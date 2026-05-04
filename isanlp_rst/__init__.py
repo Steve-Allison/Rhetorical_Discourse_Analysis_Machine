@@ -21,6 +21,7 @@ from typing import IO, Awaitable, Dict, Optional, Union
 from .rstviewer import RenderedRST
 from .rstviewer import main as _rst_main
 
+
 try:  # pragma: no cover - dependency is optional in tests
     from isanlp.annotation_rst import DiscourseUnit
 except Exception:  # pragma: no cover - fall back when isanlp is unavailable
@@ -50,12 +51,11 @@ PathLike = Union[str, os.PathLike]
 
 
 def render(rs3_source: Union[PathLike, bytes, IO[str], IO[bytes]], *,
-           display_inline: bool = True, colab: bool = False) -> RenderedRST:
+           display_inline: bool = True, colab: bool = False) -> "RenderedRST":
     """Render an RST tree and, optionally, display it inline.
 
     This is a light-weight proxy around :func:`isanlp_rst.rstviewer.main.render`.
     """
-
     return _rst_main.render(rs3_source, display_inline=display_inline, colab=colab)
 
 
@@ -86,7 +86,6 @@ def to_png(rs3_path: PathLike, png_path: Optional[PathLike] = None, *,
            base64_encoded: bool = False, device_scale_factor: int = 2,
            timeout_ms: int = 10_000) -> Union[bytes, str, None]:
     """Render an ``.rs3`` file to PNG (works in both sync and async environments)."""
-
     # If there's no running loop, use the fast sync path.
     try:
         _ = asyncio.get_running_loop()
@@ -121,7 +120,6 @@ def to_pdf(rs3_path: PathLike, pdf_path: PathLike, *,
     an event loop is already running the rendering is executed in a worker
     thread so that the current loop does not need to be interrupted.
     """
-
     coro = _rst_main.rs3topdf_async(
         os.fspath(rs3_path),
         os.fspath(pdf_path),

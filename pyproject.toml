@@ -4,28 +4,53 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "isanlp_rst"
-version = "3.2.0"
-description = "IsaNLP RST Parser: A library for parsing Rhetorical Structure Theory trees."
+version = "3.2.0+story-analyser.1"
+description = "IsaNLP RST Parser: A library for parsing Rhetorical Structure Theory trees. Story_Analyser fork — repinned numpy, optional extras for viewer/training."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 authors = [
   { name = "Elena Chistova", email = "elenachistov@gmail.com" },
 ]
-urls = { "Homepage" = "https://github.com/tchewik/isanlp_rst" }
+maintainers = [
+  { name = "Steve Allison (fork maintainer)", email = "steve.allison@me.com" },
+]
+urls = { "Homepage" = "https://github.com/Steve-Allison/isanlp_rst", "Upstream" = "https://github.com/tchewik/isanlp_rst" }
 
+# Story_Analyser fork: numpy repinned (was numpy==1.26.4), missing
+# inference-time deps added (huggingface_hub, tqdm, networkx, pillow).
+# Upstream imports many "training-time" deps at module load (fire in
+# data_manager.py, lxml in corpus.utils_rs3, jsonnet in src/config_reader.py)
+# via the predictor's import chain — so we keep them as hard deps rather
+# than chase lazy-import patches across the codebase. Only matplotlib
+# (which is commented out everywhere upstream) stays excluded.
 dependencies = [
-  "asyncio",
-  "playwright",
   "razdel",
-  "fire",
-  "matplotlib",
-  "lxml",
-  "jsonnet",
   "nltk",
   "spacy",
-  "numpy==1.26.4",
+  "numpy>=1.26,<3.0",
   "transformers",
   "torch",
+  "huggingface_hub",
+  "tqdm",
+  "networkx",
+  "pillow",
+  "playwright",
+  "lxml",
+  "fire",
+  "jsonnet",
+  # `isanlp` is required at import time but is not on PyPI.
+  # Install separately:
+  #   pip install git+https://github.com/iinemo/isanlp.git
+  # Listed here as a comment because pyproject.toml's PEP-621 dependencies
+  # cannot include direct git URLs without falling back to PEP-508 syntax,
+  # and that breaks tools that resolve from PyPI only. Documented in README.
+]
+
+[project.optional-dependencies]
+training = [
+  # pytorch-lightning is only needed for the training scripts in
+  # */multiple_runs.py — not for inference. Kept optional.
+  "pytorch-lightning",
 ]
 
 [tool.setuptools.packages.find]
