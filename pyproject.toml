@@ -58,3 +58,4 @@ exclude = ["tests"]
 
 [tool.setuptools.package-data]
 "isanlp_rst.rstviewer" = ["data/**"]
+"isanlp_rst" = ["py.typed"]
