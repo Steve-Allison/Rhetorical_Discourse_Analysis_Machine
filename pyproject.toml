@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "isanlp_rst"
-version = "3.2.0+story-analyser.1"
-description = "IsaNLP RST Parser: A library for parsing Rhetorical Structure Theory trees. Story_Analyser fork — repinned numpy, optional extras for viewer/training."
+version = "3.2.0+story-analyser.2"
+description = "IsaNLP RST Parser: A library for parsing Rhetorical Structure Theory trees. Story_Analyser fork — numpy 2.x compat, MPS device support, HF cache control, parse cache hook, batch parsing, JSON serialisers."
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
@@ -51,6 +51,9 @@ training = [
   # pytorch-lightning is only needed for the training scripts in
   # */multiple_runs.py — not for inference. Kept optional.
   "pytorch-lightning",
+]
+test = [
+  "pytest>=7",
 ]
 
 [tool.setuptools.packages.find]

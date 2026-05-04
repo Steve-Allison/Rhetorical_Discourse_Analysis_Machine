@@ -2,38 +2,98 @@
 
 **Fork of:** [tchewik/isanlp_rst](https://github.com/tchewik/isanlp_rst)
 **Maintained by:** Steve Allison
-**Reason:** Upstream `pyproject.toml` pins `numpy==1.26.4`, blocking installation in projects that have moved to `numpy` 2.x. Also missing several runtime-imported packages from the declared dependency list.
+**Reason:** Upstream `pyproject.toml` pins `numpy==1.26.4`, blocking installation in projects that have moved to numpy 2.x. The fork additionally addresses a numpy 2.x regression on the training path, a `torch.load` security warning, missing Apple Silicon (MPS) device support, missing HF Hub controls (cache / offline / token), missing batch-parsing API, missing parse-result cache hook, and several quality-of-life fixes (logging hygiene, deprecated PyTorch API).
 **Forked at upstream commit:** `249feb6` (v3.2.0 merge)
 
 ## Changes vs upstream `v3.2.0`
 
-### `pyproject.toml`
+### Dependency / packaging fixes (`pyproject.toml`)
 
-- **`numpy==1.26.4` → `numpy>=1.26,<3.0`.** Inspection of all 21 numpy call sites in `isanlp_rst/` shows usage limited to stable APIs (`np.unique`, `np.array(..., dtype=object)`, `np.mean`). No use of removed numpy 1.x aliases (`np.float`, `np.int`, `np.bool`, `np.string_`). Verified by full end-to-end parse against `numpy 2.2.6` — see *Verification* below.
+- **`numpy==1.26.4` → `numpy>=1.26,<3.0`.** Inspection of all 21 numpy call sites in `isanlp_rst/` showed usage limited to APIs stable across numpy 1.26 and 2.x (`np.unique`, `np.array(..., dtype=object)`, `np.mean`). Verified with end-to-end parse on numpy 2.2.6.
 - **Added missing runtime deps:** `huggingface_hub`, `tqdm`, `networkx`, `pillow`. All four are imported at module load via the predictor's import chain but were missing from upstream's dependency list.
 - **`asyncio` removed.** Stdlib module — listing it as a dependency is a documentation error (no-op for installers).
 - **`requires-python` raised from `>=3.8` to `>=3.10`.** Reflects the actual PyTorch / transformers floor in 2026.
-- **`pytorch-lightning` moved to optional `[training]` extra.** Only used by `*/multiple_runs.py` training launchers, never on the inference path.
+- **`pytorch-lightning` moved to optional `[training]` extra.** Used only by `*/multiple_runs.py` training launchers, never on the inference path.
+- **New `[test]` extra: `pytest>=7`.** Lets contributors run the new test suite via `pip install '.[test]'`.
 
-**Note on optional extras:** an earlier attempt moved `playwright`, `lxml`, `fire`, `jsonnet` into optional `[viewer]` and `[training]` extras. Reverted — these packages are imported at module load via the predictor's import chain (`data_manager.py` imports `fire`, `corpus/utils_rs3.py` imports `lxml`, `src/config_reader.py` imports `jsonnet`, `rstviewer/main.py` imports `playwright`). Splitting them into extras would require either lazy-import patches across 5+ upstream modules or breaking the package on import. The hard-dep approach is the smaller patch surface.
+**Note on optional extras:** an earlier attempt moved `playwright`, `lxml`, `fire`, `jsonnet` into optional `[viewer]` and `[training]` extras. Reverted because these packages are imported at module load via the predictor's import chain (`data_manager.py` imports `fire`, `corpus/utils_rs3.py` imports `lxml`, `src/config_reader.py` imports `jsonnet`, `rstviewer/main.py` imports `playwright`). Splitting them into extras would require lazy-import patches across 5+ upstream modules. The hard-dep approach is the smaller patch surface.
 
-### Source code (surgical fixes)
+### Bug fixes (cross-applicable to upstream)
 
-- **Removed dead `from PIL import Image`** in two files where `Image` is never referenced:
+- **Removed dead `from PIL import Image`** in two files where `Image` is never referenced (verified zero `Image.` call sites):
   - `isanlp_rst/dmrst_parser/src/parser/parsing_net.py:5`
   - `isanlp_rst/universal_parser/src/parser/parsing_net.py:5`
 
-  Verified with `grep "Image\."`: zero call sites in either file. These are upstream dead imports — likely IDE auto-added — that became a problem only when a downstream tool tried to load the predictor without `pillow` installed.
+- **`np.string_` → `np.bytes_`** in `isanlp_rst/dmrst_parser/src/parser/training_manager.py:36`. `np.string_` was removed in numpy 2.0; `string_` was an alias for `bytes_` in numpy 1.x — behaviour-preserving. The matching line in `universal_parser/src/parser/training_manager.py:36` was already commented out upstream. Affects only the *training* path; without this fix, retraining on numpy 2.x crashes.
 
-- **`np.string_` → `np.bytes_`** in `isanlp_rst/dmrst_parser/src/parser/training_manager.py:36`. `np.string_` was removed in numpy 2.0; `string_` was an alias for `bytes_` in numpy 1.x, so this is behaviour-preserving. (The matching line in `universal_parser/src/parser/training_manager.py:36` was already commented out upstream.) This affects only the *training* path — inference doesn't load `training_manager` — so missed in the original numpy-usage audit. Without this fix, retraining on numpy 2.x crashes.
+- **`torch.load(..., weights_only=True)`** in both predictors (`dmrst_parser/predictor.py:91`, `universal_parser/predictor.py:321`). Mitigates the arbitrary-code-execution vector that motivated PyTorch 2.6's default flip. State dicts from huggingface_hub are tensor-only, so this is a safe-default upgrade with no behavioural change. Eliminates the `FutureWarning` that otherwise fires on every parse in PyTorch 2.4+.
 
-### Story_Analyser-specific additions (not in upstream PR)
+- **Removed deprecated `verbose=True` from `ReduceLROnPlateau`** in both training managers. The argument was removed in PyTorch 2.x; the scheduler's native logging hook covers the same use case. Affects the training path only.
 
-These add API surface rather than fix bugs, so they live only in the fork. The upstream maintainer may want to review them separately later.
+### Quality of life (cross-applicable to upstream)
 
-- **`isanlp_rst/py.typed`** (PEP 561 marker, empty file) plus type hints on `Parser.__init__`, `Parser.__call__`, `Parser.from_edus`, and the new `Parser.parse_segments`. Pyright/mypy now resolve types through the parser API instead of seeing `Any`. The lazy `PredictorDMRST` / `PredictorUniRST` imports inside `__init__` mean the package no longer requires both predictor families to import successfully just to construct one.
-- **`Parser.parse_segments(segments, join_with=" ")`** — convenience method for parsing pre-segmented documents (slides, sections, emails) without losing the caller's segment intent. Implementation joins with `join_with` and dispatches to `__call__`; future revisions could push hard segment boundaries down to the parser.
-- **`isanlp_rst/utils/serialization.py`** — `tree_to_dict()` and `tree_from_dict()` for JSON-safe round-trip of `DiscourseUnit` trees. Lets downstream consumers cache/transmit trees without holding the live object graph. Story_Analyser previously had a private copy of this in `nlp/rst_utils.py::serialize_rst_tree`; the project can now drop that and import from the fork.
+- **Replaced `print()` with structured `logging`** in corpus utilities:
+  - `isanlp_rst/{universal,dmrst}_parser/src/corpus/data.py` — 5 prints each → `logger.debug`/`logger.info`
+  - `isanlp_rst/{universal,dmrst}_parser/src/corpus/utils_dis_thiago.py` — 7 prints each → conditional `logger.info`/`logger.debug` (preserved the `verbose` flag)
+  - `printLabels` migrated to logger.info so callers piping the output get clean stdout
+
+  Output now respects host log configuration and goes to stderr instead of stdout, which matters for callers that consume parser output via subprocess.
+
+### New API surface (fork-only — Story_Analyser additions)
+
+These add API rather than fix bugs; they live only in the fork. The upstream maintainer may want to review them separately.
+
+#### Device abstraction with Apple Silicon (MPS) support
+
+- **New module `isanlp_rst/utils/device.py`** exposing `resolve_device(spec)` and the `DeviceSpec` type alias.
+- **New keyword-only `device` parameter** on `Parser.__init__` and both predictor `__init__`s. Accepts:
+  - `None` / `'auto'` — picks the best available accelerator (CUDA → MPS → CPU)
+  - `'cpu'` / `'cuda'` / `'cuda:N'` / `'mps'` — explicit device strings
+  - `int` — legacy isanlp_rst convention (`-1` = CPU, `N` = `cuda:N`)
+  - `torch.device` — passed through unchanged
+- **MPS edge case handled:** `torch.linalg.qr` (used in LSTM orthogonal init) is not yet implemented for MPS in PyTorch 2.11 (see [pytorch#141287](https://github.com/pytorch/pytorch/issues/141287)). The auto-selector probes the op at resolve time and falls back to CPU silently with a clear warning if it fails. The `PYTORCH_ENABLE_MPS_FALLBACK=1` env var (set in the shell *before* Python starts) bypasses the probe and runs inference on MPS with CPU fallback only for the missing init op.
+- **Backward compatibility:** the legacy `cuda_device: int` parameter still works exactly as before. The new `device` parameter takes precedence when supplied.
+
+#### HF Hub control: cache / offline / auth
+
+- **New keyword-only parameters** `cache_dir`, `local_files_only`, `token` on `Parser.__init__` and both predictor `__init__`s. All four `hf_hub_download` call sites now honour these settings.
+- **`cache_dir`** — override the HF Hub cache directory (defaults to `~/.cache/huggingface`).
+- **`local_files_only=True`** — refuse to reach out to HF Hub; fail if files aren't already cached. Useful for airgapped / reproducible runs.
+- **`token`** — HF Hub auth token. Skips the "unauthenticated requests" warning and avoids the lower rate-limit ceiling.
+
+#### Pluggable parse cache
+
+- **New module `isanlp_rst/utils/cache.py`** exposing the `ParseCache` Protocol (runtime-checkable).
+- **New keyword-only `cache` parameter** on `Parser.__init__`. Any object with `get(text) -> result | None` and `put(text, result) -> None` methods works.
+- The parser checks the cache on every `__call__` and stores results on miss. Cache `put` failures are caught and logged — they never break the parse.
+
+#### Batch parsing
+
+- **New `Parser.parse_batch(texts, *, show_progress=False, skip_empty=True)`** — parse multiple documents with optional tqdm progress bar. Cache-aware (delegates to `__call__`). Empty / whitespace-only inputs return `None` at their position in the result list when `skip_empty=True`.
+- Implementation today is a sequential loop. The API exists so a future move to true batched inference is a drop-in replacement for callers.
+
+#### Slide / section-grain parsing
+
+- **`Parser.parse_segments(segments, join_with=" ")`** — convenience method for parsing pre-segmented documents (slides in a deck, sections in a Docling/Markdown document, emails in a thread, paragraphs in a research paper). Joins segments with the supplied separator and dispatches to `__call__`. Story_Analyser uses this for slide decks; the same method is suitable for any structurally pre-divided input.
+
+#### JSON tree serialiser
+
+- **New module `isanlp_rst/utils/serialization.py`** — `tree_to_dict()` and `tree_from_dict()` for JSON-safe round-trip of `DiscourseUnit` trees. Preserves `id`, `relation`, `nuclearity`, `start`, `end`, `text`, `proba` plus children (`left`, `right`).
+- `tree_from_dict` falls back to returning the dict unchanged when `isanlp` isn't importable, so dict-shaped consumers still work.
+
+#### Type stubs
+
+- **`isanlp_rst/py.typed`** (PEP 561 marker, empty file) plus type hints on every public method of `Parser`. Pyright/mypy now resolve types through the parser API instead of seeing `Any`.
+- The Predictor imports inside `Parser.__init__` are lazy — constructing a DMRST parser no longer requires the UniRST predictor to import successfully (and vice versa).
+
+### Test suite (fork-only)
+
+- **40 new pytest tests across 4 modules:**
+  - `tests/test_device.py` — 14 tests covering `resolve_device` (legacy ints, modern strings, auto-selection, MPS/CUDA availability gating, `torch.device` pass-through, type errors)
+  - `tests/test_cache_protocol.py` — 5 tests covering `ParseCache` protocol membership and round-trip
+  - `tests/test_serialization.py` — 8 tests covering `tree_to_dict`/`tree_from_dict` (None handling, recursive children, JSON serialisability, round-trip, isanlp-unavailable fallback)
+  - `tests/test_parser_construction.py` — 13 tests covering Parser version validation, input validation in `parse_segments`/`parse_batch`/`__call__`, and cache-hook behaviour (hit, miss, write-failure)
+- Tests do **not** require the model weights — they stub the predictor where needed. Run with `pip install '.[test]' && pytest tests/`.
 
 ### `isanlp` (parent library) — upstream documentation issue carried forward
 
@@ -47,15 +107,18 @@ Unchanged from upstream behaviour but documented here because it is the most com
 
 ## Verification (2026-05-04)
 
-1. **Install:** `pip install -e .` succeeded against an isolated venv backed by Python 3.12 + numpy 2.2.6. No version conflicts.
-2. **Import:** `from isanlp_rst.parser import Parser` succeeded; `py.typed` shipped in the wheel.
-3. **End-to-end parse:** Loaded `tchewik/isanlp_rst_v3` model with `hf_model_version='rstdt'`, parsed a 32-word business text. Root DiscourseUnit returned with attributes:
-   - `id, left, right, relation, nuclearity, start, end, text, proba` (matches `story_analyser/nlp/rst_utils.py::serialize_rst_tree` field expectations exactly)
-   - Bonus attributes returned: `entropy`, `_exporter`
-   - Root: `relation='Elaboration'`, `nuclearity='NS'`, span 0..212, both children present.
-4. **`parse_segments`:** Parsed a 3-slide deck with `join_with="\n\n"`. Root: `Elaboration`/`NS`, span 0..117 covering all three concatenated slides.
-5. **`tree_to_dict` round-trip:** Serialised the parsed tree to JSON (795 chars) and round-tripped back through `tree_from_dict`; `relation` and `nuclearity` preserved at root.
-6. **`np.string_ → np.bytes_`:** `import isanlp_rst.dmrst_parser.src.parser.training_manager` succeeds on numpy 2.2.6 (would have crashed before this patch).
+All checks pass against an isolated Python 3.12 venv with numpy 2.2.6 on Apple Silicon (M-series).
+
+1. **Install:** `pip install -e '.[test]'` succeeded; no version conflicts.
+2. **Test suite:** `pytest tests/` — 40 passed, 2 skipped (skips are gated on CUDA / isanlp availability).
+3. **End-to-end parse on CPU:** `Parser(hf_model_version='rstdt', device='cpu')` returned correct tree (relation=Elaboration, nuclearity=NS).
+4. **End-to-end parse on MPS** (with `PYTORCH_ENABLE_MPS_FALLBACK=1` exported before Python launch): `Parser(device='auto')` resolved to MPS, model constructed successfully (LSTM init's QR op fell back to CPU, everything else ran on MPS), inference returned correct tree.
+5. **MPS auto-fallback** (without env var): probe correctly detected the missing op and resolved to CPU with a clear warning naming the env var to set.
+6. **`parse_segments`:** 3-slide deck joined with `\n\n` → single tree spanning all three.
+7. **`parse_batch`:** 4-element list with one empty entry → 4-element output list with `None` at the empty position.
+8. **Cache hook:** 3 calls with the same text → 1 miss + 2 hits.
+9. **`tree_to_dict` round-trip:** parsed tree → JSON → restored tree, `relation` and `nuclearity` preserved.
+10. **`torch.load(weights_only=True)`:** `FutureWarning` no longer fires; checkpoint loads identically.
 
 ## Rebase plan
 
@@ -64,17 +127,18 @@ Upstream releases roughly twice a year. To incorporate upstream changes:
 ```bash
 git remote add upstream https://github.com/tchewik/isanlp_rst.git
 git fetch upstream
-git checkout main
-git rebase upstream/main
-# Re-apply pyproject.toml changes if upstream re-pinned numpy or restored
-# the removed PIL imports.
+git checkout story-analyser-numpy2-repin
+git rebase upstream/master
+# Re-apply pyproject.toml changes if upstream re-pinned numpy / restored
+# the removed PIL imports / removed the missing-deps additions.
 ```
 
-**Open question on every rebase:** did upstream relax `numpy==1.26.4`? If yes, this fork is no longer needed and Story_Analyser can switch back to upstream PyPI.
+**Open question on every rebase:** has upstream merged the open PR ([tchewik/isanlp_rst#13](https://github.com/tchewik/isanlp_rst/pull/13))? If yes, the dependency-fix portion of this fork is no longer needed and the fork shrinks to the Story_Analyser-specific additions only.
 
 ## Out of scope
 
-- No changes to parser internals, model loading, or output schema.
+- No changes to parser model architecture, weights, or output schema.
 - No re-training, no model weight changes.
 - No language-support changes.
-- No algorithmic bug fixes — purely a packaging + dead-import-removal fork.
+- No new algorithmic bug fixes beyond the unused-import removals.
+- No CI / pre-commit / lint config (upstream has none; adding it would be its own PR).

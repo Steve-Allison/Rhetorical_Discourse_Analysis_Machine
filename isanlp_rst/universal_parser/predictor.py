@@ -57,7 +57,19 @@ class PredictorUniRST(BasePredictor):
         relinventory: str = None,
         relinventory_idx: int = 0,
         cuda_device: int = -1,
+        *,
+        device=None,
+        cache_dir: Optional[str] = None,
+        local_files_only: bool = False,
+        token: Optional[str] = None,
     ) -> None:
+        """Initialise the UniRST predictor.
+
+        See :class:`isanlp_rst.dmrst_parser.predictor.PredictorDMRST.__init__`
+        for parameter semantics — they are identical.
+        """
+        from isanlp_rst.utils.device import resolve_device
+
         self._ensure_module_aliases()
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
@@ -74,8 +86,16 @@ class PredictorUniRST(BasePredictor):
         self.hf_model_name = hf_model_name
         self.hf_model_version = hf_model_version
 
+        # Persisted so _resolve_resource() can use the same HF Hub options
+        # for relation-table / data-manager fetches later in the lifecycle.
+        self._hf_cache_dir = cache_dir
+        self._hf_local_files_only = local_files_only
+        self._hf_token = token
+
         model_filename = 'best_weights.pt'
         config_filename = 'config.json'
+
+        _hf_kwargs = self._build_hf_kwargs()
 
         if self.mode == 'local':
             self.model_file = os.path.join(self.model_dir, model_filename)
@@ -85,11 +105,13 @@ class PredictorUniRST(BasePredictor):
                 repo_id=self.hf_model_name,
                 filename=model_filename,
                 revision=self.hf_model_version,
+                **_hf_kwargs,
             )
             self.config_path = hf_hub_download(
                 repo_id=self.hf_model_name,
                 filename=config_filename,
                 revision=self.hf_model_version,
+                **_hf_kwargs,
             )
 
         with open(self.config_path, 'r', encoding='utf8') as f:
@@ -122,9 +144,24 @@ class PredictorUniRST(BasePredictor):
                     )
                 self.relation_tables.append(relation_table)
 
-        self._cuda_device = torch.device('cpu' if cuda_device == -1 else f'cuda:{cuda_device}')
+        # Modern device parameter takes precedence over legacy cuda_device.
+        if device is not None:
+            self._cuda_device = resolve_device(device)
+        else:
+            self._cuda_device = resolve_device(cuda_device)
 
         self._load_model()
+
+    def _build_hf_kwargs(self) -> dict:
+        """Assemble HF Hub download kwargs from the per-instance settings."""
+        kwargs: dict = {}
+        if self._hf_cache_dir is not None:
+            kwargs["cache_dir"] = self._hf_cache_dir
+        if self._hf_local_files_only:
+            kwargs["local_files_only"] = True
+        if self._hf_token is not None:
+            kwargs["token"] = self._hf_token
+        return kwargs
 
     @classmethod
     def _ensure_module_aliases(cls) -> None:
@@ -174,6 +211,7 @@ class PredictorUniRST(BasePredictor):
                 repo_id=self.hf_model_name,
                 filename=relative_path,
                 revision=self.hf_model_version,
+                **self._build_hf_kwargs(),
             )
         except Exception:
             return None
@@ -318,7 +356,13 @@ class PredictorUniRST(BasePredictor):
         model_cls = ParsingNet if parser_type == 'top-down' else ParsingNetBottomUp
 
         self.model = model_cls(**model_config).to(self._cuda_device)
-        self.model.load_state_dict(torch.load(self.model_file, map_location=self._cuda_device))
+        # weights_only=True: refuses pickled-Python content in the checkpoint,
+        # mitigating the arbitrary-code-execution vector that motivated PyTorch
+        # 2.6's default flip. State dicts from huggingface_hub are tensor-only,
+        # so this is a safe-default upgrade with no behavioural change.
+        self.model.load_state_dict(
+            torch.load(self.model_file, map_location=self._cuda_device, weights_only=True)
+        )
         self.model.eval()
 
     def _get_model_configs(self) -> dict:

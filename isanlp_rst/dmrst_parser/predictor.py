@@ -27,7 +27,33 @@ class PredictorDMRST(BasePredictor):
                  model_dir: str = None,
                  hf_model_name: str = None,
                  hf_model_version: str = None,
-                 cuda_device: int = -1):
+                 cuda_device: int = -1,
+                 *,
+                 device=None,
+                 cache_dir: str | None = None,
+                 local_files_only: bool = False,
+                 token: str | None = None):
+        """Initialise the DMRST predictor.
+
+        Args:
+            model_dir: Optional local model directory. Mutually exclusive
+                with ``hf_model_name``.
+            hf_model_name: HF Hub repo containing the model checkpoint.
+            hf_model_version: Branch / tag / revision in the HF repo.
+            cuda_device: Legacy device selector (-1 = CPU, N = cuda:N).
+                Prefer the keyword-only ``device`` parameter for new code.
+            device: Modern device selector (str / int / torch.device /
+                None). Overrides ``cuda_device`` when provided. ``'auto'``
+                or ``None`` picks the best available accelerator (CUDA →
+                MPS → CPU). See ``isanlp_rst.utils.device.resolve_device``.
+            cache_dir: Override the HF Hub cache directory for downloaded
+                model files. ``None`` uses the HF Hub default.
+            local_files_only: When True, refuse to download from HF Hub —
+                fail if any required file isn't already cached.
+            token: HF Hub auth token. ``None`` uses ``HF_TOKEN`` env var
+                if set, otherwise unauthenticated (rate-limited).
+        """
+        from isanlp_rst.utils.device import resolve_device
 
         self.mode = None
         if hf_model_name is not None:
@@ -35,32 +61,67 @@ class PredictorDMRST(BasePredictor):
         if model_dir is not None:
             self.mode = 'local'
 
-        assert self.mode is not None
+        if self.mode is None:
+            raise ValueError('Either model_dir or hf_model_name must be provided.')
 
         _file_model = 'best_weights.pt'
         _file_config = 'config.json'
         _file_relation_table = 'relation_table.txt'
 
+        # Common kwargs for HF Hub downloads (filtered to non-None so the
+        # huggingface_hub function uses its own defaults when we have nothing
+        # to override).
+        _hf_kwargs = {
+            k: v for k, v in {
+                "cache_dir": cache_dir,
+                "local_files_only": local_files_only,
+                "token": token,
+            }.items() if v is not None and v is not False
+        }
+        # local_files_only must be passed even when False — its absence and
+        # its False value have the same meaning to hf_hub_download, so this
+        # is safe.
+        if local_files_only:
+            _hf_kwargs["local_files_only"] = True
+
         if self.mode == 'local':
             self.model_file = os.path.join(model_dir, _file_model)
             self.config_path = os.path.join(model_dir, _file_config)
-            self.relation_table = open(os.path.join(model_dir, _file_relation_table), 'r').read().splitlines()
+            with open(os.path.join(model_dir, _file_relation_table), 'r') as f:
+                self.relation_table = f.read().splitlines()
 
         elif self.mode == 'hf':
             self.hf_model_name = hf_model_name
             self.hf_model_version = hf_model_version
-            self.model_file = hf_hub_download(repo_id=self.hf_model_name,
-                                              filename=_file_model,
-                                              revision=self.hf_model_version)
-            self.config_path = hf_hub_download(repo_id=self.hf_model_name,
-                                               filename=_file_config,
-                                               revision=self.hf_model_version)
-            self.relation_table = open(hf_hub_download(repo_id=self.hf_model_name,
-                                                       filename=_file_relation_table,
-                                                       revision=self.hf_model_version), 'r').read().splitlines()
+            self.model_file = hf_hub_download(
+                repo_id=self.hf_model_name,
+                filename=_file_model,
+                revision=self.hf_model_version,
+                **_hf_kwargs,
+            )
+            self.config_path = hf_hub_download(
+                repo_id=self.hf_model_name,
+                filename=_file_config,
+                revision=self.hf_model_version,
+                **_hf_kwargs,
+            )
+            relation_table_path = hf_hub_download(
+                repo_id=self.hf_model_name,
+                filename=_file_relation_table,
+                revision=self.hf_model_version,
+                **_hf_kwargs,
+            )
+            with open(relation_table_path, 'r') as f:
+                self.relation_table = f.read().splitlines()
 
-        self.config = json.load(open(self.config_path))
-        self._cuda_device = torch.device('cpu' if cuda_device == -1 else f'cuda:{cuda_device}')
+        with open(self.config_path) as f:
+            self.config = json.load(f)
+
+        # Modern device parameter takes precedence over legacy cuda_device.
+        if device is not None:
+            self._cuda_device = resolve_device(device)
+        else:
+            self._cuda_device = resolve_device(cuda_device)
 
         self._load_model()
 
@@ -88,7 +149,13 @@ class PredictorDMRST(BasePredictor):
 
         model_config.update(self._get_model_configs())
         self.model = ParsingNet(**model_config).to(self._cuda_device)
-        self.model.load_state_dict(torch.load(self.model_file, map_location=self._cuda_device))
+        # weights_only=True: refuses pickled-Python content in the checkpoint,
+        # mitigating the arbitrary-code-execution vector that motivated PyTorch
+        # 2.6's default flip. State dicts from huggingface_hub are tensor-only,
+        # so this is a safe-default upgrade with no behavioural change.
+        self.model.load_state_dict(
+            torch.load(self.model_file, map_location=self._cuda_device, weights_only=True)
+        )
         self.model.eval()
 
     def _get_model_configs(self):
