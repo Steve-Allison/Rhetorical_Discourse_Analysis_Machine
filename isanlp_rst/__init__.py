@@ -20,6 +20,7 @@ from typing import IO, Awaitable, Dict, Optional, Union
 
 from .rstviewer import RenderedRST
 from .rstviewer import main as _rst_main
+from .utils.analysis import find_cdu, relation_category, tree_stats
 
 try:  # pragma: no cover - dependency is optional in tests
     from isanlp.annotation_rst import DiscourseUnit
@@ -44,6 +45,9 @@ __all__ = [
     "to_html",
     "to_png",
     "to_pdf",
+    "find_cdu",
+    "relation_category",
+    "tree_stats",
 ]
 
 PathLike = Union[str, os.PathLike]
