@@ -8,6 +8,19 @@ Third-party RST (Rhetorical Structure Theory) parser library by Elena Chistova (
 
 This is an **external library**, not Steve's own code. Treat it as a vendored dependency: changes should stay surgical and upstream-aware. The companion runtime `isanlp` (`iinemo/isanlp`) is a separate GitHub package that must be installed for `DiscourseUnit` to be available.
 
+## Git remotes — fork only, never upstream
+
+This repo is **Steve's fork** at `github.com/Steve-Allison/isanlp_rst`. Upstream is Elena Chistova's `tchewik/isanlp_rst` and is **not** configured as a remote. Verify before any push:
+
+```bash
+git remote -v   # must show only origin -> Steve-Allison/isanlp_rst
+```
+
+- All commits and pushes go to `origin` (Steve's fork). Never to upstream.
+- Upstream updates currently arrive via GitHub PR merges (`Merge pull request #N from tchewik/v…`), not local `git fetch upstream`. Don't add an `upstream` remote without asking.
+- Feeding work back to `tchewik/isanlp_rst` is **opt-in**, not obligatory. Don't open a PR upstream unless Steve asks for one.
+- If `git remote -v` ever shows a second remote (typically `upstream`), confirm with Steve before pushing.
+
 ## Common commands
 
 There is no test suite, no lint config, no `pixi.toml`, no Makefile. The project ships as a `pip`-installable package via `pyproject.toml` (setuptools build).
