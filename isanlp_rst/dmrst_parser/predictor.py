@@ -1,66 +1,74 @@
+from __future__ import annotations
+
 import json
 import os
+from typing import List, Optional, Sequence
+
 import razdel
 import torch
-from bisect import bisect_right
 from huggingface_hub import hf_hub_download
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel, AutoConfig
-from typing import List, Sequence, Tuple
 
-from isanlp_rst.base_predictor import BasePredictor
+from isanlp_rst.base_predictor import BasePredictor, str2bool
 from isanlp_rst.utils.du_converter import DUConverter
 from .src.parser.data import Data
 from .src.parser.parsing_net import ParsingNet
 
 
-def str2bool(value):
-    if type(value) == bool:
-        return value
-
-    if type(value) == str:
-        return value.lower() == 'true'
-
-
 class PredictorDMRST(BasePredictor):
-    def __init__(self,
-                 model_dir: str = None,
-                 hf_model_name: str = None,
-                 hf_model_version: str = None,
-                 cuda_device: int = -1):
-
-        self.mode = None
-        if hf_model_name is not None:
-            self.mode = 'hf'
-        if model_dir is not None:
-            self.mode = 'local'
-
-        assert self.mode is not None
+    def __init__(
+        self,
+        model_dir: Optional[str] = None,
+        hf_model_name: Optional[str] = None,
+        hf_model_version: Optional[str] = None,
+        cuda_device: int = -1,
+        dtype: 'str | torch.dtype | None' = None,
+    ):
+        if model_dir is not None and hf_model_name is not None:
+            raise ValueError(
+                'Pass exactly one of `model_dir` or `hf_model_name`, not both.'
+            )
 
         _file_model = 'best_weights.pt'
         _file_config = 'config.json'
         _file_relation_table = 'relation_table.txt'
 
-        if self.mode == 'local':
+        if model_dir is not None:
+            self.mode = 'local'
             self.model_file = os.path.join(model_dir, _file_model)
             self.config_path = os.path.join(model_dir, _file_config)
-            self.relation_table = open(os.path.join(model_dir, _file_relation_table), 'r').read().splitlines()
-
-        elif self.mode == 'hf':
+            with open(os.path.join(model_dir, _file_relation_table), 'r', encoding='utf8') as f:
+                self.relation_table = f.read().splitlines()
+        elif hf_model_name is not None:
+            self.mode = 'hf'
             self.hf_model_name = hf_model_name
             self.hf_model_version = hf_model_version
-            self.model_file = hf_hub_download(repo_id=self.hf_model_name,
-                                              filename=_file_model,
-                                              revision=self.hf_model_version)
-            self.config_path = hf_hub_download(repo_id=self.hf_model_name,
-                                               filename=_file_config,
-                                               revision=self.hf_model_version)
-            self.relation_table = open(hf_hub_download(repo_id=self.hf_model_name,
-                                                       filename=_file_relation_table,
-                                                       revision=self.hf_model_version), 'r').read().splitlines()
+            self.model_file = hf_hub_download(
+                repo_id=hf_model_name,
+                filename=_file_model,
+                revision=hf_model_version,
+            )
+            self.config_path = hf_hub_download(
+                repo_id=hf_model_name,
+                filename=_file_config,
+                revision=hf_model_version,
+            )
+            relation_table_path = hf_hub_download(
+                repo_id=hf_model_name,
+                filename=_file_relation_table,
+                revision=hf_model_version,
+            )
+            with open(relation_table_path, 'r', encoding='utf8') as f:
+                self.relation_table = f.read().splitlines()
+        else:
+            raise ValueError('Pass either `model_dir` or `hf_model_name`.')
 
-        self.config = json.load(open(self.config_path))
-        self._cuda_device = torch.device('cpu' if cuda_device == -1 else f'cuda:{cuda_device}')
+        with open(self.config_path, 'r', encoding='utf8') as f:
+            self.config = json.load(f)
+
+        self._cuda_device = self._select_device(cuda_device)
+        self._dtype = self._resolve_dtype(dtype, self._cuda_device)
 
         self._load_model()
 
@@ -88,7 +96,7 @@ class PredictorDMRST(BasePredictor):
 
         model_config.update(self._get_model_configs())
         self.model = ParsingNet(**model_config).to(self._cuda_device)
-        self.model.load_state_dict(torch.load(self.model_file, map_location=self._cuda_device))
+        self.model.load_state_dict(self._load_torch_weights(self.model_file, self._cuda_device))
         self.model.eval()
 
     def _get_model_configs(self):
@@ -183,7 +191,7 @@ class PredictorDMRST(BasePredictor):
         # recount edu_breaks for subwords
         subword_edu_breaks = []
         for doc_word_offsets, doc_subword_offsets, edu_breaks in zip(
-                word_offsets, tokens['offset_mapping'], data.edu_breaks):
+                word_offsets, tokens['offset_mapping'], data.edu_breaks, strict=True):
             subword_edu_breaks.append(self._recount_spans(doc_word_offsets, doc_subword_offsets, edu_breaks))
 
         return Data(
@@ -217,7 +225,8 @@ class PredictorDMRST(BasePredictor):
         for (input_sentences, edu_breaks, decoder_input,
              relation_label, parsing_breaks, golden_metric
              ) in tqdm(zip(_input_sentences, _edu_breaks, _decoder_input,
-                           _relation_label, _parsing_breaks, _golden_metric), total=len(_input_sentences)):
+                           _relation_label, _parsing_breaks, _golden_metric, strict=True),
+                       total=len(_input_sentences)):
             batches.append(
                 Data(
                     input_sentences=input_sentences,
@@ -235,73 +244,6 @@ class PredictorDMRST(BasePredictor):
             )
 
         return batches
-
-    def _validate_edus(self, edus: Sequence[str]) -> List[str]:
-        if edus is None:
-            raise ValueError('`edus` must be provided for parsing.')
-
-        if isinstance(edus, (str, bytes)):
-            raise TypeError('`edus` must be a sequence of strings, not a single string.')
-
-        if not isinstance(edus, Sequence):
-            raise TypeError('`edus` must be a sequence of strings.')
-
-        if not edus:
-            raise ValueError('`edus` must contain at least one EDU.')
-
-        normalized = []
-        for idx, edu in enumerate(edus):
-            if not isinstance(edu, str):
-                raise TypeError(f'EDU at position {idx} must be a string.')
-            if not edu:
-                raise ValueError(f'EDU at position {idx} is empty.')
-            normalized.append(edu)
-
-        return normalized
-
-    @staticmethod
-    def _compute_edu_char_spans(edus: Sequence[str]) -> Tuple[str, List[Tuple[int, int]]]:
-        text = ' '.join(edus)
-        spans: List[Tuple[int, int]] = []
-        cursor = 0
-
-        for idx, edu in enumerate(edus):
-            start = cursor
-            end = start + len(edu)
-            if text[start:end] != edu:
-                raise ValueError(f'EDU at position {idx} does not align after concatenation.')
-            spans.append((start, end))
-            if idx < len(edus) - 1:
-                cursor = end + 1
-            else:
-                cursor = end
-
-        return text, spans
-
-    @staticmethod
-    def _char_spans_to_token_breaks(tokens, spans: List[Tuple[int, int]]) -> List[int]:
-        if not tokens:
-            raise ValueError('Unable to derive token boundaries from the provided EDUs.')
-
-        token_stops = [token.stop for token in tokens]
-        edu_breaks: List[int] = []
-        token_idx = -1
-
-        for span_idx, (_, edu_end) in enumerate(spans):
-            while token_idx + 1 < len(token_stops) and token_stops[token_idx + 1] <= edu_end:
-                token_idx += 1
-
-            if token_idx == -1 or token_stops[token_idx] != edu_end:
-                raise ValueError(
-                    f'EDU at position {span_idx} does not align with tokenizer boundaries.'
-                )
-
-            edu_breaks.append(token_idx)
-
-        if edu_breaks[-1] != len(token_stops) - 1:
-            raise ValueError('EDU boundaries do not cover the entire tokenized text.')
-
-        return edu_breaks
 
     def parse_rst(self, text: str):
         """
@@ -350,7 +292,7 @@ class PredictorDMRST(BasePredictor):
         batch = self.tokenize(input_data)
 
         # Perform forward pass
-        with torch.inference_mode():
+        with torch.inference_mode(), self._autocast():
             loss_tree_batch, loss_label_batch, \
                 span_batch, label_tuple_batch, predict_edu_breaks = self.model.testing_loss(
                 batch.input_sentences, batch.sent_breaks, batch.entity_ids, batch.entity_position_ids,
@@ -397,7 +339,8 @@ class PredictorDMRST(BasePredictor):
                 'rst': [tree]
             }
 
-        edu_breaks = self._char_spans_to_token_breaks(razdel_tokens, spans)
+        razdel_offsets = [(t.start, t.stop) for t in razdel_tokens]
+        edu_breaks = self._char_spans_to_token_breaks(razdel_offsets, spans)
 
         num_edus = len(edu_breaks)
         relation_placeholder = [[0] * max(num_edus - 1, 0)]
@@ -424,7 +367,7 @@ class PredictorDMRST(BasePredictor):
 
         batch = self.tokenize(input_data)
 
-        with torch.inference_mode():
+        with torch.inference_mode(), self._autocast():
             loss_tree_batch, loss_label_batch, \
                 span_batch, label_tuple_batch, predict_edu_breaks = self.model.testing_loss(
                 batch.input_sentences, batch.sent_breaks, batch.entity_ids, batch.entity_position_ids,
