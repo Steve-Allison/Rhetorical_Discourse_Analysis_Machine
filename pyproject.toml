@@ -25,7 +25,15 @@ dependencies = [
   "spacy",
   "numpy==1.26.4",
   "transformers",
-  "torch",
+  "torch>=2.0",
+  "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "ruff>=0.6",
+  "pyright>=1.1.380",
 ]
 
 [tool.setuptools.packages.find]
@@ -33,3 +41,84 @@ exclude = ["tests"]
 
 [tool.setuptools.package-data]
 "isanlp_rst.rstviewer" = ["data/**"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+markers = [
+  "slow: integration tests that download models from HF (~2 GB each)",
+]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+isanlp_rst = { path = ".", editable = true, extras = ["dev"] }
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+# Lint scope: only files we authored or substantially restructured. The
+# inherited research code under `*/src/parser/`, `*/src/corpus/`,
+# `dmrst_parser/multiple_runs.py`, `universal_parser/multiple_runs.py`,
+# `utils/du_converter.py`, and the rstviewer subpackage is left untouched
+# (per CLAUDE.md's surgical / upstream-aware rule). Bug fixes touching those
+# files are still in scope; lint of their pre-existing style is not.
+extend-exclude = [
+  "isanlp_rst/__init__.py",  # rstviewer surface (inherited)
+  "isanlp_rst/dmrst_parser/src",
+  "isanlp_rst/universal_parser/src",
+  "isanlp_rst/dmrst_parser/multiple_runs.py",
+  "isanlp_rst/dmrst_parser/data_manager.py",
+  "isanlp_rst/universal_parser/multiple_runs.py",
+  "isanlp_rst/universal_parser/data_manager.py",
+  "isanlp_rst/utils/du_converter.py",
+  "isanlp_rst/rstviewer",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "W"]
+ignore = [
+  "E501",  # line-length: rare overruns in docstrings and config tables
+  "E741",  # ambiguous variable names (used in research idioms)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["B011"]
+
+[tool.pyright]
+# Strict on the stuff WE wrote, lenient on inherited research modules.
+include = [
+  "isanlp_rst/parser.py",
+  "isanlp_rst/base_predictor.py",
+  "isanlp_rst/dmrst_parser/predictor.py",
+  "isanlp_rst/universal_parser/predictor.py",
+  "isanlp_rst/utils/mps_init.py",
+  "tests",
+  "scripts",
+]
+exclude = [
+  "**/__pycache__",
+  ".pixi",
+  "build",
+]
+pythonVersion = "3.10"
+reportMissingImports = "warning"     # pyright runs against the active env
+# torch's runtime API exposes many names not in __all__ (e.g. torch.device,
+# torch.tensor, torch.equal); flagging them as private noise dwarfs real issues.
+reportPrivateImportUsage = "none"
+
+[tool.pixi.tasks]
+test = "pytest -m 'not slow' -q"
+test-all = "pytest -q"
+smoke = "python scripts/smoke_test.py"
+smoke-full = "python scripts/smoke_test.py --full"
+smoke-mps = "python scripts/smoke_test.py --cuda-device 0"
+smoke-full-mps = "python scripts/smoke_test.py --full --cuda-device 0"
+cuda-smoke = "python scripts/cuda_smoke.py"
+bench = "python scripts/bench.py"
+lint = "ruff check isanlp_rst tests scripts"
+typecheck = "pyright"
+mdlint = "markdownlint-cli2 README.md UniRST_Metrics.md CLAUDE.md"

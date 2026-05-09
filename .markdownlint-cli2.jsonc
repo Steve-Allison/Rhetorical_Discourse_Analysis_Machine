@@ -1,0 +1,47 @@
+{
+  // Project-local markdownlint config. Disables rules that conflict with the
+  // README's intentional style choices (HTML badges, performance tables, long
+  // descriptive paragraphs) and the UniRST_Metrics.md table-only document.
+  "config": {
+    // Long lines: badges, citation BibTeX, performance tables, long URLs.
+    "MD013": false,
+
+    // Inline HTML: README uses <details>/<summary> for collapsible installation
+    // notes and <img> tags for status badges and logos.
+    "MD033": false,
+
+    // First-line H1: UniRST_Metrics.md is an appendix that begins with H3.
+    "MD041": false,
+
+    // Trailing punctuation in headings: a few section titles use a colon
+    // ("Detailed metrics:", "Coverage:") as a stylistic choice.
+    "MD026": false,
+
+    // Multiple consecutive blanks: tolerate the existing layout; not a
+    // correctness issue.
+    "MD012": false,
+
+    // List style (* vs -): the README mixes both intentionally; not enforcing
+    // one form avoids churn in inherited content.
+    "MD004": false,
+
+    // List marker spacing: pre-existing in the README's bullet style.
+    "MD030": false,
+
+    // Trailing spaces: pre-existing two-space line breaks in some paragraphs.
+    "MD009": false,
+
+    // Blanks around fenced code: pre-existing in the README's BibTeX block.
+    "MD031": false,
+
+    // Heading-increment: README intentionally starts at H3 inside numbered
+    // sections; the structure is a pre-existing design choice.
+    "MD001": false,
+
+    // Indented bullet lists: pre-existing TOC formatting under numbered items.
+    "MD007": false,
+
+    // Table column style: CLAUDE.md uses compact pipe tables.
+    "MD060": false
+  }
+}
