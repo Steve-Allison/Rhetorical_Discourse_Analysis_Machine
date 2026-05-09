@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Fast tests (pytest, no model downloads)
+    runs-on: macos-14  # Apple Silicon to match pixi.toml `platforms = ["osx-arm64"]`
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.64.0
+          cache: true
+
+      - name: Install environment
+        run: pixi install
+
+      - name: Run unit tests (fast)
+        run: pixi run test
