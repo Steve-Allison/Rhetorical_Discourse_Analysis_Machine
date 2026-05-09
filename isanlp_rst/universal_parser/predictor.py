@@ -1,36 +1,28 @@
+from __future__ import annotations
+
 import ast
 import json
 import logging
 import os
 import pickle
-import razdel
 import sys
-import torch
 import types
-from bisect import bisect_right
-from huggingface_hub import hf_hub_download
 from importlib import import_module
-from isanlp.annotation import Token
+from typing import Dict, List, Optional, Sequence, Tuple
+
+import razdel
+import torch
+from huggingface_hub import hf_hub_download
+from huggingface_hub.errors import EntryNotFoundError
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer, AutoConfig
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
-from isanlp_rst.base_predictor import BasePredictor
+from isanlp_rst.base_predictor import BasePredictor, str2bool
 from isanlp_rst.utils.du_converter import DUConverter
 from .data_manager import DataManager  # noqa: F401 - ensure module is registered for pickle
 from .src.parser.data import Data
 from .src.parser.parsing_net import ParsingNet
 from .src.parser.parsing_net_bottom_up import ParsingNetBottomUp
-
-
-def str2bool(value):
-    if isinstance(value, bool):
-        return value
-
-    if isinstance(value, str):
-        return value.lower() == 'true'
-
-    return bool(value)
 
 
 class PredictorUniRST(BasePredictor):
@@ -54,43 +46,46 @@ class PredictorUniRST(BasePredictor):
         model_dir: Optional[str] = None,
         hf_model_name: Optional[str] = None,
         hf_model_version: Optional[str] = None,
-        relinventory: str = None,
+        relinventory: Optional[str] = None,
         relinventory_idx: int = 0,
         cuda_device: int = -1,
+        dtype: 'str | torch.dtype | None' = None,
     ) -> None:
         self._ensure_module_aliases()
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
-        self.mode: Optional[str] = None
-        if hf_model_name is not None:
-            self.mode = 'hf'
-        if model_dir is not None:
-            self.mode = 'local'
-
-        if self.mode is None:
-            raise ValueError('Either model_dir or hf_model_name must be provided.')
-
-        self.model_dir = model_dir
-        self.hf_model_name = hf_model_name
-        self.hf_model_version = hf_model_version
+        if model_dir is not None and hf_model_name is not None:
+            raise ValueError(
+                'Pass exactly one of `model_dir` or `hf_model_name`, not both.'
+            )
 
         model_filename = 'best_weights.pt'
         config_filename = 'config.json'
 
-        if self.mode == 'local':
-            self.model_file = os.path.join(self.model_dir, model_filename)
-            self.config_path = os.path.join(self.model_dir, config_filename)
-        else:
+        if model_dir is not None:
+            self.mode = 'local'
+            self.model_dir = model_dir
+            self.hf_model_name = None
+            self.hf_model_version = None
+            self.model_file = os.path.join(model_dir, model_filename)
+            self.config_path = os.path.join(model_dir, config_filename)
+        elif hf_model_name is not None:
+            self.mode = 'hf'
+            self.model_dir = None
+            self.hf_model_name = hf_model_name
+            self.hf_model_version = hf_model_version
             self.model_file = hf_hub_download(
-                repo_id=self.hf_model_name,
+                repo_id=hf_model_name,
                 filename=model_filename,
-                revision=self.hf_model_version,
+                revision=hf_model_version,
             )
             self.config_path = hf_hub_download(
-                repo_id=self.hf_model_name,
+                repo_id=hf_model_name,
                 filename=config_filename,
-                revision=self.hf_model_version,
+                revision=hf_model_version,
             )
+        else:
+            raise ValueError('Pass either `model_dir` or `hf_model_name`.')
 
         with open(self.config_path, 'r', encoding='utf8') as f:
             self.config = json.load(f)
@@ -104,7 +99,14 @@ class PredictorUniRST(BasePredictor):
         if self.relinventory is None:
             self.relinventory_idx = relinventory_idx
         else:
-            self.relinventory_idx = self.dataset_names.index(self.relinventory.strip().lower())
+            key = self.relinventory.strip().lower()
+            try:
+                self.relinventory_idx = self.dataset_names.index(key)
+            except ValueError as exc:
+                raise ValueError(
+                    f"Unknown relinventory {self.relinventory!r}. "
+                    f"Available datasets: {self.dataset_names}."
+                ) from exc
 
         self.data_managers: List[Optional[object]] = []
         self.relation_tables: List[Sequence[str]] = []
@@ -122,7 +124,8 @@ class PredictorUniRST(BasePredictor):
                     )
                 self.relation_tables.append(relation_table)
 
-        self._cuda_device = torch.device('cpu' if cuda_device == -1 else f'cuda:{cuda_device}')
+        self._cuda_device = self._select_device(cuda_device)
+        self._dtype = self._resolve_dtype(dtype, self._cuda_device)
 
         self._load_model()
 
@@ -169,13 +172,23 @@ class PredictorUniRST(BasePredictor):
                 return path
             return None
 
+        # HF mode: distinguish "resource not in repo" (silent miss) from
+        # network/auth errors (logged but still treated as miss for caller
+        # robustness — the caller has fallback paths).
+        if self.hf_model_name is None:
+            return None
         try:
             return hf_hub_download(
                 repo_id=self.hf_model_name,
                 filename=relative_path,
                 revision=self.hf_model_version,
             )
-        except Exception:
+        except EntryNotFoundError:
+            return None
+        except OSError as exc:
+            self.logger.warning(
+                'I/O error while resolving %s from HF: %s', relative_path, exc
+            )
             return None
 
     def _corpus_variants(self, corpus_name: str) -> List[str]:
@@ -210,7 +223,10 @@ class PredictorUniRST(BasePredictor):
             try:
                 with open(resolved, 'rb') as f:
                     return pickle.load(f)
-            except Exception:
+            except (pickle.UnpicklingError, EOFError, OSError) as exc:
+                self.logger.warning(
+                    'Skipping unreadable data_manager pickle %s: %s', resolved, exc
+                )
                 continue
         return None
 
@@ -231,6 +247,22 @@ class PredictorUniRST(BasePredictor):
         with open(resolved, 'r', encoding='utf8') as f:
             return [line.strip() for line in f if line.strip()]
 
+    @staticmethod
+    def _classifier_count_from_state_dict(state_dict) -> Optional[int]:
+        """Count distinct ``label_classifiers.<N>.*`` indices in a state dict.
+
+        Returns ``None`` if the checkpoint has no such keys (older variant,
+        DMRST-shaped state dict, etc.) — caller falls back to the configured
+        architecture.
+        """
+        indices = set()
+        for key in state_dict.keys():
+            if key.startswith('label_classifiers.'):
+                parts = key.split('.', 2)
+                if len(parts) >= 2 and parts[1].isdigit():
+                    indices.add(int(parts[1]))
+        return (max(indices) + 1) if indices else None
+
     def _load_model(self) -> None:
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.config['model']['transformer']['model_name'],
@@ -243,6 +275,13 @@ class PredictorUniRST(BasePredictor):
 
         self.tokenizer.add_tokens(['<P>'])
         transformer.resize_token_embeddings(len(self.tokenizer))
+
+        # Load weights ONCE, up front. The classifier count in the trained
+        # checkpoint is the source of truth for the architecture — we use it
+        # to allocate the right number of `label_classifiers` so the
+        # subsequent `load_state_dict` call cannot mismatch.
+        state_dict = self._load_torch_weights(self.model_file, self._cuda_device)
+        ckpt_n_classifiers = self._classifier_count_from_state_dict(state_dict)
 
         rel_tables = self.relation_tables
         use_union = (
@@ -285,21 +324,52 @@ class PredictorUniRST(BasePredictor):
                 'dataset2classifier': dataset2classifier,
             }
         else:
-            unique_tables: List[Sequence[str]] = []
-            mapping: List[int] = []
-            for table in rel_tables:
-                for idx, unique in enumerate(unique_tables):
-                    if list(table) == list(unique):
-                        mapping.append(idx)
-                        break
-                else:
-                    mapping.append(len(unique_tables))
-                    unique_tables.append(table)
+            # Non-union path: pick the architecture that matches the
+            # checkpoint's classifier count.
+            #
+            # - If the checkpoint has one classifier per corpus, allocate one
+            #   per corpus (no dedup).
+            # - If the checkpoint dedupes by relation-table equality (older
+            #   training convention), apply that dedup and allocate the
+            #   smaller number of classifiers.
+            # - If the checkpoint has no classifier keys (legacy variant),
+            #   fall back to one-per-corpus, the more general default.
+            n_corpora = len(rel_tables)
+
+            if ckpt_n_classifiers is None or ckpt_n_classifiers == n_corpora:
+                model_relation_tables = list(rel_tables)
+                classes_numbers = [len(t) for t in rel_tables]
+                dataset2classifier = list(range(n_corpora))
+            elif ckpt_n_classifiers < n_corpora:
+                unique_tables: List[Sequence[str]] = []
+                mapping: List[int] = []
+                for table in rel_tables:
+                    for idx, unique in enumerate(unique_tables):
+                        if list(table) == list(unique):
+                            mapping.append(idx)
+                            break
+                    else:
+                        mapping.append(len(unique_tables))
+                        unique_tables.append(table)
+                if len(unique_tables) != ckpt_n_classifiers:
+                    raise RuntimeError(
+                        f'Checkpoint has {ckpt_n_classifiers} label classifier(s) '
+                        f'but relation-table dedup produced {len(unique_tables)}. '
+                        f'The published model assets likely lack the per-corpus '
+                        f'data_manager pickles needed to reconstruct distinct '
+                        f'relation tables. Affected corpora: {self.dataset_names}.'
+                    )
+                model_relation_tables = unique_tables
+                classes_numbers = [len(t) for t in unique_tables]
+                dataset2classifier = mapping
+            else:
+                raise RuntimeError(
+                    f'Checkpoint declares {ckpt_n_classifiers} label classifier(s) '
+                    f'but only {n_corpora} corpora are configured '
+                    f'({self.dataset_names}). Cannot construct a consistent model.'
+                )
 
             self.label_maps = None
-            model_relation_tables = unique_tables
-            classes_numbers = [len(t) for t in unique_tables]
-            dataset2classifier = mapping
             model_specific_config = {
                 'relation_tables': model_relation_tables,
                 'classes_numbers': classes_numbers,
@@ -318,7 +388,7 @@ class PredictorUniRST(BasePredictor):
         model_cls = ParsingNet if parser_type == 'top-down' else ParsingNetBottomUp
 
         self.model = model_cls(**model_config).to(self._cuda_device)
-        self.model.load_state_dict(torch.load(self.model_file, map_location=self._cuda_device))
+        self.model.load_state_dict(state_dict)
         self.model.eval()
 
     def _get_model_configs(self) -> dict:
@@ -412,7 +482,7 @@ class PredictorUniRST(BasePredictor):
         # recount edu_breaks for subwords
         subword_edu_breaks = []
         for doc_word_offsets, doc_subword_offsets, edu_breaks in zip(
-            word_offsets, tokens['offset_mapping'], data.edu_breaks
+            word_offsets, tokens['offset_mapping'], data.edu_breaks, strict=True,
         ):
             subword_edu_breaks.append(
                 self._recount_spans(doc_word_offsets, doc_subword_offsets, edu_breaks)
@@ -441,14 +511,24 @@ class PredictorUniRST(BasePredictor):
             golden_metric=data.golden_metric,
             parents_index=data.parents_index,
             sibling=data.sibling,
-            dataset_index=[self.relinventory_idx for _ in range(len(data.input_sentences))],
+            dataset_index=[self.relinventory_idx] * len(data.input_sentences),
         )
 
     def get_batches(self, data: Data, size: int) -> List[Data]:
-        """Splits a batch into multiple smaller batches of the given size."""
+        """Splits a batch into multiple smaller batches of the given size.
+
+        Note: ``data.dataset_index`` must be populated (the predictor's
+        ``tokenize`` method does this). Callers passing un-tokenized ``Data``
+        with ``dataset_index=None`` will hit a ``ValueError`` here.
+        """
 
         if len(data.input_sentences) < size:
             return [data]
+
+        if data.dataset_index is None:
+            raise ValueError(
+                'Data.dataset_index is None; call `tokenize` before `get_batches`.'
+            )
 
         _input_sentences = list(self.divide_chunks(data.input_sentences, size))
         _edu_breaks = list(self.divide_chunks(data.edu_breaks, size))
@@ -476,6 +556,7 @@ class PredictorUniRST(BasePredictor):
                 _parsing_breaks,
                 _golden_metric,
                 _dataset_index,
+                strict=True,
             ),
             total=len(_input_sentences),
         ):
@@ -497,95 +578,6 @@ class PredictorUniRST(BasePredictor):
             )
 
         return batches
-
-    @staticmethod
-    def _guess_token_offsets(text: str, tokens: Sequence[str]) -> List[Tuple[int, int]]:
-        offsets: List[Tuple[int, int]] = []
-        cursor = 0
-        for token in tokens:
-            if not token:
-                offsets.append((cursor, cursor))
-                continue
-
-            start = cursor
-            while start <= len(text) and text[start:start + len(token)] != token:
-                start += 1
-                if start >= len(text):
-                    start = cursor
-                    break
-            end = start + len(token)
-            offsets.append((start, end))
-            cursor = end
-        return offsets
-
-    def _validate_edus(self, edus: Sequence[str]) -> List[str]:
-        if edus is None:
-            raise ValueError('`edus` must be provided for parsing.')
-
-        if isinstance(edus, (str, bytes)):
-            raise TypeError('`edus` must be a sequence of strings, not a single string.')
-
-        if not isinstance(edus, Sequence):
-            raise TypeError('`edus` must be a sequence of strings.')
-
-        if not edus:
-            raise ValueError('`edus` must contain at least one EDU.')
-
-        normalized: List[str] = []
-        for idx, edu in enumerate(edus):
-            if not isinstance(edu, str):
-                raise TypeError(f'EDU at position {idx} must be a string.')
-            if not edu:
-                raise ValueError(f'EDU at position {idx} is empty.')
-            normalized.append(edu)
-
-        return normalized
-
-    @staticmethod
-    def _compute_edu_char_spans(edus: Sequence[str]) -> Tuple[str, List[Tuple[int, int]]]:
-        text = ' '.join(edus)
-        spans: List[Tuple[int, int]] = []
-        cursor = 0
-
-        for idx, edu in enumerate(edus):
-            start = cursor
-            end = start + len(edu)
-            if text[start:end] != edu:
-                raise ValueError(f'EDU at position {idx} does not align after concatenation.')
-            spans.append((start, end))
-            if idx < len(edus) - 1:
-                cursor = end + 1
-            else:
-                cursor = end
-
-        return text, spans
-
-    @staticmethod
-    def _char_spans_to_token_breaks(offsets: Sequence[Tuple[int, int]], spans: List[Tuple[int, int]]) -> List[int]:
-        if not offsets:
-            raise ValueError('Unable to derive token boundaries from the provided EDUs.')
-
-        token_stops = [stop for _, stop in offsets]
-        edu_breaks: List[int] = []
-        token_idx = -1
-
-        for span_idx, (_, edu_end) in enumerate(spans):
-            while token_idx + 1 < len(token_stops) and token_stops[token_idx + 1] <= edu_end:
-                token_idx += 1
-
-            if token_idx == -1 or token_stops[token_idx] != edu_end:
-                raise ValueError(
-                    f'EDU at position {span_idx} does not align with tokenizer boundaries.'
-                )
-
-            edu_breaks.append(token_idx)
-
-        if edu_breaks[-1] != len(token_stops) - 1:
-            raise ValueError('EDU boundaries do not cover the entire tokenized text.')
-
-        return edu_breaks
-
-
 
     def parse_rst(
         self,
@@ -610,7 +602,7 @@ class PredictorUniRST(BasePredictor):
         if tokens is None:
             razdel_tokens = list(razdel.tokenize(text))
             word_tokens = [token.text for token in razdel_tokens]
-            offsets = [(token.start, token.stop) for token in razdel_tokens]
+            offsets: List[Tuple[int, int]] = [(token.start, token.stop) for token in razdel_tokens]
         else:
             word_tokens = list(tokens)
             if token_offsets is None:
@@ -648,7 +640,7 @@ class PredictorUniRST(BasePredictor):
 
         batch = self.tokenize(input_data)
 
-        with torch.inference_mode():
+        with torch.inference_mode(), self._autocast():
             (
                 _loss_tree,
                 _loss_label,
@@ -732,7 +724,7 @@ class PredictorUniRST(BasePredictor):
 
         batch = self.tokenize(data)
 
-        with torch.inference_mode():
+        with torch.inference_mode(), self._autocast():
             (
                 _loss_tree,
                 _loss_label,
