@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import List
 
+from isanlp_rst.utils.mps_init import orthogonal_ as mps_safe_orthogonal_
+
 
 class BiMPM(nn.Module):
     def __init__(self, word_dim, hidden_size, class_number, num_perspective=10, dropout=0.4,
@@ -61,12 +63,12 @@ class BiMPM(nn.Module):
         # ----- Context Representation Layer -----
         nn.init.kaiming_normal_(self.context_LSTM.weight_ih_l0)
         nn.init.constant_(self.context_LSTM.bias_ih_l0, val=0)
-        nn.init.orthogonal_(self.context_LSTM.weight_hh_l0)
+        mps_safe_orthogonal_(self.context_LSTM.weight_hh_l0)
         nn.init.constant_(self.context_LSTM.bias_hh_l0, val=0)
 
         nn.init.kaiming_normal_(self.context_LSTM.weight_ih_l0_reverse)
         nn.init.constant_(self.context_LSTM.bias_ih_l0_reverse, val=0)
-        nn.init.orthogonal_(self.context_LSTM.weight_hh_l0_reverse)
+        mps_safe_orthogonal_(self.context_LSTM.weight_hh_l0_reverse)
         nn.init.constant_(self.context_LSTM.bias_hh_l0_reverse, val=0)
 
         # ----- Matching Layer -----
@@ -77,12 +79,12 @@ class BiMPM(nn.Module):
         # ----- Aggregation Layer -----
         nn.init.kaiming_normal_(self.aggregation_LSTM.weight_ih_l0)
         nn.init.constant_(self.aggregation_LSTM.bias_ih_l0, val=0)
-        nn.init.orthogonal_(self.aggregation_LSTM.weight_hh_l0)
+        mps_safe_orthogonal_(self.aggregation_LSTM.weight_hh_l0)
         nn.init.constant_(self.aggregation_LSTM.bias_hh_l0, val=0)
 
         nn.init.kaiming_normal_(self.aggregation_LSTM.weight_ih_l0_reverse)
         nn.init.constant_(self.aggregation_LSTM.bias_ih_l0_reverse, val=0)
-        nn.init.orthogonal_(self.aggregation_LSTM.weight_hh_l0_reverse)
+        mps_safe_orthogonal_(self.aggregation_LSTM.weight_hh_l0_reverse)
         nn.init.constant_(self.aggregation_LSTM.bias_hh_l0_reverse, val=0)
 
         # ----- Prediction Layer ----

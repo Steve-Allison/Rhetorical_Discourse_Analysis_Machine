@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from isanlp_rst.utils.mps_init import orthogonal_ as mps_safe_orthogonal_
+
 from . import modules
 
 
@@ -454,7 +456,7 @@ class ToNySegmenter(nn.Module):
                 if 'weight_ih' in name:
                     torch.nn.init.xavier_uniform_(param.data)
                 elif 'weight_hh' in name:
-                    torch.nn.init.orthogonal_(param.data)
+                    mps_safe_orthogonal_(param.data)
                 elif 'bias' in name:
                     param.data.fill_(0)
 
