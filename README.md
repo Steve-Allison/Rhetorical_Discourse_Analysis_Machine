@@ -105,7 +105,84 @@ To use the multilingual UniRST model, you can specify the required relation inve
                    cuda_device=0,
                    relinventory='eng.erst.gum')
    ```
-   
+
+#### Loading from a local checkpoint directory
+
+If you've downloaded a checkpoint locally (e.g. for offline use or air-gapped environments), point `Parser` at the directory:
+
+```python
+# Family is auto-detected from directory contents:
+#   - data_manager_*.pickle or config.json with `data.corpora` -> UniRST
+#   - relation_table.txt                                       -> DMRST
+parser = Parser(model_dir='/path/to/checkpoint', cuda_device=0)
+
+# Override auto-detection if needed:
+parser = Parser(model_dir='/path/to/checkpoint', family='dmrst', cuda_device=0)
+```
+
+#### GPU on Apple Silicon (MPS)
+
+`cuda_device=N` (any non-negative integer) auto-selects the best available GPU backend:
+
+* NVIDIA CUDA host → `cuda:N`
+* Apple Silicon (no CUDA) → `mps` (the integer is ignored; MPS exposes a single device)
+* No GPU available → `RuntimeError` (use `cuda_device=-1` for CPU)
+
+PyTorch 2.x has no MPS kernel for `torch.linalg.qr`
+(used by `torch.nn.init.orthogonal_` during weight init);
+the parser handles this in source so model construction succeeds
+on MPS without manual env-var hacks.
+
+#### Mixed precision (`dtype=`)
+
+Forward passes go through `torch.autocast`, so the model can run in
+`float32`, `float16`, or `bfloat16` without changing the trained weights.
+
+```python
+import torch
+parser = Parser(hf_model_version='gumrrg', cuda_device=0,
+                dtype=torch.bfloat16)   # also accepts 'bf16', 'fp16', 'fp32'
+```
+
+Default is `float32` on every device. On Apple Silicon (M-series, PyTorch
+2.11) measured against typical document-length inputs (~1k chars), `float32`
+beats `bfloat16` / `float16` for **every** published model — per-op autocast
+dispatch overhead dominates the matmul speedup at this input scale. On
+large-batch CUDA workloads with native bf16 (Hopper / Ada Tensor Cores),
+`bfloat16` is likely faster — measure on your hardware with
+`pixi run bench` before committing to a non-default choice.
+
+Measured tree structure is bit-equivalent across all three dtypes for all
+five published models — see `tests/test_integration.py` for the equivalence
+suite.
+
+##### Performance on Apple Silicon (M-series, PyTorch 2.11, ~1k char input)
+
+| Model | CPU fp32 | MPS fp32 | MPS bf16 | MPS fp16 |
+|---|---|---|---|---|
+| `gumrrg` | 143 ms | **120 ms** | 156 ms | 157 ms |
+| `rstdt` | 168 ms | **123 ms** | 161 ms | 165 ms |
+| `rstreebank` | 113 ms | **59 ms** | 94 ms | 94 ms |
+| `rrtrrg` | 118 ms | **61 ms** | 104 ms | 95 ms |
+| `unirst` | **127 ms** | 153 ms | 218 ms | 221 ms |
+
+The 18-corpus `unirst` model is faster on CPU than on MPS — the multi-corpus
+classifier dispatch costs more than MPS's matmul speedup recovers. Run
+`pixi run bench --version unirst` on your hardware to verify before pinning
+a device choice for that model.
+
+#### Verifying on NVIDIA CUDA hardware
+
+CI runs on macOS Apple Silicon, so the CUDA dispatch path can't be
+exercised in CI. To verify on an NVIDIA host:
+
+```bash
+pixi run cuda-smoke
+```
+
+The script confirms `torch.cuda.is_available()`, loads DMRST and UniRST
+on `cuda:0`, parses a sample text, and round-trips a `parse_from_edus`
+call. Exits non-zero on any failure.
 
 ### 3\. Understanding the Output
 
