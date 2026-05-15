@@ -14,14 +14,18 @@ Index of project-local memories. One line per entry.
 
 ## Design decisions (Docling work)
 
-- [Consumer-agnostic framing](decision_consumer_agnostic.md) — work is "Docling JSON in → RST relations indexed by self_ref → out"; no CSM or any single-consumer coupling.
+- [One tree per Docling JSON](decision_one_tree_per_document.md) — one Parser call, one DiscourseUnit tree, boundary metadata as annotation.
+- [Consumer-agnostic framing](decision_consumer_agnostic.md) — work is "Docling JSON in → RST relations indexed by self_ref → out"; no single-consumer coupling.
 - [Overlap rule](decision_overlap_rule.md) — any non-empty intersection → include; `note` field for ≥ 90% lopsided overlaps.
-- [Anchor on docling-core, not hand-rolled walker](decision_use_docling_core.md) — add `docling-core` as a hard dependency.
+- [Anchor on docling-core, not hand-rolled walker](decision_use_docling_core.md) — `docling-core` is a hard runtime dependency.
+
+## Resolved questions (kept as historical record)
+
+- [Boundary preservation in harvested text](open_boundary_preservation.md) — RESOLVED: boundary metadata as annotation; not structural.
+- [Parse-per-boundary alternative architecture](open_parse_per_boundary.md) — REJECTED: one-tree-per-document wins.
+- [v1 policy knobs](open_v1_policy_knobs.md) — RESOLVED: every policy is a parameter on `parse_docling()` with a default.
+- [`Parser` facade output shape](open_parser_facade_unverified.md) — RESOLVED: returns `{'rst': [tree]}`; tree has character-level absolute offsets; strictly binary; leaves are EDUs.
 
 ## Open design questions
 
-- [Boundary preservation in harvested text](open_boundary_preservation.md) — page / slide / speaker-turn boundaries; biggest gap in current v1 plan.
-- [Parse-per-boundary alternative architecture](open_parse_per_boundary.md) — never properly compared against concat-and-parse; worth a session.
-- [`Parser` facade output shape](open_parser_facade_unverified.md) — assumed character-level offsets per CLAUDE.md; never read `parser.py` to confirm.
-- [Device API public surface](open_device_api.md) — `cuda_device=int` is the CUDA-era API; MPS support is in but the public surface is misleading.
-- [v1 policy knobs](open_v1_policy_knobs.md) — table cells, picture captions, harvest separator all hard-coded; should be parameters with defaults.
+- [Device API public surface](open_device_api.md) — `cuda_device=int` is the CUDA-era API; new `device="auto"` proposed for `parse_docling()` but the underlying `Parser` still uses the legacy shape.

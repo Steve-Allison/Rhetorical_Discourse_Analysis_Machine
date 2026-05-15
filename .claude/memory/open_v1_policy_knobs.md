@@ -1,42 +1,26 @@
 ---
 name: open-v1-policy-knobs
-description: The Docling-native parse_docling() v1 policy decisions (skip table cells, skip picture captions, default separator) are baked into the harvester. They should be exposed as parameters with safe defaults — cheap to do, removes "wait for v2" friction.
+description: RESOLVED 2026-05-15. The single-release scope decision means every policy is a parameter on parse_docling() with a default. No deferred-to-v2.
 metadata:
   type: project
 ---
 
-The Docling-native build plan locks several v1 policy decisions into code rather than exposing them as parameters:
+**Status: RESOLVED 2026-05-15** by the "do the full thing first time" directive and the architecture revision.
 
-- **Skip `TableItem` cell text.** Tables yield only their `self_ref`; no cell-text harvesting.
-- **Skip `PictureItem.captions`.** `traverse_pictures=False` (the `iterate_items` default).
-- **Harvest separator** between concatenated spans (`\n\n` is the current lean).
-- **Content-layer filter** = `{ContentLayer.BODY}` (excludes furniture).
-- **Overlap rule** 90% threshold for the `note` field.
+The proposal's `parse_docling()` signature now exposes:
 
-**Problem:** the first consumer who wants caption-aware RST, or wants to include furniture, or wants `<P>` separators between paragraphs, has to wait for v2. That's friction that costs us early adopters.
+- `include_picture_captions: bool = True` — non-OCR caption text harvested by default.
+- `include_furniture: bool = False` — page headers / footers off by default.
+- `harvest_separator: str = "\n\n"` — caller can override.
+- `coalesce_speaker_turns: bool = True` — VTT same-voice runs coalesce into one boundary by default.
+- `note_threshold: float = 0.90` — overlap-rule lopsided threshold.
+- `device: str = "auto"` — replaces the legacy `cuda_device: int`.
 
-**Fix:** make `parse_docling()` accept these as parameters, with the current v1 defaults baked in. Costs ~5 lines of code; immediately enables more consumers.
+Two policies are NOT parameters by design:
 
-```python
-def parse_docling(
-    path: Path,
-    *,
-    hf_model_name: str = "tchewik/isanlp_rst_v3",
-    hf_model_version: str = "gumrrg",
-    cuda_device: int = -1,
-    include_table_cells: bool = False,
-    include_picture_captions: bool = False,
-    include_furniture: bool = False,
-    harvest_separator: str = "\n\n",
-    note_threshold: float = 0.90,
-) -> DoclingRstResult:
-    ...
-```
+- **Table cell text is not in the RST harvest input.** RST over flattened table cells produces nonsense; the cost of making this a parameter is one more boolean that almost no one will flip and that produces bad output when they do. `TableItem` `self_refs` still appear as `boundaries[]` entries so consumers know they're there.
+- **`traverse_pictures=True` is always passed to `iterate_items()`** because it's required for OCR-PDF support. The `include_picture_captions` knob does the actual filtering downstream of iteration.
 
-**How to apply:**
+**How to apply:** when adding new policy decisions for the entry point, default to "expose as parameter with safe default" unless there's a structural reason not to (e.g. tables-as-grids).
 
-- Bake this into the Phase 3 orchestrator design. Don't ship a no-knobs API.
-- Defaults match v1 policy; non-default values opt the caller into more inclusive harvests at the cost of larger inputs and possibly worse RST quality (well-known limit on noise tolerance).
-- Document each knob's trade-off in the docstring.
-
-Related: [[open-device-api]] (similar "expose proper knobs" theme).
+Related: [[decision-one-tree-per-document]], [[open-device-api]] (the `device` parameter shape).

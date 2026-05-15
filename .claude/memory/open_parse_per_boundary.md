@@ -1,34 +1,31 @@
 ---
 name: open-parse-per-boundary
-description: Alternative architecture — parse RST once per slide / page / speaker turn, aggregate. Never properly compared against concat-and-parse. May be both simpler and higher quality.
+description: RESOLVED 2026-05-15 (rejected). Parse-per-boundary architecture was drafted on the same day and replaced before any commit by one-tree-per-document. Kept as historical record.
 metadata:
   type: project
 ---
 
-The current build plan assumes one giant RST tree over a concatenated text. An alternative: produce one RST tree per slide / page / speaker turn / section, then aggregate.
+**Status: RESOLVED — REJECTED 2026-05-15** (same day as proposed).
 
-**Pros:**
+Parse-per-boundary was drafted as the answer to [[open-boundary-preservation]]: one RST tree per slide / page / section / speaker turn, aggregated to a flat relations list with `boundary_id` annotations.
 
-- No cross-boundary RST relations possible by construction. Resolves [[open-boundary-preservation]] entirely.
-- Mapper simplifies: each tree's offsets index into its own boundary's text. No global-offset arithmetic; the overlap rule is per-boundary.
-- Smaller inputs per parse → faster, less memory pressure, no risk of multi-MB inputs hitting model limits.
-- Per-boundary parses are independently parallelisable.
+**Why rejected:** the natural output of `isanlp_rst.Parser(...)` is one `DiscourseUnit` tree per input. Forcing N small parses and flattening loses the hierarchical structure RST is for. Cross-boundary relations (deck narrative, cross-turn elaboration, cross-section discourse) are real phenomena, not noise; the parser is honest about them, and consumers can filter via boundary metadata if they want to ignore them.
 
-**Cons:**
+Pros that were claimed:
 
-- N model passes instead of 1. For a 50-slide deck, that's 50 forward passes. Some setup amortises (model loaded once), but inference time scales with N.
-- Some discourse relations *do* cross boundaries (a section header introducing a list; a cross-slide narrative arc). We'd never detect these. Open question: how often does this matter in practice?
-- Aggregation logic: do we keep separate per-boundary RST trees in the output, or flatten into one self-ref-indexed list? Probably the latter (matches the proposal's output shape), but with a `boundary_id` field per relation so consumers can re-group.
+- No cross-boundary noise — but cross-boundary relations aren't necessarily noise.
+- Smaller inputs — but the parser's sliding-window encoding handles document-scale inputs.
+- Trivially parallelisable — true, but not a v1 requirement.
 
-**Open empirical questions:**
+Cons that won:
 
-- For pptx: is cross-slide RST ever meaningful? My current intuition: rarely.
-- For pdf: is cross-page RST ever meaningful? My intuition: sometimes, at section boundaries that happen to coincide with page breaks.
-- For vtt: is cross-speaker-turn RST ever meaningful? My intuition: sometimes (one speaker's turn elaborates the prior speaker's claim), but the model isn't trained on conversational discourse.
+- Non-standard RST output (flat list under per-boundary trees).
+- Loses hierarchical structure.
+- N parser calls vs 1.
+- Discards potentially meaningful cross-boundary relations.
 
-**How to apply:**
+**Replacement:** [[decision-one-tree-per-document]] — one parser call, one tree, with boundary metadata as annotation.
 
-- This is a real alternative architecture, not just a "v2 improvement". If it wins, it changes Phase 1 of the build plan from harvest+mapper to per-boundary-orchestrator+aggregator.
-- Worth a focused session: pick one fixture per source flavour, hand-author "ideal" RST output, compare what each architecture would produce.
+**How to apply:** kept as historical record. If a future change re-proposes parse-per-boundary, re-read this and [[decision-one-tree-per-document]] before committing.
 
-Related: [[open-boundary-preservation]].
+Related: [[decision-one-tree-per-document]], [[open-boundary-preservation]].
