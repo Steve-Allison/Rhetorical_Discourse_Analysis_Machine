@@ -1,33 +1,46 @@
 ---
 name: verified-docling-schema
-description: DoclingDocument v1.10.0 shape is uniform across pptx, pdf, vtt, html-markdown source formats. Differences are which fields are populated, not which fields exist. Verified 2026-05-15.
+description: Sample-scoped findings (4 files in tests/fixtures/docling/ + 1 additional sample) about DoclingDocument v1.10.0 shape. Inferences beyond the sample are NOT claimed.
 metadata:
   type: reference
 ---
 
-Investigated 2026-05-15 against a real-world Docling JSON corpus (five files across four source formats).
+Findings from inspecting 5 Docling JSON files on 2026-05-15: the four files in [`tests/fixtures/docling/`](../../tests/fixtures/docling/) plus one additional sample from the same corpus. **Sample size: 5. Scope of any claim below is the sample, unless explicitly noted otherwise.**
 
-**All five files emit `DoclingDocument` v1.10.0** with identical top-level shape: `body`, `furniture`, `groups`, `texts`, `pictures`, `tables`, `pages`, `origin`, `form_items`, `key_value_items`, `name`, `schema_name`, `version`.
+## Per-fixture observations
 
-**Source-format-specific differences are populated-vs-empty, not structural:**
+See [`tests/fixtures/docling/README.md`](../../tests/fixtures/docling/README.md) for the verified file-by-file facts. That README is the source of truth for what each fixture contains; this memory captures cross-fixture observations.
 
-| Aspect | PPTX | PDF | VTT | HTML / Markdown |
-|---|---|---|---|---|
-| `body.children` | → `groups` (one per slide), then texts/pictures/tables | mostly direct text / picture / group `$ref`s | flat list of text `$ref`s | similar to PDF, simpler |
-| `groups` | slide containers (`name: "slide-N"`, `label: "chapter"`) | semantic groupers (`name: "list"`) | none | semantic groupers |
-| Page info | `pages` map + `prov.page_no` on texts | `pages` map + `prov.page_no` on texts | none — text items have `source.start_time` / `source.end_time` instead | `pages` map empty if source has no native paging |
-| Text labels | `title`, `text`, ... | `section_header`, `list_item`, `text`, `page_footer`; `level` on headers | only `text`; each carries `voice` (speaker) | similar to PDF |
-| Provenance | `prov` with bbox | `prov` with bbox + `level` hierarchy | `source` with VTT timing, no `prov` | similar to PDF, `prov` may be sparse |
+## Cross-fixture observations (sample-scope: 5 files)
 
-**Furniture handling:** `.furniture.children` is empty across all files, but text items can carry `content_layer: "furniture"`. They're only reachable via the flat `.texts[]` array, not via `body.children`. The default `iterate_items()` filter (`{ContentLayer.BODY}`) excludes them automatically.
+- All 5 files emit `schema_name: "DoclingDocument"`, `version: "1.10.0"`.
+- All 5 files share the same top-level keys: `body`, `form_items`, `furniture`, `groups`, `key_value_items`, `name`, `origin`, `pages`, `pictures`, `schema_name`, `tables`, `texts`, `version`.
+- `body.children` is a list of `$ref` references, not inline objects. Resolving these `$ref`s is required to walk the document in canonical reading order.
+- `origin.binary_hash` is present as an integer on every file in the sample.
 
-**`origin.binary_hash`** is present in every file as an integer. Consumers needing a source-cache anchor read it from there; we don't compute it.
+## Per-source-format observations (each from N=1 file in the sample)
 
-**How to apply:**
+These are observations from **single fixtures**, not validated across multiple files per format. Treat as preliminary, not as schema-wide guarantees:
 
-- One walker handles all source formats. No source-format special-casing in our harvester code.
-- Phase 1 fixture set should include one example per source flavour (pptx / pdf / vtt / markdown) to catch any edge cases the five-file sample missed.
-- Forms (`form_items`) and key-value pairs (`key_value_items`) appear as top-level fields but were not exercised in the sample — flag these if a future Docling source populates them.
-- OCR'd PDFs (where all text is wrapped in pictures and needs `traverse_pictures=True`) are also untested; document this in the harvester as a known v1 gap.
+| Source format | What this single fixture shows |
+|---|---|
+| PPTX (`pptx.docling.json`) | `body.children` contains `groups[i]` refs (one per slide); group `name` matches `^slide-N$`, `label` is `"chapter"`. Slide notes live at `content_layer: "notes"` parented to the slide group (i.e. **reachable via tree walk** from `body.children` if `included_content_layers` includes `notes` — not just orphans in `.texts[]`). Page footers / masters not observed because slide content_layer is `body`/`notes` only here. |
+| PDF (`pdf.docling.json`) | `body.children` contains direct text/picture/group refs. Some pictures have `children` lists of text refs — verified the children are figure-internal text labels (e.g. chart axis values), NOT OCR-extracted scanned-page text. PDFs of OCR origin would presumably differ; not yet inspected. |
+| VTT (`vtt.docling.json`) | Flat: `body.children` is all direct text refs. Each text in this single fixture has `source[0].voice == "SPEAKER_00"` — single-speaker. Multi-speaker VTT shape not yet inspected. |
+| Markdown (`markdown.docling.json`) | `pages` map is empty `{}` (no native page concept). `body.children` shape and section_header behaviour for markdown not yet fully traced. |
 
-Related: [[verified-docling-core-api]], [[open-boundary-preservation]].
+## What this memory does NOT claim
+
+- Schema uniformity across ALL Docling JSONs in the wild. The sample is 5 files, all from one working corpus.
+- That OCR-PDF processing produces a particular shape. No OCR-PDF fixture exists.
+- That `.furniture.children` is empty across all Docling outputs. ASSUMED for PDF and PPTX based on the unique-value check; not directly opened for verification across all 5.
+- That every VTT TextItem in every transcript carries `source[0].voice`. ASSUMED universally; verified for 37/37 in the one VTT fixture.
+- That every PPTX file uses `groups[name=slide-N, label=chapter]`. ASSUMED from one PPTX sample.
+
+## How to apply
+
+- Phase 0 step 3 (schema-detail verification) closes the gaps named above and in [[open-schema-detail-verifications]].
+- Use the per-fixture README (`tests/fixtures/docling/README.md`) as the citable evidence base — don't restate from this memory; cite the README instead.
+- New Docling files added to the fixture set must have their facts verified and committed to the README, not just inferred from this memory.
+
+Related: [[verified-docling-core-api]], [[open-schema-detail-verifications]], [[open-rst-real-world-quality]].

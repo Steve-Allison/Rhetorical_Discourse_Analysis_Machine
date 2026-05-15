@@ -34,11 +34,13 @@ Adding dependencies: `pixi add <package>`. Never `pip install`.
 - **No fork-only-push rule.** This repo is not a fork in spirit; `origin` is the only valid push target by virtue of remote configuration. The earlier "fork-only push" rule has been retired.
 - **No vendored-dependency mentality.** This is Steve's code. Refactor when it pays off; don't defer to "what would upstream accept".
 - **Code-style mode mixed.** New modules use modern Python 3.13+ idioms (see [`code-standards.md`](.claude/rules/code-standards.md)); the inherited research modules under `*/src/parser/`, `*/src/corpus/`, `multiple_runs.py`, `data_manager.py`, `du_converter.py`, and `rstviewer/` are touched surgically — bug fixes are in scope, aesthetic sweeps are not.
+- **No assumptions.** Factual claims about data / schema / code / runtime are either verified (with cited evidence) or explicitly marked `ASSUMED`. No silent inference, no sample-to-universal escalation, no eyeballing summary stats and concluding semantics. See [`no-assumptions.md`](.claude/rules/no-assumptions.md). **This is a project HARD RULE.**
 
 ## Detail in `.claude/rules/`
 
 | File | Loads when |
 |---|---|
+| [`no-assumptions.md`](.claude/rules/no-assumptions.md) | Always. **HARD RULE.** Forbids stating assumptions as fact; requires evidence-cited claims or explicit `ASSUMED` marking. |
 | [`architecture.md`](.claude/rules/architecture.md) | Always. Parser families, inference flow, visualisation, memory management. |
 | [`code-standards.md`](.claude/rules/code-standards.md) | Always. Modern-Python rules for new code; surgical rules for inherited modules; testing and gotchas. |
 | [`commands.md`](.claude/rules/commands.md) | Always. Full pixi command reference + when to use each. |

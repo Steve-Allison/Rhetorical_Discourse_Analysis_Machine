@@ -28,10 +28,10 @@ Both predictors inherit `isanlp_rst.base_predictor.BasePredictor`, which central
 
 1. `Parser(...)` → `PredictorDMRST.__init__` downloads `best_weights.pt`, `config.json`, `relation_table.txt` from HuggingFace for the requested `hf_model_version` (a git ref/tag on the HF repo), or loads from `model_dir` if supplied.
 2. `_load_model()` builds an `AutoTokenizer` + `AutoModel` from the transformer name in `config['model']['transformer']['model_name']` (default: `xlm-roberta-large`), wires it into a `ParsingNet`, and loads the weights.
-3. `parse_rst(text)` razdel-tokenises → builds an offset converter → tokenises with the transformer → `model.testing_loss(..., generate_tree=True)` returns spans + EDU breaks + relation labels → `DUConverter` builds an `isanlp.DiscourseUnit` tree → `remap_tree_offsets` rewrites every node's `start` / `end` to original-text indices.
+3. `parse_rst(text)` razdel-tokenises → builds an offset converter → tokenises with the transformer → `model.testing_loss(..., generate_tree=True)` returns spans + EDU breaks + relation labels → `DUConverter` builds an `isanlp.annotation_rst.DiscourseUnit` tree → `remap_tree_offsets` rewrites every node's `start` / `end` to original-text indices.
 4. `parse_from_edus(edus)` follows the same path but with `use_pred_segmentation=False`, validating that the produced leaves match the input EDUs character-for-character.
 
-`UniRST` adds a `relinventory` parameter so a single multilingual model can target a specific corpus's relation set (e.g. `eng.erst.gum`, `rus.rst.rrt`). Default inventory for `unirst` is `eng.rst.rstdt`. Available inventories: [`UniRST_Metrics.md`](../../UniRST_Metrics.md).
+`UniRST` adds a `relinventory` parameter (`Optional[str]`) so a single multilingual model can target a specific corpus's relation set (e.g. `eng.erst.gum`, `rus.rst.rrt`). When `None`, falls back to `relinventory_idx` (default `0`); the dataset at index 0 in the loaded model's `dataset_names` becomes the active inventory. Available inventories: [`UniRST_Metrics.md`](../../UniRST_Metrics.md). Source: `universal_parser/predictor.py:48-109`.
 
 ## Device handling
 
@@ -47,9 +47,9 @@ PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogon
 
 Forward passes go through `torch.autocast`. The model runs in `float32`, `float16`, or `bfloat16` without changing trained weights. Default is `float32` on every device.
 
-- **Apple Silicon (~1k-char inputs):** `float32` beats `bfloat16` / `float16` for every published model. Autocast dispatch overhead dominates the matmul speedup at this scale.
-- **Large-batch CUDA (Hopper / Ada Tensor Cores):** `bfloat16` is likely faster. Measure with `pixi run bench` before pinning.
-- **Tree structure is bit-equivalent across all three dtypes** for all five published models — see [`tests/test_integration.py`](../../tests/test_integration.py) for the equivalence suite.
+- **Apple Silicon (~1k-char inputs):** `float32` beats `bfloat16` / `float16` for every published model — claim per `base_predictor.py:362-365` source comment, measured by the maintainer at the time.
+- **Large-batch CUDA (Hopper / Ada Tensor Cores):** `bfloat16` is likely faster — same source comment. Measure with `pixi run bench` before pinning.
+- **Tree structure is bit-equivalent across all three dtypes** for all five published models — ASSUMED per `tests/test_integration.py` equivalence-suite name; not re-run this session.
 
 ## Visualisation (`isanlp_rst.rstviewer`)
 
@@ -58,7 +58,7 @@ Standalone subpackage ported from `rstviewer`. Public surface lives in the packa
 - `render(rs3_source)` — Jupyter / Colab inline render
 - `to_html(rs3_path, html_path)` — write standalone HTML
 - `to_png(rs3_path, png_path)` / `to_pdf(rs3_path, pdf_path)` — Playwright / Chromium-driven; both have sync and async paths. They detect a running event loop (e.g. inside Jupyter) and dispatch via a worker thread when needed.
-- `DiscourseUnit.to_rs3('file.rs3')` (provided by the `iinemo/isanlp` runtime) is the bridge from a parsed tree to the visualiser format.
+- `DiscourseUnit.to_rs3(filename, encoding='utf8')` (provided by the `iinemo/isanlp` runtime — verified by reading the pinned commit's `src/isanlp/annotation_rst.py:81`) is the bridge from a parsed tree to the visualiser format.
 
 The async / sync dispatch in `isanlp_rst/__init__.py:_run_coro_sync_result` is load-bearing — don't simplify it without checking notebook compatibility.
 
@@ -96,4 +96,6 @@ Leaves are EDUs; internal nodes are relations. Every node has `start` / `end` in
 
 ## Companion runtime
 
-[`iinemo/isanlp`](https://github.com/iinemo/isanlp) supplies the `DiscourseUnit` class and is a hard runtime dependency. Installed via the `git+` URL pinned in `pyproject.toml`. If `DiscourseUnit` import fails, that pin is the first place to check.
+[`iinemo/isanlp`](https://github.com/iinemo/isanlp) supplies the `DiscourseUnit` class (at `src/isanlp/annotation_rst.py`) and is a hard runtime dependency. Installed via the `git+` URL pinned in `pyproject.toml` (commit `2a102e59f9718acc7fe259dd8d83c66d5da39794`). If `DiscourseUnit` import fails, that pin is the first place to check.
+
+`DiscourseUnit` constructor fields (verified at the pinned commit): `id`, `left`, `right`, `text`, `start`, `end`, `orig_text`, `relation`, `nuclearity`, `proba`, `entropy`. Methods: `clear_textfields()` (recursively sets `.text = ''`), `fill_textfields(full_text)` (re-extracts substring per node), `to_rs3(filename, encoding='utf8')` (writes RS3 XML via internal `Exporter`).

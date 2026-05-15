@@ -19,10 +19,10 @@ Investigated 2026-05-15 against `docling-core` `main` and a real-world Docling J
 
 - **Loader:** `DoclingDocument.load_from_json(filename: Union[str, Path]) -> DoclingDocument` — `docling_core/types/doc/document.py:5778`.
 - **Walker:** `DoclingDocument.iterate_items(root=None, with_groups=False, traverse_pictures=False, page_no=None, included_content_layers=None) -> Iterable[tuple[NodeItem, int]]` — `document.py:5535`. Pre-order DFS through `body.children`, resolves `$ref` via `child_ref.resolve(self)`, yields `(NodeItem, depth)` tuples.
-- **Default filter:** `DEFAULT_CONTENT_LAYERS = {ContentLayer.BODY}` — `document.py:1291`. Page headers, footers, slide masters, and other furniture-layer content are excluded by default.
-- **Schema:** all inspected sources emit `DoclingDocument` v1.10.0 with uniform top-level shape (`body`, `furniture`, `groups`, `texts`, `pictures`, `tables`, `pages`, `origin`, …). Source-format differences are which fields are *populated*, not which fields *exist*.
-- **`.texts[]` order ≠ canonical reading order.** Must walk via `body.children`. `iterate_items()` does this.
-- **`origin.binary_hash`** is already present in every Docling input — consumers wanting a source-cache key use it directly.
+- **Default filter:** `DEFAULT_CONTENT_LAYERS = {ContentLayer.BODY}` — `document.py:1291`. Content layers other than `body` are excluded by default. Observed non-body layers in the fixture set: `notes` (PPTX slide notes — verified on `pptx.docling.json`), `furniture` (PDF page footers — verified on `pdf.docling.json`). Slide notes are NOT in the `furniture` layer despite earlier assumption.
+- **Schema (sample-scope: 5 files inspected 2026-05-15):** all 5 emit `DoclingDocument` v1.10.0 with the same top-level keys (`body`, `furniture`, `groups`, `texts`, `pictures`, `tables`, `pages`, `origin`, `form_items`, `key_value_items`, `name`, `schema_name`, `version`). Source-format differences observed are which fields are *populated*, not which fields *exist*. ASSUMED to generalise beyond the sample — to verify on any further fixtures added.
+- **`.texts[]` array order is not the canonical reading order** for the PPTX sample (where `body.children` walks groups, not `.texts[]`). Whether this holds across all source formats: ASSUMED.
+- **`origin.binary_hash`** is present as an integer on all 5 sample files. ASSUMED universal across Docling outputs.
 
 ## Dependencies
 
@@ -188,7 +188,7 @@ The walker API is verified. The schema's top-level shape is verified on five fil
    - Does it handle mixed prose + bullets + captions gracefully?
    - Are there obviously wrong relations (e.g. "Elaboration" between two unrelated slides)?
    If the answer on a major source format is "the parser produces a tree but it's noise", the whole architecture is suspect and we rethink before any code. See [[open-rst-real-world-quality]].
-3. **Schema-detail verification.** Against each fixture, verify the assumptions catalogued in [[open-schema-detail-verifications]]: slide-notes reachability via `iterate_items(included_content_layers={BODY, FURNITURE})`; `level` distribution on section_headers; OCR-PDF text structure; VTT `voice` reliability; table-cell layout in `data.grid`; `TextItem.text` vs `.orig`; `prov.page_no` reliability. Each gets a documented yes/no answer; update the proposal / build plan if any answer changes the design.
+3. **Schema-detail verification.** Against each fixture, verify the assumptions catalogued in [[open-schema-detail-verifications]]: slide-notes reachability via `iterate_items(included_content_layers={BODY, NOTES})` (NB: slide notes are in `content_layer: "notes"`, not `"furniture"`, verified on `pptx.docling.json`); `level` distribution on section_headers; OCR-PDF text structure; VTT `voice` reliability; table-cell layout in `data.grid`; `TextItem.text` vs `.orig`; `prov.page_no` reliability. Each gets a documented yes/no answer; update the proposal / build plan if any answer changes the design.
 4. **Pin `docling-core`.** Latest stable; record in the verification log. **Discipline:** when a new `docling-core` version ships, bump this pin (the Docling JSON files in the wild will reflect whatever version produced them).
 5. **Smoke-iterate** per fixture. Short script: load each, print `(self_ref, text_preview, content_layer, label, depth)` for each item yielded by `iterate_items(traverse_pictures=True, included_content_layers={BODY, FURNITURE})`. Eyeball: canonical order, no surprises, expected items reachable.
 6. **Long-input smoke** on the largest fixture. Run the existing `Parser` on its harvested text. Outcomes per [[open-long-input-fallback]]:
@@ -208,7 +208,7 @@ The walker API is verified. The schema's top-level shape is verified on five fil
 
 - `harvest_docling_text(doc, *, include_picture_captions, include_furniture, harvest_separator) -> HarvestResult` — walks `iterate_items(traverse_pictures=True)`, filters per policy, concatenates text, records `HarvestSpan`s with `(self_ref, start, end)`. Skips `TableItem`s (their cells are excluded from RST input).
 - `detect_boundaries(doc, *, coalesce_speaker_turns) -> tuple[Boundary, ...]` — source-format-aware. Dispatch on `doc.origin.mimetype`:
-  - `application/vnd.ms-powerpoint`, `application/vnd.openxmlformats-officedocument.presentationml.presentation` → slide detection (one `slide-N` + one `slide-N-notes` per slide group)
+  - `application/vnd.ms-powerpoint`, `application/vnd.openxmlformats-officedocument.presentationml.presentation` → slide detection (one `slide-N` boundary per slide group; one `slide-N-notes` boundary per slide that has any descendant TextItem with `content_layer: "notes"`)
   - `text/vtt` → speaker-turn coalescing
   - `application/pdf` and `text/markdown`, `text/html` → section detection (open new boundary at each `section_header`)
   - default → single `document` boundary covering everything
@@ -402,9 +402,9 @@ Each phase has its own success criterion above. No phase counts as done until it
 - **Canonical iteration API confirmed:** `DoclingDocument.iterate_items(...)` at `docling_core/types/doc/document.py:5535`. Pre-order DFS through `body.children`; resolves `$ref` via `child_ref.resolve(self)`. Yields `(NodeItem, depth)` tuples.
 - **Loader confirmed:** `DoclingDocument.load_from_json(filename)` at `document.py:5778`.
 - **Default filter confirmed:** `DEFAULT_CONTENT_LAYERS = {ContentLayer.BODY}` (document.py:1291).
-- **Schema uniformity confirmed:** five Docling JSONs across four source formats (pptx / pdf / vtt / html-markdown) all emit `DoclingDocument` v1.10.0 with identical top-level shape.
+- **Schema uniformity in the sample:** the 5 inspected Docling JSONs (pptx / pdf / vtt / html-markdown) all emit `DoclingDocument` v1.10.0 with identical top-level keys. Sample-scoped finding, not a universal guarantee.
 - **Text-carrying node types observed:** `TextItem` (with subclass-level labels `text`, `section_header`, `list_item`, `title`, `page_footer`). `PictureItem.captions` carries `$ref`s to text items (skipped by default; we'll pass `traverse_pictures=True` for OCR-PDF support). `TableItem.data.grid[].text` is cell-level content (not yielded by `iterate_items`; intentionally excluded from harvest).
-- **`origin.binary_hash`** is already a field in every Docling input JSON.
+- **`origin.binary_hash`** is present as an integer on every file in the 5-file sample. ASSUMED universal.
 
 **Outstanding Phase 0 work:**
 

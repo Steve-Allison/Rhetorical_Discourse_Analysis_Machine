@@ -35,7 +35,7 @@ Verified facts (now baked in):
 
 - `docling-core.DoclingDocument.load_from_json(...)` loads + validates.
 - `docling-core.DoclingDocument.iterate_items(...)` is the canonical walker (pre-order DFS, resolves `$ref`s, filters by `ContentLayer`, supports `page_no` filtering).
-- All inspected Docling sources (pptx, pdf, vtt, html/markdown) emit `DoclingDocument` v1.10.0 with uniform top-level shape.
+- The 5 Docling JSONs inspected 2026-05-15 (pptx, pdf, vtt, html/markdown) all emit `DoclingDocument` v1.10.0 with identical top-level keys. Sample-scoped finding; not a universal guarantee.
 - `docling-core` is **not** currently a dependency of this fork.
 
 Build plan: [`./2026-05-15-docling-native-rst-build.md`](./2026-05-15-docling-native-rst-build.md).
@@ -69,7 +69,7 @@ Verified shapes (see [`verified_docling_schema`](../../.claude/memory/verified_d
 
 | Source | Boundary detection |
 |---|---|
-| **PPTX** | one `slide-N` boundary per `groups[name=slide-N].label=chapter`; one `slide-N-notes` boundary per slide for `content_layer == "furniture"` items parented to the slide group. |
+| **PPTX** | one `slide-N` boundary per `groups[name=slide-N].label=chapter`; one `slide-N-notes` boundary per slide for `content_layer == "notes"` items parented to the slide group (verified on `tests/fixtures/docling/pptx.docling.json`: 5 `notes`-layer items parented to slide groups). |
 | **PDF** | one `section-N` boundary opened at each `TextItem` with `label == "section_header"`. Document-level `document` boundary covers any pre-header content. |
 | **VTT** | one `turn-N` boundary per contiguous-same-speaker run (consecutive `TextItem`s sharing the same `source[*].voice`). |
 | **HTML / Markdown** | same as PDF (`section_header` levels). If no section headers exist, the whole document is one `document` boundary. |
@@ -233,7 +233,7 @@ For each source format, the harvest concatenates text from:
 
 | Source | What's harvested | What's not |
 |---|---|---|
-| **PPTX** | slide body texts (titles + bodies), slide notes, picture captions within slides | table cells, furniture-layer items outside slide notes |
+| **PPTX** | slide body texts (`content_layer: "body"`), slide notes (`content_layer: "notes"`), picture captions within slides | table cells, `content_layer: "furniture"` items if any |
 | **PDF** | body texts, section_header texts, list-item texts, picture captions | page headers/footers (furniture by default), table cells |
 | **VTT** | every `TextItem` (single text label, single content layer) | n/a |
 | **HTML / Markdown** | body texts, section_header texts, list-item texts | table cells |

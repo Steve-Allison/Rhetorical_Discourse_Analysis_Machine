@@ -7,13 +7,15 @@ metadata:
 
 The Docling-native plan rests on schema assumptions verified on **five sample files**. Each assumption needs broader empirical confirmation against the five-fixture set being built in Phase 0.
 
-## Slide notes reachability
+## Slide notes reachability — PARTIALLY RESOLVED 2026-05-15
 
-**Assumption:** slide notes are `TextItem`s with `content_layer == "furniture"`, parented to the slide group. Reachable via `iterate_items(included_content_layers={ContentLayer.BODY, ContentLayer.FURNITURE})`.
+**Original assumption (WRONG):** slide notes are at `content_layer == "furniture"`.
 
-**Why it's suspect:** `.furniture.children` was empty in the PDF sample, but 33 texts carried `content_layer: "furniture"`. They live in `.texts[]` flat array. The question: do they get yielded by `iterate_items` via parent-link resolution from the slide group, or are they orphaned (only reachable through `.texts[]` indexing)?
+**Verified 2026-05-15 on `tests/fixtures/docling/pptx.docling.json`:** slide notes are at `content_layer == "notes"` (NOT `"furniture"`). Sampled `#/texts/3`: `content_layer: "notes"`, `parent: {"$ref": "#/groups/1"}`, text is recognisably speaker-notes content. 5 such items in the fixture (all 5 happen to be the same 1378-char text — possibly a Docling quirk, possibly a real per-slide duplicate).
 
-**Verification:** load a pptx fixture; call `iterate_items(included_content_layers={ContentLayer.BODY, ContentLayer.FURNITURE})`; check whether `content_layer == "furniture"` items appear and what their `parent` points to.
+**Still to verify:** whether `iterate_items(included_content_layers={ContentLayer.BODY, ContentLayer.NOTES})` actually yields these items via the tree walk. Requires running `docling-core` in the pixi env.
+
+**`ContentLayer` enum (verified 2026-05-15 at `docling_core/types/doc/document.py:1281-1289`):** five members — `BODY` (`"body"`), `FURNITURE` (`"furniture"`, page headers/footers), `BACKGROUND` (`"background"`, watermarks), `INVISIBLE` (`"invisible"`, hidden text), `NOTES` (`"notes"`, author/speaker notes). `DEFAULT_CONTENT_LAYERS = {ContentLayer.BODY}` (line 1291).
 
 ## section_header `level` distribution
 

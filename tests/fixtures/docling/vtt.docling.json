@@ -1,0 +1,921 @@
+{
+  "schema_name": "DoclingDocument",
+  "version": "1.10.0",
+  "name": "Acrobat Studio Sales Press V1_2_01KQH5W7",
+  "origin": {
+    "mimetype": "text/vtt",
+    "binary_hash": 2376097893795345270,
+    "filename": "Acrobat Studio Sales Press V1_2_01KQH5W7.vtt"
+  },
+  "furniture": {
+    "self_ref": "#/furniture",
+    "children": [],
+    "content_layer": "furniture",
+    "name": "_root_",
+    "label": "unspecified"
+  },
+  "body": {
+    "self_ref": "#/body",
+    "children": [
+      {
+        "$ref": "#/texts/0"
+      },
+      {
+        "$ref": "#/texts/1"
+      },
+      {
+        "$ref": "#/texts/2"
+      },
+      {
+        "$ref": "#/texts/3"
+      },
+      {
+        "$ref": "#/texts/4"
+      },
+      {
+        "$ref": "#/texts/5"
+      },
+      {
+        "$ref": "#/texts/6"
+      },
+      {
+        "$ref": "#/texts/7"
+      },
+      {
+        "$ref": "#/texts/8"
+      },
+      {
+        "$ref": "#/texts/9"
+      },
+      {
+        "$ref": "#/texts/10"
+      },
+      {
+        "$ref": "#/texts/11"
+      },
+      {
+        "$ref": "#/texts/12"
+      },
+      {
+        "$ref": "#/texts/13"
+      },
+      {
+        "$ref": "#/texts/14"
+      },
+      {
+        "$ref": "#/texts/15"
+      },
+      {
+        "$ref": "#/texts/16"
+      },
+      {
+        "$ref": "#/texts/17"
+      },
+      {
+        "$ref": "#/texts/18"
+      },
+      {
+        "$ref": "#/texts/19"
+      },
+      {
+        "$ref": "#/texts/20"
+      },
+      {
+        "$ref": "#/texts/21"
+      },
+      {
+        "$ref": "#/texts/22"
+      },
+      {
+        "$ref": "#/texts/23"
+      },
+      {
+        "$ref": "#/texts/24"
+      },
+      {
+        "$ref": "#/texts/25"
+      },
+      {
+        "$ref": "#/texts/26"
+      },
+      {
+        "$ref": "#/texts/27"
+      },
+      {
+        "$ref": "#/texts/28"
+      },
+      {
+        "$ref": "#/texts/29"
+      },
+      {
+        "$ref": "#/texts/30"
+      },
+      {
+        "$ref": "#/texts/31"
+      },
+      {
+        "$ref": "#/texts/32"
+      },
+      {
+        "$ref": "#/texts/33"
+      },
+      {
+        "$ref": "#/texts/34"
+      },
+      {
+        "$ref": "#/texts/35"
+      },
+      {
+        "$ref": "#/texts/36"
+      }
+    ],
+    "content_layer": "body",
+    "name": "_root_",
+    "label": "unspecified"
+  },
+  "groups": [],
+  "texts": [
+    {
+      "self_ref": "#/texts/0",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 0.0,
+          "end_time": 6.299,
+          "identifier": "1",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I'm a salesperson who really needs to understand the needs of a prospect so they can craft a strategy and proposal to win their business.",
+      "text": "I'm a salesperson who really needs to understand the needs of a prospect so they can craft a strategy and proposal to win their business."
+    },
+    {
+      "self_ref": "#/texts/1",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 6.299,
+          "end_time": 16.679,
+          "identifier": "2",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I start in the new Acrobat Studio home where I can bring in all the information I have on the client and use AI to ask questions, surface insights, and get new ideas and PDF spaces.",
+      "text": "I start in the new Acrobat Studio home where I can bring in all the information I have on the client and use AI to ask questions, surface insights, and get new ideas and PDF spaces."
+    },
+    {
+      "self_ref": "#/texts/2",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 16.679,
+          "end_time": 23.64,
+          "identifier": "3",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I also have easy access to Adobe Express Premium features when I can want to create a client-ready presentation or deck.",
+      "text": "I also have easy access to Adobe Express Premium features when I can want to create a client-ready presentation or deck."
+    },
+    {
+      "self_ref": "#/texts/3",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 23.64,
+          "end_time": 28.879,
+          "identifier": "4",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "And of course, because it's Acrobat, I have all the trusted PDF tools right at my fingertips.",
+      "text": "And of course, because it's Acrobat, I have all the trusted PDF tools right at my fingertips."
+    },
+    {
+      "self_ref": "#/texts/4",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 29.399,
+          "end_time": 32.5,
+          "identifier": "5",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "Now, let's create a new space by selecting some files.",
+      "text": "Now, let's create a new space by selecting some files."
+    },
+    {
+      "self_ref": "#/texts/5",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 32.5,
+          "end_time": 44.439,
+          "identifier": "6",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I can bring in all the information I need for this work, things like customer webpages, financial reports, even online news articles about their competition, product sheets, meeting transcripts, and discovery notes.",
+      "text": "I can bring in all the information I need for this work, things like customer webpages, financial reports, even online news articles about their competition, product sheets, meeting transcripts, and discovery notes."
+    },
+    {
+      "self_ref": "#/texts/6",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 44.439,
+          "end_time": 49.719,
+          "identifier": "7",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I can add just about any document format and up to 100 documents in a PDF space.",
+      "text": "I can add just about any document format and up to 100 documents in a PDF space."
+    },
+    {
+      "self_ref": "#/texts/7",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 49.719,
+          "end_time": 58.64,
+          "identifier": "8",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "Once I've uploaded my information, I get a quick overview of what's in the documents without even having to enter a prompt, including key details about their workflows,",
+      "text": "Once I've uploaded my information, I get a quick overview of what's in the documents without even having to enter a prompt, including key details about their workflows,"
+    },
+    {
+      "self_ref": "#/texts/8",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 58.799,
+          "end_time": 65.76,
+          "identifier": "9",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "challenges, and priorities, along with recommended goals for next steps, all based on the documents.",
+      "text": "challenges, and priorities, along with recommended goals for next steps, all based on the documents."
+    },
+    {
+      "self_ref": "#/texts/9",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 65.76,
+          "end_time": 72.239,
+          "identifier": "10",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "This is a great place to start. Today, I have a specific objective and I'm ready to focus on getting the job done.",
+      "text": "This is a great place to start. Today, I have a specific objective and I'm ready to focus on getting the job done."
+    },
+    {
+      "self_ref": "#/texts/10",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 72.239,
+          "end_time": 79.42,
+          "identifier": "11",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I can simply describe what I want to work on or I can also use an AI assistant with a specific personality.",
+      "text": "I can simply describe what I want to work on or I can also use an AI assistant with a specific personality."
+    },
+    {
+      "self_ref": "#/texts/11",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 79.42,
+          "end_time": 85.299,
+          "identifier": "12",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I can pick from a list of pre-built assistants or customize my own by telling it how I want it to behave.",
+      "text": "I can pick from a list of pre-built assistants or customize my own by telling it how I want it to behave."
+    },
+    {
+      "self_ref": "#/texts/12",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 85.299,
+          "end_time": 90.799,
+          "identifier": "13",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "For this work, I'll create a sales assistant that understands the customer's needs and proposes solutions.",
+      "text": "For this work, I'll create a sales assistant that understands the customer's needs and proposes solutions."
+    },
+    {
+      "self_ref": "#/texts/13",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 90.799,
+          "end_time": 96.859,
+          "identifier": "14",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "With just a name and a short description, I can quickly generate clear instructions focused on my goals.",
+      "text": "With just a name and a short description, I can quickly generate clear instructions focused on my goals."
+    },
+    {
+      "self_ref": "#/texts/14",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 97.099,
+          "end_time": 101.84,
+          "identifier": "15",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "It's easy to set up and my personalized assistant helps me achieve my goals faster.",
+      "text": "It's easy to set up and my personalized assistant helps me achieve my goals faster."
+    },
+    {
+      "self_ref": "#/texts/15",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 101.84,
+          "end_time": 111.34,
+          "identifier": "16",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "After making my new sales assistant, I see that the content on the page has been refreshed with new insights and suggested next steps from the specific lens of the sales assistant.",
+      "text": "After making my new sales assistant, I see that the content on the page has been refreshed with new insights and suggested next steps from the specific lens of the sales assistant."
+    },
+    {
+      "self_ref": "#/texts/16",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 112.06,
+          "end_time": 116.9,
+          "identifier": "17",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "Next, I want to understand the client's pain points and how my solution can address them.",
+      "text": "Next, I want to understand the client's pain points and how my solution can address them."
+    },
+    {
+      "self_ref": "#/texts/17",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 118.019,
+          "end_time": 123.9,
+          "identifier": "18",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "The AI response highlights key pain points like fragmented document creation and management and manual and inefficient approval flows.",
+      "text": "The AI response highlights key pain points like fragmented document creation and management and manual and inefficient approval flows."
+    },
+    {
+      "self_ref": "#/texts/18",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 123.9,
+          "end_time": 128.52,
+          "identifier": "19",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "And it shows how we can address those issues. And it provides clickable citations.",
+      "text": "And it shows how we can address those issues. And it provides clickable citations."
+    },
+    {
+      "self_ref": "#/texts/19",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 128.52,
+          "end_time": 136.479,
+          "identifier": "20",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "This helps you navigate through all the documents to where the info came from, validate the answer, and enables you to dive deeper and get more context.",
+      "text": "This helps you navigate through all the documents to where the info came from, validate the answer, and enables you to dive deeper and get more context."
+    },
+    {
+      "self_ref": "#/texts/20",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 136.479,
+          "end_time": 141.68,
+          "identifier": "21",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "The assistant also makes suggestions which can inspire new ideas to make my proposal even better.",
+      "text": "The assistant also makes suggestions which can inspire new ideas to make my proposal even better."
+    },
+    {
+      "self_ref": "#/texts/21",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 141.68,
+          "end_time": 145.259,
+          "identifier": "22",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "With a clear view of the customer's challenges, I'm ready to start my proposal.",
+      "text": "With a clear view of the customer's challenges, I'm ready to start my proposal."
+    },
+    {
+      "self_ref": "#/texts/22",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 145.599,
+          "end_time": 149.74,
+          "identifier": "23",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I'll ask for help in creating a first draft focusing on their top pain points.",
+      "text": "I'll ask for help in creating a first draft focusing on their top pain points."
+    },
+    {
+      "self_ref": "#/texts/23",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 149.74,
+          "end_time": 152.96,
+          "identifier": "24",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "This is looking pretty good for a first draft.",
+      "text": "This is looking pretty good for a first draft."
+    },
+    {
+      "self_ref": "#/texts/24",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 152.96,
+          "end_time": 159.039,
+          "identifier": "25",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I can just save this as a note and continue to refine.",
+      "text": "I can just save this as a note and continue to refine."
+    },
+    {
+      "self_ref": "#/texts/25",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 159.039,
+          "end_time": 165.379,
+          "identifier": "26",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "In just a few minutes, I've accomplished what it would have taken me hours to do without Studio.",
+      "text": "In just a few minutes, I've accomplished what it would have taken me hours to do without Studio."
+    },
+    {
+      "self_ref": "#/texts/26",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 165.379,
+          "end_time": 170.0,
+          "identifier": "27",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "And now I have time to focus on refining my strategy, fine-tuning the solutions I'm proposing,",
+      "text": "And now I have time to focus on refining my strategy, fine-tuning the solutions I'm proposing,"
+    },
+    {
+      "self_ref": "#/texts/27",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 170.0,
+          "end_time": 175.46,
+          "identifier": "28",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "and bringing in my own personal knowledge of what will help make their teams be more successful.",
+      "text": "and bringing in my own personal knowledge of what will help make their teams be more successful."
+    },
+    {
+      "self_ref": "#/texts/28",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 175.599,
+          "end_time": 184.68,
+          "identifier": "29",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "Once I'm feeling good about the proposal, I can share the PDF space with my team so that when we go to the in-person pitch, everybody is on the same page.",
+      "text": "Once I'm feeling good about the proposal, I can share the PDF space with my team so that when we go to the in-person pitch, everybody is on the same page."
+    },
+    {
+      "self_ref": "#/texts/29",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 184.68,
+          "end_time": 191.879,
+          "identifier": "30",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "Now that I've got the content for the proposal, I can easily take it to the next level with a design that adds professional polish.",
+      "text": "Now that I've got the content for the proposal, I can easily take it to the next level with a design that adds professional polish."
+    },
+    {
+      "self_ref": "#/texts/30",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 192.439,
+          "end_time": 199.68,
+          "identifier": "31",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "From Acrobat Studio Home, I can easily click over to Express and choose a template or use my company's branded template like I did here.",
+      "text": "From Acrobat Studio Home, I can easily click over to Express and choose a template or use my company's branded template like I did here."
+    },
+    {
+      "self_ref": "#/texts/31",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 199.68,
+          "end_time": 203.979,
+          "identifier": "32",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "I can bring in the text from my PDF space for the proposal and fill it out here.",
+      "text": "I can bring in the text from my PDF space for the proposal and fill it out here."
+    },
+    {
+      "self_ref": "#/texts/32",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 203.979,
+          "end_time": 212.919,
+          "identifier": "33",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "Adobe Express has easy-to-use editing and design tools where I can add tables, graphics, and bid videos or choose from a huge library of Adobe Stock images or fonts.",
+      "text": "Adobe Express has easy-to-use editing and design tools where I can add tables, graphics, and bid videos or choose from a huge library of Adobe Stock images or fonts."
+    },
+    {
+      "self_ref": "#/texts/33",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 213.28,
+          "end_time": 216.819,
+          "identifier": "34",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "Once I've finished the proposal, I bring it back to Acrobat as a PDF.",
+      "text": "Once I've finished the proposal, I bring it back to Acrobat as a PDF."
+    },
+    {
+      "self_ref": "#/texts/34",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 216.819,
+          "end_time": 223.379,
+          "identifier": "35",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "And now I can use all the Acrobat tools to make final tweaks before I share with my manager and the team.",
+      "text": "And now I can use all the Acrobat tools to make final tweaks before I share with my manager and the team."
+    },
+    {
+      "self_ref": "#/texts/35",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 223.379,
+          "end_time": 228.84,
+          "identifier": "36",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "In just a short time, I gained a deep understanding of the customer's business and how our solutions can help,",
+      "text": "In just a short time, I gained a deep understanding of the customer's business and how our solutions can help,"
+    },
+    {
+      "self_ref": "#/texts/36",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [],
+      "source": [
+        {
+          "kind": "track",
+          "start_time": 228.84,
+          "end_time": 232.379,
+          "identifier": "37",
+          "voice": "SPEAKER_00"
+        }
+      ],
+      "orig": "then crafted a strong proposal, all within Acrobat Studio.",
+      "text": "then crafted a strong proposal, all within Acrobat Studio."
+    }
+  ],
+  "pictures": [],
+  "tables": [],
+  "key_value_items": [],
+  "form_items": [],
+  "pages": {}
+}
