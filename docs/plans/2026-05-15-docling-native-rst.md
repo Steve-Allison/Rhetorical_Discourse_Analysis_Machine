@@ -35,8 +35,8 @@ Verified facts (now baked in):
 
 - `docling-core.DoclingDocument.load_from_json(...)` loads + validates.
 - `docling-core.DoclingDocument.iterate_items(...)` is the canonical walker (pre-order DFS, resolves `$ref`s, filters by `ContentLayer`, supports `page_no` filtering).
-- The 5 Docling JSONs inspected 2026-05-15 (pptx, pdf, vtt, html/markdown) all emit `DoclingDocument` v1.10.0 with identical top-level keys. Sample-scoped finding; not a universal guarantee.
-- `docling-core` is **not** currently a dependency of this fork.
+- The 4 Docling JSONs in `tests/fixtures/docling/` (pptx, pdf, vtt, markdown) all emit `DoclingDocument` v1.10.0 with identical top-level keys. Sample-scoped finding; not a universal guarantee.
+- `docling-core>=2.75.0,<3` is now a hard dependency, pinned in `pyproject.toml` `[project.dependencies]` (added Phase 0 step 1).
 
 Build plan: [`./2026-05-15-docling-native-rst-build.md`](./2026-05-15-docling-native-rst-build.md).
 
@@ -55,7 +55,7 @@ Solve it once, here, by emitting an RST tree where every node references `self_r
 A new entry point `isanlp_rst.docling.parse_docling(path)` that:
 
 1. **Accepts** a path to a Docling JSON file directly.
-2. **Walks** the loaded `DoclingDocument` via `docling-core.iterate_items(...)` with full cue awareness (section headers, slide notes, picture captions, all included).
+2. **Walks** the loaded `DoclingDocument` via `docling-core.iterate_items(traverse_pictures=True, included_content_layers=...)` with full cue awareness (section headers, slide notes, picture descriptions, all included by default).
 3. **Concatenates** the harvested text into one input, recording `(self_ref, start, end)` for every span.
 4. **Detects boundaries** appropriate to the source format and annotates each `self_ref` with its boundary memberships.
 5. **Runs RST once** over the full harvested text via the existing `Parser` facade.
@@ -74,9 +74,9 @@ Verified shapes (see [`verified_docling_schema`](../../.claude/memory/verified_d
 | **VTT** | one `turn-N` boundary per contiguous-same-speaker run (consecutive `TextItem`s sharing the same `source[*].voice`). |
 | **HTML / Markdown** | same as PDF (`section_header` levels). If no section headers exist, the whole document is one `document` boundary. |
 | **Tables** | each `TableItem` is its own `table-N` boundary; cell content is NOT included in the RST input text (see § Tables). |
-| **OCR-PDFs** | `traverse_pictures=True` is the default, so layout-model-wrapped texts inside top-level `PictureItem`s enter the harvest and boundary detection works the same as PDF. |
+| **OCR-PDFs** | `traverse_pictures=True` is always passed to `iterate_items`, so layout-model-wrapped texts inside top-level `PictureItem`s enter the harvest as picture children, and boundary detection works the same as PDF. (Behaviour ASSUMED equivalent to chart-picture-children iteration; no populated `full_page_image` fixture is committed yet — see build plan §Phase 0 step 3.) |
 
-Picture captions (separate from OCR-wrapped text) enter the harvest as regular text spans; their boundary membership is whatever boundary contains the picture's parent.
+Picture descriptions (the VLM-style text in `picture.meta.description.text`, separate from OCR-wrapped child text) enter the harvest as regular text spans keyed by the picture's `self_ref`; their boundary membership is whatever boundary contains the picture's parent.
 
 ## Output shape
 
@@ -85,9 +85,9 @@ Picture captions (separate from OCR-wrapped text) enter the harvest as regular t
   "schema_name": "isanlp_rst_docling",
   "schema_version": "1.0",
   "tool": "isanlp_rst",
-  "tool_version": "<fork commit hash>",
+  "tool_version": "<git describe / package version / 'unknown'>",
   "model_version": "gumrrg",
-  "inventory": "eng.rst.rstdt",
+  "inventory": "gumrrg",
   "source": "foo.docling.json",
   "source_origin": {
     "mimetype": "application/vnd.ms-powerpoint",
@@ -100,21 +100,27 @@ Picture captions (separate from OCR-wrapped text) enter the harvest as regular t
       "kind": "slide",
       "label": "GenAI Creation",
       "parent_self_ref": "#/groups/0",
-      "self_refs": ["#/texts/0", "#/texts/1"]
+      "self_refs": ["#/texts/0", "#/texts/1", "#/pictures/0"],
+      "level": null,
+      "page_no": null
     },
     {
-      "id": "slide-0-notes",
+      "id": "slide-1-notes",
       "kind": "slide-notes",
       "label": null,
-      "parent_self_ref": "#/groups/0",
-      "self_refs": ["#/texts/42"]
+      "parent_self_ref": "#/groups/1",
+      "self_refs": ["#/texts/3"],
+      "level": null,
+      "page_no": null
     },
     {
       "id": "table-0",
       "kind": "table",
       "label": null,
       "parent_self_ref": "#/groups/1",
-      "self_refs": ["#/tables/0"]
+      "self_refs": ["#/tables/0"],
+      "level": null,
+      "page_no": null
     }
   ],
   "relations": [
@@ -157,30 +163,33 @@ Key design points:
 - **`edus` list** carries leaf-node identity so consumers can resolve EDU-level references (`left_id` / `right_id` of depth-bottom relations point into `edus[]`).
 - **`boundary_memberships`** is the list of `boundaries[].id` values whose `self_refs` intersect the relation's nucleus or satellite refs. Single-element list when the relation is fully within one boundary; multi-element when it spans.
 - **`boundaries` list is metadata** — it doesn't affect what RST relations are emitted, only annotates them.
-- **`boundary.kind` is enumerated.** Currently: `"slide" | "slide-notes" | "page" | "section" | "turn" | "table" | "document"`. Extensible.
+- **`boundary.kind` is enumerated.** Currently emitted: `"slide" | "slide-notes" | "section" | "turn" | "table" | "document"`. Page boundaries are not emitted; instead `Boundary.page_no` carries the page number as metadata on slides/sections where applicable (build plan §Decisions: Page boundaries).
+- **`Boundary` also carries `level: int | None` and `page_no: int | None`** as optional metadata. `level` passes through Docling's `section_header.level`; `page_no` passes through `prov.page_no` where applicable.
 - **`source_origin`** preserves the Docling `origin` block so consumers don't have to re-open the source.
 - **Overlap rule unchanged:** any non-empty intersection between a relation's char-range and a `self_ref`'s harvest range → include in `nucleus_refs` / `satellite_refs`. Lopsided ≥ 90% gets a `note` field (omitted from sample above for brevity).
 
 ## Architecture
 
 ```text
-parse_docling(path, **knobs)
+parse_docling(path, *, parser=None, **knobs)
   │
   ├─→ doc = DoclingDocument.load_from_json(path)
   │
   ├─→ harvest = harvest_docling_text(doc, knobs)
-  │     # walks iterate_items(); concatenates text; records (self_ref, start, end) spans
-  │     # cue-aware: includes section headers, slide notes, picture captions per knobs
+  │     # walks iterate_items(traverse_pictures=True, included_content_layers=...);
+  │     # concatenates text; records (self_ref, start, end) spans
+  │     # cue-aware: includes section headers, slide notes, picture descriptions per knobs
   │
-  ├─→ boundaries = detect_boundaries(doc, harvest, knobs)
+  ├─→ boundaries = detect_boundaries(doc, coalesce_speaker_turns=...)
   │     # produces list of Boundary entries with id/kind/label/parent_self_ref/self_refs
   │     # source-format-aware: slides for pptx, sections for pdf, turns for vtt, etc.
   │     # tables emit boundary entries but their cells are NOT in `harvest.full_text`
   │
-  ├─→ rst_tree = Parser(...).parse(harvest.full_text)
-  │     # ONE Parser call; one DiscourseUnit tree
+  ├─→ parser = parser or Parser(...)           # injection point for batch consumers
+  ├─→ rst_tree = parser(harvest.full_text)['rst'][0]
+  │     # ONE Parser call (Parser.__call__); one DiscourseUnit tree
   │
-  └─→ result = map_tree_to_refs(rst_tree, harvest, boundaries)
+  └─→ result = flatten_tree(rst_tree, harvest.spans, boundaries)
         # for each tree node: map node.start/end → self_refs via overlap rule
         # for each relation: compute boundary_memberships
         # flatten tree to relations[] + edus[]; preserve tree shape via left_id/right_id
@@ -188,31 +197,36 @@ parse_docling(path, **knobs)
   return DoclingRstResult(metadata, boundaries, relations, edus)
 ```
 
-The `Parser(...)` facade is loaded once and called once per document. Boundary detection is independent of RST parsing — boundaries are derived from the Docling structure, the RST tree is derived from the harvested text. Boundary memberships are computed at the end by intersecting each relation's `self_refs` with each boundary's `self_refs`.
+The `Parser` is loaded once and reused across `parse_docling` calls when injected (batch path); otherwise constructed per call from the model knobs. Boundary detection is independent of RST parsing — boundaries are derived from the Docling structure, the RST tree is derived from the harvested text. Boundary memberships are computed at the end by intersecting each relation's `self_refs` with each boundary's `self_refs`.
 
 ## Public API
 
 ```python
 from pathlib import Path
+from isanlp_rst.parser import Parser
 from isanlp_rst.docling import parse_docling, DoclingRstResult
 
 result: DoclingRstResult = parse_docling(
     Path("source.docling.json"),
-    # Model selection
+    # Parser injection — recommended for batch consumers (avoids weight reload per call)
+    parser: Parser | None = None,
+    # Model selection (used only when parser is None)
     hf_model_name: str = "tchewik/isanlp_rst_v3",
     hf_model_version: str = "gumrrg",
-    relinventory: str | None = None,        # required for unirst
-    # Device
-    device: str = "auto",                   # "auto" | "cpu" | "cuda:N" | "mps"
+    relinventory: str | None = None,        # should be set when hf_model_version="unirst"
+    # Device (used only when parser is None)
+    device: str = "auto",                   # "auto" | "cpu" | "mps" | "cuda" | "cuda:N"
     # Harvest policy (what enters the RST input text)
-    include_picture_captions: bool = True,
-    include_slide_notes: bool = True,        # ContentLayer.NOTES (PPTX speaker notes)
-    include_furniture: bool = False,         # ContentLayer.FURNITURE (page headers / footers)
+    include_picture_descriptions: bool = True,  # picture.meta.description.text
+    include_slide_notes: bool = True,           # ContentLayer.NOTES (PPTX speaker notes)
+    include_furniture: bool = False,            # ContentLayer.FURNITURE (page headers / footers)
     harvest_separator: str = "\n\n",
     # Boundary policy (annotation only — doesn't affect RST input)
     coalesce_speaker_turns: bool = True,    # contiguous same-voice runs → one turn boundary
     # Overlap rule
     note_threshold: float = 0.90,
+    # Long-input guard
+    max_harvest_chars: int = 200_000,       # raises InputTooLargeError above this
 )
 ```
 
@@ -234,25 +248,31 @@ For each source format, the harvest concatenates text from:
 
 | Source | What's harvested | What's not |
 |---|---|---|
-| **PPTX** | slide body texts (`content_layer: "body"`), slide notes (`content_layer: "notes"`), picture captions within slides | table cells, `content_layer: "furniture"` items if any |
-| **PDF** | body texts, section_header texts, list-item texts, picture captions | page headers/footers (furniture by default), table cells |
+| **PPTX** | slide body texts (`content_layer: "body"`), slide notes (`content_layer: "notes"`), picture descriptions from `picture.meta.description.text` where present | table cells, `content_layer: "furniture"` items if any |
+| **PDF** | body texts, section_header texts, list-item texts, picture-children TextItems (yielded by `traverse_pictures=True`), picture descriptions where present | page headers/footers (furniture by default), table cells |
 | **VTT** | every `TextItem` (single text label, single content layer) | n/a |
 | **HTML / Markdown** | body texts, section_header texts, list-item texts | table cells |
 | **OCR-PDF** | texts wrapped in top-level `PictureItem`s (via `traverse_pictures=True`) | n/a |
 
-The `include_slide_notes` knob (default `True`) adds `ContentLayer.NOTES` to the iterate filter — PPTX speaker notes are harvested by default because they are usually rhetorically meaningful. `include_furniture` (default `False`) adds `ContentLayer.FURNITURE` — page headers / footers, typically boilerplate, off by default. `include_picture_captions` (default `True`) controls `traverse_pictures` (always passed `True` for OCR-PDF support; the knob filters out non-OCR caption text downstream of iteration).
+`traverse_pictures=True` is always passed to `iterate_items` so picture children (OCR text, chart labels) are yielded as part of the canonical walk regardless of knobs.
+
+Knob semantics:
+
+- `include_slide_notes` (default `True`) adds `ContentLayer.NOTES` to the iterate filter — PPTX speaker notes are harvested by default because they are usually rhetorically meaningful.
+- `include_furniture` (default `False`) adds `ContentLayer.FURNITURE` — page headers / footers, typically boilerplate, off by default.
+- `include_picture_descriptions` (default `True`) controls whether each `PictureItem`'s `meta.description.text` is appended to the harvest as its own span (with the picture's `self_ref` as the `HarvestSpan.self_ref`). `picture.meta.description` is the canonical Docling location for picture descriptions (incl. VLM captions); it carries the `created_by` field that names the producer (e.g. Docling-Machine's `pptx_enrichment_gemini`). The deprecated `PictureItem.annotations` field is not read.
 
 ## Testing
 
 Smoke tests:
 
-1. **Round-trip:** every `self_ref` in `relations[].nucleus_refs` / `satellite_refs` exists in the source's `self_ref` set or the `boundaries[]` cell-ref extension.
-2. **Reproducibility:** same source twice → byte-identical output (modulo `tool_version`).
-3. **Tree completeness:** for every relation with `left_id != null`, the referenced id exists in `relations[]` or `edus[]`.
-4. **Boundary completeness:** every boundary in `boundaries` has at least one `self_ref`.
+1. **Round-trip:** every `self_ref` in `relations[].nucleus_refs` / `satellite_refs` exists in the source's `self_ref` set. (Tables are excluded from harvest, so `#/tables/N` cannot appear in relation refs — see § Tables.)
+2. **Reproducibility:** same source twice → byte-identical output (modulo `tool_version`). Verified empirically in Phase 0 step 7.
+3. **Tree completeness:** for every relation, `left_id` and `right_id` resolve into the union of `relations[]` and `edus[]` (shared id namespace).
+4. **Boundary completeness:** every boundary in `boundaries` has at least one `self_ref` (empty boundaries are filtered out).
 5. **Boundary tagging:** every relation's `boundary_memberships` is non-empty, and every listed boundary id exists in `boundaries[]`.
-6. **Format coverage:** one fixture per source flavour (pptx, pdf, vtt, markdown, OCR-PDF). Each parses without source-format special-casing in client code.
-7. **Edge cases:** single-speaker VTT, table-heavy PPTX, multi-section PDF with `level: 2`+ subdivisions, document with no section headers (single `document` boundary), and a deliberately-long input (one of the larger Docling fixtures) to verify sliding-window behaviour.
+6. **Format coverage:** four fixtures shipped (pptx, pdf, vtt, markdown). OCR-PDF iteration is ASSUMED equivalent and covered by a picture-children unit test rather than a dedicated fixture (build plan §Phase 0 step 3).
+7. **Edge cases:** single-speaker VTT (coalesces to one `turn-0`), table-heavy PPTX (20 tables → 20 `table-N` boundaries, none in relation refs), multi-level Markdown (levels `{2, 3}` carried on `Boundary.level`), and long-input smoke (40 KB+ harvest parses cleanly; threshold at `max_harvest_chars=200_000`).
 
 ## Out of scope
 
