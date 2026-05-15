@@ -49,7 +49,7 @@ Forward passes go through `torch.autocast`. The model runs in `float32`, `float1
 
 - **Apple Silicon (~1k-char inputs):** `float32` beats `bfloat16` / `float16` for every published model — claim per `base_predictor.py:362-365` source comment, measured by the maintainer at the time.
 - **Large-batch CUDA (Hopper / Ada Tensor Cores):** `bfloat16` is likely faster — same source comment. Measure with `pixi run bench` before pinning.
-- **Tree structure is bit-equivalent across all three dtypes** for all five published models — ASSUMED per `tests/test_integration.py` equivalence-suite name; not re-run this session.
+- **Tree structure is bit-equivalent across all three dtypes** for all five published models — assertion source: `tests/test_integration.py:176-330` defines `test_dmrst_dtype_equivalence_on_mps`, `test_unirst_dtype_equivalence_on_mps`, `test_dtype_equivalence_rstdt`, `test_dtype_equivalence_rstreebank`, `test_dtype_equivalence_rrtrrg` — each compares fp16/bf16 against an fp32-CPU baseline and asserts equivalence. Test definitions verified by reading the file; **test PASS status not re-run this session**.
 
 ## Visualisation (`isanlp_rst.rstviewer`)
 
