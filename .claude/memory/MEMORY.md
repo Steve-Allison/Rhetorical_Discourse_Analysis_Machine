@@ -26,6 +26,10 @@ Index of project-local memories. One line per entry.
 - [v1 policy knobs](open_v1_policy_knobs.md) — RESOLVED: every policy is a parameter on `parse_docling()` with a default.
 - [`Parser` facade output shape](open_parser_facade_unverified.md) — RESOLVED: returns `{'rst': [tree]}`; tree has character-level absolute offsets; strictly binary; leaves are EDUs.
 
+## Feedback (HARD-RULE enforcement)
+
+- [No-assumptions HARD RULE — incident + hook](feedback_no_assumptions_hard_rule.md) — 2026-05-15. Inferred `meta.description` was an extension without reading PictureMeta. Hook at `.claude/hooks/no-assumptions-check.sh` blocks future occurrences. Steve does not tolerate this behaviour.
+
 ## Open design questions
 
 - [RST real-world quality](open_rst_real_world_quality.md) — biggest blind spot: RST was developed for prose; quality on slides / transcripts / long mixed docs is unverified. Also: which relation inventory to default to.

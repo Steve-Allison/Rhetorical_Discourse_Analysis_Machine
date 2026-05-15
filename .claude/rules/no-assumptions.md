@@ -26,6 +26,20 @@ Seeing a structural hint and inferring a property without opening the actual dat
 
 Structural hints (a field exists, a value appears in a `unique` listing, a directory has a suggestive name) are *hypotheses*, not facts. Verify by opening, reading, running.
 
+**Worked example (2026-05-15, second occurrence — direct breach despite reading this rule the same day):**
+
+Seeing `created_by: "pptx_enrichment_gemini:gemini-2.5-pro"` inside a `picture.meta.description` block, and a sibling key `docling_machine__vlm_metadata`, I concluded `meta.description` was a "Docling-Machine extension" and that `annotations[]` was "the canonical Docling place" for picture descriptions.
+
+Reality (Verified 2026-05-15 at runtime via `type(picture.meta).__name__` and the docling-core 2.75 DeprecationWarning):
+
+- `picture.meta` is a declared `PictureMeta` field on `PictureItem`.
+- `picture.meta.description` is a declared `DescriptionMetaField` with `.text`, `.created_by`, `.confidence`.
+- `picture.annotations` is the *deprecated* field, superseded by `meta` per the runtime DeprecationWarning emitted by docling-core 2.75+.
+
+What would have caught it: one `grep "class PictureMeta"` on the docling-core source already in the session, or `print(PictureItem.model_fields)` in the pixi env. Cost: seconds. Cost of skipping it: Steve's words — "I spend MORE TIME fighting you than I do getting work actually done."
+
+A write-time hook at `.claude/hooks/no-assumptions-check.sh` was added the same day. It scans Write / Edit content for trigger phrases (canonicity / custom-field / extension claims) and blocks unless an evidence anchor or `ASSUMED` marker is present in the same content. Do not bypass by rephrasing — the rephrase is the symptom; the unverified claim is the disease. See [[feedback-no-assumptions-hard-rule]].
+
 ### 3. Restating one's own earlier conclusion as new evidence
 
 Citing yourself across files until the chain of reasoning is invisible. The third-or-fourth restatement reads like established fact even though it traces back to one sample observation:
