@@ -1,10 +1,22 @@
 # Docling-native RST output
 
-**Status:** Proposed
-**Date:** 2026-05-15
+**Status:** Approved (with revisions — see § Revisions)
+**Date:** 2026-05-15 (revised same day)
 **Driver:** Steve Allison (the fork's owner)
 **Consumer:** Content Structuring Machine (`/Users/steveallison/AI_Projects+Code/Content_Structuring_Machine`)
 **Estimated effort:** 1–3 days of focused work
+
+---
+
+## Revisions
+
+**2026-05-15 (revision, same day as proposal):** Three decisions taken before implementation. The body below has been edited inline to reflect them.
+
+- **Harvester anchored on the canonical `docling-core` spec, not CSM's traversal.** The original draft said the fork's harvester must mirror `DoclingSource.collect_text()` in CSM. Revised: the fork walks `DoclingDocument` using `docling-core`'s canonical iteration API. The fork no longer depends on CSM at all. If CSM's `collect_text()` order diverges from the official spec, that is CSM's problem to reconcile. The contract is the library, not a shared fixture between two repos.
+- **`docling_binary_hash` dropped from the output schema.** CSM creates its own hash upstream. The fork emits its output without a binary hash. (A `harvest_hash` over the concatenated text may be added for reproducibility testing — see the build plan.)
+- **Overlap rule formalised.** A relation's `nucleus_refs` (resp. `satellite_refs`) contains every `self_ref` whose harvest character range has *any* non-empty intersection with the relation's nucleus (resp. satellite) span. When a relation's span overlaps ≥ 90% with one `self_ref` but marginally touches an adjacent one, the relation carries a `note` field of the form `"nucleus dominantly in #/texts/47; spills into #/texts/48 (8% overlap)"`. Other `note` shapes are reserved for future use.
+
+Build plan lives at [`./2026-05-15-docling-native-rst-build.md`](./2026-05-15-docling-native-rst-build.md).
 
 ---
 
@@ -62,7 +74,6 @@ Add a Docling-aware entry point to this fork that:
   "model_version": "gumrrg",
   "inventory": "eng.rst.rstdt",
   "source": "foo.docling.json",
-  "docling_binary_hash": 1234567890,
   "relations": [
     {
       "relation": "Elaboration",
@@ -113,28 +124,40 @@ result = parse_docling(
 
 ### 2. Position-tracking harvester
 
-A function that walks Docling JSON once and produces a list of `(text_start, text_end, self_ref)` triples alongside the concatenated text:
+A function that walks `DoclingDocument` once via `docling-core`'s canonical iteration API and produces a list of `(text_start, text_end, self_ref)` triples alongside the concatenated text:
 
 ```python
 def harvest_docling_text(path: Path) -> tuple[str, list[tuple[int, int, str]]]:
     """Returns (full_text, [(start, end, self_ref), ...]).
 
-    Walks Docling structure in canonical order:
-      1. body layer texts (in body.children traversal order)
-      2. notes layer texts
-      3. picture descriptions (pictures[].meta.description.text)
-      4. table cells (tables[].data.grid[].text)
+    Walks DoclingDocument using docling-core's canonical iteration
+    (e.g. DoclingDocument.iterate_items()). Each yielded text-carrying
+    node contributes its text and self_ref to the harvest; the
+    concatenation order is whatever the library defines as canonical.
 
-    Each text span gets a (start, end) range in the concatenated output
-    paired with its source self_ref.
+    Text-carrying node types harvested in v1 (verify against the pinned
+    docling-core version during Phase 0 of the build plan):
+      - TextItem and its variants (paragraphs, section headers, list items)
+      - PictureItem captions
+      - TableItem cell text (only if part of the canonical iteration)
     """
 ```
 
-The canonical order must match `DoclingSource.collect_text()` in CSM (`Content_Structuring_Machine/tools/schemas/docling.py`) so the harvest is reproducible across the boundary.
+The canonical order is whatever `docling-core` defines. The fork does not mirror or coordinate with CSM's `DoclingSource.collect_text()` — if CSM diverges from the spec, that is CSM's reconciliation, not the fork's.
 
 ### 3. Offset-to-ref mapper
 
-After parsing produces RST relations with character offsets, map each relation's `[start, end]` range to the set of `self_ref`s whose harvest ranges intersect that span. A relation spanning offsets `[100, 300]` covers all `self_ref`s whose harvest ranges intersect `[100, 300]`.
+After parsing produces RST relations with character offsets, map each relation's nucleus and satellite character ranges to sets of `self_ref`s.
+
+**Overlap rule (v1):** a relation's `nucleus_refs` (resp. `satellite_refs`) contains every `self_ref` whose harvest range has *any* non-empty intersection with the relation's nucleus (resp. satellite) span. No threshold.
+
+**Note field:** when a relation's span overlaps ≥ 90% with one `self_ref` but marginally touches an adjacent one, attach a `note` field describing the imbalance, for example:
+
+```json
+"note": "nucleus dominantly in #/texts/47; spills into #/texts/48 (8% overlap)"
+```
+
+The 90% threshold is the only knob; other `note` shapes are reserved for future use.
 
 ### 4. Schema versioning + version flag
 
@@ -187,6 +210,7 @@ None of these CSM changes block this fork work. CSM's `methodology-rst-coverage`
 - CSM consumes RST output via `tools/schemas/methodology.py:RstArtifact`. The schema is open to additive change (the model has `kind: Literal["rst"]` as discriminator and the rest as plain typed fields).
 - CSM's curator-AI auditor (`Content_Structuring_Machine/.claude/agents/csm-phase1-auditor.md`) was updated 2026-05-15 to consult RST artefacts during Phase 1 audit. The richer Docling-native output, when shipped, sharpens that consultation.
 - Don't add CSM-specific business logic to this fork. The fork's job ends at "Docling JSON in, RST relations indexed by `self_ref` out."
+- **No harvest-order coordination.** The fork anchors on `docling-core`'s canonical iteration. CSM's `DoclingSource.collect_text()` may use the same canonical order or its own — that is CSM's concern. The fork emits `self_ref`-indexed relations; CSM looks them up directly.
 
 ---
 
