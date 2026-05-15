@@ -106,6 +106,7 @@ include = [
   "isanlp_rst/dmrst_parser/predictor.py",
   "isanlp_rst/universal_parser/predictor.py",
   "isanlp_rst/utils/mps_init.py",
+  "isanlp_rst/docling",
   "tests",
   "scripts",
 ]

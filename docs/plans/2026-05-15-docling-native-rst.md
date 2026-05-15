@@ -224,7 +224,7 @@ Tables are structurally different from prose — a grid, not a flow. Running RST
 
 - **Each `TableItem` is emitted as a `boundary` entry** with `kind: "table"` and `self_refs: ["#/tables/N"]`. Consumers know the table exists and where it sits in document structure.
 - **Table cell text is NOT included in `harvest.full_text`.** No spurious RST relations are emitted for table-internal content.
-- **The table's `self_ref`** may still appear in a relation's `nucleus_refs` / `satellite_refs` if the table-as-whole participates in document-level discourse (e.g. a paragraph "Elaboration"s a table). The relation refers to the table by its `self_ref`, not by its cells.
+- **`#/tables/N` never appears in a relation's `nucleus_refs` / `satellite_refs`.** Tables are excluded from the harvest, so no `HarvestSpan` carries `#/tables/N`, so the overlap rule cannot include it. Tables are visible to consumers only via the `boundaries[]` list. (Resolved 2026-05-15 in build plan §Decisions: Table references.)
 
 Cell-text harvesting is rejected because it would force a design choice (linearise cells in row-major vs column-major) that any choice is wrong for some tables.
 

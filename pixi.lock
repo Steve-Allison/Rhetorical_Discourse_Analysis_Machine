@@ -681,7 +681,7 @@ packages:
 - pypi: ./
   name: isanlp-rst
   version: 3.2.0
-  sha256: 9a30da05b49713bf96609221220841944c1aef679b4dd56cf6f704e458de0c12
+  sha256: 34c8749ad2a0288d40dca1047340346ae62a238e6469fee394745265b93ea4cf
   requires_dist:
   - asyncio
   - playwright

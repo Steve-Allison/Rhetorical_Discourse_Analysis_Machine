@@ -261,7 +261,54 @@ res['rst'][0].fill_textfields(full_text)   # repopulate later
 
 ---
 
-## Project status & licence
+## Docling-native output
+
+For structured documents — PDFs, PPTX decks, VTT transcripts, Markdown, HTML — converted via [Docling](https://github.com/docling-project/docling), `isanlp_rst` exposes `parse_docling()`: a single entry point that walks the canonical Docling structure, harvests the text in source-format-appropriate order, runs RST once over the full harvest, and returns the relations indexed by Docling `self_ref` with per-relation boundary annotations.
+
+```python
+from pathlib import Path
+from isanlp_rst.docling import parse_docling
+
+result = parse_docling(Path("deck.docling.json"), device="auto")
+
+# result.relations: tuple of RstRelation — flat list with left_id / right_id for tree shape
+# result.edus:      tuple of RstEdu     — leaves indexed by Docling self_ref
+# result.boundaries: tuple of Boundary  — slides, sections, speaker turns, tables
+# result.source_origin: dict            — mirror of doc.origin (mimetype, binary_hash, filename)
+```
+
+### Batch use — inject one Parser
+
+The underlying weights are ~2 GB. Constructing a fresh `Parser` per call would reload them every time. Build one parser, inject it:
+
+```python
+from isanlp_rst.parser import Parser
+from isanlp_rst.docling import parse_docling
+
+parser = Parser(hf_model_version="gumrrg", cuda_device=0)
+
+for path in document_paths:
+    result = parse_docling(path, parser=parser)
+    ...
+```
+
+### What enters the harvest
+
+| Source format | Harvested by default | Boundary detection |
+| :--- | :--- | :--- |
+| PPTX | slide texts (titles, paragraphs, list items); speaker notes (`ContentLayer.NOTES`); picture VLM descriptions from `meta.description.text` where present | one `slide-N` boundary per slide group; one `slide-N-notes` when the slide carries notes |
+| PDF | body texts, section headers, list items, picture-children (OCR / chart labels) | `section-N` opened at each `section_header`; any pre-header content lives in a leading `document` boundary |
+| HTML / Markdown | same as PDF | same as PDF |
+| VTT | every transcript line | one `turn-N` per contiguous-same-voice run (`coalesce_speaker_turns=True` default) |
+| Tables (any format) | excluded from harvest | one `table-N` boundary per `TableItem` — tables never appear in relation refs |
+
+Toggle the harvest with keyword arguments: `include_picture_descriptions=False`, `include_slide_notes=False`, `include_furniture=True`. See the [walkthrough](docs/examples/docling-native.md) for the full set of knobs and a tree-reconstruction example.
+
+### Caveats — read before relying on it
+
+- **RST was trained on prose.** Quality is highest on continuous narrative (VTT transcripts, decks with VLM descriptions, prose-heavy PDFs). On bullet-only slide decks without VLM enrichment, or on highly procedural / list-heavy PDFs, relations are dominated by `joint` / `organization` chains — structurally valid but rhetorically thin. Use the result with appropriate scepticism on non-prose input.
+- **Long inputs:** `parse_docling` raises `InputTooLargeError` above `max_harvest_chars=200_000` (configurable). The largest fixture exercised end-to-end is ~18 KB; the parser handles 40 KB+ cleanly in smoke tests but degradation at extreme sizes is empirical.
+- **Cross-boundary relations are preserved.** A relation may touch two slides or sections; `boundary_memberships` lists all touched boundaries. Filter on `len(boundary_memberships) == 1` for within-boundary relations only.
 
 This repository is Steve Allison's evolution of the IsaNLP RST Parser. The original RST research code and the trained model weights are by Elena Chistova; the MIT-licensed source code carries her copyright. This repository adds pixi-managed builds, a pytest test suite, GitHub Actions CI, MPS / Apple-Silicon support, mixed-precision dispatch, and ongoing roadmap work (see `docs/plans/`).
 

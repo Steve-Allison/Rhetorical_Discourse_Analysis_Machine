@@ -94,30 +94,39 @@ The existing `Parser` facade is reused unchanged.
 Each item below was an open question in `.claude/memory/`. Decisions land here so Phase 1 has a closed contract. Memory files are kept as historical record.
 
 ### Parser caching / injection
+
 `parse_docling(path, *, parser: Parser | None = None, ...)`. If `parser` is `None`, instantiate one from the model knobs (catastrophic for batch use — every call reloads ~2 GB of weights). Document that batch consumers must construct once and inject. **Rejected:** process-global `@functools.cache` on the Parser constructor — hides cost, surprises long-running services.
 
 ### Input path — harvest-and-segment vs `from_edus`
+
 **Chosen:** harvest-and-segment. One `parser(harvest.full_text)` call; the parser does its own EDU segmentation. **Rejected:** treating each Docling `TextItem` as a pre-segmented EDU via `Parser.from_edus(edus)`. **Why:** Docling TextItems are layout-derived, not discourse-derived. A bullet list with five points is five TextItems but rarely five EDUs; a long paragraph is one TextItem but often multiple EDUs. The parser's segmentation is authoritative. Cost: EDUs can straddle `self_ref` boundaries → overlap rule handles it; `note` field documents lopsided cases.
 
 ### Table references
+
 **Chosen:** `#/tables/N` **never** appears in `nucleus_refs` / `satellite_refs`. Tables are excluded from `harvest.full_text`, so no `HarvestSpan` carries `#/tables/N`, so the overlap rule cannot emit it. Tables are visible only via `boundaries[]` (one `table-N` per `TableItem`). **Rejected:** injecting a `[TABLE]` placeholder span — adds synthetic prose to RST input; muddies what the parser sees. **Proposal impact:** the proposal's §Tables paragraph claiming "the table's `self_ref` may still appear in a relation's `nucleus_refs` / `satellite_refs`" contradicts this. To be struck in a follow-up edit to the proposal.
 
 ### `boundary_memberships` semantics
+
 **Chosen: "touches"** — `boundary_memberships` lists every boundary whose `self_refs` intersect the relation's refs. Cross-boundary relations have multi-element lists; consumers filter via `len(boundary_memberships) > 1`. **Rejected:** "contained-within" semantics (empty list for cross-boundary) — less informative for "this slide's discourse arc" queries. A separate `is_cross_boundary: bool` field is **not** added in v1.
 
 ### Section nesting
+
 **Chosen:** sibling-flat `Boundary` list. Add `Boundary.level: int | None` (pass-through from Docling's `section_header.level`; `None` for non-section boundaries). Consumers reconstruct nesting from `level`. **Rejected:** `Boundary.parent_boundary_id` — adds graph structure no consumer has asked for.
 
 ### Page boundaries
+
 **Chosen:** do **not** emit `kind: "page"` boundaries. Add `Boundary.page_no: int | None` as metadata (populated for PDF / PPTX where applicable; `None` for VTT / Markdown). **Rejected:** separate page boundaries — creates boundary overlap with sections and slides; consumer pain.
 
 ### `relations[]` and `edus[]` ordering, id space
+
 - `relations[]`: pre-order DFS (root first; relation 0 is always the tree root).
 - `edus[]`: left-to-right reading order (ascending start offset in the harvest).
 - Id space: **shared sequential namespace** across `relations[]` and `edus[]`. `left_id` / `right_id` resolves uniformly to either. Deterministic given the same parser output.
 
 ### `tool_version` format
+
 Resolution chain (first match wins, cached at module import):
+
 1. `git describe --always --dirty` (when running in a git checkout).
 2. `importlib.metadata.version("isanlp_rst")` (PyPI install / wheel).
 3. Literal `"unknown"` (neither available).
@@ -125,14 +134,17 @@ Resolution chain (first match wins, cached at module import):
 Never raises.
 
 ### `source` field
+
 **Chosen:** basename only (e.g. `"deck.docling.json"`). Full provenance lives in `source_origin`. **Rejected:** absolute path (leaks paths, breaks reproducibility).
 
 ### `source_origin` serialisation
+
 `doc.origin` is a Pydantic model. Serialise via `doc.origin.model_dump(mode="json")` → `dict[str, Any]`. Pydantic guarantees JSON-safe primitives.
 
 **Caveat:** `origin.binary_hash` is a 64-bit Python integer. Python's `json` round-trips it losslessly. JavaScript consumers parsing the JSON via `JSON.parse` will lose precision above 2^53. Documented in the public README; not changed in v1.
 
 ### JSON serialisation
+
 - `indent: int | None = 2` as a serialiser knob; default 2 for readability.
 - `sort_keys=True` — stable cross-run ordering.
 - `ensure_ascii=False` — preserve UTF-8.
@@ -140,6 +152,7 @@ Never raises.
 - UTF-8 no BOM; LF; trailing newline.
 
 ### Empty / degenerate cases
+
 - Empty Docling JSON (no body content): raise `EmptyDoclingError`.
 - Document with only `TableItem`s (no prose): raise `EmptyHarvestError`.
 - One TextItem (one EDU after parser): valid output — one `RstEdu`, zero `RstRelation`, one `document` boundary.
@@ -147,9 +160,11 @@ Never raises.
 - `coalesce_speaker_turns=False` on short-turn VTT: mostly-empty output. Documented; default `True`.
 
 ### Long-input fallback
+
 **Chosen:** option 1 — raise `InputTooLargeError` when `len(harvest.full_text)` exceeds a documented threshold. Threshold set empirically in Phase 0 step 6; initial guess 200,000 chars; refine after measurement. **Rejected:** per-section parse + merge (reintroduces parse-per-boundary), sliding-window vote aggregation (complex, non-standard). **Reopen trigger:** if a real consumer hits the limit and cannot chunk upstream, revisit.
 
 ### Device API
+
 `parse_docling(..., device: str = "auto")`. Translation to `Parser`'s `cuda_device: int`:
 
 | `device` value | Translation |
@@ -163,12 +178,18 @@ Never raises.
 
 Future `Parser` migration to a string `device` API is tracked separately ([[open-device-api]]); the mapping lives in `parse_docling` for now.
 
+### TextItem.text vs TextItem.orig
+
+**Chosen:** harvest `TextItem.text` (normalised form). Verified 2026-05-15 across the four fixtures: markdown / pptx / vtt have zero diverging items; pdf has 80 of 651 list_item TextItems where `.text` strips a leading `"· "` bullet marker that `.orig` retains. The parser does rhetorical analysis; bullet markers are formatting noise. The harvest is not byte-aligned with the source PDF and is not intended to be — provenance lives in `source_origin`, not in `full_text`.
+
 ### Default model / inventory
+
 **Chosen:** `hf_model_version="gumrrg"` (DMRST, English; trained on GUM corpus — essays, news, biographies, fiction).
 **Caveat:** RST quality on non-prose (slides, transcripts) is unverified — Phase 0 step 5 is the empirical gate. If quality on slide content is poor, **the default may need to change** or the entry-point documentation must warn explicitly.
 **For multilingual / Russian content:** caller passes `hf_model_version="unirst", relinventory="..."` explicitly. The original docstring claim "required for unirst" is misleading — the Parser falls back silently to `relinventory_idx=0`. Reword: "should be set when `hf_model_version="unirst"`; otherwise the model's first inventory is used."
 
 ### Python floor
+
 `isanlp_rst/docling/` uses modern Python 3.13+ idioms (frozen-slots dataclasses, `X | None`, `match`). Current `requires-python = ">=3.8"` in `pyproject.toml` is too low; new module won't import on 3.8 / 3.9.
 **Chosen:** bump `requires-python = ">=3.10"` and use `from __future__ import annotations` to defer hint evaluation (sufficient for 3.10 / 3.11). PEP 695 syntax (`type X = ...`, `def f[T](...)`) is **not** available below 3.12 — use old-style aliases / `TypeVar` in this module if Python 3.10 / 3.11 support matters. Phase 1 lint pass enforces.
 
@@ -544,17 +565,24 @@ Each phase has its own success criterion above. No phase counts as done until it
 
 - `Parser.__call__(text)` returns `{'rst': [tree]}`; tree is strictly binary; `remap_tree_offsets` produces character offsets into input text (`isanlp_rst/parser.py:148`, `dmrst_parser/predictor.py:248-316`, `base_predictor.py:126-167`).
 - `Parser.from_edus(edus)` exists and returns the same shape (`parser.py:151`).
-- No `docling-core` dependency present (`grep -n docling pyproject.toml` returns nothing; no separate `pixi.toml`).
 
-**Outstanding (Phase 0 work to complete before Phase 1):**
+**Verified at runtime (2026-05-15 via the pixi env, after `pixi add --pypi docling-core` resolved `docling-core>=2.75.0,<3`):**
 
-- Pin `docling-core` version via `pixi add --pypi docling-core`.
-- Run `iterate_items` smoke test per fixture under the pixi env (confirm what was inferred from source).
+- `docling-core>=2.75.0` pinned in `pyproject.toml` `[project.dependencies]`; lock at `pixi.lock`.
+- `iterate_items(traverse_pictures=True, included_content_layers={BODY, FURNITURE, NOTES})` smoke-iterate run on each of the four fixtures. Items yielded: markdown 54, pdf 733 (incl. 129 picture-children), pptx 33 (28 body + 5 notes), vtt 37. Confirmed at runtime, not inferred from source.
+- `PictureItem.meta` is a declared `PictureMeta` Pydantic field; `picture.meta.description` is a declared `DescriptionMetaField` carrying `.text`, `.created_by`, `.confidence`. The legacy `PictureItem.annotations` field is deprecated in favour of `meta` per the docling-core 2.75 runtime DeprecationWarning. Verified by `type(picture.meta).__name__ == "PictureMeta"` and the DeprecationWarning emitted when reading `picture.annotations`. So `picture.meta.description.text` is the canonical Docling location for picture descriptions (VLM captions etc.) — what's producer-specific is the *content* (PPTX-enrichment via Gemini in the user's Docling-Machine pipeline, documented via `description.created_by`) and any `docling_machine__*`-prefixed sibling extras inside `meta`, not the description location itself.
+- VLM-description coverage in fixtures: all 5 pptx pictures carry `meta.description.text` (~1,400 chars each); 0 of 48 pdf pictures do; markdown/vtt have no pictures with descriptions.
+- Phase 0 step 5 RST quality eyeball: trees produced on all four fixtures with `gumrrg`. VTT produces coherent rhetorical relations (`elaboration`, `purpose`, `context`); pptx (with VLM descriptions in harvest) produces meaningful `elaboration`/`restatement`/`explanation`/`same-unit` relations on slide-VLM prose, with the whole-deck tree binding per-slide content as `context` blocks; markdown is mixed (frontmatter pollution → `organization` chains; body prose → reasonable relations); pdf workbook is procedural list-like (`joint`/`organization` chains dominate). Architecture survives; consumers warned in public docs that quality is highest on prose-shaped inputs and slide decks with VLM enrichment.
+
+**Verified at runtime (Phase 0 steps 6 + 7, 2026-05-15):**
+
+- **Long-input smoke:** concatenation of all four fixture harvests (40,429 chars total, joined with `\n\n---\n\n`) parsed cleanly with `gumrrg` — 1,327 leaves, 1,326 internal nodes, max depth 31, no OOM / hang / garbage. Parser comfortably handles inputs well above the largest single fixture (17.9 KB pdf). The plan's default `InputTooLargeError` threshold of 200,000 chars has substantial headroom; refine if a real consumer hits the limit.
+- **Determinism:** two repeated `parser(text)` calls on the 17.9 KB pdf harvest produced byte-equivalent tree signatures across all 685 relations (same `relation`, `nuclearity`, `depth`, `start`, `end` tuple per relation). `parser(text)` is deterministic on this Apple Silicon / MPS / gumrrg / float32 configuration. Phase 3's reproducibility test can assert byte-equality; no structural-only fallback needed unless dtype/device combinations turn out to break this.
+
+**Outstanding (non-blocking nice-to-haves):**
+
 - Resolve `TextItem.text` vs `.orig` (verify on a fixture with normalised text).
-- VTT multi-speaker: add or source a multi-speaker fixture if needed.
-- Empirical RST quality check on each fixture (gating).
-- Long-input smoke on the largest fixture.
-- Determinism check (twice-run `parser(text)` diff).
+- VTT multi-speaker: add or source a multi-speaker fixture if needed for boundary detection coverage.
 
 ---
 
