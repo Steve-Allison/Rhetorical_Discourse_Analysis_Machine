@@ -29,7 +29,7 @@ Index of project-local memories. One line per entry.
 ## Open design questions
 
 - [RST real-world quality](open_rst_real_world_quality.md) — biggest blind spot: RST was developed for prose; quality on slides / transcripts / long mixed docs is unverified. Also: which relation inventory to default to.
-- [Schema-detail verifications](open_schema_detail_verifications.md) — slide notes reachability, level distribution, OCR-PDF shape, VTT voice reliability, table cell structure, TextItem.orig vs .text, furniture sub-types.
+- [Schema-detail verifications](open_schema_detail_verifications.md) — slide-notes content_layer (RESOLVED: `"notes"`, not `"furniture"`), level distribution, OCR-PDF shape, VTT voice reliability, table cell structure, TextItem.orig vs .text, non-body content layers (FURNITURE / NOTES / BACKGROUND / INVISIBLE).
 - [Boundary design decisions](open_boundary_design_decisions.md) — boundary_memberships semantics, section nesting, pages, picture-caption vs OCR-text, degenerate cases (empty boundaries, single-EDU, table-only documents).
 - [Output schema specifics](open_output_schema_specifics.md) — relation / EDU / boundary ordering, id space, tool_version format, source field format, JSON serialisation specifics.
 - [Long-input parser fallback](open_long_input_fallback.md) — what `parse_docling()` does if the existing `Parser` fails or degrades on 50K+-char harvests. Verified empirically in Phase 0 step 6.

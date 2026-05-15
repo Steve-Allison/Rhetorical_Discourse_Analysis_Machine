@@ -10,7 +10,8 @@ metadata:
 The proposal's `parse_docling()` signature now exposes:
 
 - `include_picture_captions: bool = True` — non-OCR caption text harvested by default.
-- `include_furniture: bool = False` — page headers / footers off by default.
+- `include_slide_notes: bool = True` — `ContentLayer.NOTES` items harvested by default (PPTX speaker notes — rhetorically meaningful).
+- `include_furniture: bool = False` — `ContentLayer.FURNITURE` (page headers / footers, typically boilerplate) off by default.
 - `harvest_separator: str = "\n\n"` — caller can override.
 - `coalesce_speaker_turns: bool = True` — VTT same-voice runs coalesce into one boundary by default.
 - `note_threshold: float = 0.90` — overlap-rule lopsided threshold.

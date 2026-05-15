@@ -206,7 +206,8 @@ result: DoclingRstResult = parse_docling(
     device: str = "auto",                   # "auto" | "cpu" | "cuda:N" | "mps"
     # Harvest policy (what enters the RST input text)
     include_picture_captions: bool = True,
-    include_furniture: bool = False,
+    include_slide_notes: bool = True,        # ContentLayer.NOTES (PPTX speaker notes)
+    include_furniture: bool = False,         # ContentLayer.FURNITURE (page headers / footers)
     harvest_separator: str = "\n\n",
     # Boundary policy (annotation only — doesn't affect RST input)
     coalesce_speaker_turns: bool = True,    # contiguous same-voice runs → one turn boundary
@@ -239,7 +240,7 @@ For each source format, the harvest concatenates text from:
 | **HTML / Markdown** | body texts, section_header texts, list-item texts | table cells |
 | **OCR-PDF** | texts wrapped in top-level `PictureItem`s (via `traverse_pictures=True`) | n/a |
 
-The `include_furniture` knob (default `False`) flips whether `content_layer == "furniture"` items are harvested. `include_picture_captions` (default `True`) controls `traverse_pictures` indirectly (we always pass `True` to access OCR-PDF text; the knob filters out non-OCR caption text downstream of iteration).
+The `include_slide_notes` knob (default `True`) adds `ContentLayer.NOTES` to the iterate filter — PPTX speaker notes are harvested by default because they are usually rhetorically meaningful. `include_furniture` (default `False`) adds `ContentLayer.FURNITURE` — page headers / footers, typically boilerplate, off by default. `include_picture_captions` (default `True`) controls `traverse_pictures` (always passed `True` for OCR-PDF support; the knob filters out non-OCR caption text downstream of iteration).
 
 ## Testing
 

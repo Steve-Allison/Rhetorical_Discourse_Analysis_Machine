@@ -92,7 +92,8 @@ result: DoclingRstResult = parse_docling(
     device="auto",                           # "auto" | "cpu" | "cuda:N" | "mps"
     # Harvest policy (what enters the RST input)
     include_picture_captions=True,
-    include_furniture=False,
+    include_slide_notes=True,                # ContentLayer.NOTES
+    include_furniture=False,                 # ContentLayer.FURNITURE
     harvest_separator="\n\n",
     # Boundary policy (annotation only)
     coalesce_speaker_turns=True,
@@ -206,7 +207,7 @@ The walker API is verified. The schema's top-level shape is verified on five fil
 
 **Implementation:**
 
-- `harvest_docling_text(doc, *, include_picture_captions, include_furniture, harvest_separator) -> HarvestResult` — walks `iterate_items(traverse_pictures=True)`, filters per policy, concatenates text, records `HarvestSpan`s with `(self_ref, start, end)`. Skips `TableItem`s (their cells are excluded from RST input).
+- `harvest_docling_text(doc, *, include_picture_captions, include_slide_notes, include_furniture, harvest_separator) -> HarvestResult` — walks `iterate_items(traverse_pictures=True, included_content_layers=...)` with the content-layer set built from the boolean knobs (always includes `BODY`; conditionally adds `NOTES` / `FURNITURE`). Concatenates text, records `HarvestSpan`s with `(self_ref, start, end)`. Skips `TableItem`s (their cells are excluded from RST input).
 - `detect_boundaries(doc, *, coalesce_speaker_turns) -> tuple[Boundary, ...]` — source-format-aware. Dispatch on `doc.origin.mimetype`:
   - `application/vnd.ms-powerpoint`, `application/vnd.openxmlformats-officedocument.presentationml.presentation` → slide detection (one `slide-N` boundary per slide group; one `slide-N-notes` boundary per slide that has any descendant TextItem with `content_layer: "notes"`)
   - `text/vtt` → speaker-turn coalescing

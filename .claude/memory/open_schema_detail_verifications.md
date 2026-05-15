@@ -17,13 +17,17 @@ The Docling-native plan rests on schema assumptions verified on **five sample fi
 
 **`ContentLayer` enum (verified 2026-05-15 at `docling_core/types/doc/document.py:1281-1289`):** five members — `BODY` (`"body"`), `FURNITURE` (`"furniture"`, page headers/footers), `BACKGROUND` (`"background"`, watermarks), `INVISIBLE` (`"invisible"`, hidden text), `NOTES` (`"notes"`, author/speaker notes). `DEFAULT_CONTENT_LAYERS = {ContentLayer.BODY}` (line 1291).
 
-## section_header `level` distribution
+## section_header `level` distribution — PARTIALLY RESOLVED 2026-05-15
 
-**Assumption:** PDF / Markdown / HTML use `section_header` with a `level` attribute for hierarchy.
+**Verified on the fixture set (`jq` on `tests/fixtures/docling/*.docling.json`):**
 
-**Unverified:** range and distribution of `level` values in real Docling output. Have I seen `level: 2` or deeper? PDFs where every heading is `level: 1`?
+- `pdf.docling.json`: 11 `section_header` items, all `level: 1`. No multi-level hierarchy.
+- `markdown.docling.json`: 4 `section_header` items, levels `[2, 3]`. Notable: **no `level: 1` heading** in this fixture. Markdown can apparently start the section hierarchy at any level.
+- `pptx.docling.json`, `vtt.docling.json`: zero section_header items.
 
-**Verification:** in the PDF fixture (after building it), enumerate `level` values across all section_header items. Confirm range.
+**Implication:** boundary detection cannot assume `level: 1` is the entry point. Multi-level nesting and starting-mid-hierarchy both occur in real fixtures.
+
+**Still open:** behaviour on a single PDF with both `level: 1` and `level: 2` headings — not yet observed in the fixture set.
 
 ## OCR-PDF structure
 
@@ -33,13 +37,11 @@ The Docling-native plan rests on schema assumptions verified on **five sample fi
 
 **Verification:** find an OCR-PDF in the CSM corpus (or run Docling on one); inspect the structure. Does it have `section_header` items, or is everything `label: "text"`?
 
-## VTT `source[*].voice` reliability
+## VTT `source[*].voice` reliability — PARTIALLY RESOLVED 2026-05-15
 
-**Assumption:** every VTT `TextItem` has `source[*].voice` identifying the speaker.
+**Verified on `tests/fixtures/docling/vtt.docling.json`:** 37/37 texts have `source[0].voice`; single distinct value (`"SPEAKER_00"`) — single-speaker fixture.
 
-**Unverified:** does every VTT TextItem actually have a `voice`? Can it be empty, `null`, or `"SPEAKER_UNKNOWN"`? What about anonymous transcripts?
-
-**Verification:** in the VTT fixture, enumerate `voice` values across all items. Check for empty / null / missing.
+**Still open:** multi-speaker behaviour. Anonymous / unnamed turns. Whether `voice` can be empty / null. Need another VTT fixture with multiple distinct speakers, ideally one with at least one anonymous turn, to close fully.
 
 ## Table cell structure
 
@@ -62,19 +64,36 @@ The Docling-native plan rests on schema assumptions verified on **five sample fi
 
 **Verification:** in any fixture, pick a TextItem and compare `.orig` and `.text`. Document the difference. Decide which to harvest.
 
-## `furniture` sub-types
+## Non-body content layers — separate knobs needed
 
-**Assumption:** `include_furniture=True` is a single binary knob that turns on slide notes (PPTX) and page footers/headers (PDF) simultaneously.
+`ContentLayer` has five members (verified in `docling_core/types/doc/document.py:1281-1289`): `BODY`, `FURNITURE`, `BACKGROUND`, `INVISIBLE`, `NOTES`. Default filter is `{BODY}`.
 
-**Why it's suspect:** consumers may want slide notes (rhetorically meaningful) without page footers (typically boilerplate). A single binary knob conflates them.
+The four non-default layers serve different rhetorical purposes:
 
-**Verification + decision:** check what content lives at `content_layer == "furniture"` for each source format. If slide-notes vs page-furniture are distinguishable by `parent` type or by content patterns, consider exposing as two knobs (`include_slide_notes`, `include_page_furniture`).
+- `NOTES` — speaker notes, author corrections. PPTX slide notes live here (verified on `pptx.docling.json`). Often rhetorically meaningful.
+- `FURNITURE` — page headers/footers. PDF page footers live here (verified on `pdf.docling.json`: 33 furniture-layer texts, predominantly footer-style content per the `page_footer` label distribution). Typically boilerplate.
+- `BACKGROUND` — watermarks. Not yet observed in fixtures.
+- `INVISIBLE` — hidden text. Not yet observed in fixtures.
 
-## `prov.page_no` reliability
+**Design implication:** the original `include_furniture=True` single-knob proposal conflates `NOTES` (rhetorically valuable) with `FURNITURE` (boilerplate). Likely need separate knobs:
 
-**Assumption:** PDF text items carry `prov[].page_no` reliably. PPTX text items carry `prov[].page_no` for slide number.
+- `include_slide_notes: bool = True` → adds `ContentLayer.NOTES` to the filter
+- `include_furniture: bool = False` → adds `ContentLayer.FURNITURE` to the filter
+- `include_background: bool = False`, `include_invisible: bool = False` — likely never needed, but trivial to expose if asked
 
-**Verification:** in PDF and PPTX fixtures, confirm `prov[].page_no` is populated for every relevant TextItem. Spot-check VTT items (which use `source` not `prov`).
+**Verification + decision:** to confirm before Phase 1, run `iterate_items(included_content_layers={BODY, NOTES})` on the pptx fixture and check that slide notes appear in the yielded items.
+
+## `prov.page_no` reliability — PARTIALLY RESOLVED 2026-05-15
+
+**Verified on the fixture set:**
+
+- `pdf.docling.json`: 684/684 texts have `prov[0].page_no` populated.
+- `pptx.docling.json`: 8/8 texts have `prov[0].page_no` populated (matches slide number).
+
+**Not applicable:**
+
+- `vtt.docling.json`: uses `source[0].start_time` / `end_time` instead of `prov`.
+- `markdown.docling.json`: not yet inspected for `prov` coverage. Markdown has no native paging (`pages` map is empty), so `page_no` likely null or absent. To verify.
 
 ## How to apply
 
