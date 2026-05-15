@@ -169,24 +169,36 @@ See proposal's "Output shape" section.
 
 ## Implementation phases
 
-### Phase 0 — Finalise `docling-core` contract + fixture set
+### Phase 0 — Empirical validation of the one-tree architecture
 
-The big questions are answered in § Verified facts. Remaining work:
+The walker API is verified. The schema's top-level shape is verified on five files. What remains is empirical: does RST output on real Docling content actually make sense, does the schema-detail match assumptions on real fixtures, and does the parser hold up at document scale.
 
-- **Pin `docling-core` version.** Pick the latest stable; record in the verification log below.
-- **Build the fixture set.** Commit one Docling JSON per source flavour under `tests/fixtures/docling/`:
-  - pptx (multi-slide, with notes and at least one table and one picture)
-  - pdf (multi-section with `level: 1` and `level: 2` headers)
-  - vtt (multi-speaker, multi-turn)
-  - markdown / html (section-headed)
-  - **OCR-PDF** (text wrapped in top-level pictures via `traverse_pictures=True`)
-  Each < 200 KB, free of sensitive/proprietary content. Source by running Docling on small public-domain inputs or synthetic inputs.
-- **Smoke-iterate.** Throwaway script that loads each fixture with `DoclingDocument.load_from_json` and prints `(self_ref, text_preview)` for each item yielded by `iterate_items(traverse_pictures=True)`. Eyeball: order is canonical, no surprises, all expected items reachable.
-- **Long-input smoke test.** Pick the largest fixture (or build one ~50KB of harvested text). Run the existing `Parser` on it. Confirm it doesn't OOM, doesn't hit a context limit, and produces a coherent tree. This validates the one-tree-per-document architecture.
+**Reordered (the order matters — earlier steps gate later ones):**
 
-**Output:** populate § Phase 0 verification log.
+1. **Build the fixture set first.** Commit one Docling JSON per source flavour under `tests/fixtures/docling/`. Source from the CSM corpus at `Content_Structuring_Machine/project/sources/` (Steve's working corpus), suitably trimmed:
+   - pptx (multi-slide with notes, tables, pictures)
+   - pdf (multi-section with `level: 1` and ideally `level: 2` headers)
+   - vtt (multi-speaker, multi-turn)
+   - markdown / html (section-headed)
+   - **OCR-PDF** (text wrapped in top-level pictures requiring `traverse_pictures=True`)
+   Each < 200 KB, free of sensitive content. Adobe-owned content is fine; trim any genuinely confidential material.
+2. **Empirical RST quality check** (gating). For each fixture, harvest the body text (without any `parse_docling()` infrastructure — just `iterate_items` + concatenate) and feed it to the existing `Parser` with `gumrrg`. Eyeball the resulting `DiscourseUnit` tree. Questions:
+   - Does the tree make any semantic sense on slide-deck content?
+   - Does it produce useful relations on VTT transcripts?
+   - Does it handle mixed prose + bullets + captions gracefully?
+   - Are there obviously wrong relations (e.g. "Elaboration" between two unrelated slides)?
+   If the answer on a major source format is "the parser produces a tree but it's noise", the whole architecture is suspect and we rethink before any code. See [[open-rst-real-world-quality]].
+3. **Schema-detail verification.** Against each fixture, verify the assumptions catalogued in [[open-schema-detail-verifications]]: slide-notes reachability via `iterate_items(included_content_layers={BODY, FURNITURE})`; `level` distribution on section_headers; OCR-PDF text structure; VTT `voice` reliability; table-cell layout in `data.grid`; `TextItem.text` vs `.orig`; `prov.page_no` reliability. Each gets a documented yes/no answer; update the proposal / build plan if any answer changes the design.
+4. **Pin `docling-core`.** Latest stable; record in the verification log. **Discipline:** when a new `docling-core` version ships, bump this pin (the Docling JSON files in the wild will reflect whatever version produced them).
+5. **Smoke-iterate** per fixture. Short script: load each, print `(self_ref, text_preview, content_layer, label, depth)` for each item yielded by `iterate_items(traverse_pictures=True, included_content_layers={BODY, FURNITURE})`. Eyeball: canonical order, no surprises, expected items reachable.
+6. **Long-input smoke** on the largest fixture. Run the existing `Parser` on its harvested text. Outcomes per [[open-long-input-fallback]]:
+   - Succeeds with coherent tree → architecture validated.
+   - Succeeds with degraded quality → document the limit.
+   - Fails (OOM, hang, garbage) → design-level redesign required.
 
-**Success criterion:** harvester implementable as a single `for item, depth in doc.iterate_items(traverse_pictures=True): ...` loop with no node-type-specific drilling; all five fixtures load cleanly; long-input parse completes.
+**Output:** populate § Phase 0 verification log with findings from each step.
+
+**Success criterion:** every step has a documented outcome; no step has the answer "we don't know"; if any step exposes a failure mode, the proposal / build plan is updated before Phase 1 starts.
 
 ### Phase 1 — Harvester + schema + boundary detection
 
@@ -312,11 +324,20 @@ Tree flattening:
 
 ## Open questions to close before Phase 1
 
-1. **`harvest_separator` default:** `\n\n` is the lean (matches existing flat-text usage). If Phase 0 long-input smoke shows the parser handles ` ` separators just as well and avoids spurious paragraph-break inference, consider that instead. Resolution: measure.
-2. **Malformed source policy:** when `docling-core` raises on load (Pydantic validation error), let it propagate — that's the contract. When `iterate_items` yields a node with empty `text` or unexpected shape, skip silently or raise? Default lean: skip with a one-time `logging.debug` for empty text; raise on unexpected shape (per no-defensive-coding rule).
-3. **PDF section subdivision:** the previous draft proposed subdividing long sections at `level: 2` if `level: 1` yielded too-large boundaries. Resolved: not needed in the one-tree architecture — the whole document feeds one Parser call regardless. Sections are annotation-only.
+The 2026-05-15 critical review surfaced a larger set than the original three. See the project memory:
 
-Resolve items 1 and 2 during Phase 1; item 3 is resolved.
+- [[open-rst-real-world-quality]] — gating: empirical RST quality on real fixtures.
+- [[open-schema-detail-verifications]] — slide notes, levels, OCR-PDF, VTT voice, tables, .orig/.text.
+- [[open-boundary-design-decisions]] — `boundary_memberships` semantics, section nesting, pages, picture-caption / OCR-text disambiguation, degenerate cases.
+- [[open-output-schema-specifics]] — relation / EDU / boundary ordering, id space, tool_version format, source field, JSON serialisation.
+- [[open-long-input-fallback]] — what `parse_docling()` does if the parser fails at scale.
+
+**Carried over from the previous open-questions list:**
+
+1. **`harvest_separator` default:** `\n\n` is the lean (matches existing flat-text usage). If Phase 0 step 6 long-input smoke shows the parser handles ` ` separators just as well and avoids spurious paragraph-break inference, consider that instead. Resolution: measure.
+2. **Malformed source policy:** when `docling-core` raises on load (Pydantic validation error), let it propagate — that's the contract. When `iterate_items` yields a node with empty `text` or unexpected shape, skip silently or raise? Default lean: skip with a one-time `logging.debug` for empty text; raise on unexpected shape (per no-defensive-coding rule).
+
+Resolution sequence: Phase 0 closes the empirical questions in the memory files; Phase 1 starts only when each has a documented answer.
 
 ## Acceptance test for the whole feature
 
@@ -358,12 +379,18 @@ for relation in result.relations:
 
 ## Phase sequencing
 
-1. Phase 0: pin `docling-core` + build 5-fixture set + smoke-iterate + long-input smoke.
-2. Resolve the two open questions above.
-3. Phase 1: harvester + schema + boundaries (parallel-developable, mostly independent).
-4. Phase 2: mapper (tree flattening + boundary tagging).
-5. Phase 3: orchestrator + entry + integration tests.
-6. Phase 4: docs.
+1. **Phase 0** (gated; each step gates the next):
+   1. Build 5-fixture set under `tests/fixtures/docling/`.
+   2. Empirical RST quality check per fixture — if quality on slides / transcripts is poor, rethink before any further code.
+   3. Schema-detail verification per the [[open-schema-detail-verifications]] checklist.
+   4. Pin `docling-core` in `pyproject.toml` + `pixi.toml` (latest stable; bump-discipline when new versions ship).
+   5. Smoke-iterate per fixture.
+   6. Long-input smoke against existing `Parser`.
+2. Resolve the open design decisions in [[open-boundary-design-decisions]] and [[open-output-schema-specifics]].
+3. **Phase 1:** harvester + schema + boundaries (parallel-developable, mostly independent).
+4. **Phase 2:** mapper (tree flattening + boundary tagging).
+5. **Phase 3:** orchestrator + entry + integration tests.
+6. **Phase 4:** docs.
 7. Cut a release tag.
 
 Each phase has its own success criterion above. No phase counts as done until its tests pass.
