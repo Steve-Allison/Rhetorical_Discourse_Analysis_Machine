@@ -29,13 +29,23 @@ The Docling-native plan rests on schema assumptions verified on **five sample fi
 
 **Still open:** behaviour on a single PDF with both `level: 1` and `level: 2` headings — not yet observed in the fixture set.
 
-## OCR-PDF structure
+## OCR-PDF structure — verified facts (2026-05-15)
 
-**Assumption:** OCR PDFs wrap all text in top-level `PictureItem`s; `traverse_pictures=True` exposes that wrapped text; section detection works the same way.
+**Verified at `docling_core/types/doc/document.py:5982-5985`** (docstring on `export_to_markdown(traverse_pictures=...)`, repeated at `:6086` for `export_to_text`):
 
-**Why it's suspect:** I haven't actually inspected an OCR-PDF Docling JSON. The wrapped text may not carry `section_header` labels at all — Docling's OCR layer may emit everything as `label: "text"`. If section_header labelling doesn't survive OCR, boundary detection falls back to single `document` boundary for OCR PDFs.
+> "Must be set to True for scanned/image-based PDFs processed with full-page OCR, where the layout model places all OCR text as children of a top-level PictureItem."
 
-**Verification:** find an OCR-PDF in the CSM corpus (or run Docling on one); inspect the structure. Does it have `section_header` items, or is everything `label: "text"`?
+**Verified at `document.py:6408`:** `PictureClassificationLabel.FULL_PAGE_IMAGE` is a defined classification label (alongside others like `PIE_CHART`, `BAR_CHART`, `GEOGRAPHICAL_MAP`).
+
+**Verified by `jq` on `tests/fixtures/docling/pdf.docling.json`:** 24 of 48 `PictureItem`s have non-empty `children`; total of 130 child refs. Sampled `pictures[42].children[0] == #/texts/613` which has `parent: #/pictures/42`, `content_layer: "body"`, `label: "text"`, `text: "1100"`, narrow `bbox`.
+
+**NOT verified in this session:**
+
+- Whether `iterate_items(traverse_pictures=True)` yields TextItems parented to a `FULL_PAGE_IMAGE`-classified picture the same way it yields TextItems parented to a chart-classified picture. The schema represents both via `PictureItem.children`; the walker's behaviour on each was not directly tested.
+- Whether Docling's OCR pipeline emits `section_header` labels on OCR-extracted text, or whether everything becomes `label: "text"`.
+- Whether the existing PDF fixture's picture-children code path is equivalent for testing purposes to what a `FULL_PAGE_IMAGE` picture would produce.
+
+Decision on whether a separate OCR-PDF fixture is needed: not yet made; depends on the NOT-verified items above.
 
 ## VTT `source[*].voice` reliability — PARTIALLY RESOLVED 2026-05-15
 

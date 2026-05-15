@@ -24,9 +24,10 @@ Real-world Docling JSON files used for testing `isanlp_rst.docling.parse_docling
 - `texts`: 684 total
   - `content_layer` distribution: 651 body, 33 furniture
   - `label` distribution: 556 `text`, 84 `list_item`, 33 `page_footer`, 11 `section_header`
-- `pictures`: 48 total; **24 of them have non-empty `children` lists** (total 130 child-refs across the 48 pictures)
+- `pictures`: 48 total; **24 of them have non-empty `children` lists** (total 130 child-refs)
 - `tables`: 1
-- **Sampled `pictures[42].children[0]` (`#/texts/613`)**: `parent: #/pictures/42`, `content_layer: "body"`, `label: "text"`, `text: "1100"`, very thin `bbox`. This is **figure-internal text** (e.g. a chart label or data value), **NOT OCR-extracted scanned-page text.** The PDF is a regular text-PDF with figure embeds, not an OCR PDF.
+- **Picture classification (top predicted class per `annotations[].predicted_classes[0]`):** 40× `screenshot_from_computer`, 3× `photograph`, 1× each of `bar_chart`, `full_page_image`, `icon`, `logo`, `table`. **One picture is classified `full_page_image`** (the docling-core term for an OCR-derived full-page rendering).
+- **Sampled `pictures[42]` (top class `screenshot_from_computer`, confidence 0.99) `.children[0]` (`#/texts/613`):** `parent: #/pictures/42`, `content_layer: "body"`, `label: "text"`, `text: "1100"`, narrow `bbox`. The text is parented to the picture and reachable only with `traverse_pictures=True`. Whether it was extracted by OCR or by vector-text-overlay is not knowable from the schema alone — the classification of the parent picture is the only signal.
 
 ### `vtt.docling.json` — 26 KB
 
@@ -57,12 +58,12 @@ Real-world Docling JSON files used for testing `isanlp_rst.docling.parse_docling
 
 These cases are **not** present in the current fixture set; flagged for future addition:
 
-- **A true OCR-PDF.** None of the four fixtures is OCR-derived. The PDF has figure-internal text labels reachable via `traverse_pictures=True`, but those are vector-rendered numbers in charts, not OCR of scanned pages. To exercise OCR-PDF code paths, a fresh fixture is needed (run Docling on a scanned-PDF input).
-- **A document with no `section_header`.** All three relevant fixtures (PDF, Markdown, plus PPTX in a sense) have at least one. The "default `document` boundary fallback" code path has no fixture.
+- **A PDF dominated by `full_page_image`-classified pictures** (typical of scanned-PDF OCR output). The current PDF fixture has 1 such picture among 48; a "true OCR PDF" fixture would have most or all pictures so classified.
+- **A document with no `section_header`.** The PDF fixture has 11; Markdown has 4. PPTX and VTT have zero — but they exercise different boundary detection (slide groups, speaker turns), so the "default `document` boundary fallback" for prose-formats remains uncovered.
 - **A single-text-item document** (parser edge case).
 - **A document with empty `body.children`** (parser edge case).
-- **A multi-speaker VTT.** The current VTT fixture has one speaker; speaker-coalescing logic has no fixture to exercise.
-- **A document with `level: 2`+ section_headers.** Not verified whether the current PDF has multi-level section headers — flagged for Phase 0 schema-detail verification.
+- **A multi-speaker VTT.** The current VTT fixture has one speaker (`SPEAKER_00`); speaker-coalescing logic has no fixture to exercise.
+- **A PDF with multi-level section headers.** The current PDF has 11× `level: 1` only. Markdown fixture has `level: 2` and `level: 3` (no `level: 1`) — multi-level hierarchy in one document not yet fixtured.
 
 ## Provenance
 

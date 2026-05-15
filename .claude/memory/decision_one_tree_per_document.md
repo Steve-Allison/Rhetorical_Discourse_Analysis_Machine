@@ -22,6 +22,6 @@ Two architectures considered and rejected:
 - Compute `boundary_memberships` for each relation by intersecting its refs with each boundary's `self_refs`.
 - Flatten the tree to `relations[]` (internal nodes) + `edus[]` (leaves), preserving hierarchy via `left_id` / `right_id`.
 
-Empirical question to close in Phase 0: does the parser handle long, structurally-diverse single inputs gracefully? Sliding-window encoding (`tokenizer.model_max_length = 1e9`) is the upstream mitigation. If long-input quality degrades materially, revisit — but the answer is probably "the parser is fine on document-scale inputs; we just need to verify".
+Empirical question to close in Phase 0: does the parser handle long, structurally-diverse single inputs gracefully? Sliding-window encoding is mentioned in `dmrst_parser/predictor.py:271` source comment (`tokenizer.model_max_length = int(1e9) # The parser relies on a sliding window encoding`). Whether the encoding actually produces good results on 50K+-char inputs is UNVERIFIED — to test in Phase 0 step 6.
 
 Related: [[decision-consumer-agnostic]], [[decision-use-docling-core]], [[decision-overlap-rule]], [[open-parser-facade-unverified]].
