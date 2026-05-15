@@ -1,16 +1,36 @@
 # Docling-native RST output — build plan
 
-**Status:** Ready to start (pending Phase 0 verification)
+**Status:** Ready to start (Phase 0 mostly complete; see § Phase 0 verification log)
 **Date:** 2026-05-15
 **Driver:** Steve Allison
 **Proposal:** [`./2026-05-15-docling-native-rst.md`](./2026-05-15-docling-native-rst.md)
 **Estimated effort:** 1–3 days of focused work
+**Target consumers:** consumer-agnostic; any tool wanting RST relations on `DoclingDocument`-shaped input.
 
 ---
 
 ## Goal
 
-Ship a new public entry point `isanlp_rst.docling.parse_docling(path)` that accepts a Docling JSON file and emits RST relations indexed by `self_ref` instead of character offsets, per the approved proposal at the link above.
+Ship a new public entry point `isanlp_rst.docling.parse_docling(path)` that accepts a Docling JSON file and emits RST relations indexed by `self_ref` instead of character offsets, per the approved proposal at the link above. Consumer-agnostic.
+
+## Verified facts (post-investigation)
+
+Investigated 2026-05-15 against `docling-core` `main` and a real-world Docling JSON corpus across pptx / pdf / vtt / html-markdown source formats. Key facts the design relies on:
+
+- **Loader:** `DoclingDocument.load_from_json(filename: Union[str, Path]) -> DoclingDocument` — `docling_core/types/doc/document.py:5778`.
+- **Walker:** `DoclingDocument.iterate_items(root=None, with_groups=False, traverse_pictures=False, page_no=None, included_content_layers=None) -> Iterable[tuple[NodeItem, int]]` — `document.py:5535`. Pre-order DFS through `body.children`, resolves `$ref` references via `child_ref.resolve(self)`, yields `(NodeItem, depth)` tuples.
+- **Default filter:** `DEFAULT_CONTENT_LAYERS = {ContentLayer.BODY}` — `document.py:1291`. Page headers, footers, slide masters, and other furniture-layer content are excluded by default.
+- **Schema:** all inspected sources emit `DoclingDocument` v1.10.0 with uniform top-level shape (`body`, `furniture`, `groups`, `texts`, `pictures`, `tables`, `pages`, `origin`, …). Source-format differences are which fields are *populated*, not which fields *exist*.
+- **`.texts[]` order ≠ canonical reading order.** Must walk via `body.children`. `iterate_items()` does this; rolling our own walker reinvents the wheel.
+- **`origin.binary_hash`** is already present in every Docling input — consumers wanting a source-cache key use it directly.
+
+## Dependencies
+
+This entry point adds **one** new runtime dependency:
+
+- **`docling-core`** — pure Python + Pydantic. Used for `DoclingDocument` loading, validation, and canonical iteration. Added to `pyproject.toml` (runtime) and `pixi.toml` (locked env). Version pin: TBD during Phase 0 (use latest stable; record in verification log).
+
+No other new dependencies.
 
 ## Architecture
 
@@ -111,20 +131,17 @@ Identical to the proposal's "Output shape" section (with `docling_binary_hash` r
 
 ## Implementation phases
 
-### Phase 0 — Verify the `docling-core` contract (no code)
+### Phase 0 — Finalise the `docling-core` contract (mostly complete)
 
-**Why:** the whole design hangs on `docling-core` exposing a canonical, stable iteration API. Verify before writing the harvester.
+The big questions (does the walker exist? is it canonical? does it filter furniture? does the schema unify across source formats?) are answered in § Verified facts. Remaining Phase 0 work:
 
-**Verifications:**
+- **Pin `docling-core` version.** Pick the latest stable; record in the verification log below. Confirm v1.10.0 schema compatibility with the picked version.
+- **Build the fixture set.** Commit one small Docling JSON per source flavour under `tests/fixtures/docling/`: pptx, pdf, vtt, markdown/html. Each < 100 KB, free of sensitive content. Source these by re-running Docling on small public-domain inputs, or by anonymising / trimming existing samples — do not commit corpus material from other projects without review.
+- **Smoke-iterate.** Write a 10-line throwaway script that loads each fixture with `DoclingDocument.load_from_json` and prints `(self_ref, text_preview)` for each item yielded by `iterate_items()` with defaults. Eyeball the output: order looks canonical, no surprises, all text-carrying items reachable.
 
-- Confirm `DoclingDocument.iterate_items()` (or equivalent) exists and is part of the documented public surface, not internal.
-- Confirm the iteration order is deterministic and documented.
-- Enumerate the text-carrying node types: `TextItem`, `SectionHeaderItem`, `ListItem`, `PictureItem.captions`, `TableItem.data.grid[].text`. Pin to the version in this fork's pixi env.
-- Load a real Docling source (e.g. one from CSM's corpus) and print `(self_ref, text_preview)` in canonical order — eyeball it for sanity.
+**Output:** populate § Phase 0 verification log.
 
-**Output:** a short addendum at the bottom of this build plan recording the verified API surface and version pin.
-
-**Success criterion:** the harvester can be implemented as a single `for item in doc.iterate_items(): ...` loop with no node-type-specific drilling.
+**Success criterion:** harvester can be implemented as a single `for item, depth in doc.iterate_items(): ...` loop with no node-type-specific drilling; fixtures committed and load cleanly.
 
 ### Phase 1 — Harvester + schema
 
@@ -196,16 +213,16 @@ Identical to the proposal's "Output shape" section (with `docling_binary_hash` r
 
 - **Unit:** harvester (Phase 1), mapper (Phase 2) — pure-function tests, fast, no model load.
 - **Integration:** entry point (Phase 3) — slower, requires model download. Tag with `@pytest.mark.integration` so the nightly CI workflow picks it up.
-- **Fixtures:** one small Docling JSON fixture committed under `tests/fixtures/docling/` (chosen to be < 100 KB and free of sensitive content). Golden harvest text recorded alongside it.
+- **Fixtures:** one small Docling JSON per source flavour committed under `tests/fixtures/docling/` (pptx, pdf, vtt, markdown). Each < 100 KB and free of sensitive content. Golden harvest text recorded alongside each.
 
 ## Risks and mitigations
 
 | Risk | Mitigation |
 |---|---|
-| `docling-core` iteration is not actually stable / public | Phase 0 verifies; if not, vendor a small canonical traversal here, pinned per `docling-core` version. |
-| EDU boundaries chronically straddle Docling spans | Overlap rule + note field already handle this; if note rates exceed ~30% in practice, revisit threshold. |
-| Performance: large Docling sources cause RST OOM | Out of scope for v1; document the limit. RST parsing on multi-MB text is already a known limitation upstream. |
-| Schema collision with CSM's existing consumer | CSM has not yet shipped the consumer; the field shape is additive. Coordinate the cutover with one CSM session after v1 ships. |
+| `docling-core` schema bumps from v1.10.0 to a breaking version mid-implementation | Hard-pin the dependency. Track the changelog; reassess at each upstream release. The walker API is well-established and unlikely to break in patch/minor versions. |
+| EDU boundaries chronically straddle Docling spans | Overlap rule + note field already handle this; if `note` field rates exceed ~30% in practice on a representative corpus, revisit the 90% threshold or the harvester separator. |
+| Performance: large Docling sources cause RST OOM | Out of scope for v1; document the practical input-size limit. RST parsing on multi-MB text is a known upstream limitation. |
+| Source-format-specific edge cases (e.g. empty `pages` map, missing `prov`, table-only documents) | Format-coverage tests in Phase 1 (one fixture per pptx/pdf/vtt/markdown flavour) catch this; `iterate_items()` already abstracts most source-format variance. |
 
 ## Out of scope (v1)
 
@@ -247,24 +264,32 @@ for relation in result.relations:
 
 ## Phase sequencing
 
-1. Phase 0: verify `docling-core` iteration API + node-type coverage + version pin.
+1. Phase 0: pin `docling-core` version + build fixture set (pptx/pdf/vtt/markdown) + smoke-iterate.
 2. Resolve the three open questions above.
-3. Phase 1: harvester + schema + their tests.
+3. Phase 1: harvester + schema + their tests (incl. format-coverage tests on all four fixtures).
 4. Phase 2: mapper + tests.
 5. Phase 3: orchestrator + entry + integration test.
 6. Phase 4: docs.
-7. Cut a fork release (tag) so CSM has a pinable reference for its cutover.
+7. Cut a fork release (tag) so downstream consumers have a pinable reference.
 
 Each phase has its own success criterion above. No phase counts as done until its tests pass; no phase starts until the prior phase's success criterion is met.
 
 ## Phase 0 verification log
 
-*(populate during Phase 0)*
+**Investigated 2026-05-15** against `docling-core` `main` and the Docling JSON corpus at `/Users/steveallison/AI_Projects+Code/Content_Structuring_Machine/project/sources/`.
 
-- `docling-core` version pinned: TBD
-- Canonical iteration API: TBD
-- Text-carrying node types confirmed: TBD
-- Sample Docling source eyeball-checked: TBD
+- **Canonical iteration API confirmed:** `DoclingDocument.iterate_items(...)` at `docling_core/types/doc/document.py:5535`. Pre-order DFS through `body.children`; resolves `$ref` via `child_ref.resolve(self)`. Yields `(NodeItem, depth)` tuples.
+- **Loader confirmed:** `DoclingDocument.load_from_json(filename)` at `document.py:5778`.
+- **Default filter confirmed:** `DEFAULT_CONTENT_LAYERS = {ContentLayer.BODY}` (document.py:1291). Furniture-layer items (page headers/footers, slide masters) excluded automatically.
+- **Schema uniformity confirmed:** five Docling JSONs across four source formats (pptx / pdf / vtt / html-markdown) all emit `DoclingDocument` v1.10.0 with identical top-level shape. Differences are populated-vs-empty fields, not structural.
+- **Text-carrying node types observed:** `TextItem` (with subclass-level labels `text`, `section_header`, `list_item`, `title`, `page_footer`). `PictureItem.captions` carries `$ref`s to text items (skipped by default; `traverse_pictures=False`). `TableItem.data.grid[].text` is cell-level content (not yielded by `iterate_items`; v2 concern).
+- **`origin.binary_hash`** is already a field in every Docling input JSON — consumers needing a source-cache key use it directly.
+
+**Outstanding Phase 0 work:**
+
+- Pick and commit `docling-core` version pin (latest stable as of implementation start).
+- Build and commit the four fixture files under `tests/fixtures/docling/`.
+- Run the smoke-iterate script on each fixture; record any surprises here.
 
 ---
 
