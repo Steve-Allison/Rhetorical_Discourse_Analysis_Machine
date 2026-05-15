@@ -30,6 +30,10 @@ Index of project-local memories. One line per entry.
 
 - [No-assumptions HARD RULE — incident + hook](feedback_no_assumptions_hard_rule.md) — 2026-05-15. Inferred `meta.description` was an extension without reading PictureMeta. Hook at `.claude/hooks/no-assumptions-check.sh` blocks future occurrences. Steve does not tolerate this behaviour.
 
+## Upstream tracking
+
+- [Upstream issue 14 — bug fixes offer to tchewik/isanlp_rst](upstream_issue_14.md) — Filed 2026-05-09; tracks PR-extraction plan if Elena signals interest. Moved 2026-05-15 from machine-local auto-memory into the repo per Steve's project-memory-lives-in-repo pattern.
+
 ## Open design questions
 
 - [RST real-world quality](open_rst_real_world_quality.md) — biggest blind spot: RST was developed for prose; quality on slides / transcripts / long mixed docs is unverified. Also: which relation inventory to default to.
