@@ -203,7 +203,7 @@ Smoke tests:
 
 ## Out of scope (v1)
 
-- **Upstream PR to `tchewik/isanlp_rst`.** Per this fork's CLAUDE.md, feeding work back upstream is opt-in. The Docling-native entry point may or may not be generally useful upstream; default is to keep it in this fork.
+- **Contributing back to `tchewik/isanlp_rst`** (Elena's original repo). This is Steve's project; sending work back to Elena's repo is not the default workflow. The Docling-native entry point may or may not be generally useful there, but the default is to keep it here.
 - **Pedagogic / domain judgement.** RST is descriptive linguistics. The fork measures rhetorical structure; it does not judge relevance, importance, learner-difficulty, or pedagogic value.
 - **Embedding outputs.** The fork emits structural relations, not vector representations. Embeddings are a separate scaffold layer.
 - **Table cell text.** Tables yield only a `TableItem` `self_ref` in v1; cell-text harvesting is a v2 concern.

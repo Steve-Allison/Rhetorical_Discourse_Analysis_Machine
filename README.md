@@ -1,26 +1,23 @@
-![Python](https://img.shields.io/badge/python-3.10%2B-blue) 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1dFItacO_fiOczrVno-hXEn2HTTN6ldH5?usp=sharing)
-
+![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![License](https://img.shields.io/badge/license-MIT_(code)_/_CC_BY--NC_4.0_(weights)-orange) ![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-MPS-blueviolet)
 
 # IsaNLP RST Parser
 
-This library provides several versions of the Rhetorical Structure (RST) parser for multiple languages. Below, you will find instructions on how to set up and run the parser either locally or using Docker.
+End-to-end Rhetorical Structure Theory (RST) parser. Predicts discourse trees from raw text or pre-segmented EDUs across 11 languages via the `unirst` multilingual model, plus three monolingual / bilingual models (`rstdt`, `gumrrg`, `rstreebank`). Pixi-managed, MPS-aware, with real tests and CI.
 
-### Table of Contents
+### Table of contents
 
-  * [Performance](#performance)
-  * [Installation & Quick Start](#installation--quick-start)
-  * [Visualizing the RST Tree](#visualizing-the-rst-tree)
-  * [Advanced Usage](#advanced-usage)
-  * [Docker Setup](#docker-setup)
-  * [Citation](#citation)
-
+- [Performance](#performance)
+- [Installation & quick start](#installation--quick-start)
+- [Visualising the RST tree](#visualising-the-rst-tree)
+- [Advanced usage](#advanced-usage)
+- [Project status & licence](#project-status--licence)
+- [Citation](#citation)
 
 ## Performance
 
-The parser achieves strong end-to-end performance across various standard RST corpora.
+The parser achieves strong end-to-end performance across standard RST corpora.
 
-**Supported languages (all):** English (eng), Czech (ces), German (deu), Basque (eus), Persian (fas), French (fra), Dutch (nld), Brazilian Portuguese (por), Russian (rus), Spanish (spa), and Chinese (zho).
+**Supported languages (`unirst`):** English (eng), Czech (ces), German (deu), Basque (eus), Persian (fas), French (fra), Dutch (nld), Brazilian Portuguese (por), Russian (rus), Spanish (spa), Chinese (zho).
 
 <details>
 <summary><b>Click to view detailed end-to-end performance metrics</b></summary>
@@ -50,93 +47,92 @@ The parser achieves strong end-to-end performance across various standard RST co
 | | | | zho.rst.gcdt | 93.0 | 64.5 | 50.7 | 45.9 | 44.6 |
 | | | | zho.rst.sctb | 95.4 | 67.5 | 51.5 | 39.9 | 39.9 |
 
+Full per-corpus UniRST metrics: [`UniRST_Metrics.md`](UniRST_Metrics.md).
+
 </details>
 
-## Installation & Quick Start
+## Installation & quick start
 
-This guide covers the most common use case: running the parser locally.
+### 1. Install
 
-### 1\. Installation
-
-Install `isanlp` from GitHub and `isanlp_rst` from PyPI:
+The recommended path is pixi (provisions Python + all dependencies + the `iinemo/isanlp` runtime into a locked env):
 
 ```bash
-pip uninstall isanlp -y && pip install git+https://github.com/iinemo/isanlp.git
-pip install isanlp_rst
+git clone https://github.com/Steve-Allison/isanlp_rst.git
+cd isanlp_rst
+pixi install
 ```
 
-### 2\. Basic Usage
+Alternative (raw venv / pip):
 
-The following example initializes and runs the parser.
+```bash
+pip install git+https://github.com/iinemo/isanlp.git    # required runtime dep
+pip install git+https://github.com/Steve-Allison/isanlp_rst.git
+```
+
+### 2. Basic usage
 
 ```python
 from isanlp_rst.parser import Parser
 
-# Define the version of the model you want to use
-version = 'gumrrg'  # Choose from {'gumrrg', 'rstdt', 'rstreebank'}
+# Choose a model version
+version = 'gumrrg'  # one of: 'gumrrg', 'rstdt', 'rstreebank', 'rrtrrg', 'unirst'
 
-# Initialize the parser
-parser = Parser(hf_model_name='tchewik/isanlp_rst_v3', 
-                hf_model_version=version, 
-                cuda_device=0) # Use -1 for CPU
+# Initialise the parser (downloads weights from HF on first call)
+parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
+                hf_model_version=version,
+                cuda_device=0)  # -1 = CPU
 
 text = """
-On Saturday, in the ninth edition of the T20 Men's Cricket World Cup, Team India won against South Africa by seven runs. 
-The final match was played at the Kensington Oval Stadium in Barbados. This marks India's second win in the T20 World Cup, 
+On Saturday, in the ninth edition of the T20 Men's Cricket World Cup, Team India won against South Africa by seven runs.
+The final match was played at the Kensington Oval Stadium in Barbados. This marks India's second win in the T20 World Cup,
 which was co-hosted by the West Indies and the USA between June 2 and June 29.
 
-After winning the toss, India decided to bat first and scored 176 runs for the loss of seven wickets. 
-Virat Kohli top-scored with 76 runs, followed by Axar Patel with 47 runs. Hardik Pandya took three wickets, 
+After winning the toss, India decided to bat first and scored 176 runs for the loss of seven wickets.
+Virat Kohli top-scored with 76 runs, followed by Axar Patel with 47 runs. Hardik Pandya took three wickets,
 and Jasprit Bumrah took two wickets.
 """
 
-# Parse the text to obtain the RST tree
-res = parser(text) # res['rst'] contains the binary discourse tree
-
-# Inspect the structure of the root node
+res = parser(text)  # res['rst'] contains the binary discourse tree
 print(vars(res['rst'][0]))
 ```
 
-To use the multilingual UniRST model, you can specify the required relation inventory with `relinventory='lang.code.dataset'`, as listed in the [UniRST performance table](https://github.com/tchewik/isanlp_rst/blob/master/UniRST_Metrics.md). The default inventory for UniRST is `eng.rst.rstdt`. 
-   
-   ```python
-   parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                   hf_model_version='unirst',
-                   cuda_device=0,
-                   relinventory='eng.erst.gum')
-   ```
-
-#### Loading from a local checkpoint directory
-
-If you've downloaded a checkpoint locally (e.g. for offline use or air-gapped environments), point `Parser` at the directory:
+For the multilingual `unirst` model, specify the relation inventory:
 
 ```python
-# Family is auto-detected from directory contents:
-#   - data_manager_*.pickle or config.json with `data.corpora` -> UniRST
-#   - relation_table.txt                                       -> DMRST
+parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
+                hf_model_version='unirst',
+                cuda_device=0,
+                relinventory='eng.erst.gum')  # see UniRST_Metrics.md for options
+```
+
+#### Loading from a local checkpoint
+
+For offline / air-gapped use, point `Parser` at a directory containing the checkpoint:
+
+```python
+# Family auto-detected:
+#   data_manager_*.pickle or config.json with `data.corpora`  -> UniRST
+#   relation_table.txt                                        -> DMRST
 parser = Parser(model_dir='/path/to/checkpoint', cuda_device=0)
 
-# Override auto-detection if needed:
+# Override auto-detection:
 parser = Parser(model_dir='/path/to/checkpoint', family='dmrst', cuda_device=0)
 ```
 
-#### GPU on Apple Silicon (MPS)
+#### Apple Silicon (MPS)
 
-`cuda_device=N` (any non-negative integer) auto-selects the best available GPU backend:
+`cuda_device=N` auto-selects the best available GPU backend:
 
-* NVIDIA CUDA host → `cuda:N`
-* Apple Silicon (no CUDA) → `mps` (the integer is ignored; MPS exposes a single device)
-* No GPU available → `RuntimeError` (use `cuda_device=-1` for CPU)
+- NVIDIA CUDA host → `cuda:N`
+- Apple Silicon (no CUDA) → `mps` (integer ignored; MPS exposes a single device)
+- No GPU available → `RuntimeError` (use `cuda_device=-1` for CPU)
 
-PyTorch 2.x has no MPS kernel for `torch.linalg.qr`
-(used by `torch.nn.init.orthogonal_` during weight init);
-the parser handles this in source so model construction succeeds
-on MPS without manual env-var hacks.
+PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogonal_` during weight init). The parser routes this via CPU automatically — no env-var hacks required.
 
 #### Mixed precision (`dtype=`)
 
-Forward passes go through `torch.autocast`, so the model can run in
-`float32`, `float16`, or `bfloat16` without changing the trained weights.
+Forward passes go through `torch.autocast`, so the model runs in `float32`, `float16`, or `bfloat16` without changing the trained weights:
 
 ```python
 import torch
@@ -144,19 +140,11 @@ parser = Parser(hf_model_version='gumrrg', cuda_device=0,
                 dtype=torch.bfloat16)   # also accepts 'bf16', 'fp16', 'fp32'
 ```
 
-Default is `float32` on every device. On Apple Silicon (M-series, PyTorch
-2.11) measured against typical document-length inputs (~1k chars), `float32`
-beats `bfloat16` / `float16` for **every** published model — per-op autocast
-dispatch overhead dominates the matmul speedup at this input scale. On
-large-batch CUDA workloads with native bf16 (Hopper / Ada Tensor Cores),
-`bfloat16` is likely faster — measure on your hardware with
-`pixi run bench` before committing to a non-default choice.
+Default is `float32` on every device. On Apple Silicon (M-series, PyTorch 2.11) at ~1k-char inputs, `float32` beats `bfloat16` / `float16` for every published model — per-op autocast dispatch overhead dominates the matmul speedup at this scale. On large-batch CUDA workloads with native bf16 (Hopper / Ada Tensor Cores), `bfloat16` is likely faster — measure with `pixi run bench` before pinning a choice.
 
-Measured tree structure is bit-equivalent across all three dtypes for all
-five published models — see `tests/test_integration.py` for the equivalence
-suite.
+Tree structure is bit-equivalent across all three dtypes for every published model — see [`tests/test_integration.py`](tests/test_integration.py) for the equivalence suite.
 
-##### Performance on Apple Silicon (M-series, PyTorch 2.11, ~1k char input)
+##### Apple Silicon perf (M-series, PyTorch 2.11, ~1k char input)
 
 | Model | CPU fp32 | MPS fp32 | MPS bf16 | MPS fp16 |
 |---|---|---|---|---|
@@ -166,107 +154,89 @@ suite.
 | `rrtrrg` | 118 ms | **61 ms** | 104 ms | 95 ms |
 | `unirst` | **127 ms** | 153 ms | 218 ms | 221 ms |
 
-The 18-corpus `unirst` model is faster on CPU than on MPS — the multi-corpus
-classifier dispatch costs more than MPS's matmul speedup recovers. Run
-`pixi run bench --version unirst` on your hardware to verify before pinning
-a device choice for that model.
+The 18-corpus `unirst` model is faster on CPU than on MPS — multi-corpus classifier dispatch costs more than MPS's matmul speedup recovers. Run `pixi run bench --version unirst` on your hardware to verify before pinning a device choice for that model.
 
 #### Verifying on NVIDIA CUDA hardware
 
-CI runs on macOS Apple Silicon, so the CUDA dispatch path can't be
-exercised in CI. To verify on an NVIDIA host:
+CI runs on macOS Apple Silicon, so the CUDA dispatch path isn't exercised in CI. To verify on an NVIDIA host:
 
 ```bash
 pixi run cuda-smoke
 ```
 
-The script confirms `torch.cuda.is_available()`, loads DMRST and UniRST
-on `cuda:0`, parses a sample text, and round-trips a `parse_from_edus`
-call. Exits non-zero on any failure.
+The script confirms `torch.cuda.is_available()`, loads DMRST and UniRST on `cuda:0`, parses a sample text, and round-trips a `parse_from_edus` call. Exits non-zero on any failure.
 
-### 3\. Understanding the Output
+### 3. Understanding the output
 
-The parser returns an RST tree with a recursive structure. Each node (Discourse Unit) contains:
+The parser returns an RST tree with a recursive `DiscourseUnit` structure. Each node carries:
 
 ```python
 {
  'id': 21,
- 'left': (id=14, start=1, end=323),  # Left child node
- 'right': (id=20, start=324, end=570), # Right child node
- 'relation': 'elaboration',           # Rhetorical relation
- 'nuclearity': 'NS',                 # Nucleus-Satellite status
- 'entropy': 0.92,                    # Entropy of the split
- 'start': 1,                         # Start character offset
- 'end': 570,                         # End character offset
- 'text': "On Saturday, ... took two wickets."
+ 'left':  (id=14, start=1,   end=323),  # child node refs
+ 'right': (id=20, start=324, end=570),
+ 'relation':    'elaboration',           # rhetorical relation
+ 'nuclearity':  'NS',                    # NS / NN / ""
+ 'entropy':     0.92,                    # split entropy
+ 'start':       1,                       # original-text character offset
+ 'end':         570,
+ 'text':        "On Saturday, ... took two wickets."
 }
 ```
 
------
+Leaves are EDUs; internal nodes are relations. Every node has `start` / `end` in **original-text character coordinates**.
 
-## Visualizing the RST Tree
+---
 
-You can easily visualize the output in several ways.
+## Visualising the RST tree
 
-### 1\. Save to RS3 Format
-
-First, export the parsed tree to the standard `.rs3` format.
+### 1. Save to RS3
 
 ```python
 res['rst'][0].to_rs3('filename.rs3')
 ```
 
-You can open `filename.rs3` in external tools like **RSTTool** or **rstWeb** for editing.
+Open `filename.rs3` in external tools like **RSTTool** or **rstWeb** for editing.
 
-### 2\. View in Jupyter / Colab
-
-Render the tree directly in your notebook.
+### 2. Inline render (Jupyter / Colab)
 
 ```python
 import io, contextlib
 import isanlp_rst
 
-# Suppress the HTML string from being printed
 buf = io.StringIO()
 with contextlib.redirect_stdout(buf):
     isanlp_rst.render("filename.rs3")
 
-# If you’re in Google Colab, use colab=True to sync the cell height
+# For Google Colab, sync the cell height:
 # isanlp_rst.render("filename.rs3", colab=True)
 ```
 
-<img src="examples/example-inline.png" alt="Illustration of the parsing visualization" width="600">
+<img src="examples/example-inline.png" alt="Illustration of the parsing visualisation" width="600">
 
-### 3\. Export to PNG or PDF
+### 3. Export to PNG or PDF
 
-To export the visualization, you'll first need to install Playwright:
+Requires Playwright:
 
 ```bash
 pip install playwright
 playwright install chromium
 ```
 
-Then, you can export the `.rs3` file:
-
 ```python
 import isanlp_rst
 
-# Export to PNG
 isanlp_rst.to_png("filename.rs3", "filename.png")
-
-# Export to PDF
 isanlp_rst.to_pdf("filename.rs3", "filename.pdf")
 ```
 
-<img src="examples/example-image.png" alt="Illustration of En parsing" width="600">
+<img src="examples/example-image.png" alt="Illustration of English parsing" width="600">
 
------
+---
 
-## Advanced Usage
+## Advanced usage
 
-### Parsing Pre-Segmented EDUs
-
-You can pass custom segments instead of raw text:
+### Parsing pre-segmented EDUs
 
 ```python
 my_edus = [
@@ -277,85 +247,63 @@ my_edus = [
 res = parser.from_edus(my_edus)
 ```
 
-### Memory Management for Large Datasets
+### Memory management for large datasets
 
-When parsing many documents, the resulting `DiscourseUnit` trees can consume significant memory, as each node stores its corresponding text span.
+When parsing many documents, the resulting `DiscourseUnit` trees can consume significant memory — each node stores its corresponding text span.
 
-You can use `res['rst'][0].clear_textfields()` to recursively remove all text from the tree, leaving only the structure (IDs, relations, and character offsets). This makes the tree object lightweight for storage (e.g., pickling).
+```python
+res['rst'][0].clear_textfields()   # drop .text on every node, keep structure
+# ... pickle / store ...
+res['rst'][0].fill_textfields(full_text)   # repopulate later
+```
 
-Later, you can use `.fill_textfields(full_text)` to repopulate the tree using the original text.
+**Note:** `.to_rs3()` on a tree with cleared text fields will fail.
 
-**Important:** Do not use the `.to_rs3()` method on a tree with cleared text fields. 
+---
 
------
+## Project status & licence
 
-## Docker Setup
+This repository is Steve Allison's evolution of the IsaNLP RST Parser. The original RST research code and the trained model weights are by Elena Chistova; the MIT-licensed source code carries her copyright. This repository adds pixi-managed builds, a pytest test suite, GitHub Actions CI, MPS / Apple-Silicon support, mixed-precision dispatch, and ongoing roadmap work (see `docs/plans/`).
 
-You can run the parser as a service using Docker. This is currently available for tags: `rstdt`, `gumrrg`, `rstreebank`.
+- **Source code:** MIT — see [`LICENSE`](LICENSE). Copyright Elena Chistova 2020; Steve Allison contributions also under MIT.
+- **Model weights** (downloaded from `tchewik/isanlp_rst_v3` on HuggingFace): **CC BY-NC 4.0 — research and non-commercial use only.** See [`LICENSE_MODELS`](LICENSE_MODELS). Commercial use requires either retraining weights under a permissive licence or replacing the models entirely.
 
-1.  **Run the Docker container:**
+Issues and pull requests: please open them on `Steve-Allison/isanlp_rst`. For questions about the underlying RST research, see Elena Chistova's papers cited below.
 
-    ```bash
-    # Pull and run the 'rstreebank' model on port 3335
-    docker run --rm -p 3335:3333 --name rst_rrt tchewik/isanlp_rst:3.0-rstreebank
-    ```
+---
 
-2.  **Connect with the `isanlp` client:**
-    (Note: `isanlp_rst` is not required for the client)
-
-    ```bash
-    pip install git+https://github.com/iinemo/isanlp.git
-    ```
-
-    ```python
-    from isanlp import PipelineCommon
-    from isanlp.processor_remote import ProcessorRemote
-
-    # Connect to the running container
-    address_rst = ('127.0.0.1', 3335)
-
-    ppl = PipelineCommon([
-        (ProcessorRemote(address_rst[0], address_rst[1], 'default'),
-         ['text'],
-         {'rst': 'rst'})
-    ])
-
-    res = ppl(text)
-    # res['rst'] will contain the binary discourse tree
-    ```
-
------
-   
 ## Citation
 
-If you use the IsaNLP RST Parser in your research, please cite our work:
+The published model weights are by Elena Chistova. If you use them in research, please cite:
 
-* For `rstdt`, `gumrrg`, and `rstreebank` models:
+For `rstdt`, `gumrrg`, and `rstreebank`:
 
-  ```bibtex
-  @inproceedings{chistova-2024-bilingual,
-   title = "Bilingual Rhetorical Structure Parsing with Large Parallel Annotations",
-   author = "Chistova, Elena",
-   booktitle = "Findings of the Association for Computational Linguistics ACL 2024",
-   month = aug,
-   year = "2024",
-   address = "Bangkok, Thailand and virtual meeting",
-   publisher = "Association for Computational Linguistics",
-   url = "https://aclanthology.org/2024.findings-acl.577",
-   pages = "9689--9706"
-  }
+```bibtex
+@inproceedings{chistova-2024-bilingual,
+ title = "Bilingual Rhetorical Structure Parsing with Large Parallel Annotations",
+ author = "Chistova, Elena",
+ booktitle = "Findings of the Association for Computational Linguistics ACL 2024",
+ month = aug,
+ year = "2024",
+ address = "Bangkok, Thailand and virtual meeting",
+ publisher = "Association for Computational Linguistics",
+ url = "https://aclanthology.org/2024.findings-acl.577",
+ pages = "9689--9706"
+}
+```
 
-* For the `unirst` model:
-  ```bibtex
-  @inproceedings{chistova-2025-bridging,
-    title = "Bridging Discourse Treebanks with a Unified Rhetorical Structure Parser",
-    author = "Chistova, Elena",
-    booktitle = "Proceedings of the 6th Workshop on Computational Approaches to Discourse, Context and Document-Level Inferences (CODI 2025)",
-    month = nov,
-    year = "2025",
-    address = "Suzhou, China",
-    publisher = "Association for Computational Linguistics",
-    url = "https://aclanthology.org/2025.codi-1.17/",
-    pages = "197--208"
-   }
-  ```
+For `unirst`:
+
+```bibtex
+@inproceedings{chistova-2025-bridging,
+  title = "Bridging Discourse Treebanks with a Unified Rhetorical Structure Parser",
+  author = "Chistova, Elena",
+  booktitle = "Proceedings of the 6th Workshop on Computational Approaches to Discourse, Context and Document-Level Inferences (CODI 2025)",
+  month = nov,
+  year = "2025",
+  address = "Suzhou, China",
+  publisher = "Association for Computational Linguistics",
+  url = "https://aclanthology.org/2025.codi-1.17/",
+  pages = "197--208"
+}
+```

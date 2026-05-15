@@ -227,7 +227,7 @@ The big questions (does the walker exist? is it canonical? does it filter furnit
 ## Out of scope (v1)
 
 - **Cue-awareness.** Notes-vs-body candidate relations, table-skipping, picture-description anchoring — all per the proposal's "Optional — Docling-cue awareness (later phase)" section. Don't do this in v1.
-- **Upstream PR to `tchewik/isanlp_rst`.** Per the fork's CLAUDE.md.
+- **Contributing back to `tchewik/isanlp_rst`** (Elena's original repo). This is Steve's project; sending work back to Elena's repo is not the default workflow and would only happen if Steve specifically asks.
 - **CLI entry point.** Python API only in v1. Add later if needed.
 - **Streaming / async API.** Synchronous only.
 - **Embeddings.** Separate scaffold layer.
