@@ -1,10 +1,10 @@
 # DocLang-native RST output
 
-**Status:** Phase 0 in progress (spec verified; design open)
-**Date:** 2026-05-15
+**Status:** Phase 1 complete (fixtures pulled; Q1–Q6 verified); Phase 2 ready
+**Date:** 2026-05-15 (Phase 0); 2026-06-10 (Phase 1)
 **Driver:** Steve Allison
 **Companion:** [`2026-05-15-docling-native-rst.md`](./2026-05-15-docling-native-rst.md) (the Docling JSON entry point that already exists)
-**Sibling memory:** [[verified-doclang-spec]] — file:line citations against `doclang-project/doclang` `main`.
+**Sibling memories:** [[verified-doclang-spec]] (spec citations); [[verified-doclang-fixtures]] (fixture-evidence for the answers below).
 
 ---
 
@@ -49,14 +49,15 @@ isanlp_rst/
   _rst_common/    # new private — shared overlap-rule maths + tree-flatten skeleton
 ```
 
-## DocLang-native addressing scheme
+## DocLang-native addressing scheme — VERIFIED
 
-DocLang has no stable identifiers in the spec. Our addressing must be reproducible from the parsed XML alone. Proposed:
+DocLang has no stable identifiers in the spec. Our addressing must be reproducible from the parsed XML alone.
 
-- **Primary key: canonical XPath** — e.g. `/doclang[1]/heading[2]` or `/doclang[1]/text[7]`. Reproducible from the document order. Position predicates per tag name (XPath 1.0 style, 1-based).
-- **Secondary key: `thread_id`** — when present, captured as a separate `thread_ids: tuple[int, ...]` field on the span (a fragment may belong to multiple threads — e.g. an outer container thread and an inner item thread per `spec.md:1893-1916`).
+**Primary key: local-name canonical XPath** — e.g. `/doclang[1]/heading[2]`, `/doclang[1]/text[7]`. Each step is `local_name[i]` where `i` is the 1-based position among siblings sharing the same local name. Namespaces are stripped.
 
-So a `DoclangHarvestSpan` carries both: XPath as the structural address, `thread_ids` for cross-fragment grouping.
+This is **not** `lxml.etree.ElementTree.getpath()`. We confirmed in Phase 1 that `getpath()` produces `/*/*[3]`-style wildcard paths on default-namespaced documents (the spec-recommended shape per [`spec.md:219-241`](https://github.com/doclang-project/doclang/blob/main/spec.md#L219-L241)) — unusable as a human-readable identifier. We build the path ourselves: a one-screen `local_path(el)` function, round-trips 464 / 464 elements on [`ok_comprehensive.dclg.xml`](../../tests/fixtures/doclang/ok_comprehensive.dclg.xml), 4 / 4 on [`ok_no_namespace.dclg.xml`](../../tests/fixtures/doclang/ok_no_namespace.dclg.xml). All paths unique within a document. See [[verified-doclang-fixtures]] item 1.
+
+**Secondary key: `thread_id`** — when present, captured as `thread_id: int | None` on the span. Phase 1 confirmed that across all 40 valid fixtures, every host element has **exactly one** `<thread>` child (5 hosts in total). The element-head ordering at [`spec.md:147-157`](https://github.com/doclang-project/doclang/blob/main/spec.md#L147-L157) specifies `<thread>` as a single optional slot, and the corpus matches. Schema simplified from `tuple[int, ...]` to `int | None`.
 
 ## DocLang-native boundary kinds
 
@@ -103,8 +104,9 @@ Filter by `<layer>`:
 ```python
 @dataclass(frozen=True, slots=True)
 class DoclangHarvestSpan:
-    xpath: str                          # e.g. "/doclang[1]/text[3]"
-    thread_ids: tuple[int, ...]         # empty tuple when no <thread> present
+    xpath: str                          # e.g. "/doclang[1]/text[3]" — local-name canonical
+    thread_id: int | None               # None when host has no <thread> (most spans)
+    layer: str                          # "body" | "background" | "furniture"
     text: str
     start: int
     end: int
@@ -131,7 +133,7 @@ class DoclangRstRelation:
     nuclearity: str
     nucleus_xpaths: tuple[str, ...]
     satellite_xpaths: tuple[str, ...]
-    nucleus_thread_ids: tuple[int, ...]      # only those that carry a thread
+    nucleus_thread_ids: tuple[int, ...]      # only those nucleus spans carrying a thread (deduplicated)
     satellite_thread_ids: tuple[int, ...]
     depth: int
     left_id: int
@@ -143,7 +145,7 @@ class DoclangRstRelation:
 class DoclangRstEdu:
     id: int
     xpaths: tuple[str, ...]
-    thread_ids: tuple[int, ...]
+    thread_ids: tuple[int, ...]                # only spans carrying a thread
     depth: int
 
 @dataclass(frozen=True, slots=True)
@@ -193,16 +195,16 @@ result: DoclangRstResult = parse_doclang(
 )
 ```
 
-## Open design questions
+## Design questions — RESOLVED in Phase 1
 
-The following each need a verified answer before writing code. Marked `ASSUMED` per the no-assumptions rule:
+All six questions were verified against the 40-fixture corpus pulled into [`tests/fixtures/doclang/`](../../tests/fixtures/doclang/). Evidence per question lives in [[verified-doclang-fixtures]].
 
-1. **`<list>` granularity** — does each list item become a separate harvest span (granular: relations per item) or does the whole `<list>` become one span (coarser)? ASSUMED per-item. Verification: open a real fixture, eyeball whether RST on a per-item list reads sensibly.
-2. **`<code>` and `<formula>` inclusion** — ASSUMED excluded as not-prose. Verification needed: run a small experiment with a fixture that has both, decide whether including them as opaque tokens helps or hurts RST quality.
-3. **XPath dialect** — XPath 1.0 with positional predicates (`/doclang[1]/heading[2]`) per element name. ASSUMED reproducible across runs since position is determined by document order. Verify with `lxml.etree.ElementTree.getpath(elem)` to make sure the library's canonical path matches.
-4. **Namespace handling** — DocLang fixtures may or may not declare the namespace. Our XPath generation must work in both cases. ASSUMED: pass through whatever the source uses; produce namespaceless XPath when source has none, namespaced XPath when source declares.
-5. **Virtual text addressing** — list items / table cells without explicit `<text>` wrappers don't have their own element. ASSUMED: synthesise an XPath using the parent + position, e.g. `/doclang[1]/list[1]/ldiv[2]/.text()`. Verify against `lxml`'s text-node addressing semantics.
-6. **`<thread>` semantics on cross-page continuations** — should a relation whose nucleus is in two thread fragments emit both thread_ids? ASSUMED yes (union).
+1. **`<list>` granularity** — **RESOLVED: per-item.** 30 lists across the corpus; 2 nested-list cases at depth 1 (`<list>` whose ancestor is `<list>`, not nested via `<ldiv>`). Each `<ldiv/>` marker produces one harvest span; nested lists are harvested independently at their own XPath. Evidence: `ok_list_with_unwrapped_text.dclg.xml`, `ok_comprehensive.dclg.xml`.
+2. **`<code>` and `<formula>` inclusion** — **RESOLVED: default OFF, both knobs preserved.** 3 `<formula>` blocks in the corpus, all pure LaTeX (`E = mc^2`, `x = \frac{-b \pm \sqrt{b^{2} - 4ac}}{2a}`). 12 `<code>` blocks across R / Python / SQL / Java — bulk is source code, a minority is mixed-prose-with-`<bold>` markup. Default-off is correct for both; `include_code_blocks` / `include_formulas` knobs handle the opt-in cases.
+3. **XPath dialect** — **RESOLVED: local-name canonical path, NOT `lxml.getpath()`.** Verified `lxml.etree.ElementTree.getpath()` emits `/*/*[N]` wildcards on default-namespaced documents. Our own `local_path(el)` walker produces `/doclang[1]/heading[2]`-style paths that round-trip 100% across all 464 elements of `ok_comprehensive.dclg.xml`.
+4. **Namespace handling** — **RESOLVED: transparent.** Local-name path is identical regardless of whether the source declares `xmlns`. No per-format dialect, no per-format knob.
+5. **Virtual text addressing** — **RESOLVED: marker XPath is the address.** `<ldiv/>` / `<fcel/>` / `<ched/>` are self-closing markers whose item / cell content lives in the marker's `.tail` plus the `itertext()` and `.tail` of intervening siblings up to the next marker. The item / cell IS the marker; its XPath is the marker's own XPath. No synthetic text-node addressing needed.
+6. **`<thread>` semantics** — **RESOLVED: 1 thread per host (max).** Verified across all 40 fixtures: every host element with a `<thread>` carries exactly one. The element-head ordering at [`spec.md:147-157`](https://github.com/doclang-project/doclang/blob/main/spec.md#L147-L157) defines a single optional slot. Schema simplified to `thread_id: int | None`. For relations whose nucleus straddles two thread-carrying spans, the relation's `nucleus_thread_ids` is the deduplicated tuple of those spans' thread ids — a union over span-level scalars, not per-span tuples.
 
 ## Phase plan
 
@@ -214,15 +216,12 @@ The following each need a verified answer before writing code. Marked `ASSUMED` 
 - ✅ Write [[verified-doclang-spec]] with file:line citations.
 - ✅ Write this plan doc.
 
-### Phase 1 — Fixture set + design verification (next session)
+### Phase 1 — Fixture set + design verification (2026-06-10)
 
-- Build fixture set under `tests/fixtures/doclang/`. Candidates from the official repo's `tests/data/valid/`:
-  - `doclang_example.dclg.xml` (2.4 KB) — real fragment with table, picture, list, code, heading
-  - `ok_comprehensive.dclg.xml` (18.6 KB) — exercises 48 example shapes
-  - At least one fixture each of: namespace-present and namespace-absent
-  - ASSUMED: add fixtures with `<thread>` continuations (`ok_*.dclg.xml` fixtures may already include them; verify)
-- Resolve the 6 open design questions via fixture inspection.
-- Update this plan doc with verified answers.
+- ✅ Mirrored all 40 valid fixtures from `doclang-project/doclang/tests/data/valid` into [`tests/fixtures/doclang/`](../../tests/fixtures/doclang/) with provenance README.
+- ✅ Resolved Q1–Q6 against the corpus; updated the addressing-scheme and schema sections above.
+- ✅ Wrote [[verified-doclang-fixtures]] with reproducer commands and fixture:line citations.
+- ✅ Updated this plan doc with verified answers.
 
 ### Phase 2 — Implementation
 
@@ -241,9 +240,9 @@ The following each need a verified answer before writing code. Marked `ASSUMED` 
 | Risk | Mitigation |
 |---|---|
 | DocLang v0.5 is breaking-change territory (any `0.x.y` minor bump can break us per `spec.md:236-241`). | Pin a specific `doclang` package version; track changelog. |
-| `lxml.etree.ElementTree.getpath()` may produce surprising XPath for elements with namespaces. | Phase 1 fixture verification confirms before Phase 2. |
+| ~~`lxml.etree.ElementTree.getpath()` may produce surprising XPath for elements with namespaces.~~ | **Retired by Phase 1**: `getpath()` is unusable on namespaced docs (`/*/*[3]`-style wildcards); we own a `local_path()` walker that round-trips 100% on the corpus. |
 | RST quality on DocLang-rendered prose is the same open question as for Docling (see [[open-rst-real-world-quality]]) — additionally, OTSL tables and code blocks inline within `<text>` may degrade the harvest signal. | Same empirical-quality-check pattern as `parse_docling`. |
-| Fragment continuation via `<thread>` makes harvest spans non-contiguous in the source document but contiguous in our text concatenation. The mapper's overlap rule still works on offsets, but `boundary_memberships` may need to handle a relation whose nucleus is split across two `<thread>` fragments in different `page-N` boundaries. | Phase 1 inspection of a `<thread>`-bearing fixture clarifies. |
+| Fragment continuation via `<thread>` makes harvest spans non-contiguous in the source document but contiguous in our text concatenation. The mapper's overlap rule still works on offsets, but `boundary_memberships` may need to handle a relation whose nucleus is split across two `<thread>` fragments in different `page-N` boundaries. | Phase 1 confirmed shape (`ok_thread.dclg.xml` shows two `<text>` hosts sharing `thread_id=1`). Phase 2 mapper assigns spans to all `page-N` boundaries whose page-range contains their character offsets; the union of those memberships shows up in `relation.boundary_memberships` naturally. |
 
 ## Out of scope
 

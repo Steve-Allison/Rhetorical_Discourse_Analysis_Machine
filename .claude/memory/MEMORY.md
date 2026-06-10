@@ -15,6 +15,7 @@ Index of project-local memories. One line per entry.
 ## Verified facts (DocLang work)
 
 - [DocLang 0.5 spec](verified_doclang_spec.md) — XML-based; doclang PyPI is validator-only; no stable element IDs; `<layer>` ∈ {body, background, furniture}; no slide concept. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md).
+- [DocLang fixture verifications (Phase 1)](verified_doclang_fixtures.md) — answers to Q1–Q6 verified against all 40 valid fixtures: local-name canonical XPath (not `lxml.getpath()`); marker `.tail`-based virtual text; `thread_id: int | None` per host; per-item list granularity.
 
 ## Design decisions (Docling work)
 
