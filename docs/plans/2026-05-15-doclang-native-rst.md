@@ -1,7 +1,7 @@
 # DocLang-native RST output
 
-**Status:** Phase 1 complete (fixtures pulled; Q1–Q6 verified); Phase 2 ready
-**Date:** 2026-05-15 (Phase 0); 2026-06-10 (Phase 1)
+**Status:** Phase 2 complete (modules + tests landed; lint + pyright clean); Phase 3 ready
+**Date:** 2026-05-15 (Phase 0); 2026-06-10 (Phases 1 + 2)
 **Driver:** Steve Allison
 **Companion:** [`2026-05-15-docling-native-rst.md`](./2026-05-15-docling-native-rst.md) (the Docling JSON entry point that already exists)
 **Sibling memories:** [[verified-doclang-spec]] (spec citations); [[verified-doclang-fixtures]] (fixture-evidence for the answers below).
@@ -223,12 +223,14 @@ All six questions were verified against the 40-fixture corpus pulled into [`test
 - ✅ Wrote [[verified-doclang-fixtures]] with reproducer commands and fixture:line citations.
 - ✅ Updated this plan doc with verified answers.
 
-### Phase 2 — Implementation
+### Phase 2 — Implementation (2026-06-10)
 
-- Extract shared maths to `isanlp_rst/_rst_common/`.
-- Implement `isanlp_rst/doclang/` mirroring the Docling module structure.
-- Tests: `tests/test_doclang_harvester.py`, `..._boundaries.py`, `..._mapper.py`, `..._entry.py`.
-- Add `lxml` to runtime deps if not already present (it IS in `pyproject.toml` already as a transitive — verify direct dep).
+- ✅ Extracted shared overlap maths and nuclearity split into [`isanlp_rst/_rst_common/`](../../isanlp_rst/_rst_common/). Refactored [`isanlp_rst/docling/mapper.py`](../../isanlp_rst/docling/mapper.py) to delegate to the shared helpers while preserving its public API (all 183 prior Docling tests still pass).
+- ✅ Implemented [`isanlp_rst/doclang/`](../../isanlp_rst/doclang/) — `schema`, `errors`, `loader`, `harvester`, `boundaries`, `mapper`, `_entry`, `__init__`.
+- ✅ Added [`types-lxml`](https://pypi.org/project/types-lxml/) as a dev dependency (lxml is already direct via `pyproject.toml`).
+- ✅ Wrote 115 new tests across 5 files: `tests/test_doclang_loader.py` (15), `_harvester.py` (31), `_boundaries.py` (25), `_mapper.py` (14), `_entry.py` (30 fast + 6 slow integration). Total test count: 298 fast + 48 slow.
+- ✅ Updated `tool.pyright.include` with the new module dirs.
+- Lint clean (ruff). Pyright clean (strict). Slow integration tests behind `@pytest.mark.slow` so they don't run on every commit.
 
 ### Phase 3 — Docs
 

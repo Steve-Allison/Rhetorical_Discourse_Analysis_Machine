@@ -18,15 +18,28 @@ Per plan §Decisions:
   left subtree precedes the right subtree in text, pre-order over leaves
   is the same as reading order.
 - ids are a shared namespace; left_id / right_id resolve uniformly.
+
+Pure overlap maths and the nuclearity split live in ``isanlp_rst._rst_common``
+so the ``doclang`` module shares them verbatim.
 """
 
 from __future__ import annotations
 
+from operator import attrgetter
 from typing import Any
 
+from .._rst_common import (
+    NOTE_THRESHOLD,
+    split_refs_by_nuclearity,
+)
+from .._rst_common import (
+    compute_overlap_refs as _generic_compute_overlap_refs,
+)
 from .schema import Boundary, HarvestSpan, RstEdu, RstRelation
 
-NOTE_THRESHOLD: float = 0.90
+__all__ = ["NOTE_THRESHOLD", "compute_overlap_refs", "flatten_tree"]
+
+_self_ref = attrgetter("self_ref")
 
 
 def compute_overlap_refs(
@@ -38,62 +51,12 @@ def compute_overlap_refs(
 ) -> tuple[tuple[str, ...], str | None]:
     """Return ``(refs, note)`` for the half-open range ``[start, end)``.
 
-    ``refs`` is every HarvestSpan's ``self_ref`` whose own range has any
-    non-empty intersection with ``[start, end)``, in the order the spans
-    appear in ``spans``. ``note`` is ``None`` unless one span carries
-    >= ``NOTE_THRESHOLD`` of the total intersected length and there is at
-    least one minor contributor; in that case ``note`` summarises the
-    spill in human-readable form.
-
-    Returns ``((), None)`` for zero-width or non-overlapping ranges.
+    Docling-specific wrapper over the generic overlap function — the
+    address is each span's ``self_ref``.
     """
-    if start >= end:
-        return (), None
-
-    overlaps: list[tuple[str, int]] = []
-    for span in spans:
-        ov_start = max(start, span.start)
-        ov_end = min(end, span.end)
-        if ov_end > ov_start:
-            overlaps.append((span.self_ref, ov_end - ov_start))
-
-    if not overlaps:
-        return (), None
-
-    refs = tuple(ref for ref, _ in overlaps)
-
-    if len(overlaps) == 1:
-        return refs, None
-
-    total = sum(o for _, o in overlaps)
-    dominant_ref, dominant_overlap = max(overlaps, key=lambda x: x[1])
-    if total > 0 and dominant_overlap / total >= note_threshold:
-        minors = [(r, o) for r, o in overlaps if r != dominant_ref and o > 0]
-        if minors:
-            spill_pct = sum(o for _, o in minors) / total * 100
-            minor_summary = ", ".join(f"{r} ({o} chars)" for r, o in minors)
-            note = (
-                f"{dominant_ref} covers {dominant_overlap}/{total} chars "
-                f"({dominant_overlap / total * 100:.0f}%); "
-                f"{spill_pct:.0f}% spills into: {minor_summary}"
-            )
-            return refs, note
-
-    return refs, None
-
-
-def _split_refs_by_nuclearity(
-    left_refs: tuple[str, ...],
-    right_refs: tuple[str, ...],
-    nuclearity: str,
-) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    """Return (nucleus_refs, satellite_refs) based on nuclearity."""
-    if nuclearity == "NS":
-        return left_refs, right_refs
-    if nuclearity == "SN":
-        return right_refs, left_refs
-    # NN, "", or anything unrecognised → treat both children as nuclei
-    return left_refs + right_refs, ()
+    return _generic_compute_overlap_refs(
+        start, end, spans, ref_of=_self_ref, note_threshold=note_threshold
+    )
 
 
 def flatten_tree(
@@ -127,7 +90,6 @@ def flatten_tree(
 
     relations: list[RstRelation] = []
     edus: list[RstEdu] = []
-    # Pre-compute boundary self_ref sets for O(1) intersection.
     boundary_sets: list[tuple[str, frozenset[str]]] = [
         (b.id, frozenset(b.self_refs)) for b in boundaries
     ]
@@ -152,7 +114,7 @@ def flatten_tree(
         right_refs, _ = compute_overlap_refs(right.start, right.end, harvest_spans)
         nuclearity = getattr(node, "nuclearity", "") or ""
         relation = getattr(node, "relation", "") or ""
-        nucleus_refs, satellite_refs = _split_refs_by_nuclearity(
+        nucleus_refs, satellite_refs = split_refs_by_nuclearity(
             left_refs, right_refs, nuclearity
         )
 

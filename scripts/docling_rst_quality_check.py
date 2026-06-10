@@ -142,13 +142,13 @@ def quality_check(parser: Parser, path: Path) -> None:
     print(f"tree: leaves={n_leaves} internal={n_internal} max_depth={max_depth}")
 
     leaves = collect_leaves(tree)
-    print(f"first 10 EDUs:")
+    print("first 10 EDUs:")
     for i, leaf in enumerate(leaves[:10]):
         edu_text = (leaf.text or "").replace("\n", " ")[:100]
         print(f"  [{i}] ({leaf.start:>5}, {leaf.end:>5}) {edu_text!r}")
 
     rels = collect_relations(tree)
-    print(f"first 15 relations (pre-order):")
+    print("first 15 relations (pre-order):")
     for i, (rel, depth) in enumerate(rels[:15]):
         relation = getattr(rel, "relation", None)
         nuclearity = getattr(rel, "nuclearity", None)

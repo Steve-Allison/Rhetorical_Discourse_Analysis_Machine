@@ -44,6 +44,7 @@ dev = [
   "pytest>=8",
   "ruff>=0.6",
   "pyright>=1.1.380",
+  "types-lxml>=2026.2.16,<2027",
 ]
 
 [tool.setuptools.packages.find]
@@ -106,7 +107,9 @@ include = [
   "isanlp_rst/dmrst_parser/predictor.py",
   "isanlp_rst/universal_parser/predictor.py",
   "isanlp_rst/utils/mps_init.py",
+  "isanlp_rst/_rst_common",
   "isanlp_rst/docling",
+  "isanlp_rst/doclang",
   "tests",
   "scripts",
 ]
