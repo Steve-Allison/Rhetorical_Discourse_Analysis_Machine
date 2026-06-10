@@ -47,7 +47,14 @@ Adding dependencies: `pixi add <package>`. Never `pip install`.
 
 ## Active roadmap
 
-In flight: [Docling-native RST output](docs/plans/2026-05-15-docling-native-rst.md). New entry point `isanlp_rst.docling.parse_docling(path)` that takes a Docling JSON file and emits RST relations indexed by `self_ref`. Build plan: [`docs/plans/2026-05-15-docling-native-rst-build.md`](docs/plans/2026-05-15-docling-native-rst-build.md). Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks verified facts and open design questions.
+**Shipped:** two first-class format-native entry points sit alongside the raw `Parser` API:
+
+- `isanlp_rst.docling.parse_docling(path)` — Docling JSON in → RST relations indexed by `self_ref`. Plans: [proposal](docs/plans/2026-05-15-docling-native-rst.md), [build](docs/plans/2026-05-15-docling-native-rst-build.md). Walkthrough: [`docs/examples/docling-native.md`](docs/examples/docling-native.md).
+- `isanlp_rst.doclang.parse_doclang(path)` — DocLang 0.5 XML in → RST relations indexed by local-name XPath, with `<thread>` aggregation. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](docs/plans/2026-05-15-doclang-native-rst.md). Walkthrough: [`docs/examples/doclang-native.md`](docs/examples/doclang-native.md).
+
+Format-agnostic helpers (`compute_overlap_refs`, `split_refs_by_nuclearity`) live in `isanlp_rst/_rst_common/` so both entry points share the same overlap maths.
+
+Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks verified facts (spec citations, fixture evidence) and open design questions.
 
 ## Files worth knowing
 
@@ -56,6 +63,9 @@ In flight: [Docling-native RST output](docs/plans/2026-05-15-docling-native-rst.
 - [`isanlp_rst/dmrst_parser/predictor.py`](isanlp_rst/dmrst_parser/predictor.py) — DMRST inference path.
 - [`isanlp_rst/universal_parser/predictor.py`](isanlp_rst/universal_parser/predictor.py) — UniRST inference path.
 - [`isanlp_rst/__init__.py`](isanlp_rst/__init__.py) — viewer convenience helpers (`render`, `to_html`, `to_png`, `to_pdf`).
+- [`isanlp_rst/docling/`](isanlp_rst/docling/) — `parse_docling` entry point; `harvester`, `boundaries`, `mapper` flow.
+- [`isanlp_rst/doclang/`](isanlp_rst/doclang/) — `parse_doclang` entry point; `loader` (XPath generator), `harvester`, `boundaries`, `mapper` flow.
+- [`isanlp_rst/_rst_common/`](isanlp_rst/_rst_common/) — shared overlap-rule maths + nuclearity split, format-agnostic.
 - [`tests/test_integration.py`](tests/test_integration.py) — end-to-end model parses; dtype-equivalence suite.
 - [`docs/plans/`](docs/plans/) — design plans (proposals + build plans).
 - [`UniRST_Metrics.md`](UniRST_Metrics.md) — per-corpus metrics for the multilingual model.

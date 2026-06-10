@@ -10,6 +10,8 @@ End-to-end Rhetorical Structure Theory (RST) parser. Predicts discourse trees fr
 - [Installation & quick start](#installation--quick-start)
 - [Visualising the RST tree](#visualising-the-rst-tree)
 - [Advanced usage](#advanced-usage)
+- [Docling-native output](#docling-native-output)
+- [DocLang-native output](#doclang-native-output)
 - [Project status & licence](#project-status--licence)
 - [Citation](#citation)
 
@@ -309,6 +311,63 @@ Toggle the harvest with keyword arguments: `include_picture_descriptions=False`,
 - **RST was trained on prose.** Quality is highest on continuous narrative (VTT transcripts, decks with VLM descriptions, prose-heavy PDFs). On bullet-only slide decks without VLM enrichment, or on highly procedural / list-heavy PDFs, relations are dominated by `joint` / `organization` chains — structurally valid but rhetorically thin. Use the result with appropriate scepticism on non-prose input.
 - **Long inputs:** `parse_docling` raises `InputTooLargeError` above `max_harvest_chars=200_000` (configurable). The largest fixture exercised end-to-end is ~18 KB; the parser handles 40 KB+ cleanly in smoke tests but degradation at extreme sizes is empirical.
 - **Cross-boundary relations are preserved.** A relation may touch two slides or sections; `boundary_memberships` lists all touched boundaries. Filter on `len(boundary_memberships) == 1` for within-boundary relations only.
+
+---
+
+## DocLang-native output
+
+For documents authored in the [DocLang 0.5 XML format](https://github.com/doclang-project/doclang) — the AI-native document standard from IBM, ABBYY, RedHat, HumanSignal, NVIDIA, and Forgis — `isanlp_rst` exposes `parse_doclang()` alongside `parse_docling`. Both are **first-class entry points** with honestly different schemas; neither coerces into the other.
+
+```python
+from pathlib import Path
+from isanlp_rst.doclang import parse_doclang
+
+result = parse_doclang(Path("document.dclg.xml"), device="auto")
+
+# result.relations:   tuple of RstRelation, indexed by local-name XPath
+# result.edus:        tuple of RstEdu      with the same xpath addressing
+# result.boundaries:  tuple of Boundary    — headings, pages, groups, tables, field_regions
+# result.source_origin: {"format": "doclang", "namespace": ..., "version": "0.5", "head_children": [...]}
+```
+
+### How addresses work
+
+Every element is addressed by a **local-name canonical XPath** of the form `/doclang[1]/heading[2]/text[1]` — 1-based position predicates per local name, namespaces stripped. The same document with or without `xmlns="https://www.doclang.ai/ns/v0"` produces identical paths. (`lxml.etree.ElementTree.getpath()` is **not** used; it emits `/*/*[N]` wildcards on default-namespaced documents.) Paths round-trip 100% against the upstream 40-fixture valid corpus.
+
+### What enters the DocLang harvest
+
+| Element | Default | Notes |
+| :--- | :--- | :--- |
+| `<text>`, `<heading>`, `<footnote>` | harvested | one span per element; `<heading>` also opens a `heading-N` boundary |
+| `<list>` items | harvested per `<ldiv/>` marker | item text aggregates `marker.tail` + intervening sibling tails |
+| `<picture><caption>` | harvested | `include_picture_captions=False` to skip |
+| `<code>` | skipped | source code is not prose — `include_code_blocks=True` to opt in |
+| `<formula>` | skipped | raw LaTeX is not prose — `include_formulas=True` to opt in |
+| `<table>` body | skipped | cells are OTSL grid; one `table-N` boundary emitted per table |
+| `<field_region>` body | skipped | `include_field_regions=True` to opt in |
+| `<page_header>` / `<page_footer>` | skipped | `include_furniture=True` to include |
+| `<layer value="background">` items | skipped | `include_background=True` to include |
+| `<layer value="furniture">` items | skipped | covered by `include_furniture=True` |
+
+Toggle each via the corresponding keyword. See the [walkthrough](docs/examples/doclang-native.md) for the full set, a tree-reconstruction example, and `<thread>` handling for cross-fragment continuation.
+
+### Boundary kinds
+
+DocLang doesn't model slides or speaker turns — the boundary set reflects what the spec **does** model: `heading-N`, `page-N` (between `<page_break/>` markers), `group-N` (with `group-N-M` for one level of nesting), `table-N`, `field_region-N`, and a `document` fallback. If your input is PPTX or VTT, use `parse_docling` on the Docling JSON form — those formats give you `slide-N` / `slide-N-notes` / `turn-N` instead.
+
+### Validation
+
+`parse_doclang(..., validate_xml=True)` (default) gates the file through the [`doclang`](https://pypi.org/project/doclang/) PyPI package's `validate(path)` before parsing. The `doclang` package is validator-only (no DOM) — we parse with `lxml` ourselves. If `doclang` is not importable in your env, validation is silently skipped.
+
+### Caveats
+
+- **RST was trained on prose.** Same caveat as `parse_docling`: bullet-only documents and form-shaped content yield rhetorically thin relations dominated by `joint` / `organization` chains.
+- **Stable addressing across producers.** The local-name XPath is reproducible from the parsed XML alone, but it depends on document order. A producer that reorders elements between runs will produce different addresses for the same logical content. DocLang 0.5 has no stable per-element identifier in the spec.
+- **`<thread>` is continuation, not identity.** Two spans sharing `thread_id` are fragments of one logical paragraph (typically across a `<page_break/>`). The RST mapper aggregates dedup'd thread ids on each relation as `nucleus_thread_ids` / `satellite_thread_ids`.
+
+---
+
+## Project status & licence
 
 This repository is Steve Allison's evolution of the IsaNLP RST Parser. The original RST research code and the trained model weights are by Elena Chistova; the MIT-licensed source code carries her copyright. This repository adds pixi-managed builds, a pytest test suite, GitHub Actions CI, MPS / Apple-Silicon support, mixed-precision dispatch, and ongoing roadmap work (see `docs/plans/`).
 
