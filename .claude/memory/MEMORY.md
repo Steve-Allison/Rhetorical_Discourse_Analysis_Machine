@@ -12,6 +12,10 @@ Index of project-local memories. One line per entry.
 - [Docling-core API contract](verified_docling_core_api.md) — `iterate_items`, `load_from_json`, default content-layer filter; with file:line citations.
 - [Docling JSON schema uniformity](verified_docling_schema.md) — `DoclingDocument` v1.10.0 uniform across pptx / pdf / vtt / markdown; populated-vs-empty field differences only.
 
+## Verified facts (DocLang work)
+
+- [DocLang 0.5 spec](verified_doclang_spec.md) — XML-based; doclang PyPI is validator-only; no stable element IDs; `<layer>` ∈ {body, background, furniture}; no slide concept. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md).
+
 ## Design decisions (Docling work)
 
 - [One tree per Docling JSON](decision_one_tree_per_document.md) — one Parser call, one DiscourseUnit tree, boundary metadata as annotation.
