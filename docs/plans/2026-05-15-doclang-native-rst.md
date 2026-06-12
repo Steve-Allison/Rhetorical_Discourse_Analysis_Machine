@@ -1,12 +1,18 @@
 # DocLang-native RST output
 
-**Status:** Phase 2 complete (modules + tests landed; lint + pyright clean); Phase 3 ready
-**Date:** 2026-05-15 (Phase 0); 2026-06-10 (Phases 1 + 2)
+**Status:** Phase 2 complete (modules + tests landed; lint + pyright clean); Phase 3 ready. Phase 9 (2026-06-12) added per-cell `<table>` harvest — see Revision below.
+**Date:** 2026-05-15 (Phase 0); 2026-06-10 (Phases 1 + 2); 2026-06-12 (cross-format table-cell directive)
 **Driver:** Steve Allison
-**Companion:** [`2026-05-15-docling-native-rst.md`](./2026-05-15-docling-native-rst.md) (the Docling JSON entry point that already exists)
+**Companion:** [`2026-05-15-docling-native-rst.md`](./2026-05-15-docling-native-rst.md) (the Docling JSON entry point that already exists); [`2026-06-12-markdown-native-rst.md`](./2026-06-12-markdown-native-rst.md) (the markdown-native entry point and source of the cross-format directive).
 **Sibling memories:** [[verified-doclang-spec]] (spec citations); [[verified-doclang-fixtures]] (fixture-evidence for the answers below).
 
 ---
+
+## Revision — 2026-06-12 (two-level table analysis, Option 2)
+
+`<table>` content is fully analysed without polluting the document tree. Cells are EXCLUDED from the main harvest; each `<table>` gets its own RST mini-parse whose relations/edus land in `DoclangRstResult.table_analyses` (id matches the `table-N` boundary). Cells are addressed by their marker xpath (`<ched/>` / `<fcel/>` / `<rhed/>` / `<corn/>`) and carry `kind` + `row_idx`/`col_idx` grid positions; `<ecel/>` (empty) and the span-continuation markers (`<lcel/>` / `<ucel/>` / `<xcel/>`) occupy grid columns and terminate the previous cell's text but never yield spans; `<nl/>` delimits rows. `<index>` / `<tabular>` remain boundary-only. Knob `include_table_cells: bool = True` toggles the per-table analyses.
+
+Same change set: **thread-aware joins** — main-harvest spans sharing a `thread_id` with their predecessor join with a single space instead of the paragraph separator (a `<thread>` marks paragraph continuation across page breaks; a hard break mid-paragraph made the segmenter split one sentence in two). Plus `dtype` pass-through, `device="auto"` CPU fallback, optional `cache_dir` result cache, and the shared `_rst_common` flatten (iterative) / overlap (bisect) machinery. Driven by Steve's "analyse EVERYTHING" directive; the markdown plan ([`2026-06-12-markdown-native-rst.md`](./2026-06-12-markdown-native-rst.md)) is the cross-format anchor.
 
 ## Goal
 

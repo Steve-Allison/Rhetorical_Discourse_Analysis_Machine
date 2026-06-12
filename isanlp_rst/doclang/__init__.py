@@ -3,9 +3,10 @@
 Public API:
 
 - ``parse_doclang(path, *, parser=None, ...)`` — entry point.
-- ``DoclangRstResult``, ``Boundary``, ``RstRelation``, ``RstEdu`` —
-  result types.
-- ``HarvestResult``, ``HarvestSpan`` — harvest intermediates.
+- ``DoclangRstResult``, ``Boundary``, ``RstRelation``, ``RstEdu``,
+  ``TableAnalysis`` — result types.
+- ``HarvestResult``, ``HarvestSpan``, ``TableHarvest`` — harvest
+  intermediates.
 - ``DoclangRstError`` and subclasses — error hierarchy.
 - ``local_path`` — the canonical local-name XPath generator used as the
   addressing scheme (verified Phase 1 against all 40 valid fixtures).
@@ -29,6 +30,8 @@ from .schema import (
     HarvestSpan,
     RstEdu,
     RstRelation,
+    TableAnalysis,
+    TableHarvest,
 )
 
 __all__ = [
@@ -43,6 +46,8 @@ __all__ = [
     "InvalidDoclangError",
     "RstEdu",
     "RstRelation",
+    "TableAnalysis",
+    "TableHarvest",
     "local_path",
     "parse_doclang",
 ]

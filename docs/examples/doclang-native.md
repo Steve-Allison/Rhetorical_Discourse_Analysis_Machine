@@ -202,15 +202,50 @@ All errors except `ValueError` derive from `DoclangRstError`. Catch
 broadly with that base class when you want to handle DocLang-specific
 failures uniformly.
 
+## Table analyses (two-level)
+
+Per the 2026-06-12 cross-format directive (Option 2), each `<table>`
+gets its own RST mini-parse in `result.table_analyses` — cells never
+enter the main document harvest, so table discourse cannot distort the
+document tree. Cells are addressed by the cell marker's xpath (e.g.
+`/doclang[1]/table[1]/ched[1]` for a column header,
+`/doclang[1]/table[1]/fcel[3]` for a body cell) and carry `kind` plus
+`row_idx` / `col_idx` grid positions. `<ecel/>` (empty by grammar) and
+the span-continuation markers (`<lcel/>` / `<ucel/>` / `<xcel/>`)
+occupy grid columns but never yield spans; `<nl/>` delimits rows. The
+`table-N` boundary's `xpaths` is `(table_xpath, <cell marker xpaths>)`;
+the table xpath itself is the synthetic boundary marker and carries no
+harvest span.
+
+```python
+result = parse_doclang("doc.dclg.xml")              # analyses on by default
+for analysis in result.table_analyses:
+    print(analysis.id, len(analysis.edus), "cell EDUs")
+```
+
+Set `include_table_cells=False` to skip the analyses entirely
+(boundaries still emit). `<index>` and `<tabular>` remain boundary-only
+in either mode — they're rare in the Phase 1 corpus and use different
+internal grammars.
+
+## Thread-aware joins
+
+Main-harvest spans sharing a `thread_id` with their predecessor join
+with a single space instead of the paragraph separator: a `<thread>`
+marks paragraph continuation across page breaks, and a hard break
+mid-paragraph would make the segmenter split one sentence in two. A
+table-only document is valid: the main tree is empty, the content lives
+in `table_analyses`.
+
 ## What's intentionally excluded
 
 - **Slide and speaker-turn boundaries.** DocLang doesn't model slides
   or speaker turns — for PPTX or VTT input, use `parse_docling` on
   Docling JSON.
-- **Table cells and field content.** Tables are OTSL grids in DocLang;
-  their cells never enter the RST input. Each `<table>` and
-  `<field_region>` shows up as one boundary so consumers can see where
-  it sits structurally.
+- **Field content.** `<field_region>` content stays boundary-only
+  unless `include_field_regions=True` — key/value form data is
+  structurally distinct from prose. (`<table>` cells now harvest by
+  default — see § Table cells.)
 - **`<code>` and `<formula>` by default.** `<code>` is source code (R,
   Python, SQL, …); `<formula>` is raw LaTeX. Neither is natural-language
   prose. Both are toggleable via `include_code_blocks=True` /

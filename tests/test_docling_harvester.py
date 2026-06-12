@@ -1,4 +1,4 @@
-"""Unit tests for ``isanlp_rst.docling.harvester.harvest_docling_text``."""
+"""Unit tests for the docling harvesters (main text + per-table)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from docling_core.types.doc.document import DoclingDocument
 
-from isanlp_rst.docling.harvester import harvest_docling_text
+from isanlp_rst.docling.harvester import harvest_docling_tables, harvest_docling_text
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "docling"
 
@@ -78,20 +78,63 @@ def test_custom_separator(pptx_doc: DoclingDocument) -> None:
     assert " | ".join(s.text for s in result.spans) == result.full_text
 
 
-# --- Table exclusion -------------------------------------------------------
+# --- Two-level table analysis (Option 2) -----------------------------------
 
 
 @pytest.mark.parametrize(
     "doc_fixture",
     ["pptx_doc", "pdf_doc", "vtt_doc", "markdown_doc"],
 )
-def test_no_table_refs_in_spans(doc_fixture: str, request: pytest.FixtureRequest) -> None:
+def test_main_harvest_never_contains_table_refs(doc_fixture: str, request: pytest.FixtureRequest) -> None:
+    """Two-level invariant: tables live in their own harvests; the main
+    document harvest must never carry a ``#/tables/...`` ref."""
     doc = request.getfixturevalue(doc_fixture)
     result = harvest_docling_text(doc)
     for span in result.spans:
         assert not span.self_ref.startswith("#/tables/"), (
-            f"table ref {span.self_ref!r} leaked into harvest"
+            f"table ref {span.self_ref!r} leaked into main harvest"
         )
+
+
+def test_table_harvest_refs_are_real_json_pointers(pdf_doc: DoclingDocument) -> None:
+    """Cell refs must resolve mechanically against the Docling JSON —
+    the path component is ``data/table_cells``, not an invented one."""
+    (th,) = harvest_docling_tables(pdf_doc)
+    assert th.marker_ref == "#/tables/0"
+    for s in th.spans:
+        assert s.self_ref.startswith("#/tables/0/data/table_cells/")
+
+
+def test_table_harvest_carries_grid_metadata(pdf_doc: DoclingDocument) -> None:
+    """Each cell span must carry kind + row/col from TableCell."""
+    (th,) = harvest_docling_tables(pdf_doc)
+    for s in th.spans:
+        assert s.kind in ("table_cell", "table_header_cell")
+        assert s.row_idx is not None and s.col_idx is not None
+    # The pdf fixture's table is 6x2: first two cells are row 0, cols 0/1.
+    assert (th.spans[0].row_idx, th.spans[0].col_idx) == (0, 0)
+    assert (th.spans[1].row_idx, th.spans[1].col_idx) == (0, 1)
+
+
+def test_table_harvest_offsets_tile_full_text(pdf_doc: DoclingDocument) -> None:
+    (th,) = harvest_docling_tables(pdf_doc)
+    for s in th.spans:
+        assert th.full_text[s.start : s.end] == s.text
+
+
+def test_tableless_doc_yields_no_table_harvests(vtt_doc: DoclingDocument) -> None:
+    assert harvest_docling_tables(vtt_doc) == ()
+
+
+def test_main_spans_carry_item_label_as_kind(pdf_doc: DoclingDocument) -> None:
+    """Span ``kind`` mirrors the Docling item label so consumers can
+    distinguish section headers from body text without re-opening the
+    source."""
+    result = harvest_docling_text(pdf_doc)
+    kinds = {s.kind for s in result.spans}
+    assert "section_header" in kinds
+    assert "text" in kinds
+    assert "" not in kinds
 
 
 # --- Picture descriptions (VLM) --------------------------------------------

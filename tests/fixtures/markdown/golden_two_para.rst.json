@@ -1,0 +1,68 @@
+{
+  "schema_name": "isanlp_rst_markdown",
+  "schema_version": "1.0",
+  "tool": "isanlp_rst",
+  "tool_version": "<normalised>",
+  "model_version": "gumrrg",
+  "inventory": "gumrrg",
+  "source": "golden_src.md",
+  "source_origin": {
+    "format": "markdown",
+    "gfm": true,
+    "front_matter": null,
+    "front_matter_format": null
+  },
+  "boundaries": [
+    {
+      "id": "section-0",
+      "kind": "section",
+      "label": "Title",
+      "parent_block_ref": null,
+      "block_refs": [
+        "#/blocks/0",
+        "#/blocks/1",
+        "#/blocks/2"
+      ],
+      "level": 1
+    }
+  ],
+  "relations": [
+    {
+      "id": 0,
+      "relation": "elaboration",
+      "nuclearity": "NS",
+      "nucleus_refs": [
+        "#/blocks/0"
+      ],
+      "satellite_refs": [
+        "#/blocks/1",
+        "#/blocks/2"
+      ],
+      "depth": 0,
+      "left_id": 1,
+      "right_id": 2,
+      "boundary_memberships": [
+        "section-0"
+      ],
+      "note": null
+    }
+  ],
+  "edus": [
+    {
+      "id": 1,
+      "block_refs": [
+        "#/blocks/0"
+      ],
+      "depth": 1
+    },
+    {
+      "id": 2,
+      "block_refs": [
+        "#/blocks/1",
+        "#/blocks/2"
+      ],
+      "depth": 1
+    }
+  ],
+  "table_analyses": []
+}

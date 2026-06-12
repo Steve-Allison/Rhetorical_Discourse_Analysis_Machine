@@ -245,6 +245,18 @@ def _single_document_boundary(doc: DoclingDocument) -> list[Boundary]:
 
 
 def _detect_table_boundaries(doc: DoclingDocument) -> tuple[Boundary, ...]:
+    """Emit one ``table-N`` boundary per ``TableItem``.
+
+    ``self_refs`` is ``(table.self_ref, cell_self_ref_0, ...)`` — the
+    table's own self_ref is the synthetic boundary marker (no
+    ``HarvestSpan`` carries it, so it cannot land in relation refs),
+    followed by every cell ref. Cell refs are real JSON pointers into
+    the Docling document (``f"{table.self_ref}/data/table_cells/{idx}"``),
+    matching ``harvest_docling_tables`` addressing, so per-table analysis
+    refs resolve against both the boundary and the source. Empty cells
+    are listed here too (the boundary doesn't depend on cell text); the
+    harvester skips them, so they never appear in any relation.
+    """
     out: list[Boundary] = []
     for i, table in enumerate(doc.tables):
         if not isinstance(table, TableItem):
@@ -253,13 +265,17 @@ def _detect_table_boundaries(doc: DoclingDocument) -> tuple[Boundary, ...]:
         parent = getattr(table, "parent", None)
         if parent is not None:
             parent_ref = getattr(parent, "cref", None)
+        cell_refs = tuple(
+            f"{table.self_ref}/data/table_cells/{idx}"
+            for idx in range(len(table.data.table_cells))
+        )
         out.append(
             Boundary(
                 id=f"table-{i}",
                 kind="table",
                 label=None,
                 parent_self_ref=parent_ref,
-                self_refs=(table.self_ref,),
+                self_refs=(table.self_ref, *cell_refs),
             )
         )
     return tuple(out)

@@ -1,12 +1,20 @@
 """Schema types for the Docling-native RST output.
 
 All types are frozen-slots dataclasses with value-equality semantics.
-Serialise to JSON via stdlib `json` after `dataclasses.asdict`.
+Serialise via ``result.to_dict()`` / ``result.to_json()``.
+
+Tables are analysed two-level (2026-06-12 directive, Option 2): cells
+never enter the main document harvest; each table gets its own
+mini-parse whose relations/edus land in ``DoclingRstResult.table_analyses``.
+Cell addresses are real JSON pointers into the Docling document
+(``#/tables/N/data/table_cells/M``), so consumers can resolve them
+mechanically against the source.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import json
+from dataclasses import asdict, dataclass
 from typing import Any
 
 
@@ -14,25 +22,52 @@ from typing import Any
 class HarvestSpan:
     """One unit of text harvested from the Docling document.
 
-    `self_ref` is the source node's Docling identifier (e.g. ``#/texts/47``
-    for a TextItem, ``#/pictures/3`` for a picture-description span). `start`
-    and `end` are half-open character offsets into the concatenated harvest.
+    ``self_ref`` is the source node's Docling identifier (``#/texts/47``
+    for a TextItem, ``#/pictures/3`` for a picture-description span,
+    ``#/tables/2/data/table_cells/5`` for a table cell inside a
+    table harvest). ``start`` and ``end`` are half-open character
+    offsets into the harvest the span belongs to (document harvest or
+    one table's harvest).
+
+    ``kind`` carries the Docling item label (``"text"``,
+    ``"section_header"``, ``"list_item"``, …), ``"picture_description"``
+    for picture spans, or ``"table_cell"`` / ``"table_header_cell"``
+    for cells. ``row_idx`` / ``col_idx`` are set only for cells
+    (``TableCell.start_row_offset_idx`` / ``start_col_offset_idx``).
     """
 
     self_ref: str
     text: str
     start: int
     end: int
+    kind: str = ""
+    row_idx: int | None = None
+    col_idx: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class HarvestResult:
     """Concatenated harvest produced from a DoclingDocument.
 
-    `full_text` is the input passed to the RST parser. `spans` is the
+    ``full_text`` is the input passed to the RST parser. ``spans`` is the
     ordered tuple of HarvestSpans that compose it.
     """
 
+    full_text: str
+    spans: tuple[HarvestSpan, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class TableHarvest:
+    """One table's cell harvest, offsets local to ``full_text``.
+
+    ``marker_ref`` is the table's own ``self_ref`` (``#/tables/N``) —
+    the synthetic boundary marker. ``spans`` covers the non-empty cells
+    in ``TableItem.data.table_cells`` order.
+    """
+
+    table_idx: int
+    marker_ref: str
     full_text: str
     spans: tuple[HarvestSpan, ...]
 
@@ -43,7 +78,7 @@ class Boundary:
 
     Boundaries are emitted from the Docling structure independently of
     the RST tree. The mapper intersects each relation's refs with each
-    boundary's `self_refs` to compute `boundary_memberships`.
+    boundary's ``self_refs`` to compute ``boundary_memberships``.
     """
 
     id: str
@@ -57,7 +92,7 @@ class Boundary:
 
 @dataclass(frozen=True, slots=True)
 class RstRelation:
-    """One internal node of the RST tree."""
+    """One internal node of an RST tree."""
 
     id: int
     relation: str
@@ -73,11 +108,26 @@ class RstRelation:
 
 @dataclass(frozen=True, slots=True)
 class RstEdu:
-    """One leaf of the RST tree (Elementary Discourse Unit)."""
+    """One leaf of an RST tree (Elementary Discourse Unit)."""
 
     id: int
     self_refs: tuple[str, ...]
     depth: int
+
+
+@dataclass(frozen=True, slots=True)
+class TableAnalysis:
+    """The per-table RST mini-parse (two-level analysis, Option 2).
+
+    ``id`` is the matching ``table-N`` boundary id. ``relations`` /
+    ``edus`` use an id namespace local to this analysis (independent of
+    the document tree and of other tables). Cell refs resolve against
+    the ``table-N`` boundary's ``self_refs``.
+    """
+
+    id: str
+    relations: tuple[RstRelation, ...]
+    edus: tuple[RstEdu, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -95,3 +145,12 @@ class DoclingRstResult:
     boundaries: tuple[Boundary, ...]
     relations: tuple[RstRelation, ...]
     edus: tuple[RstEdu, ...]
+    table_analyses: tuple[TableAnalysis, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        """JSON-shaped plain data (nested dataclasses → dicts, tuples → lists)."""
+        return json.loads(self.to_json(indent=None))
+
+    def to_json(self, *, indent: int | None = 2) -> str:
+        """JSON string of the result."""
+        return json.dumps(asdict(self), ensure_ascii=False, indent=indent)

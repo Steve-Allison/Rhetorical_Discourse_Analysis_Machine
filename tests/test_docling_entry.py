@@ -45,7 +45,6 @@ PPTX_FIXTURE = FIXTURES / "pptx.docling.json"
 @pytest.mark.parametrize(
     "device,expected",
     [
-        ("auto", 0),
         ("cpu", -1),
         ("mps", 0),
         ("cuda", 0),
@@ -56,6 +55,14 @@ PPTX_FIXTURE = FIXTURES / "pptx.docling.json"
 )
 def test_resolve_device_valid(device: str, expected: int) -> None:
     assert _resolve_device(device) == expected
+
+
+def test_resolve_device_auto_follows_torch_backends() -> None:
+    """``auto`` is 0 when torch reports a backend, -1 (CPU) otherwise."""
+    import torch
+
+    expected = 0 if (torch.cuda.is_available() or torch.backends.mps.is_available()) else -1
+    assert _resolve_device("auto") == expected
 
 
 @pytest.mark.parametrize(
@@ -193,12 +200,30 @@ def test_parse_docling_ids_resolve_left_right(parser) -> None:
 
 
 @pytest.mark.slow
-def test_parse_docling_no_table_refs_in_relations(parser) -> None:
-    """Per plan §Decisions: tables never appear in relation refs."""
+def test_parse_docling_main_relations_never_reference_tables(parser) -> None:
+    """Two-level invariant: cells live in table_analyses, the synthetic
+    marker lives in the boundary — the main tree references neither."""
     result = parse_docling(PPTX_FIXTURE, parser=parser)
     for relation in result.relations:
         for ref in (*relation.nucleus_refs, *relation.satellite_refs):
-            assert not ref.startswith("#/tables/"), f"table ref leaked: {ref}"
+            assert not ref.startswith("#/tables/"), f"table ref leaked into main tree: {ref}"
+
+
+@pytest.mark.slow
+def test_parse_docling_table_analyses_end_to_end(parser) -> None:
+    """The PPTX fixture has 20 tables — analyses exist for those with
+    non-empty cells, and each analysis's refs resolve against its
+    boundary."""
+    result = parse_docling(PPTX_FIXTURE, parser=parser)
+    assert result.table_analyses, "no table analyses produced"
+    boundary_by_id = {b.id: b for b in result.boundaries}
+    for analysis in result.table_analyses:
+        boundary = boundary_by_id[analysis.id]
+        assert boundary.kind == "table"
+        assert analysis.edus, f"{analysis.id} has no EDUs"
+        for edu in analysis.edus:
+            for ref in edu.self_refs:
+                assert ref in boundary.self_refs, f"{ref} not in {analysis.id}"
 
 
 @pytest.mark.slow

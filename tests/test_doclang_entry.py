@@ -49,7 +49,6 @@ TABLE_ONLY = FIXTURES / "ok_table_rectangular.dclg.xml"
 @pytest.mark.parametrize(
     "device,expected",
     [
-        ("auto", 0),
         ("cpu", -1),
         ("mps", 0),
         ("cuda", 0),
@@ -60,6 +59,14 @@ TABLE_ONLY = FIXTURES / "ok_table_rectangular.dclg.xml"
 )
 def test_resolve_device_valid(device: str, expected: int) -> None:
     assert _resolve_device(device) == expected
+
+
+def test_resolve_device_auto_follows_torch_backends() -> None:
+    """``auto`` is 0 when torch reports a backend, -1 (CPU) otherwise."""
+    import torch
+
+    expected = 0 if (torch.cuda.is_available() or torch.backends.mps.is_available()) else -1
+    assert _resolve_device("auto") == expected
 
 
 @pytest.mark.parametrize(
@@ -186,11 +193,63 @@ def test_empty_doclang_error_with_head_only(tmp_path: Path) -> None:
         parse_doclang(path, validate_xml=False)
 
 
-def test_empty_harvest_error_on_table_only() -> None:
-    """``ok_table_rectangular`` is table-only — harvest is empty, must
-    raise ``EmptyHarvestError`` before the parser is constructed."""
+def test_table_only_raises_only_when_table_analysis_disabled() -> None:
+    """Two-level analysis: a table-only document is parseable (the
+    content lives in table_analyses), so EmptyHarvestError fires only
+    when ``include_table_cells=False`` removes the last harvestable
+    content."""
     with pytest.raises(EmptyHarvestError):
-        parse_doclang(TABLE_ONLY, validate_xml=False)
+        parse_doclang(
+            TABLE_ONLY, validate_xml=False, include_table_cells=False
+        )
+
+
+class _StubNode:
+    """Duck-typed DiscourseUnit stand-in for two-level orchestration tests."""
+
+    def __init__(self, start: int, end: int, left=None, right=None,
+                 relation: str = "", nuclearity: str = "") -> None:
+        self.start = start
+        self.end = end
+        self.left = left
+        self.right = right
+        self.relation = relation
+        self.nuclearity = nuclearity
+
+
+class _StubParser:
+    """Deterministic Parser stand-in — splits at the first separator."""
+
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+
+    def __call__(self, text: str) -> dict:
+        self.calls.append(text)
+        n = len(text)
+        if "\n\n" in text:
+            cut = text.index("\n\n")
+            root = _StubNode(0, n, _StubNode(0, cut), _StubNode(cut + 2, n),
+                             "elaboration", "NS")
+        else:
+            root = _StubNode(0, n)
+        return {"rst": [root]}
+
+
+def test_table_only_doc_produces_analyses_with_empty_main_tree() -> None:
+    """The 3-table fixture parses to an empty main tree + 3 analyses
+    whose refs resolve against their boundaries."""
+    stub = _StubParser()
+    result = parse_doclang(TABLE_ONLY, parser=stub, validate_xml=False)  # type: ignore[arg-type]
+    assert result.relations == ()
+    assert result.edus == ()
+    assert [a.id for a in result.table_analyses] == ["table-0", "table-1", "table-2"]
+    boundary_by_id = {b.id: b for b in result.boundaries}
+    for analysis in result.table_analyses:
+        boundary = boundary_by_id[analysis.id]
+        for edu in analysis.edus:
+            for xp in edu.xpaths:
+                assert xp in boundary.xpaths
+    assert len(stub.calls) == 3  # no main parse, one per table
 
 
 # ===========================================================================
@@ -232,14 +291,13 @@ def test_parse_doclang_ids_resolve_left_right(parser) -> None:
 
 
 @pytest.mark.slow
-def test_parse_doclang_no_table_xpaths_in_relations(parser) -> None:
-    """Per design: tables never appear in relation xpaths."""
+def test_parse_doclang_main_relations_never_reference_tables(parser) -> None:
+    """Two-level invariant: table content (cells AND the synthetic
+    marker) lives in table_analyses, never in the main tree."""
     result = parse_doclang(COMPREHENSIVE, parser=parser, validate_xml=False)
     for relation in result.relations:
         for xp in (*relation.nucleus_xpaths, *relation.satellite_xpaths):
-            # The last step must not be table[N].
-            last = xp.rsplit("/", 1)[-1]
-            assert not last.startswith("table["), f"table xpath leaked: {xp}"
+            assert "/table[" not in xp, f"table xpath leaked into main tree: {xp}"
 
 
 @pytest.mark.slow

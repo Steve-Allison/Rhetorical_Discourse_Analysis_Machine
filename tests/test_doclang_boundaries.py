@@ -119,13 +119,36 @@ def test_table_boundary_per_table_doc_order() -> None:
     assert [b.id for b in tables] == [f"table-{i}" for i in range(3)]
 
 
-def test_table_xpaths_point_at_table_element() -> None:
+def test_table_boundary_first_xpath_points_at_table_element() -> None:
+    """Phase 9: each table boundary starts with the synthetic table xpath
+    (boundary marker, no harvest span) followed by per-cell xpaths."""
     result = detect_boundaries(_tree("ok_table_rectangular.dclg.xml"))
     tables = [b for b in result if b.kind == "table"]
     for t in tables:
-        assert len(t.xpaths) == 1
+        # First xpath is the table element itself.
         last = t.xpaths[0].rsplit("/", 1)[-1]
         assert last.startswith("table[")
+        # Subsequent xpaths are cell markers under the same table.
+        cell_markers = {"ched", "fcel", "rhed", "corn"}
+        for xp in t.xpaths[1:]:
+            tail = xp.rsplit("/", 1)[-1]
+            local = tail.split("[", 1)[0]
+            assert local in cell_markers, f"unexpected cell marker: {xp}"
+            # And each cell xpath sits under this same table.
+            assert xp.startswith(t.xpaths[0] + "/"), f"cell {xp} not under {t.xpaths[0]}"
+
+
+def test_table_boundary_excludes_ecel_and_nl() -> None:
+    """``<ecel/>`` cells and ``<nl/>`` row breaks must not appear among
+    boundary xpaths — they have no harvest spans, so listing them would
+    be dead weight."""
+    result = detect_boundaries(_tree("ok_table_rectangular.dclg.xml"))
+    tables = [b for b in result if b.kind == "table"]
+    for t in tables:
+        for xp in t.xpaths:
+            tail = xp.rsplit("/", 1)[-1]
+            local = tail.split("[", 1)[0]
+            assert local not in {"ecel", "nl"}, f"forbidden marker in boundary: {xp}"
 
 
 # --- Field-region boundaries ----------------------------------------------

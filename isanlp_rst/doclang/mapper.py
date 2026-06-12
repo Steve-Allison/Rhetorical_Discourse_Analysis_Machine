@@ -1,24 +1,10 @@
 """Map an RST tree's character-offset spans to DocLang xpaths.
 
-Two pure functions:
-
-- ``compute_overlap_refs(start, end, spans)`` — given a half-open character
-  range and the harvest's spans, return every span whose xpath overlaps
-  the range, plus an optional ``note`` describing lopsided overlaps where
-  one span carries >= ``NOTE_THRESHOLD`` of the total. Delegates to the
-  generic ``isanlp_rst._rst_common`` function.
-
-- ``flatten_tree(tree, harvest_spans, boundaries)`` — walk a binary
-  ``DiscourseUnit`` tree in pre-order, assign sequential ids (shared
-  namespace across relations and edus), compute per-relation xpaths +
-  thread_ids + boundary_memberships, and emit ``(relations, edus)`` tuples.
-
-Per the verified plan:
-- ``thread_ids`` on a relation / edu is the deduplicated tuple of
-  ``thread_id`` values carried by its constituent spans (Phase 1
-  confirmed at most one ``<thread>`` per host element).
-- The ``DiscourseUnit`` walk is identical in shape to the Docling
-  variant; the schema construction differs.
+Thin format binding over ``isanlp_rst._rst_common``: the address is each
+span's ``xpath``; relations and edus are the DocLang schema types, with
+``thread_ids`` aggregated per node from the constituent spans (Phase 1
+confirmed at most one ``<thread>`` per host element). The traversal
+itself lives in ``_rst_common._flatten``.
 """
 
 from __future__ import annotations
@@ -28,10 +14,13 @@ from typing import Any
 
 from .._rst_common import (
     NOTE_THRESHOLD,
-    split_refs_by_nuclearity,
+    SpanIndex,
 )
 from .._rst_common import (
     compute_overlap_refs as _generic_compute_overlap_refs,
+)
+from .._rst_common import (
+    flatten_tree as _generic_flatten_tree,
 )
 from .schema import Boundary, HarvestSpan, RstEdu, RstRelation
 
@@ -90,85 +79,49 @@ def flatten_tree(
     and edus. ``boundary_memberships`` for each relation lists the boundary
     ids whose ``xpaths`` intersect the relation's node-level xpaths.
     """
-    id_map: dict[int, int] = {}
-    counter = 0
-
-    def _assign(node: Any) -> None:
-        nonlocal counter
-        id_map[id(node)] = counter
-        counter += 1
-        left = getattr(node, "left", None)
-        right = getattr(node, "right", None)
-        if left is not None:
-            _assign(left)
-        if right is not None:
-            _assign(right)
-
-    _assign(tree)
-
     span_lookup: dict[str, HarvestSpan] = {s.xpath: s for s in harvest_spans}
-    boundary_sets: list[tuple[str, frozenset[str]]] = [
-        (b.id, frozenset(b.xpaths)) for b in boundaries
-    ]
 
-    relations: list[RstRelation] = []
-    edus: list[RstEdu] = []
-
-    def _build(node: Any, depth: int) -> None:
-        my_id = id_map[id(node)]
-        left = getattr(node, "left", None)
-        right = getattr(node, "right", None)
-        is_leaf = left is None and right is None
-        node_xpaths, node_note = compute_overlap_refs(
-            node.start, node.end, harvest_spans, note_threshold=note_threshold
+    def make_relation(
+        *,
+        id: int,
+        relation: str,
+        nuclearity: str,
+        nucleus_refs: tuple[str, ...],
+        satellite_refs: tuple[str, ...],
+        depth: int,
+        left_id: int,
+        right_id: int,
+        boundary_memberships: tuple[str, ...],
+        note: str | None,
+    ) -> RstRelation:
+        return RstRelation(
+            id=id,
+            relation=relation,
+            nuclearity=nuclearity,
+            nucleus_xpaths=nucleus_refs,
+            satellite_xpaths=satellite_refs,
+            nucleus_thread_ids=_thread_ids_for_xpaths(nucleus_refs, span_lookup),
+            satellite_thread_ids=_thread_ids_for_xpaths(satellite_refs, span_lookup),
+            depth=depth,
+            left_id=left_id,
+            right_id=right_id,
+            boundary_memberships=boundary_memberships,
+            note=note,
         )
 
-        if is_leaf:
-            edus.append(
-                RstEdu(
-                    id=my_id,
-                    xpaths=node_xpaths,
-                    thread_ids=_thread_ids_for_xpaths(node_xpaths, span_lookup),
-                    depth=depth,
-                )
-            )
-            return
-
-        # Binary-tree invariant: internal nodes always have both children
-        # (see isanlp_rst/base_predictor.py).
-        assert left is not None and right is not None
-        left_xpaths, _ = compute_overlap_refs(left.start, left.end, harvest_spans)
-        right_xpaths, _ = compute_overlap_refs(right.start, right.end, harvest_spans)
-        nuclearity = getattr(node, "nuclearity", "") or ""
-        relation = getattr(node, "relation", "") or ""
-        nucleus_xpaths, satellite_xpaths = split_refs_by_nuclearity(
-            left_xpaths, right_xpaths, nuclearity
+    def make_edu(*, id: int, refs: tuple[str, ...], depth: int) -> RstEdu:
+        return RstEdu(
+            id=id,
+            xpaths=refs,
+            thread_ids=_thread_ids_for_xpaths(refs, span_lookup),
+            depth=depth,
         )
 
-        node_xpath_set = set(node_xpaths)
-        memberships = tuple(
-            bid for bid, bxpaths in boundary_sets if node_xpath_set & bxpaths
-        )
-
-        relations.append(
-            RstRelation(
-                id=my_id,
-                relation=relation,
-                nuclearity=nuclearity,
-                nucleus_xpaths=nucleus_xpaths,
-                satellite_xpaths=satellite_xpaths,
-                nucleus_thread_ids=_thread_ids_for_xpaths(nucleus_xpaths, span_lookup),
-                satellite_thread_ids=_thread_ids_for_xpaths(satellite_xpaths, span_lookup),
-                depth=depth,
-                left_id=id_map[id(left)],
-                right_id=id_map[id(right)],
-                boundary_memberships=memberships,
-                note=node_note,
-            )
-        )
-
-        _build(left, depth + 1)
-        _build(right, depth + 1)
-
-    _build(tree, 0)
-    return tuple(relations), tuple(edus)
+    return _generic_flatten_tree(
+        tree,
+        SpanIndex(harvest_spans, ref_of=_xpath),
+        [(b.id, frozenset(b.xpaths)) for b in boundaries],
+        make_relation=make_relation,
+        make_edu=make_edu,
+        note_threshold=note_threshold,
+    )

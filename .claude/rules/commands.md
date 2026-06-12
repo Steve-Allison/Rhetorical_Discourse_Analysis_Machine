@@ -22,7 +22,12 @@ pixi run smoke-full     # full smoke (all five published models)
 pixi run smoke-full-mps # full smoke on MPS
 pixi run bench          # performance bench across models / dtypes
 pixi run cuda-smoke     # CUDA verification (for NVIDIA hosts only)
+pixi run rst-diag <paths>  # RST quality proxy metrics over .md / docling / doclang sources
 ```
+
+`rst-diag` loads the model once and dispatches by suffix; use it to A/B
+any harvest-policy change (joint ratio, tree skew, cross-boundary ratio,
+note ratio, table-analysis count). `--json` for machine output.
 
 ## Dependency management
 

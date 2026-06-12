@@ -189,21 +189,36 @@ def _detect_group_boundaries(root: etree._Element) -> list[Boundary]:
 
 
 def _detect_table_boundaries(root: etree._Element) -> list[Boundary]:
-    """Emit one ``table-N`` boundary per ``<table>``, in document order."""
+    """Emit one ``table-N`` boundary per ``<table>``, in document order.
+
+    ``xpaths`` is ``(table_xpath, cell_marker_xpath_0, …)`` — the table
+    element's own xpath is the synthetic boundary marker (no harvest span
+    carries it, so it cannot land in relation refs), followed by each
+    cell marker's xpath. Empty-by-grammar ``<ecel/>`` cells are skipped
+    here too — the harvester would emit no span for them, so their
+    xpaths in the boundary would never match.
+    """
     boundaries: list[Boundary] = []
     idx = 0
+    cell_markers = {"ched", "fcel", "rhed", "corn"}
     for el in _walk_descendants(root):
         if not isinstance(el.tag, str) or local_name(el) != "table":
             continue
         parent = el.getparent()
         parent_xpath = local_path(parent) if parent is not None else None
+        cell_xpaths: list[str] = []
+        for child in el:
+            if not isinstance(child.tag, str):
+                continue
+            if local_name(child) in cell_markers:
+                cell_xpaths.append(local_path(child))
         boundaries.append(
             Boundary(
                 id=f"table-{idx}",
                 kind="table",
                 label=None,
                 parent_xpath=parent_xpath,
-                xpaths=(local_path(el),),
+                xpaths=(local_path(el), *cell_xpaths),
             )
         )
         idx += 1

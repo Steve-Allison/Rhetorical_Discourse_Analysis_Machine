@@ -1,9 +1,8 @@
-"""Map an RST tree's character-offset spans to Docling self_refs.
+"""Map an RST tree's character-offset spans to markdown ``block_ref``s.
 
 Thin format binding over ``isanlp_rst._rst_common``: the address is each
-span's ``self_ref``; relations and edus are the Docling schema types.
-The traversal itself (iterative pre-order, shared id namespace, boundary
-memberships) lives in ``_rst_common._flatten``.
+span's ``block_ref``; relations and edus are the markdown schema types.
+The traversal itself lives in ``_rst_common._flatten``.
 """
 
 from __future__ import annotations
@@ -25,7 +24,7 @@ from .schema import Boundary, HarvestSpan, RstEdu, RstRelation
 
 __all__ = ["NOTE_THRESHOLD", "compute_overlap_refs", "flatten_tree"]
 
-_self_ref = attrgetter("self_ref")
+_block_ref = attrgetter("block_ref")
 
 
 def compute_overlap_refs(
@@ -35,18 +34,18 @@ def compute_overlap_refs(
     *,
     note_threshold: float = NOTE_THRESHOLD,
 ) -> tuple[tuple[str, ...], str | None]:
-    """Return ``(refs, note)`` for the half-open range ``[start, end)``.
+    """Return ``(block_refs, note)`` for the half-open range ``[start, end)``.
 
-    Docling-specific wrapper over the generic overlap function — the
-    address is each span's ``self_ref``.
+    Markdown-specific wrapper over the generic overlap function — the
+    address is each span's ``block_ref``.
     """
     return _generic_compute_overlap_refs(
-        start, end, spans, ref_of=_self_ref, note_threshold=note_threshold
+        start, end, spans, ref_of=_block_ref, note_threshold=note_threshold
     )
 
 
 def _make_edu(*, id: int, refs: tuple[str, ...], depth: int) -> RstEdu:
-    return RstEdu(id=id, self_refs=refs, depth=depth)
+    return RstEdu(id=id, block_refs=refs, depth=depth)
 
 
 def flatten_tree(
@@ -56,16 +55,16 @@ def flatten_tree(
     *,
     note_threshold: float = NOTE_THRESHOLD,
 ) -> tuple[tuple[RstRelation, ...], tuple[RstEdu, ...]]:
-    """Flatten a DiscourseUnit tree into ``(relations, edus)`` tuples.
+    """Flatten a ``DiscourseUnit`` tree into ``(relations, edus)`` tuples.
 
     Ids are assigned in pre-order traversal and shared across relations
     and edus. ``boundary_memberships`` for each relation lists the boundary
-    ids whose ``self_refs`` intersect the relation's node-level refs.
+    ids whose ``block_refs`` intersect the relation's node-level block_refs.
     """
     return _generic_flatten_tree(
         tree,
-        SpanIndex(harvest_spans, ref_of=_self_ref),
-        [(b.id, frozenset(b.self_refs)) for b in boundaries],
+        SpanIndex(harvest_spans, ref_of=_block_ref),
+        [(b.id, frozenset(b.block_refs)) for b in boundaries],
         make_relation=RstRelation,
         make_edu=_make_edu,
         note_threshold=note_threshold,

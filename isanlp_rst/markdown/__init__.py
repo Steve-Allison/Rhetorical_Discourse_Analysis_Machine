@@ -1,29 +1,31 @@
-"""Docling-native RST parsing for isanlp_rst.
+"""Markdown-native RST parsing for isanlp_rst.
 
 Public API:
 
-- ``parse_docling(path, *, parser=None, ...)`` — entry point.
-- ``DoclingRstResult``, ``Boundary``, ``RstRelation``, ``RstEdu``,
+- ``parse_markdown(path, *, parser=None, ...)`` — entry point.
+- ``MarkdownRstResult``, ``Boundary``, ``RstRelation``, ``RstEdu``,
   ``TableAnalysis`` — result types.
 - ``HarvestResult``, ``HarvestSpan``, ``TableHarvest`` — harvest
   intermediates.
-- ``DoclingRstError`` and subclasses — error hierarchy.
+- ``MarkdownRstError`` and subclasses — error hierarchy.
+
+Plan: ``docs/plans/2026-06-12-markdown-native-rst.md``.
 """
 
 from __future__ import annotations
 
-from ._entry import parse_docling
+from ._entry import parse_markdown
 from .errors import (
-    DoclingRstError,
-    EmptyDoclingError,
     EmptyHarvestError,
+    EmptyMarkdownError,
     InputTooLargeError,
+    MarkdownRstError,
 )
 from .schema import (
     Boundary,
-    DoclingRstResult,
     HarvestResult,
     HarvestSpan,
+    MarkdownRstResult,
     RstEdu,
     RstRelation,
     TableAnalysis,
@@ -32,16 +34,16 @@ from .schema import (
 
 __all__ = [
     "Boundary",
-    "DoclingRstError",
-    "DoclingRstResult",
-    "EmptyDoclingError",
     "EmptyHarvestError",
+    "EmptyMarkdownError",
     "HarvestResult",
     "HarvestSpan",
     "InputTooLargeError",
+    "MarkdownRstError",
+    "MarkdownRstResult",
     "RstEdu",
     "RstRelation",
     "TableAnalysis",
     "TableHarvest",
-    "parse_docling",
+    "parse_markdown",
 ]

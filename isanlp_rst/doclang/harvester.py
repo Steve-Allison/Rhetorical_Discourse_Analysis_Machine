@@ -1,23 +1,33 @@
-"""Harvest concatenated text from a parsed DocLang document for RST parsing.
+"""Harvest text from a parsed DocLang document for RST parsing.
 
-Walks the lxml element tree and emits one ``HarvestSpan`` per text-bearing
-unit, addressed by its local-name canonical XPath. Virtual-text container
-shapes (``<list>``, ``<table>``, ``<index>``) are partitioned at the
-self-closing marker tokens (``<ldiv/>``, ``<fcel/>``, ``<ched/>``, etc.).
+Two harvesters:
 
-Skipped (boundary-only per design):
-  - ``<table>`` body (cells excluded from RST input; boundary emitted)
-  - ``<index>`` body (same model as table)
-  - ``<field_region>`` body (key/value text is structurally distinct)
+- ``harvest_doclang_text`` — the main document harvest. Walks the lxml
+  element tree and emits one ``HarvestSpan`` per text-bearing unit,
+  addressed by its local-name canonical XPath. ``<table>`` / ``<index>``
+  / ``<tabular>`` are boundary-only here — tables are analysed
+  separately (two-level analysis, 2026-06-12 directive Option 2).
+  Consecutive spans sharing a ``thread_id`` are joined with a single
+  space rather than the harvest separator: ``<thread>`` marks paragraph
+  continuation across page breaks, and a hard break mid-paragraph would
+  make the segmenter treat one sentence as two.
+- ``harvest_doclang_tables`` — one ``TableHarvest`` per ``<table>``,
+  in document order, cells addressed by their marker xpaths with
+  row/col grid positions.
 
-Off by default (opt-in via knobs):
+Virtual-text container shapes (``<list>``) are partitioned at the
+self-closing ``<ldiv/>`` marker tokens. Table cells partition at the
+OTSL grid markers: ``<ched/>`` / ``<rhed/>`` / ``<corn/>`` (header
+cells), ``<fcel/>`` (body cells), ``<ecel/>`` (empty — occupies a grid
+position, never yields a span), ``<lcel/>`` / ``<ucel/>`` / ``<xcel/>``
+(span-continuation — occupy positions, never yield), ``<nl/>`` (row
+break).
+
+Off by default in the main harvest (opt-in via knobs):
   - ``<formula>`` — LaTeX; not natural-language prose
   - ``<code>``    — source code; not natural-language prose
   - ``<page_header>`` / ``<page_footer>`` — furniture-by-position
-  - ``<layer value="background">`` items
-  - ``<layer value="furniture">`` items
-
-Spans are concatenated with ``harvest_separator`` (default ``"\\n\\n"``).
+  - ``<layer value="background">`` / ``<layer value="furniture">`` items
 """
 
 from __future__ import annotations
@@ -27,7 +37,7 @@ from collections.abc import Iterable
 from lxml import etree
 
 from .loader import local_name, local_path
-from .schema import HarvestResult, HarvestSpan
+from .schema import HarvestResult, HarvestSpan, TableHarvest
 
 # Element-head children whose own text must NOT enter the harvest — they
 # are metadata, not prose.
@@ -47,6 +57,15 @@ _HARVEST_AS_BLOCK: frozenset[str] = frozenset({
     "text", "heading", "footnote",
 })
 
+# OTSL-style cell markers per DocLang 0.5.
+_HEADER_CELL_MARKERS: frozenset[str] = frozenset({"ched", "rhed", "corn"})
+_BODY_CELL_MARKERS: frozenset[str] = frozenset({"fcel"})
+_POSITION_ONLY_MARKERS: frozenset[str] = frozenset({"ecel", "lcel", "ucel", "xcel"})
+_GRID_MARKERS: frozenset[str] = (
+    _HEADER_CELL_MARKERS | _BODY_CELL_MARKERS | _POSITION_ONLY_MARKERS
+)
+_ROW_BREAK: str = "nl"
+
 
 def _element_layer(element: etree._Element) -> str:
     """Return the effective ``<layer value="...">`` for ``element``.
@@ -61,6 +80,16 @@ def _element_layer(element: etree._Element) -> str:
             if value:
                 return value
     return "body"
+
+
+def _thread_id(element: etree._Element) -> int | None:
+    """Return the element's ``<thread thread_id="N"/>`` value, if any."""
+    for child in element:
+        if isinstance(child.tag, str) and local_name(child) == "thread":
+            value = child.get("thread_id")
+            if value is not None:
+                return int(value)
+    return None
 
 
 def _prose_itertext(element: etree._Element) -> Iterable[str]:
@@ -124,6 +153,71 @@ def _list_items(list_el: etree._Element) -> Iterable[tuple[etree._Element, str]]
             i += 1
 
 
+def _table_cells(
+    table_el: etree._Element,
+) -> Iterable[tuple[etree._Element, str, str, int, int]]:
+    """Yield ``(marker, kind, text, row, col)`` per non-empty cell in a ``<table>``.
+
+    Cell text accumulates from the marker's ``.tail`` plus subsequent
+    siblings' text up to the next grid marker or ``<nl/>`` row break.
+    Position-only markers (``<ecel/>``, ``<lcel/>``, ``<ucel/>``,
+    ``<xcel/>``) occupy a grid column and terminate the previous cell's
+    accumulation but never yield. Rows are delimited by ``<nl/>``.
+    """
+    children = list(table_el)
+    n = len(children)
+    row = 0
+    col = 0
+    i = 0
+    while i < n:
+        child = children[i]
+        if not isinstance(child.tag, str):
+            i += 1
+            continue
+        tag = local_name(child)
+        if tag == _ROW_BREAK:
+            row += 1
+            col = 0
+            i += 1
+            continue
+        if tag not in _GRID_MARKERS:
+            i += 1
+            continue
+        if tag in _POSITION_ONLY_MARKERS:
+            col += 1
+            i += 1
+            continue
+        marker = child
+        marker_col = col
+        col += 1
+        pieces: list[str] = []
+        if marker.tail:
+            pieces.append(marker.tail)
+        j = i + 1
+        while j < n:
+            sib = children[j]
+            if not isinstance(sib.tag, str):
+                j += 1
+                continue
+            sib_local = local_name(sib)
+            if sib_local in _GRID_MARKERS or sib_local == _ROW_BREAK:
+                break
+            if sib_local in _HEAD_LOCALS:
+                if sib.tail:
+                    pieces.append(sib.tail)
+            else:
+                pieces.extend(sib.itertext())
+                if sib.tail:
+                    pieces.append(sib.tail)
+            j += 1
+        text = "".join(pieces).strip()
+        if text:
+            kind = "table_header_cell" if tag in _HEADER_CELL_MARKERS else "table_cell"
+            yield marker, kind, text, row, marker_col
+        i = j
+    return
+
+
 def harvest_doclang_text(
     tree: etree._ElementTree,
     *,
@@ -135,7 +229,7 @@ def harvest_doclang_text(
     include_formulas: bool = False,
     harvest_separator: str = "\n\n",
 ) -> HarvestResult:
-    """Produce a concatenated text harvest with per-span xpath mapping.
+    """Produce the main document harvest with per-span xpath mapping.
 
     Args:
         tree: a parsed DocLang document (``lxml.etree._ElementTree``).
@@ -148,12 +242,15 @@ def harvest_doclang_text(
             (default: skipped — boundary-only).
         include_code_blocks: harvest ``<code>`` element text.
         include_formulas: harvest ``<formula>`` element text.
-        harvest_separator: inserted between consecutive harvested spans.
+        harvest_separator: inserted between consecutive harvested spans —
+            except between spans sharing a ``thread_id``, which join with
+            a single space (paragraph continuation).
 
     Returns:
-        ``HarvestResult`` whose ``full_text`` is the concatenated input
+        ``HarvestResult`` whose ``full_text`` is the document-level input
         for the RST parser, and whose ``spans`` map each text range back
-        to its source ``xpath`` in document order.
+        to its source ``xpath`` in document order. Tables are never
+        included — see ``harvest_doclang_tables``.
     """
     root = tree.getroot()
     allowed_layers: set[str] = {"body"}
@@ -162,17 +259,20 @@ def harvest_doclang_text(
     if include_furniture:
         allowed_layers.add("furniture")
 
-    pieces: list[str] = []
+    parts: list[str] = []
     spans: list[HarvestSpan] = []
     cursor = 0
-    sep_len = len(harvest_separator)
 
-    def _emit(xpath: str, thread_id: int | None, layer: str, text: str) -> None:
+    def _emit(xpath: str, kind: str, thread_id: int | None, layer: str, text: str) -> None:
         nonlocal cursor
         if not text:
             return
-        if pieces:
-            cursor += sep_len
+        if spans:
+            prev = spans[-1]
+            continuation = thread_id is not None and prev.thread_id == thread_id
+            sep = " " if continuation else harvest_separator
+            parts.append(sep)
+            cursor += len(sep)
         start = cursor
         end = start + len(text)
         spans.append(HarvestSpan(
@@ -182,17 +282,10 @@ def harvest_doclang_text(
             text=text,
             start=start,
             end=end,
+            kind=kind,
         ))
-        pieces.append(text)
+        parts.append(text)
         cursor = end
-
-    def _thread_id(element: etree._Element) -> int | None:
-        for child in element:
-            if isinstance(child.tag, str) and local_name(child) == "thread":
-                value = child.get("thread_id")
-                if value is not None:
-                    return int(value)
-        return None
 
     def _walk(element: etree._Element) -> None:
         if not isinstance(element.tag, str):
@@ -203,7 +296,7 @@ def harvest_doclang_text(
             layer = _element_layer(element)
             if layer in allowed_layers:
                 for marker, item_text in _list_items(element):
-                    _emit(local_path(marker), _thread_id(element), layer, item_text)
+                    _emit(local_path(marker), "list_item", _thread_id(element), layer, item_text)
             # nested lists / structural children are handled within _list_items;
             # we still recurse into nested lists for their own boundaries.
             for child in element:
@@ -212,7 +305,8 @@ def harvest_doclang_text(
             return
 
         if tag in {"table", "index", "tabular"}:
-            # Boundary-only; cells are not harvested as prose.
+            # Boundary-only in the main harvest; tables are analysed
+            # per-table via harvest_doclang_tables (two-level analysis).
             return
 
         if tag == "field_region":
@@ -227,7 +321,7 @@ def harvest_doclang_text(
                 return
             layer = _element_layer(element)
             text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), _thread_id(element), layer, text)
+            _emit(local_path(element), tag, _thread_id(element), layer, text)
             return
 
         if tag == "formula":
@@ -237,7 +331,7 @@ def harvest_doclang_text(
             if layer not in allowed_layers:
                 return
             text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), _thread_id(element), layer, text)
+            _emit(local_path(element), "formula", _thread_id(element), layer, text)
             return
 
         if tag == "code":
@@ -247,7 +341,7 @@ def harvest_doclang_text(
             if layer not in allowed_layers:
                 return
             text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), _thread_id(element), layer, text)
+            _emit(local_path(element), "code", _thread_id(element), layer, text)
             return
 
         if tag == "picture":
@@ -259,7 +353,7 @@ def harvest_doclang_text(
             for child in element:
                 if isinstance(child.tag, str) and local_name(child) == "caption":
                     caption_text = "".join(child.itertext()).strip()
-                    _emit(local_path(child), _thread_id(element), layer, caption_text)
+                    _emit(local_path(child), "caption", _thread_id(element), layer, caption_text)
             return
 
         if tag in _HARVEST_AS_BLOCK:
@@ -267,7 +361,7 @@ def harvest_doclang_text(
             if layer not in allowed_layers:
                 return
             text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), _thread_id(element), layer, text)
+            _emit(local_path(element), tag, _thread_id(element), layer, text)
             return
 
         if tag == "group":
@@ -285,7 +379,76 @@ def harvest_doclang_text(
             continue
         _walk(child)
 
-    return HarvestResult(full_text=harvest_separator.join(pieces), spans=tuple(spans))
+    return HarvestResult(full_text="".join(parts), spans=tuple(spans))
 
 
-__all__ = ["harvest_doclang_text"]
+def _walk_tables(element: etree._Element) -> Iterable[etree._Element]:
+    """Yield every ``<table>`` under ``element`` in document order."""
+    if isinstance(element.tag, str) and local_name(element) == "table":
+        yield element
+        return
+    for child in element:
+        if isinstance(child.tag, str):
+            yield from _walk_tables(child)
+
+
+def harvest_doclang_tables(
+    tree: etree._ElementTree,
+    *,
+    include_background: bool = False,
+    include_furniture: bool = False,
+    harvest_separator: str = "\n\n",
+) -> tuple[TableHarvest, ...]:
+    """Produce one ``TableHarvest`` per ``<table>``, in document order.
+
+    Document order matches ``detect_boundaries``'s ``table-N``
+    numbering. Cells are addressed by their marker xpaths with row/col
+    grid positions; offsets are local to each table's ``full_text``.
+    Tables in excluded layers produce an empty harvest (no spans).
+    """
+    root = tree.getroot()
+    allowed_layers: set[str] = {"body"}
+    if include_background:
+        allowed_layers.add("background")
+    if include_furniture:
+        allowed_layers.add("furniture")
+
+    harvests: list[TableHarvest] = []
+    sep_len = len(harvest_separator)
+
+    for table_idx, table_el in enumerate(_walk_tables(root)):
+        pieces: list[str] = []
+        spans: list[HarvestSpan] = []
+        cursor = 0
+        if _element_layer(table_el) in allowed_layers:
+            thread = _thread_id(table_el)
+            layer = _element_layer(table_el)
+            for marker, kind, text, row, col in _table_cells(table_el):
+                if pieces:
+                    cursor += sep_len
+                start = cursor
+                end = start + len(text)
+                spans.append(HarvestSpan(
+                    xpath=local_path(marker),
+                    thread_id=thread,
+                    layer=layer,
+                    text=text,
+                    start=start,
+                    end=end,
+                    kind=kind,
+                    row_idx=row,
+                    col_idx=col,
+                ))
+                pieces.append(text)
+                cursor = end
+        harvests.append(TableHarvest(
+            table_idx=table_idx,
+            marker_xpath=local_path(table_el),
+            full_text=harvest_separator.join(pieces),
+            spans=tuple(spans),
+        ))
+
+    return tuple(harvests)
+
+
+__all__ = ["harvest_doclang_tables", "harvest_doclang_text"]

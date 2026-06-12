@@ -24,6 +24,7 @@ pixi run smoke     # quick parser smoke test
 pixi run smoke-mps # smoke test on MPS
 pixi run bench     # performance bench across models / dtypes
 pixi run cuda-smoke # verify on NVIDIA hardware
+pixi run rst-diag  # RST quality diagnostics over a corpus (proxy metrics, no gold)
 pixi run mdlint    # markdownlint
 ```
 
@@ -47,12 +48,17 @@ Adding dependencies: `pixi add <package>`. Never `pip install`.
 
 ## Active roadmap
 
-**Shipped:** two first-class format-native entry points sit alongside the raw `Parser` API:
+**Shipped:** three first-class format-native entry points sit alongside the raw `Parser` API:
 
 - `isanlp_rst.docling.parse_docling(path)` — Docling JSON in → RST relations indexed by `self_ref`. Plans: [proposal](docs/plans/2026-05-15-docling-native-rst.md), [build](docs/plans/2026-05-15-docling-native-rst-build.md). Walkthrough: [`docs/examples/docling-native.md`](docs/examples/docling-native.md).
 - `isanlp_rst.doclang.parse_doclang(path)` — DocLang 0.5 XML in → RST relations indexed by local-name XPath, with `<thread>` aggregation. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](docs/plans/2026-05-15-doclang-native-rst.md). Walkthrough: [`docs/examples/doclang-native.md`](docs/examples/doclang-native.md).
+- `isanlp_rst.markdown.parse_markdown(path)` — CommonMark / GFM markdown in → RST relations indexed by `#/blocks/N`. Plan: [`docs/plans/2026-06-12-markdown-native-rst.md`](docs/plans/2026-06-12-markdown-native-rst.md). Walkthrough: [`docs/examples/markdown-native.md`](docs/examples/markdown-native.md).
 
-Format-agnostic helpers (`compute_overlap_refs`, `split_refs_by_nuclearity`) live in `isanlp_rst/_rst_common/` so both entry points share the same overlap maths.
+All three honour the cross-format "analyse everything" directive **two-level** (2026-06-12, Option 2): prose enters the document tree; each table gets its own RST mini-parse in `result.table_analyses`, so table discourse never distorts the document tree. All three expose `dtype=`, `device="auto"` (CPU fallback), and an optional `cache_dir=` on-disk result cache.
+
+Shared machinery lives in `isanlp_rst/_rst_common/`: `SpanIndex` (bisect overlap), iterative `flatten_tree` (no RecursionError on degenerate joint-chains), `resolve_device` / `resolve_tool_version` / `resolve_inventory`, and the result-cache helpers. Format mappers and `_entry` modules are thin bindings over it.
+
+Quality measurement: `pixi run rst-diag <paths>` ([`scripts/rst_diag.py`](scripts/rst_diag.py)) — per-document proxy metrics (joint ratio, tree skew, cross-boundary ratio, note ratio) across all three formats. Use it to A/B any harvest-policy change. Hierarchical long-input parsing remains a spike gated on rst-diag evidence of degradation at length.
 
 Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks verified facts (spec citations, fixture evidence) and open design questions.
 
@@ -65,6 +71,7 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 - [`isanlp_rst/__init__.py`](isanlp_rst/__init__.py) — viewer convenience helpers (`render`, `to_html`, `to_png`, `to_pdf`).
 - [`isanlp_rst/docling/`](isanlp_rst/docling/) — `parse_docling` entry point; `harvester`, `boundaries`, `mapper` flow.
 - [`isanlp_rst/doclang/`](isanlp_rst/doclang/) — `parse_doclang` entry point; `loader` (XPath generator), `harvester`, `boundaries`, `mapper` flow.
+- [`isanlp_rst/markdown/`](isanlp_rst/markdown/) — `parse_markdown` entry point; `loader` (markdown-it-py + front-matter), `harvester`, `boundaries`, `mapper` flow.
 - [`isanlp_rst/_rst_common/`](isanlp_rst/_rst_common/) — shared overlap-rule maths + nuclearity split, format-agnostic.
 - [`tests/test_integration.py`](tests/test_integration.py) — end-to-end model parses; dtype-equivalence suite.
 - [`docs/plans/`](docs/plans/) — design plans (proposals + build plans).

@@ -1,4 +1,4 @@
-"""Unit tests for ``isanlp_rst.doclang.harvester.harvest_doclang_text``."""
+"""Unit tests for the doclang harvesters (main text + per-table)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from lxml import etree
 
-from isanlp_rst.doclang.harvester import harvest_doclang_text
+from isanlp_rst.doclang.harvester import harvest_doclang_tables, harvest_doclang_text
 from isanlp_rst.doclang.loader import parse_doclang_xml
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "doclang"
@@ -117,14 +117,75 @@ def test_furniture_layer_included_when_toggled() -> None:
     assert "furniture" in {s.layer for s in with_.spans}
 
 
-# --- Table exclusion (boundary-only by design) -----------------------------
+# --- Two-level table analysis (Option 2) -----------------------------------
 
 
-def test_table_cells_never_in_harvest_spans() -> None:
-    """``ok_table_rectangular`` is table-only — harvest must be empty."""
+def test_main_harvest_empty_for_table_only_doc() -> None:
+    """``ok_table_rectangular`` is table-only — the main harvest must be
+    empty; the content lives in the per-table harvests."""
     result = harvest_doclang_text(_tree("ok_table_rectangular.dclg.xml"))
     assert result.spans == ()
     assert result.full_text == ""
+
+
+def test_table_harvests_carry_cells_in_doc_order() -> None:
+    """The fixture has 3 tables; harvests must match boundary numbering
+    (document order) and carry the cell text."""
+    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg.xml"))
+    assert [th.table_idx for th in harvests] == [0, 1, 2]
+    first = harvests[0]
+    assert [s.text for s in first.spans] == [
+        "Method", "Accuracy", "Baseline", "0.85", "Proposed", "0.92",
+    ]
+    assert first.marker_xpath == "/doclang[1]/table[1]"
+
+
+def test_table_cells_carry_grid_positions() -> None:
+    """Table 3 starts with ``<corn/>`` — a position-only marker. The
+    first text cell (Q1) must land at column 1, not 0."""
+    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg.xml"))
+    third = harvests[2]
+    q1 = next(s for s in third.spans if s.text == "Q1")
+    assert (q1.row_idx, q1.col_idx) == (0, 1)
+    sales = next(s for s in third.spans if s.text == "Sales")
+    assert (sales.row_idx, sales.col_idx) == (1, 0)
+    assert sales.kind == "table_header_cell"  # rhed marker
+
+
+def test_ecel_and_nl_markers_never_yield_spans() -> None:
+    """``<ecel/>`` (empty) and ``<nl/>`` (row break) must not appear in
+    any harvest xpath."""
+    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg.xml"))
+    for th in harvests:
+        for span in th.spans:
+            last = span.xpath.rsplit("/", 1)[-1]
+            local = last.split("[", 1)[0]
+            assert local in {"ched", "fcel", "rhed", "corn"}, span.xpath
+
+
+def test_span_continuation_markers_terminate_previous_cell() -> None:
+    """``<lcel/>`` (col-span continuation) must end the preceding cell's
+    accumulation — text after it belongs to no cell — and must occupy a
+    grid column."""
+    xml = (
+        b'<doclang xmlns="https://www.doclang.ai/ns/v0">'
+        b"<table>"
+        b"<fcel/><text>A</text><lcel/><fcel/><text>B</text><nl/>"
+        b"</table>"
+        b"</doclang>"
+    )
+    tree = etree.ElementTree(etree.fromstring(xml))
+    (th,) = harvest_doclang_tables(tree)
+    assert [s.text for s in th.spans] == ["A", "B"]
+    # lcel occupies col 1, so B sits at col 2.
+    assert [s.col_idx for s in th.spans] == [0, 2]
+
+
+def test_table_harvest_offsets_tile_full_text() -> None:
+    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg.xml"))
+    for th in harvests:
+        for s in th.spans:
+            assert th.full_text[s.start : s.end] == s.text
 
 
 @pytest.mark.parametrize(
@@ -134,17 +195,44 @@ def test_table_cells_never_in_harvest_spans() -> None:
         "ok_comprehensive.dclg.xml",
     ],
 )
-def test_no_cell_marker_xpath_in_spans(fixture_name: str) -> None:
-    """No span's xpath terminates in a cell-start marker — those are
-    structural, not prose."""
+def test_main_harvest_has_no_grid_markers(fixture_name: str) -> None:
+    """Main-harvest spans must never terminate in a grid marker."""
     result = harvest_doclang_text(_tree(fixture_name))
-    cell_markers = {"fcel", "ecel", "ched", "rhed", "corn", "srow", "lcel", "ucel", "xcel", "nl"}
+    grid_markers = {"ched", "fcel", "rhed", "corn", "ecel", "srow", "lcel", "ucel", "xcel", "nl"}
     for span in result.spans:
         last = span.xpath.rsplit("/", 1)[-1]
         local = last.split("[", 1)[0]
-        assert local not in cell_markers, (
-            f"cell marker {local!r} leaked into harvest xpath: {span.xpath}"
+        assert local not in grid_markers, (
+            f"grid marker {local!r} leaked into main harvest: {span.xpath}"
         )
+
+
+# --- Thread-aware joins (B4) ------------------------------------------------
+
+
+def test_thread_continuation_joins_with_single_space() -> None:
+    """``ok_thread.dclg.xml``'s two spans share ``thread_id=1`` — they
+    are one logical paragraph split by a page break, so they must join
+    with a space, not the paragraph separator."""
+    result = harvest_doclang_text(_tree("ok_thread.dclg.xml"))
+    assert len(result.spans) == 2
+    a, b = result.spans
+    assert result.full_text[a.end : b.start] == " "
+    assert "\n\n" not in result.full_text
+
+
+def test_unthreaded_spans_join_with_separator() -> None:
+    """Spans without a shared thread keep the paragraph separator."""
+    xml = (
+        b'<doclang xmlns="https://www.doclang.ai/ns/v0">'
+        b"<text>First.</text>"
+        b"<text>Second.</text>"
+        b"</doclang>"
+    )
+    tree = etree.ElementTree(etree.fromstring(xml))
+    result = harvest_doclang_text(tree)
+    a, b = result.spans
+    assert result.full_text[a.end : b.start] == "\n\n"
 
 
 # --- List item granularity (Phase 1 Q1) ------------------------------------

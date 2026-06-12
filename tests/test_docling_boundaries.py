@@ -85,7 +85,12 @@ def test_pptx_tables_emitted(pptx_doc: DoclingDocument) -> None:
     result = detect_boundaries(pptx_doc)
     tables = [b for b in result if b.kind == "table"]
     assert len(tables) == 20
-    assert tables[0].self_refs == ("#/tables/0",)
+    # Each table boundary's self_refs starts with the synthetic table
+    # marker, followed by real JSON-pointer cell refs that resolve
+    # against the source document (data/table_cells path).
+    assert tables[0].self_refs[0] == "#/tables/0"
+    for ref in tables[0].self_refs[1:]:
+        assert ref.startswith("#/tables/0/data/table_cells/")
 
 
 # --- VTT --------------------------------------------------------------------

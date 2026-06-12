@@ -136,11 +136,33 @@ walk(root.id)
 All errors derive from `DoclingRstError`. Catch broadly with that base
 class when you want to handle docling-specific failures uniformly.
 
+## Table analyses (two-level)
+
+Per the 2026-06-12 cross-format directive (Option 2), each `TableItem`
+gets its own RST mini-parse in `result.table_analyses` — cells never
+enter the main document harvest, so table discourse cannot distort the
+document tree. Cell `self_ref`s are **real JSON pointers**
+(`#/tables/N/data/table_cells/M`) that resolve mechanically against the
+source document; the table's own `#/tables/N` remains a synthetic
+boundary marker that no `HarvestSpan` carries. The `table-N` boundary's
+`self_refs` is `(#/tables/N, <cell pointers>)`.
+
+```python
+result = parse_docling("doc.docling.json")          # analyses on by default
+for analysis in result.table_analyses:
+    print(analysis.id, len(analysis.edus), "cell EDUs")
+```
+
+Each cell span carries `kind` (`table_cell` / `table_header_cell`) and
+`row_idx` / `col_idx` from `TableCell`. Set `include_table_cells=False`
+to skip the analyses entirely (boundaries still emit).
+
+Other spans carry `kind` from the Docling item label
+(`"section_header"`, `"text"`, `"list_item"`, `"picture_description"`,
+…), so consumers can classify content without re-opening the source.
+
 ## What's intentionally excluded
 
-- **Table cells.** Tables are grids, not prose; their cells never enter
-  the RST input. Each `TableItem` shows up as one `table-N` boundary so
-  consumers can see where the table sits structurally.
 - **CLI entry point.** Python API only for now.
 - **Streaming / async.** Synchronous only.
 - **Custom relation taxonomies.** The RST model's emitted labels are

@@ -1,25 +1,34 @@
-"""``parse_doclang`` entry point — orchestrates load → harvest → boundaries → parse → flatten.
+"""``parse_doclang`` entry point — load → harvest → boundaries → parse → flatten.
 
-The underlying ``Parser`` is injectable so batch consumers construct it
-once and reuse it across many ``parse_doclang`` calls (otherwise each
-call reloads the ~2 GB model from disk).
+Two-level analysis (2026-06-12 directive, Option 2): the main document
+harvest excludes table cells; each ``<table>`` gets its own RST
+mini-parse whose relations land in ``DoclangRstResult.table_analyses``.
 
 XML validation is delegated to the ``doclang`` PyPI package (validator-
 only — see [[verified-doclang-spec]]). When ``validate_xml=True``
 (default) and the package is importable, the file is run through
 ``doclang.validate(path)`` before parsing; otherwise the validation step
 is skipped silently.
+
+The underlying ``Parser`` is injectable so batch consumers construct it
+once and reuse it across many ``parse_doclang`` calls. An optional
+on-disk cache (``cache_dir=``) short-circuits repeat parses.
 """
 
 from __future__ import annotations
 
 import importlib
-import subprocess
-from functools import cache
-from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from .._rst_common import (
+    load_cached,
+    resolve_device,
+    resolve_inventory,
+    resolve_tool_version,
+    result_cache_key,
+    store_cached,
+)
 from .boundaries import detect_boundaries
 from .errors import (
     EmptyDoclangError,
@@ -27,10 +36,10 @@ from .errors import (
     InputTooLargeError,
     InvalidDoclangError,
 )
-from .harvester import harvest_doclang_text
+from .harvester import harvest_doclang_tables, harvest_doclang_text
 from .loader import local_name, parse_doclang_xml
 from .mapper import flatten_tree
-from .schema import DoclangRstResult
+from .schema import DoclangRstResult, TableAnalysis
 
 if TYPE_CHECKING:
     from isanlp_rst.parser import Parser
@@ -43,77 +52,11 @@ DEFAULT_MAX_HARVEST_CHARS = 200_000
 # DocLang XML namespace per spec.md:219-241 (default xmlns when declared).
 DOCLANG_NS = "https://www.doclang.ai/ns/v0"
 
-
-# --- Helpers ----------------------------------------------------------------
-
-
-def _resolve_device(device: str) -> int:
-    """Translate the string device API to ``cuda_device: int`` on ``Parser``.
-
-    ``"auto"`` → 0 (Parser auto-selects CUDA → MPS → error); ``"cpu"`` →
-    -1; ``"mps"`` → 0 (integer is ignored on Apple Silicon);
-    ``"cuda"`` / ``"cuda:0"`` → 0; ``"cuda:N"`` → N.
-    """
-    if device == "auto":
-        return 0
-    if device == "cpu":
-        return -1
-    if device == "mps":
-        return 0
-    if device in ("cuda", "cuda:0"):
-        return 0
-    if device.startswith("cuda:"):
-        try:
-            n = int(device.split(":", 1)[1])
-        except ValueError as exc:
-            raise ValueError(f"Invalid CUDA device specifier: {device!r}") from exc
-        if n < 0:
-            raise ValueError(f"CUDA device index must be non-negative: {device!r}")
-        return n
-    raise ValueError(
-        f"Unrecognised device {device!r}. Expected one of "
-        f"'auto', 'cpu', 'mps', 'cuda', 'cuda:N'."
-    )
-
-
-@cache
-def _resolve_tool_version() -> str:
-    """Resolve a stable tool-version string.
-
-    Tries, in order: ``git describe --always --dirty`` (when run inside a
-    git checkout); ``importlib.metadata.version("isanlp_rst")`` (when
-    installed); ``"unknown"`` (fallback). Never raises.
-    """
-    package_dir = Path(__file__).resolve().parent.parent.parent
-    try:
-        result = subprocess.run(
-            ["git", "describe", "--always", "--dirty"],
-            cwd=package_dir,
-            capture_output=True,
-            text=True,
-            timeout=5,
-            check=False,
-        )
-        if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.strip()
-    except (OSError, subprocess.SubprocessError):
-        pass
-
-    try:
-        return version("isanlp_rst")
-    except PackageNotFoundError:
-        pass
-
-    return "unknown"
-
-
-def _resolve_inventory(hf_model_version: str, relinventory: str | None) -> str:
-    """Pick the inventory string for the result metadata.
-
-    Explicit ``relinventory`` wins; otherwise fall back to
-    ``hf_model_version`` as a coarse identifier.
-    """
-    return relinventory or hf_model_version
+# Backwards-compatible aliases — tests and external callers import these
+# from the entry module; the implementations live in _rst_common.
+_resolve_device = resolve_device
+_resolve_inventory = resolve_inventory
+_resolve_tool_version = resolve_tool_version
 
 
 def _validate_xml(path: Path) -> None:
@@ -162,9 +105,6 @@ def _source_origin(tree: Any) -> dict[str, Any]:
     }
 
 
-# --- Orchestrator -----------------------------------------------------------
-
-
 def parse_doclang(
     path: str | Path,
     *,
@@ -173,16 +113,19 @@ def parse_doclang(
     hf_model_version: str = "gumrrg",
     relinventory: str | None = None,
     device: str = "auto",
+    dtype: str | None = None,
     include_picture_captions: bool = True,
     include_background: bool = False,
     include_furniture: bool = False,
     include_field_regions: bool = False,
     include_code_blocks: bool = False,
     include_formulas: bool = False,
+    include_table_cells: bool = True,
     harvest_separator: str = "\n\n",
     note_threshold: float = 0.90,
     validate_xml: bool = True,
     max_harvest_chars: int = DEFAULT_MAX_HARVEST_CHARS,
+    cache_dir: str | Path | None = None,
 ) -> DoclangRstResult:
     """Parse a DocLang XML file and return its RST analysis.
 
@@ -193,8 +136,11 @@ def parse_doclang(
             reloads the model from disk.
         hf_model_name, hf_model_version, relinventory: passed to a new
             ``Parser`` only when ``parser is None``.
-        device: ``"auto" | "cpu" | "mps" | "cuda" | "cuda:N"``. Used only
-            when constructing a new ``Parser``.
+        device: ``"auto" | "cpu" | "mps" | "cuda" | "cuda:N"``. ``"auto"``
+            picks GPU when torch reports one, else CPU. Used only when
+            constructing a new ``Parser``.
+        dtype: ``"float32" | "bf16" | "fp16" | None`` — mixed-precision
+            override passed to a new ``Parser``.
         include_picture_captions: harvest ``<picture><caption>`` text.
         include_background: include layer ``"background"`` items.
         include_furniture: include layer ``"furniture"`` items plus
@@ -203,21 +149,58 @@ def parse_doclang(
             (default off — boundary-only).
         include_code_blocks: harvest ``<code>`` text (default off).
         include_formulas: harvest ``<formula>`` text (default off).
-        harvest_separator: inserted between harvested spans.
+        include_table_cells: run the per-table mini-parses (two-level
+            analysis). When False, ``table_analyses`` is empty and table
+            content is not analysed; the ``table-N`` boundaries are
+            emitted either way. ``<index>`` and ``<tabular>`` are
+            boundary-only in both modes.
+        harvest_separator: inserted between harvested spans (thread
+            continuations join with a single space instead).
         note_threshold: relations whose overlap is >= this ratio
             dominated by a single span get a ``note`` field.
         validate_xml: when True (default), validate against DocLang 0.5
             via the ``doclang`` PyPI package before parsing. Silently
             skipped when the package is not importable.
-        max_harvest_chars: raise ``InputTooLargeError`` above this size.
+        max_harvest_chars: raise ``InputTooLargeError`` above this size
+            (checked for the main harvest and each table harvest).
+        cache_dir: when set, results are cached on disk keyed by the
+            source bytes + model identity + knobs; repeat calls return
+            the cached result without loading the model.
 
     Raises:
         InvalidDoclangError: ``validate_xml=True`` and validation failed.
         EmptyDoclangError: the document has no harvestable content.
-        EmptyHarvestError: harvest produced no text.
-        InputTooLargeError: harvest exceeds ``max_harvest_chars``.
+        EmptyHarvestError: neither the main harvest nor any table
+            harvest produced text.
+        InputTooLargeError: a harvest exceeds ``max_harvest_chars``.
     """
     src_path = Path(path)
+    source_bytes = src_path.read_bytes()
+
+    knobs: dict[str, object] = {
+        "schema_name": SCHEMA_NAME,
+        "schema_version": SCHEMA_VERSION,
+        "hf_model_version": hf_model_version,
+        "relinventory": relinventory,
+        "dtype": dtype,
+        "include_picture_captions": include_picture_captions,
+        "include_background": include_background,
+        "include_furniture": include_furniture,
+        "include_field_regions": include_field_regions,
+        "include_code_blocks": include_code_blocks,
+        "include_formulas": include_formulas,
+        "include_table_cells": include_table_cells,
+        "harvest_separator": harvest_separator,
+        "note_threshold": note_threshold,
+        "max_harvest_chars": max_harvest_chars,
+    }
+    cache_path = Path(cache_dir) if cache_dir is not None else None
+    cache_key = result_cache_key(source_bytes, knobs)
+    if cache_path is not None:
+        cached = load_cached(cache_path, cache_key)
+        if isinstance(cached, DoclangRstResult):
+            return cached
+
     if validate_xml:
         _validate_xml(src_path)
 
@@ -243,19 +226,34 @@ def parse_doclang(
         include_formulas=include_formulas,
         harvest_separator=harvest_separator,
     )
-    if not harvest.full_text:
+    table_harvests = (
+        harvest_doclang_tables(
+            tree,
+            include_background=include_background,
+            include_furniture=include_furniture,
+            harvest_separator=harvest_separator,
+        )
+        if include_table_cells
+        else ()
+    )
+
+    if not harvest.full_text and not any(th.full_text for th in table_harvests):
         raise EmptyHarvestError(
-            f"No text harvested from {src_path}. Document may be tables-only "
-            f"or have all eligible content excluded by knobs."
+            f"No text harvested from {src_path}. Document may have all "
+            f"eligible content excluded by knobs."
         )
 
-    if len(harvest.full_text) > max_harvest_chars:
-        raise InputTooLargeError(
-            f"Harvested text is {len(harvest.full_text)} chars, exceeds "
-            f"max_harvest_chars={max_harvest_chars}. Chunk upstream or raise the limit."
-        )
+    for label, text in (("main", harvest.full_text), *(
+        (th.marker_xpath, th.full_text) for th in table_harvests
+    )):
+        if len(text) > max_harvest_chars:
+            raise InputTooLargeError(
+                f"Harvested text for {label} is {len(text)} chars, exceeds "
+                f"max_harvest_chars={max_harvest_chars}. Chunk upstream or raise the limit."
+            )
 
     boundaries = detect_boundaries(tree)
+    table_boundaries = {b.id: b for b in boundaries if b.kind == "table"}
 
     if parser is None:
         from isanlp_rst.parser import Parser
@@ -263,26 +261,48 @@ def parse_doclang(
             hf_model_name=hf_model_name,
             hf_model_version=hf_model_version,
             relinventory=relinventory,
-            cuda_device=_resolve_device(device),
+            cuda_device=resolve_device(device),
+            dtype=dtype,
         )
 
-    result = parser(harvest.full_text)
-    rst_tree = result["rst"][0]
+    if harvest.full_text:
+        rst_tree = parser(harvest.full_text)["rst"][0]
+        relations, edus = flatten_tree(
+            rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
+        )
+    else:
+        relations, edus = (), ()
 
-    relations, edus = flatten_tree(
-        rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
-    )
+    table_analyses: list[TableAnalysis] = []
+    for th in table_harvests:
+        if not th.full_text:
+            continue
+        boundary_id = f"table-{th.table_idx}"
+        table_tree = parser(th.full_text)["rst"][0]
+        t_relations, t_edus = flatten_tree(
+            table_tree,
+            th.spans,
+            (table_boundaries[boundary_id],),
+            note_threshold=note_threshold,
+        )
+        table_analyses.append(
+            TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus)
+        )
 
-    return DoclangRstResult(
+    result = DoclangRstResult(
         schema_name=SCHEMA_NAME,
         schema_version=SCHEMA_VERSION,
         tool=TOOL_NAME,
-        tool_version=_resolve_tool_version(),
+        tool_version=resolve_tool_version(),
         model_version=hf_model_version,
-        inventory=_resolve_inventory(hf_model_version, relinventory),
+        inventory=resolve_inventory(hf_model_version, relinventory),
         source=src_path.name,
         source_origin=_source_origin(tree),
         boundaries=boundaries,
         relations=relations,
         edus=edus,
+        table_analyses=tuple(table_analyses),
     )
+    if cache_path is not None:
+        store_cached(cache_path, cache_key, result)
+    return result

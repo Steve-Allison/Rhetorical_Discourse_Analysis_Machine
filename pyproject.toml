@@ -19,19 +19,23 @@ maintainers = [
 #   - Code:    MIT, copyright Elena Chistova 2020 (see LICENSE)
 #   - Weights: CC BY-NC 4.0 (see LICENSE_MODELS)
 dependencies = [
-  "asyncio",
   "playwright",
   "razdel",
   "fire",
-  "matplotlib",
   "lxml",
   "jsonnet",
   "nltk",
-  "spacy",
   "numpy==1.26.4",
   "transformers",
   "torch>=2.0",
-  "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794", "docling-core>=2.75.0,<3",
+  "huggingface-hub>=0.16.4,<2.0",
+  "tqdm>=4.42",
+  "pillow>=10",
+  "networkx>=2.5.1",
+  "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
+  "docling-core>=2.75.0,<3",
+  "markdown-it-py>=3",
+  "mdit-py-plugins>=0.4",
 ]
 
 [project.urls]
@@ -63,6 +67,9 @@ markers = [
 [tool.pixi.workspace]
 channels = ["conda-forge"]
 platforms = ["osx-arm64"]
+
+[tool.pixi.dependencies]
+markdownlint-cli2 = ">=0.14"
 
 [tool.pixi.pypi-dependencies]
 isanlp_rst = { path = ".", editable = true, extras = ["dev"] }
@@ -110,6 +117,7 @@ include = [
   "isanlp_rst/_rst_common",
   "isanlp_rst/docling",
   "isanlp_rst/doclang",
+  "isanlp_rst/markdown",
   "tests",
   "scripts",
 ]
@@ -133,6 +141,7 @@ smoke-mps = "python scripts/smoke_test.py --cuda-device 0"
 smoke-full-mps = "python scripts/smoke_test.py --full --cuda-device 0"
 cuda-smoke = "python scripts/cuda_smoke.py"
 bench = "python scripts/bench.py"
+rst-diag = "python scripts/rst_diag.py"
 lint = "ruff check isanlp_rst tests scripts"
 typecheck = "pyright"
 mdlint = "markdownlint-cli2 README.md UniRST_Metrics.md CLAUDE.md"

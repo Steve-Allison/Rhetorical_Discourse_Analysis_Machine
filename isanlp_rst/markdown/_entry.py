@@ -1,22 +1,18 @@
-"""``parse_docling`` entry point — load → harvest → boundaries → parse → flatten.
+"""``parse_markdown`` entry point — load → harvest → boundaries → parse → flatten.
 
 Two-level analysis (2026-06-12 directive, Option 2): the main document
 harvest excludes table cells; each table gets its own RST mini-parse
-whose relations land in ``DoclingRstResult.table_analyses``. Table
-discourse therefore never distorts the document-level tree.
+whose relations land in ``MarkdownRstResult.table_analyses``.
 
 The underlying ``Parser`` is injectable so batch consumers construct it
-once and reuse it across many ``parse_docling`` calls (otherwise each
-call reloads the ~2 GB model from disk). An optional on-disk cache
-(``cache_dir=``) short-circuits repeat parses of unchanged sources.
+once and reuse it across many ``parse_markdown`` calls. An optional
+on-disk cache (``cache_dir=``) short-circuits repeat parses.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-
-from docling_core.types.doc.document import DoclingDocument
 
 from .._rst_common import (
     load_cached,
@@ -27,15 +23,16 @@ from .._rst_common import (
     store_cached,
 )
 from .boundaries import detect_boundaries
-from .errors import EmptyDoclingError, EmptyHarvestError, InputTooLargeError
-from .harvester import harvest_docling_tables, harvest_docling_text
+from .errors import EmptyHarvestError, EmptyMarkdownError, InputTooLargeError
+from .harvester import harvest_markdown_tables, harvest_markdown_text
+from .loader import load_markdown
 from .mapper import flatten_tree
-from .schema import DoclingRstResult, TableAnalysis
+from .schema import MarkdownRstResult, TableAnalysis
 
 if TYPE_CHECKING:
     from isanlp_rst.parser import Parser
 
-SCHEMA_NAME = "isanlp_rst_docling"
+SCHEMA_NAME = "isanlp_rst_markdown"
 SCHEMA_VERSION = "1.0"
 TOOL_NAME = "isanlp_rst"
 DEFAULT_MAX_HARVEST_CHARS = 200_000
@@ -47,19 +44,22 @@ _resolve_inventory = resolve_inventory
 _resolve_tool_version = resolve_tool_version
 
 
-def _serialise_source_origin(origin: Any) -> dict[str, Any]:
-    """Serialise ``doc.origin`` (a Pydantic model) to a JSON-safe dict.
+def _source_origin(
+    front_matter: str | None,
+    front_matter_format: str | None,
+    *,
+    gfm: bool,
+) -> dict[str, Any]:
+    """Build the ``source_origin`` block for the result."""
+    return {
+        "format": "markdown",
+        "gfm": gfm,
+        "front_matter": front_matter,
+        "front_matter_format": front_matter_format,
+    }
 
-    Returns ``{}`` when origin is None.
-    """
-    if origin is None:
-        return {}
-    if hasattr(origin, "model_dump"):
-        return origin.model_dump(mode="json")
-    return {}
 
-
-def parse_docling(
+def parse_markdown(
     path: str | Path,
     *,
     parser: "Parser | None" = None,
@@ -68,20 +68,20 @@ def parse_docling(
     relinventory: str | None = None,
     device: str = "auto",
     dtype: str | None = None,
-    include_picture_descriptions: bool = True,
-    include_slide_notes: bool = True,
-    include_furniture: bool = False,
+    gfm: bool = True,
+    include_blockquotes: bool = True,
     include_table_cells: bool = True,
+    include_code_blocks: bool = True,
+    include_html: bool = True,
     harvest_separator: str = "\n\n",
-    coalesce_speaker_turns: bool = True,
     note_threshold: float = 0.90,
     max_harvest_chars: int = DEFAULT_MAX_HARVEST_CHARS,
     cache_dir: str | Path | None = None,
-) -> DoclingRstResult:
-    """Parse a Docling JSON file and return its RST analysis.
+) -> MarkdownRstResult:
+    """Parse a markdown file and return its RST analysis.
 
     Args:
-        path: filesystem path to a Docling JSON file.
+        path: filesystem path to a ``.md`` / ``.markdown`` file.
         parser: a pre-constructed ``Parser`` to reuse. Batch consumers
             should construct once and inject — otherwise each call
             reloads the model from disk.
@@ -92,17 +92,17 @@ def parse_docling(
             constructing a new ``Parser``.
         dtype: ``"float32" | "bf16" | "fp16" | None`` — mixed-precision
             override passed to a new ``Parser``.
-        include_picture_descriptions: harvest
-            ``picture.meta.description.text`` when present.
-        include_slide_notes: include ``ContentLayer.NOTES`` items.
-        include_furniture: include ``ContentLayer.FURNITURE`` items.
+        gfm: enable GFM tables + strikethrough (default on).
+        include_blockquotes: harvest content inside ``<blockquote>`` —
+            paragraphs, headings, lists, code fences, HTML blocks, and
+            tables alike.
         include_table_cells: run the per-table mini-parses (two-level
-            analysis). When False, ``table_analyses`` is empty and table
-            content is not analysed; the ``table-N`` boundaries are
-            emitted either way.
-        harvest_separator: inserted between harvested spans.
-        coalesce_speaker_turns: VTT only — coalesce consecutive
-            same-voice runs into one ``turn-K`` boundary.
+            analysis). When False, ``table_analyses`` is empty, table
+            content is not analysed, and no ``table-T`` boundaries are
+            emitted (markdown boundaries derive from the harvests).
+        include_code_blocks: harvest fenced and indented code blocks.
+        include_html: harvest raw HTML blocks (tags stripped to text).
+        harvest_separator: inserted between consecutive harvested spans.
         note_threshold: relations whose overlap is >= this ratio
             dominated by a single span get a ``note`` field.
         max_harvest_chars: raise ``InputTooLargeError`` above this size
@@ -112,7 +112,8 @@ def parse_docling(
             the cached result without loading the model.
 
     Raises:
-        EmptyDoclingError: the document has no body content.
+        EmptyMarkdownError: the file has no body tokens (whitespace or
+            front-matter only).
         EmptyHarvestError: neither the main harvest nor any table
             harvest produced text.
         InputTooLargeError: a harvest exceeds ``max_harvest_chars``.
@@ -126,12 +127,12 @@ def parse_docling(
         "hf_model_version": hf_model_version,
         "relinventory": relinventory,
         "dtype": dtype,
-        "include_picture_descriptions": include_picture_descriptions,
-        "include_slide_notes": include_slide_notes,
-        "include_furniture": include_furniture,
+        "gfm": gfm,
+        "include_blockquotes": include_blockquotes,
         "include_table_cells": include_table_cells,
+        "include_code_blocks": include_code_blocks,
+        "include_html": include_html,
         "harvest_separator": harvest_separator,
-        "coalesce_speaker_turns": coalesce_speaker_turns,
         "note_threshold": note_threshold,
         "max_harvest_chars": max_harvest_chars,
     }
@@ -139,34 +140,37 @@ def parse_docling(
     cache_key = result_cache_key(source_bytes, knobs)
     if cache_path is not None:
         cached = load_cached(cache_path, cache_key)
-        if isinstance(cached, DoclingRstResult):
+        if isinstance(cached, MarkdownRstResult):
             return cached
 
-    doc = DoclingDocument.load_from_json(src_path)
-
-    body_children = getattr(getattr(doc, "body", None), "children", None) or ()
-    if not body_children:
-        raise EmptyDoclingError(
-            f"DoclingDocument at {src_path} has an empty body — nothing to harvest."
+    loaded = load_markdown(source_bytes.decode("utf-8"), gfm=gfm)
+    if not loaded.tokens:
+        raise EmptyMarkdownError(
+            f"Markdown file at {src_path} has no body content "
+            f"(only whitespace or front-matter)."
         )
 
-    harvest = harvest_docling_text(
-        doc,
-        include_picture_descriptions=include_picture_descriptions,
-        include_slide_notes=include_slide_notes,
-        include_furniture=include_furniture,
+    harvest = harvest_markdown_text(
+        loaded.tokens,
+        include_blockquotes=include_blockquotes,
+        include_code_blocks=include_code_blocks,
+        include_html=include_html,
         harvest_separator=harvest_separator,
     )
     table_harvests = (
-        harvest_docling_tables(doc, harvest_separator=harvest_separator)
+        harvest_markdown_tables(
+            loaded.tokens,
+            include_blockquotes=include_blockquotes,
+            harvest_separator=harvest_separator,
+        )
         if include_table_cells
         else ()
     )
 
     if not harvest.full_text and not any(th.full_text for th in table_harvests):
         raise EmptyHarvestError(
-            f"No text harvested from {src_path}. Document may have all "
-            f"content layers filtered out."
+            f"No text harvested from {src_path}. The file may contain only "
+            f"thematic breaks, or all eligible content was excluded by knobs."
         )
 
     for label, text in (("main", harvest.full_text), *(
@@ -178,11 +182,11 @@ def parse_docling(
                 f"max_harvest_chars={max_harvest_chars}. Chunk upstream or raise the limit."
             )
 
-    boundaries = detect_boundaries(doc, coalesce_speaker_turns=coalesce_speaker_turns)
+    boundaries = detect_boundaries(harvest.spans, table_harvests)
     table_boundaries = {b.id: b for b in boundaries if b.kind == "table"}
 
     if parser is None:
-        from isanlp_rst.parser import Parser  # lazy import — avoids loading on every import
+        from isanlp_rst.parser import Parser  # lazy — avoids loading on every import
         parser = Parser(
             hf_model_name=hf_model_name,
             hf_model_version=hf_model_version,
@@ -192,9 +196,9 @@ def parse_docling(
         )
 
     if harvest.full_text:
-        tree = parser(harvest.full_text)["rst"][0]
+        rst_tree = parser(harvest.full_text)["rst"][0]
         relations, edus = flatten_tree(
-            tree, harvest.spans, boundaries, note_threshold=note_threshold
+            rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
         )
     else:
         relations, edus = (), ()
@@ -215,7 +219,7 @@ def parse_docling(
             TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus)
         )
 
-    result = DoclingRstResult(
+    result = MarkdownRstResult(
         schema_name=SCHEMA_NAME,
         schema_version=SCHEMA_VERSION,
         tool=TOOL_NAME,
@@ -223,7 +227,9 @@ def parse_docling(
         model_version=hf_model_version,
         inventory=resolve_inventory(hf_model_version, relinventory),
         source=src_path.name,
-        source_origin=_serialise_source_origin(getattr(doc, "origin", None)),
+        source_origin=_source_origin(
+            loaded.front_matter, loaded.front_matter_format, gfm=gfm
+        ),
         boundaries=boundaries,
         relations=relations,
         edus=edus,
