@@ -120,7 +120,7 @@ def test_source_origin_includes_namespace_when_declared() -> None:
     origin = _source_origin(tree)
     assert origin["format"] == "doclang"
     assert origin["namespace"] == "https://www.doclang.ai/ns/v0"
-    assert origin["version"] == "0.5"
+    assert origin["version"] == ""
 
 
 def test_source_origin_empty_namespace_when_absent() -> None:

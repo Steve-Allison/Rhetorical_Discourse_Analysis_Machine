@@ -89,14 +89,14 @@ def _validate_xml(path: Path) -> None:
 def _source_origin(tree: Any) -> dict[str, Any]:
     """Capture lightweight provenance from the parsed tree.
 
-    Reports: declared namespace (or ``""``), version attribute (or default
-    ``"0.5"`` per spec), and any first-level ``<head>`` child names.
+    Reports: declared namespace (or ``""``), version attribute (or ``""``
+    when the document declares none), and any first-level ``<head>`` child names.
     """
     root = tree.getroot()
     ns = ""
     if isinstance(root.tag, str) and root.tag.startswith("{"):
         ns = root.tag.split("}", 1)[0][1:]
-    version_attr = root.get("version", "0.5")
+    version_attr = root.get("version", "")
     head_children: list[str] = []
     for child in root:
         if isinstance(child.tag, str) and local_name(child) == "head":
