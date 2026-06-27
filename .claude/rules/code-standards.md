@@ -47,7 +47,7 @@ If new code lands outside `tool.pyright.include`, add it to that list.
 
 ## Tests
 
-- Real test suite under `tests/` — 85 unit + 27 integration as of 2026-05.
+- Real test suite under `tests/` — 425 fast + 48 integration (slow) as of 2026-06-27.
 - New code lands with new tests in the same commit (or the next, if scope permits). Not "later".
 - Markers (defined in `pyproject.toml`):
   - `slow` — integration tests that download HF models (~2 GB each). Excluded from `pixi run test`; included in `pixi run test-all`.
@@ -62,8 +62,8 @@ If new code lands outside `tool.pyright.include`, add it to that list.
 
 ## Gotchas
 
-- **Python `requires-python = ">=3.8"`** in `pyproject.toml`. The pixi env is 3.10+. Use 3.13 idioms for new code; trust the `requires-python` floor for compatibility.
-- **`numpy==1.26.4`** is pinned. Don't bump without checking transformer compatibility.
+- **Python `requires-python = ">=3.10"`** in `pyproject.toml`. The pixi env runs 3.14. Use 3.13+ idioms for new code; trust the `requires-python` floor for compatibility.
+- **`numpy>=1.26.4`** tracks latest (resolves to 2.5.0 as of 2026-06-27). The old `==1.26.4` exact pin was lifted after verifying numpy 2.x is green across the full suite; transformers 5.x only requires `numpy>=1.17`.
 - **HF revisions are the version channel.** `hf_model_version` maps to a git ref on the HF repo — switching versions re-downloads weights / config / relation table.
 - **`<P>` token** is added to the tokenizer at load time (`tokenizer.add_tokens(['<P>'])`) and the transformer embeddings are resized accordingly. Anything that re-instantiates the tokenizer must replicate this.
 - **`tokenizer.model_max_length = 1e9`** is intentional — sliding-window encoding, this suppresses HF's max-length warning. Don't "fix" it.

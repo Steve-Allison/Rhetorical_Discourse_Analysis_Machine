@@ -38,7 +38,7 @@ Verified facts (now baked in):
 - `docling-core.DoclingDocument.load_from_json(...)` loads + validates.
 - `docling-core.DoclingDocument.iterate_items(...)` is the canonical walker (pre-order DFS, resolves `$ref`s, filters by `ContentLayer`, supports `page_no` filtering).
 - The 4 Docling JSONs in `tests/fixtures/docling/` (pptx, pdf, vtt, markdown) all emit `DoclingDocument` v1.10.0 with identical top-level keys. Sample-scoped finding; not a universal guarantee.
-- `docling-core>=2.75.0,<3` is now a hard dependency, pinned in `pyproject.toml` `[project.dependencies]` (added Phase 0 step 1).
+- `docling-core>=2.75.0` is a hard dependency in `pyproject.toml` `[project.dependencies]` (added Phase 0 step 1). *(Updated 2026-06-27: the original `,<3` ceiling was removed — docling-core now tracks latest per the unpinned-deps policy; see commit `5b7288d`.)*
 
 Build plan: [`./2026-05-15-docling-native-rst-build.md`](./2026-05-15-docling-native-rst-build.md).
 

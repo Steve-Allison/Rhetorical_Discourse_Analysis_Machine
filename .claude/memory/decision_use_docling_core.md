@@ -19,7 +19,7 @@ For the Docling-native RST entry point, the harvester uses `docling-core`'s `Doc
 **How to apply:**
 
 - Don't roll a custom JSON walker even when "it's just a small dict traversal." The cost of `docling-core` is small (pure Python + Pydantic); the benefit is the official contract.
-- Pin `docling-core` to the latest stable; record the pin in [`docs/plans/2026-05-15-docling-native-rst-build.md`](../../docs/plans/2026-05-15-docling-native-rst-build.md) under Phase 0 verification log.
-- When `docling-core` bumps to a major version, treat it as a Docling schema-compatibility checkpoint. Don't auto-bump.
+- Keep `docling-core` **unpinned** — declare a floor only (`>=2.75.0`, the minimum API the harvester needs) and let it track latest, including majors. Per the 2026-06-27 policy (commit `5b7288d`), docling/doclang always run latest, not pinned; the test suite + CI are the breakage safety net, not a version ceiling. (`doclang` rides in transitively via docling-core's own `doclang>=0.7,<0.8` requirement.)
+- A docling-core **major** bump is still worth watching as a Docling schema-compatibility checkpoint, but it is no longer blocked — if it breaks the harvester, the docling tests fail and we fix forward rather than holding an old version.
 
 Related: [[verified-docling-core-api]], [[decision-consumer-agnostic]].

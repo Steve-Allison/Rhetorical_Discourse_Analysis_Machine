@@ -31,7 +31,7 @@ Slide notes in real PPTX output are in the `NOTES` layer (verified on `tests/fix
 
 **How to apply:**
 
-- Verify before relying on this in code: the API may have changed since 2026-05-15. Re-check `iterate_items` signature on the pinned `docling-core` version. If they refactor, this memory needs updating.
+- Verify before relying on this in code: the API may have changed since 2026-05-15. Re-check `iterate_items` on the currently-locked `docling-core` version. If they refactor, this memory needs updating. *(2026-06-27: docling-core is now 2.85.0 — unpinned, tracking latest — and the 113 docling tests pass, so `iterate_items` remains compatible with our usage; full signature not re-diffed.)*
 - Don't roll our own walker. Anchor on `iterate_items()`.
 - The default `with_groups=False` + `traverse_pictures=False` is correct for v1 of the Docling-native entry point — we want leaf-ish text-carrying items, not group markers, and we explicitly skip picture-caption recursion in v1.
 
