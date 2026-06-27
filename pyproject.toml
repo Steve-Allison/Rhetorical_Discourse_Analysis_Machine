@@ -25,15 +25,15 @@ dependencies = [
   "lxml",
   "jsonnet",
   "nltk",
-  "numpy==1.26.4",
+  "numpy>=1.26.4",
   "transformers",
   "torch>=2.0",
-  "huggingface-hub>=0.16.4,<2.0",
+  "huggingface-hub>=0.16.4",
   "tqdm>=4.42",
   "pillow>=10",
   "networkx>=2.5.1",
   "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
-  "docling-core>=2.75.0,<3",
+  "docling-core>=2.75.0",
   "markdown-it-py>=3",
   "mdit-py-plugins>=0.4",
 ]
@@ -48,7 +48,7 @@ dev = [
   "pytest>=8",
   "ruff>=0.6",
   "pyright>=1.1.380",
-  "types-lxml>=2026.2.16,<2027",
+  "types-lxml>=2026.2.16",
 ]
 
 [tool.setuptools.packages.find]

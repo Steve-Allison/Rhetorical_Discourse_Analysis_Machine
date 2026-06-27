@@ -146,7 +146,7 @@ parser = Parser(hf_model_version='gumrrg', cuda_device=0,
 
 Default is `float32` on every device. On Apple Silicon (M-series, PyTorch 2.11) at ~1k-char inputs, `float32` beats `bfloat16` / `float16` for every published model — per-op autocast dispatch overhead dominates the matmul speedup at this scale. On large-batch CUDA workloads with native bf16 (Hopper / Ada Tensor Cores), `bfloat16` is likely faster — measure with `pixi run bench` before pinning a choice.
 
-Tree structure is bit-equivalent across all three dtypes for every published model — see [`tests/test_integration.py`](tests/test_integration.py) for the equivalence suite.
+Tree topology and EDU segmentation are bit-equivalent across all three dtypes for every published model; relation labels are not — on a near-tied node, reduced precision (bf16/fp16) can flip the argmax without any structural change. See [`tests/test_integration.py`](tests/test_integration.py) for the equivalence suite.
 
 ##### Apple Silicon perf (M-series, PyTorch 2.11, ~1k char input)
 
