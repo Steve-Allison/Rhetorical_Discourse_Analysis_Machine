@@ -1,0 +1,11 @@
+# yamllint config tuned for GitHub Actions workflow YAML, which legitimately
+# omits the `---` document start, uses the `on:` key (a YAML boolean-like), and
+# carries long inline `run:` commands. These are conventions, not defects.
+extends: default
+
+rules:
+  document-start: disable
+  truthy:
+    check-keys: false  # don't flag the GitHub Actions `on:` key
+  line-length:
+    max: 200

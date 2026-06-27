@@ -1,0 +1,49 @@
+name: docling / doclang compat
+
+# Resolves the LATEST docling-core (and its transitive doclang) within our
+# version floors, then runs the compatibility guard + docling/doclang unit
+# tests against it. This is the "check on every new version" safety net: it
+# goes red when a new docling / doclang release breaks our ability to read
+# current Docling / DocLang output.
+#
+# Report-only: `pixi update` mutates the lock in the ephemeral runner only and
+# is never committed. When this is green and reports a newer version, run
+# `pixi update docling-core` locally and commit the new pixi.lock yourself.
+
+on:
+  schedule:
+    # Mondays 06:17 UTC — off-peak for HF, deliberately not on the :00 mark
+    - cron: '17 6 * * 1'
+  workflow_dispatch: {}
+
+jobs:
+  compat:
+    name: Compatibility against latest docling-core / doclang
+    runs-on: macos-14  # Apple Silicon to match pixi `platforms = ["osx-arm64"]`
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.64.0
+          cache: false  # force a fresh resolve, not a cached env
+
+      - name: Install (locked baseline)
+        run: pixi install
+
+      - name: Record locked versions
+        run: pixi run python -c "import importlib.metadata as m; print('LOCKED  docling-core', m.version('docling-core'), '| doclang', m.version('doclang'))"
+
+      - name: Update to latest docling-core (pulls latest doclang in range)
+        run: pixi update docling-core
+
+      - name: Record resolved versions
+        run: pixi run python -c "import importlib.metadata as m; print('LATEST  docling-core', m.version('docling-core'), '| doclang', m.version('doclang'))"
+
+      - name: Compatibility guard against latest
+        run: pixi run pytest tests/test_version_compat.py -v
+
+      - name: docling / doclang unit tests against latest
+        run: pixi run pytest -m "not slow" -k "docling or doclang" -v
