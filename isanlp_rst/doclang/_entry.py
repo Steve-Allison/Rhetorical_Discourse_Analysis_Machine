@@ -60,12 +60,17 @@ _resolve_tool_version = resolve_tool_version
 
 
 def _validate_xml(path: Path) -> None:
-    """Validate ``path`` against DocLang 0.5 via the ``doclang`` package.
+    """Validate ``path`` against the DocLang schema via the ``doclang`` package.
 
     When the package is not importable in the active env, validation is
     skipped silently (the harvester / loader still runs). When the
     package IS importable and validation fails, raises
     ``InvalidDoclangError`` wrapping the original error.
+
+    Current DocLang requires the ``DOCLANG_NS`` namespace, so a
+    non-namespaced document fails here even though the loader / harvester
+    can still read it — pass ``validate_xml=False`` to ``parse_doclang``
+    to parse non-conforming input best-effort.
     """
     try:
         doclang_pkg = importlib.import_module("doclang")
@@ -75,7 +80,9 @@ def _validate_xml(path: Path) -> None:
         doclang_pkg.validate(path)
     except Exception as exc:
         raise InvalidDoclangError(
-            f"{path}: failed DocLang 0.5 validation: {exc}"
+            f"{path}: failed DocLang validation via the doclang package: {exc}. "
+            f"Current DocLang requires the {DOCLANG_NS} namespace; pass "
+            f"validate_xml=False to parse non-conforming input best-effort."
         ) from exc
 
 
@@ -158,9 +165,12 @@ def parse_doclang(
             continuations join with a single space instead).
         note_threshold: relations whose overlap is >= this ratio
             dominated by a single span get a ``note`` field.
-        validate_xml: when True (default), validate against DocLang 0.5
-            via the ``doclang`` PyPI package before parsing. Silently
-            skipped when the package is not importable.
+        validate_xml: when True (default), validate against the DocLang
+            schema via the ``doclang`` PyPI package before parsing. Current
+            DocLang requires the ``https://www.doclang.ai/ns/v0`` namespace,
+            so a non-namespaced document is rejected here; pass
+            ``validate_xml=False`` to parse non-conforming input best-effort.
+            Silently skipped when the package is not importable.
         max_harvest_chars: raise ``InputTooLargeError`` above this size
             (checked for the main harvest and each table harvest).
         cache_dir: when set, results are cached on disk keyed by the

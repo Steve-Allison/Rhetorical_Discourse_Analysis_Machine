@@ -20,4 +20,4 @@ class InputTooLargeError(DoclangRstError):
 
 
 class InvalidDoclangError(DoclangRstError):
-    """The XML file is not a valid DocLang 0.5 document."""
+    """The XML file is not a valid DocLang document."""

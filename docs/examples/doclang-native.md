@@ -1,6 +1,6 @@
 # DocLang-native RST output — walkthrough
 
-`isanlp_rst.doclang.parse_doclang()` turns a DocLang 0.5 `.dclg.xml`
+`isanlp_rst.doclang.parse_doclang()` turns a DocLang `.dclg.xml`
 file into a flat list of RST relations and EDUs, each indexed by a
 DocLang-native local-name XPath and annotated with the structural
 boundaries (heading / page / group / table / field_region) its content

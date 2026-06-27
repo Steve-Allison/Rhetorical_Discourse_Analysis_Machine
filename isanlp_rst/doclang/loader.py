@@ -1,4 +1,4 @@
-"""Parse a DocLang 0.5 ``.dclg.xml`` file into a usable element tree.
+"""Parse a DocLang ``.dclg.xml`` file into a usable element tree.
 
 The ``doclang`` PyPI package (``doclang-project/doclang``) is
 validator-only — it exposes ``validate(path)`` and ``ValidationError``

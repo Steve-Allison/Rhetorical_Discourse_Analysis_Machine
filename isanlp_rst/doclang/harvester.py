@@ -57,7 +57,7 @@ _HARVEST_AS_BLOCK: frozenset[str] = frozenset({
     "text", "heading", "footnote",
 })
 
-# OTSL-style cell markers per DocLang 0.5.
+# OTSL-style cell markers per the DocLang table model.
 _HEADER_CELL_MARKERS: frozenset[str] = frozenset({"ched", "rhed", "corn"})
 _BODY_CELL_MARKERS: frozenset[str] = frozenset({"fcel"})
 _POSITION_ONLY_MARKERS: frozenset[str] = frozenset({"ecel", "lcel", "ucel", "xcel"})
