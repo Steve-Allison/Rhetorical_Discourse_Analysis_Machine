@@ -22,7 +22,7 @@ Index of project-local memories. One line per entry.
 - [One tree per Docling JSON](decision_one_tree_per_document.md) — one Parser call, one DiscourseUnit tree, boundary metadata as annotation.
 - [Consumer-agnostic framing](decision_consumer_agnostic.md) — work is "Docling JSON in → RST relations indexed by self_ref → out"; no single-consumer coupling.
 - [Overlap rule](decision_overlap_rule.md) — any non-empty intersection → include; `note` field for ≥ 90% lopsided overlaps.
-- [Anchor on docling-core, not hand-rolled walker](decision_use_docling_core.md) — `docling-core` is a hard runtime dependency.
+- [Anchor on docling-core, not hand-rolled walker](decision_use_docling_core.md) — `docling-core` is an optional `formats` extra, not a core dep.
 
 ## Resolved questions (kept as historical record)
 

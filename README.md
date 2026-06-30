@@ -72,7 +72,13 @@ Alternative (raw venv / pip):
 ```bash
 pip install git+https://github.com/iinemo/isanlp.git    # required runtime dep
 pip install git+https://github.com/Steve-Allison/isanlp_rst.git
+
+# The format-native entry points (parse_docling / parse_doclang /
+# parse_markdown) need the optional `formats` extra; the core RST Parser does not:
+pip install "isanlp_rst[formats] @ git+https://github.com/Steve-Allison/isanlp_rst.git"
 ```
+
+`pixi install` already includes the `formats` extra, so the pixi path needs nothing extra.
 
 ### 2. Basic usage
 

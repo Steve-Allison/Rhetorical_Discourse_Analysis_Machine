@@ -33,9 +33,6 @@ dependencies = [
   "pillow>=10",
   "networkx>=2.5.1",
   "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
-  "docling-core>=2.75.0",
-  "markdown-it-py>=3",
-  "mdit-py-plugins>=0.4",
 ]
 
 [project.urls]
@@ -49,6 +46,17 @@ dev = [
   "ruff>=0.6",
   "pyright>=1.1.380",
   "types-lxml>=2026.2.16",
+]
+
+# Format-native entry points only: parse_docling / parse_doclang /
+# parse_markdown. The core `Parser` does not import these — consumers that only
+# use the RST parser (e.g. as a library) install isanlp_rst without this extra
+# and avoid the docling-core dependency chain entirely. `doclang` rides in
+# transitively via docling-core.
+formats = [
+  "docling-core>=2.75.0",
+  "markdown-it-py>=3",
+  "mdit-py-plugins>=0.4",
 ]
 
 [tool.setuptools.packages.find]
@@ -72,7 +80,7 @@ platforms = ["osx-arm64"]
 markdownlint-cli2 = ">=0.14"
 
 [tool.pixi.pypi-dependencies]
-isanlp_rst = { path = ".", editable = true, extras = ["dev"] }
+isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats"] }
 
 [tool.ruff]
 line-length = 120

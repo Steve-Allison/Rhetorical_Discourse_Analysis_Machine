@@ -1,11 +1,11 @@
 ---
 name: decision-use-docling-core
-description: Anchor the Docling-native harvester on docling-core.DoclingDocument.iterate_items rather than hand-rolling a JSON walker. Adds docling-core as a hard runtime dependency.
+description: Anchor the Docling-native harvester on docling-core.DoclingDocument.iterate_items rather than hand-rolling a JSON walker. docling-core is an optional 'formats' extra, not a core dependency.
 metadata:
   type: feedback
 ---
 
-For the Docling-native RST entry point, the harvester uses `docling-core`'s `DoclingDocument.load_from_json(...)` + `iterate_items(...)` rather than walking the JSON as a plain dict. `docling-core` becomes a hard runtime dependency (`pyproject.toml` and `pixi.toml`).
+For the Docling-native RST entry point, the harvester uses `docling-core`'s `DoclingDocument.load_from_json(...)` + `iterate_items(...)` rather than walking the JSON as a plain dict. `docling-core` is an **optional** dependency — the `formats` extra (`pip install isanlp_rst[formats]`), present in the pixi dev/test env but NOT a core requirement (2026-06-30). Consumers that only use the RST `Parser` as a library (e.g. Story_Analyser) install without it and avoid the docling-core dependency chain (incl. the transitive `typer` constraint that conflicted with conda).
 
 **Why:**
 
