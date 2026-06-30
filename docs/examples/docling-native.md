@@ -38,7 +38,7 @@ and inject it:
 from isanlp_rst.parser import Parser
 from isanlp_rst.docling import parse_docling
 
-parser = Parser(hf_model_version="gumrrg", cuda_device=0)
+parser = Parser(hf_model_version="gumrrg", device="auto")
 
 results = [
     parse_docling(p, parser=parser)

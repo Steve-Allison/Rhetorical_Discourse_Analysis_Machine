@@ -16,7 +16,6 @@ from typing import TYPE_CHECKING, Any
 
 from .._rst_common import (
     load_cached,
-    resolve_device,
     resolve_inventory,
     resolve_tool_version,
     result_cache_key,
@@ -39,7 +38,6 @@ DEFAULT_MAX_HARVEST_CHARS = 200_000
 
 # Backwards-compatible aliases — tests and external callers import these
 # from the entry module; the implementations live in _rst_common.
-_resolve_device = resolve_device
 _resolve_inventory = resolve_inventory
 _resolve_tool_version = resolve_tool_version
 
@@ -191,7 +189,7 @@ def parse_markdown(
             hf_model_name=hf_model_name,
             hf_model_version=hf_model_version,
             relinventory=relinventory,
-            cuda_device=resolve_device(device),
+            device=device,
             dtype=dtype,
         )
 

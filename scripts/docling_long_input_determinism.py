@@ -54,8 +54,8 @@ def tree_signature(tree: Any) -> tuple[tuple[Any, ...], ...]:
 
 
 def main() -> int:
-    print("Loading Parser(hf_model_version='gumrrg', cuda_device=0) ...")
-    parser = Parser(hf_model_version=HF_MODEL_VERSION, cuda_device=0)
+    print("Loading Parser(hf_model_version='gumrrg', device='auto') ...")
+    parser = Parser(hf_model_version=HF_MODEL_VERSION, device="auto")
     print("Parser loaded.\n")
 
     # ----- Step 6: long-input smoke -----
@@ -63,7 +63,7 @@ def main() -> int:
     harvests: list[tuple[str, str]] = []
     for path in sorted(FIXTURES_DIR.glob("*.docling.json")):
         doc = DoclingDocument.load_from_json(path)
-        text, _n_text, _n_pic = harvest_body_text(doc)
+        text, _, _ = harvest_body_text(doc)
         harvests.append((path.name, text))
         print(f"  {path.name}: {len(text):>7} chars")
 

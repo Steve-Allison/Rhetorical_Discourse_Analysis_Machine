@@ -9,7 +9,7 @@ host (Linux + CUDA-built PyTorch) to confirm the CUDA dispatch path of the
 ``Parser`` façade end-to-end. Verifies:
 
 * ``torch.cuda.is_available()`` returns True (otherwise the test refuses to run).
-* ``Parser(cuda_device=0)`` resolves to ``cuda:0`` (not MPS, not CPU).
+* ``Parser(device='cuda')`` resolves to ``cuda:0`` (not MPS, not CPU).
 * DMRST ``gumrrg`` and UniRST ``unirst`` both load and parse on GPU.
 * Tree alignment matches the input text.
 * ``parse_from_edus`` round-trips the input EDUs.
@@ -87,9 +87,9 @@ def main() -> int:
         print(f"\n--- {name} ---")
         t0 = time.time()
         parser = Parser(
-            hf_model_name='tchewik/isanlp_rst_v3', cuda_device=0, **kwargs,
+            hf_model_name='tchewik/isanlp_rst_v3', device='cuda', **kwargs,
         )
-        device = parser.predictor._cuda_device
+        device = parser.predictor._device
         if device.type != 'cuda':
             print(f"FAIL — expected cuda device, got {device}", file=sys.stderr)
             return 1

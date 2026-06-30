@@ -1,27 +1,33 @@
 ---
 name: open-device-api
-description: The public Parser API takes `cuda_device: int` even though MPS is now first-class. The naming is misleading and the integer is unused on MPS. Worth a public-API revision before next minor release.
+description: RESOLVED 2026-06-30 — `device=` is now the canonical Parser knob ("auto" default); `cuda_device:int` kept as a deprecated warned shim. The misleading-name problem is fixed.
 metadata:
   type: project
 ---
 
-`Parser(..., cuda_device=N)` is the device knob. It now auto-selects:
+**RESOLVED 2026-06-30.** Implemented option 1 below: `device=` is the canonical
+knob on `Parser` and both predictors, accepting `"auto"` (default) / `"cpu"` /
+`"mps"` / `"cuda"` / `"cuda:N"` / a `torch.device`, resolved by `resolve_device`
+in [`isanlp_rst/base_predictor.py`](../../isanlp_rst/base_predictor.py). The
+resolved value is stored as `self._device` (a `torch.device`, replacing the
+misnamed `self._cuda_device`). The legacy `cuda_device:int` is a deprecated shim
+that emits a `DeprecationWarning` (`-1` → CPU, `>= 0` → best accelerator);
+passing both `device=` and `cuda_device=` raises. The format-native entry points
+pass `device=` straight to `Parser` — the old string→int
+`_rst_common.resolve_device` bridge was removed (one resolver now, not two). The
+inherited `ParsingNet` keeps its original `cuda_device=` kwarg name (Mode-B
+research network, not renamed).
 
-- NVIDIA CUDA host → `cuda:N`
-- Apple Silicon (no CUDA) → `mps` (the integer is ignored; MPS exposes a single device)
-- No GPU available → `RuntimeError` (use `cuda_device=-1` for CPU)
+Default behaviour changed: from CPU (`cuda_device=-1`) to `device="auto"` —
+fixes the foot-gun where Apple Silicon silently ran on CPU.
 
-**Problem:** the parameter is named `cuda_device` but on Apple Silicon it's actually selecting MPS — the name is a lie, and the integer is meaningless. Users reading the docstring get a confusing picture.
+Verified end-to-end this session: gumrrg + unirst parse on both `device="cpu"`
+and `device="mps"` (Apple Silicon); 440 fast tests + ruff + pyright green.
 
-**Options:**
+---
 
-- **Add `device=` as the preferred name**, keep `cuda_device=` as a deprecated alias. `device="auto"` is the default; explicit `"cpu"` / `"cuda:0"` / `"mps"` strings are accepted.
-- **Or:** introduce a richer `device` object that wraps backend + index, and have `cuda_device=` continue working for backwards compatibility.
-
-**How to apply:**
-
-- This is a public API change. Cluster it with other public-API revisions for the next minor release (3.3.0?), not as a one-off.
-- The Docling-native `parse_docling()` entry point should accept the *new* device API from day one, not inherit the legacy `cuda_device=` from `Parser`.
-- README has a sub-section explaining the auto-selection behaviour — it acknowledges the awkwardness ("the integer is ignored; MPS exposes a single device") but doesn't fix it.
+Original problem (kept for record): `Parser(..., cuda_device=N)` was named for
+CUDA but on Apple Silicon selected MPS — the name was a lie and the integer was
+meaningless on MPS, so the docstring gave users a confusing picture.
 
 Related: [[open-v1-policy-knobs]] (similar "expose proper knobs" theme).

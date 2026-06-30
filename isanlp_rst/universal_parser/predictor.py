@@ -17,7 +17,7 @@ from huggingface_hub.errors import EntryNotFoundError
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer, AutoConfig
 
-from isanlp_rst.base_predictor import BasePredictor, str2bool
+from isanlp_rst.base_predictor import BasePredictor, resolve_device, str2bool
 from isanlp_rst.utils.du_converter import DUConverter
 from .data_manager import DataManager  # noqa: F401 - ensure module is registered for pickle
 from .src.parser.data import Data
@@ -48,7 +48,8 @@ class PredictorUniRST(BasePredictor):
         hf_model_version: Optional[str] = None,
         relinventory: Optional[str] = None,
         relinventory_idx: int = 0,
-        cuda_device: int = -1,
+        device: 'str | torch.device | None' = None,
+        cuda_device: 'int | None' = None,
         dtype: 'str | torch.dtype | None' = None,
     ) -> None:
         self._ensure_module_aliases()
@@ -124,8 +125,8 @@ class PredictorUniRST(BasePredictor):
                     )
                 self.relation_tables.append(relation_table)
 
-        self._cuda_device = self._select_device(cuda_device)
-        self._dtype = self._resolve_dtype(dtype, self._cuda_device)
+        self._device = resolve_device(device, cuda_device)
+        self._dtype = self._resolve_dtype(dtype)
 
         self._load_model()
 
@@ -271,7 +272,7 @@ class PredictorUniRST(BasePredictor):
         self.tokenizer.model_max_length = int(1e9)  # The parser relies on a sliding window encoding, so we'll suppress the max_len warning this way.
 
         transformer_config = AutoConfig.from_pretrained(self.config['model']['transformer']['model_name'])
-        transformer = AutoModel.from_config(transformer_config).to(self._cuda_device)
+        transformer = AutoModel.from_config(transformer_config).to(self._device)
 
         self.tokenizer.add_tokens(['<P>'])
         transformer.resize_token_embeddings(len(self.tokenizer))
@@ -280,7 +281,7 @@ class PredictorUniRST(BasePredictor):
         # checkpoint is the source of truth for the architecture — we use it
         # to allocate the right number of `label_classifiers` so the
         # subsequent `load_state_dict` call cannot mismatch.
-        state_dict = self._load_torch_weights(self.model_file, self._cuda_device)
+        state_dict = self._load_torch_weights(self.model_file, self._device)
         ckpt_n_classifiers = self._classifier_count_from_state_dict(state_dict)
 
         rel_tables = self.relation_tables
@@ -379,7 +380,8 @@ class PredictorUniRST(BasePredictor):
         model_config = {
             'transformer': transformer,
             'emb_dim': int(self.config['model']['transformer']['emb_size']),
-            'cuda_device': self._cuda_device,
+            # Inherited ParsingNet kwarg name; holds a torch.device (may be mps).
+            'cuda_device': self._device,
         }
         model_config.update(model_specific_config)
         model_config.update(self._get_model_configs())
@@ -387,7 +389,7 @@ class PredictorUniRST(BasePredictor):
         parser_type = self.config['model'].get('parser_type', 'top-down')
         model_cls = ParsingNet if parser_type == 'top-down' else ParsingNetBottomUp
 
-        self.model = model_cls(**model_config).to(self._cuda_device)
+        self.model = model_cls(**model_config).to(self._device)
         self.model.load_state_dict(state_dict)
         self.model.eval()
 
@@ -596,9 +598,6 @@ class PredictorUniRST(BasePredictor):
             A dictionary with token annotations and the predicted RST tree.
         """
 
-        if text is None:
-            raise ValueError('`text` must be provided for parsing.')
-
         if tokens is None:
             razdel_tokens = list(razdel.tokenize(text))
             word_tokens = [token.text for token in razdel_tokens]
@@ -642,10 +641,10 @@ class PredictorUniRST(BasePredictor):
 
         with torch.inference_mode(), self._autocast():
             (
-                _loss_tree,
-                _loss_label,
+                _,
+                _,
                 span_batch,
-                _label_tuple_batch,
+                _,
                 predict_edu_breaks,
             ) = self.model.testing_loss(
                 batch.input_sentences,
@@ -726,11 +725,11 @@ class PredictorUniRST(BasePredictor):
 
         with torch.inference_mode(), self._autocast():
             (
-                _loss_tree,
-                _loss_label,
+                _,
+                _,
                 span_batch,
-                _label_tuple_batch,
-                predict_edu_breaks,
+                _,
+                _,
             ) = self.model.testing_loss(
                 batch.input_sentences,
                 batch.sent_breaks,

@@ -56,7 +56,7 @@ def harvest_body_text(doc: DoclingDocument) -> tuple[str, int, int]:
     pieces: list[str] = []
     n_text_items = 0
     n_picture_descriptions = 0
-    for item, _depth in doc.iterate_items(
+    for item, _ in doc.iterate_items(
         traverse_pictures=True,
         included_content_layers=LAYERS,
     ):
@@ -157,8 +157,8 @@ def quality_check(parser: Parser, path: Path) -> None:
 
 
 def main() -> int:
-    print("Loading Parser(hf_model_version='gumrrg', cuda_device=0) ...")
-    parser = Parser(hf_model_version=HF_MODEL_VERSION, cuda_device=0)
+    print("Loading Parser(hf_model_version='gumrrg', device='auto') ...")
+    parser = Parser(hf_model_version=HF_MODEL_VERSION, device="auto")
     print("Parser loaded.")
 
     for path in sorted(FIXTURES_DIR.glob("*.docling.json")):

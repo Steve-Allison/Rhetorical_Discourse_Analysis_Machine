@@ -194,13 +194,12 @@ def main(argv: list[str] | None = None) -> int:
         print("No supported sources found.", file=sys.stderr)
         return 1
 
-    from isanlp_rst._rst_common import resolve_device
     from isanlp_rst.parser import Parser
 
     parser = Parser(
         hf_model_version=args.model_version,
         relinventory=args.relinventory,
-        cuda_device=resolve_device(args.device),
+        device=args.device,
         dtype=args.dtype,
     )
 

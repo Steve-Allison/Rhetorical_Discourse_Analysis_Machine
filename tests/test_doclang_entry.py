@@ -21,7 +21,6 @@ from isanlp_rst.doclang._entry import (
     SCHEMA_NAME,
     SCHEMA_VERSION,
     TOOL_NAME,
-    _resolve_device,
     _resolve_inventory,
     _resolve_tool_version,
     _source_origin,
@@ -41,51 +40,6 @@ TABLE_ONLY = FIXTURES / "ok_table_rectangular.dclg.xml"
 # ===========================================================================
 # Fast unit tests — no model load
 # ===========================================================================
-
-
-# --- _resolve_device -------------------------------------------------------
-
-
-@pytest.mark.parametrize(
-    "device,expected",
-    [
-        ("cpu", -1),
-        ("mps", 0),
-        ("cuda", 0),
-        ("cuda:0", 0),
-        ("cuda:1", 1),
-        ("cuda:7", 7),
-    ],
-)
-def test_resolve_device_valid(device: str, expected: int) -> None:
-    assert _resolve_device(device) == expected
-
-
-def test_resolve_device_auto_follows_torch_backends() -> None:
-    """``auto`` is 0 when torch reports a backend, -1 (CPU) otherwise."""
-    import torch
-
-    expected = 0 if (torch.cuda.is_available() or torch.backends.mps.is_available()) else -1
-    assert _resolve_device("auto") == expected
-
-
-@pytest.mark.parametrize(
-    "device",
-    [
-        "",
-        "gpu",
-        "tpu",
-        "CUDA",
-        "cuda:",
-        "cuda:abc",
-        "cuda:-1",
-        "cuda:0:1",
-        "mps:0",
-    ],
-)
-def test_resolve_device_invalid_raises(device: str) -> None:
-    with pytest.raises(ValueError):
-        _resolve_device(device)
 
 
 # --- _resolve_tool_version -------------------------------------------------
@@ -261,7 +215,7 @@ def test_table_only_doc_produces_analyses_with_empty_main_tree() -> None:
 def parser():
     """Construct gumrrg parser once for the slow tests."""
     from isanlp_rst.parser import Parser
-    return Parser(hf_model_version="gumrrg", cuda_device=0)
+    return Parser(hf_model_version="gumrrg", device="auto")
 
 
 @pytest.mark.slow

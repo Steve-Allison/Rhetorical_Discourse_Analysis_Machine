@@ -162,15 +162,15 @@ def _seed_detection_dirs(base: str) -> None:
 # ---- Family-level integration tests ----
 
 
-def _run_family(version: str, cuda_device: int = -1, dtype=None, **extras) -> None:
+def _run_family(version: str, device: str = 'cpu', dtype=None, **extras) -> None:
     """Load via Parser façade, parse_rst + parse_from_edus + edge cases."""
-    print(f"\n=== {version} (cuda_device={cuda_device}, dtype={dtype}) ===", flush=True)
+    print(f"\n=== {version} (device={device}, dtype={dtype}) ===", flush=True)
     parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
                     hf_model_version=version,
-                    cuda_device=cuda_device,
+                    device=device,
                     dtype=dtype,
                     **extras)
-    print(f"  device: {parser.predictor._cuda_device}, "
+    print(f"  device: {parser.predictor._device}, "
           f"dtype: {parser.predictor._dtype}")
 
     _check('parse_rst basic', lambda: _check_parse_rst(parser, SAMPLE_TEXT))
@@ -235,9 +235,9 @@ def main() -> int:
     grp = ap.add_mutually_exclusive_group()
     grp.add_argument('--quick', action='store_true', help='gumrrg + unirst only (default)')
     grp.add_argument('--full', action='store_true', help='all 5 hf_model_versions')
-    ap.add_argument('--cuda-device', type=int, default=-1,
-                    help='CPU=-1 (default); >=0 selects CUDA on NVIDIA hosts or '
-                         'MPS on Apple Silicon (the integer is ignored on MPS).')
+    ap.add_argument('--device', default='cpu',
+                    help="Compute device: 'auto'|'cpu'|'mps'|'cuda'|'cuda:N' "
+                         "(default: cpu). 'auto' picks CUDA, else MPS, else CPU.")
     ap.add_argument('--dtype', default=None,
                     help='Inference dtype: fp32/fp16/bf16 (default: fp32 on '
                          'every device). Tree shape is bit-equivalent across '
@@ -269,12 +269,12 @@ def main() -> int:
     for version in versions:
         extras = {'relinventory': 'eng.erst.gum'} if version == 'unirst' else {}
         try:
-            _run_family(version, cuda_device=args.cuda_device, **extras)
+            _run_family(version, device=args.device, **extras)
             if version == 'unirst':
                 unirst_parser_for_offset_check = Parser(
                     hf_model_name='tchewik/isanlp_rst_v3',
                     hf_model_version='unirst',
-                    cuda_device=args.cuda_device,
+                    device=args.device,
                     relinventory='eng.erst.gum',
                 )
         except Exception:

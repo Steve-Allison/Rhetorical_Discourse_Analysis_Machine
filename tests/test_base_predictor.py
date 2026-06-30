@@ -7,7 +7,7 @@ from collections import OrderedDict
 import pytest
 import torch
 
-from isanlp_rst.base_predictor import BasePredictor, str2bool
+from isanlp_rst.base_predictor import BasePredictor, resolve_device, str2bool
 
 
 # ---------- str2bool ----------
@@ -79,7 +79,7 @@ def test_validate_edus_happy():
 
 def test_validate_edus_none_raises():
     with pytest.raises(ValueError, match="must be provided"):
-        BasePredictor._validate_edus(None)  # type: ignore[arg-type]
+        BasePredictor._validate_edus(None)
 
 
 def test_validate_edus_string_raises():
@@ -89,7 +89,7 @@ def test_validate_edus_string_raises():
 
 def test_validate_edus_bytes_raises():
     with pytest.raises(TypeError, match="not a single string"):
-        BasePredictor._validate_edus(b"oh no bytes")  # type: ignore[arg-type]
+        BasePredictor._validate_edus(b"oh no bytes")
 
 
 def test_validate_edus_empty_raises():
@@ -104,7 +104,7 @@ def test_validate_edus_empty_string_raises():
 
 def test_validate_edus_non_string_raises():
     with pytest.raises(TypeError, match="position 1 must be a string"):
-        BasePredictor._validate_edus(["ok", 42])  # type: ignore[list-item]
+        BasePredictor._validate_edus(["ok", 42])
 
 
 # ---------- _compute_edu_char_spans ----------
@@ -233,25 +233,13 @@ def test_divide_chunks_empty():
     assert out == [[]]
 
 
-# ---------- _resolve_dtype — device-aware default + string parsing ----------
+# ---------- _resolve_dtype — default + string parsing ----------
 
 
-def test_resolve_dtype_default_cpu():
-    assert BasePredictor._resolve_dtype(None, torch.device('cpu')) == torch.float32
-
-
-def test_resolve_dtype_default_cuda_is_float32():
-    """Default is fp32 across all devices — measured fp32 wins on MPS for
-    typical inputs, and we don't promise bf16 wins on CUDA without measurement
-    on the user's hardware. Users opt in via dtype= when their workload
-    benefits."""
-    assert (BasePredictor._resolve_dtype(None, torch.device('cuda', 0))
-            == torch.float32)
-
-
-def test_resolve_dtype_default_mps_is_float32():
-    assert (BasePredictor._resolve_dtype(None, torch.device('mps'))
-            == torch.float32)
+def test_resolve_dtype_default_is_float32():
+    """Default is fp32 on every device — measured fp32 wins on MPS for typical
+    inputs; users opt into bf16/fp16 via dtype= when their workload benefits."""
+    assert BasePredictor._resolve_dtype(None) == torch.float32
 
 
 @pytest.mark.parametrize(
@@ -269,7 +257,7 @@ def test_resolve_dtype_default_mps_is_float32():
     ],
 )
 def test_resolve_dtype_string_parsing(spec, expected):
-    assert BasePredictor._resolve_dtype(spec, torch.device('cpu')) == expected
+    assert BasePredictor._resolve_dtype(spec) == expected
 
 
 @pytest.mark.parametrize(
@@ -277,53 +265,105 @@ def test_resolve_dtype_string_parsing(spec, expected):
     [torch.float32, torch.float16, torch.bfloat16],
 )
 def test_resolve_dtype_passthrough(spec):
-    assert BasePredictor._resolve_dtype(spec, torch.device('cpu')) is spec
+    assert BasePredictor._resolve_dtype(spec) is spec
 
 
 def test_resolve_dtype_unknown_string_raises():
     with pytest.raises(ValueError, match="Unknown dtype"):
-        BasePredictor._resolve_dtype('quantum-float8', torch.device('cpu'))
+        BasePredictor._resolve_dtype('quantum-float8')
 
 
 def test_resolve_dtype_unsupported_torch_dtype_raises():
     with pytest.raises(ValueError, match="Unsupported dtype"):
-        BasePredictor._resolve_dtype(torch.int64, torch.device('cpu'))
+        BasePredictor._resolve_dtype(torch.int64)
 
 
-# ---------- _select_device — CPU/CUDA/MPS dispatch ----------
+# ---------- resolve_device — string API + deprecated cuda_device shim ----------
 
 
-def test_select_device_cpu():
-    assert BasePredictor._select_device(-1) == torch.device('cpu')
+def test_resolve_device_cpu_string():
+    assert resolve_device('cpu') == torch.device('cpu')
 
 
-def test_select_device_with_no_accelerator(monkeypatch):
+def test_resolve_device_auto_no_accelerator_is_cpu(monkeypatch):
     monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
-    # Pretend MPS isn't available either.
     if hasattr(torch.backends, 'mps'):
         monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: False)
         monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: False)
-    with pytest.raises(RuntimeError, match='no GPU backend is available'):
-        BasePredictor._select_device(0)
+    assert resolve_device('auto') == torch.device('cpu')
 
 
-def test_select_device_prefers_cuda(monkeypatch):
+def test_resolve_device_none_defaults_to_auto(monkeypatch):
+    monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
+    if hasattr(torch.backends, 'mps'):
+        monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: False)
+        monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: False)
+    assert resolve_device(None) == torch.device('cpu')
+
+
+def test_resolve_device_auto_prefers_cuda(monkeypatch):
     monkeypatch.setattr(torch.cuda, 'is_available', lambda: True)
     if hasattr(torch.backends, 'mps'):
         monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: True)
         monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: True)
-    dev = BasePredictor._select_device(2)
-    assert dev.type == 'cuda' and dev.index == 2
+    assert resolve_device('auto') == torch.device('cuda:0')
 
 
-def test_select_device_falls_back_to_mps(monkeypatch):
+def test_resolve_device_auto_falls_back_to_mps(monkeypatch):
     if not (hasattr(torch.backends, 'mps') and torch.backends.mps.is_built()):
         pytest.skip('PyTorch built without MPS support')
     monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
     monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: True)
     monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: True)
-    dev = BasePredictor._select_device(0)
-    assert dev.type == 'mps'
+    assert resolve_device('auto').type == 'mps'
+
+
+def test_resolve_device_explicit_mps_unavailable_raises(monkeypatch):
+    monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
+    if hasattr(torch.backends, 'mps'):
+        monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: False)
+        monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: False)
+    with pytest.raises(RuntimeError, match='MPS is not available'):
+        resolve_device('mps')
+
+
+def test_resolve_device_explicit_cuda_unavailable_raises(monkeypatch):
+    monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
+    with pytest.raises(RuntimeError, match='CUDA is not available'):
+        resolve_device('cuda:1')
+
+
+def test_resolve_device_cuda_index_parsed(monkeypatch):
+    monkeypatch.setattr(torch.cuda, 'is_available', lambda: True)
+    dev = resolve_device('cuda:2')
+    assert dev.type == 'cuda' and dev.index == 2
+
+
+def test_resolve_device_negative_cuda_index_raises(monkeypatch):
+    monkeypatch.setattr(torch.cuda, 'is_available', lambda: True)
+    with pytest.raises(ValueError, match='non-negative'):
+        resolve_device('cuda:-1')
+
+
+def test_resolve_device_invalid_spec_raises():
+    with pytest.raises(ValueError, match='Unrecognised device'):
+        resolve_device('gpu')
+
+
+def test_resolve_device_torch_device_passthrough():
+    d = torch.device('cpu')
+    assert resolve_device(d) is d
+
+
+def test_resolve_device_legacy_int_warns_and_maps_cpu():
+    with pytest.warns(DeprecationWarning, match='cuda_device'):
+        dev = resolve_device(cuda_device=-1)
+    assert dev == torch.device('cpu')
+
+
+def test_resolve_device_both_args_raises():
+    with pytest.raises(ValueError, match='not both'):
+        resolve_device('cpu', cuda_device=-1)
 
 
 # ---------- _recount_spans (regression — _recount_spans is delicate) ----------

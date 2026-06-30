@@ -24,8 +24,12 @@ class Parser:
        ``data_manager_*.pickle`` or a ``config.json`` with ``data.corpora``
        implies UniRST; otherwise ``relation_table.txt`` implies DMRST).
 
+    Device selection uses ``device=`` (``"auto"`` by default — CUDA if
+    present, else MPS on Apple Silicon, else CPU). The legacy integer
+    ``cuda_device=`` is still accepted but deprecated.
+
     Examples:
-        >>> Parser(hf_model_version='gumrrg', cuda_device=-1)              # DMRST
+        >>> Parser(hf_model_version='gumrrg', device='cpu')               # DMRST
         >>> Parser(hf_model_version='unirst', relinventory='eng.erst.gum') # UniRST
         >>> Parser(model_dir='/path/to/checkpoint', family='dmrst')        # local
     """
@@ -42,7 +46,8 @@ class Parser:
         hf_model_version: Optional[str] = None,
         relinventory: Optional[str] = None,
         relinventory_idx: int = 0,
-        cuda_device: int = -1,
+        device: 'str | torch.device | None' = None,
+        cuda_device: 'int | None' = None,
         family: Optional[str] = None,
         dtype: 'str | torch.dtype | None' = None,
     ):
@@ -57,6 +62,7 @@ class Parser:
                 model_dir=model_dir,
                 hf_model_name=effective_hf_name,
                 hf_model_version=hf_model_version,
+                device=device,
                 cuda_device=cuda_device,
                 dtype=dtype,
             )
@@ -67,6 +73,7 @@ class Parser:
                 hf_model_version=hf_model_version,
                 relinventory=relinventory,
                 relinventory_idx=relinventory_idx,
+                device=device,
                 cuda_device=cuda_device,
                 dtype=dtype,
             )

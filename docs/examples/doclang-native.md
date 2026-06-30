@@ -59,7 +59,7 @@ one and inject it:
 from isanlp_rst.parser import Parser
 from isanlp_rst.doclang import parse_doclang
 
-parser = Parser(hf_model_version="gumrrg", cuda_device=0)
+parser = Parser(hf_model_version="gumrrg", device="auto")
 
 results = [
     parse_doclang(p, parser=parser)

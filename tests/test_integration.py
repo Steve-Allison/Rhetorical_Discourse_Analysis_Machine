@@ -134,26 +134,26 @@ def _assert_aligned(unit, text: str, path: str = 'root') -> None:
 @pytest.fixture(scope='session')
 def dmrst_gumrrg_cpu() -> Parser:
     return Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                  hf_model_version='gumrrg', cuda_device=-1)
+                  hf_model_version='gumrrg', device='cpu')
 
 
 @pytest.fixture(scope='session')
 def dmrst_rstdt_cpu() -> Parser:
     return Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                  hf_model_version='rstdt', cuda_device=-1)
+                  hf_model_version='rstdt', device='cpu')
 
 
 @pytest.fixture(scope='session')
 def dmrst_rstreebank_cpu() -> Parser:
     """Russian-trained DMRST model."""
     return Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                  hf_model_version='rstreebank', cuda_device=-1)
+                  hf_model_version='rstreebank', device='cpu')
 
 
 @pytest.fixture(scope='session')
 def unirst_eng_cpu() -> Parser:
     return Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                  hf_model_version='unirst', cuda_device=-1,
+                  hf_model_version='unirst', device='cpu',
                   relinventory='eng.erst.gum')
 
 
@@ -162,7 +162,7 @@ def rrtrrg_cpu() -> Parser:
     """Multi-corpus, non-union UniRST — exercises the checkpoint-driven
     classifier-count code path."""
     return Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                  hf_model_version='rrtrrg', cuda_device=-1)
+                  hf_model_version='rrtrrg', device='cpu')
 
 
 # ---------- BUG-FINDING test 1: cross-dtype equivalence on MPS ----------
@@ -191,7 +191,7 @@ def test_dmrst_dtype_equivalence_on_mps(dmrst_gumrrg_cpu: Parser, text_name, tex
     """fp16/bf16 on MPS must produce identical tree shape to fp32-CPU baseline."""
     baseline = _topology(dmrst_gumrrg_cpu(text)['rst'][0])
     mps_parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                        hf_model_version='gumrrg', cuda_device=0, dtype=dtype)
+                        hf_model_version='gumrrg', device='mps', dtype=dtype)
     candidate = _topology(mps_parser(text)['rst'][0])
     assert candidate == baseline, (
         f"DMRST gumrrg MPS {dtype} on {text_name} diverged from CPU fp32"
@@ -205,7 +205,7 @@ def test_unirst_dtype_equivalence_on_mps(unirst_eng_cpu: Parser, dtype):
     relations) — verify it also has bit-equivalent dtype behaviour."""
     baseline = _topology(unirst_eng_cpu(LONG_EN)['rst'][0])
     mps_parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                        hf_model_version='unirst', cuda_device=0,
+                        hf_model_version='unirst', device='mps',
                         relinventory='eng.erst.gum', dtype=dtype)
     candidate = _topology(mps_parser(LONG_EN)['rst'][0])
     assert candidate == baseline, f"UniRST MPS {dtype} diverged from CPU fp32"
@@ -248,7 +248,7 @@ def test_unirst_russian_via_relinventory():
     """UniRST is multilingual. Using a Russian relinventory on Russian text
     should produce a sensible tree."""
     parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                    hf_model_version='unirst', cuda_device=-1,
+                    hf_model_version='unirst', device='cpu',
                     relinventory='rus.rst.rrt')
     res = parser(RUSSIAN_TEXT)
     _assert_aligned(res['rst'][0], RUSSIAN_TEXT)
@@ -309,7 +309,7 @@ def test_edge_unicode_punctuation(dmrst_gumrrg_cpu: Parser):
 def test_dtype_equivalence_rstdt(dmrst_rstdt_cpu: Parser, dtype):
     baseline = _topology(dmrst_rstdt_cpu(LONG_EN)['rst'][0])
     p = Parser(hf_model_name='tchewik/isanlp_rst_v3',
-               hf_model_version='rstdt', cuda_device=0, dtype=dtype)
+               hf_model_version='rstdt', device='mps', dtype=dtype)
     assert _topology(p(LONG_EN)['rst'][0]) == baseline, f"rstdt {dtype} diverged"
 
 
@@ -318,7 +318,7 @@ def test_dtype_equivalence_rstdt(dmrst_rstdt_cpu: Parser, dtype):
 def test_dtype_equivalence_rstreebank(dmrst_rstreebank_cpu: Parser, dtype):
     baseline = _topology(dmrst_rstreebank_cpu(RUSSIAN_TEXT)['rst'][0])
     p = Parser(hf_model_name='tchewik/isanlp_rst_v3',
-               hf_model_version='rstreebank', cuda_device=0, dtype=dtype)
+               hf_model_version='rstreebank', device='mps', dtype=dtype)
     assert _topology(p(RUSSIAN_TEXT)['rst'][0]) == baseline, (
         f"rstreebank {dtype} diverged (Russian text)"
     )
@@ -331,5 +331,5 @@ def test_dtype_equivalence_rrtrrg(rrtrrg_cpu: Parser, dtype):
     equivalence over that fix specifically."""
     baseline = _topology(rrtrrg_cpu(LONG_EN)['rst'][0])
     p = Parser(hf_model_name='tchewik/isanlp_rst_v3',
-               hf_model_version='rrtrrg', cuda_device=0, dtype=dtype)
+               hf_model_version='rrtrrg', device='mps', dtype=dtype)
     assert _topology(p(LONG_EN)['rst'][0]) == baseline, f"rrtrrg {dtype} diverged"

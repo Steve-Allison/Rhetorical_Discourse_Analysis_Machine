@@ -46,7 +46,7 @@ re-parsed:
 from isanlp_rst.parser import Parser
 from isanlp_rst.markdown import parse_markdown
 
-parser = Parser(hf_model_version="gumrrg", cuda_device=0)
+parser = Parser(hf_model_version="gumrrg", device="auto")
 
 results = [
     parse_markdown(p, parser=parser, cache_dir=".rst-cache")

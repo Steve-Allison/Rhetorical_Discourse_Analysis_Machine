@@ -97,7 +97,7 @@ version = 'gumrrg'  # one of: 'gumrrg', 'rstdt', 'rstreebank', 'rrtrrg', 'unirst
 # Initialise the parser (downloads weights from HF on first call)
 parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
                 hf_model_version=version,
-                cuda_device=0)  # -1 = CPU
+                device='auto')  # 'auto' (default) | 'cpu' | 'mps' | 'cuda' | 'cuda:N'
 
 text = """
 On Saturday, in the ninth edition of the T20 Men's Cricket World Cup, Team India won against South Africa by seven runs.
@@ -118,7 +118,7 @@ For the multilingual `unirst` model, specify the relation inventory:
 ```python
 parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
                 hf_model_version='unirst',
-                cuda_device=0,
+                device='auto',
                 relinventory='eng.erst.gum')  # see UniRST_Metrics.md for options
 ```
 
@@ -130,19 +130,22 @@ For offline / air-gapped use, point `Parser` at a directory containing the check
 # Family auto-detected:
 #   data_manager_*.pickle or config.json with `data.corpora`  -> UniRST
 #   relation_table.txt                                        -> DMRST
-parser = Parser(model_dir='/path/to/checkpoint', cuda_device=0)
+parser = Parser(model_dir='/path/to/checkpoint', device='auto')
 
 # Override auto-detection:
-parser = Parser(model_dir='/path/to/checkpoint', family='dmrst', cuda_device=0)
+parser = Parser(model_dir='/path/to/checkpoint', family='dmrst', device='auto')
 ```
 
-#### Apple Silicon (MPS)
+#### Device selection (`device=`)
 
-`cuda_device=N` auto-selects the best available GPU backend:
+`device=` chooses the compute backend (default `"auto"`):
 
-- NVIDIA CUDA host → `cuda:N`
-- Apple Silicon (no CUDA) → `mps` (integer ignored; MPS exposes a single device)
-- No GPU available → `RuntimeError` (use `cuda_device=-1` for CPU)
+- `"auto"` (default) → CUDA if present, else MPS on Apple Silicon, else CPU
+- `"cpu"` → CPU
+- `"mps"` → Apple Silicon Metal backend (raises if unavailable)
+- `"cuda"` / `"cuda:N"` → a specific NVIDIA device (raises if no CUDA)
+
+The integer `cuda_device=` parameter is **deprecated** but still accepted (`-1` → CPU, `>= 0` → best available accelerator); passing it emits a `DeprecationWarning`. Migrate to `device=`.
 
 PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogonal_` during weight init). The parser routes this via CPU automatically — no env-var hacks required.
 
@@ -152,7 +155,7 @@ Forward passes go through `torch.autocast`, so the model runs in `float32`, `flo
 
 ```python
 import torch
-parser = Parser(hf_model_version='gumrrg', cuda_device=0,
+parser = Parser(hf_model_version='gumrrg', device='auto',
                 dtype=torch.bfloat16)   # also accepts 'bf16', 'fp16', 'fp32'
 ```
 
@@ -301,7 +304,7 @@ The underlying weights are ~2 GB. Constructing a fresh `Parser` per call would r
 from isanlp_rst.parser import Parser
 from isanlp_rst.docling import parse_docling
 
-parser = Parser(hf_model_version="gumrrg", cuda_device=0)
+parser = Parser(hf_model_version="gumrrg", device="auto")
 
 for path in document_paths:
     result = parse_docling(path, parser=parser)

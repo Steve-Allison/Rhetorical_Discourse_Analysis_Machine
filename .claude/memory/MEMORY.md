@@ -30,6 +30,7 @@ Index of project-local memories. One line per entry.
 - [Parse-per-boundary alternative architecture](open_parse_per_boundary.md) — REJECTED: one-tree-per-document wins.
 - [v1 policy knobs](open_v1_policy_knobs.md) — RESOLVED: every policy is a parameter on `parse_docling()` with a default.
 - [`Parser` facade output shape](open_parser_facade_unverified.md) — RESOLVED: returns `{'rst': [tree]}`; tree has character-level absolute offsets; strictly binary; leaves are EDUs.
+- [Device API public surface](open_device_api.md) — RESOLVED 2026-06-30: `device=` ("auto" default) is canonical on `Parser` + predictors; `cuda_device:int` is a deprecated warned shim.
 
 ## Feedback (HARD-RULE enforcement)
 
@@ -46,4 +47,3 @@ Index of project-local memories. One line per entry.
 - [Boundary design decisions](open_boundary_design_decisions.md) — boundary_memberships semantics, section nesting, pages, picture-caption vs OCR-text, degenerate cases (empty boundaries, single-EDU, table-only documents).
 - [Output schema specifics](open_output_schema_specifics.md) — relation / EDU / boundary ordering, id space, tool_version format, source field format, JSON serialisation specifics.
 - [Long-input parser fallback](open_long_input_fallback.md) — what `parse_docling()` does if the existing `Parser` fails or degrades on 50K+-char harvests. Verified empirically in Phase 0 step 6.
-- [Device API public surface](open_device_api.md) — `cuda_device=int` is the CUDA-era API; new `device="auto"` proposed for `parse_docling()` but the underlying `Parser` still uses the legacy shape.

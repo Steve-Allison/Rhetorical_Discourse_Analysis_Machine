@@ -10,9 +10,9 @@ Reports median wall-clock latency for ``parse_rst`` after warm-up. Comparing
 across:
 
 * CPU fp32 (baseline, host-dependent)
-* GPU fp32 (forced — equivalent precision to CPU baseline)
-* GPU bf16 (default for accelerators in this library — 2026 SOTA)
-* GPU fp16 (faster on hardware without native bf16, e.g. M1)
+* GPU fp32 (the library default on every device — equivalent precision to CPU baseline)
+* GPU bf16 (opt-in via dtype='bf16' — 2026 SOTA on native-bf16 accelerators)
+* GPU fp16 (opt-in via dtype='fp16' — faster on hardware without native bf16, e.g. M1)
 
 Tree shapes from every (device, dtype) combination must match the CPU fp32
 baseline. The benchmark fails if any combination diverges in tree structure.
@@ -91,13 +91,13 @@ def main() -> int:
     extras = {'relinventory': args.relinventory} if args.version == 'unirst' else {}
 
     configs: list[tuple[str, dict]] = [
-        ('CPU fp32', dict(cuda_device=-1)),
+        ('CPU fp32', dict(device='cpu')),
     ]
     if torch.cuda.is_available():
         configs.extend([
-            ('CUDA fp32', dict(cuda_device=0, dtype=torch.float32)),
-            ('CUDA bf16', dict(cuda_device=0, dtype=torch.bfloat16)),
-            ('CUDA fp16', dict(cuda_device=0, dtype=torch.float16)),
+            ('CUDA fp32', dict(device='cuda', dtype=torch.float32)),
+            ('CUDA bf16', dict(device='cuda', dtype=torch.bfloat16)),
+            ('CUDA fp16', dict(device='cuda', dtype=torch.float16)),
         ])
     elif (
         hasattr(torch.backends, 'mps')
@@ -105,9 +105,9 @@ def main() -> int:
         and torch.backends.mps.is_built()
     ):
         configs.extend([
-            ('MPS fp32', dict(cuda_device=0, dtype=torch.float32)),
-            ('MPS bf16', dict(cuda_device=0, dtype=torch.bfloat16)),
-            ('MPS fp16', dict(cuda_device=0, dtype=torch.float16)),
+            ('MPS fp32', dict(device='mps', dtype=torch.float32)),
+            ('MPS bf16', dict(device='mps', dtype=torch.bfloat16)),
+            ('MPS fp16', dict(device='mps', dtype=torch.float16)),
         ])
 
     print(f"{'config':<14} {'load':>8} {'parse (median)':>16} {'per char':>12} "

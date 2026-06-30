@@ -31,15 +31,19 @@ Both predictors inherit `isanlp_rst.base_predictor.BasePredictor`, which central
 3. `parse_rst(text)` razdel-tokenises → builds an offset converter → tokenises with the transformer → `model.testing_loss(..., generate_tree=True)` returns spans + EDU breaks + relation labels → `DUConverter` builds an `isanlp.annotation_rst.DiscourseUnit` tree → `remap_tree_offsets` rewrites every node's `start` / `end` to original-text indices.
 4. `parse_from_edus(edus)` follows the same path but with `use_pred_segmentation=False`, validating that the produced leaves match the input EDUs character-for-character.
 
-`UniRST` adds a `relinventory` parameter (`Optional[str]`) so a single multilingual model can target a specific corpus's relation set (e.g. `eng.erst.gum`, `rus.rst.rrt`). When `None`, falls back to `relinventory_idx` (default `0`); the dataset at index 0 in the loaded model's `dataset_names` becomes the active inventory. Available inventories: [`UniRST_Metrics.md`](../../UniRST_Metrics.md). Source: `universal_parser/predictor.py:48-109`.
+`UniRST` adds a `relinventory` parameter (`Optional[str]`) so a single multilingual model can target a specific corpus's relation set (e.g. `eng.erst.gum`, `rus.rst.rrt`). When `None`, falls back to `relinventory_idx` (default `0`); the dataset at index 0 in the loaded model's `dataset_names` becomes the active inventory. Available inventories: [`UniRST_Metrics.md`](../../UniRST_Metrics.md). Source: `universal_parser/predictor.py:49-110`.
 
 ## Device handling
 
-`cuda_device=N` (any non-negative integer) auto-selects the best available GPU backend:
+`device=` is the canonical knob (default `"auto"`), resolved by `resolve_device` in [`isanlp_rst/base_predictor.py`](../../isanlp_rst/base_predictor.py):
 
-- NVIDIA CUDA host → `cuda:N`
-- Apple Silicon (no CUDA) → `mps` (the integer is ignored; MPS exposes a single device)
-- No GPU available → `RuntimeError` (use `cuda_device=-1` for CPU)
+- `"auto"` (default) → CUDA if present, else MPS on Apple Silicon, else CPU
+- `"cpu"` → CPU
+- `"mps"` → Apple Silicon Metal backend (`RuntimeError` if unavailable)
+- `"cuda"` / `"cuda:N"` → a specific NVIDIA device (`RuntimeError` if no CUDA)
+- a `torch.device` → used as-is
+
+The resolved device is stored on the predictor as `self._device` (a `torch.device`). The legacy integer `cuda_device=` is a deprecated shim (`-1` → CPU, `>= 0` → best accelerator) that emits a `DeprecationWarning`; both families still pass the resolved device into the inherited `ParsingNet` under its original `cuda_device=` kwarg name (a Mode-B research-network parameter, not renamed).
 
 PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogonal_`). The parser routes this via CPU automatically — see [`isanlp_rst/utils/mps_init.py`](../../isanlp_rst/utils/mps_init.py). No manual env-var hacks required.
 
@@ -47,7 +51,7 @@ PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogon
 
 Forward passes go through `torch.autocast`. The model runs in `float32`, `float16`, or `bfloat16` without changing trained weights. Default is `float32` on every device.
 
-- **Apple Silicon (~1k-char inputs):** `float32` beats `bfloat16` / `float16` for every published model — claim per `base_predictor.py:362-365` source comment, measured by the maintainer at the time.
+- **Apple Silicon (~1k-char inputs):** `float32` beats `bfloat16` / `float16` for every published model — claim per `base_predictor.py:470-478` source comment, measured by the maintainer at the time.
 - **Large-batch CUDA (Hopper / Ada Tensor Cores):** `bfloat16` is likely faster — same source comment. Measure with `pixi run bench` before pinning.
 - **Tree topology + EDU segmentation are bit-equivalent across all three dtypes** for all five published models — **but relation / nuclearity labels are not.** A node's label is an argmax over a per-node distribution; on a near-tied (high-entropy) node, bf16/fp16 can flip the winner with no structural change. Verified 2026-06-27 (numpy 2.5.0, MPS): rrtrrg on `LONG_EN` flips one entropy-0.40 node from `Elaboration`/NS to `Cause-effect`/SN under bf16 while every span stays byte-identical; the other four models show no flip on their test inputs (and rrtrrg itself does not flip under fp16). Assertion source: `tests/test_integration.py` — `test_dmrst_dtype_equivalence_on_mps`, `test_unirst_dtype_equivalence_on_mps`, `test_dtype_equivalence_rstdt`, `test_dtype_equivalence_rstreebank`, `test_dtype_equivalence_rrtrrg`, each comparing fp16/bf16 **topology** (see `_topology`, labels deliberately excluded) against an fp32-CPU baseline. **Suite PASS re-run and verified this session.**
 

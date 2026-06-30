@@ -10,7 +10,7 @@ from huggingface_hub import hf_hub_download
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel, AutoConfig
 
-from isanlp_rst.base_predictor import BasePredictor, str2bool
+from isanlp_rst.base_predictor import BasePredictor, resolve_device, str2bool
 from isanlp_rst.utils.du_converter import DUConverter
 from .src.parser.data import Data
 from .src.parser.parsing_net import ParsingNet
@@ -22,7 +22,8 @@ class PredictorDMRST(BasePredictor):
         model_dir: Optional[str] = None,
         hf_model_name: Optional[str] = None,
         hf_model_version: Optional[str] = None,
-        cuda_device: int = -1,
+        device: 'str | torch.device | None' = None,
+        cuda_device: 'int | None' = None,
         dtype: 'str | torch.dtype | None' = None,
     ):
         if model_dir is not None and hf_model_name is not None:
@@ -67,8 +68,8 @@ class PredictorDMRST(BasePredictor):
         with open(self.config_path, 'r', encoding='utf8') as f:
             self.config = json.load(f)
 
-        self._cuda_device = self._select_device(cuda_device)
-        self._dtype = self._resolve_dtype(dtype, self._cuda_device)
+        self._device = resolve_device(device, cuda_device)
+        self._dtype = self._resolve_dtype(dtype)
 
         self._load_model()
 
@@ -81,7 +82,7 @@ class PredictorDMRST(BasePredictor):
             1e9)  # The parser relies on a sliding window encoding, so we'll suppress the max_len warning this way.
 
         transformer_config = AutoConfig.from_pretrained(self.config['model']['transformer']['model_name'])
-        transformer = AutoModel.from_config(transformer_config).to(self._cuda_device)
+        transformer = AutoModel.from_config(transformer_config).to(self._device)
 
         self.tokenizer.add_tokens(['<P>'])
         transformer.resize_token_embeddings(len(self.tokenizer))
@@ -91,12 +92,13 @@ class PredictorDMRST(BasePredictor):
             'classes_number': len(self.relation_table),
             'transformer': transformer,
             'emb_dim': int(self.config['model']['transformer']['emb_size']),
-            'cuda_device': self._cuda_device
+            # Inherited ParsingNet kwarg name; holds a torch.device (may be mps).
+            'cuda_device': self._device
         }
 
         model_config.update(self._get_model_configs())
-        self.model = ParsingNet(**model_config).to(self._cuda_device)
-        self.model.load_state_dict(self._load_torch_weights(self.model_file, self._cuda_device))
+        self.model = ParsingNet(**model_config).to(self._device)
+        self.model.load_state_dict(self._load_torch_weights(self.model_file, self._device))
         self.model.eval()
 
     def _get_model_configs(self):
@@ -153,25 +155,6 @@ class PredictorDMRST(BasePredictor):
 
     def tokenize(self, data):
         """ Takes data with word level tokenization, run current transformer tokenizer and recount EDU boundaries."""
-
-        def get_offset_mappings(input_ids):
-            subwords_str = self.tokenizer.convert_ids_to_tokens(input_ids)
-
-            start, end = 0, 0
-            result = []
-            for subword in subwords_str:
-                if subword.startswith('▁'):
-                    if subword != '▁':
-                        start += 1
-
-                if subword == '<P>' and start > 0:
-                    start += 1
-                    end += 1
-
-                end += len(subword)
-                result.append((start, end))
-                start = end
-            return result
 
         # (word_start_char, word_end_char+1) for each token
         word_offsets = []
@@ -293,8 +276,7 @@ class PredictorDMRST(BasePredictor):
 
         # Perform forward pass
         with torch.inference_mode(), self._autocast():
-            loss_tree_batch, loss_label_batch, \
-                span_batch, label_tuple_batch, predict_edu_breaks = self.model.testing_loss(
+            _, _, span_batch, _, predict_edu_breaks = self.model.testing_loss(
                 batch.input_sentences, batch.sent_breaks, batch.entity_ids, batch.entity_position_ids,
                 batch.edu_breaks, batch.relation_label, batch.parsing_breaks,
                 generate_tree=True, use_pred_segmentation=True)
@@ -368,8 +350,7 @@ class PredictorDMRST(BasePredictor):
         batch = self.tokenize(input_data)
 
         with torch.inference_mode(), self._autocast():
-            loss_tree_batch, loss_label_batch, \
-                span_batch, label_tuple_batch, predict_edu_breaks = self.model.testing_loss(
+            _, _, span_batch, _, predict_edu_breaks = self.model.testing_loss(
                 batch.input_sentences, batch.sent_breaks, batch.entity_ids, batch.entity_position_ids,
                 batch.edu_breaks, batch.relation_label, batch.parsing_breaks,
                 generate_tree=True, use_pred_segmentation=False)

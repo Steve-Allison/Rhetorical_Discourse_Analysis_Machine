@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import warnings
 from bisect import bisect_right
 from typing import Iterable, List, Optional, Sequence, Tuple
 
@@ -24,6 +25,116 @@ def str2bool(value):
     return bool(value)
 
 
+def _mps_available() -> bool:
+    """True when this host has a usable MPS (Apple Silicon Metal) backend."""
+    return (
+        hasattr(torch.backends, 'mps')
+        and torch.backends.mps.is_available()
+        and torch.backends.mps.is_built()
+    )
+
+
+def _device_from_spec(spec: str) -> 'torch.device':
+    """Resolve the string device API to a ``torch.device``.
+
+    ``"auto"`` picks the best available backend (CUDA, else MPS, else CPU) and
+    never raises. ``"cpu"`` is always available. ``"mps"`` / ``"cuda"`` /
+    ``"cuda:N"`` are explicit requests and raise ``RuntimeError`` if that
+    backend is not present on the host.
+    """
+    key = spec.strip().lower()
+    if key == 'cpu':
+        return torch.device('cpu')
+    if key == 'auto':
+        if torch.cuda.is_available():
+            return torch.device('cuda:0')
+        if _mps_available():
+            os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
+            return torch.device('mps')
+        return torch.device('cpu')
+    if key == 'mps':
+        if not _mps_available():
+            raise RuntimeError("device='mps' requested but MPS is not available on this host.")
+        os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
+        return torch.device('mps')
+    if key == 'cuda' or key.startswith('cuda:'):
+        if not torch.cuda.is_available():
+            raise RuntimeError(f"device={spec!r} requested but CUDA is not available on this host.")
+        if key == 'cuda':
+            return torch.device('cuda:0')
+        try:
+            index = int(key.split(':', 1)[1])
+        except ValueError as exc:
+            raise ValueError(f"Invalid CUDA device specifier: {spec!r}") from exc
+        if index < 0:
+            raise ValueError(f"CUDA device index must be non-negative: {spec!r}")
+        return torch.device(f'cuda:{index}')
+    raise ValueError(
+        f"Unrecognised device {spec!r}. Expected 'auto', 'cpu', 'mps', 'cuda', or 'cuda:N'."
+    )
+
+
+def _device_from_legacy_int(cuda_device: int) -> 'torch.device':
+    """Reproduce the historical ``cuda_device: int`` selection exactly.
+
+    ``-1`` -> CPU. ``>= 0`` -> ``cuda:<n>`` on an NVIDIA host, else ``mps`` on
+    Apple Silicon, else ``RuntimeError``. Kept bit-for-bit so the deprecated
+    integer path behaves as it always did.
+    """
+    if cuda_device == -1:
+        return torch.device('cpu')
+    if torch.cuda.is_available():
+        return torch.device(f'cuda:{cuda_device}')
+    if _mps_available():
+        os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
+        return torch.device('mps')
+    raise RuntimeError(
+        f'cuda_device={cuda_device} requested but no GPU backend is '
+        'available (neither CUDA nor MPS). Pass device="cpu" for CPU.'
+    )
+
+
+def resolve_device(
+    device: 'str | torch.device | None' = None,
+    cuda_device: 'int | None' = None,
+) -> 'torch.device':
+    """Resolve the compute device from the string API (or the deprecated int).
+
+    ``device`` is the canonical API:
+
+    - ``"auto"`` (or ``None``) -> CUDA if present, else MPS on Apple Silicon,
+      else CPU.
+    - ``"cpu"`` -> CPU.
+    - ``"mps"`` -> Apple Silicon Metal backend (raises if unavailable).
+    - ``"cuda"`` / ``"cuda:N"`` -> a specific NVIDIA device (raises if no CUDA).
+    - a ``torch.device`` -> returned as-is.
+
+    ``cuda_device`` is the deprecated integer shim: ``-1`` -> CPU; ``>= 0`` ->
+    the best available accelerator. Passing it emits a ``DeprecationWarning``.
+    Passing both ``device`` and ``cuda_device`` is a ``ValueError``.
+    """
+    if cuda_device is not None:
+        if device is not None:
+            raise ValueError(
+                'Pass either `device` (preferred) or `cuda_device` (deprecated), not both.'
+            )
+        warnings.warn(
+            "`cuda_device` is deprecated and will be removed in a future release; "
+            "use `device=` instead (e.g. device='auto'|'cpu'|'mps'|'cuda:0'). "
+            "cuda_device=-1 maps to device='cpu'; cuda_device>=0 selects the best "
+            "available accelerator.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return _device_from_legacy_int(cuda_device)
+
+    if device is None:
+        return _device_from_spec('auto')
+    if isinstance(device, torch.device):
+        return device
+    return _device_from_spec(device)
+
+
 class BasePredictor:
     """Mixin-style base with shared tokenization, batching and offset utils.
 
@@ -33,11 +144,11 @@ class BasePredictor:
     """
 
     tokenizer = None
-    # Set by subclasses' ``__init__`` after ``_select_device`` and
+    # Set by subclasses' ``__init__`` after ``resolve_device`` and
     # ``_resolve_dtype`` resolve them. Declared here so Pyright can narrow
-    # ``self._cuda_device`` and ``self._dtype`` on the base methods that use
-    # them (``_autocast``, ``_load_torch_weights``).
-    _cuda_device: 'torch.device'
+    # ``self._device`` and ``self._dtype`` on the base methods that use them
+    # (``_autocast``, ``_load_torch_weights``).
+    _device: 'torch.device'
     _dtype: 'torch.dtype'
 
     @staticmethod
@@ -236,8 +347,12 @@ class BasePredictor:
             BasePredictor._collect_leaf_texts(right, acc)
 
     @staticmethod
-    def _validate_edus(edus: Sequence[str]) -> List[str]:
-        """Validate a sequence of EDU strings and return a normalized list.
+    def _validate_edus(edus: object) -> List[str]:
+        """Validate untrusted input as a sequence of EDU strings.
+
+        Typed ``object`` because this is the input-validation boundary for the
+        public ``parse_from_edus`` API: callers may pass anything, and the
+        guards below narrow it to ``list[str]`` or raise.
 
         Raises:
             ValueError: if `edus` is None, empty, or contains an empty string.
@@ -337,17 +452,14 @@ class BasePredictor:
     @staticmethod
     def _resolve_dtype(
         dtype: 'str | torch.dtype | None',
-        device: torch.device,
     ) -> torch.dtype:
-        """Normalise a dtype spec to a ``torch.dtype``, defaulting per device.
+        """Normalise a dtype spec to a ``torch.dtype``.
 
         Accepts:
-            * ``None`` -> device-aware default. CPU stays at ``float32``;
-              CUDA and MPS pick ``float16`` (industry-standard for transformer
-              inference on hardware with native half-precision matmul, with
-              numerical-sensitive ops kept in ``float32`` by ``torch.autocast``).
-              For exact bit-equivalence with the historical ``float32`` outputs,
-              callers must pass ``dtype=torch.float32`` explicitly.
+            * ``None`` -> ``float32`` on every device (the default). Measured
+              fastest for document-length inputs on Apple Silicon; pass
+              ``dtype='bf16'`` explicitly for large-batch CUDA where native
+              half-precision matmul wins.
             * a ``torch.dtype`` instance, returned as-is after validation.
             * a string: ``'float32' / 'fp32'``, ``'float16' / 'fp16' / 'half'``,
               ``'bfloat16' / 'bf16'``.
@@ -392,48 +504,10 @@ class BasePredictor:
         right device-typed autocast (CUDA / MPS / CPU). Combine with
         ``torch.inference_mode()`` at call sites.
         """
-        device_type = self._cuda_device.type
+        device_type = self._device.type
         return torch.autocast(
             device_type=device_type,
             dtype=self._dtype,
             enabled=(self._dtype is not torch.float32),
-        )
-
-    @staticmethod
-    def _select_device(cuda_device: int) -> torch.device:
-        """Choose the best available compute device.
-
-        - ``cuda_device == -1`` -> ``cpu``.
-        - ``cuda_device >= 0``:
-            * NVIDIA CUDA available  -> ``cuda:<cuda_device>``.
-            * Apple Silicon MPS available -> ``mps`` (the integer is ignored;
-              MPS exposes a single device). ``PYTORCH_ENABLE_MPS_FALLBACK=1``
-              is set automatically so MPS-unsupported ops (notably
-              ``torch.linalg.qr`` used by orthogonal weight init) fall back to
-              CPU for that op while the rest of the model stays on MPS.
-            * Otherwise -> ``RuntimeError`` so the caller knows acceleration
-              was requested but no GPU backend is reachable.
-
-        The parameter is named ``cuda_device`` for backward compatibility with
-        the public ``Parser`` / predictor signatures. MPS dispatch is automatic
-        on Apple Silicon hosts where CUDA is not present.
-        """
-        if cuda_device == -1:
-            return torch.device('cpu')
-        if torch.cuda.is_available():
-            return torch.device(f'cuda:{cuda_device}')
-        mps_available = (
-            hasattr(torch.backends, 'mps')
-            and torch.backends.mps.is_available()
-            and torch.backends.mps.is_built()
-        )
-        if mps_available:
-            # Required so e.g. torch.linalg.qr (used inside orthogonal_ init)
-            # falls back to CPU rather than raising NotImplementedError on MPS.
-            os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
-            return torch.device('mps')
-        raise RuntimeError(
-            f'cuda_device={cuda_device} requested but no GPU backend is '
-            'available (neither CUDA nor MPS). Pass cuda_device=-1 for CPU.'
         )
 

@@ -600,7 +600,7 @@ packages:
 - pypi: ./
   name: isanlp-rst
   version: 3.2.0
-  sha256: 57e4fc186c9c2297804076cc83ff4002d153ebb570a1d616b2bc6bcc2ae577de
+  sha256: 7d6f197658725e1e34310938f1c574159ba85ce15b67a42a9d29333cff938c9c
   requires_dist:
   - playwright
   - razdel
