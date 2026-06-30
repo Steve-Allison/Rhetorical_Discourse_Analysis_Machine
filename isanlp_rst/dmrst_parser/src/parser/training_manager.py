@@ -33,7 +33,7 @@ class NpEncoder(json.JSONEncoder):
             return int(obj)
         if isinstance(obj, np.ndarray):
             return obj.tolist()
-        if isinstance(obj, np.string_):
+        if isinstance(obj, np.bytes_):
             return str(obj)
         if isinstance(obj, (datetime, date)):
             return obj.isoformat()
