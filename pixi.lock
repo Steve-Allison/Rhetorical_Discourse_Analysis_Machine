@@ -600,7 +600,7 @@ packages:
 - pypi: ./
   name: isanlp-rst
   version: 3.2.0
-  sha256: 538de16cc38201be50423bda18e5bf9d45493de9efc28ff0a87a469c01ee47cd
+  sha256: 57e4fc186c9c2297804076cc83ff4002d153ebb570a1d616b2bc6bcc2ae577de
   requires_dist:
   - playwright
   - razdel
@@ -623,6 +623,7 @@ packages:
   - docling-core>=2.75.0 ; extra == 'formats'
   - markdown-it-py>=3 ; extra == 'formats'
   - mdit-py-plugins>=0.4 ; extra == 'formats'
+  - pydantic>=2 ; extra == 'pydantic'
   requires_python: '>=3.10'
 - pypi: https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl
   name: jinja2

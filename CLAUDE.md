@@ -75,6 +75,7 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 - [`isanlp_rst/doclang/`](isanlp_rst/doclang/) — `parse_doclang` entry point; `loader` (XPath generator), `harvester`, `boundaries`, `mapper` flow.
 - [`isanlp_rst/markdown/`](isanlp_rst/markdown/) — `parse_markdown` entry point; `loader` (markdown-it-py + front-matter), `harvester`, `boundaries`, `mapper` flow.
 - [`isanlp_rst/_rst_common/`](isanlp_rst/_rst_common/) — shared overlap-rule maths + nuclearity split, format-agnostic.
+- [`isanlp_rst/utils/serialization.py`](isanlp_rst/utils/serialization.py) — `tree_to_dict` / `tree_from_dict`: a `DiscourseUnit` tree ↔ nested JSON dict (core, zero-dep). For a validated typed model (`RstNode`), [`serialization_pydantic.py`](isanlp_rst/utils/serialization_pydantic.py) — requires the `pydantic` extra (`pip install isanlp_rst[pydantic]`), kept off the core import path so dependency-light consumers don't inherit pydantic.
 - [`tests/test_integration.py`](tests/test_integration.py) — end-to-end model parses; dtype-equivalence suite.
 - [`docs/plans/`](docs/plans/) — design plans (proposals + build plans).
 - [`UniRST_Metrics.md`](UniRST_Metrics.md) — per-corpus metrics for the multilingual model.

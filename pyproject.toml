@@ -59,6 +59,13 @@ formats = [
   "mdit-py-plugins>=0.4",
 ]
 
+# Typed RST-tree model (isanlp_rst.utils.serialization_pydantic.RstNode). The
+# dependency-free dict helpers in utils.serialization need none of this; this
+# extra is only for consumers who want a validated pydantic model.
+pydantic = [
+  "pydantic>=2",
+]
+
 [tool.setuptools.packages.find]
 exclude = ["tests"]
 
@@ -80,7 +87,7 @@ platforms = ["osx-arm64"]
 markdownlint-cli2 = ">=0.14"
 
 [tool.pixi.pypi-dependencies]
-isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats"] }
+isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats", "pydantic"] }
 
 [tool.ruff]
 line-length = 120
@@ -122,6 +129,8 @@ include = [
   "isanlp_rst/dmrst_parser/predictor.py",
   "isanlp_rst/universal_parser/predictor.py",
   "isanlp_rst/utils/mps_init.py",
+  "isanlp_rst/utils/serialization.py",
+  "isanlp_rst/utils/serialization_pydantic.py",
   "isanlp_rst/_rst_common",
   "isanlp_rst/docling",
   "isanlp_rst/doclang",

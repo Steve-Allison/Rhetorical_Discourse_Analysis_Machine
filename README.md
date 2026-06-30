@@ -78,7 +78,13 @@ pip install git+https://github.com/Steve-Allison/isanlp_rst.git
 pip install "isanlp_rst[formats] @ git+https://github.com/Steve-Allison/isanlp_rst.git"
 ```
 
-`pixi install` already includes the `formats` extra, so the pixi path needs nothing extra.
+The `pydantic` extra adds the typed `RstNode` tree model (`isanlp_rst.utils.serialization_pydantic`); the dependency-free `tree_to_dict` / `tree_from_dict` helpers need nothing:
+
+```bash
+pip install "isanlp_rst[pydantic] @ git+https://github.com/Steve-Allison/isanlp_rst.git"
+```
+
+`pixi install` already includes both extras, so the pixi path needs nothing extra.
 
 ### 2. Basic usage
 
