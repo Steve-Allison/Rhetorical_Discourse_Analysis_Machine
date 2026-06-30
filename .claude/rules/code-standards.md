@@ -47,7 +47,7 @@ If new code lands outside `tool.pyright.include`, add it to that list.
 
 ## Tests
 
-- Real test suite under `tests/` — 425 fast + 48 integration (slow) as of 2026-06-27.
+- Real test suite under `tests/` — 440 fast + 48 integration (slow) as of 2026-06-30.
 - New code lands with new tests in the same commit (or the next, if scope permits). Not "later".
 - Markers (defined in `pyproject.toml`):
   - `slow` — integration tests that download HF models (~2 GB each). Excluded from `pixi run test`; included in `pixi run test-all`.

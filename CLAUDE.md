@@ -58,7 +58,7 @@ These three entry points require the optional **`formats` extra** (`docling-core
 
 All three honour the cross-format "analyse everything" directive **two-level** (2026-06-12, Option 2): prose enters the document tree; each table gets its own RST mini-parse in `result.table_analyses`, so table discourse never distorts the document tree. All three expose `dtype=`, `device="auto"` (CPU fallback), and an optional `cache_dir=` on-disk result cache.
 
-Shared machinery lives in `isanlp_rst/_rst_common/`: `SpanIndex` (bisect overlap), iterative `flatten_tree` (no RecursionError on degenerate joint-chains), `resolve_device` / `resolve_tool_version` / `resolve_inventory`, and the result-cache helpers. Format mappers and `_entry` modules are thin bindings over it.
+Shared machinery lives in `isanlp_rst/_rst_common/`: `SpanIndex` (bisect overlap), iterative `flatten_tree` (no RecursionError on degenerate joint-chains), `resolve_tool_version` / `resolve_inventory`, and the result-cache helpers. Format mappers and `_entry` modules are thin bindings over it. (Device resolution moved to `resolve_device` in [`base_predictor.py`](isanlp_rst/base_predictor.py) — `_rst_common` no longer carries a device helper.)
 
 Quality measurement: `pixi run rst-diag <paths>` ([`scripts/rst_diag.py`](scripts/rst_diag.py)) — per-document proxy metrics (joint ratio, tree skew, cross-boundary ratio, note ratio) across all three formats. Use it to A/B any harvest-policy change. Hierarchical long-input parsing remains a spike gated on rst-diag evidence of degradation at length.
 

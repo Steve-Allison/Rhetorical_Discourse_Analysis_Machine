@@ -9,7 +9,7 @@ metadata:
 
 **`Parser` facade public surface** (from `isanlp_rst/parser.py`):
 
-- Construct: `Parser(model_dir=None, hf_model_name='tchewik/isanlp_rst_v3', hf_model_version=None, relinventory=None, relinventory_idx=0, cuda_device=-1, family=None, dtype=None)`.
+- Construct: `Parser(model_dir=None, hf_model_name='tchewik/isanlp_rst_v3', hf_model_version=None, relinventory=None, relinventory_idx=0, device=None, cuda_device=None, family=None, dtype=None)`. (Updated 2026-06-30: `device=` — `"auto"` default — is now the canonical device knob; `cuda_device:int` is a deprecated warned shim. See [[open-device-api]].)
 - Resolves a family (`'dmrst'` or `'unirst'`) in priority order: explicit `family` arg → `hf_model_version` lookup → `model_dir` content auto-detection.
 - `parser(text)` → `predictor.parse_rst(text)`. Returns `{'rst': [tree]}`.
 - `parser.from_edus(edus)` → `predictor.parse_from_edus(edus)`. Returns `{'rst': [tree]}` (same shape).
