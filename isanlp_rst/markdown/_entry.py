@@ -16,7 +16,9 @@ from typing import TYPE_CHECKING, Any
 
 from .._rst_common import (
     load_cached,
+    model_identity_knobs,
     resolve_inventory,
+    resolve_result_model_meta,
     resolve_tool_version,
     result_cache_key,
     store_cached,
@@ -122,8 +124,6 @@ def parse_markdown(
     knobs: dict[str, object] = {
         "schema_name": SCHEMA_NAME,
         "schema_version": SCHEMA_VERSION,
-        "hf_model_version": hf_model_version,
-        "relinventory": relinventory,
         "dtype": dtype,
         "gfm": gfm,
         "include_blockquotes": include_blockquotes,
@@ -133,6 +133,12 @@ def parse_markdown(
         "harvest_separator": harvest_separator,
         "note_threshold": note_threshold,
         "max_harvest_chars": max_harvest_chars,
+        **model_identity_knobs(
+            hf_model_name=hf_model_name,
+            hf_model_version=hf_model_version,
+            relinventory=relinventory,
+            parser=parser,
+        ),
     }
     cache_path = Path(cache_dir) if cache_dir is not None else None
     cache_key = result_cache_key(source_bytes, knobs)
@@ -141,7 +147,13 @@ def parse_markdown(
         if isinstance(cached, MarkdownRstResult):
             return cached
 
-    loaded = load_markdown(source_bytes.decode("utf-8"), gfm=gfm)
+    try:
+        source_text = source_bytes.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError(
+            f"Markdown file at {src_path} is not valid UTF-8."
+        ) from exc
+    loaded = load_markdown(source_text, gfm=gfm)
     if not loaded.tokens:
         raise EmptyMarkdownError(
             f"Markdown file at {src_path} has no body content "
@@ -193,6 +205,10 @@ def parse_markdown(
             dtype=dtype,
         )
 
+    model_version, inventory = resolve_result_model_meta(
+        parser, hf_model_version, relinventory, resolve_inventory=resolve_inventory
+    )
+
     if harvest.full_text:
         rst_tree = parser(harvest.full_text)["rst"][0]
         relations, edus = flatten_tree(
@@ -222,8 +238,8 @@ def parse_markdown(
         schema_version=SCHEMA_VERSION,
         tool=TOOL_NAME,
         tool_version=resolve_tool_version(),
-        model_version=hf_model_version,
-        inventory=resolve_inventory(hf_model_version, relinventory),
+        model_version=model_version,
+        inventory=inventory,
         source=src_path.name,
         source_origin=_source_origin(
             loaded.front_matter, loaded.front_matter_format, gfm=gfm

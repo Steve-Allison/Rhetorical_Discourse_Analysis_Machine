@@ -12,7 +12,6 @@ import asyncio
 import logging
 import os
 import threading
-import transformers
 import warnings
 from pathlib import Path
 from typing import Any
@@ -27,7 +26,12 @@ try:  # pragma: no cover - dependency is optional in tests
 except Exception:  # pragma: no cover - fall back when isanlp is unavailable
     DiscourseUnit = None  # type: ignore[misc]
 
-logging.getLogger("transformers").setLevel(logging.ERROR)
+try:
+    import transformers  # noqa: F401
+
+    logging.getLogger("transformers").setLevel(logging.ERROR)
+except ImportError:
+    pass
 
 warnings.filterwarnings(
     "ignore",
@@ -82,8 +86,7 @@ def to_html(rs3_path: PathLike, html_path: Optional[PathLike] = None, *,
     html_str = _rst_main.rs3tohtml(os.fspath(rs3_path), user=user, project=project)
     if html_path is not None:
         Path(html_path).write_text(html_str, encoding="utf-8")
-    else:
-        return html_str
+    return html_str
 
 
 def to_png(rs3_path: PathLike, png_path: Optional[PathLike] = None, *,
@@ -139,7 +142,7 @@ def to_pdf(rs3_path: PathLike, pdf_path: PathLike, *,
     _run_coro_sync_result(coro)
 
 
-def _run_coro_sync_result(coro: Awaitable[T]) -> T:
+def _run_coro_sync_result[T](coro: Awaitable[T]) -> T:
     """Execute `coro` to completion and return its result, regardless of asyncio state."""
     try:
         _ = asyncio.get_running_loop()

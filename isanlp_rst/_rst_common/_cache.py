@@ -18,20 +18,33 @@ from pathlib import Path
 
 
 def result_cache_key(source_bytes: bytes, parts: Mapping[str, object]) -> str:
-    """Compute a stable hex key from source bytes + sorted knob parts."""
+    """Compute a stable hex key from source bytes + sorted knob parts.
+
+    Values are serialised with ``repr``. Callers must pass only
+    repr-stable scalars (``str``, ``bool``, ``int``, ``float``, ``None``).
+    """
     h = hashlib.sha256(source_bytes)
     for name in sorted(parts):
-        h.update(f"|{name}={parts[name]!r}".encode())
+        value = parts[name]
+        if type(value) not in (str, bool, int, float, type(None)):
+            raise TypeError(
+                f"cache knob {name!r} has non-repr-stable type {type(value).__name__}; "
+                "pass str/bool/int/float/None only"
+            )
+        h.update(f"|{name}={value!r}".encode())
     return h.hexdigest()
 
 
 def load_cached(cache_dir: Path, key: str) -> object | None:
-    """Return the cached value for ``key``, or ``None`` when absent."""
+    """Return the cached value for ``key``, or ``None`` when absent/corrupt."""
     path = cache_dir / f"{key}.pkl"
     if not path.is_file():
         return None
-    with path.open("rb") as f:
-        return pickle.load(f)
+    try:
+        with path.open("rb") as f:
+            return pickle.load(f)
+    except (pickle.UnpicklingError, EOFError, OSError, AttributeError):
+        return None
 
 
 def store_cached(cache_dir: Path, key: str, value: object) -> None:

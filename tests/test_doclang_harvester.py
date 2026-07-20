@@ -358,6 +358,26 @@ def test_field_regions_excluded_by_default() -> None:
         assert "/field_region[" not in span.xpath
 
 
+def test_field_regions_included_when_opted_in() -> None:
+    """``include_field_regions=True`` surfaces key/value text from the
+    nested field_item fixture."""
+    result = harvest_doclang_text(
+        _tree("ok_field_item_nested_descendant_key_scope.dclg.xml"),
+        include_field_regions=True,
+    )
+    joined = " ".join(s.text for s in result.spans)
+    assert "Key 1 (outer)" in joined
+    assert "Outer value 1a" in joined
+    assert "Key 2 (inner)" in joined
+    assert "Inner value 2a" in joined
+    xpath_blob = " ".join(s.xpath for s in result.spans)
+    assert (
+        "/field_region[" in xpath_blob
+        or "/key[" in xpath_blob
+        or "/value[" in xpath_blob
+    )
+
+
 # --- Head element skipped --------------------------------------------------
 
 

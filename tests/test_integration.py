@@ -82,6 +82,9 @@ EDGE_CASES = {
     ),
 }
 
+EMPTY_INPUTS = ('', '   ', '\n\t\n')
+
+
 
 # ---------- Helpers ----------
 
@@ -117,7 +120,30 @@ def _collect_leaves(unit) -> list[str]:
     return out
 
 
+def _collect_leaf_units(unit) -> list:
+    out: list = []
+
+    def walk(u) -> None:
+        l, r = getattr(u, 'left', None), getattr(u, 'right', None)
+        if l is None and r is None:
+            out.append(u)
+            return
+        if l is not None:
+            walk(l)
+        if r is not None:
+            walk(r)
+
+    walk(unit)
+    return out
+
+
 def _assert_aligned(unit, text: str, path: str = 'root') -> None:
+    """Assert remapped spans are consistent with ``text``.
+
+    Beyond the per-node ``text == text[start:end]`` check (which remap
+    always establishes), verify leaf spans are ordered, non-overlapping,
+    and that the root covers the leaf span range.
+    """
     expected = text[unit.start:unit.end]
     assert unit.text == expected, (
         f"{path}: tree.text={unit.text!r} != text[{unit.start}:{unit.end}]={expected!r}"
@@ -126,6 +152,19 @@ def _assert_aligned(unit, text: str, path: str = 'root') -> None:
         child = getattr(unit, name, None)
         if child is not None:
             _assert_aligned(child, text, f"{path}.{name}")
+
+    if path == 'root':
+        leaves = _collect_leaf_units(unit)
+        assert leaves, 'expected at least one leaf EDU'
+        assert leaves[0].start >= 0
+        assert leaves[-1].end <= len(text)
+        for prev, nxt in zip(leaves, leaves[1:], strict=False):
+            assert prev.end <= nxt.start, (
+                f'overlapping/out-of-order leaves: '
+                f'[{prev.start}:{prev.end}] then [{nxt.start}:{nxt.end}]'
+            )
+        assert unit.start <= leaves[0].start
+        assert unit.end >= leaves[-1].end
 
 
 # ---------- Session fixtures (model load is expensive) ----------
@@ -299,6 +338,13 @@ def test_edge_unicode_punctuation(dmrst_gumrrg_cpu: Parser):
     text = EDGE_CASES['with_unicode']
     res = dmrst_gumrrg_cpu(text)
     _assert_aligned(res['rst'][0], text)
+
+
+@pytest.mark.parametrize('empty', EMPTY_INPUTS)
+def test_edge_empty_or_whitespace_raises(dmrst_gumrrg_cpu: Parser, empty: str):
+    """Empty / whitespace-only inputs must fail closed — not a silent dummy tree."""
+    with pytest.raises(ValueError, match='non-empty'):
+        dmrst_gumrrg_cpu(empty)
 
 
 # ---------- BUG-FINDING test 6: full-cross-dtype on every model (selected text) ----------

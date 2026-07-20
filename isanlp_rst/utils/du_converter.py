@@ -46,17 +46,19 @@ class DUConverter:
 
         for segment in predicted_segments:
             segment_len = len(''.join(segment.split()))
-            fixed_segment = gold_tokens[start_token]
+            if segment_len == 0:
+                fixed_segments.append('')
+                continue
 
-            i = 0
-            while len(fixed_segment) < segment_len:
-                fixed_segment = ''.join(gold_tokens[start_token:start_token + i])
-                i += 1
+            n = 0
+            accumulated = 0
+            while start_token + n < len(gold_tokens) and accumulated < segment_len:
+                accumulated += len(gold_tokens[start_token + n])
+                n += 1
 
-            i -= 1
-            fixed_segment = ' '.join(gold_tokens[start_token:start_token + i])
+            fixed_segment = ' '.join(gold_tokens[start_token:start_token + n])
             fixed_segments.append(fixed_segment.strip())
-            start_token += i
+            start_token += n
 
         return fixed_segments
 
@@ -162,6 +164,9 @@ class DUConverter:
             left_start, _, _, _, _, right_end, *_ = rel
             if left_start == start and right_end == end:
                 return idx
+        raise ValueError(
+            f'No discourse unit found for span ({start}, {end}).'
+        )
 
     def construct_tree(self, root, edus, rels):
         """

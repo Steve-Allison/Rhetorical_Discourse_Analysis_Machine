@@ -29,6 +29,7 @@ from isanlp_rst.doclang.errors import (
     EmptyDoclangError,
     EmptyHarvestError,
     InputTooLargeError,
+    InvalidDoclangError,
 )
 from isanlp_rst.doclang.loader import parse_doclang_xml
 
@@ -174,8 +175,16 @@ class _StubNode:
 class _StubParser:
     """Deterministic Parser stand-in — splits at the first separator."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        hf_model_name: str | None = None,
+        hf_model_version: str | None = None,
+        relinventory: str | None = None,
+    ) -> None:
         self.calls: list[str] = []
+        self.hf_model_name = hf_model_name
+        self.hf_model_version = hf_model_version
+        self.relinventory = relinventory
 
     def __call__(self, text: str) -> dict:
         self.calls.append(text)
@@ -204,6 +213,131 @@ def test_table_only_doc_produces_analyses_with_empty_main_tree() -> None:
             for xp in edu.xpaths:
                 assert xp in boundary.xpaths
     assert len(stub.calls) == 3  # no main parse, one per table
+
+
+def test_cache_round_trip_skips_reparse(tmp_path: Path) -> None:
+    cache = tmp_path / "cache"
+    stub = _StubParser()
+    first = parse_doclang(
+        COMPREHENSIVE,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+        cache_dir=cache,
+    )
+    calls_after_first = len(stub.calls)
+    second = parse_doclang(
+        COMPREHENSIVE,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+        cache_dir=cache,
+    )
+    assert len(stub.calls) == calls_after_first
+    assert first == second
+
+
+def test_cache_misses_when_validate_xml_changes(tmp_path: Path) -> None:
+    """``validate_xml`` is a parse-affecting knob and must be in the key.
+
+    A cached ``validate_xml=False`` result must not be returned when the
+    caller asks for ``validate_xml=True``. Either we reparse (full
+    Schematron backend available) or validation runs and raises
+    ``InvalidDoclangError`` — both prove the cache missed.
+    """
+    pytest.importorskip("doclang")
+    cache = tmp_path / "cache"
+    stub = _StubParser()
+    parse_doclang(
+        COMPREHENSIVE,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+        cache_dir=cache,
+    )
+    calls_after_first = len(stub.calls)
+    try:
+        parse_doclang(
+            COMPREHENSIVE,
+            parser=stub,  # type: ignore[arg-type]
+            validate_xml=True,
+            cache_dir=cache,
+        )
+    except InvalidDoclangError:
+        # Cache miss: validation executed instead of returning the
+        # validate_xml=False entry. (Common when doclang is installed
+        # without a Schematron backend.)
+        assert len(stub.calls) == calls_after_first
+        return
+    assert len(stub.calls) > calls_after_first
+
+
+def test_main_relations_never_reference_table_cell_xpaths() -> None:
+    """Two-level invariant on a mixed prose+table fixture."""
+    stub = _StubParser()
+    result = parse_doclang(
+        COMPREHENSIVE,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+    )
+    for relation in result.relations:
+        for xp in (*relation.nucleus_xpaths, *relation.satellite_xpaths):
+            assert "/table[" not in xp, f"table xpath leaked into main tree: {xp}"
+            last = xp.rsplit("/", 1)[-1]
+            local = last.split("[", 1)[0]
+            assert local not in {"ched", "fcel", "rhed", "corn", "ecel", "nl"}, xp
+
+
+def test_include_table_cells_false_drops_analyses() -> None:
+    stub = _StubParser()
+    result = parse_doclang(
+        COMPREHENSIVE,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+        include_table_cells=False,
+    )
+    assert result.table_analyses == ()
+
+
+def test_result_metadata_follows_injected_parser_not_kwargs() -> None:
+    stub = _StubParser(hf_model_version="rstdt")
+    result = parse_doclang(
+        TABLE_ONLY,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+        hf_model_version="gumrrg",
+    )
+    assert result.model_version == "rstdt"
+    assert result.inventory == "rstdt"
+
+
+def test_validate_xml_true_fail_closed_wraps_backend_errors() -> None:
+    """``validate_xml=True`` must not skip validation when Schematron is absent.
+
+    Either validation succeeds (full backend installed) or we get
+    ``InvalidDoclangError`` — never a silent proceed-as-valid.
+    """
+    pytest.importorskip("doclang")
+    stub = _StubParser()
+    try:
+        parse_doclang(
+            COMPREHENSIVE,
+            parser=stub,  # type: ignore[arg-type]
+            validate_xml=True,
+        )
+    except InvalidDoclangError as exc:
+        assert "validation" in str(exc).lower() or "doclang" in str(exc).lower()
+        assert stub.calls == []  # failed before any parse
+        return
+    # Backend available: must have actually parsed (not a no-op skip).
+    assert stub.calls
+
+
+def test_table_only_with_cells_disabled_raises_empty_harvest() -> None:
+    with pytest.raises(EmptyHarvestError):
+        parse_doclang(
+            TABLE_ONLY,
+            parser=_StubParser(),  # type: ignore[arg-type]
+            validate_xml=False,
+            include_table_cells=False,
+        )
 
 
 # ===========================================================================

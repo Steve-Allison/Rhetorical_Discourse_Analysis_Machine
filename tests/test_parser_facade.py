@@ -19,10 +19,10 @@ from isanlp_rst.parser import Parser
 
 class TestResolveFamily:
     def test_explicit_family_dmrst(self):
-        assert Parser._resolve_family(None, None, 'dmrst') == 'dmrst'
+        assert Parser._resolve_family(None, 'gumrrg', 'dmrst') == 'dmrst'
 
     def test_explicit_family_unirst(self):
-        assert Parser._resolve_family(None, None, 'unirst') == 'unirst'
+        assert Parser._resolve_family(None, 'unirst', 'unirst') == 'unirst'
 
     def test_explicit_family_invalid(self):
         with pytest.raises(ValueError, match="Unknown family"):
@@ -40,10 +40,28 @@ class TestResolveFamily:
         with pytest.raises(ValueError, match="Unknown hf_model_version"):
             Parser._resolve_family(None, 'not-a-version', None)
 
-    def test_explicit_family_overrides_version_check(self):
-        """family= takes priority over hf_model_version validation."""
-        assert Parser._resolve_family(None, 'gumrrg', 'unirst') == 'unirst'
-        assert Parser._resolve_family(None, 'unirst', 'dmrst') == 'dmrst'
+    def test_explicit_family_mismatched_version_raises(self):
+        """When both family and version are set, version must belong to family."""
+        with pytest.raises(ValueError, match="not valid for family"):
+            Parser._resolve_family(None, 'gumrrg', 'unirst')
+        with pytest.raises(ValueError, match="not valid for family"):
+            Parser._resolve_family(None, 'unirst', 'dmrst')
+
+    def test_family_alone_without_model_dir_raises(self):
+        with pytest.raises(ValueError, match="requires hf_model_version or model_dir"):
+            Parser._resolve_family(None, None, 'dmrst')
+        with pytest.raises(ValueError, match="requires hf_model_version or model_dir"):
+            Parser._resolve_family(None, None, 'unirst')
+
+    def test_family_with_matching_version_ok(self):
+        assert Parser._resolve_family(None, 'gumrrg', 'dmrst') == 'dmrst'
+        assert Parser._resolve_family(None, 'rstdt', 'dmrst') == 'dmrst'
+        assert Parser._resolve_family(None, 'unirst', 'unirst') == 'unirst'
+        assert Parser._resolve_family(None, 'rrtrrg', 'unirst') == 'unirst'
+
+    def test_family_with_model_dir_ok_without_version(self, tmp_path):
+        assert Parser._resolve_family(str(tmp_path), None, 'dmrst') == 'dmrst'
+        assert Parser._resolve_family(str(tmp_path), None, 'unirst') == 'unirst'
 
     def test_no_args_raises(self):
         with pytest.raises(ValueError, match="hf_model_version"):
@@ -122,6 +140,16 @@ class TestParserInitValidation:
     def test_no_args_raises(self):
         with pytest.raises(ValueError, match="hf_model_version"):
             Parser()
+
+    def test_family_alone_without_version_or_model_dir_raises(self):
+        """``family=`` alone is not enough — need a version or local dir."""
+        with pytest.raises(ValueError):
+            Parser(family="dmrst")
+
+    def test_family_mismatched_version_raises_before_download(self):
+        """Incompatible family+version must fail before any model load."""
+        with pytest.raises(ValueError):
+            Parser(family="dmrst", hf_model_version="unirst")
 
     def test_unknown_version_raises(self):
         with pytest.raises(ValueError, match="Unknown hf_model_version"):

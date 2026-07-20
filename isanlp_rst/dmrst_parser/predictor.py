@@ -238,6 +238,14 @@ class PredictorDMRST(BasePredictor):
         Returns:
             dict: Tokens and a tree representing the rhetorical structure based on the input text.
         """
+        if text is None:
+            raise ValueError('`text` must be provided for parsing.')
+        if not isinstance(text, str):
+            raise TypeError(
+                f'`text` must be a str, got {type(text).__name__}.'
+            )
+        if not text.strip():
+            raise ValueError('`text` must be non-empty (got empty/whitespace-only input).')
 
         # Prepare the input data
         razdel_tokens = list(razdel.tokenize(text))

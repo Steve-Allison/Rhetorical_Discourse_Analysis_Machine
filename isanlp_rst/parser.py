@@ -53,6 +53,11 @@ class Parser:
     ):
         resolved_family = self._resolve_family(model_dir, hf_model_version, family)
 
+        self.family = resolved_family
+        self.hf_model_name = hf_model_name
+        self.hf_model_version = hf_model_version
+        self.relinventory = relinventory
+
         # When loading from disk, suppress the default HF repo name so the
         # predictor unambiguously selects local mode.
         effective_hf_name = None if model_dir is not None else hf_model_name
@@ -90,6 +95,19 @@ class Parser:
                 raise ValueError(
                     f"Unknown family {family!r}. Available: {cls.AVAILABLE_FAMILIES}."
                 )
+            if hf_model_version is None and model_dir is None:
+                raise ValueError(
+                    f"family={family!r} requires hf_model_version or model_dir."
+                )
+            if hf_model_version is not None:
+                allowed = (
+                    cls.DMRST_PARSERS if family == 'dmrst' else cls.UNIVERSAL_PARSERS
+                )
+                if hf_model_version not in allowed:
+                    raise ValueError(
+                        f"hf_model_version={hf_model_version!r} is not valid for "
+                        f"family={family!r}. Expected one of {allowed}."
+                    )
             return family
 
         if hf_model_version is not None:

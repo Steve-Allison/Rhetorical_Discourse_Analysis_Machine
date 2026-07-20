@@ -20,7 +20,9 @@ from docling_core.types.doc.document import DoclingDocument
 
 from .._rst_common import (
     load_cached,
+    model_identity_knobs,
     resolve_inventory,
+    resolve_result_model_meta,
     resolve_tool_version,
     result_cache_key,
     store_cached,
@@ -121,8 +123,6 @@ def parse_docling(
     knobs: dict[str, object] = {
         "schema_name": SCHEMA_NAME,
         "schema_version": SCHEMA_VERSION,
-        "hf_model_version": hf_model_version,
-        "relinventory": relinventory,
         "dtype": dtype,
         "include_picture_descriptions": include_picture_descriptions,
         "include_slide_notes": include_slide_notes,
@@ -132,6 +132,12 @@ def parse_docling(
         "coalesce_speaker_turns": coalesce_speaker_turns,
         "note_threshold": note_threshold,
         "max_harvest_chars": max_harvest_chars,
+        **model_identity_knobs(
+            hf_model_name=hf_model_name,
+            hf_model_version=hf_model_version,
+            relinventory=relinventory,
+            parser=parser,
+        ),
     }
     cache_path = Path(cache_dir) if cache_dir is not None else None
     cache_key = result_cache_key(source_bytes, knobs)
@@ -189,6 +195,10 @@ def parse_docling(
             dtype=dtype,
         )
 
+    model_version, inventory = resolve_result_model_meta(
+        parser, hf_model_version, relinventory, resolve_inventory=resolve_inventory
+    )
+
     if harvest.full_text:
         tree = parser(harvest.full_text)["rst"][0]
         relations, edus = flatten_tree(
@@ -218,8 +228,8 @@ def parse_docling(
         schema_version=SCHEMA_VERSION,
         tool=TOOL_NAME,
         tool_version=resolve_tool_version(),
-        model_version=hf_model_version,
-        inventory=resolve_inventory(hf_model_version, relinventory),
+        model_version=model_version,
+        inventory=inventory,
         source=src_path.name,
         source_origin=_serialise_source_origin(getattr(doc, "origin", None)),
         boundaries=boundaries,

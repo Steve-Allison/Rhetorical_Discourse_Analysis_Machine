@@ -23,5 +23,11 @@ jobs:
       - name: Install environment
         run: pixi install
 
+      - name: Lint
+        run: pixi run lint
+
+      - name: Typecheck
+        run: pixi run typecheck
+
       - name: Run unit tests (fast)
         run: pixi run test

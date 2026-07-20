@@ -107,7 +107,7 @@ def _detect_pptx_slide_boundaries(doc: DoclingDocument) -> list[Boundary]:
         for child_ref in group.children:
             try:
                 child = child_ref.resolve(doc)
-            except Exception:  # noqa: BLE001 — defensive against broken refs
+            except (AttributeError, LookupError, TypeError, ValueError, RuntimeError):
                 continue
             self_ref = getattr(child, "self_ref", None)
             if self_ref is None:

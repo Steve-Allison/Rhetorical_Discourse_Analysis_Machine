@@ -36,6 +36,29 @@ def test_heading_level_preserved() -> None:
     assert levels == {1, 2, 3}
 
 
+def test_heading_includes_following_prose_xpaths() -> None:
+    """Each heading owns itself plus following harvest-eligible xpaths
+    until the next heading (markdown-style section bucketing)."""
+    xml = (
+        b'<doclang xmlns="https://www.doclang.ai/ns/v0">'
+        b"<heading level=\"1\">First</heading>"
+        b"<text>Prose under first.</text>"
+        b"<heading level=\"1\">Second</heading>"
+        b"<text>Prose under second.</text>"
+        b"</doclang>"
+    )
+    tree = etree.ElementTree(etree.fromstring(xml))
+    result = detect_boundaries(tree)
+    heading_0 = next(b for b in result if b.id == "heading-0")
+    heading_1 = next(b for b in result if b.id == "heading-1")
+    assert "/doclang[1]/heading[1]" in heading_0.xpaths
+    assert "/doclang[1]/text[1]" in heading_0.xpaths
+    assert "/doclang[1]/heading[2]" in heading_1.xpaths
+    assert "/doclang[1]/text[2]" in heading_1.xpaths
+    assert "/doclang[1]/text[2]" not in heading_0.xpaths
+    assert "/doclang[1]/text[1]" not in heading_1.xpaths
+
+
 def test_heading_label_is_heading_text() -> None:
     """The fixture's first heading is ``Introduction``."""
     result = detect_boundaries(_tree("ok_comprehensive.dclg.xml"))
@@ -177,10 +200,32 @@ def test_document_fallback_when_no_structural_boundary() -> None:
 
 
 def test_no_document_fallback_when_headings_present() -> None:
-    """``ok_comprehensive`` has headings — fallback must not fire."""
+    """``ok_comprehensive`` has headings and no pre-heading prose — a
+    full-document fallback must not fire. (A leading ``document`` bucket
+    is only for content that precedes the first heading.)"""
     result = detect_boundaries(_tree("ok_comprehensive.dclg.xml"))
     documents = [b for b in result if b.kind == "document"]
     assert documents == []
+
+
+def test_pre_heading_content_gets_document_bucket() -> None:
+    """Prose before the first heading lands in a leading ``document``
+    boundary (same pattern as markdown)."""
+    xml = (
+        b'<doclang xmlns="https://www.doclang.ai/ns/v0">'
+        b"<text>Lead-in before any heading.</text>"
+        b"<heading level=\"1\">Title</heading>"
+        b"<text>Under the title.</text>"
+        b"</doclang>"
+    )
+    tree = etree.ElementTree(etree.fromstring(xml))
+    result = detect_boundaries(tree)
+    documents = [b for b in result if b.kind == "document"]
+    assert len(documents) == 1
+    assert "/doclang[1]/text[1]" in documents[0].xpaths
+    heading_0 = next(b for b in result if b.id == "heading-0")
+    assert "/doclang[1]/text[2]" in heading_0.xpaths
+    assert "/doclang[1]/text[1]" not in heading_0.xpaths
 
 
 # --- Global invariants -----------------------------------------------------

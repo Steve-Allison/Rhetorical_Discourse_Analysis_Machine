@@ -316,6 +316,39 @@ def harvest_doclang_text(
                 _walk(child)
             return
 
+        if tag == "field_item":
+            if not include_field_regions:
+                return
+            for child in element:
+                _walk(child)
+            return
+
+        if tag == "key":
+            if not include_field_regions:
+                return
+            layer = _element_layer(element)
+            text = "".join(_prose_itertext(element)).strip()
+            _emit(local_path(element), "key", _thread_id(element), layer, text)
+            return
+
+        if tag == "value":
+            if not include_field_regions:
+                return
+            # Nested field_items under <value> are harvested recursively;
+            # a leaf value is one span.
+            has_nested_field_item = any(
+                isinstance(child.tag, str) and local_name(child) == "field_item"
+                for child in element
+            )
+            if has_nested_field_item:
+                for child in element:
+                    _walk(child)
+                return
+            layer = _element_layer(element)
+            text = "".join(_prose_itertext(element)).strip()
+            _emit(local_path(element), "value", _thread_id(element), layer, text)
+            return
+
         if tag in {"page_header", "page_footer"}:
             if not include_furniture:
                 return

@@ -10,6 +10,9 @@ round-trip 100% across the 40-fixture corpus).
 documents it emits ``/*/*[N]`` wildcards (`spec.md:219-241` recommends a
 default namespace, so this is the common case). The local-name path
 ``/doclang[1]/heading[2]`` is namespace-agnostic and human-readable.
+
+XML parsing is hardened against XXE: external entities, network DTD
+fetches, and DTD loading are disabled.
 """
 
 from __future__ import annotations
@@ -17,6 +20,15 @@ from __future__ import annotations
 from pathlib import Path
 
 from lxml import etree
+
+# Deny external entity expansion / network DTD fetches (XXE).
+_SECURE_PARSER = etree.XMLParser(
+    resolve_entities=False,
+    no_network=True,
+    dtd_validation=False,
+    load_dtd=False,
+    huge_tree=False,
+)
 
 
 def local_name(element: etree._Element) -> str:
@@ -55,7 +67,9 @@ def local_path(element: etree._Element) -> str:
 def parse_doclang_xml(path: Path) -> etree._ElementTree:
     """Parse the ``.dclg.xml`` file at ``path`` and return the ElementTree.
 
-    Validation is delegated to ``isanlp_rst.doclang._entry`` (which uses
-    the ``doclang`` package's ``validate`` when ``validate_xml=True``).
+    Uses a hardened ``XMLParser`` that refuses external entities and
+    network DTD loads. Schema validation is delegated to
+    ``isanlp_rst.doclang._entry`` (``doclang`` package when
+    ``validate_xml=True``).
     """
-    return etree.parse(path)
+    return etree.parse(path, parser=_SECURE_PARSER)

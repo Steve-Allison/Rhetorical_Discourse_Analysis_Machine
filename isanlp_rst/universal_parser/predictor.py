@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import ast
+import builtins
+import collections
 import json
 import logging
 import os
+import pathlib
 import pickle
 import sys
 import types
@@ -23,6 +26,38 @@ from .data_manager import DataManager  # noqa: F401 - ensure module is registere
 from .src.parser.data import Data
 from .src.parser.parsing_net import ParsingNet
 from .src.parser.parsing_net_bottom_up import ParsingNetBottomUp
+
+
+class _RestrictedUnpickler(pickle.Unpickler):
+    """Unpickler that only reconstructs an allow-listed set of classes."""
+
+    _ALLOWED_BUILTINS = frozenset({
+        'list', 'dict', 'tuple', 'set', 'frozenset', 'str', 'int', 'float',
+        'bool', 'bytes', 'complex', 'NoneType', 'slice', 'object',
+    })
+    _ALLOWED_COLLECTIONS = frozenset({'defaultdict', 'OrderedDict'})
+    _ALLOWED_PATHLIB = frozenset({'Path', 'PosixPath', 'WindowsPath'})
+
+    def find_class(self, module: str, name: str):
+        if module == 'builtins' and name in self._ALLOWED_BUILTINS:
+            if name == 'NoneType':
+                return type(None)
+            return getattr(builtins, name)
+        if module == 'collections' and name in self._ALLOWED_COLLECTIONS:
+            return getattr(collections, name)
+        if module in ('pathlib', 'pathlib._local') and name in self._ALLOWED_PATHLIB:
+            return getattr(pathlib, name)
+
+        alias_modules = (
+            set(PredictorUniRST._MODULE_ALIASES)
+            | set(PredictorUniRST._MODULE_ALIASES.values())
+        )
+        if module.startswith('isanlp_rst.') or module in alias_modules:
+            return super().find_class(module, name)
+
+        raise pickle.UnpicklingError(
+            f'Refused to unpickle {module}.{name} (not on allow-list).'
+        )
 
 
 class PredictorUniRST(BasePredictor):
@@ -99,6 +134,11 @@ class PredictorUniRST(BasePredictor):
         self.relinventory = relinventory
         if self.relinventory is None:
             self.relinventory_idx = relinventory_idx
+            if not (0 <= self.relinventory_idx < len(self.dataset_names)):
+                raise ValueError(
+                    f'relinventory_idx={self.relinventory_idx} is out of bounds for '
+                    f'dataset_names ({self.dataset_names}).'
+                )
         else:
             key = self.relinventory.strip().lower()
             try:
@@ -112,18 +152,21 @@ class PredictorUniRST(BasePredictor):
         self.data_managers: List[Optional[object]] = []
         self.relation_tables: List[Sequence[str]] = []
         for corpus_name in self.dataset_names:
+            # Prefer plain relation_table.txt over unpickling data managers.
+            relation_table = self._load_relation_table(corpus_name)
+            if relation_table is not None:
+                self.data_managers.append(None)
+                self.relation_tables.append(relation_table)
+                continue
             data_manager = self._load_data_manager(corpus_name)
             self.data_managers.append(data_manager)
             if data_manager is not None:
                 self.relation_tables.append(data_manager.relation_table)
             else:
-                relation_table = self._load_relation_table(corpus_name)
-                if relation_table is None:
-                    raise FileNotFoundError(
-                        f"Could not find relation inventory for corpus '{corpus_name}'. "
-                        'Ensure that relation_table files or data manager pickles are packaged with the model.'
-                    )
-                self.relation_tables.append(relation_table)
+                raise FileNotFoundError(
+                    f"Could not find relation inventory for corpus '{corpus_name}'. "
+                    'Ensure that relation_table files or data manager pickles are packaged with the model.'
+                )
 
         self._device = resolve_device(device, cuda_device)
         self._dtype = self._resolve_dtype(dtype)
@@ -223,7 +266,7 @@ class PredictorUniRST(BasePredictor):
                 continue
             try:
                 with open(resolved, 'rb') as f:
-                    return pickle.load(f)
+                    return _RestrictedUnpickler(f).load()
             except (pickle.UnpicklingError, EOFError, OSError) as exc:
                 self.logger.warning(
                     'Skipping unreadable data_manager pickle %s: %s', resolved, exc
@@ -597,6 +640,15 @@ class PredictorUniRST(BasePredictor):
         Returns:
             A dictionary with token annotations and the predicted RST tree.
         """
+
+        if text is None:
+            raise ValueError('`text` must be provided for parsing.')
+        if not isinstance(text, str):
+            raise TypeError(
+                f'`text` must be a str, got {type(text).__name__}.'
+            )
+        if not text.strip():
+            raise ValueError('`text` must be non-empty (got empty/whitespace-only input).')
 
         if tokens is None:
             razdel_tokens = list(razdel.tokenize(text))

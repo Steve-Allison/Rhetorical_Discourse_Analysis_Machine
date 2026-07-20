@@ -81,6 +81,15 @@ def _device_from_legacy_int(cuda_device: int) -> 'torch.device':
     Apple Silicon, else ``RuntimeError``. Kept bit-for-bit so the deprecated
     integer path behaves as it always did.
     """
+    if isinstance(cuda_device, bool) or not isinstance(cuda_device, int):
+        raise ValueError(
+            f'cuda_device must be an int (-1 for CPU, or >= 0 for GPU); '
+            f'got {cuda_device!r}.'
+        )
+    if cuda_device < -1:
+        raise ValueError(
+            f'cuda_device must be -1 (CPU) or >= 0 (GPU); got {cuda_device}.'
+        )
     if cuda_device == -1:
         return torch.device('cpu')
     if torch.cuda.is_available():

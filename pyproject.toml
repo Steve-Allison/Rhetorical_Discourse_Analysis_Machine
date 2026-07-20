@@ -84,6 +84,7 @@ channels = ["conda-forge"]
 platforms = ["osx-arm64"]
 
 [tool.pixi.dependencies]
+python = "3.12.*"
 markdownlint-cli2 = ">=0.14"
 
 [tool.pixi.pypi-dependencies]

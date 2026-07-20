@@ -57,10 +57,22 @@ class StubParser:
 
     Splits at the first ``\\n\\n`` into a two-leaf NS tree when present,
     otherwise returns a single-leaf tree. Records every input text.
+
+    Optional identity attrs mirror a real ``Parser`` so cache-key tests
+    can exercise injected-with-attrs vs stub-by-id behaviour. Defaults
+    leave attrs as ``None`` so existing stub-by-id tests keep working.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        hf_model_name: str | None = None,
+        hf_model_version: str | None = None,
+        relinventory: str | None = None,
+    ) -> None:
         self.calls: list[str] = []
+        self.hf_model_name = hf_model_name
+        self.hf_model_version = hf_model_version
+        self.relinventory = relinventory
 
     def __call__(self, text: str) -> dict:
         self.calls.append(text)
@@ -263,6 +275,66 @@ def test_cache_misses_when_source_changes(tmp_path: Path) -> None:
     p.write_text("para two\n")
     parse_markdown(p, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
     assert len(stub.calls) == 2
+
+
+def test_cache_misses_when_hf_model_name_changes(tmp_path: Path) -> None:
+    """Same stub object (no identity attrs) but different ``hf_model_name``
+    kwarg must reparse — the name enters the key via the stub fallback."""
+    p = tmp_path / "doc.md"
+    p.write_text(TABLE_DOC)
+    cache = tmp_path / "cache"
+    stub = StubParser()
+    parse_markdown(
+        p,
+        parser=stub,  # type: ignore[arg-type]
+        cache_dir=cache,
+        hf_model_name="repo/model-a",
+    )
+    calls_after_first = len(stub.calls)
+    parse_markdown(
+        p,
+        parser=stub,  # type: ignore[arg-type]
+        cache_dir=cache,
+        hf_model_name="repo/model-b",
+    )
+    assert len(stub.calls) > calls_after_first
+
+
+def test_cache_misses_when_injected_parser_identity_differs(tmp_path: Path) -> None:
+    """Stub A caches; stub B with identity attrs must miss even with the
+    same kwargs — object identity / attrs are part of the cache key."""
+    p = tmp_path / "doc.md"
+    p.write_text(TABLE_DOC)
+    cache = tmp_path / "cache"
+    stub_a = StubParser()
+    parse_markdown(p, parser=stub_a, cache_dir=cache)  # type: ignore[arg-type]
+    stub_b = StubParser(hf_model_version="rstdt")
+    parse_markdown(p, parser=stub_b, cache_dir=cache)  # type: ignore[arg-type]
+    assert len(stub_b.calls) > 0
+
+
+def test_result_metadata_follows_injected_parser_not_kwargs(
+    tmp_path: Path,
+) -> None:
+    """Disagreement: kwargs say gumrrg, injected parser says rstdt → rstdt."""
+    p = tmp_path / "doc.md"
+    p.write_text("Only one paragraph.\n")
+    stub = StubParser(hf_model_version="rstdt", relinventory=None)
+    result = parse_markdown(
+        p,
+        parser=stub,  # type: ignore[arg-type]
+        hf_model_version="gumrrg",
+    )
+    assert result.model_version == "rstdt"
+    assert result.inventory == "rstdt"
+
+
+def test_non_utf8_markdown_raises_value_error(tmp_path: Path) -> None:
+    """Latin-1 bytes that are not valid UTF-8 must not be silently decoded."""
+    p = tmp_path / "latin1.md"
+    p.write_bytes("caf\xe9\n".encode("latin-1"))
+    with pytest.raises(ValueError, match="not valid UTF-8"):
+        parse_markdown(p, parser=StubParser())  # type: ignore[arg-type]
 
 
 # --- Serialisation -----------------------------------------------------------

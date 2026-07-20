@@ -6,9 +6,9 @@ mini-parse whose relations land in ``DoclangRstResult.table_analyses``.
 
 XML validation is delegated to the ``doclang`` PyPI package (validator-
 only — see [[verified-doclang-spec]]). When ``validate_xml=True``
-(default) and the package is importable, the file is run through
-``doclang.validate(path)`` before parsing; otherwise the validation step
-is skipped silently.
+(default), the file is run through ``doclang.validate(path)`` before
+parsing. If the package is not importable, validation fails closed with
+``InvalidDoclangError`` (pass ``validate_xml=False`` to skip).
 
 The underlying ``Parser`` is injectable so batch consumers construct it
 once and reuse it across many ``parse_doclang`` calls. An optional
@@ -23,7 +23,9 @@ from typing import TYPE_CHECKING, Any
 
 from .._rst_common import (
     load_cached,
+    model_identity_knobs,
     resolve_inventory,
+    resolve_result_model_meta,
     resolve_tool_version,
     result_cache_key,
     store_cached,
@@ -60,10 +62,11 @@ _resolve_tool_version = resolve_tool_version
 def _validate_xml(path: Path) -> None:
     """Validate ``path`` against the DocLang schema via the ``doclang`` package.
 
-    When the package is not importable in the active env, validation is
-    skipped silently (the harvester / loader still runs). When the
-    package IS importable and validation fails, raises
-    ``InvalidDoclangError`` wrapping the original error.
+    When the package is not importable in the active env, raises
+    ``InvalidDoclangError`` (fail-closed). When the package IS importable
+    and validation fails, raises ``InvalidDoclangError`` wrapping the
+    original error. Callers that cannot install ``doclang`` should pass
+    ``validate_xml=False``.
 
     Current DocLang requires the ``DOCLANG_NS`` namespace, so a
     non-namespaced document fails here even though the loader / harvester
@@ -72,8 +75,11 @@ def _validate_xml(path: Path) -> None:
     """
     try:
         doclang_pkg = importlib.import_module("doclang")
-    except ImportError:
-        return
+    except ImportError as exc:
+        raise InvalidDoclangError(
+            f"{path}: validate_xml=True requires the doclang package. "
+            "Install doclang or pass validate_xml=False."
+        ) from exc
     try:
         doclang_pkg.validate(path)
     except Exception as exc:
@@ -164,11 +170,12 @@ def parse_doclang(
         note_threshold: relations whose overlap is >= this ratio
             dominated by a single span get a ``note`` field.
         validate_xml: when True (default), validate against the DocLang
-            schema via the ``doclang`` PyPI package before parsing. Current
-            DocLang requires the ``https://www.doclang.ai/ns/v0`` namespace,
-            so a non-namespaced document is rejected here; pass
+            schema via the ``doclang`` PyPI package before parsing. Raises
+            ``InvalidDoclangError`` when the package is not importable
+            (pass ``validate_xml=False`` to skip). Current DocLang requires
+            the ``https://www.doclang.ai/ns/v0`` namespace, so a
+            non-namespaced document is rejected here; pass
             ``validate_xml=False`` to parse non-conforming input best-effort.
-            Silently skipped when the package is not importable.
         max_harvest_chars: raise ``InputTooLargeError`` above this size
             (checked for the main harvest and each table harvest).
         cache_dir: when set, results are cached on disk keyed by the
@@ -188,8 +195,6 @@ def parse_doclang(
     knobs: dict[str, object] = {
         "schema_name": SCHEMA_NAME,
         "schema_version": SCHEMA_VERSION,
-        "hf_model_version": hf_model_version,
-        "relinventory": relinventory,
         "dtype": dtype,
         "include_picture_captions": include_picture_captions,
         "include_background": include_background,
@@ -200,7 +205,14 @@ def parse_doclang(
         "include_table_cells": include_table_cells,
         "harvest_separator": harvest_separator,
         "note_threshold": note_threshold,
+        "validate_xml": validate_xml,
         "max_harvest_chars": max_harvest_chars,
+        **model_identity_knobs(
+            hf_model_name=hf_model_name,
+            hf_model_version=hf_model_version,
+            relinventory=relinventory,
+            parser=parser,
+        ),
     }
     cache_path = Path(cache_dir) if cache_dir is not None else None
     cache_key = result_cache_key(source_bytes, knobs)
@@ -273,6 +285,10 @@ def parse_doclang(
             dtype=dtype,
         )
 
+    model_version, inventory = resolve_result_model_meta(
+        parser, hf_model_version, relinventory, resolve_inventory=resolve_inventory
+    )
+
     if harvest.full_text:
         rst_tree = parser(harvest.full_text)["rst"][0]
         relations, edus = flatten_tree(
@@ -302,8 +318,8 @@ def parse_doclang(
         schema_version=SCHEMA_VERSION,
         tool=TOOL_NAME,
         tool_version=resolve_tool_version(),
-        model_version=hf_model_version,
-        inventory=resolve_inventory(hf_model_version, relinventory),
+        model_version=model_version,
+        inventory=inventory,
         source=src_path.name,
         source_origin=_source_origin(tree),
         boundaries=boundaries,

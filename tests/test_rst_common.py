@@ -10,10 +10,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+import pytest
+
 from isanlp_rst._rst_common import (
     SpanIndex,
     flatten_tree,
     load_cached,
+    model_identity_knobs,
+    resolve_inventory,
+    resolve_result_model_meta,
     result_cache_key,
     store_cached,
 )
@@ -161,3 +166,127 @@ def test_cache_store_load_round_trip(tmp_path: Path) -> None:
 
 def test_cache_load_returns_none_on_miss(tmp_path: Path) -> None:
     assert load_cached(tmp_path, "no-such-key") is None
+
+
+def test_cache_key_rejects_non_scalar_knob() -> None:
+    """Lists (and other non-repr-stable types) must raise, not silently hash."""
+    with pytest.raises(TypeError, match="non-repr-stable"):
+        result_cache_key(b"src", {"bad": ["a", "b"]})
+
+
+def test_cache_load_returns_none_on_corrupt_pickle(tmp_path: Path) -> None:
+    key = "deadbeef"
+    path = tmp_path / f"{key}.pkl"
+    path.write_bytes(b"not a valid pickle\xff\x00")
+    assert load_cached(tmp_path, key) is None
+
+
+# --- model_identity_knobs ----------------------------------------------------
+
+
+class _InjectedParser:
+    def __init__(
+        self,
+        hf_model_name: str | None = None,
+        hf_model_version: str | None = None,
+        relinventory: str | None = None,
+    ) -> None:
+        self.hf_model_name = hf_model_name
+        self.hf_model_version = hf_model_version
+        self.relinventory = relinventory
+
+
+def test_model_identity_knobs_construct_vs_injected_vs_stub() -> None:
+    construct = model_identity_knobs(
+        hf_model_name="repo/a",
+        hf_model_version="gumrrg",
+        relinventory=None,
+        parser=None,
+    )
+    assert construct["parser_source"] == "construct"
+    assert construct["hf_model_name"] == "repo/a"
+    assert "parser_id" not in construct
+
+    injected = model_identity_knobs(
+        hf_model_name="ignored",
+        hf_model_version="ignored",
+        relinventory="ignored",
+        parser=_InjectedParser(
+            hf_model_name="repo/b",
+            hf_model_version="rstdt",
+            relinventory="eng.erst.gum",
+        ),
+    )
+    assert injected["parser_source"] == "injected"
+    assert injected["hf_model_name"] == "repo/b"
+    assert injected["hf_model_version"] == "rstdt"
+    assert injected["relinventory"] == "eng.erst.gum"
+    assert "parser_id" not in injected
+
+    stub = object()
+    stub_knobs = model_identity_knobs(
+        hf_model_name="repo/c",
+        hf_model_version="gumrrg",
+        relinventory=None,
+        parser=stub,
+    )
+    assert stub_knobs["parser_source"] == "injected"
+    assert stub_knobs["hf_model_name"] == "repo/c"
+    assert stub_knobs["parser_id"] == id(stub)
+
+
+def test_model_identity_knobs_different_stubs_differ() -> None:
+    a, b = object(), object()
+    ka = model_identity_knobs(
+        hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=a
+    )
+    kb = model_identity_knobs(
+        hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=b
+    )
+    assert ka["parser_id"] != kb["parser_id"]
+    assert ka != kb
+
+
+def test_model_identity_knobs_same_stub_stable() -> None:
+    stub = object()
+    ka = model_identity_knobs(
+        hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=stub
+    )
+    kb = model_identity_knobs(
+        hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=stub
+    )
+    assert ka == kb
+    assert ka["parser_id"] == id(stub)
+
+
+def test_resolve_result_model_meta_prefers_injected_parser_over_kwargs() -> None:
+    """Metadata must not silently report kwargs when the injected parser differs."""
+    parser = _InjectedParser(
+        hf_model_name="repo/x",
+        hf_model_version="rstdt",
+        relinventory=None,
+    )
+    version, inventory = resolve_result_model_meta(
+        parser,
+        hf_model_version="gumrrg",  # disagrees on purpose
+        relinventory="should_be_ignored_when_parser_has_none_then_fallback",
+        resolve_inventory=resolve_inventory,
+    )
+    # version from parser; inventory falls back to kwargs relinventory then version
+    assert version == "rstdt"
+    assert inventory == "should_be_ignored_when_parser_has_none_then_fallback"
+
+
+def test_resolve_result_model_meta_injected_relinventory_wins() -> None:
+    parser = _InjectedParser(
+        hf_model_version="unirst",
+        relinventory="eng.erst.gum",
+    )
+    version, inventory = resolve_result_model_meta(
+        parser,
+        hf_model_version="gumrrg",
+        relinventory="eng.rst.rstdt",
+        resolve_inventory=resolve_inventory,
+    )
+    assert version == "unirst"
+    assert inventory == "eng.erst.gum"

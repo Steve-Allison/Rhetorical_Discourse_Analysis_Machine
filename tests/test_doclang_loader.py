@@ -153,3 +153,34 @@ def test_parse_doclang_xml_missing_file_raises_oserror(tmp_path: Path) -> None:
     missing = tmp_path / "does_not_exist.dclg.xml"
     with pytest.raises(OSError):
         parse_doclang_xml(missing)
+
+
+# --- XXE hardening ----------------------------------------------------------
+
+
+def test_parse_doclang_xml_refuses_external_entity_xxe(tmp_path: Path) -> None:
+    """External entity SYSTEM paths must not leak file contents into
+    ``itertext()``. Raising ``XMLSyntaxError`` is acceptable; the secret
+    must never appear in harvested text."""
+    secret = tmp_path / "secret.txt"
+    secret.write_text("TOP_SECRET_PAYLOAD_XYZ", encoding="utf-8")
+    xml_path = tmp_path / "xxe.dclg.xml"
+    xml_path.write_text(
+        (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            "<!DOCTYPE doclang [\n"
+            f'  <!ENTITY xxe SYSTEM "{secret.resolve()}">\n'
+            "]>\n"
+            '<doclang xmlns="https://www.doclang.ai/ns/v0">'
+            "<text>&xxe;</text>"
+            "</doclang>\n"
+        ),
+        encoding="utf-8",
+    )
+    try:
+        tree = parse_doclang_xml(xml_path)
+    except etree.XMLSyntaxError:
+        return
+    blob = "".join(tree.getroot().itertext())
+    assert "TOP_SECRET_PAYLOAD_XYZ" not in blob
+

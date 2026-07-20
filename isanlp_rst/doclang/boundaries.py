@@ -6,15 +6,18 @@ each RST relation's xpaths to produce ``boundary_memberships``.
 
 Boundary kinds (verified Phase 1 against the 40-fixture corpus):
 
-- ``heading-N`` — each top-level ``<heading>``, indexed in document order
+- ``heading-N`` — each ``<heading>`` owns itself plus following
+  harvest-eligible xpaths until the next heading (markdown-style
+  section bucketing). Pre-heading content lands in a leading
+  ``document`` boundary when non-empty.
 - ``page-N``    — content between successive ``<page_break/>`` markers
 - ``group-N``   — each top-level ``<group>``; nested groups get
-  hierarchical ids (``group-N-M`` for one level of nesting; deeper
-  nesting was not observed in the corpus and is left as a follow-up).
+  hierarchical ids (``group-N-M-…`` at arbitrary nesting depth).
 - ``table-N``   — each ``<table>``
 - ``field_region-N`` — each ``<field_region>``
 - ``document``  — fallback boundary covering all harvest-eligible
-  elements when none of the above apply.
+  elements when none of the above apply; also used for pre-heading
+  content when headings are present.
 
 DocLang has no slide / speaker-turn concepts (Phase 0 verified) — those
 kinds are absent by design.
@@ -63,16 +66,16 @@ def _harvest_eligible_xpaths(root: etree._Element) -> tuple[str, ...]:
 
 
 def _detect_heading_boundaries(root: etree._Element) -> list[Boundary]:
-    """Emit one ``heading-N`` boundary per ``<heading>``, in document order.
+    """Emit ``heading-N`` boundaries with markdown-style section bucketing.
 
-    The boundary's ``xpaths`` is the heading itself plus every
-    harvest-eligible element under it (which, since headings cannot
-    contain block-level descendants in practice, is usually just the
-    heading). The ``label`` carries the heading's text; the ``level``
-    carries its ``level`` attribute (default 1 per spec).
+    Document-order harvest-eligible xpaths are partitioned so each
+    heading owns itself plus every following eligible xpath until the
+    next heading. Content before the first heading lands in a leading
+    ``document`` boundary when non-empty. The ``label`` carries the
+    heading's text; the ``level`` carries its ``level`` attribute
+    (default 1 per spec).
     """
-    boundaries: list[Boundary] = []
-    idx = 0
+    heading_meta: dict[str, tuple[str | None, int]] = {}
     for el in _walk_descendants(root):
         if not isinstance(el.tag, str) or local_name(el) != "heading":
             continue
@@ -84,17 +87,47 @@ def _detect_heading_boundaries(root: etree._Element) -> list[Boundary]:
                 f"<heading> at {local_path(el)} has non-integer level={level_str!r}"
             ) from exc
         label = "".join(el.itertext()).strip() or None
+        heading_meta[local_path(el)] = (label, level)
+
+    if not heading_meta:
+        return []
+
+    # Buckets: [(None, pre-heading refs), (heading_xpath, section refs), ...]
+    buckets: list[tuple[str | None, list[str]]] = [(None, [])]
+    for xp in _harvest_eligible_xpaths(root):
+        if xp in heading_meta:
+            buckets.append((xp, [xp]))
+        else:
+            buckets[-1][1].append(xp)
+
+    boundaries: list[Boundary] = []
+    pre_refs = buckets[0][1]
+    if pre_refs:
         boundaries.append(
             Boundary(
-                id=f"heading-{idx}",
+                id="document",
+                kind="document",
+                label=None,
+                parent_xpath=local_path(root),
+                xpaths=tuple(pre_refs),
+            )
+        )
+
+    heading_idx = 0
+    for heading_xp, refs in buckets[1:]:
+        assert heading_xp is not None
+        label, level = heading_meta[heading_xp]
+        boundaries.append(
+            Boundary(
+                id=f"heading-{heading_idx}",
                 kind="heading",
                 label=label,
                 parent_xpath=None,
-                xpaths=(local_path(el),),
+                xpaths=tuple(refs),
                 level=level,
             )
         )
-        idx += 1
+        heading_idx += 1
     return boundaries
 
 
@@ -149,42 +182,33 @@ def _detect_page_boundaries(root: etree._Element) -> list[Boundary]:
 
 
 def _detect_group_boundaries(root: etree._Element) -> list[Boundary]:
-    """Emit one ``group-N`` boundary per top-level ``<group>``.
+    """Emit ``group-N`` / ``group-N-M-…`` boundaries at any nesting depth.
 
     Top-level here means a direct child of ``<doclang>``. Nested groups
-    are surfaced as ``group-N-M`` (one level deep — the only depth
-    observed in the Phase 1 corpus).
+    receive hierarchical ids appended with ``-M`` for each nesting level.
     """
     boundaries: list[Boundary] = []
-    idx = 0
-    for child in root:
-        if not isinstance(child.tag, str) or local_name(child) != "group":
-            continue
-        outer_id = f"group-{idx}"
-        boundaries.append(
-            Boundary(
-                id=outer_id,
-                kind="group",
-                label=None,
-                parent_xpath=local_path(root),
-                xpaths=_harvest_eligible_xpaths(child),
-            )
-        )
-        inner_idx = 0
-        for inner in child:
-            if not isinstance(inner.tag, str) or local_name(inner) != "group":
+
+    def _walk_groups(parent: etree._Element, id_parts: list[int]) -> None:
+        idx = 0
+        for child in parent:
+            if not isinstance(child.tag, str) or local_name(child) != "group":
                 continue
+            parts = [*id_parts, idx]
+            group_id = "group-" + "-".join(str(p) for p in parts)
             boundaries.append(
                 Boundary(
-                    id=f"{outer_id}-{inner_idx}",
+                    id=group_id,
                     kind="group",
                     label=None,
-                    parent_xpath=local_path(child),
-                    xpaths=_harvest_eligible_xpaths(inner),
+                    parent_xpath=local_path(parent),
+                    xpaths=_harvest_eligible_xpaths(child),
                 )
             )
-            inner_idx += 1
-        idx += 1
+            _walk_groups(child, parts)
+            idx += 1
+
+    _walk_groups(root, [])
     return boundaries
 
 
@@ -267,10 +291,10 @@ def detect_boundaries(tree: etree._ElementTree) -> tuple[Boundary, ...]:
     """Detect every structural boundary in ``tree``.
 
     Always emits ``table-N`` and ``field_region-N`` boundaries when those
-    elements exist. Emits one of (``heading-N`` set, ``page-N`` set,
-    ``group-N`` set) per the structural shape; if none apply, falls back
-    to a single ``document`` boundary covering the harvest-eligible
-    elements.
+    elements exist. Emits all applicable of the ``heading-N``, ``page-N``,
+    and ``group-N`` sets (they are not mutually exclusive). If none of
+    those three apply, falls back to a single ``document`` boundary
+    covering the harvest-eligible elements.
     """
     root = tree.getroot()
 
