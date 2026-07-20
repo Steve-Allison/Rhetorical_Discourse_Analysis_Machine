@@ -1,0 +1,20 @@
+---
+description: Full git status at the start of every session
+alwaysApply: true
+---
+
+# Session-start git status
+
+At the start of **every** conversation (before other work), run a full git
+status check and use it to orient:
+
+```bash
+git status
+git status -sb
+git remote -v
+git branch -vv
+git log -5 --oneline
+```
+
+Note dirty files, branch vs `origin`, remotes, and recent commits before
+planning or editing. Do not skip this because the task looks unrelated to git.
