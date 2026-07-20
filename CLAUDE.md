@@ -30,6 +30,8 @@ pixi run mdlint    # markdownlint
 
 Adding dependencies: `pixi add <package>`. Never `pip install`.
 
+CI (`.github/workflows/ci.yml`) runs on macOS arm64 with the pixi lock (**Python 3.12**). `requires-python` is `>=3.10` for downstream installs; the project's tested path is 3.12. PRs also run a short CPU smoke (`--quick`: gumrrg + unirst) with an HF hub cache, plus `mdlint`.
+
 ## Project-specific overrides of global rules
 
 - **No fork-only-push rule.** This repo is not a fork in spirit; `origin` is the only valid push target by virtue of remote configuration. The earlier "fork-only push" rule has been retired.

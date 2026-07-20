@@ -298,6 +298,55 @@ def test_cache_misses_when_hf_model_name_changes(tmp_path: Path) -> None:
     assert len(stub.calls) > calls_after_first
 
 
+def test_cache_misses_when_source_changes(tmp_path: Path) -> None:
+    path = _write_two_para_docling(tmp_path / "doc.docling.json")
+    cache = tmp_path / "cache"
+    stub = StubParser()
+    parse_docling(path, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    # Change bytes in place.
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["name"] = "mutated-doc"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    parse_docling(path, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    assert len(stub.calls) == 2
+
+
+def test_cache_misses_when_knobs_change(tmp_path: Path) -> None:
+    path = _write_two_para_docling(tmp_path / "doc.docling.json")
+    cache = tmp_path / "cache"
+    stub = StubParser()
+    parse_docling(path, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    calls_after_first = len(stub.calls)
+    parse_docling(
+        path, parser=stub, cache_dir=cache, include_table_cells=False  # type: ignore[arg-type]
+    )
+    assert len(stub.calls) > calls_after_first
+
+
+def test_cache_misses_when_injected_parser_identity_differs(tmp_path: Path) -> None:
+    path = _write_two_para_docling(tmp_path / "doc.docling.json")
+    cache = tmp_path / "cache"
+    stub_a = StubParser()
+    parse_docling(path, parser=stub_a, cache_dir=cache)  # type: ignore[arg-type]
+    stub_b = StubParser(hf_model_version="rstdt")
+    parse_docling(path, parser=stub_b, cache_dir=cache)  # type: ignore[arg-type]
+    assert len(stub_b.calls) > 0
+
+
+def test_cache_misses_when_device_changes(tmp_path: Path) -> None:
+    path = _write_two_para_docling(tmp_path / "doc.docling.json")
+    cache = tmp_path / "cache"
+    stub = StubParser()
+    parse_docling(
+        path, parser=stub, cache_dir=cache, device="cpu"  # type: ignore[arg-type]
+    )
+    calls_after_first = len(stub.calls)
+    parse_docling(
+        path, parser=stub, cache_dir=cache, device="mps"  # type: ignore[arg-type]
+    )
+    assert len(stub.calls) > calls_after_first
+
+
 def test_empty_docling_error(tmp_path: Path) -> None:
     path = tmp_path / "empty.docling.json"
     path.write_text(json.dumps(_minimal_docling_json(body_children=[])))

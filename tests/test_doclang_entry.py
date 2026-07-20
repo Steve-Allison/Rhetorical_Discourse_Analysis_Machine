@@ -11,6 +11,7 @@ and verify end-to-end behaviour on a representative DocLang fixture.
 
 from __future__ import annotations
 
+import importlib
 from pathlib import Path
 
 import pytest
@@ -267,6 +268,95 @@ def test_cache_misses_when_validate_xml_changes(tmp_path: Path) -> None:
         assert len(stub.calls) == calls_after_first
         return
     assert len(stub.calls) > calls_after_first
+
+
+def test_cache_misses_when_source_changes(tmp_path: Path) -> None:
+    cache = tmp_path / "cache"
+    stub = _StubParser()
+    path = tmp_path / "doc.dclg.xml"
+    original = COMPREHENSIVE.read_text(encoding="utf-8")
+    path.write_text(original, encoding="utf-8")
+    parse_doclang(path, parser=stub, validate_xml=False, cache_dir=cache)  # type: ignore[arg-type]
+    # Trailing whitespace changes source bytes without breaking XML.
+    path.write_text(original + "\n", encoding="utf-8")
+    parse_doclang(path, parser=stub, validate_xml=False, cache_dir=cache)  # type: ignore[arg-type]
+    assert len(stub.calls) >= 2
+
+
+def test_cache_misses_when_hf_model_name_changes(tmp_path: Path) -> None:
+    cache = tmp_path / "cache"
+    stub = _StubParser()
+    parse_doclang(
+        COMPREHENSIVE,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+        cache_dir=cache,
+        hf_model_name="repo/model-a",
+    )
+    calls_after_first = len(stub.calls)
+    parse_doclang(
+        COMPREHENSIVE,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+        cache_dir=cache,
+        hf_model_name="repo/model-b",
+    )
+    assert len(stub.calls) > calls_after_first
+
+
+def test_cache_misses_when_injected_parser_identity_differs(tmp_path: Path) -> None:
+    cache = tmp_path / "cache"
+    stub_a = _StubParser()
+    parse_doclang(
+        COMPREHENSIVE, parser=stub_a, validate_xml=False, cache_dir=cache  # type: ignore[arg-type]
+    )
+    stub_b = _StubParser(hf_model_version="rstdt")
+    parse_doclang(
+        COMPREHENSIVE, parser=stub_b, validate_xml=False, cache_dir=cache  # type: ignore[arg-type]
+    )
+    assert len(stub_b.calls) > 0
+
+
+def test_cache_misses_when_device_changes(tmp_path: Path) -> None:
+    """``device`` is part of the cache key (locked Wave 4 contract)."""
+    cache = tmp_path / "cache"
+    stub = _StubParser()
+    parse_doclang(
+        COMPREHENSIVE,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+        cache_dir=cache,
+        device="cpu",
+    )
+    calls_after_first = len(stub.calls)
+    parse_doclang(
+        COMPREHENSIVE,
+        parser=stub,  # type: ignore[arg-type]
+        validate_xml=False,
+        cache_dir=cache,
+        device="mps",
+    )
+    assert len(stub.calls) > calls_after_first
+
+
+def test_validate_xml_import_error_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Missing ``doclang`` package must raise ``InvalidDoclangError``, not skip."""
+    real_import = importlib.import_module
+
+    def _boom(name: str, package=None):
+        if name == "doclang":
+            raise ImportError("simulated missing doclang")
+        return real_import(name, package)
+
+    monkeypatch.setattr(importlib, "import_module", _boom)
+    stub = _StubParser()
+    with pytest.raises(InvalidDoclangError, match="requires the doclang package"):
+        parse_doclang(
+            COMPREHENSIVE,
+            parser=stub,  # type: ignore[arg-type]
+            validate_xml=True,
+        )
+    assert stub.calls == []
 
 
 def test_main_relations_never_reference_table_cell_xpaths() -> None:

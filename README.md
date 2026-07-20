@@ -177,7 +177,7 @@ The 18-corpus `unirst` model is faster on CPU than on MPS — multi-corpus class
 
 #### Verifying on NVIDIA CUDA hardware
 
-CI runs on macOS Apple Silicon, so the CUDA dispatch path isn't exercised in CI. To verify on an NVIDIA host:
+CI runs on macOS Apple Silicon with **Python 3.12** (pixi lock). Package metadata declares `requires-python >= 3.10` for downstream installs; that older floor is best-effort, not the CI matrix. The CUDA dispatch path isn't exercised in CI. To verify on an NVIDIA host:
 
 ```bash
 pixi run cuda-smoke

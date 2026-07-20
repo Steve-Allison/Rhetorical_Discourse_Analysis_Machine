@@ -313,6 +313,18 @@ def test_cache_misses_when_injected_parser_identity_differs(tmp_path: Path) -> N
     assert len(stub_b.calls) > 0
 
 
+def test_cache_misses_when_device_changes(tmp_path: Path) -> None:
+    """``device`` is part of the cache key (locked Wave 4 contract)."""
+    p = tmp_path / "doc.md"
+    p.write_text(TABLE_DOC)
+    cache = tmp_path / "cache"
+    stub = StubParser()
+    parse_markdown(p, parser=stub, cache_dir=cache, device="cpu")  # type: ignore[arg-type]
+    calls_after_first = len(stub.calls)
+    parse_markdown(p, parser=stub, cache_dir=cache, device="mps")  # type: ignore[arg-type]
+    assert len(stub.calls) > calls_after_first
+
+
 def test_result_metadata_follows_injected_parser_not_kwargs(
     tmp_path: Path,
 ) -> None:

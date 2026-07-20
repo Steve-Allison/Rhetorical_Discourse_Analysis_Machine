@@ -29,5 +29,37 @@ jobs:
       - name: Typecheck
         run: pixi run typecheck
 
+      - name: Markdown lint
+        run: pixi run mdlint
+
       - name: Run unit tests (fast)
         run: pixi run test
+
+  smoke-pr:
+    name: Short smoke (gumrrg + unirst, CPU)
+    runs-on: macos-14
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.64.0
+          cache: true
+
+      - name: Cache HuggingFace hub
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface/hub
+          key: hf-cache-isanlp-rst-v3-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            hf-cache-isanlp-rst-v3-
+
+      - name: Install environment
+        run: pixi install
+
+      - name: Quick smoke (CPU)
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: pixi run python scripts/smoke_test.py --quick --device cpu

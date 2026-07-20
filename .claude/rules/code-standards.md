@@ -62,7 +62,7 @@ If new code lands outside `tool.pyright.include`, add it to that list.
 
 ## Gotchas
 
-- **Python `requires-python = ">=3.10"`** in `pyproject.toml`. The pixi env runs 3.14. Use 3.13+ idioms for new code; trust the `requires-python` floor for compatibility.
+- **Python `requires-python = ">=3.10"`** in `pyproject.toml`. Pixi / CI use **Python 3.12** (`python = "3.12.*"` in `[tool.pixi.dependencies]`). The `>=3.10` floor is best-effort for downstream installs; this project's tested path is 3.12 on macOS arm64. Use 3.13+ idioms for new code; trust the `requires-python` floor for compatibility.
 - **`numpy>=1.26.4`** tracks latest (resolves to 2.5.0 as of 2026-06-27). The old `==1.26.4` exact pin was lifted after verifying numpy 2.x is green across the full suite; transformers 5.x only requires `numpy>=1.17`.
 - **HF revisions are the version channel.** `hf_model_version` maps to a git ref on the HF repo — switching versions re-downloads weights / config / relation table.
 - **`<P>` token** is added to the tokenizer at load time (`tokenizer.add_tokens(['<P>'])`) and the transformer embeddings are resized accordingly. Anything that re-instantiates the tokenizer must replicate this.
