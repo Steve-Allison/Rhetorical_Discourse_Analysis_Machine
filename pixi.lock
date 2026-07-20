@@ -440,6 +440,7 @@ packages:
   - tqdm>=4.42
   - pillow>=10
   - networkx>=2.5.1
+  - doclang>=0.7,<0.8
   - isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794
   - pytest>=8 ; extra == 'dev'
   - ruff>=0.6 ; extra == 'dev'

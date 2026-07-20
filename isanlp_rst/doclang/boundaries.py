@@ -41,13 +41,19 @@ def _walk_descendants(element: etree._Element) -> Iterable[etree._Element]:
             yield from _walk_descendants(child)
 
 
-def _harvest_eligible_xpaths(root: etree._Element) -> tuple[str, ...]:
+def _harvest_eligible_xpaths(
+    root: etree._Element,
+    *,
+    include_code_blocks: bool = False,
+    include_formulas: bool = False,
+    include_field_regions: bool = False,
+) -> tuple[str, ...]:
     """Yield xpaths of every harvest-eligible element under ``root``.
 
-    Mirrors the harvester's coverage: ``<text>``, ``<heading>``,
-    ``<footnote>``, ``<list>`` items (via the ``<ldiv/>`` marker), and
-    ``<picture>``'s caption. Used to populate the ``document`` fallback
-    boundary when no structural boundaries match.
+    Mirrors the harvester's coverage for the default / opt-in knobs used by
+    ``detect_boundaries``. Default tags: ``text``, ``heading``, ``footnote``,
+    ``ldiv``, picture ``caption``. Opt-in: ``code``, ``formula``, ``key`` /
+    ``value`` under ``field_region``.
     """
     xpaths: list[str] = []
     for el in _walk_descendants(root):
@@ -62,10 +68,22 @@ def _harvest_eligible_xpaths(root: etree._Element) -> tuple[str, ...]:
             parent = el.getparent()
             if parent is not None and local_name(parent) == "picture":
                 xpaths.append(local_path(el))
+        elif tag == "code" and include_code_blocks:
+            xpaths.append(local_path(el))
+        elif tag == "formula" and include_formulas:
+            xpaths.append(local_path(el))
+        elif tag in {"key", "value"} and include_field_regions:
+            xpaths.append(local_path(el))
     return tuple(xpaths)
 
 
-def _detect_heading_boundaries(root: etree._Element) -> list[Boundary]:
+def _detect_heading_boundaries(
+    root: etree._Element,
+    *,
+    include_code_blocks: bool = False,
+    include_formulas: bool = False,
+    include_field_regions: bool = False,
+) -> list[Boundary]:
     """Emit ``heading-N`` boundaries with markdown-style section bucketing.
 
     Document-order harvest-eligible xpaths are partitioned so each
@@ -92,9 +110,16 @@ def _detect_heading_boundaries(root: etree._Element) -> list[Boundary]:
     if not heading_meta:
         return []
 
+    eligible = _harvest_eligible_xpaths(
+        root,
+        include_code_blocks=include_code_blocks,
+        include_formulas=include_formulas,
+        include_field_regions=include_field_regions,
+    )
+
     # Buckets: [(None, pre-heading refs), (heading_xpath, section refs), ...]
     buckets: list[tuple[str | None, list[str]]] = [(None, [])]
-    for xp in _harvest_eligible_xpaths(root):
+    for xp in eligible:
         if xp in heading_meta:
             buckets.append((xp, [xp]))
         else:
@@ -250,7 +275,12 @@ def _detect_table_boundaries(root: etree._Element) -> list[Boundary]:
 
 
 def _detect_field_region_boundaries(root: etree._Element) -> list[Boundary]:
-    """Emit one ``field_region-N`` boundary per ``<field_region>``."""
+    """Emit one ``field_region-N`` boundary per ``<field_region>``.
+
+    ``xpaths`` include the region itself plus every descendant ``key`` /
+    ``value`` path the harvester emits when ``include_field_regions=True``,
+    so mapper set-intersection can attach ``field_region-*`` memberships.
+    """
     boundaries: list[Boundary] = []
     idx = 0
     for el in _walk_descendants(root):
@@ -258,22 +288,39 @@ def _detect_field_region_boundaries(root: etree._Element) -> list[Boundary]:
             continue
         parent = el.getparent()
         parent_xpath = local_path(parent) if parent is not None else None
+        member_xpaths = [local_path(el)]
+        for desc in _walk_descendants(el):
+            if desc is el or not isinstance(desc.tag, str):
+                continue
+            if local_name(desc) in {"key", "value"}:
+                member_xpaths.append(local_path(desc))
         boundaries.append(
             Boundary(
                 id=f"field_region-{idx}",
                 kind="field_region",
                 label=None,
                 parent_xpath=parent_xpath,
-                xpaths=(local_path(el),),
+                xpaths=tuple(member_xpaths),
             )
         )
         idx += 1
     return boundaries
 
 
-def _detect_document_fallback(root: etree._Element) -> list[Boundary]:
+def _detect_document_fallback(
+    root: etree._Element,
+    *,
+    include_code_blocks: bool = False,
+    include_formulas: bool = False,
+    include_field_regions: bool = False,
+) -> list[Boundary]:
     """Emit a single ``document`` boundary covering every harvest-eligible xpath."""
-    xpaths = _harvest_eligible_xpaths(root)
+    xpaths = _harvest_eligible_xpaths(
+        root,
+        include_code_blocks=include_code_blocks,
+        include_formulas=include_formulas,
+        include_field_regions=include_field_regions,
+    )
     if not xpaths:
         return []
     return [
@@ -287,7 +334,13 @@ def _detect_document_fallback(root: etree._Element) -> list[Boundary]:
     ]
 
 
-def detect_boundaries(tree: etree._ElementTree) -> tuple[Boundary, ...]:
+def detect_boundaries(
+    tree: etree._ElementTree,
+    *,
+    include_code_blocks: bool = False,
+    include_formulas: bool = False,
+    include_field_regions: bool = False,
+) -> tuple[Boundary, ...]:
     """Detect every structural boundary in ``tree``.
 
     Always emits ``table-N`` and ``field_region-N`` boundaries when those
@@ -295,15 +348,33 @@ def detect_boundaries(tree: etree._ElementTree) -> tuple[Boundary, ...]:
     and ``group-N`` sets (they are not mutually exclusive). If none of
     those three apply, falls back to a single ``document`` boundary
     covering the harvest-eligible elements.
+
+    Opt-in harvest knobs (``include_code_blocks`` / ``include_formulas`` /
+    ``include_field_regions``) widen heading / document eligibility so
+    boundary memberships stay aligned with the harvester.
     """
     root = tree.getroot()
 
     primary: list[Boundary] = []
-    primary.extend(_detect_heading_boundaries(root))
+    primary.extend(
+        _detect_heading_boundaries(
+            root,
+            include_code_blocks=include_code_blocks,
+            include_formulas=include_formulas,
+            include_field_regions=include_field_regions,
+        )
+    )
     primary.extend(_detect_page_boundaries(root))
     primary.extend(_detect_group_boundaries(root))
     if not primary:
-        primary.extend(_detect_document_fallback(root))
+        primary.extend(
+            _detect_document_fallback(
+                root,
+                include_code_blocks=include_code_blocks,
+                include_formulas=include_formulas,
+                include_field_regions=include_field_regions,
+            )
+        )
 
     tables = _detect_table_boundaries(root)
     fields = _detect_field_region_boundaries(root)

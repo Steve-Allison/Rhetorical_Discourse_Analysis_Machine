@@ -13,6 +13,7 @@ Public API:
 from __future__ import annotations
 
 from ._entry import parse_docling
+from ._mimetypes import ensure_docling_mimetypes
 from .errors import (
     DoclingRstError,
     EmptyDoclingError,
@@ -30,6 +31,10 @@ from .schema import (
     TableHarvest,
 )
 
+# Register WebP (and related) MIME types as soon as the package is imported so
+# direct ``DoclingDocument.load_from_json`` callers in tests / scripts also work.
+ensure_docling_mimetypes()
+
 __all__ = [
     "Boundary",
     "DoclingRstError",
@@ -43,5 +48,6 @@ __all__ = [
     "RstRelation",
     "TableAnalysis",
     "TableHarvest",
+    "ensure_docling_mimetypes",
     "parse_docling",
 ]

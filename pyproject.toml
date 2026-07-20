@@ -32,6 +32,9 @@ dependencies = [
   "tqdm>=4.42",
   "pillow>=10",
   "networkx>=2.5.1",
+  # DocLang validator for parse_doclang(..., validate_xml=True) — first-class
+  # entry point; not optional. Spec/toolkit: https://github.com/doclang-project/doclang
+  "doclang>=0.7,<0.8",
   "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
 ]
 
@@ -48,11 +51,10 @@ dev = [
   "types-lxml>=2026.2.16",
 ]
 
-# Format-native entry points only: parse_docling / parse_doclang /
-# parse_markdown. The core `Parser` does not import these — consumers that only
-# use the RST parser (e.g. as a library) install isanlp_rst without this extra
-# and avoid the docling-core dependency chain entirely. `doclang` rides in
-# transitively via docling-core.
+# Docling / Markdown format-native entry points only. The core `Parser` and
+# `parse_doclang` do not need these — consumers that only use RST (+ DocLang
+# XML) can install isanlp_rst without this extra and avoid the docling-core
+# dependency chain.
 formats = [
   "docling-core>=2.75.0",
   "markdown-it-py>=3",

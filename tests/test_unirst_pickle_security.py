@@ -68,6 +68,54 @@ def test_restricted_unpickler_loads_isanlp_rst_parser_input(tmp_path: Path) -> N
     assert loaded.relation_table == ["elaboration", "contrast"]  # type: ignore[attr-defined]
 
 
+def test_restricted_unpickler_refuses_isanlp_rst_collect_gadget(tmp_path: Path) -> None:
+    """REDUCE → data_manager.collect must not execute (prefix allow-list hole)."""
+
+    class _CollectGadget:
+        def __reduce__(self):
+            from isanlp_rst.universal_parser import data_manager
+
+            return (data_manager.collect, ())
+
+    evil = tmp_path / "collect.pkl"
+    with evil.open("wb") as f:
+        pickle.dump(_CollectGadget(), f)
+
+    with evil.open("rb") as f, pytest.raises(pickle.UnpicklingError, match="Refused"):
+        _RestrictedUnpickler(f).load()
+
+
+def test_restricted_unpickler_refuses_data_manager_class(tmp_path: Path) -> None:
+    """DataManager is excluded so ATTR from_pickle gadgets cannot be built."""
+    from isanlp_rst.universal_parser.data_manager import DataManager
+
+    class _DmGadget:
+        def __reduce__(self):
+            return (DataManager, ("GUM",))
+
+    evil = tmp_path / "dm.pkl"
+    with evil.open("wb") as f:
+        pickle.dump(_DmGadget(), f)
+
+    with evil.open("rb") as f, pytest.raises(pickle.UnpicklingError, match="Refused"):
+        _RestrictedUnpickler(f).load()
+
+
+def test_restricted_unpickler_refuses_load_cached_gadget(tmp_path: Path) -> None:
+    class _CacheGadget:
+        def __reduce__(self):
+            from isanlp_rst._rst_common._cache import load_cached
+
+            return (load_cached, (tmp_path, "deadbeef"))
+
+    evil = tmp_path / "cache.pkl"
+    with evil.open("wb") as f:
+        pickle.dump(_CacheGadget(), f)
+
+    with evil.open("rb") as f, pytest.raises(pickle.UnpicklingError, match="Refused"):
+        _RestrictedUnpickler(f).load()
+
+
 # --- _load_data_manager / _load_relation_table ------------------------------
 
 

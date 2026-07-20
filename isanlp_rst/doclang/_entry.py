@@ -272,7 +272,12 @@ def parse_doclang(
                 f"max_harvest_chars={max_harvest_chars}. Chunk upstream or raise the limit."
             )
 
-    boundaries = detect_boundaries(tree)
+    boundaries = detect_boundaries(
+        tree,
+        include_code_blocks=include_code_blocks,
+        include_formulas=include_formulas,
+        include_field_regions=include_field_regions,
+    )
     table_boundaries = {b.id: b for b in boundaries if b.kind == "table"}
 
     if parser is None:

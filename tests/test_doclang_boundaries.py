@@ -7,7 +7,8 @@ from pathlib import Path
 import pytest
 from lxml import etree
 
-from isanlp_rst.doclang.boundaries import detect_boundaries
+from isanlp_rst.doclang.boundaries import _harvest_eligible_xpaths, detect_boundaries
+from isanlp_rst.doclang.harvester import harvest_doclang_text
 from isanlp_rst.doclang.loader import parse_doclang_xml
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "doclang"
@@ -183,6 +184,36 @@ def test_field_region_boundary_emitted() -> None:
     )
     field_regions = [b for b in result if b.kind == "field_region"]
     assert len(field_regions) >= 1
+
+
+def test_field_region_xpaths_cover_harvested_key_value_spans() -> None:
+    """Boundary xpaths must intersect harvester key/value paths (not only the region)."""
+    tree = _tree("ok_field_item_nested_descendant_key_scope.dclg.xml")
+    field_regions = [b for b in detect_boundaries(tree) if b.kind == "field_region"]
+    assert field_regions
+    harvest = harvest_doclang_text(tree, include_field_regions=True)
+    harvest_xpaths = {s.xpath for s in harvest.spans}
+    assert harvest_xpaths, "fixture must harvest key/value spans"
+    covered = set()
+    for boundary in field_regions:
+        covered |= set(boundary.xpaths) & harvest_xpaths
+    assert covered == harvest_xpaths
+
+
+def test_code_formula_eligible_when_knobs_on() -> None:
+    """Opt-in code/formula must join document/heading eligibility."""
+    tree = _tree("ok_comprehensive.dclg.xml")
+    root = tree.getroot()
+    default = set(_harvest_eligible_xpaths(root))
+    widened = set(
+        _harvest_eligible_xpaths(
+            root, include_code_blocks=True, include_formulas=True
+        )
+    )
+    assert widened >= default
+    assert any("/code[" in xp for xp in widened - default) or any(
+        "/formula[" in xp for xp in widened - default
+    )
 
 
 # --- Document fallback -----------------------------------------------------

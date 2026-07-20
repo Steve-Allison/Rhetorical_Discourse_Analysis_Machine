@@ -29,7 +29,14 @@ from .src.parser.parsing_net_bottom_up import ParsingNetBottomUp
 
 
 class _RestrictedUnpickler(pickle.Unpickler):
-    """Unpickler that only reconstructs an allow-listed set of classes."""
+    """Unpickler that only reconstructs inventory leaf types + containers.
+
+    Deliberately does **not** allow arbitrary ``isanlp_rst.*`` callables:
+    REDUCE gadgets targeting ``data_manager.collect``,
+    ``DataManager.from_pickle``, or ``load_cached`` must be refused.
+    ``DataManager`` itself is excluded so ATTR-based ``from_pickle`` gadgets
+    cannot be assembled after loading the class.
+    """
 
     _ALLOWED_BUILTINS = frozenset({
         'list', 'dict', 'tuple', 'set', 'frozenset', 'str', 'int', 'float',
@@ -37,6 +44,12 @@ class _RestrictedUnpickler(pickle.Unpickler):
     })
     _ALLOWED_COLLECTIONS = frozenset({'defaultdict', 'OrderedDict'})
     _ALLOWED_PATHLIB = frozenset({'Path', 'PosixPath', 'WindowsPath'})
+    # Inventory pickles used at inference only need ``ParserInput`` (relation
+    # table carrier). Keep the allow-list minimal and explicit.
+    _ALLOWED_CLASSES = frozenset({
+        ('isanlp_rst.universal_parser.data_manager', 'ParserInput'),
+        ('src.universal_parser.data_manager', 'ParserInput'),
+    })
 
     def find_class(self, module: str, name: str):
         if module == 'builtins' and name in self._ALLOWED_BUILTINS:
@@ -48,11 +61,7 @@ class _RestrictedUnpickler(pickle.Unpickler):
         if module in ('pathlib', 'pathlib._local') and name in self._ALLOWED_PATHLIB:
             return getattr(pathlib, name)
 
-        alias_modules = (
-            set(PredictorUniRST._MODULE_ALIASES)
-            | set(PredictorUniRST._MODULE_ALIASES.values())
-        )
-        if module.startswith('isanlp_rst.') or module in alias_modules:
+        if (module, name) in self._ALLOWED_CLASSES:
             return super().find_class(module, name)
 
         raise pickle.UnpicklingError(
@@ -329,7 +338,7 @@ class PredictorUniRST(BasePredictor):
 
         rel_tables = self.relation_tables
         use_union = (
-            bool(self.config['model'].get('use_union_relations'))
+            str2bool(self.config['model'].get('use_union_relations', False))
             and len(rel_tables) > 1
         )
 

@@ -73,8 +73,8 @@ Alternative (raw venv / pip):
 pip install git+https://github.com/iinemo/isanlp.git    # required runtime dep
 pip install git+https://github.com/Steve-Allison/isanlp_rst.git
 
-# The format-native entry points (parse_docling / parse_doclang /
-# parse_markdown) need the optional `formats` extra; the core RST Parser does not:
+# The format-native Docling / Markdown entry points need the optional
+# `formats` extra; the core RST Parser and parse_doclang do not:
 pip install "isanlp_rst[formats] @ git+https://github.com/Steve-Allison/isanlp_rst.git"
 ```
 
@@ -374,7 +374,7 @@ DocLang doesn't model slides or speaker turns — the boundary set reflects what
 
 ### Validation
 
-`parse_doclang(..., validate_xml=True)` (default) gates the file through the [`doclang`](https://pypi.org/project/doclang/) PyPI package's `validate(path)` before parsing. The `doclang` package is validator-only (no DOM) — we parse with `lxml` ourselves. If `doclang` is not importable in your env, validation is silently skipped.
+`parse_doclang(..., validate_xml=True)` (default) gates the file through the [`doclang`](https://pypi.org/project/doclang/) PyPI package's `validate(path)` before parsing ([spec + toolkit](https://github.com/doclang-project/doclang/)). The `doclang` package is validator-only (no DOM) — we parse with `lxml` ourselves. `doclang` is a **core** dependency so validation works on a plain `isanlp_rst` install. If it is somehow not importable, validation **fails closed** with `InvalidDoclangError` (pass `validate_xml=False` to skip).
 
 ### Caveats
 

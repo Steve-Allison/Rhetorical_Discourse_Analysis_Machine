@@ -31,6 +31,7 @@ from .boundaries import detect_boundaries
 from .errors import EmptyDoclingError, EmptyHarvestError, InputTooLargeError
 from .harvester import harvest_docling_tables, harvest_docling_text
 from .mapper import flatten_tree
+from ._mimetypes import ensure_docling_mimetypes
 from .schema import DoclingRstResult, TableAnalysis
 
 if TYPE_CHECKING:
@@ -146,6 +147,7 @@ def parse_docling(
         if isinstance(cached, DoclingRstResult):
             return cached
 
+    ensure_docling_mimetypes()
     doc = DoclingDocument.load_from_json(src_path)
 
     body_children = getattr(getattr(doc, "body", None), "children", None) or ()
