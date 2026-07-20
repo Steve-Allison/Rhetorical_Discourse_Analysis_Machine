@@ -1,6 +1,8 @@
 import argparse
 import asyncio
 import base64
+import html
+import json
 import os
 import re
 import sys
@@ -15,8 +17,15 @@ from PIL import Image, ImageChops
 
 from .rstweb_classes import NODE, get_depth, get_left_right
 from .rstweb_sql import (
-    import_document, get_def_rel, get_max_right, get_multinuc_children_lr,
-    get_multinuc_children_lr_ids, get_rst_doc, get_rst_rels, setup_db)
+    get_def_rel,
+    get_max_right,
+    get_multinuc_children_lr,
+    get_multinuc_children_lr_ids,
+    get_rst_doc,
+    get_rst_rels,
+    import_document,
+    temporary_db,
+)
 
 JS_GET_DOCUMENT_HEIGHT = """
 let docHeight = Math.max(
@@ -28,6 +37,47 @@ let docHeight = Math.max(
 // we increase the height by 20% because the calculated value is still too small
 return Math.round(docHeight * 1.2);
 """
+
+_PLAYWRIGHT_LAUNCH_ARGS = ("--disable-extensions", "--disable-sync")
+_PLAYWRIGHT_DEFAULT_TIMEOUT_MS = 10_000
+
+
+def _launch_chromium(playwright_api, *, headless: bool = True):
+    return playwright_api.chromium.launch(
+        headless=headless,
+        args=list(_PLAYWRIGHT_LAUNCH_ARGS),
+    )
+
+
+async def _launch_chromium_async(playwright_api, *, headless: bool = True):
+    return await playwright_api.chromium.launch(
+        headless=headless,
+        args=list(_PLAYWRIGHT_LAUNCH_ARGS),
+    )
+
+
+def _attach_navigation_guard(page) -> None:
+    """Allow only about:/data: navigations and resource loads (offline render)."""
+
+    def _guard(route):
+        url = route.request.url
+        if url.startswith(("about:", "data:")):
+            route.continue_()
+        else:
+            route.abort()
+
+    page.route("**/*", _guard)
+
+
+async def _attach_navigation_guard_async(page) -> None:
+    async def _guard(route):
+        url = route.request.url
+        if url.startswith(("about:", "data:")):
+            await route.continue_()
+        else:
+            await route.abort()
+
+    await page.route("**/*", _guard)
 
 JS_GET_DOCUMENT_WIDTH = """
 let docWidth = Math.max(
@@ -66,7 +116,11 @@ def _html_to_fragment(full_html: str) -> str:
 
 
 def rs3tohtml(rs3_filepath, user='temp_user', project='rstviewer_temp'):
-    setup_db()
+    with temporary_db():
+        return _rs3tohtml_with_db(rs3_filepath, user=user, project=project)
+
+
+def _rs3tohtml_with_db(rs3_filepath, user='temp_user', project='rstviewer_temp'):
     import_document(filename=rs3_filepath, project=project, user=user)
 
     ###GRAPHICAL PARAMETERS###
@@ -75,13 +129,14 @@ def rs3tohtml(rs3_filepath, user='temp_user', project='rstviewer_temp'):
 
     templatedir = os.path.join(DATA_ROOT_DIR, 'templates')
     current_doc = os.path.basename(rs3_filepath)
+    current_doc_safe = html.escape(current_doc, quote=True)
     current_project = project
 
     with open(os.path.join(templatedir, 'main.html'), 'r', encoding='utf-8') as template:
         header = template.read()
 
     header = header.replace("**page_title**", "RST Viewer")
-    header = header.replace("**doc**", current_doc)
+    header = header.replace("**doc**", current_doc_safe)
 
     def _load_asset_text(*path_parts):
         asset_path = os.path.join(DATA_ROOT_DIR, *path_parts)
@@ -120,19 +175,25 @@ def rs3tohtml(rs3_filepath, user='temp_user', project='rstviewer_temp'):
     cpout += '''<div>\n'''
 
     rels = get_rst_rels(current_doc, current_project)
-    def_multirel = get_def_rel("multinuc", current_doc, current_project)
     def_rstrel = get_def_rel("rst", current_doc, current_project)
-    multi_options = ""
-    rst_options = ""
+    multi_rel_entries = []
+    rst_rel_entries = []
     rel_kinds = {}
     for rel in rels:
+        value = str(rel[0])
         if rel[1] == "multinuc":
-            multi_options += "<option value='" + rel[0] + "'>" + rel[0].replace("_m", "") + '</option>'
-            rel_kinds[rel[0]] = "multinuc"
+            multi_rel_entries.append(
+                {"value": value, "label": value.replace("_m", "")}
+            )
+            rel_kinds[value] = "multinuc"
         else:
-            rst_options += "<option value='" + rel[0] + "'>" + rel[0].replace("_r", "") + '</option>'
-            rel_kinds[rel[0]] = "rst"
-    multi_options += "<option value='" + def_rstrel + "'>(satellite...)</option>"
+            rst_rel_entries.append(
+                {"value": value, "label": value.replace("_r", "")}
+            )
+            rel_kinds[value] = "rst"
+    multi_rel_entries.append(
+        {"value": str(def_rstrel), "label": "(satellite...)"}
+    )
 
     nodes = {}
     rows = get_rst_doc(current_doc, current_project, user)
@@ -261,17 +322,33 @@ def rs3tohtml(rs3_filepath, user='temp_user', project='rstviewer_temp'):
             cpout += '\n\t\t<table class="btn_tb">\n\t\t\t<tr>'
             cpout += '\n\t\t\t\t<td rowspan="2"><span class="num_id">&nbsp;' + str(
                 int(node.left)) + '&nbsp;</span></td>\n'
-            cpout += '</table>\n</div>' + node.text + '</div>\n'
+            cpout += '</table>\n</div>' + html.escape(node.text or '', quote=False) + '</div>\n'
 
     jsplumb_src = _load_asset_text('script', 'jquery.jsPlumb-1.7.5-min.js')
     cpout += '<script>\n' + jsplumb_src + '\n</script>\n<script>\n'
 
-    cpout += 'function select_my_rel(options,my_rel){'
-    cpout += 'var multi_options = "' + multi_options + '";'
-    cpout += 'var rst_options = "' + rst_options + '";'
-    cpout += 'if (options =="multi"){options = multi_options;} else {options=rst_options;}'
-    cpout += '      return options.replace("<option value=' + "'" + '"' + '+my_rel+' + '"' + "'" + '","<option selected=' + "'" + 'selected' + "'" + ' value=' + "'" + '"' + '+my_rel+' + '"' + "'" + '");'
-    cpout += '          }\n'
+    cpout += 'var multi_rel_entries = ' + json.dumps(
+        multi_rel_entries, ensure_ascii=False
+    ) + ';\n'
+    cpout += 'var rst_rel_entries = ' + json.dumps(
+        rst_rel_entries, ensure_ascii=False
+    ) + ';\n'
+    cpout += '''function options_html_from_entries(entries){
+        return entries.map(function(e){
+            var opt = document.createElement("option");
+            opt.value = e.value;
+            opt.textContent = e.label;
+            return opt.outerHTML;
+        }).join("");
+    }
+    function select_my_rel(options,my_rel){
+        var entries = (options === "multi") ? multi_rel_entries : rst_rel_entries;
+        var html = options_html_from_entries(entries);
+        var needle = "<option value='" + my_rel + "'";
+        var repl = "<option selected='selected' value='" + my_rel + "'";
+        return html.split(needle).join(repl);
+    }
+'''
 
     cpout += '''function rel_display(rel){
         return (rel || "").replace(/_(m|r)$/, "");
@@ -371,9 +448,21 @@ def rs3tohtml(rs3_filepath, user='temp_user', project='rstviewer_temp'):
             if node.relname == "span":
                 cpout += 'jsPlumb.connect({source:"' + node_id_str + '",target:"' + parent_id_str + '", connector:"Straight", anchors: ["Top","Bottom"]});'
             elif parent.kind == "multinuc" and node.relkind == "multinuc":
-                cpout += 'jsPlumb.connect({source:"' + node_id_str + '",target:"' + parent_id_str + '", connector:"Straight", anchors: ["Top","Bottom"], overlays: [ ["Custom", {create:function(component) {return make_relchooser("' + node.id + '","multi","' + node.relname + '");},location:0.2,id:"customOverlay"}]]});'
+                cpout += (
+                    'jsPlumb.connect({source:"' + node_id_str + '",target:"'
+                    + parent_id_str
+                    + '", connector:"Straight", anchors: ["Top","Bottom"], overlays: [ ["Custom", {create:function(component) {return make_relchooser('
+                    + json.dumps(str(node.id)) + ',"multi",' + json.dumps(str(node.relname))
+                    + ');},location:0.2,id:"customOverlay"}]]});'
+                )
             else:
-                cpout += 'jsPlumb.connect({source:"' + node_id_str + '",target:"' + parent_id_str + '", overlays: [ ["Arrow" , { width:12, length:12, location:0.95 }],["Custom", {create:function(component) {return make_relchooser("' + node.id + '","rst","' + node.relname + '");},location:0.1,id:"customOverlay"}]]});'
+                cpout += (
+                    'jsPlumb.connect({source:"' + node_id_str + '",target:"'
+                    + parent_id_str
+                    + '", overlays: [ ["Arrow" , { width:12, length:12, location:0.95 }],["Custom", {create:function(component) {return make_relchooser('
+                    + json.dumps(str(node.id)) + ',"rst",' + json.dumps(str(node.relname))
+                    + ');},location:0.1,id:"customOverlay"}]]});'
+                )
 
     cpout += '''
         jsPlumb.setSuspendDrawing(false,true);
@@ -491,15 +580,17 @@ def rs3topng(
     html_str = rs3tohtml(os.fspath(rs3_filepath))
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = _launch_chromium(p)
         context = browser.new_context(
             device_scale_factor=device_scale_factor,
             color_scheme="light",
         )
         page = context.new_page()
+        page.set_default_timeout(timeout_ms)
+        _attach_navigation_guard(page)
 
         try:
-            page.set_content(html_str, wait_until="load", timeout=timeout_ms)
+            page.set_content(html_str, wait_until="domcontentloaded", timeout=timeout_ms)
         except PlaywrightTimeoutError:
             # Continue even if scripts load slowly
             pass
@@ -567,15 +658,19 @@ async def rs3topng_async(
     html_str = rs3tohtml(os.fspath(rs3_filepath))
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await _launch_chromium_async(p)
         context = await browser.new_context(
             device_scale_factor=device_scale_factor,
             viewport={"width": viewport_width, "height": viewport_height},
             color_scheme="light",
         )
         page = await context.new_page()
+        page.set_default_timeout(timeout_ms)
+        await _attach_navigation_guard_async(page)
         try:
-            await page.set_content(html_str, wait_until="load", timeout=timeout_ms)
+            await page.set_content(
+                html_str, wait_until="domcontentloaded", timeout=timeout_ms
+            )
         except PlaywrightTimeoutError:
             pass
 
@@ -669,7 +764,7 @@ async def rs3topdf_async(
 
     async with async_playwright() as p:
         try:
-            browser = await p.chromium.launch(headless=True)
+            browser = await _launch_chromium_async(p)
         except Exception as e:
             raise ImportError(
                 "Browser is not installed.\n"
@@ -683,8 +778,12 @@ async def rs3topdf_async(
             color_scheme="light",
         )
         page = await context.new_page()
+        page.set_default_timeout(timeout_ms)
+        await _attach_navigation_guard_async(page)
         try:
-            await page.set_content(html_str, wait_until="load", timeout=timeout_ms)
+            await page.set_content(
+                html_str, wait_until="domcontentloaded", timeout=timeout_ms
+            )
         except PlaywrightTimeoutError:
             pass
         await page.wait_for_timeout(100)

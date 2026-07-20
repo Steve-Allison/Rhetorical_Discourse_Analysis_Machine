@@ -11,7 +11,34 @@ from typing import Dict
 from xml.dom import minidom
 from xml.parsers.expat import ExpatError
 
+from lxml import etree
+
 from .rstweb_classes import NODE, get_left_right
+
+# Same XXE posture as DocLang loader — RS3 is untrusted input.
+_SECURE_PARSER = etree.XMLParser(
+	resolve_entities=False,
+	no_network=True,
+	dtd_validation=False,
+	load_dtd=False,
+	huge_tree=False,
+)
+
+
+def _parse_rs3_dom(xml_content: str):
+	"""Parse RS3 XML with a hardened lxml parser, then expose a minidom tree.
+
+	Entity expansion / network DTD fetches are disabled before any DOM is
+	built. The minidom step is only for the existing attribute/node walkers.
+	"""
+	try:
+		root = etree.fromstring(
+			xml_content.encode("utf-8"), parser=_SECURE_PARSER
+		)
+	except etree.XMLSyntaxError as exc:
+		raise ExpatError(str(exc)) from exc
+	safe_xml = etree.tostring(root, encoding="unicode")
+	return minidom.parseString(safe_xml)
 
 
 def read_rst(filename, rel_hash):
@@ -43,7 +70,7 @@ def read_rst(filename, rel_hash):
 		return f"Unable to read '{filename}': {err.strerror}."
 
 	try:
-		xmldoc = minidom.parseString(xml_content)
+		xmldoc = _parse_rs3_dom(xml_content)
 	except ExpatError:
 		message = "Invalid .rs3 file"
 		return message

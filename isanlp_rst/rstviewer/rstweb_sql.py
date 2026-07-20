@@ -16,15 +16,48 @@ import os
 import re
 import sqlite3
 import tempfile
+from contextlib import contextmanager
+from contextvars import ContextVar
+from typing import Iterator
 
 from .rstweb_reader import *  # noqa: F401,F403  (re-exported API)
 
 
-with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
-    DBPATH = tmpfile.name
+# Per-render SQLite path — never create a leftover NamedTemporaryFile at import.
+_active_dbpath: ContextVar[str | None] = ContextVar("rstviewer_dbpath", default=None)
 
 
-def setup_db(dbpath=DBPATH):
+def _resolve_dbpath(dbpath: str | None = None) -> str:
+    if dbpath is not None:
+        return dbpath
+    active = _active_dbpath.get()
+    if active is None:
+        raise RuntimeError(
+            "No active viewer SQLite path. Use temporary_db() "
+            "(rs3tohtml does this automatically)."
+        )
+    return active
+
+
+@contextmanager
+def temporary_db() -> Iterator[str]:
+    """Create a private SQLite file for one render; unlink in ``finally``."""
+    fd, path = tempfile.mkstemp(prefix="rstviewer_", suffix=".sqlite")
+    os.close(fd)
+    token = _active_dbpath.set(path)
+    try:
+        setup_db(path)
+        yield path
+    finally:
+        _active_dbpath.reset(token)
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
+
+
+def setup_db(dbpath=None):
+    dbpath = _resolve_dbpath(dbpath)
     conn = sqlite3.connect(dbpath)
 
     cur = conn.cursor()
@@ -60,7 +93,7 @@ def setup_db(dbpath=DBPATH):
     conn.close()
 
 
-def import_document(filename, project, user, dbpath=DBPATH):
+def import_document(filename, project, user, dbpath=None):
     """parse and import an RS3 file into the local rstWeb SQLite database.
 
     Parameters
@@ -72,6 +105,7 @@ def import_document(filename, project, user, dbpath=DBPATH):
     user : str
         name of the user associated with that project
     """
+    dbpath = _resolve_dbpath(dbpath)
     conn = sqlite3.connect(dbpath)
     cur = conn.cursor()
 
@@ -102,7 +136,7 @@ def import_document(filename, project, user, dbpath=DBPATH):
     conn.close()
 
 
-def get_rst_doc(doc, project, user, dbpath=DBPATH):
+def get_rst_doc(doc, project, user, dbpath=None):
     """Return database representation of the given RS3 file.
 
     Parameters
@@ -131,6 +165,7 @@ def get_rst_doc(doc, project, user, dbpath=DBPATH):
         - project: name of the project the file belongs to
         - user: user name
     """
+    dbpath = _resolve_dbpath(dbpath)
     conn = sqlite3.connect(dbpath)
 
     with conn:
@@ -163,7 +198,7 @@ def get_def_rel(relkind, doc, project):
     return rel_row[0][0]
 
 
-def get_rst_rels(doc, project, dbpath=DBPATH):
+def get_rst_rels(doc, project, dbpath=None):
     """Return a list RST relations defined for the given document.
 
     The relations are not fetched directly from the file but from the
@@ -185,6 +220,7 @@ def get_rst_rels(doc, project, dbpath=DBPATH):
         A list of (RST relation name, RST relation type) tuples,
         e.g. (u'restatement-mn_m', u'multinuc').
     """
+    dbpath = _resolve_dbpath(dbpath)
     conn = sqlite3.connect(dbpath)
 
     with conn:
@@ -347,7 +383,8 @@ def get_max_right(doc,project,user):
     return generic_query("SELECT max(right) as max_right from rst_nodes WHERE doc=? and project=? and user=?",(doc,project,user))[0][0]
 
 
-def generic_query(sql, params, dbpath=DBPATH):
+def generic_query(sql, params, dbpath=None):
+    dbpath = _resolve_dbpath(dbpath)
     conn = sqlite3.connect(dbpath)
 
     with conn:
