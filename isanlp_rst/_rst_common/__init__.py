@@ -8,7 +8,7 @@ independent of the source format. ``isanlp_rst.docling``,
 
 from __future__ import annotations
 
-from ._cache import load_cached, result_cache_key, store_cached
+from ._cache import dataclass_from_dict, load_cached, result_cache_key, store_cached
 from ._flatten import flatten_tree
 from ._identity import model_identity_knobs, resolve_result_model_meta
 from ._overlap import NOTE_THRESHOLD, SpanIndex, compute_overlap_refs
@@ -19,6 +19,7 @@ __all__ = [
     "NOTE_THRESHOLD",
     "SpanIndex",
     "compute_overlap_refs",
+    "dataclass_from_dict",
     "flatten_tree",
     "load_cached",
     "model_identity_knobs",

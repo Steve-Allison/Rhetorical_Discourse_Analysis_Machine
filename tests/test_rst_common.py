@@ -158,7 +158,7 @@ def test_cache_key_order_insensitive_for_knobs() -> None:
 
 
 def test_cache_store_load_round_trip(tmp_path: Path) -> None:
-    value = {"nested": ("tuple", 1), "n": 2}
+    value = {"nested": ["tuple", 1], "n": 2}
     key = result_cache_key(b"src", {"knob": True})
     store_cached(tmp_path / "cache", key, value)
     assert load_cached(tmp_path / "cache", key) == value
@@ -174,11 +174,26 @@ def test_cache_key_rejects_non_scalar_knob() -> None:
         result_cache_key(b"src", {"bad": ["a", "b"]})
 
 
-def test_cache_load_returns_none_on_corrupt_pickle(tmp_path: Path) -> None:
+def test_cache_load_returns_none_on_corrupt_json(tmp_path: Path) -> None:
     key = "deadbeef"
-    path = tmp_path / f"{key}.pkl"
-    path.write_bytes(b"not a valid pickle\xff\x00")
+    path = tmp_path / f"{key}.json"
+    path.write_text("{not-json", encoding="utf-8")
     assert load_cached(tmp_path, key) is None
+
+
+def test_cache_ignores_legacy_pickle_files(tmp_path: Path) -> None:
+    """Old ``.pkl`` cache files must not be loaded (no pickle execution)."""
+    key = "legacy"
+    (tmp_path / f"{key}.pkl").write_bytes(b"cos\nsystem\n(S'echo pwned'\ntR.")
+    assert load_cached(tmp_path, key) is None
+
+
+def test_cache_refuses_world_writable_dir(tmp_path: Path) -> None:
+    cache = tmp_path / "shared"
+    cache.mkdir()
+    cache.chmod(0o777)
+    with pytest.raises(PermissionError, match="world-writable"):
+        store_cached(cache, "k", {"a": 1})
 
 
 # --- model_identity_knobs ----------------------------------------------------
@@ -207,21 +222,22 @@ def test_model_identity_knobs_construct_vs_injected_vs_stub() -> None:
     assert construct["hf_model_name"] == "repo/a"
     assert "parser_id" not in construct
 
+    injected_parser = _InjectedParser(
+        hf_model_name="repo/b",
+        hf_model_version="rstdt",
+        relinventory="eng.erst.gum",
+    )
     injected = model_identity_knobs(
         hf_model_name="ignored",
         hf_model_version="ignored",
         relinventory="ignored",
-        parser=_InjectedParser(
-            hf_model_name="repo/b",
-            hf_model_version="rstdt",
-            relinventory="eng.erst.gum",
-        ),
+        parser=injected_parser,
     )
     assert injected["parser_source"] == "injected"
     assert injected["hf_model_name"] == "repo/b"
     assert injected["hf_model_version"] == "rstdt"
     assert injected["relinventory"] == "eng.erst.gum"
-    assert "parser_id" not in injected
+    assert injected["parser_id"] == id(injected_parser)
 
     stub = object()
     stub_knobs = model_identity_knobs(

@@ -38,11 +38,12 @@ class Parser:
     UNIVERSAL_PARSERS = ('rrtrrg', 'unirst')
     AVAILABLE_VERSIONS = DMRST_PARSERS + UNIVERSAL_PARSERS
     AVAILABLE_FAMILIES = ('dmrst', 'unirst')
+    _DEFAULT_HF_MODEL_NAME = 'tchewik/isanlp_rst_v3'
 
     def __init__(
         self,
         model_dir: Optional[str] = None,
-        hf_model_name: Optional[str] = 'tchewik/isanlp_rst_v3',
+        hf_model_name: Optional[str] = _DEFAULT_HF_MODEL_NAME,
         hf_model_version: Optional[str] = None,
         relinventory: Optional[str] = None,
         relinventory_idx: int = 0,
@@ -51,6 +52,16 @@ class Parser:
         family: Optional[str] = None,
         dtype: 'str | torch.dtype | None' = None,
     ):
+        if (
+            model_dir is not None
+            and hf_model_name is not None
+            and hf_model_name != self._DEFAULT_HF_MODEL_NAME
+        ):
+            raise ValueError(
+                'Pass either `model_dir` or `hf_model_name`, not both. '
+                'When loading from disk, omit hf_model_name (or leave the default).'
+            )
+
         resolved_family = self._resolve_family(model_dir, hf_model_version, family)
 
         self.family = resolved_family

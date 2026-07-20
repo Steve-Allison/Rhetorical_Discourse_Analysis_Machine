@@ -225,9 +225,8 @@ class PredictorUniRST(BasePredictor):
                 return path
             return None
 
-        # HF mode: distinguish "resource not in repo" (silent miss) from
-        # network/auth errors (logged but still treated as miss for caller
-        # robustness — the caller has fallback paths).
+        # HF mode: distinguish "resource not in repo" (silent miss → next
+        # candidate / pickle fallback) from network/auth/disk errors (raise).
         if self.hf_model_name is None:
             return None
         try:
@@ -238,11 +237,10 @@ class PredictorUniRST(BasePredictor):
             )
         except EntryNotFoundError:
             return None
-        except OSError as exc:
-            self.logger.warning(
-                'I/O error while resolving %s from HF: %s', relative_path, exc
-            )
-            return None
+        except OSError:
+            # Network / auth / disk failures must not look like "inventory
+            # missing" — re-raise so callers see the real cause.
+            raise
 
     def _corpus_variants(self, corpus_name: str) -> List[str]:
         lower = corpus_name.lower()

@@ -7,7 +7,12 @@ from collections import OrderedDict
 import pytest
 import torch
 
-from isanlp_rst.base_predictor import BasePredictor, resolve_device, str2bool
+from isanlp_rst.base_predictor import (
+    BasePredictor,
+    DeviceProbe,
+    resolve_device,
+    str2bool,
+)
 
 
 # ---------- str2bool ----------
@@ -279,91 +284,105 @@ def test_resolve_dtype_unsupported_torch_dtype_raises():
 
 
 # ---------- resolve_device — string API + deprecated cuda_device shim ----------
+# Tests inject ``DeviceProbe`` — no monkeypatching of torch.cuda / MPS.
 
 
 def test_resolve_device_cpu_string():
-    assert resolve_device('cpu') == torch.device('cpu')
+    assert resolve_device('cpu', probe=DeviceProbe()) == torch.device('cpu')
 
 
-def test_resolve_device_auto_no_accelerator_is_cpu(monkeypatch):
-    monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
-    if hasattr(torch.backends, 'mps'):
-        monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: False)
-        monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: False)
-    assert resolve_device('auto') == torch.device('cpu')
+def test_resolve_device_auto_no_accelerator_is_cpu():
+    assert resolve_device('auto', probe=DeviceProbe()) == torch.device('cpu')
 
 
-def test_resolve_device_none_defaults_to_auto(monkeypatch):
-    monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
-    if hasattr(torch.backends, 'mps'):
-        monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: False)
-        monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: False)
-    assert resolve_device(None) == torch.device('cpu')
+def test_resolve_device_none_defaults_to_auto():
+    assert resolve_device(None, probe=DeviceProbe()) == torch.device('cpu')
 
 
-def test_resolve_device_auto_prefers_cuda(monkeypatch):
-    monkeypatch.setattr(torch.cuda, 'is_available', lambda: True)
-    if hasattr(torch.backends, 'mps'):
-        monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: True)
-        monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: True)
-    assert resolve_device('auto') == torch.device('cuda:0')
+def test_resolve_device_auto_prefers_cuda_when_probe_says_so():
+    """CUDA wins over MPS when both are available (API contract; rare on macOS)."""
+    probe = DeviceProbe(cuda_available=True, cuda_device_count=1, mps_available=True)
+    assert resolve_device('auto', probe=probe) == torch.device('cuda:0')
 
 
-def test_resolve_device_auto_falls_back_to_mps(monkeypatch):
-    if not (hasattr(torch.backends, 'mps') and torch.backends.mps.is_built()):
-        pytest.skip('PyTorch built without MPS support')
-    monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
-    monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: True)
-    monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: True)
-    assert resolve_device('auto').type == 'mps'
+def test_resolve_device_auto_falls_back_to_mps():
+    """macOS primary path: no CUDA → MPS."""
+    probe = DeviceProbe(cuda_available=False, mps_available=True)
+    assert resolve_device('auto', probe=probe).type == 'mps'
 
 
-def test_resolve_device_explicit_mps_unavailable_raises(monkeypatch):
-    monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
-    if hasattr(torch.backends, 'mps'):
-        monkeypatch.setattr(torch.backends.mps, 'is_available', lambda: False)
-        monkeypatch.setattr(torch.backends.mps, 'is_built', lambda: False)
+def test_resolve_device_explicit_mps_unavailable_raises():
     with pytest.raises(RuntimeError, match='MPS is not available'):
-        resolve_device('mps')
+        resolve_device('mps', probe=DeviceProbe(mps_available=False))
 
 
-def test_resolve_device_explicit_cuda_unavailable_raises(monkeypatch):
-    monkeypatch.setattr(torch.cuda, 'is_available', lambda: False)
+def test_resolve_device_explicit_cuda_unavailable_raises():
     with pytest.raises(RuntimeError, match='CUDA is not available'):
-        resolve_device('cuda:1')
+        resolve_device('cuda:1', probe=DeviceProbe(cuda_available=False))
 
 
-def test_resolve_device_cuda_index_parsed(monkeypatch):
-    monkeypatch.setattr(torch.cuda, 'is_available', lambda: True)
-    dev = resolve_device('cuda:2')
+def test_resolve_device_cuda_index_parsed():
+    probe = DeviceProbe(cuda_available=True, cuda_device_count=4)
+    dev = resolve_device('cuda:2', probe=probe)
     assert dev.type == 'cuda' and dev.index == 2
 
 
-def test_resolve_device_negative_cuda_index_raises(monkeypatch):
-    monkeypatch.setattr(torch.cuda, 'is_available', lambda: True)
+def test_resolve_device_cuda_index_out_of_range_raises():
+    probe = DeviceProbe(cuda_available=True, cuda_device_count=1)
+    with pytest.raises(ValueError, match='out of range'):
+        resolve_device('cuda:2', probe=probe)
+
+
+def test_resolve_device_negative_cuda_index_raises():
+    probe = DeviceProbe(cuda_available=True, cuda_device_count=1)
     with pytest.raises(ValueError, match='non-negative'):
-        resolve_device('cuda:-1')
+        resolve_device('cuda:-1', probe=probe)
 
 
 def test_resolve_device_invalid_spec_raises():
     with pytest.raises(ValueError, match='Unrecognised device'):
-        resolve_device('gpu')
+        resolve_device('gpu', probe=DeviceProbe())
 
 
-def test_resolve_device_torch_device_passthrough():
+def test_resolve_device_torch_device_cpu_passthrough():
     d = torch.device('cpu')
-    assert resolve_device(d) is d
+    assert resolve_device(d, probe=DeviceProbe()) is d
+
+
+def test_resolve_device_torch_device_mps_unavailable_raises():
+    with pytest.raises(RuntimeError, match="mps"):
+        resolve_device(torch.device('mps'), probe=DeviceProbe(mps_available=False))
 
 
 def test_resolve_device_legacy_int_warns_and_maps_cpu():
     with pytest.warns(DeprecationWarning, match='cuda_device'):
-        dev = resolve_device(cuda_device=-1)
+        dev = resolve_device(cuda_device=-1, probe=DeviceProbe())
     assert dev == torch.device('cpu')
+
+
+def test_resolve_device_legacy_int_maps_to_mps_on_apple_probe():
+    with pytest.warns(DeprecationWarning, match='cuda_device'):
+        dev = resolve_device(
+            cuda_device=0,
+            probe=DeviceProbe(cuda_available=False, mps_available=True),
+        )
+    assert dev.type == 'mps'
 
 
 def test_resolve_device_both_args_raises():
     with pytest.raises(ValueError, match='not both'):
-        resolve_device('cpu', cuda_device=-1)
+        resolve_device('cpu', cuda_device=-1, probe=DeviceProbe())
+
+
+def test_device_probe_detect_matches_host_mps_or_cpu():
+    """On this macOS-first project, detect() is MPS or CPU — never invent CUDA."""
+    probe = DeviceProbe.detect()
+    assert probe.cuda_available is False or probe.cuda_device_count >= 0
+    resolved = resolve_device('auto', probe=probe)
+    if probe.mps_available:
+        assert resolved.type == 'mps'
+    elif not probe.cuda_available:
+        assert resolved == torch.device('cpu')
 
 
 # ---------- _recount_spans (regression — _recount_spans is delicate) ----------

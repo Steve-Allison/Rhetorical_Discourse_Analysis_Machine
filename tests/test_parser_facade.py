@@ -163,6 +163,15 @@ class TestParserInitValidation:
         with pytest.raises(ValueError, match="auto-detect"):
             Parser(model_dir=str(tmp_path), hf_model_name=None)
 
+    def test_model_dir_with_explicit_nondefault_hf_name_raises(self, tmp_path):
+        (tmp_path / "relation_table.txt").write_text("elaboration\n", encoding="utf-8")
+        with pytest.raises(ValueError, match="not both"):
+            Parser(
+                model_dir=str(tmp_path),
+                hf_model_name="some/other-repo",
+                family="dmrst",
+            )
+
     def test_class_constants(self):
         """Public class constants documenting valid versions."""
         assert 'gumrrg' in Parser.DMRST_PARSERS

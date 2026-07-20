@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import warnings
 from bisect import bisect_right
+from dataclasses import dataclass
 from typing import Iterable, List, Optional, Sequence, Tuple
 
 # Apple Silicon: enable CPU fallback for MPS-unsupported ops BEFORE torch is
@@ -25,6 +26,31 @@ def str2bool(value):
     return bool(value)
 
 
+@dataclass(frozen=True, slots=True)
+class DeviceProbe:
+    """Immutable snapshot of which accelerators the host exposes.
+
+    Production code uses ``DeviceProbe.detect()``. Tests pass explicit
+    probes — no monkeypatching of ``torch.cuda`` / MPS backends.
+    This project is Apple-Silicon-first; CUDA fields exist so the public
+    ``device='cuda*'`` API stays correct without needing NVIDIA CI.
+    """
+
+    cuda_available: bool = False
+    cuda_device_count: int = 0
+    mps_available: bool = False
+
+    @classmethod
+    def detect(cls) -> 'DeviceProbe':
+        """Probe the real host (CUDA, then MPS, else CPU-only)."""
+        cuda_ok = torch.cuda.is_available()
+        return cls(
+            cuda_available=cuda_ok,
+            cuda_device_count=torch.cuda.device_count() if cuda_ok else 0,
+            mps_available=_mps_available(),
+        )
+
+
 def _mps_available() -> bool:
     """True when this host has a usable MPS (Apple Silicon Metal) backend."""
     return (
@@ -34,31 +60,31 @@ def _mps_available() -> bool:
     )
 
 
-def _device_from_spec(spec: str) -> 'torch.device':
+def _device_from_spec(spec: str, probe: DeviceProbe) -> 'torch.device':
     """Resolve the string device API to a ``torch.device``.
 
     ``"auto"`` picks the best available backend (CUDA, else MPS, else CPU) and
     never raises. ``"cpu"`` is always available. ``"mps"`` / ``"cuda"`` /
     ``"cuda:N"`` are explicit requests and raise ``RuntimeError`` if that
-    backend is not present on the host.
+    backend is not present on the host (per ``probe``).
     """
     key = spec.strip().lower()
     if key == 'cpu':
         return torch.device('cpu')
     if key == 'auto':
-        if torch.cuda.is_available():
+        if probe.cuda_available:
             return torch.device('cuda:0')
-        if _mps_available():
+        if probe.mps_available:
             os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
             return torch.device('mps')
         return torch.device('cpu')
     if key == 'mps':
-        if not _mps_available():
+        if not probe.mps_available:
             raise RuntimeError("device='mps' requested but MPS is not available on this host.")
         os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
         return torch.device('mps')
     if key == 'cuda' or key.startswith('cuda:'):
-        if not torch.cuda.is_available():
+        if not probe.cuda_available:
             raise RuntimeError(f"device={spec!r} requested but CUDA is not available on this host.")
         if key == 'cuda':
             return torch.device('cuda:0')
@@ -68,13 +94,18 @@ def _device_from_spec(spec: str) -> 'torch.device':
             raise ValueError(f"Invalid CUDA device specifier: {spec!r}") from exc
         if index < 0:
             raise ValueError(f"CUDA device index must be non-negative: {spec!r}")
+        if index >= probe.cuda_device_count:
+            raise ValueError(
+                f"CUDA device index {index} is out of range "
+                f"(device_count={probe.cuda_device_count})."
+            )
         return torch.device(f'cuda:{index}')
     raise ValueError(
         f"Unrecognised device {spec!r}. Expected 'auto', 'cpu', 'mps', 'cuda', or 'cuda:N'."
     )
 
 
-def _device_from_legacy_int(cuda_device: int) -> 'torch.device':
+def _device_from_legacy_int(cuda_device: int, probe: DeviceProbe) -> 'torch.device':
     """Reproduce the historical ``cuda_device: int`` selection exactly.
 
     ``-1`` -> CPU. ``>= 0`` -> ``cuda:<n>`` on an NVIDIA host, else ``mps`` on
@@ -92,9 +123,9 @@ def _device_from_legacy_int(cuda_device: int) -> 'torch.device':
         )
     if cuda_device == -1:
         return torch.device('cpu')
-    if torch.cuda.is_available():
+    if probe.cuda_available:
         return torch.device(f'cuda:{cuda_device}')
-    if _mps_available():
+    if probe.mps_available:
         os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
         return torch.device('mps')
     raise RuntimeError(
@@ -106,6 +137,8 @@ def _device_from_legacy_int(cuda_device: int) -> 'torch.device':
 def resolve_device(
     device: 'str | torch.device | None' = None,
     cuda_device: 'int | None' = None,
+    *,
+    probe: DeviceProbe | None = None,
 ) -> 'torch.device':
     """Resolve the compute device from the string API (or the deprecated int).
 
@@ -116,12 +149,17 @@ def resolve_device(
     - ``"cpu"`` -> CPU.
     - ``"mps"`` -> Apple Silicon Metal backend (raises if unavailable).
     - ``"cuda"`` / ``"cuda:N"`` -> a specific NVIDIA device (raises if no CUDA).
-    - a ``torch.device`` -> returned as-is.
+    - a ``torch.device`` -> validated with the same availability rules.
 
     ``cuda_device`` is the deprecated integer shim: ``-1`` -> CPU; ``>= 0`` ->
     the best available accelerator. Passing it emits a ``DeprecationWarning``.
     Passing both ``device`` and ``cuda_device`` is a ``ValueError``.
+
+    ``probe`` injects accelerator availability for tests; production omits it
+    and uses ``DeviceProbe.detect()``.
     """
+    resolved_probe = probe if probe is not None else DeviceProbe.detect()
+
     if cuda_device is not None:
         if device is not None:
             raise ValueError(
@@ -135,13 +173,17 @@ def resolve_device(
             DeprecationWarning,
             stacklevel=2,
         )
-        return _device_from_legacy_int(cuda_device)
+        return _device_from_legacy_int(cuda_device, resolved_probe)
 
     if device is None:
-        return _device_from_spec('auto')
+        return _device_from_spec('auto', resolved_probe)
     if isinstance(device, torch.device):
-        return device
-    return _device_from_spec(device)
+        # Same availability rules as the string API — do not silently accept
+        # an unavailable backend via passthrough.
+        if device.type == 'cpu':
+            return device
+        return _device_from_spec(str(device), resolved_probe)
+    return _device_from_spec(device, resolved_probe)
 
 
 class BasePredictor:

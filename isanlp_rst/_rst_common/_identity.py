@@ -2,9 +2,9 @@
 
 An injected ``parser`` is the source of truth for which model produced a
 tree. When the caller constructs a fresh ``Parser`` from kwargs, those
-kwargs are the identity. Stubs without identity attributes are keyed by
-``id(parser)`` so two distinct injected objects never share a cache hit
-(the documented batch pattern reuses one object).
+kwargs are the identity. Injected parsers are always keyed by ``id(parser)``
+so two objects with identical HF attrs cannot share a cache hit (the
+documented batch pattern reuses one object and therefore hits).
 """
 
 from __future__ import annotations
@@ -31,20 +31,10 @@ def model_identity_knobs(
     name = getattr(parser, "hf_model_name", None)
     version = getattr(parser, "hf_model_version", None)
     inv = getattr(parser, "relinventory", None)
-    if name is not None or version is not None:
-        return {
-            "hf_model_name": name,
-            "hf_model_version": version,
-            "relinventory": inv,
-            "parser_source": "injected",
-        }
-
-    # Stub / duck-typed parsers without identity attrs: same object can
-    # reuse the cache (batch pattern); a different object must miss.
     return {
-        "hf_model_name": hf_model_name,
-        "hf_model_version": hf_model_version,
-        "relinventory": relinventory,
+        "hf_model_name": name if name is not None else hf_model_name,
+        "hf_model_version": version if version is not None else hf_model_version,
+        "relinventory": inv if inv is not None else relinventory,
         "parser_source": "injected",
         "parser_id": id(parser),
     }

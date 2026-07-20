@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .._rst_common import (
+    dataclass_from_dict,
     load_cached,
     model_identity_knobs,
     resolve_inventory,
@@ -196,6 +197,7 @@ def parse_doclang(
         "schema_name": SCHEMA_NAME,
         "schema_version": SCHEMA_VERSION,
         "dtype": dtype,
+        "device": str(device),
         "include_picture_captions": include_picture_captions,
         "include_background": include_background,
         "include_furniture": include_furniture,
@@ -217,7 +219,11 @@ def parse_doclang(
     cache_path = Path(cache_dir) if cache_dir is not None else None
     cache_key = result_cache_key(source_bytes, knobs)
     if cache_path is not None:
-        cached = load_cached(cache_path, cache_key)
+        cached = load_cached(
+            cache_path,
+            cache_key,
+            rebuild=lambda data: dataclass_from_dict(DoclangRstResult, data),
+        )
         if isinstance(cached, DoclangRstResult):
             return cached
 

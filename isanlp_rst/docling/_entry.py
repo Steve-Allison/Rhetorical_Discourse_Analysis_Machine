@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any
 from docling_core.types.doc.document import DoclingDocument
 
 from .._rst_common import (
+    dataclass_from_dict,
     load_cached,
     model_identity_knobs,
     resolve_inventory,
@@ -125,6 +126,7 @@ def parse_docling(
         "schema_name": SCHEMA_NAME,
         "schema_version": SCHEMA_VERSION,
         "dtype": dtype,
+        "device": str(device),
         "include_picture_descriptions": include_picture_descriptions,
         "include_slide_notes": include_slide_notes,
         "include_furniture": include_furniture,
@@ -143,7 +145,11 @@ def parse_docling(
     cache_path = Path(cache_dir) if cache_dir is not None else None
     cache_key = result_cache_key(source_bytes, knobs)
     if cache_path is not None:
-        cached = load_cached(cache_path, cache_key)
+        cached = load_cached(
+            cache_path,
+            cache_key,
+            rebuild=lambda data: dataclass_from_dict(DoclingRstResult, data),
+        )
         if isinstance(cached, DoclingRstResult):
             return cached
 
