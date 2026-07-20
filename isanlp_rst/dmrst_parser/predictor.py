@@ -39,8 +39,9 @@ class PredictorDMRST(BasePredictor):
             self.mode = 'local'
             self.model_file = os.path.join(model_dir, _file_model)
             self.config_path = os.path.join(model_dir, _file_config)
-            with open(os.path.join(model_dir, _file_relation_table), 'r', encoding='utf8') as f:
-                self.relation_table = f.read().splitlines()
+            self.relation_table = self._read_relation_table(
+                os.path.join(model_dir, _file_relation_table)
+            )
         elif hf_model_name is not None:
             self.mode = 'hf'
             self.hf_model_name = hf_model_name
@@ -60,8 +61,7 @@ class PredictorDMRST(BasePredictor):
                 filename=_file_relation_table,
                 revision=hf_model_version,
             )
-            with open(relation_table_path, 'r', encoding='utf8') as f:
-                self.relation_table = f.read().splitlines()
+            self.relation_table = self._read_relation_table(relation_table_path)
         else:
             raise ValueError('Pass either `model_dir` or `hf_model_name`.')
 
@@ -72,6 +72,15 @@ class PredictorDMRST(BasePredictor):
         self._dtype = self._resolve_dtype(dtype)
 
         self._load_model()
+
+    @staticmethod
+    def _read_relation_table(path: str) -> List[str]:
+        """Load relation labels, matching UniRST (strip; drop blank lines)."""
+        with open(path, 'r', encoding='utf8') as f:
+            table = [line.strip() for line in f if line.strip()]
+        if not table:
+            raise ValueError(f'relation_table at {path!r} has no non-blank labels.')
+        return table
 
     def _load_model(self):
         self.tokenizer = AutoTokenizer.from_pretrained(

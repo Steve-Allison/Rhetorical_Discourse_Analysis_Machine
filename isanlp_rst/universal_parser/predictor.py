@@ -282,21 +282,17 @@ class PredictorUniRST(BasePredictor):
         return None
 
     def _load_relation_table(self, corpus_name: str) -> Optional[List[str]]:
-        lower = corpus_name.lower()
-        if lower == 'rst-dt-tr':
-            lower = 'rst-dt'
-        elif lower == 'gum10-tr':
-            lower = 'gum'
-        elif lower == 'gum10_tr':
-            lower = 'gum'
-
-        filename = f'relation_table_{lower}.txt'
-        resolved = self._resolve_resource(filename)
-        if not resolved:
-            return None
-
-        with open(resolved, 'r', encoding='utf8') as f:
-            return [line.strip() for line in f if line.strip()]
+        """Load ``relation_table_<variant>.txt`` using the same corpus aliases
+        as ``_load_data_manager`` (dots/underscores, ``-tr`` / ``_tr`` remaps).
+        """
+        for variant in self._corpus_variants(corpus_name):
+            filename = f'relation_table_{variant}.txt'
+            resolved = self._resolve_resource(filename)
+            if not resolved:
+                continue
+            with open(resolved, 'r', encoding='utf8') as f:
+                return [line.strip() for line in f if line.strip()]
+        return None
 
     @staticmethod
     def _classifier_count_from_state_dict(state_dict) -> Optional[int]:

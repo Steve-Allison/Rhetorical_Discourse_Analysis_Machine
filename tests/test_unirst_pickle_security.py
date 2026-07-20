@@ -164,3 +164,21 @@ def test_relation_table_txt_preferred_over_pickle_with_different_labels(
     dm = pred._load_data_manager("eng.rst.gum")
     assert dm is not None
     assert list(dm.relation_table) == ["from_pickle_SHOULD_NOT_WIN"]
+
+
+@pytest.mark.parametrize(
+    "corpus,filename",
+    [
+        ("rst-dt-tr", "relation_table_rst-dt.txt"),
+        ("gum10-tr", "relation_table_gum.txt"),
+        ("gum10_tr", "relation_table_gum.txt"),
+        ("eng.rst.gum", "relation_table_eng_rst_gum.txt"),
+    ],
+)
+def test_relation_table_txt_uses_corpus_variants(
+    tmp_path: Path, corpus: str, filename: str
+) -> None:
+    """Txt resolution must share ``_corpus_variants`` with pickle lookup."""
+    (tmp_path / filename).write_text("joint\nelaboration\n", encoding="utf-8")
+    pred = _local_shell(tmp_path)
+    assert pred._load_relation_table(corpus) == ["joint", "elaboration"]

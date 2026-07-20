@@ -24,6 +24,7 @@ from .._rst_common import (
     result_cache_key,
     store_cached,
 )
+from ..utils.parse_result import extract_root_tree
 from .boundaries import detect_boundaries
 from .errors import EmptyHarvestError, EmptyMarkdownError, InputTooLargeError
 from .harvester import harvest_markdown_tables, harvest_markdown_text
@@ -216,7 +217,7 @@ def parse_markdown(
     )
 
     if harvest.full_text:
-        rst_tree = parser(harvest.full_text)["rst"][0]
+        rst_tree = extract_root_tree(parser(harvest.full_text))
         relations, edus = flatten_tree(
             rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
         )
@@ -228,7 +229,7 @@ def parse_markdown(
         if not th.full_text:
             continue
         boundary_id = f"table-{th.table_idx}"
-        table_tree = parser(th.full_text)["rst"][0]
+        table_tree = extract_root_tree(parser(th.full_text))
         t_relations, t_edus = flatten_tree(
             table_tree,
             th.spans,

@@ -7,6 +7,9 @@ from typing import TYPE_CHECKING, Optional, Sequence
 
 from .dmrst_parser.predictor import PredictorDMRST
 from .universal_parser.predictor import PredictorUniRST
+from .utils.parse_result import ParseFailedError, extract_root_tree
+
+__all__ = ["ParseFailedError", "Parser", "extract_root_tree"]
 
 if TYPE_CHECKING:
     import torch
@@ -118,6 +121,14 @@ class Parser:
                     raise ValueError(
                         f"hf_model_version={hf_model_version!r} is not valid for "
                         f"family={family!r}. Expected one of {allowed}."
+                    )
+            if model_dir is not None:
+                detected = cls._detect_family_from_model_dir(model_dir)
+                if detected is not None and detected != family:
+                    raise ValueError(
+                        f"family={family!r} does not match model_dir signatures "
+                        f"(detected {detected!r} from {model_dir!r}). "
+                        f"Pass family={detected!r}, or use a matching checkpoint."
                     )
             return family
 

@@ -63,6 +63,26 @@ class TestResolveFamily:
         assert Parser._resolve_family(str(tmp_path), None, 'dmrst') == 'dmrst'
         assert Parser._resolve_family(str(tmp_path), None, 'unirst') == 'unirst'
 
+    def test_family_mismatched_model_dir_raises(self, tmp_path):
+        """Explicit family must match detectable signatures when present."""
+        d = tmp_path / "dmrst"
+        d.mkdir()
+        (d / "relation_table.txt").write_text("elaboration\n", encoding="utf-8")
+        with pytest.raises(ValueError, match="does not match model_dir"):
+            Parser._resolve_family(str(d), None, 'unirst')
+
+        u = tmp_path / "unirst"
+        u.mkdir()
+        (u / "data_manager_eng.rst.gum.pickle").write_bytes(b"fake")
+        with pytest.raises(ValueError, match="does not match model_dir"):
+            Parser._resolve_family(str(u), None, 'dmrst')
+
+    def test_family_matching_model_dir_ok(self, tmp_path):
+        d = tmp_path / "dmrst"
+        d.mkdir()
+        (d / "relation_table.txt").write_text("elaboration\n", encoding="utf-8")
+        assert Parser._resolve_family(str(d), None, 'dmrst') == 'dmrst'
+
     def test_no_args_raises(self):
         with pytest.raises(ValueError, match="hf_model_version"):
             Parser._resolve_family(None, None, None)
