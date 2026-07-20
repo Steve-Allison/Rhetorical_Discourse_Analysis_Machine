@@ -10,7 +10,8 @@ Dispatch on ``doc.origin.mimetype``:
   ``doc.groups`` for entries with ``label == "chapter"`` and ``name``
   starting with ``"slide-"``. Each emits one ``slide-N`` boundary; if
   any of its children land in ``ContentLayer.NOTES`` an additional
-  ``slide-N-notes`` boundary is emitted over just those refs.
+  ``slide-N-notes`` boundary is emitted over just those refs (when
+  ``include_slide_notes`` is True).
 - ``text/vtt`` → speaker-turn detection. Walks TextItems in iteration
   order; contiguous same-voice runs coalesce into one ``turn-K``
   boundary when ``coalesce_speaker_turns`` (default).
@@ -22,6 +23,9 @@ Dispatch on ``doc.origin.mimetype``:
   text/picture self_refs.
 
 Every source format also emits one ``table-N`` boundary per ``TableItem``.
+
+``include_slide_notes`` / ``include_furniture`` must match the harvester
+knobs so boundary memberships only cover content that was actually parsed.
 """
 
 from __future__ import annotations
@@ -52,22 +56,58 @@ SECTION_MIMETYPES = frozenset({
 VTT_MIMETYPE = "text/vtt"
 
 
+def _content_layers(
+    *,
+    include_slide_notes: bool,
+    include_furniture: bool,
+) -> set[ContentLayer]:
+    layers: set[ContentLayer] = {ContentLayer.BODY}
+    if include_slide_notes:
+        layers.add(ContentLayer.NOTES)
+    if include_furniture:
+        layers.add(ContentLayer.FURNITURE)
+    return layers
+
+
+def _layer_allowed(item: object, layers: set[ContentLayer]) -> bool:
+    layer = getattr(item, "content_layer", None)
+    if layer is None:
+        return True
+    return layer in layers
+
+
 def detect_boundaries(
     doc: DoclingDocument,
     *,
     coalesce_speaker_turns: bool = True,
+    include_slide_notes: bool = True,
+    include_furniture: bool = False,
 ) -> tuple[Boundary, ...]:
-    """Detect boundaries in ``doc`` based on its origin mimetype."""
+    """Detect boundaries in ``doc`` based on its origin mimetype.
+
+    ``include_slide_notes`` / ``include_furniture`` mirror
+    ``harvest_docling_text`` so memberships stay aligned with the parse.
+    """
+    layers = _content_layers(
+        include_slide_notes=include_slide_notes,
+        include_furniture=include_furniture,
+    )
     mimetype = (doc.origin.mimetype if doc.origin else "") or ""
 
     if mimetype in PPTX_MIMETYPES:
-        primary: list[Boundary] = _detect_pptx_slide_boundaries(doc)
+        primary: list[Boundary] = _detect_pptx_slide_boundaries(
+            doc,
+            include_slide_notes=include_slide_notes,
+            include_furniture=include_furniture,
+        )
     elif mimetype == VTT_MIMETYPE:
-        primary = _detect_vtt_turn_boundaries(doc, coalesce=coalesce_speaker_turns)
+        primary = _detect_vtt_turn_boundaries(
+            doc, coalesce=coalesce_speaker_turns, layers=layers
+        )
     elif mimetype in SECTION_MIMETYPES:
-        primary = _detect_section_boundaries(doc)
+        primary = _detect_section_boundaries(doc, layers=layers)
     else:
-        primary = _single_document_boundary(doc)
+        primary = _single_document_boundary(doc, layers=layers)
 
     tables = _detect_table_boundaries(doc)
     return tuple(primary) + tables
@@ -82,9 +122,14 @@ def _label_value(thing: object) -> str:
     return value if isinstance(value, str) else str(thing)
 
 
-def _iter_body_self_refs(doc: DoclingDocument) -> Iterable[str]:
+def _iter_body_self_refs(
+    doc: DoclingDocument, *, layers: set[ContentLayer]
+) -> Iterable[str]:
     """Yield self_refs of TextItem and PictureItem in iteration order."""
-    for item, _depth in doc.iterate_items(traverse_pictures=True):
+    for item, _depth in doc.iterate_items(
+        traverse_pictures=True,
+        included_content_layers=layers,
+    ):
         if isinstance(item, (TextItem, PictureItem)):
             yield item.self_ref
 
@@ -92,7 +137,16 @@ def _iter_body_self_refs(doc: DoclingDocument) -> Iterable[str]:
 # --- PPTX ------------------------------------------------------------------
 
 
-def _detect_pptx_slide_boundaries(doc: DoclingDocument) -> list[Boundary]:
+def _detect_pptx_slide_boundaries(
+    doc: DoclingDocument,
+    *,
+    include_slide_notes: bool,
+    include_furniture: bool,
+) -> list[Boundary]:
+    layers = _content_layers(
+        include_slide_notes=include_slide_notes,
+        include_furniture=include_furniture,
+    )
     boundaries: list[Boundary] = []
     for group in doc.groups:
         if _label_value(group.label) != "chapter":
@@ -108,6 +162,8 @@ def _detect_pptx_slide_boundaries(doc: DoclingDocument) -> list[Boundary]:
             try:
                 child = child_ref.resolve(doc)
             except (AttributeError, LookupError, TypeError, ValueError, RuntimeError):
+                continue
+            if not _layer_allowed(child, layers):
                 continue
             self_ref = getattr(child, "self_ref", None)
             if self_ref is None:
@@ -127,7 +183,7 @@ def _detect_pptx_slide_boundaries(doc: DoclingDocument) -> list[Boundary]:
                 self_refs=tuple(slide_refs),
             )
         )
-        if notes_refs:
+        if include_slide_notes and notes_refs:
             boundaries.append(
                 Boundary(
                     id=f"{group.name}-notes",
@@ -145,7 +201,7 @@ def _detect_pptx_slide_boundaries(doc: DoclingDocument) -> list[Boundary]:
 
 
 def _detect_vtt_turn_boundaries(
-    doc: DoclingDocument, *, coalesce: bool
+    doc: DoclingDocument, *, coalesce: bool, layers: set[ContentLayer]
 ) -> list[Boundary]:
     boundaries: list[Boundary] = []
     current_voice: str | None = None
@@ -168,7 +224,10 @@ def _detect_vtt_turn_boundaries(
         turn_idx += 1
         current_refs = []
 
-    for item, _depth in doc.iterate_items(traverse_pictures=True):
+    for item, _depth in doc.iterate_items(
+        traverse_pictures=True,
+        included_content_layers=layers,
+    ):
         if not isinstance(item, TextItem):
             continue
         source = getattr(item, "source", None) or []
@@ -186,12 +245,17 @@ def _detect_vtt_turn_boundaries(
 # --- Section-based formats (PDF / Markdown / HTML) -------------------------
 
 
-def _detect_section_boundaries(doc: DoclingDocument) -> list[Boundary]:
+def _detect_section_boundaries(
+    doc: DoclingDocument, *, layers: set[ContentLayer]
+) -> list[Boundary]:
     # Buckets: first entry is the implicit pre-header "document" bucket;
     # each subsequent entry is one section opened by a SectionHeaderItem.
     buckets: list[tuple[str | None, int | None, list[str]]] = [(None, None, [])]
 
-    for item, _depth in doc.iterate_items(traverse_pictures=True):
+    for item, _depth in doc.iterate_items(
+        traverse_pictures=True,
+        included_content_layers=layers,
+    ):
         if isinstance(item, SectionHeaderItem):
             buckets.append((item.text or None, getattr(item, "level", None), [item.self_ref]))
         elif isinstance(item, (TextItem, PictureItem)):
@@ -226,8 +290,10 @@ def _detect_section_boundaries(doc: DoclingDocument) -> list[Boundary]:
 # --- Default fallback ------------------------------------------------------
 
 
-def _single_document_boundary(doc: DoclingDocument) -> list[Boundary]:
-    refs = tuple(_iter_body_self_refs(doc))
+def _single_document_boundary(
+    doc: DoclingDocument, *, layers: set[ContentLayer]
+) -> list[Boundary]:
+    refs = tuple(_iter_body_self_refs(doc, layers=layers))
     if not refs:
         return []
     return [
@@ -247,15 +313,9 @@ def _single_document_boundary(doc: DoclingDocument) -> list[Boundary]:
 def _detect_table_boundaries(doc: DoclingDocument) -> tuple[Boundary, ...]:
     """Emit one ``table-N`` boundary per ``TableItem``.
 
-    ``self_refs`` is ``(table.self_ref, cell_self_ref_0, ...)`` — the
-    table's own self_ref is the synthetic boundary marker (no
-    ``HarvestSpan`` carries it, so it cannot land in relation refs),
-    followed by every cell ref. Cell refs are real JSON pointers into
-    the Docling document (``f"{table.self_ref}/data/table_cells/{idx}"``),
-    matching ``harvest_docling_tables`` addressing, so per-table analysis
-    refs resolve against both the boundary and the source. Empty cells
-    are listed here too (the boundary doesn't depend on cell text); the
-    harvester skips them, so they never appear in any relation.
+    Indexing matches ``harvest_docling_tables`` (``enumerate(doc.tables)``).
+    Layer knobs do not drop tables here — table mini-parses are gated by
+    ``include_table_cells`` on the entry point, not content-layer filters.
     """
     out: list[Boundary] = []
     for i, table in enumerate(doc.tables):

@@ -36,8 +36,30 @@ from collections.abc import Iterable
 
 from lxml import etree
 
+from .errors import UnsupportedDoclangError
 from .loader import local_name, local_path
 from .schema import HarvestResult, HarvestSpan, TableHarvest
+
+
+def reject_nested_tables(root: etree._Element) -> None:
+    """Raise if any ``<table>`` contains another ``<table>``.
+
+    Nested tables would get ``table-N`` boundaries (full descendant walk)
+    without matching harvests (``_walk_tables`` stops at each outer table).
+    Fail closed until nested-table support ships with fixtures.
+    """
+    for el in root.iter():
+        if not isinstance(el.tag, str) or local_name(el) != "table":
+            continue
+        for desc in el.iter():
+            if desc is el:
+                continue
+            if isinstance(desc.tag, str) and local_name(desc) == "table":
+                raise UnsupportedDoclangError(
+                    f"Nested <table> is not supported "
+                    f"(found {local_path(desc)} inside {local_path(el)}). "
+                    "Flatten tables upstream."
+                )
 
 # Element-head children whose own text must NOT enter the harvest — they
 # are metadata, not prose.
@@ -440,6 +462,7 @@ def harvest_doclang_tables(
     Tables in excluded layers produce an empty harvest (no spans).
     """
     root = tree.getroot()
+    reject_nested_tables(root)
     allowed_layers: set[str] = {"body"}
     if include_background:
         allowed_layers.add("background")
@@ -484,4 +507,4 @@ def harvest_doclang_tables(
     return tuple(harvests)
 
 
-__all__ = ["harvest_doclang_tables", "harvest_doclang_text"]
+__all__ = ["harvest_doclang_tables", "harvest_doclang_text", "reject_nested_tables"]

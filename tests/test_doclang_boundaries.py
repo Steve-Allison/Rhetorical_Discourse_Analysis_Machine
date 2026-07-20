@@ -304,3 +304,28 @@ def test_no_slide_or_turn_boundary_kinds() -> None:
     assert "slide" not in kinds
     assert "slide-notes" not in kinds
     assert "turn" not in kinds
+
+
+def test_nested_table_raises_unsupported(tmp_path: Path) -> None:
+    from isanlp_rst.doclang.errors import UnsupportedDoclangError
+
+    path = tmp_path / "nested.dclg.xml"
+    path.write_text(
+        """\
+<?xml version="1.0" encoding="UTF-8"?>
+<doclang xmlns="https://www.doclang.ai/ns/v0">
+  <p>Intro</p>
+  <table>
+    <ched/><fcel/>outer
+    <fcel/>
+    <table>
+      <ched/><fcel/>inner
+    </table>
+  </table>
+</doclang>
+""",
+        encoding="utf-8",
+    )
+    tree = parse_doclang_xml(path)
+    with pytest.raises(UnsupportedDoclangError, match="Nested <table>"):
+        detect_boundaries(tree)

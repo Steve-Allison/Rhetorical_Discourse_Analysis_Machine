@@ -81,6 +81,16 @@ def test_pptx_slide_1_notes_self_ref(pptx_doc: DoclingDocument) -> None:
     assert notes_1.parent_self_ref == "#/groups/1"
 
 
+def test_pptx_notes_omitted_when_include_slide_notes_false(
+    pptx_doc: DoclingDocument,
+) -> None:
+    """Boundaries must honour the same NOTES knob as the harvester."""
+    result = detect_boundaries(pptx_doc, include_slide_notes=False)
+    assert [b for b in result if b.kind == "slide-notes"] == []
+    slide_1 = next(b for b in result if b.id == "slide-1")
+    assert "#/texts/3" not in slide_1.self_refs
+
+
 def test_pptx_tables_emitted(pptx_doc: DoclingDocument) -> None:
     result = detect_boundaries(pptx_doc)
     tables = [b for b in result if b.kind == "table"]

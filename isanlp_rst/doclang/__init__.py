@@ -21,6 +21,7 @@ from .errors import (
     EmptyHarvestError,
     InputTooLargeError,
     InvalidDoclangError,
+    UnsupportedDoclangError,
 )
 from .loader import local_path
 from .schema import (
@@ -48,6 +49,7 @@ __all__ = [
     "RstRelation",
     "TableAnalysis",
     "TableHarvest",
+    "UnsupportedDoclangError",
     "local_path",
     "parse_doclang",
 ]

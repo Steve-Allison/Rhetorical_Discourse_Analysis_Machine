@@ -21,3 +21,7 @@ class InputTooLargeError(DoclangRstError):
 
 class InvalidDoclangError(DoclangRstError):
     """The XML file is not a valid DocLang document."""
+
+
+class UnsupportedDoclangError(DoclangRstError):
+    """The document uses a DocLang construct this parser does not support yet."""

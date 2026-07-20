@@ -387,3 +387,33 @@ def test_head_element_text_not_in_harvest() -> None:
     result = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"))
     for span in result.spans:
         assert "/head[" not in span.xpath
+
+
+# --- Nested tables (fail-closed) -------------------------------------------
+
+
+def test_nested_table_raises_unsupported(tmp_path: Path) -> None:
+    from isanlp_rst.doclang.errors import UnsupportedDoclangError
+
+    path = tmp_path / "nested.dclg.xml"
+    path.write_text(
+        """\
+<?xml version="1.0" encoding="UTF-8"?>
+<doclang xmlns="https://www.doclang.ai/ns/v0">
+  <heading>Title</heading>
+  <p>Intro</p>
+  <table>
+    <ched/><fcel/>outer
+    <nl/>
+    <fcel/>
+    <table>
+      <ched/><fcel/>inner
+    </table>
+  </table>
+</doclang>
+""",
+        encoding="utf-8",
+    )
+    tree = parse_doclang_xml(path)
+    with pytest.raises(UnsupportedDoclangError, match="Nested <table>"):
+        harvest_doclang_tables(tree)

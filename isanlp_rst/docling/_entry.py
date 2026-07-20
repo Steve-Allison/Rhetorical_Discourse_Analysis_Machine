@@ -191,7 +191,12 @@ def parse_docling(
                 f"max_harvest_chars={max_harvest_chars}. Chunk upstream or raise the limit."
             )
 
-    boundaries = detect_boundaries(doc, coalesce_speaker_turns=coalesce_speaker_turns)
+    boundaries = detect_boundaries(
+        doc,
+        coalesce_speaker_turns=coalesce_speaker_turns,
+        include_slide_notes=include_slide_notes,
+        include_furniture=include_furniture,
+    )
     table_boundaries = {b.id: b for b in boundaries if b.kind == "table"}
 
     if parser is None:

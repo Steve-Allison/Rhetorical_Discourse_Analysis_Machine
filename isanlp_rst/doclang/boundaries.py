@@ -29,6 +29,7 @@ from collections.abc import Iterable
 
 from lxml import etree
 
+from .harvester import reject_nested_tables
 from .loader import local_name, local_path
 from .schema import Boundary
 
@@ -354,6 +355,7 @@ def detect_boundaries(
     boundary memberships stay aligned with the harvester.
     """
     root = tree.getroot()
+    reject_nested_tables(root)
 
     primary: list[Boundary] = []
     primary.extend(
