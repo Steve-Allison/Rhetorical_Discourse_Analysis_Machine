@@ -115,7 +115,7 @@ extend-exclude = [
 ]
 
 [tool.ruff.lint]
-select = ["E", "F", "B", "W"]
+select = ["E", "F", "B", "W", "BLE"]
 ignore = [
   "E501",  # line-length: rare overruns in docstrings and config tables
   "E741",  # ambiguous variable names (used in research idioms)
@@ -123,6 +123,14 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["B011"]
+# Pre-existing BLE001 (blind `except Exception`) at the point BLE was added
+# to select (2026-07-29) — grandfathered so the rule is live for new code
+# without a retroactive fix pass. Remove an entry (and fix the site) the
+# next time that file is touched.
+"scripts/bench.py" = ["BLE001"]
+"scripts/docling_long_input_determinism.py" = ["BLE001"]
+"scripts/docling_rst_quality_check.py" = ["BLE001"]
+"scripts/smoke_test.py" = ["BLE001"]
 
 [tool.pyright]
 # Strict on the stuff WE wrote, lenient on inherited research modules.
