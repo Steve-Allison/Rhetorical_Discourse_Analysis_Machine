@@ -1,4 +1,16 @@
 {
+  "_meta": {
+    "id": "pdf.docling",
+    "title": "Pdf.Docling",
+    "version": "1.10.0",
+    "schema_version": "1.0.0",
+    "last_updated": "2026-08-15",
+    "authority": "Central_Configs",
+    "status": "draft",
+    "ontology_domain": "ai",
+    "ontology_version": "4.0.0",
+    "governing_schema": "ResourceSpecification"
+  },
   "schema_name": "DoclingDocument",
   "version": "1.10.0",
   "name": "02_Accelerate Workbook_UsingAcrobatStudioAndExpress_v3",
@@ -2565,8 +2577,8 @@
           ]
         }
       ],
-      "orig": "< \u2192",
-      "text": "< \u2192"
+      "orig": "< →",
+      "text": "< →"
     },
     {
       "self_ref": "#/texts/10",
@@ -2687,8 +2699,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 acrobat.adobe.com/link/spaces/urn:aaid:sc:US:c470a0ad-d3ba-4292-966c-ef8b7c4f6197/?x_api_client_id=acrobat_com",
-      "text": "\u00b7 acrobat.adobe.com/link/spaces/urn:aaid:sc:US:c470a0ad-d3ba-4292-966c-ef8b7c4f6197/?x_api_client_id=acrobat_com"
+      "orig": "· acrobat.adobe.com/link/spaces/urn:aaid:sc:US:c470a0ad-d3ba-4292-966c-ef8b7c4f6197/?x_api_client_id=acrobat_com",
+      "text": "· acrobat.adobe.com/link/spaces/urn:aaid:sc:US:c470a0ad-d3ba-4292-966c-ef8b7c4f6197/?x_api_client_id=acrobat_com"
     },
     {
       "self_ref": "#/texts/14",
@@ -2920,10 +2932,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Drive awareness of the value of Acrobat Studio.",
+      "orig": "· Drive awareness of the value of Acrobat Studio.",
       "text": "Drive awareness of the value of Acrobat Studio.",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/21",
@@ -2949,10 +2961,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Ensure audience understands how to use Acrobat Studio in their role, and how to communicate their personal use case in customer meetings. Generating summary...",
+      "orig": "· Ensure audience understands how to use Acrobat Studio in their role, and how to communicate their personal use case in customer meetings. Generating summary...",
       "text": "Ensure audience understands how to use Acrobat Studio in their role, and how to communicate their personal use case in customer meetings. Generating summary...",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/22",
@@ -3006,10 +3018,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Open this PDF Space:",
+      "orig": "· Open this PDF Space:",
       "text": "Open this PDF Space:",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/24",
@@ -4450,8 +4462,8 @@
           ]
         }
       ],
-      "orig": "Added 5 minutes ago \u00b7 You",
-      "text": "Added 5 minutes ago \u00b7 You"
+      "orig": "Added 5 minutes ago · You",
+      "text": "Added 5 minutes ago · You"
     },
     {
       "self_ref": "#/texts/69",
@@ -4558,8 +4570,8 @@
           ]
         }
       ],
-      "orig": "SecurFinancial A.... *\u00b7\u00b7",
-      "text": "SecurFinancial A.... *\u00b7\u00b7"
+      "orig": "SecurFinancial A.... *··",
+      "text": "SecurFinancial A.... *··"
     },
     {
       "self_ref": "#/texts/73",
@@ -4612,8 +4624,8 @@
           ]
         }
       ],
-      "orig": "Added 5 minutes ago \u00b7 You",
-      "text": "Added 5 minutes ago \u00b7 You"
+      "orig": "Added 5 minutes ago · You",
+      "text": "Added 5 minutes ago · You"
     },
     {
       "self_ref": "#/texts/75",
@@ -4639,8 +4651,8 @@
           ]
         }
       ],
-      "orig": "SecurFinancial-Q....\u00b7\u00b7",
-      "text": "SecurFinancial-Q....\u00b7\u00b7"
+      "orig": "SecurFinancial-Q....··",
+      "text": "SecurFinancial-Q....··"
     },
     {
       "self_ref": "#/texts/76",
@@ -5086,8 +5098,8 @@
           ]
         }
       ],
-      "orig": "MeetingTranscri... *.\u2022",
-      "text": "MeetingTranscri... *.\u2022"
+      "orig": "MeetingTranscri... *.•",
+      "text": "MeetingTranscri... *.•"
     },
     {
       "self_ref": "#/texts/91",
@@ -5113,8 +5125,8 @@
           ]
         }
       ],
-      "orig": "Added 5 minutes ago \u2022 You",
-      "text": "Added 5 minutes ago \u2022 You"
+      "orig": "Added 5 minutes ago • You",
+      "text": "Added 5 minutes ago • You"
     },
     {
       "self_ref": "#/texts/92",
@@ -5167,8 +5179,8 @@
           ]
         }
       ],
-      "orig": "Added 5 minutes ago \u2022 You",
-      "text": "Added 5 minutes ago \u2022 You"
+      "orig": "Added 5 minutes ago • You",
+      "text": "Added 5 minutes ago • You"
     },
     {
       "self_ref": "#/texts/94",
@@ -5221,8 +5233,8 @@
           ]
         }
       ],
-      "orig": "SecurBank- Serv....\u2022\u2022",
-      "text": "SecurBank- Serv....\u2022\u2022"
+      "orig": "SecurBank- Serv....••",
+      "text": "SecurBank- Serv....••"
     },
     {
       "self_ref": "#/texts/96",
@@ -5248,8 +5260,8 @@
           ]
         }
       ],
-      "orig": "Added 5 minutes ago \u2022 You",
-      "text": "Added 5 minutes ago \u2022 You"
+      "orig": "Added 5 minutes ago • You",
+      "text": "Added 5 minutes ago • You"
     },
     {
       "self_ref": "#/texts/97",
@@ -5497,10 +5509,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Information about SecurFinancial and SecurBank.",
+      "orig": "· Information about SecurFinancial and SecurBank.",
       "text": "Information about SecurFinancial and SecurBank.",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/106",
@@ -5526,10 +5538,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Information about Acrobat Studio.",
+      "orig": "· Information about Acrobat Studio.",
       "text": "Information about Acrobat Studio.",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/107",
@@ -5584,8 +5596,8 @@
           ]
         }
       ],
-      "orig": "Acrobat Studio E... **\u00b7",
-      "text": "Acrobat Studio E... **\u00b7"
+      "orig": "Acrobat Studio E... **·",
+      "text": "Acrobat Studio E... **·"
     },
     {
       "self_ref": "#/texts/109",
@@ -5611,8 +5623,8 @@
           ]
         }
       ],
-      "orig": "Added 5 minutes ago \u00b7 You",
-      "text": "Added 5 minutes ago \u00b7 You"
+      "orig": "Added 5 minutes ago · You",
+      "text": "Added 5 minutes ago · You"
     },
     {
       "self_ref": "#/texts/110",
@@ -7187,8 +7199,8 @@
           ]
         }
       ],
-      "orig": "\u2192 Identify potential discounts available through",
-      "text": "\u2192 Identify potential discounts available through"
+      "orig": "→ Identify potential discounts available through",
+      "text": "→ Identify potential discounts available through"
     },
     {
       "self_ref": "#/texts/167",
@@ -7322,8 +7334,8 @@
           ]
         }
       ],
-      "orig": "\u2192 Prepare a checklist for applying for a",
-      "text": "\u2192 Prepare a checklist for applying for a"
+      "orig": "→ Prepare a checklist for applying for a",
+      "text": "→ Prepare a checklist for applying for a"
     },
     {
       "self_ref": "#/texts/172",
@@ -7945,8 +7957,8 @@
           ]
         }
       ],
-      "orig": "\u203ale through",
-      "text": "\u203ale through"
+      "orig": "›le through",
+      "text": "›le through"
     },
     {
       "self_ref": "#/texts/195",
@@ -7972,8 +7984,8 @@
           ]
         }
       ],
-      "orig": "\u2192 Prepare a checklist for applying for a",
-      "text": "\u2192 Prepare a checklist for applying for a"
+      "orig": "→ Prepare a checklist for applying for a",
+      "text": "→ Prepare a checklist for applying for a"
     },
     {
       "self_ref": "#/texts/196",
@@ -8026,8 +8038,8 @@
           ]
         }
       ],
-      "orig": "\u2192 Summarize key financial services offered by",
-      "text": "\u2192 Summarize key financial services offered by"
+      "orig": "→ Summarize key financial services offered by",
+      "text": "→ Summarize key financial services offered by"
     },
     {
       "self_ref": "#/texts/198",
@@ -8248,10 +8260,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Prompt example : Summarize the content to create a concise presentation for our next meeting that focuses on top priorities and aligns with the key discussion points in today's meeting.",
+      "orig": "· Prompt example : Summarize the content to create a concise presentation for our next meeting that focuses on top priorities and aligns with the key discussion points in today's meeting.",
       "text": "Prompt example : Summarize the content to create a concise presentation for our next meeting that focuses on top priorities and aligns with the key discussion points in today's meeting.",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/206",
@@ -8306,8 +8318,8 @@
           ]
         }
       ],
-      "orig": "\u2192 Summarize key financial services offered by",
-      "text": "\u2192 Summarize key financial services offered by"
+      "orig": "→ Summarize key financial services offered by",
+      "text": "→ Summarize key financial services offered by"
     },
     {
       "self_ref": "#/texts/208",
@@ -8414,8 +8426,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 select snare",
-      "text": "\u00b7 select snare"
+      "orig": "· select snare",
+      "text": "· select snare"
     },
     {
       "self_ref": "#/texts/212",
@@ -8549,8 +8561,8 @@
           ]
         }
       ],
-      "orig": "\u2192 Make the presentation more concise and focused on ROl and strategic benefits.",
-      "text": "\u2192 Make the presentation more concise and focused on ROl and strategic benefits."
+      "orig": "→ Make the presentation more concise and focused on ROl and strategic benefits.",
+      "text": "→ Make the presentation more concise and focused on ROl and strategic benefits."
     },
     {
       "self_ref": "#/texts/217",
@@ -8603,8 +8615,8 @@
           ]
         }
       ],
-      "orig": "\u2192 Develop a follow-up email summarizing key points and next steps for stakeholders.",
-      "text": "\u2192 Develop a follow-up email summarizing key points and next steps for stakeholders."
+      "orig": "→ Develop a follow-up email summarizing key points and next steps for stakeholders.",
+      "text": "→ Develop a follow-up email summarizing key points and next steps for stakeholders."
     },
     {
       "self_ref": "#/texts/219",
@@ -8657,8 +8669,8 @@
           ]
         }
       ],
-      "orig": "\u2039 Notes",
-      "text": "\u2039 Notes"
+      "orig": "‹ Notes",
+      "text": "‹ Notes"
     },
     {
       "self_ref": "#/texts/221",
@@ -8983,8 +8995,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Title: Unlocking Operational",
-      "text": "\u00b7 Title: Unlocking Operational"
+      "orig": "· Title: Unlocking Operational",
+      "text": "· Title: Unlocking Operational"
     },
     {
       "self_ref": "#/texts/231",
@@ -9091,8 +9103,8 @@
           ]
         }
       ],
-      "orig": "\u2022\u2022\u2022",
-      "text": "\u2022\u2022\u2022"
+      "orig": "•••",
+      "text": "•••"
     },
     {
       "self_ref": "#/texts/235",
@@ -9253,8 +9265,8 @@
           ]
         }
       ],
-      "orig": "\u2022",
-      "text": "\u2022"
+      "orig": "•",
+      "text": "•"
     },
     {
       "self_ref": "#/texts/241",
@@ -9307,8 +9319,8 @@
           ]
         }
       ],
-      "orig": "\u0446\u0456",
-      "text": "\u0446\u0456"
+      "orig": "ці",
+      "text": "ці"
     },
     {
       "self_ref": "#/texts/243",
@@ -9503,8 +9515,8 @@
           ]
         }
       ],
-      "orig": "\u00b7",
-      "text": "\u00b7"
+      "orig": "·",
+      "text": "·"
     },
     {
       "self_ref": "#/texts/250",
@@ -9719,8 +9731,8 @@
           ]
         }
       ],
-      "orig": "kvijay@adobe.com \u00d7",
-      "text": "kvijay@adobe.com \u00d7"
+      "orig": "kvijay@adobe.com ×",
+      "text": "kvijay@adobe.com ×"
     },
     {
       "self_ref": "#/texts/258",
@@ -10180,8 +10192,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Anyone with the link",
-      "text": "\u00b7 Anyone with the link"
+      "orig": "· Anyone with the link",
+      "text": "· Anyone with the link"
     },
     {
       "self_ref": "#/texts/275",
@@ -10207,8 +10219,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 People in Adobe Inc. with the link",
-      "text": "\u00b7 People in Adobe Inc. with the link"
+      "orig": "· People in Adobe Inc. with the link",
+      "text": "· People in Adobe Inc. with the link"
     },
     {
       "self_ref": "#/texts/276",
@@ -10234,8 +10246,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Invited people only",
-      "text": "\u00b7 Invited people only"
+      "orig": "· Invited people only",
+      "text": "· Invited people only"
     },
     {
       "self_ref": "#/texts/277",
@@ -10288,8 +10300,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Add files and comments",
-      "text": "\u00b7 Add files and comments"
+      "orig": "· Add files and comments",
+      "text": "· Add files and comments"
     },
     {
       "self_ref": "#/texts/279",
@@ -10315,8 +10327,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Add comments",
-      "text": "\u00b7 Add comments"
+      "orig": "· Add comments",
+      "text": "· Add comments"
     },
     {
       "self_ref": "#/texts/280",
@@ -10342,8 +10354,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 View only",
-      "text": "\u00b7 View only"
+      "orig": "· View only",
+      "text": "· View only"
     },
     {
       "self_ref": "#/texts/281",
@@ -10884,8 +10896,8 @@
           ]
         }
       ],
-      "orig": "\u2022 View only",
-      "text": "\u2022 View only"
+      "orig": "• View only",
+      "text": "• View only"
     },
     {
       "self_ref": "#/texts/301",
@@ -12139,8 +12151,8 @@
           ]
         }
       ],
-      "orig": "\u00a9 Insert",
-      "text": "\u00a9 Insert"
+      "orig": "© Insert",
+      "text": "© Insert"
     },
     {
       "self_ref": "#/texts/339",
@@ -12166,8 +12178,8 @@
           ]
         }
       ],
-      "orig": "\u00a9 Included in your plan",
-      "text": "\u00a9 Included in your plan"
+      "orig": "© Included in your plan",
+      "text": "© Included in your plan"
     },
     {
       "self_ref": "#/texts/340",
@@ -12247,8 +12259,8 @@
           ]
         }
       ],
-      "orig": "\u2039 Results",
-      "text": "\u2039 Results"
+      "orig": "‹ Results",
+      "text": "‹ Results"
     },
     {
       "self_ref": "#/texts/343",
@@ -12369,8 +12381,8 @@
           ]
         }
       ],
-      "orig": "16% = 5 C \u2022",
-      "text": "16% = 5 C \u2022"
+      "orig": "16% = 5 C •",
+      "text": "16% = 5 C •"
     },
     {
       "self_ref": "#/texts/347",
@@ -12481,8 +12493,8 @@
           ]
         }
       ],
-      "orig": "\u00a1At SecurFinancial, we've reimagined",
-      "text": "\u00a1At SecurFinancial, we've reimagined"
+      "orig": "¡At SecurFinancial, we've reimagined",
+      "text": "¡At SecurFinancial, we've reimagined"
     },
     {
       "self_ref": "#/texts/351",
@@ -12767,10 +12779,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Setting up the presentation",
+      "orig": "· Setting up the presentation",
       "text": "Setting up the presentation",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/360",
@@ -12912,10 +12924,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Choosing a template",
+      "orig": "· Choosing a template",
       "text": "Choosing a template",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/365",
@@ -12941,10 +12953,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Adjusting the AI settings (tone =professional, concise, persuasive; detail = medium)",
+      "orig": "· Adjusting the AI settings (tone =professional, concise, persuasive; detail = medium)",
       "text": "Adjusting the AI settings (tone =professional, concise, persuasive; detail = medium)",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/366",
@@ -12970,10 +12982,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Modifying the outline (adding a new slide with next steps)",
+      "orig": "· Modifying the outline (adding a new slide with next steps)",
       "text": "Modifying the outline (adding a new slide with next steps)",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/367",
@@ -12999,10 +13011,10 @@
           ]
         }
       ],
-      "orig": "\u00b7 Generate Presentation",
+      "orig": "· Generate Presentation",
       "text": "Generate Presentation",
       "enumerated": false,
-      "marker": "\u00b7"
+      "marker": "·"
     },
     {
       "self_ref": "#/texts/368",
@@ -13664,8 +13676,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Search text",
-      "text": "\u00b7 Search text"
+      "orig": "· Search text",
+      "text": "· Search text"
     },
     {
       "self_ref": "#/texts/391",
@@ -13855,8 +13867,8 @@
           ]
         }
       ],
-      "orig": "\u00a1Your name herei",
-      "text": "\u00a1Your name herei"
+      "orig": "¡Your name herei",
+      "text": "¡Your name herei"
     },
     {
       "self_ref": "#/texts/398",
@@ -14112,8 +14124,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Adobe Clean",
-      "text": "\u00b7 Adobe Clean"
+      "orig": "· Adobe Clean",
+      "text": "· Adobe Clean"
     },
     {
       "self_ref": "#/texts/407",
@@ -14734,8 +14746,8 @@
           ]
         }
       ],
-      "orig": "\u0417\u0430",
-      "text": "\u0417\u0430"
+      "orig": "За",
+      "text": "За"
     },
     {
       "self_ref": "#/texts/429",
@@ -15194,8 +15206,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Translate All Pages",
-      "text": "\u00b7 Translate All Pages"
+      "orig": "· Translate All Pages",
+      "text": "· Translate All Pages"
     },
     {
       "self_ref": "#/texts/445",
@@ -15221,8 +15233,8 @@
           ]
         }
       ],
-      "orig": "Automation\u00ae",
-      "text": "Automation\u00ae"
+      "orig": "Automation®",
+      "text": "Automation®"
     },
     {
       "self_ref": "#/texts/446",
@@ -15519,8 +15531,8 @@
           ]
         }
       ],
-      "orig": "\u20ac Replace with upload",
-      "text": "\u20ac Replace with upload"
+      "orig": "€ Replace with upload",
+      "text": "€ Replace with upload"
     },
     {
       "self_ref": "#/texts/456",
@@ -15627,8 +15639,8 @@
           ]
         }
       ],
-      "orig": "\u00ae Brands",
-      "text": "\u00ae Brands"
+      "orig": "® Brands",
+      "text": "® Brands"
     },
     {
       "self_ref": "#/texts/460",
@@ -15749,8 +15761,8 @@
           ]
         }
       ],
-      "orig": "\u2192 Design assets",
-      "text": "\u2192 Design assets"
+      "orig": "→ Design assets",
+      "text": "→ Design assets"
     },
     {
       "self_ref": "#/texts/464",
@@ -17074,8 +17086,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Select Charts from the top navigat",
-      "text": "\u00b7 Select Charts from the top navigat"
+      "orig": "· Select Charts from the top navigat",
+      "text": "· Select Charts from the top navigat"
     },
     {
       "self_ref": "#/texts/511",
@@ -17347,8 +17359,8 @@
           ]
         }
       ],
-      "orig": "Photos \u00b7 Videos \u00b7 Audio",
-      "text": "Photos \u00b7 Videos \u00b7 Audio"
+      "orig": "Photos · Videos · Audio",
+      "text": "Photos · Videos · Audio"
     },
     {
       "self_ref": "#/texts/520",
@@ -17401,8 +17413,8 @@
           ]
         }
       ],
-      "orig": "Design assets - Backgrounds \u00b7 Shapes \u00b7",
-      "text": "Design assets - Backgrounds \u00b7 Shapes \u00b7"
+      "orig": "Design assets - Backgrounds · Shapes ·",
+      "text": "Design assets - Backgrounds · Shapes ·"
     },
     {
       "self_ref": "#/texts/522",
@@ -17457,8 +17469,8 @@
           ]
         }
       ],
-      "orig": "Charts \u00b7 Tables \u00b7 Grids",
-      "text": "Charts \u00b7 Tables \u00b7 Grids"
+      "orig": "Charts · Tables · Grids",
+      "text": "Charts · Tables · Grids"
     },
     {
       "self_ref": "#/texts/524",
@@ -17511,8 +17523,8 @@
           ]
         }
       ],
-      "orig": "Images - Videos \u00b7 Templates \u00b7 Text effects",
-      "text": "Images - Videos \u00b7 Templates \u00b7 Text effects"
+      "orig": "Images - Videos · Templates · Text effects",
+      "text": "Images - Videos · Templates · Text effects"
     },
     {
       "self_ref": "#/texts/526",
@@ -18771,8 +18783,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 & Adobe Brand (Main)",
-      "text": "\u00b7 & Adobe Brand (Main)"
+      "orig": "· & Adobe Brand (Main)",
+      "text": "· & Adobe Brand (Main)"
     },
     {
       "self_ref": "#/texts/570",
@@ -19473,8 +19485,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Select the Animation tab and try one out!",
-      "text": "\u00b7 Select the Animation tab and try one out!"
+      "orig": "· Select the Animation tab and try one out!",
+      "text": "· Select the Animation tab and try one out!"
     },
     {
       "self_ref": "#/texts/596",
@@ -21172,8 +21184,8 @@
           ]
         }
       ],
-      "orig": "55% \u00b7 5 C",
-      "text": "55% \u00b7 5 C"
+      "orig": "55% · 5 C",
+      "text": "55% · 5 C"
     },
     {
       "self_ref": "#/texts/654",
@@ -21226,8 +21238,8 @@
           ]
         }
       ],
-      "orig": "55% V\u00b7 C",
-      "text": "55% V\u00b7 C"
+      "orig": "55% V· C",
+      "text": "55% V· C"
     },
     {
       "self_ref": "#/texts/656",
@@ -21784,8 +21796,8 @@
           ]
         }
       ],
-      "orig": "\u00b7\u00b7\u00b7 Show all Assets Strategic Value with Acrobat Studio Your name here Adobe",
-      "text": "\u00b7\u00b7\u00b7 Show all Assets Strategic Value with Acrobat Studio Your name here Adobe"
+      "orig": "··· Show all Assets Strategic Value with Acrobat Studio Your name here Adobe",
+      "text": "··· Show all Assets Strategic Value with Acrobat Studio Your name here Adobe"
     },
     {
       "self_ref": "#/texts/672",
@@ -21811,8 +21823,8 @@
           ]
         }
       ],
-      "orig": "\u00b7 Display author",
-      "text": "\u00b7 Display author"
+      "orig": "· Display author",
+      "text": "· Display author"
     },
     {
       "self_ref": "#/texts/673",
@@ -21865,8 +21877,8 @@
           ]
         }
       ],
-      "orig": "Require password protection \u00ae",
-      "text": "Require password protection \u00ae"
+      "orig": "Require password protection ®",
+      "text": "Require password protection ®"
     },
     {
       "self_ref": "#/texts/675",

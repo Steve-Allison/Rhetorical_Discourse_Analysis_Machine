@@ -1,4 +1,16 @@
 {
+  "_meta": {
+    "id": "pptx.docling",
+    "title": "Pptx.Docling",
+    "version": "1.10.0",
+    "schema_version": "1.0.0",
+    "last_updated": "2026-08-15",
+    "authority": "Central_Configs",
+    "status": "draft",
+    "ontology_domain": "ai",
+    "ontology_version": "4.0.0",
+    "governing_schema": "ResourceSpecification"
+  },
   "schema_name": "DoclingDocument",
   "version": "1.10.0",
   "name": "cleaned_Creation MVP requirements",
