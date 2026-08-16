@@ -221,7 +221,7 @@ def test_resolve_inventory_falls_back_to_model_version() -> None:
 
 def test_schema_constants() -> None:
     assert SCHEMA_NAME == "isanlp_rst_docling"
-    assert SCHEMA_VERSION == "1.0"
+    assert SCHEMA_VERSION == "1.1"
     assert TOOL_NAME == "isanlp_rst"
     assert DEFAULT_MAX_HARVEST_CHARS == 200_000
 

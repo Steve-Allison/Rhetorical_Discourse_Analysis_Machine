@@ -34,7 +34,7 @@ dependencies = [
   "networkx>=2.5.1",
   # DocLang validator for parse_doclang(..., validate_xml=True) — first-class
   # entry point; not optional. Spec/toolkit: https://github.com/doclang-project/doclang
-  "doclang>=0.7,<0.8",
+  "doclang[schematron-saxon]>=0.7,<0.8",
   "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
 ]
 
@@ -174,3 +174,4 @@ rst-diag = "python scripts/rst_diag.py"
 lint = "ruff check isanlp_rst tests scripts"
 typecheck = "pyright"
 mdlint = "markdownlint-cli2 README.md UniRST_Metrics.md CLAUDE.md"
+cleanup = "python scripts/cleanup.py"

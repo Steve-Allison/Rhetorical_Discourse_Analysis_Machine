@@ -9,7 +9,8 @@ Public API:
   intermediates.
 - ``DoclangRstError`` and subclasses — error hierarchy.
 - ``local_path`` — the canonical local-name XPath generator used as the
-  addressing scheme (verified Phase 1 against all 40 valid fixtures).
+  addressing scheme (verified Phase 1 against the then-40 valid fixtures;
+  remirror 2026-08-16 is 42 files).
 """
 
 from __future__ import annotations

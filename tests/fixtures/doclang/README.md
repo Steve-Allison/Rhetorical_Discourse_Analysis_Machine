@@ -1,13 +1,15 @@
 # DocLang test fixtures
 
-40 valid DocLang 0.5 fixtures mirrored from
+42 valid DocLang 0.7 fixtures mirrored from
 [`doclang-project/doclang`](https://github.com/doclang-project/doclang/tree/main/tests/data/valid)
-`main` branch as of 2026-06-10. Pulled via the GitHub Contents API; raw
+`main` branch as of 2026-08-16. Upstream filenames are ``*.dclg`` (0.7
+recommended extension); we store them as ``*.dclg.xml`` so existing
+test paths keep working. Pulled via the GitHub Contents API; raw
 downloads from `raw.githubusercontent.com`.
 
 These are upstream-authored examples covering each element / property /
 boundary shape allowed by the spec. We use them to verify the
-DocLang-native RST design decisions before writing any code (see
+DocLang-native RST design decisions (see
 [`docs/plans/2026-05-15-doclang-native-rst.md`](../../../docs/plans/2026-05-15-doclang-native-rst.md)
 Phase 1).
 
@@ -15,7 +17,7 @@ Phase 1).
 
 Upstream repository licence: Apache 2.0 (per
 [`LICENSE`](https://github.com/doclang-project/doclang/blob/main/LICENSE)
-on the upstream repo as at 2026-06-10). Mirrored verbatim — no
+on the upstream repo as at 2026-08-16). Mirrored verbatim — no
 modifications. Each file remains attributable to its upstream commit.
 
 To refresh from upstream:
@@ -33,7 +35,7 @@ for e in files:
 "
 ```
 
-## Fixture map (40 files)
+## Fixture map (42 files)
 
 | Fixture | Tests what |
 |---|---|
@@ -77,3 +79,5 @@ for e in files:
 | `ok_picture_chart.dclg.xml` | `<picture class="chart">` with `<tabular>`. |
 | `ok_picture_chemistry_structure.dclg.xml` | Chemistry-shape picture. |
 | `ok_picture_src_data_uri.dclg.xml` | `<src uri="data:..."/>` base64 URI. |
+| `ok_description_element_head.dclg.xml` | 0.7 `<description>` / `<summary>` element-head (new 2026-08-16 remirror). |
+| `ok_namespaced_and_versioned.dclg.xml` | `xmlns` plus `version="0.7"` on `<doclang>`. |

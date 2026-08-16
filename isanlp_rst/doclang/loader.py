@@ -4,7 +4,7 @@ The ``doclang`` PyPI package (``doclang-project/doclang``) is
 validator-only — it exposes ``validate(path)`` and ``ValidationError``
 and has no DOM. We parse the XML ourselves with ``lxml`` and provide
 the canonical addressing helper ``local_path`` (verified Phase 1 to
-round-trip 100% across the 40-fixture corpus).
+round-trip 100% across the 42-fixture corpus).
 
 ``lxml.etree.ElementTree.getpath()`` is NOT used: on default-namespaced
 documents it emits ``/*/*[N]`` wildcards (`spec.md:219-241` recommends a

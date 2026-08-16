@@ -1,0 +1,10 @@
+---
+description: Treat all repo Python as Steve's — modern world-class quality, always
+alwaysApply: true
+---
+
+# One quality bar
+
+Follow the HARD RULE in [`AGENTS.md`](../../AGENTS.md): this is Steve Allison's code. Modern, world-class Python **always**, including former research modules. Do not skip a fix because a file is “inherited” or “surgical only.” That split is retired.
+
+Do not change trained architecture or inference maths in the name of style.

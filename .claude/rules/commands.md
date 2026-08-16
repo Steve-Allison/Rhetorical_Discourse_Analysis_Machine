@@ -13,7 +13,10 @@ pixi run typecheck      # pyright (strict scope per pyproject.toml)
 pixi run smoke          # parser smoke test on CPU
 pixi run smoke-mps      # parser smoke test on MPS (Apple Silicon)
 pixi run mdlint         # markdownlint-cli2 for README, CLAUDE.md, UniRST_Metrics.md
+pixi run cleanup        # remove bytecode, tool caches, temp files (not .pixi)
 ```
+
+`./cleanup.sh` is the same cleaner without going through the pixi task table; it still prefers `pixi run python` when `.pixi` exists.
 
 ## Performance and verification commands
 

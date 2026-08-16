@@ -15,7 +15,7 @@ class PointerSegmenter(nn.Module):
 
         self.hidden_size = hidden_size
         self.pointer = modules.PointerAtten(atten_model, hidden_size)
-        self.encoder = nn.GRU(hidden_size, int(hidden_size / 2), num_layers=1, batch_first=True, dropout=0.2,
+        self.encoder = nn.GRU(hidden_size, int(hidden_size / 2), num_layers=1, batch_first=True, dropout=0,
                               bidirectional=True)
         self.decoder = modules.DecoderRNN(decoder_input_size, hidden_size, rnn_layers, dropout_d)
         self.loss_fn = nn.NLLLoss()
@@ -431,7 +431,7 @@ class ToNySegmenter(nn.Module):
             self.lstm = nn.LSTM(embedding_dim,
                                 hidden_dim,
                                 num_layers=self.num_layers,
-                                dropout=self.lstm_dropout,
+                                dropout=(0 if self.num_layers == 1 else self.lstm_dropout),
                                 bidirectional=self.bidirectional,
                                 device=self._cuda_device)
             self._init_weights(self.lstm)

@@ -46,9 +46,9 @@ plain sibling-position resolution.
 > **Why not `lxml.etree.ElementTree.getpath()`?** On default-namespaced
 > documents `getpath()` emits `/*/*[3]`-style wildcards because XPath 1.0
 > has no concept of default namespaces. The local-name path is
-> namespace-agnostic and human-readable. Verified Phase 1 against all 40
-> upstream valid fixtures (464 elements in the comprehensive fixture
-> alone, 100% round-trip).
+> namespace-agnostic and human-readable. Verified Phase 1 against the
+> then-40 upstream valid fixtures (464 elements in the comprehensive fixture
+> alone, 100% round-trip). Remirror 2026-08-16 is 42 files.
 
 ## Batch parsing — inject one Parser
 

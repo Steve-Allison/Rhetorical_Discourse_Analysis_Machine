@@ -1,10 +1,15 @@
 # Code standards
 
-Two modes coexist here. Match the mode of the module you're editing.
+One quality bar for the whole repo. Treat every module as Steve Allison's
+production Python. Provenance (Elena / `tchewik`) is not a style freeze.
+See [`AGENTS.md`](../../AGENTS.md).
 
-## Mode A — New code (modern Python 3.13+)
+## Mode A — Modern Python (3.13+ idioms, every file you touch)
 
-Anything we author from scratch (e.g. anything that will land under `isanlp_rst/docling/` when the Docling-native entry point ships, plus any new test files, scripts, or utility modules):
+Including `*/src/parser/`, `*/src/corpus/`, `rstviewer/`, `data_manager.py`,
+`du_converter.py`, tests, and scripts. When you edit a file, bring the
+touched code up to this bar. Do not leave a warning or footgun because
+the file started as research code.
 
 - `from __future__ import annotations` at the top of every module
 - Type hints on every public signature
@@ -21,26 +26,19 @@ Anything we author from scratch (e.g. anything that will land under `isanlp_rst/
 - `def f[T](...)`, not `TypeVar` declarations
 - `@override` decorator on subclass overrides
 
-## Mode B — Inherited research modules (surgical)
+Do not change trained architecture or inference maths in the name of style.
 
-These directories are inherited research code from `tchewik/isanlp_rst`. Match their existing style there; no opportunistic refactors:
+## Mode B — retired
 
-- `isanlp_rst/dmrst_parser/src/`
-- `isanlp_rst/universal_parser/src/`
-- `isanlp_rst/dmrst_parser/multiple_runs.py`
-- `isanlp_rst/dmrst_parser/data_manager.py`
-- `isanlp_rst/universal_parser/multiple_runs.py`
-- `isanlp_rst/universal_parser/data_manager.py`
-- `isanlp_rst/utils/du_converter.py`
-- `isanlp_rst/rstviewer/`
-
-These are listed in `tool.ruff.extend-exclude` in `pyproject.toml`. Bug fixes are in scope; aesthetic sweeps are not. If you touch them for a bug fix, follow their existing style (often: no type hints, mixed casing, older idioms).
+The old “inherited research, surgical only, no aesthetic sweeps” split is
+**retired**. There is no second, lower bar. `tool.ruff.extend-exclude` in
+`pyproject.toml` is a lint-backlog list, not permission to leave bugs.
 
 ## Lint and type scope
 
 | Tool | Strict on | Lenient on |
 |---|---|---|
-| ruff | `isanlp_rst/parser.py`, `isanlp_rst/base_predictor.py`, `isanlp_rst/{dmrst,universal}_parser/predictor.py`, `isanlp_rst/utils/mps_init.py`, `tests/`, `scripts/`, anything new | the Mode B directories above |
+| ruff | `isanlp_rst/parser.py`, `isanlp_rst/base_predictor.py`, `isanlp_rst/{dmrst,universal}_parser/predictor.py`, `isanlp_rst/utils/mps_init.py`, `tests/`, `scripts/`, anything new | files still listed in `tool.ruff.extend-exclude` (backlog, not a waiver) |
 | pyright | the same set as ruff (see `tool.pyright.include` in `pyproject.toml`) | everything not in `include` is not type-checked |
 
 If new code lands outside `tool.pyright.include`, add it to that list.

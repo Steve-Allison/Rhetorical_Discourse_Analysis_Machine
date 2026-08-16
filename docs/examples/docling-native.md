@@ -26,7 +26,7 @@ print(f"source: {result.source}, mimetype: {result.source_origin.get('mimetype')
 | `edus` | `tuple[RstEdu, ...]` | left-to-right reading order. |
 | `boundaries` | `tuple[Boundary, ...]` | slides / sections / turns / tables + a `document` fallback. |
 | `source_origin` | `dict[str, Any]` | `doc.origin.model_dump()` — mimetype, binary_hash, filename. |
-| `schema_name`, `schema_version` | `str` | Always `"isanlp_rst_docling"` / `"1.0"` for now. |
+| `schema_name`, `schema_version` | `str` | `"isanlp_rst_docling"` / `"1.1"`. |
 | `tool_version` | `str` | `git describe` when in a checkout; package version when installed; `"unknown"` otherwise. |
 
 ## Batch parsing — inject one Parser

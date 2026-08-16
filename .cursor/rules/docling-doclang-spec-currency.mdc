@@ -1,0 +1,10 @@
+---
+description: Always verify Docling and DocLang spec currency before format-native work
+alwaysApply: true
+---
+
+# Docling / DocLang spec currency
+
+Follow the HARD RULE in [`AGENTS.md`](../../AGENTS.md): before changing `parse_docling`, `parse_doclang`, harvest / boundaries / mappers, fixtures, or contract docs, verify we match **current** Docling and DocLang specs.
+
+The pixi lock and in-repo fixtures are what we last shipped, not the spec. Cite PyPI / upstream `spec.md` / `tests/data/valid` / current `docling-core` source. Do not treat `.claude/memory/` dates as current.

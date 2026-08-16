@@ -61,24 +61,20 @@ def test_pptx_slide_0_self_refs_match_group_children(pptx_doc: DoclingDocument) 
     assert slide_0.self_refs == ("#/texts/0", "#/texts/1", "#/pictures/0")
 
 
-def test_pptx_slide_notes_emitted_for_5_slides(pptx_doc: DoclingDocument) -> None:
-    """Slides 1, 3, 4, 7, 8 have notes-layer items in the pptx fixture."""
+def test_pptx_no_separate_slide_notes_boundaries(pptx_doc: DoclingDocument) -> None:
+    """A slide page is body + notes + pictures together — not a second region."""
     result = detect_boundaries(pptx_doc)
-    notes = [b for b in result if b.kind == "slide-notes"]
-    assert {b.id for b in notes} == {
-        "slide-1-notes",
-        "slide-3-notes",
-        "slide-4-notes",
-        "slide-7-notes",
-        "slide-8-notes",
-    }
+    assert [b for b in result if b.kind == "slide-notes"] == []
+    assert all(not b.id.endswith("-notes") for b in result if b.kind == "slide")
 
 
-def test_pptx_slide_1_notes_self_ref(pptx_doc: DoclingDocument) -> None:
+def test_pptx_slide_page_includes_notes_and_picture(pptx_doc: DoclingDocument) -> None:
+    """Fixture slide-1: body text, speaker notes (#/texts/3), picture (#/pictures/1)."""
     result = detect_boundaries(pptx_doc)
-    notes_1 = next(b for b in result if b.id == "slide-1-notes")
-    assert notes_1.self_refs == ("#/texts/3",)
-    assert notes_1.parent_self_ref == "#/groups/1"
+    slide_1 = next(b for b in result if b.id == "slide-1")
+    assert "#/texts/3" in slide_1.self_refs
+    assert "#/pictures/1" in slide_1.self_refs
+    assert "#/texts/2" in slide_1.self_refs
 
 
 def test_pptx_notes_omitted_when_include_slide_notes_false(
@@ -89,6 +85,7 @@ def test_pptx_notes_omitted_when_include_slide_notes_false(
     assert [b for b in result if b.kind == "slide-notes"] == []
     slide_1 = next(b for b in result if b.id == "slide-1")
     assert "#/texts/3" not in slide_1.self_refs
+    assert "#/pictures/1" in slide_1.self_refs
 
 
 def test_pptx_tables_emitted(pptx_doc: DoclingDocument) -> None:

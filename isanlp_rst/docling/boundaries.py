@@ -8,10 +8,9 @@ Dispatch on ``doc.origin.mimetype``:
 
 - PPTX (either MS or OpenXML mimetype) → slide-group detection. Walks
   ``doc.groups`` for entries with ``label == "chapter"`` and ``name``
-  starting with ``"slide-"``. Each emits one ``slide-N`` boundary; if
-  any of its children land in ``ContentLayer.NOTES`` an additional
-  ``slide-N-notes`` boundary is emitted over just those refs (when
-  ``include_slide_notes`` is True).
+  starting with ``"slide-"``. Each emits one ``slide-N`` page covering
+  on-slide text, picture refs, and speaker notes (``ContentLayer.NOTES``
+  when ``include_slide_notes`` is True). Notes are not a second boundary.
 - ``text/vtt`` → speaker-turn detection. Walks TextItems in iteration
   order; contiguous same-voice runs coalesce into one ``turn-K``
   boundary when ``coalesce_speaker_turns`` (default).
@@ -155,7 +154,6 @@ def _detect_pptx_slide_boundaries(
             continue
 
         slide_refs: list[str] = []
-        notes_refs: list[str] = []
         slide_label: str | None = None
 
         for child_ref in group.children:
@@ -171,8 +169,6 @@ def _detect_pptx_slide_boundaries(
             slide_refs.append(self_ref)
             if slide_label is None and isinstance(child, TitleItem):
                 slide_label = child.text or None
-            if getattr(child, "content_layer", None) == ContentLayer.NOTES:
-                notes_refs.append(self_ref)
 
         boundaries.append(
             Boundary(
@@ -183,16 +179,6 @@ def _detect_pptx_slide_boundaries(
                 self_refs=tuple(slide_refs),
             )
         )
-        if include_slide_notes and notes_refs:
-            boundaries.append(
-                Boundary(
-                    id=f"{group.name}-notes",
-                    kind="slide-notes",
-                    label=None,
-                    parent_self_ref=group.self_ref,
-                    self_refs=tuple(notes_refs),
-                )
-            )
 
     return boundaries
 

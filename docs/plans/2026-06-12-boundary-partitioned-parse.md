@@ -1,6 +1,6 @@
 # Boundary-Partitioned Long-Input Parsing
 
-**Status:** Design (not yet implemented)
+**Status:** Design (not yet implemented). **2026-08-16:** do **not** treat PPTX slides as parse partitions. A slide is a page; the deck is the book; one tree over the deck is the product. Partitioning by `slide-N` would treat pages as chapters. Revisit only if `rst-diag` shows length degradation on whole-deck harvests.
 **Date:** 2026-06-12
 **Driver:** Steve Allison
 **Trigger:** CSM project failing on large slide decks — `content_supply_chain_customer_presentation.docling.json` (98 slides, 1.26 MB) and others exceeding the `max_harvest_chars=200_000` document-level limit.

@@ -315,7 +315,7 @@ for path in document_paths:
 
 | Source format | Harvested by default | Boundary detection |
 | :--- | :--- | :--- |
-| PPTX | slide texts (titles, paragraphs, list items); speaker notes (`ContentLayer.NOTES`); picture VLM descriptions from `meta.description.text` where present | one `slide-N` boundary per slide group; one `slide-N-notes` when the slide carries notes |
+| PPTX | slide texts (titles, paragraphs, list items); speaker notes (`ContentLayer.NOTES`); picture VLM descriptions from `meta.description.text` where present | one `slide-N` page per slide group: on-slide text + notes + picture refs together |
 | PDF | body texts, section headers, list items, picture-children (OCR / chart labels) | `section-N` opened at each `section_header`; any pre-header content lives in a leading `document` boundary |
 | HTML / Markdown | same as PDF | same as PDF |
 | VTT | every transcript line | one `turn-N` per contiguous-same-voice run (`coalesce_speaker_turns=True` default) |
@@ -327,13 +327,13 @@ Toggle the harvest with keyword arguments: `include_picture_descriptions=False`,
 
 - **RST was trained on prose.** Quality is highest on continuous narrative (VTT transcripts, decks with VLM descriptions, prose-heavy PDFs). On bullet-only slide decks without VLM enrichment, or on highly procedural / list-heavy PDFs, relations are dominated by `joint` / `organization` chains — structurally valid but rhetorically thin. Use the result with appropriate scepticism on non-prose input.
 - **Long inputs:** `parse_docling` raises `InputTooLargeError` above `max_harvest_chars=200_000` (configurable). The largest fixture exercised end-to-end is ~18 KB; the parser handles 40 KB+ cleanly in smoke tests but degradation at extreme sizes is empirical.
-- **Cross-boundary relations are preserved.** A relation may touch two slides or sections; `boundary_memberships` lists all touched boundaries. Filter on `len(boundary_memberships) == 1` for within-boundary relations only.
+- **Cross-boundary relations are preserved.** A relation may touch two slides or sections; `boundary_memberships` lists all touched boundaries. Filter on `len(boundary_memberships) == 1` for within-boundary relations only. A PPTX `slide-N` page already includes that slide's notes and picture refs — they are not a second boundary.
 
 ---
 
 ## DocLang-native output
 
-For documents authored in the [DocLang 0.5 XML format](https://github.com/doclang-project/doclang) — the AI-native document standard from IBM, ABBYY, RedHat, HumanSignal, NVIDIA, and Forgis — `isanlp_rst` exposes `parse_doclang()` alongside `parse_docling`. Both are **first-class entry points** with honestly different schemas; neither coerces into the other.
+For documents authored in the [DocLang 0.7 XML format](https://github.com/doclang-project/doclang) — the AI-native document standard from IBM, ABBYY, RedHat, HumanSignal, NVIDIA, and Forgis — `isanlp_rst` exposes `parse_doclang()` alongside `parse_docling`. Both are **first-class entry points** with honestly different schemas; neither coerces into the other.
 
 ```python
 from pathlib import Path
@@ -344,12 +344,12 @@ result = parse_doclang(Path("document.dclg.xml"), device="auto")
 # result.relations:   tuple of RstRelation, indexed by local-name XPath
 # result.edus:        tuple of RstEdu      with the same xpath addressing
 # result.boundaries:  tuple of Boundary    — headings, pages, groups, tables, field_regions
-# result.source_origin: {"format": "doclang", "namespace": ..., "version": "0.5", "head_children": [...]}
+# result.source_origin: {"format": "doclang", "namespace": ..., "version": "<root @version or empty>", "head_children": [...]}
 ```
 
 ### How addresses work
 
-Every element is addressed by a **local-name canonical XPath** of the form `/doclang[1]/heading[2]/text[1]` — 1-based position predicates per local name, namespaces stripped. The same document with or without `xmlns="https://www.doclang.ai/ns/v0"` produces identical paths. (`lxml.etree.ElementTree.getpath()` is **not** used; it emits `/*/*[N]` wildcards on default-namespaced documents.) Paths round-trip 100% against the upstream 40-fixture valid corpus.
+Every element is addressed by a **local-name canonical XPath** of the form `/doclang[1]/heading[2]/text[1]` — 1-based position predicates per local name, namespaces stripped. The same document with or without `xmlns="https://www.doclang.ai/ns/v0"` produces identical paths. (`lxml.etree.ElementTree.getpath()` is **not** used; it emits `/*/*[N]` wildcards on default-namespaced documents.) Paths round-trip 100% against the upstream 42-fixture valid corpus (mirrored 2026-08-16).
 
 ### What enters the DocLang harvest
 
@@ -370,7 +370,7 @@ Toggle each via the corresponding keyword. See the [walkthrough](docs/examples/d
 
 ### Boundary kinds
 
-DocLang doesn't model slides or speaker turns — the boundary set reflects what the spec **does** model: `heading-N`, `page-N` (between `<page_break/>` markers), `group-N` (with `group-N-M` for one level of nesting), `table-N`, `field_region-N`, and a `document` fallback. If your input is PPTX or VTT, use `parse_docling` on the Docling JSON form — those formats give you `slide-N` / `slide-N-notes` / `turn-N` instead.
+DocLang doesn't model slides or speaker turns — the boundary set reflects what the spec **does** model: `heading-N`, `page-N` (between `<page_break/>` markers), `group-N` (with `group-N-M` for one level of nesting), `table-N`, `field_region-N`, and a `document` fallback. If your input is PPTX or VTT, use `parse_docling` on the Docling JSON form — those formats give you `slide-N` (one page per slide: body + notes + pictures) / `turn-N` instead.
 
 ### Validation
 
@@ -379,7 +379,7 @@ DocLang doesn't model slides or speaker turns — the boundary set reflects what
 ### Caveats
 
 - **RST was trained on prose.** Same caveat as `parse_docling`: bullet-only documents and form-shaped content yield rhetorically thin relations dominated by `joint` / `organization` chains.
-- **Stable addressing across producers.** The local-name XPath is reproducible from the parsed XML alone, but it depends on document order. A producer that reorders elements between runs will produce different addresses for the same logical content. DocLang 0.5 has no stable per-element identifier in the spec.
+- **Stable addressing across producers.** The local-name XPath is reproducible from the parsed XML alone, but it depends on document order. A producer that reorders elements between runs will produce different addresses for the same logical content. DocLang 0.7 has no stable per-element identifier in the spec.
 - **`<thread>` is continuation, not identity.** Two spans sharing `thread_id` are fragments of one logical paragraph (typically across a `<page_break/>`). The RST mapper aggregates dedup'd thread ids on each relation as `nucleus_thread_ids` / `satellite_thread_ids`.
 
 ---

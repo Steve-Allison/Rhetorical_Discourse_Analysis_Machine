@@ -40,7 +40,7 @@ if TYPE_CHECKING:
     from isanlp_rst.parser import Parser
 
 SCHEMA_NAME = "isanlp_rst_docling"
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 TOOL_NAME = "isanlp_rst"
 DEFAULT_MAX_HARVEST_CHARS = 200_000
 
