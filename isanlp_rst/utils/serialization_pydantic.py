@@ -11,7 +11,7 @@ Install with ``pip install isanlp_rst[pydantic]``.
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from isanlp.annotation_rst import DiscourseUnit
 
@@ -23,6 +23,13 @@ class RstNode(BaseModel):
     ``right`` recurse. All fields are optional so leaves (no relation /
     nuclearity / proba) validate without ceremony.
     """
+
+    model_config = ConfigDict(
+        extra="forbid",
+        strict=True,
+        frozen=True,
+        validate_default=True,
+    )
 
     id: int | None = None
     relation: str | None = None

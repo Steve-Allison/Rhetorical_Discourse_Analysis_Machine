@@ -15,7 +15,7 @@ import threading
 import warnings
 from pathlib import Path
 from typing import Any
-from typing import IO, Awaitable, Dict, Optional, Union
+from typing import IO, Awaitable, Dict, Optional, TypeVar, Union
 
 from .rstviewer import RenderedRST
 from .rstviewer import main as _rst_main
@@ -55,6 +55,7 @@ __all__ = [
 ]
 
 PathLike = Union[str, os.PathLike]
+T = TypeVar("T")
 
 
 def render(rs3_source: Union[PathLike, bytes, IO[str], IO[bytes]], *,
@@ -142,7 +143,7 @@ def to_pdf(rs3_path: PathLike, pdf_path: PathLike, *,
     _run_coro_sync_result(coro)
 
 
-def _run_coro_sync_result[T](coro: Awaitable[T]) -> T:
+def _run_coro_sync_result(coro: Awaitable[T]) -> T:
     """Execute `coro` to completion and return its result, regardless of asyncio state."""
     try:
         _ = asyncio.get_running_loop()

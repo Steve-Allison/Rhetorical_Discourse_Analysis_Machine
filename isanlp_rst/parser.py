@@ -5,6 +5,8 @@ import os
 from glob import glob
 from typing import TYPE_CHECKING, Optional, Sequence
 
+from isanlp.annotation_rst import DiscourseUnit
+
 from .dmrst_parser.predictor import PredictorDMRST
 from .universal_parser.predictor import PredictorUniRST
 from .utils.parse_result import ParseFailedError, extract_root_tree
@@ -194,6 +196,21 @@ class Parser:
 
     def __call__(self, text: str):
         return self.predictor.parse_rst(text)
+
+    def parse_tree(self, text: str) -> DiscourseUnit:
+        """Parse text and return a typed RST root instead of the legacy mapping payload.
+
+        This is the supported boundary for typed consumers. Predictor-internal
+        transport remains encapsulated inside this package.
+        """
+        result = self.predictor.parse_rst(text)
+        root = extract_root_tree(result)
+        if not isinstance(root, DiscourseUnit):
+            raise ParseFailedError(
+                "Parser produced an RST root with the wrong runtime type: "
+                f"{type(root).__name__}."
+            )
+        return root
 
     def from_edus(self, edus: Sequence[str]):
         """Parse a document using predefined EDUs."""

@@ -6,6 +6,10 @@ build/
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+# local secrets — never commit
+.env
+.env.*
+!.env.example
 # macOS Finder metadata
 .DS_Store
 **/.DS_Store
