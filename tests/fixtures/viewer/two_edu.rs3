@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rst>
+  <header>
+    <relations>
+      <rel name="elaboration" type="rst"/>
+    </relations>
+  </header>
+  <body>
+    <segment id="1" parent="0" relname="elaboration">alpha beta gamma</segment>
+    <segment id="2" parent="0" relname="elaboration">delta epsilon</segment>
+  </body>
+</rst>

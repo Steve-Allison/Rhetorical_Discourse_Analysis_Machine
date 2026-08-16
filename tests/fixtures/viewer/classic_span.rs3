@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rst>
+  <header>
+    <relations>
+      <rel name="elaboration" type="rst"/>
+    </relations>
+  </header>
+  <body>
+    <segment id="1" parent="3" relname="span">nucleus text</segment>
+    <segment id="2" parent="3" relname="elaboration">satellite text</segment>
+    <group id="3" type="span" parent="0"/>
+  </body>
+</rst>

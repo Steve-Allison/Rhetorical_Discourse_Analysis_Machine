@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rst>
+  <header>
+    <relations>
+      <rel name="elaboration" type="rst"/>
+      <rel name="joint" type="multinuc"/>
+    </relations>
+  </header>
+  <body>
+    <segment id="1" parent="3" relname="elaboration">Hello &amp; welcome</segment>
+    <segment id="2" parent="3" relname="joint">second EDU</segment>
+    <group id="3" type="multinuc" parent="0" relname="span"/>
+  </body>
+</rst>

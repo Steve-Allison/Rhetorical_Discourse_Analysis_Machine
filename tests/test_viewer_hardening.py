@@ -1,32 +1,15 @@
 """Viewer hardening: XXE posture, HTML escape, per-render SQLite."""
 
-from __future__ import annotations
-
 from pathlib import Path
 
 import pytest
 
 from isanlp_rst.rstviewer.main import rs3tohtml
 from isanlp_rst.rstviewer.rstweb_reader import read_rst
-from isanlp_rst.rstviewer.rstweb_sql import temporary_db, _resolve_dbpath
+from isanlp_rst.rstviewer.rstweb_sql import _resolve_dbpath, temporary_db
 
-
-_MINIMAL_RS3 = """\
-<?xml version="1.0" encoding="UTF-8"?>
-<rst>
-  <header>
-    <relations>
-      <rel name="elaboration" type="rst"/>
-      <rel name="joint" type="multinuc"/>
-    </relations>
-  </header>
-  <body>
-    <segment id="1" parent="3" relname="elaboration">Hello &amp; welcome</segment>
-    <segment id="2" parent="3" relname="joint">second EDU</segment>
-    <group id="3" type="multinuc" parent="0" relname="span"/>
-  </body>
-</rst>
-"""
+VIEWER_FIXTURES = Path(__file__).resolve().parent / "fixtures" / "viewer"
+MINIMAL_RS3 = (VIEWER_FIXTURES / "minimal.rs3").read_text(encoding="utf-8")
 
 
 def _write_rs3(tmp_path: Path, name: str, body: str) -> Path:
@@ -41,7 +24,7 @@ def test_rs3tohtml_escapes_edu_text(tmp_path: Path) -> None:
     rs3 = _write_rs3(
         tmp_path,
         "xss.rs3",
-        _MINIMAL_RS3.replace(
+        MINIMAL_RS3.replace(
             "Hello &amp; welcome",
             "&lt;script&gt;alert(1)&lt;/script&gt;",
         ),
@@ -52,14 +35,14 @@ def test_rs3tohtml_escapes_edu_text(tmp_path: Path) -> None:
 
 
 def test_rs3tohtml_escapes_basename_in_header(tmp_path: Path) -> None:
-    rs3 = _write_rs3(tmp_path, 'evil"name.rs3', _MINIMAL_RS3)
+    rs3 = _write_rs3(tmp_path, 'evil"name.rs3', MINIMAL_RS3)
     html_out = rs3tohtml(str(rs3))
     assert 'evil"name.rs3' not in html_out
     assert "evil&quot;name.rs3" in html_out
 
 
 def test_rs3tohtml_relation_options_use_json_entries(tmp_path: Path) -> None:
-    rs3 = _write_rs3(tmp_path, "opts.rs3", _MINIMAL_RS3)
+    rs3 = _write_rs3(tmp_path, "opts.rs3", MINIMAL_RS3)
     html_out = rs3tohtml(str(rs3))
     assert "var multi_rel_entries =" in html_out
     assert "var rst_rel_entries =" in html_out

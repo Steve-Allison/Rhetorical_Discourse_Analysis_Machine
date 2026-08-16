@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rst>
+  <header>
+    <relations>
+      <rel name="schemarel"/>
+      <rel name="elaboration" type="rst"/>
+    </relations>
+  </header>
+  <body>
+    <segment id="1" parent="0" relname="schemarel">x</segment>
+  </body>
+</rst>

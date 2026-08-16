@@ -4,14 +4,18 @@ One quality bar for the whole repo. Treat every module as Steve Allison's
 production Python. Provenance (Elena / `tchewik`) is not a style freeze.
 See [`AGENTS.md`](../../AGENTS.md).
 
-## Mode A — Modern Python (3.13+ idioms, every file you touch)
+## Mode A — Modern Python (3.14 idioms, every file you touch)
 
 Including `*/src/parser/`, `*/src/corpus/`, `rstviewer/`, `data_manager.py`,
 `du_converter.py`, tests, and scripts. When you edit a file, bring the
 touched code up to this bar. Do not leave a warning or footgun because
 the file started as research code.
 
-- `from __future__ import annotations` at the top of every module
+- Do **not** add `from __future__ import annotations`. 3.14 deferred
+  evaluation (PEP 649 / 749) is the default; the future import *stringifies*
+  annotations (PEP 563) and is scheduled for deprecation after 3.13 EOL
+  (2029), then removal. Forward references work unquoted. When you touch a
+  module that still has the future import, delete it.
 - Type hints on every public signature
 - `X | None`, never `Optional[X]`
 - `@dataclass(frozen=True, slots=True)` for value types
@@ -36,10 +40,10 @@ The old “inherited research, surgical only, no aesthetic sweeps” split is
 
 ## Lint and type scope
 
-| Tool | Strict on | Lenient on |
-|---|---|---|
-| ruff | `isanlp_rst/parser.py`, `isanlp_rst/base_predictor.py`, `isanlp_rst/{dmrst,universal}_parser/predictor.py`, `isanlp_rst/utils/mps_init.py`, `tests/`, `scripts/`, anything new | files still listed in `tool.ruff.extend-exclude` (backlog, not a waiver) |
-| pyright | the same set as ruff (see `tool.pyright.include` in `pyproject.toml`) | everything not in `include` is not type-checked |
+| Tool | Strict on |
+|---|---|
+| ruff | `isanlp_rst/` (including `rstviewer`), `tests/`, `scripts/` |
+| pyright | the same set (`tool.pyright.include` / `exclude` in `pyproject.toml`) |
 
 If new code lands outside `tool.pyright.include`, add it to that list.
 
@@ -60,7 +64,7 @@ If new code lands outside `tool.pyright.include`, add it to that list.
 
 ## Gotchas
 
-- **Python `requires-python = ">=3.10"`** in `pyproject.toml`. Pixi / CI use **Python 3.12** (`python = "3.12.*"` in `[tool.pixi.dependencies]`). The `>=3.10` floor is best-effort for downstream installs; this project's tested path is 3.12 on macOS arm64. Use 3.13+ idioms for new code; trust the `requires-python` floor for compatibility.
+- **Python `requires-python = ">=3.14"`** in `pyproject.toml`. Pixi / CI use **Python 3.14** (`python = "3.14.*"`). Avoid exactly 3.14.1 (`networkx` excludes it). Annotations use 3.14 deferred evaluation; do not reintroduce PEP 563 stringification.
 - **`numpy>=1.26.4`** tracks latest (resolves to 2.5.0 as of 2026-06-27). The old `==1.26.4` exact pin was lifted after verifying numpy 2.x is green across the full suite; transformers 5.x only requires `numpy>=1.17`.
 - **HF revisions are the version channel.** `hf_model_version` maps to a git ref on the HF repo — switching versions re-downloads weights / config / relation table.
 - **`<P>` token** is added to the tokenizer at load time (`tokenizer.add_tokens(['<P>'])`) and the transformer embeddings are resized accordingly. Anything that re-instantiates the tokenizer must replicate this.

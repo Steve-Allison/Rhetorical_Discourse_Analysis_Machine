@@ -1,7 +1,5 @@
 """Unit tests for viewer convenience helpers in ``isanlp_rst``."""
 
-from __future__ import annotations
-
 from pathlib import Path
 from unittest.mock import patch
 

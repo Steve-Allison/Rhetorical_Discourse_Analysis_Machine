@@ -1,239 +1,218 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 """Utilities for parsing ``.rs3`` and text files into in-memory objects."""
 
-from __future__ import annotations
-
 import re
-from collections import OrderedDict
-from typing import Dict
+from pathlib import Path
 from xml.dom import minidom
+from typing import cast
+from xml.dom.minidom import Document, Text
 from xml.parsers.expat import ExpatError
 
 from lxml import etree
 
-from .rstweb_classes import NODE, get_left_right
+from .rstweb_classes import NODE, NodeMap, get_left_right
+
+__all__ = ["read_rst", "read_text", "read_relfile"]
 
 # Same XXE posture as DocLang loader — RS3 is untrusted input.
 _SECURE_PARSER = etree.XMLParser(
-	resolve_entities=False,
-	no_network=True,
-	dtd_validation=False,
-	load_dtd=False,
-	huge_tree=False,
+    resolve_entities=False,
+    no_network=True,
+    dtd_validation=False,
+    load_dtd=False,
+    huge_tree=False,
 )
 
-
-def _parse_rs3_dom(xml_content: str):
-	"""Parse RS3 XML with a hardened lxml parser, then expose a minidom tree.
-
-	Entity expansion / network DTD fetches are disabled before any DOM is
-	built. The minidom step is only for the existing attribute/node walkers.
-	"""
-	try:
-		root = etree.fromstring(
-			xml_content.encode("utf-8"), parser=_SECURE_PARSER
-		)
-	except etree.XMLSyntaxError as exc:
-		raise ExpatError(str(exc)) from exc
-	safe_xml = etree.tostring(root, encoding="unicode")
-	return minidom.parseString(safe_xml)
+_REL_UNSAFE = re.compile(r"[:;,]")
 
 
-def read_rst(filename, rel_hash):
-	"""parse an RS3 file into a representation that can be stored in SQLite.
+def _parse_rs3_dom(xml_content: str) -> Document:
+    """Parse RS3 XML with a hardened lxml parser, then expose a minidom tree.
 
-	Note: `rel_hash` is never returned, so the calling function defines it
-	as an empty dict and passes it to `read_rst`. After the function
-	is run, the calling function has a filled `rel_hash`, cf.
-	https://pythonconquerstheuniverse.wordpress.com/category/python-gotchas/
-
-	Parameters
-	----------
-	filename : unicode
-		path to the RS3 file to be imported
-	rel_hash : dict
-		dict into which the RST relation names / types defined in the file
-		are stored (cf. `rstweb_sql.get_rst_rels()`)
-
-	Returns
-	-------
-	elements : dict(str: NODE)
-		a map from a node ID to a NODE instance. Each NODE represents an
-		element from an RST tree (and links to its parent NODE)
-	"""
-	try:
-		with open(filename, "r", encoding="utf-8") as f:
-			xml_content = f.read()
-	except OSError as err:
-		return f"Unable to read '{filename}': {err.strerror}."
-
-	try:
-		xmldoc = _parse_rs3_dom(xml_content)
-	except ExpatError:
-		message = "Invalid .rs3 file"
-		return message
-
-	nodes = []
-	ordered_id = {}
-	schemas = []
-	default_rst = ""
-
-	# Get relation names and their types, append type suffix to disambiguate
-	# relation names that can be both RST and multinuc
-	item_list = xmldoc.getElementsByTagName("rel")
-	for rel in item_list:
-		relname = re.sub(r"[:;,]","",rel.attributes["name"].value)
-		if rel.hasAttribute("type"):
-			rel_hash[relname+"_"+rel.attributes["type"].value[0:1]] = rel.attributes["type"].value
-			if rel.attributes["type"].value == "rst" and default_rst=="":
-				default_rst = relname+"_"+rel.attributes["type"].value[0:1]
-		else:  # This is a schema relation
-			schemas.append(relname)
+    Entity expansion / network DTD fetches are disabled before any DOM is
+    built. The minidom step is only for the existing attribute/node walkers.
+    """
+    try:
+        root = etree.fromstring(xml_content.encode("utf-8"), parser=_SECURE_PARSER)
+    except etree.XMLSyntaxError as exc:
+        raise ExpatError(str(exc)) from exc
+    safe_xml = etree.tostring(root, encoding="unicode")
+    return minidom.parseString(safe_xml)
 
 
-	item_list = xmldoc.getElementsByTagName("segment")
-	if len(item_list) < 1:
-		return '<div class="warn">No segment elements found in .rs3 file</div>'
-
-	id_counter = 0
+def _sanitize_relname(relname: str) -> str:
+    return _REL_UNSAFE.sub("", relname)
 
 
-	# Get hash to reorder EDUs and spans according to the order of appearance in .rs3 file
-	for segment in item_list:
-		id_counter += 1
-		ordered_id[segment.attributes["id"].value] = id_counter
-	item_list = xmldoc.getElementsByTagName("group")
-	for group in item_list:
-		id_counter += 1
-		ordered_id[group.attributes["id"].value] = id_counter
-	ordered_id["0"] = 0
-
-	element_types={}
-	node_elements = xmldoc.getElementsByTagName("segment")
-	for element in node_elements:
-		element_types[element.attributes["id"].value] = "edu"
-	node_elements = xmldoc.getElementsByTagName("group")
-	for element in node_elements:
-		element_types[element.attributes["id"].value] = element.attributes["type"].value
-
-	id_counter = 0
-	item_list = xmldoc.getElementsByTagName("segment")
-	for segment in item_list:
-		id_counter += 1
-		if segment.hasAttribute("parent"):
-			parent = segment.attributes["parent"].value
-		else:
-			parent = "0"
-		if segment.hasAttribute("relname"):
-			relname = segment.attributes["relname"].value
-		else:
-			relname = default_rst
-
-		# Tolerate schemas, but no real support yet:
-		if relname in schemas:
-			relname = "span"
-
-			relname = re.sub(r"[:;,]","",relname) #remove characters used for undo logging, not allowed in rel names
-		# Note that in RSTTool, a multinuc child with a multinuc compatible relation is always interpreted as multinuc
-		if parent in element_types:
-			if element_types[parent] == "multinuc" and relname+"_m" in rel_hash:
-				relname = relname+"_m"
-			elif relname !="span":
-				relname = relname+"_r"
-		else:
-			if not relname.endswith("_r") and len(relname)>0:
-				relname = relname+"_r"
-		edu_id = segment.attributes["id"].value
-		contents = segment.childNodes[0].data.strip()
-		nodes.append([str(ordered_id[edu_id]), id_counter, id_counter, str(ordered_id[parent]), 0, "edu", contents, relname])
-
-	item_list = xmldoc.getElementsByTagName("group")
-	for group in item_list:
-		if group.attributes.length == 4:
-			parent = group.attributes["parent"].value
-		else:
-			parent = "0"
-		if group.attributes.length == 4:
-			relname = group.attributes["relname"].value
-			# Tolerate schemas by treating as spans
-			if relname in schemas:
-				relname = "span"
-				
-			relname = re.sub(r"[:;,]","",relname) #remove characters used for undo logging, not allowed in rel names
-			# Note that in RSTTool, a multinuc child with a multinuc compatible relation is always interpreted as multinuc
-			if parent in element_types:
-				if element_types[parent] == "multinuc" and relname+"_m" in rel_hash:
-					relname = relname+"_m"
-				elif relname !="span":
-					relname = relname+"_r"
-			else:
-				relname = ""
-		else:
-			relname = ""
-		group_id = group.attributes["id"].value
-		group_type = group.attributes["type"].value
-		contents = ""
-		nodes.append([str(ordered_id[group_id]),0,0,str(ordered_id[parent]),0,group_type,contents,relname])
+type NodeRow = tuple[str, int, int, str, int, str, str, str]
 
 
-	elements = {}
-	for row in nodes:
-		elements[row[0]] = NODE(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],"")
+def read_rst(filename: str | Path, rel_hash: dict[str, str]) -> NodeMap | str:
+    """Parse an RS3 file into a representation that can be stored in SQLite.
 
-	for element in elements:
-		if elements[element].kind == "edu":
-			get_left_right(element, elements,0,0,rel_hash)
+    ``rel_hash`` is a mutable out-parameter: the caller passes an empty dict
+    and reads relation name → type after return.
+    """
+    try:
+        xml_content = Path(filename).read_text(encoding="utf-8")
+    except OSError as err:
+        return f"Unable to read '{filename}': {err.strerror}."
 
-	return elements
+    try:
+        xmldoc = _parse_rs3_dom(xml_content)
+    except ExpatError:
+        return "Invalid .rs3 file"
+
+    nodes: list[NodeRow] = []
+    ordered_id: dict[str, int] = {}
+    schemas: list[str] = []
+    default_rst = ""
+
+    for rel in xmldoc.getElementsByTagName("rel"):
+        relname = _sanitize_relname(rel.attributes["name"].value)
+        if rel.hasAttribute("type"):
+            rel_type = rel.attributes["type"].value
+            keyed = f"{relname}_{rel_type[0:1]}"
+            rel_hash[keyed] = rel_type
+            if rel_type == "rst" and default_rst == "":
+                default_rst = keyed
+        else:
+            schemas.append(relname)
+
+    item_list = xmldoc.getElementsByTagName("segment")
+    if len(item_list) < 1:
+        return '<div class="warn">No segment elements found in .rs3 file</div>'
+
+    id_counter = 0
+    for segment in item_list:
+        id_counter += 1
+        ordered_id[segment.attributes["id"].value] = id_counter
+    for group in xmldoc.getElementsByTagName("group"):
+        id_counter += 1
+        ordered_id[group.attributes["id"].value] = id_counter
+    ordered_id["0"] = 0
+
+    element_types: dict[str, str] = {}
+    for element in xmldoc.getElementsByTagName("segment"):
+        element_types[element.attributes["id"].value] = "edu"
+    for element in xmldoc.getElementsByTagName("group"):
+        element_types[element.attributes["id"].value] = element.attributes["type"].value
+
+    id_counter = 0
+    for segment in xmldoc.getElementsByTagName("segment"):
+        id_counter += 1
+        parent = segment.attributes["parent"].value if segment.hasAttribute("parent") else "0"
+        relname = segment.attributes["relname"].value if segment.hasAttribute("relname") else default_rst
+
+        if relname in schemas:
+            relname = "span"
+            relname = _sanitize_relname(relname)
+        if parent in element_types:
+            if element_types[parent] == "multinuc" and f"{relname}_m" in rel_hash:
+                relname = f"{relname}_m"
+            elif relname != "span":
+                relname = f"{relname}_r"
+        elif not relname.endswith("_r") and len(relname) > 0:
+            relname = f"{relname}_r"
+        edu_id = segment.attributes["id"].value
+        contents = cast(Text, segment.childNodes[0]).data.strip()
+        nodes.append(
+            (
+                str(ordered_id[edu_id]),
+                id_counter,
+                id_counter,
+                str(ordered_id[parent]),
+                0,
+                "edu",
+                contents,
+                relname,
+            )
+        )
+
+    for group in xmldoc.getElementsByTagName("group"):
+        if group.attributes.length == 4:
+            parent = group.attributes["parent"].value
+        else:
+            parent = "0"
+        if group.attributes.length == 4:
+            relname = group.attributes["relname"].value
+            if relname in schemas:
+                relname = "span"
+            relname = _sanitize_relname(relname)
+            if parent in element_types:
+                if element_types[parent] == "multinuc" and f"{relname}_m" in rel_hash:
+                    relname = f"{relname}_m"
+                elif relname != "span":
+                    relname = f"{relname}_r"
+            else:
+                relname = ""
+        else:
+            relname = ""
+        group_id = group.attributes["id"].value
+        group_type = group.attributes["type"].value
+        nodes.append(
+            (
+                str(ordered_id[group_id]),
+                0,
+                0,
+                str(ordered_id[parent]),
+                0,
+                group_type,
+                "",
+                relname,
+            )
+        )
+
+    elements: NodeMap = {}
+    for row in nodes:
+        elements[row[0]] = NODE(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], "")
+
+    for element in elements:
+        if elements[element].kind == "edu":
+            get_left_right(element, elements, 0, 0, rel_hash)
+
+    return elements
 
 
-def read_text(filename,rel_hash):
-	id_counter = 0
-	nodes = {}
-	with open(filename, "r", encoding="utf-8") as f:
-		lines = f.readlines()
-	#Add some default relations if none have been supplied (at least 1 rst and 1 multinuc)
-	if len(rel_hash) < 2:
-		rel_hash["elaboration_r"] = "rst"
-		rel_hash["joint_m"] = "multinuc"
+def read_text(filename: str | Path, rel_hash: dict[str, str]) -> NodeMap:
+    id_counter = 0
+    nodes: NodeMap = {}
+    lines = Path(filename).read_text(encoding="utf-8").splitlines(keepends=True)
+    if len(rel_hash) < 2:
+        rel_hash["elaboration_r"] = "rst"
+        rel_hash["joint_m"] = "multinuc"
 
-	rels = OrderedDict(sorted(rel_hash.items()))
+    rels = dict(sorted(rel_hash.items()))
+    try:
+        first_relname, first_reltype = next(iter(rels.items()))
+    except StopIteration as exc:
+        raise ValueError("Relation map is empty; expected at least one relation.") from exc
 
-	try:
-		first_relname, first_reltype = next(iter(rels.items()))
-	except StopIteration:
-		raise ValueError("Relation map is empty; expected at least one relation.")
+    for line in lines:
+        id_counter += 1
+        nodes[str(id_counter)] = NODE(
+            str(id_counter),
+            id_counter,
+            id_counter,
+            "0",
+            0,
+            "edu",
+            line.strip(),
+            first_relname,
+            first_reltype,
+        )
 
-	for line in lines:
-		id_counter += 1
-		nodes[str(id_counter)] = NODE(
-			str(id_counter),
-			id_counter,
-			id_counter,
-			"0",
-			0,
-			"edu",
-			line.strip(),
-			first_relname,
-			first_reltype,
-		)
-
-	return nodes
+    return nodes
 
 
-def read_relfile(filename):
-	with open(filename, "r", encoding="utf-8") as f:
-		rel_lines = f.readlines()
-
-	rels: Dict[str, str] = {}
-	for line in rel_lines:
-		if line.find("\t") > 0:
-			rel_data = line.split("\t")
-			if rel_data[1].strip() == "rst":
-				rels[rel_data[0].strip()+"_r"]="rst"
-			elif rel_data[1].strip() == "multinuc":
-				rels[rel_data[0].strip()+"_m"]="multinuc"
-
-	return rels
+def read_relfile(filename: str | Path) -> dict[str, str]:
+    rel_lines = Path(filename).read_text(encoding="utf-8").splitlines(keepends=True)
+    rels: dict[str, str] = {}
+    for line in rel_lines:
+        if line.find("\t") > 0:
+            rel_data = line.split("\t")
+            match rel_data[1].strip():
+                case "rst":
+                    rels[f"{rel_data[0].strip()}_r"] = "rst"
+                case "multinuc":
+                    rels[f"{rel_data[0].strip()}_m"] = "multinuc"
+    return rels

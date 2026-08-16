@@ -64,6 +64,8 @@ Standalone subpackage ported from `rstviewer`. Public surface lives in the packa
 - `to_png(rs3_path, png_path)` / `to_pdf(rs3_path, pdf_path)` — Playwright / Chromium-driven; both have sync and async paths. They detect a running event loop (e.g. inside Jupyter) and dispatch via a worker thread when needed.
 - `DiscourseUnit.to_rs3(filename, encoding='utf8')` (provided by the `iinemo/isanlp` runtime — verified by reading the pinned commit's `src/isanlp/annotation_rst.py:81`) is the bridge from a parsed tree to the visualiser format.
 
+Chromium launch, the offline navigation guard, viewport JS, graph-bbox JS, and PNG whitespace trim live in [`isanlp_rst/rstviewer/_chromium.py`](../../isanlp_rst/rstviewer/_chromium.py). The viewer is on the same ruff / pyright bar as the rest of `isanlp_rst/`.
+
 The async / sync dispatch in `isanlp_rst/__init__.py:_run_coro_sync_result` is load-bearing — don't simplify it without checking notebook compatibility.
 
 ## Memory management
@@ -72,7 +74,7 @@ The async / sync dispatch in `isanlp_rst/__init__.py:_run_coro_sync_result` is l
 
 ```python
 res['rst'][0].clear_textfields()      # drop .text on every node — keep structure
-# … pickle / store …
+# … serialise / store …
 tree.fill_textfields(full_text)       # repopulate from the original document
 ```
 
