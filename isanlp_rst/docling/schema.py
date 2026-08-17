@@ -152,3 +152,144 @@ class DoclingRstResult:
     def to_json(self, *, indent: int | None = 2) -> str:
         """JSON string of the result."""
         return json.dumps(asdict(self), ensure_ascii=False, indent=indent)
+
+    def to_format_analysis(self) -> Any:
+        """Project result into a typed FormatRstAnalysis contract."""
+        from isanlp_rst.contracts import (
+            FormatRstAnalysis,
+            NodeKindEnum,
+            NuclearityPatternEnum,
+            OutputFormalismEnum,
+            PrimaryRelationEdge,
+            ProvenanceRecord,
+            RstAnalysis,
+            RstNode,
+        )
+
+        nodes: list[RstNode] = []
+        primary_edges: list[PrimaryRelationEdge] = []
+        node_map: dict[str, int] = {}
+
+        for edu in self.edus:
+            for ref in edu.self_refs:
+                node_map[ref] = edu.id
+            nodes.append(
+                RstNode(
+                    node_id=edu.id,
+                    kind=NodeKindEnum.EDU,
+                    edu_span=(edu.id, edu.id),
+                    char_span=(0, 0),
+                    text="",
+                )
+            )
+
+        for rel in self.relations:
+            nuc = (
+                NuclearityPatternEnum(rel.nuclearity)
+                if rel.nuclearity in NuclearityPatternEnum
+                else NuclearityPatternEnum.NS
+            )
+            nodes.append(
+                RstNode(
+                    node_id=rel.id,
+                    kind=NodeKindEnum.MULTINUCLEAR_GROUP if rel.nuclearity == "NN" else NodeKindEnum.SPAN,
+                    edu_span=(min(rel.left_id, rel.right_id), max(rel.left_id, rel.right_id)),
+                    char_span=(0, 0),
+                    text="",
+                )
+            )
+            primary_edges.append(
+                PrimaryRelationEdge(
+                    edge_id=f"e_{rel.id}_{rel.left_id}",
+                    parent_id=rel.id,
+                    child_id=rel.left_id,
+                    relation_raw=rel.relation,
+                    relation_concept=rel.relation,
+                    nuclearity=nuc,
+                )
+            )
+            primary_edges.append(
+                PrimaryRelationEdge(
+                    edge_id=f"e_{rel.id}_{rel.right_id}",
+                    parent_id=rel.id,
+                    child_id=rel.right_id,
+                    relation_raw=rel.relation,
+                    relation_concept=rel.relation,
+                    nuclearity=nuc,
+                )
+            )
+
+        doc_analysis = RstAnalysis(
+            document_id=self.source,
+            formalism=OutputFormalismEnum.RST_TREE,
+            nodes=tuple(nodes),
+            primary_edges=tuple(primary_edges),
+            provenance=ProvenanceRecord(
+                producer=self.tool,
+                software_version=self.tool_version,
+                model_id=self.model_version,
+            ),
+        )
+
+        table_map: dict[str, RstAnalysis] = {}
+        for tbl in self.table_analyses:
+            tbl_nodes: list[RstNode] = []
+            tbl_edges: list[PrimaryRelationEdge] = []
+            for edu in tbl.edus:
+                tbl_nodes.append(
+                    RstNode(
+                        node_id=edu.id,
+                        kind=NodeKindEnum.EDU,
+                        edu_span=(edu.id, edu.id),
+                        char_span=(0, 0),
+                        text="",
+                    )
+                )
+            for rel in tbl.relations:
+                nuc = (
+                    NuclearityPatternEnum(rel.nuclearity)
+                    if rel.nuclearity in NuclearityPatternEnum
+                    else NuclearityPatternEnum.NS
+                )
+                tbl_nodes.append(
+                    RstNode(
+                        node_id=rel.id,
+                        kind=NodeKindEnum.MULTINUCLEAR_GROUP if rel.nuclearity == "NN" else NodeKindEnum.SPAN,
+                        edu_span=(min(rel.left_id, rel.right_id), max(rel.left_id, rel.right_id)),
+                        char_span=(0, 0),
+                        text="",
+                    )
+                )
+                tbl_edges.append(
+                    PrimaryRelationEdge(
+                        edge_id=f"e_{rel.id}_{rel.left_id}",
+                        parent_id=rel.id,
+                        child_id=rel.left_id,
+                        relation_raw=rel.relation,
+                        relation_concept=rel.relation,
+                        nuclearity=nuc,
+                    )
+                )
+                tbl_edges.append(
+                    PrimaryRelationEdge(
+                        edge_id=f"e_{rel.id}_{rel.right_id}",
+                        parent_id=rel.id,
+                        child_id=rel.right_id,
+                        relation_raw=rel.relation,
+                        relation_concept=rel.relation,
+                        nuclearity=nuc,
+                    )
+                )
+            table_map[tbl.id] = RstAnalysis(
+                document_id=f"{self.source}_{tbl.id}",
+                formalism=OutputFormalismEnum.RST_TREE,
+                nodes=tuple(tbl_nodes),
+                primary_edges=tuple(tbl_edges),
+            )
+
+        return FormatRstAnalysis(
+            document_analysis=doc_analysis,
+            table_analyses=table_map,
+            node_map=node_map,
+        )
+

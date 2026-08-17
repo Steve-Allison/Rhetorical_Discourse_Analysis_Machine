@@ -1,0 +1,192 @@
+# Immutable ontology lock for isanlp_rst
+schema_version: "1.0.0"
+release_version: "4.1.0-discourse"
+release_status: "released"
+sha256_digest: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+coarse_concepts:
+  - Attribution
+  - Background
+  - Cause
+  - Comparison
+  - Condition
+  - Contrast
+  - Elaboration
+  - Enablement
+  - Evaluation
+  - Explanation
+  - Joint
+  - Manner-Means
+  - Same-unit
+  - Summary
+  - Temporal
+  - Textual-organization
+  - Topic-Change
+  - Topic-Comment
+
+rst_dt_fine_to_coarse:
+  attribution: Attribution
+  attribution-negative: Attribution
+  background: Background
+  circumstance: Background
+  cause: Cause
+  cause-result: Cause
+  consequence: Cause
+  result: Cause
+  analogy: Comparison
+  comparison: Comparison
+  preference: Comparison
+  proportion: Comparison
+  condition: Condition
+  contingency: Condition
+  hypothetical: Condition
+  otherwise: Condition
+  antithesis: Contrast
+  concession: Contrast
+  contrast: Contrast
+  definition: Elaboration
+  elaboration-additional: Elaboration
+  elaboration-general-specific: Elaboration
+  elaboration-object-attribute: Elaboration
+  elaboration-part-whole: Elaboration
+  elaboration-process-step: Elaboration
+  elaboration-set-member: Elaboration
+  example: Elaboration
+  enablement: Enablement
+  purpose: Enablement
+  comment: Evaluation
+  conclusion: Evaluation
+  evaluation: Evaluation
+  interpretation: Evaluation
+  evidence: Explanation
+  explanation-argumentative: Explanation
+  reason: Explanation
+  disjunction: Joint
+  list: Joint
+  manner: Manner-Means
+  means: Manner-Means
+  same-unit: Same-unit
+  restatement: Summary
+  summary: Summary
+  inverted-sequence: Temporal
+  sequence: Temporal
+  temporal-after: Temporal
+  temporal-before: Temporal
+  temporal-same-time: Temporal
+  textual-organization: Textual-organization
+  textualorganization: Textual-organization
+  topic-drift: Topic-Change
+  topic-shift: Topic-Change
+  comment-topic: Topic-Comment
+  problem-solution: Topic-Comment
+  question-answer: Topic-Comment
+  rhetorical-question: Topic-Comment
+  statement-response: Topic-Comment
+  topic-comment: Topic-Comment
+
+gum_fine_to_coarse:
+  adversative-antithesis: adversative
+  adversative-concession: adversative
+  adversative-contrast: adversative
+  attribution-negative: attribution
+  attribution-positive: attribution
+  causal-cause: causal
+  causal-result: causal
+  context-background: context
+  context-circumstance: context
+  contingency-condition: contingency
+  elaboration-additional: elaboration
+  elaboration-attribute: elaboration
+  evaluation-comment: evaluation
+  explanation-evidence: explanation
+  explanation-justify: explanation
+  explanation-motivation: explanation
+  joint-disjunction: joint
+  joint-list: joint
+  joint-other: joint
+  joint-sequence: joint
+  mode-manner: mode
+  mode-means: mode
+  organization-heading: organization
+  organization-phatic: organization
+  organization-preparation: organization
+  purpose-attribute: purpose
+  purpose-goal: purpose
+  restatement-partial: restatement
+  restatement-repetition: restatement
+  same-unit: same-unit
+  topic-question: topic
+  topic-solutionhood: topic
+
+dmrst_gum_model_27:
+  0: { label: "adversative", nuclearity: "NN", concept: "Contrast" }
+  1: { label: "adversative", nuclearity: "NS", concept: "Contrast" }
+  2: { label: "adversative", nuclearity: "SN", concept: "Contrast" }
+  3: { label: "attribution", nuclearity: "NS", concept: "Attribution" }
+  4: { label: "attribution", nuclearity: "SN", concept: "Attribution" }
+  5: { label: "causal", nuclearity: "NS", concept: "Cause" }
+  6: { label: "causal", nuclearity: "SN", concept: "Cause" }
+  7: { label: "context", nuclearity: "NS", concept: "Background" }
+  8: { label: "context", nuclearity: "SN", concept: "Background" }
+  9: { label: "contingency", nuclearity: "NS", concept: "Condition" }
+  10: { label: "contingency", nuclearity: "SN", concept: "Condition" }
+  11: { label: "elaboration", nuclearity: "NS", concept: "Elaboration" }
+  12: { label: "evaluation", nuclearity: "NS", concept: "Evaluation" }
+  13: { label: "evaluation", nuclearity: "SN", concept: "Evaluation" }
+  14: { label: "explanation", nuclearity: "NS", concept: "Explanation" }
+  15: { label: "explanation", nuclearity: "SN", concept: "Explanation" }
+  16: { label: "joint", nuclearity: "NN", concept: "Joint" }
+  17: { label: "mode", nuclearity: "NS", concept: "Manner-Means" }
+  18: { label: "mode", nuclearity: "SN", concept: "Manner-Means" }
+  19: { label: "organization", nuclearity: "NS", concept: "Textual-organization" }
+  20: { label: "organization", nuclearity: "SN", concept: "Textual-organization" }
+  21: { label: "purpose", nuclearity: "NS", concept: "Enablement" }
+  22: { label: "purpose", nuclearity: "SN", concept: "Enablement" }
+  23: { label: "restatement", nuclearity: "NN", concept: "Summary" }
+  24: { label: "restatement", nuclearity: "NS", concept: "Summary" }
+  25: { label: "same-unit", nuclearity: "NN", concept: "Same-unit" }
+  26: { label: "topic", nuclearity: "SN", concept: "Topic-Comment" }
+
+dmrst_rstdt_model_42:
+  0: { label: "Elaboration", nuclearity: "NS", concept: "Elaboration" }
+  1: { label: "Attribution", nuclearity: "SN", concept: "Attribution" }
+  2: { label: "Joint", nuclearity: "NN", concept: "Joint" }
+  3: { label: "same-unit", nuclearity: "NN", concept: "Same-unit" }
+  4: { label: "Attribution", nuclearity: "NS", concept: "Attribution" }
+  5: { label: "Explanation", nuclearity: "NS", concept: "Explanation" }
+  6: { label: "Enablement", nuclearity: "NS", concept: "Enablement" }
+  7: { label: "Background", nuclearity: "NS", concept: "Background" }
+  8: { label: "Evaluation", nuclearity: "NS", concept: "Evaluation" }
+  9: { label: "Cause", nuclearity: "NS", concept: "Cause" }
+  10: { label: "Contrast", nuclearity: "SN", concept: "Contrast" }
+  11: { label: "Contrast", nuclearity: "NN", concept: "Contrast" }
+  12: { label: "Background", nuclearity: "SN", concept: "Background" }
+  13: { label: "Temporal", nuclearity: "NN", concept: "Temporal" }
+  14: { label: "Comparison", nuclearity: "NN", concept: "Comparison" }
+  15: { label: "Contrast", nuclearity: "NS", concept: "Contrast" }
+  16: { label: "Topic-Change", nuclearity: "NN", concept: "Topic-Change" }
+  17: { label: "Manner-Means", nuclearity: "NS", concept: "Manner-Means" }
+  18: { label: "textual-organization", nuclearity: "NN", concept: "Textual-organization" }
+  19: { label: "Temporal", nuclearity: "NS", concept: "Temporal" }
+  20: { label: "Condition", nuclearity: "NS", concept: "Condition" }
+  21: { label: "Condition", nuclearity: "SN", concept: "Condition" }
+  22: { label: "Cause", nuclearity: "SN", concept: "Cause" }
+  23: { label: "Summary", nuclearity: "NS", concept: "Summary" }
+  24: { label: "Topic-Comment", nuclearity: "NN", concept: "Topic-Comment" }
+  25: { label: "Cause", nuclearity: "NN", concept: "Cause" }
+  26: { label: "Summary", nuclearity: "NN", concept: "Summary" }
+  27: { label: "Evaluation", nuclearity: "SN", concept: "Evaluation" }
+  28: { label: "Temporal", nuclearity: "SN", concept: "Temporal" }
+  29: { label: "Explanation", nuclearity: "SN", concept: "Explanation" }
+  30: { label: "Enablement", nuclearity: "SN", concept: "Enablement" }
+  31: { label: "Topic-Comment", nuclearity: "NS", concept: "Topic-Comment" }
+  32: { label: "Comparison", nuclearity: "NS", concept: "Comparison" }
+  33: { label: "Elaboration", nuclearity: "SN", concept: "Elaboration" }
+  34: { label: "Manner-Means", nuclearity: "SN", concept: "Manner-Means" }
+  35: { label: "Comparison", nuclearity: "SN", concept: "Comparison" }
+  36: { label: "Summary", nuclearity: "SN", concept: "Summary" }
+  37: { label: "Condition", nuclearity: "NN", concept: "Condition" }
+  38: { label: "Topic-Comment", nuclearity: "SN", concept: "Topic-Comment" }
+  39: { label: "Topic-Change", nuclearity: "NS", concept: "Topic-Change" }
+  40: { label: "Evaluation", nuclearity: "NN", concept: "Evaluation" }
+  41: { label: "Explanation", nuclearity: "NN", concept: "Explanation" }

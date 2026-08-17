@@ -13,6 +13,7 @@ __all__ = ["ParseFailedError", "Parser", "extract_root_tree"]
 
 if TYPE_CHECKING:
     import torch
+    from isanlp_rst.contracts import RstAnalysis, RstDocument
 
 
 class Parser:
@@ -229,3 +230,46 @@ class Parser:
     def from_edus(self, edus: Sequence[str]):
         """Parse a document using predefined EDUs."""
         return self.predictor.parse_from_edus(edus)
+
+    def parse_document(
+        self,
+        document: RstDocument,
+        output: str = "rst_tree",
+    ) -> RstAnalysis:
+        """Parse an RstDocument into a typed, ontology-aligned RstAnalysis."""
+        import time
+        from isanlp_rst.contracts import OutputFormalismEnum, ProvenanceRecord, RstAnalysis, TimingRecord
+        from isanlp_rst.erst.converter import du_to_analysis
+
+        start_t = time.perf_counter()
+        if document.edus is not None:
+            raw_res = self.predictor.parse_from_edus([edu.text for edu in document.edus])
+        else:
+            raw_res = self.predictor.parse_rst(document.text)
+        elapsed_ms = (time.perf_counter() - start_t) * 1000.0
+
+        root_unit = extract_root_tree(raw_res)
+        base_analysis = du_to_analysis(root_unit, document_id=document.document_id)
+
+        formalism = OutputFormalismEnum(output)
+        prov = ProvenanceRecord(
+            producer="isanlp_rst.parser",
+            software_version="1.0.0",
+            model_id=self.hf_model_version or str(getattr(self.predictor, "model_dir", "unknown")),
+            ontology_version="4.1.0-discourse",
+        )
+        timing = TimingRecord(parsing_ms=elapsed_ms, total_ms=elapsed_ms)
+
+        return RstAnalysis(
+            document_id=base_analysis.document_id,
+            formalism=formalism,
+            nodes=base_analysis.nodes,
+            primary_edges=base_analysis.primary_edges,
+            secondary_edges=base_analysis.secondary_edges,
+            signals=base_analysis.signals,
+            provenance=prov,
+            timing=timing,
+            warnings=base_analysis.warnings,
+            failure_code=base_analysis.failure_code,
+        )
+

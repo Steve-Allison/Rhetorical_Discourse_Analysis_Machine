@@ -15,6 +15,39 @@ from collections.abc import Awaitable
 from pathlib import Path
 from typing import IO, Any
 
+from .contracts import (
+    AnnotationStatusEnum,
+    CapabilityStatusEnum,
+    ConfidenceKindEnum,
+    DeviceEnum,
+    DiscourseSignal,
+    DocumentToken,
+    EdgeKindEnum,
+    Edu,
+    FailureCodeEnum,
+    FormatRstAnalysis,
+    InputFidelityEnum,
+    InputModeEnum,
+    MappingKindEnum,
+    NodeKindEnum,
+    NuclearityPatternEnum,
+    NuclearityRoleEnum,
+    OutputFormalismEnum,
+    PrimaryRelationEdge,
+    ProvenanceRecord,
+    RelationSchemeEnum,
+    RelationStructureEnum,
+    RstAnalysis,
+    RstDocument,
+    RstNode,
+    SecondaryRelationEdge,
+    TextSpan,
+    TimingRecord,
+)
+from .erst import RS4Document, RS4Reader, RS4Writer
+from .eval import ErstScorer, StandardParsevalScorer
+from .ontology import OntologyAdapter
+from .parser import Parser
 from .rstviewer import RenderedRST
 from .rstviewer import main as _rst_main
 from .utils.analysis import find_cdu, relation_category, tree_stats
@@ -42,13 +75,47 @@ warnings.filterwarnings(
 )
 
 __all__ = [
+    "AnnotationStatusEnum",
+    "CapabilityStatusEnum",
+    "ConfidenceKindEnum",
+    "DeviceEnum",
+    "DiscourseSignal",
+    "DocumentToken",
+    "EdgeKindEnum",
+    "Edu",
+    "ErstScorer",
+    "FailureCodeEnum",
+    "FormatRstAnalysis",
+    "InputFidelityEnum",
+    "InputModeEnum",
+    "MappingKindEnum",
+    "NodeKindEnum",
+    "NuclearityPatternEnum",
+    "NuclearityRoleEnum",
+    "OntologyAdapter",
+    "OutputFormalismEnum",
+    "Parser",
+    "PrimaryRelationEdge",
+    "ProvenanceRecord",
+    "RS4Document",
+    "RS4Reader",
+    "RS4Writer",
+    "RelationSchemeEnum",
+    "RelationStructureEnum",
     "RenderedRST",
-    "render",
-    "to_html",
-    "to_png",
-    "to_pdf",
+    "RstAnalysis",
+    "RstDocument",
+    "RstNode",
+    "SecondaryRelationEdge",
+    "StandardParsevalScorer",
+    "TextSpan",
+    "TimingRecord",
     "find_cdu",
     "relation_category",
+    "render",
+    "to_html",
+    "to_pdf",
+    "to_png",
     "tree_stats",
 ]
 

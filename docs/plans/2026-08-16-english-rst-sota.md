@@ -203,7 +203,11 @@ Topic-Comment
 Fine-to-coarse projection is broader and lossy except where semantics are
 identical. Retain the source literal. `textualorganization` is an alias spelling,
 not a concept. Capitalization differences belong in scheme labels, not duplicate
-concepts.
+concepts. Embedded-EDU variants (`-e`, e.g. `elaboration-additional-e`, `attribution-e`)
+and nuclearity-tagged suffixes (`-s`, `-n`, e.g. `consequence-s-e`, `evaluation-s`)
+frequently found in standard LDC `.dis` and `.rs3` sources are explicitly registered
+in `rst_mappings.yaml` as alias mappings to canonical fine labels to guarantee
+deterministic resolution without unmapped-label failures.
 
 ### GUM eRST fine labels and coarse projection
 
@@ -283,6 +287,11 @@ Every encoding record requires model artifact ID, class index, exact literal,
 relation label/concept, nuclearity, validity constraints, and source revision.
 Every live class maps exactly once.
 
+UniRST multilingual inventory encodings (such as `eng.rst.rstdt` and `eng.erst.gum`
+selected via `relinventory`) require matching versioned adapter records in the
+Central ontology module alongside DMRST so multilingual models share the same
+typed mapping, ontology resolution, and confidence extraction pipeline.
+
 ### Complete eRST signal inventory
 
 | Signal type | Permitted subtypes |
@@ -351,7 +360,7 @@ reconstructs text by joining EDUs with single spaces, so it cannot preserve
 original whitespace or token identity for anchored eRST signals.
 
 ```python
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class RstDocument:
     document_id: str
     text: str
@@ -366,6 +375,15 @@ class RstDocument:
 Convenience constructors may infer fields but record `InputFidelityEnum`.
 Anchored-signal evaluation and lossless RS4 export require original text plus
 token and EDU alignment.
+
+Coordinate and indexing conventions:
+- Character offsets use standard Python 0-based half-open intervals `[start, end)`.
+- Internal token IDs (`DocumentToken.token_id`, `Edu.token_ids`, `DiscourseSignal.token_ids`)
+  are 0-based integer tuples. The RS4 serializer/deserializer translates between
+  internal 0-based tuples and 1-based RS4 string identifiers at the format boundary.
+- Contracts in `isanlp_rst/contracts/` are hand-crafted, slots-enabled Python 3.14
+  dataclasses independent of LinkML code-generation artifacts to maintain a
+  zero-dependency, deferred-evaluation runtime.
 
 ### Typed public results
 
@@ -383,9 +401,14 @@ compatible. Add the typed API alongside them and document lossy calls. Prefer an
 `ErstParser` class; do not overload a function object with `parse_erst.from_edus`.
 
 Docling, DocLang, and Markdown entry points project the same contract while
-retaining native source references and separate table analyses. They never
-invent format-specific relation names. Before modifying those routes, obey the
-hard rule to verify current upstream Docling and DocLang specifications.
+retaining native source references and separate table analyses. They expose an
+`output: Literal["rst_tree", "erst_graph"] = "rst_tree"` option and return a typed
+format analysis (`DoclingRstAnalysis`, `DocLangRstAnalysis`, `MarkdownRstAnalysis`)
+wrapping `RstAnalysis` alongside table analyses and node-to-XPath / node-to-self_ref
+mappings, while preserving backward compatibility with existing `DiscourseUnit`
+accessors. They never invent format-specific relation names. Before modifying
+those routes, obey the hard rule to verify current upstream Docling and DocLang
+specifications.
 
 ---
 
@@ -470,8 +493,11 @@ No downstream code treats proposed keys as canonical before this release exists.
 
 ### Phase 4 — Predict complete eRST graphs
 
-- Implement candidates, direction/relation classification, signal detection and
-  typing, anchoring, graph constraints, and reported repairs.
+- Implement secondary-edge candidate generation with locality constraints
+  (bounded token/EDU distance window, structural tree LCA height constraints,
+  and cross-paragraph gating) to prevent $O(N^2)$ candidate explosion on long documents.
+- Implement direction/relation classification, signal detection and typing,
+  anchoring, graph constraints, and reported repairs.
 - Train on the pinned GUM release with manifests.
 - Use an oracle ladder to isolate primary-tree, candidate, classification,
   signal, and anchor errors.

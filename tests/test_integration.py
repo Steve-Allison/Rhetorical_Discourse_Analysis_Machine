@@ -27,6 +27,7 @@ needs all 5 models (~10 GB).
 import pytest
 import torch
 
+from isanlp_rst.contracts import InputFidelityEnum, OutputFormalismEnum, RstAnalysis, RstDocument
 from isanlp_rst.parser import Parser
 
 
@@ -377,3 +378,66 @@ def test_dtype_equivalence_rrtrrg(rrtrrg_cpu: Parser, dtype):
     p = Parser(hf_model_name='tchewik/isanlp_rst_v3',
                hf_model_version='rrtrrg', device='mps', dtype=dtype)
     assert _topology(p(LONG_EN)['rst'][0]) == baseline, f"rrtrrg {dtype} diverged"
+
+
+# ---------- BUG-FINDING test 7: typed parse_document on real models (e2e) ----------
+
+
+def test_parse_document_dmrst_e2e(dmrst_gumrrg_cpu: Parser):
+    """Real DMRST end-to-end model parsing into a typed RstAnalysis contract."""
+    doc = RstDocument.from_text(LONG_EN, document_id="e2e-gumrrg-1")
+    analysis = dmrst_gumrrg_cpu.parse_document(doc, output="rst_tree")
+
+    assert isinstance(analysis, RstAnalysis)
+    assert analysis.document_id == "e2e-gumrrg-1"
+    assert analysis.formalism == OutputFormalismEnum.RST_TREE
+    assert len(analysis.nodes) > 5
+    assert len(analysis.primary_edges) > 4
+    assert analysis.timing.total_ms > 0.0
+    assert analysis.provenance.model_id == "gumrrg"
+
+    # Verify character offsets align with exact text slices
+    for node in analysis.nodes:
+        start, end = node.char_span
+        assert LONG_EN[start:end] == node.text
+
+
+def test_parse_document_with_edus_e2e(dmrst_gumrrg_cpu: Parser):
+    """Real DMRST parse with pre-segmented EDUs into RstAnalysis."""
+    # First get real gold/model leaves
+    res = dmrst_gumrrg_cpu(SHORT_EN)
+    leaves = _collect_leaves(res['rst'][0])
+
+    doc = RstDocument.from_edus(leaves, document_id="e2e-edus-1")
+    assert doc.fidelity == InputFidelityEnum.RECONSTRUCTED
+
+    analysis = dmrst_gumrrg_cpu.parse_document(doc, output="erst_graph")
+    assert analysis.formalism == OutputFormalismEnum.ERST_GRAPH
+    assert len(analysis.nodes) >= len(leaves)
+
+
+def test_parse_document_unirst_e2e(unirst_eng_cpu: Parser):
+    """Real UniRST end-to-end multilingual model parse into RstAnalysis."""
+    doc = RstDocument.from_text(SHORT_EN, document_id="e2e-unirst-1")
+    analysis = unirst_eng_cpu.parse_document(doc, output="rst_tree")
+
+    assert isinstance(analysis, RstAnalysis)
+    assert analysis.document_id == "e2e-unirst-1"
+    assert len(analysis.nodes) >= 3
+
+
+def test_parse_document_edge_cases_e2e(dmrst_gumrrg_cpu: Parser):
+    """Edge cases on real model: unicode punctuation, multi-paragraph, and empty fails."""
+    # Unicode text
+    unicode_doc = RstDocument.from_text(EDGE_CASES['with_unicode'], document_id="e2e-unicode")
+    analysis_uni = dmrst_gumrrg_cpu.parse_document(unicode_doc)
+    for node in analysis_uni.nodes:
+        start, end = node.char_span
+        assert EDGE_CASES['with_unicode'][start:end] == node.text
+
+    # Empty inputs must fail closed
+    for empty in EMPTY_INPUTS:
+        empty_doc = RstDocument.from_text(empty)
+        with pytest.raises(ValueError, match='non-empty'):
+            dmrst_gumrrg_cpu.parse_document(empty_doc)
+
