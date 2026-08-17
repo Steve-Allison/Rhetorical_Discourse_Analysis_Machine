@@ -5,8 +5,6 @@ inventory selection that the ``docling`` / ``doclang`` / ``markdown``
 ``_entry`` modules previously each carried a copy of.
 """
 
-from __future__ import annotations
-
 import subprocess
 from functools import cache
 from importlib.metadata import PackageNotFoundError, version

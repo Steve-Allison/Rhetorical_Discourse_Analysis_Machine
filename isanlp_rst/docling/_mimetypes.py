@@ -6,8 +6,6 @@ against the stdlib ``mimetypes`` database. Some platforms omit
 correctly use WebP fail to load unless we register it ourselves.
 """
 
-from __future__ import annotations
-
 import mimetypes
 
 _REGISTERED = False

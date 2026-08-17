@@ -2,6 +2,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import Tensor
+from typing import override
 
 from isanlp_rst.utils.mps_init import orthogonal_ as mps_safe_orthogonal_
 
@@ -34,7 +36,7 @@ class EncoderRNN(nn.Module):
             :param cuda_device: torch.device  - (Optional) cuda device if present
         """
 
-        super(EncoderRNN, self).__init__()
+        super().__init__()
 
         self._cuda_device = cuda_device
         self.rnn_layers = rnn_layers
@@ -91,18 +93,18 @@ class EncoderRNN(nn.Module):
                                          bidirectional=True, device=self._cuda_device)
 
     @staticmethod
-    def _init_weights(layer):
-        if type(layer) == nn.Linear:
-            nn.init.xavier_uniform(layer.weight)
+    def _init_weights(layer: nn.Module) -> None:
+        if isinstance(layer, nn.Linear):
+            nn.init.xavier_uniform_(layer.weight)
 
-        elif type(layer) == nn.GRU:
+        elif isinstance(layer, nn.GRU):
             for name, param in layer.named_parameters():
                 if 'weight' in name:
                     mps_safe_orthogonal_(param)
                 elif 'bias' in name:
                     nn.init.zeros_(param)
 
-        elif type(layer) == nn.LSTM:
+        elif isinstance(layer, nn.LSTM):
             for name, param in layer.named_parameters():
                 if 'weight_ih' in name:
                     torch.nn.init.xavier_uniform_(param.data)
@@ -111,6 +113,7 @@ class EncoderRNN(nn.Module):
                 elif 'bias' in name:
                     nn.init.zeros_(param)
 
+    @override
     def forward(self, input_tokenized_texts, entity_ids, entity_position_ids,
                 edu_breaks, sent_breaks=None, is_test=False):
         all_outputs = []
@@ -290,7 +293,7 @@ class EncoderRNN(nn.Module):
                     one_win_res = self.transformer(token_ids[:, start:end],
                                                    entity_ids=entity_ids[:, cur_entities],
                                                    entity_position_ids=current_position_ids
-                                                   )[0][:, padding:self.window_size + self.window_padding, :]
+                                                   )[0][:, self.window_padding:self.window_size + self.window_padding, :]
                 else:
                     one_win_res = self.transformer(token_ids[:, start:end])[0][:,
                                   self.window_padding:self.window_size + self.window_padding, :]
@@ -315,8 +318,9 @@ class EncoderRNN(nn.Module):
 
 
 class DecoderRNN(nn.Module):
-    def __init__(self, input_size, hidden_size, rnn_layers, dropout, cuda_device):
-        super(DecoderRNN, self).__init__()
+    def __init__(self, input_size: int, hidden_size: int, rnn_layers: int, dropout: float,
+                 cuda_device: torch.device | None) -> None:
+        super().__init__()
 
         '''
         Input:
@@ -330,7 +334,8 @@ class DecoderRNN(nn.Module):
         self.gru = nn.GRU(input_size, hidden_size, num_layers=rnn_layers, batch_first=True,
                           dropout=(0 if rnn_layers == 1 else dropout), device=cuda_device)
 
-    def forward(self, input_hidden_states, last_hidden):
+    @override
+    def forward(self, input_hidden_states: Tensor, last_hidden: Tensor) -> tuple[Tensor, Tensor]:
         # Forward through unidirectional GRU
         outputs, hidden = self.gru(input_hidden_states, last_hidden)
 
@@ -338,14 +343,14 @@ class DecoderRNN(nn.Module):
 
 
 class PointerAtten(nn.Module):
-    def __init__(self, atten_model, hidden_size):
-        super(PointerAtten, self).__init__()
+    def __init__(self, atten_model: str | None, hidden_size: int) -> None:
+        super().__init__()
 
-        '''       
+        '''
         Input:
             Encoder_outputs: [length,encoder_hidden_size]
-            Current_decoder_output: [decoder_hidden_size] 
-            Attention_model: 'Biaffine' or 'Dotproduct' 
+            Current_decoder_output: [decoder_hidden_size]
+            Attention_model: 'Biaffine' or 'Dotproduct'
 
         Output:
             attention_weights: [1,length]
@@ -356,7 +361,8 @@ class PointerAtten(nn.Module):
         self.weight1 = nn.Linear(hidden_size, hidden_size, bias=False)
         self.weight2 = nn.Linear(hidden_size, 1, bias=False)
 
-    def forward(self, encoder_outputs, cur_decoder_output):
+    @override
+    def forward(self, encoder_outputs: Tensor, cur_decoder_output: Tensor) -> tuple[Tensor, Tensor]:
 
         if self.atten_model == 'Biaffine':
 
@@ -395,7 +401,7 @@ class DefaultLabelClassifier(nn.Module):
         :return relation_weights, log_relation_weights: [1, num_classes], [1, num_classes]
         """
 
-        super(DefaultLabelClassifier, self).__init__()
+        super().__init__()
 
         self.input_size = input_size
         self.hidden_size = hidden_size
@@ -410,6 +416,7 @@ class DefaultLabelClassifier(nn.Module):
 
         self._cuda_device = cuda_device
 
+    @override
     def forward(self, input_left, input_right, **kwargs):
         labelspace_left = self.dropout(F.elu(self.labelspace_left(input_left)))
         labelspace_right = self.dropout(F.elu(self.labelspace_right(input_right)))
@@ -426,7 +433,7 @@ class DefaultLabelClassifier(nn.Module):
 
 class DefaultPlusBiMPMClassifier(nn.Module):
     def __init__(self, default_encoder, bimpm_encoder):
-        super(DefaultPlusBiMPMClassifier, self).__init__()
+        super().__init__()
 
         self._default_encoder = default_encoder
         self._bimpm_encoder = bimpm_encoder
@@ -440,6 +447,7 @@ class DefaultPlusBiMPMClassifier(nn.Module):
 
         self._cuda_device = self._default_encoder._cuda_device
 
+    @override
     def forward(self, left_edus, right_edus, left_du, right_du):
         """ Default classifier takes as input averaged DU representations,
             BiMPM computes over sequences of EDUs. """

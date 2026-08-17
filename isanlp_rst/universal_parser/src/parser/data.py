@@ -1,4 +1,7 @@
+from typing import Any
+
 import numpy as np
+from numpy.typing import ArrayLike
 
 # Fine-grained labels (51)
 # RelationTable = ['adversative-antithesis_NS', 'adversative-antithesis_SN', 'adversative-concession_NS',
@@ -45,7 +48,7 @@ RelationTableRuRSTB = ['Joint_NN', 'Elaboration_NS', 'Contrast_NN', 'Attribution
                        'Concession_NS', 'Interpretation-evaluation_SN', 'Restatement_NN', 'Concession_SN',
                        'Evidence_SN', 'Purpose_SN']
 
-def getLabelOrdered(Original_Order):
+def getLabelOrdered(Original_Order: ArrayLike) -> list[Any]:
     '''
     Get the right order of lable for stacks manner.
     E.g.
@@ -73,7 +76,7 @@ def getLabelOrdered(Original_Order):
     return [x for x in target]
 
 
-def nucs_and_rels(label_index, relation_table):
+def nucs_and_rels(label_index: int, relation_table: list[str]) -> tuple[str, str, str, str]:
     relation = relation_table[label_index]
     label, _, nuclearities = relation.rpartition('_')
 
@@ -92,10 +95,12 @@ def nucs_and_rels(label_index, relation_table):
 
 
 class Data:
-    def __init__(self, input_sentences, edu_breaks, decoder_input, relation_label,
-                 parsing_breaks, golden_metric, dataset_index=None,
-                 entity_ids=None, entity_position_ids=None,
-                 sent_breaks=None, parents_index=None, sibling=None):
+    def __init__(self, input_sentences: list, edu_breaks: list, decoder_input: list,
+                 relation_label: list, parsing_breaks: list, golden_metric: list,
+                 dataset_index: list | None = None,
+                 entity_ids: list | None = None, entity_position_ids: list | None = None,
+                 sent_breaks: list | None = None, parents_index: list | None = None,
+                 sibling: list | None = None) -> None:
         """
         input_sentences (list[list[str]]): Subtokens for each document.
             ex.: [['▁A', 'e', 'sthetic', '▁Ap', 'preci', 'ation', '▁and', '▁Spanish', '▁Art', '▁:', ...] ...]

@@ -1,23 +1,20 @@
-from __future__ import print_function
-
-import os
 import sys
+from pathlib import Path
+from typing import Any
 
+import nltk
 import numpy as np
 from lxml import etree
-# from nltk.tokenize import treebank
-# from nltk.tokenize import WhitespaceTokenizer
 
 from . import data
 
-import nltk
 
 class CustomTokenizer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.mwe_tokenizer = nltk.tokenize.MWETokenizer(separator='')
         self.mwe_tokenizer.add_mwe(('<', 'P', '>'))  # End of paragraph token annotated in RST-DT
 
-    def tokenize(self, text):
+    def tokenize(self, text: str) -> list[str]:
         return self.mwe_tokenizer.tokenize(nltk.word_tokenize(text))
 
 TOKENIZER = CustomTokenizer()
@@ -25,7 +22,7 @@ TOKENIZER = CustomTokenizer()
 # ----------------------------------------------------------------------------------
 # READ
 # ----------------------------------------------------------------------------------
-def parseXML(rs3file):
+def parseXML(rs3file: str | Path) -> tuple[etree._Element | None, etree._ElementTree | None]:
     for enc in ["utf8", "windows-1252"]:
         # ,"iso-8859-3","windows-1250", "gb2312"]:
         # spanish RST DT:"iso-8859-3", basque:None, CST:"windows-1252" !!1250 modifies the accents
@@ -34,19 +31,18 @@ def parseXML(rs3file):
             rs3_xml_tree = etree.parse(rs3file, xml_parser)
             doc_root = rs3_xml_tree.getroot()
             return doc_root, rs3_xml_tree
-        except:
+        except (etree.XMLSyntaxError, OSError, ValueError, UnicodeDecodeError):
             continue
     try:
         xml_parser = etree.XMLParser()
         rs3_xml_tree = etree.parse(rs3file, xml_parser)
         doc_root = rs3_xml_tree.getroot()
         return doc_root, rs3_xml_tree
-    except:
-        sys.exit("Unable to read file: " + rs3file)
-    return None, None
+    except (etree.XMLSyntaxError, OSError, ValueError, UnicodeDecodeError) as exc:
+        raise SystemExit("Unable to read file: " + str(rs3file)) from exc
 
 
-def getRelationsType(rs3_xml_tree):
+def getRelationsType(rs3_xml_tree: etree._ElementTree) -> dict[str, list[str]]:
     relations = {}
     for rel in rs3_xml_tree.iterfind('//header/relations/rel'):
         relName = rel.attrib['name'].replace(' ', '-')  # .encode("utf8")
@@ -63,7 +59,7 @@ def getRelationsType(rs3_xml_tree):
     return relations
 
 
-def readRS3Annotation(doc_root):
+def readRS3Annotation(doc_root: etree._Element) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any] | None]:
     '''
     a group's ``type`` attribute tells us whether the group
     node represents a span (of RST segments or other groups) OR
@@ -80,7 +76,7 @@ def readRS3Annotation(doc_root):
     potential_root = None  # see pb with i==0 and not parent..
     for i, segment in enumerate(doc_root.iter('segment')):
         # In SUMMIT, EDU 1 root in at least one doc (Parcial-38txts/CIENCIA_2005_6507.rs3)
-        if i == 0 and not 'parent' in segment.attrib:  # Ignore the 1st for the Postdam corpus (title)
+        if i == 0 and 'parent' not in segment.attrib:  # Ignore the 1st for the Postdam corpus (title)
             potential_root = segment
             continue
         if 'parent' not in segment.attrib:
@@ -94,7 +90,7 @@ def readRS3Annotation(doc_root):
                "relname": relname,
                "text": segment.text.strip().replace("\n", " "),
                "position": i}
-        if not id_ in eduIds:  # Avoid the repeted segments
+        if id_ not in eduIds:  # Avoid the repeted segments
             eduList.append(edu)
             eduIds.append(id_)
     # - CDU
@@ -106,19 +102,19 @@ def readRS3Annotation(doc_root):
                    "parent": int(group.attrib['parent']),
                    "relname": group.attrib['relname'].replace(' ', '-'),
                    "type": group.attrib['type']}
-            if not id_ in cduIds:  # Avoid the repeted segments
+            if id_ not in cduIds:  # Avoid the repeted segments
                 groupList.append(cdu)
                 cduIds.append(id_)
         else:
             root = {"id": id_,
                     "parent": None,
                     "type": group.attrib['type']}
-            if not id_ in cduIds:  # Avoid the repeted segments
+            if id_ not in cduIds:  # Avoid the repeted segments
                 groupList.append(root)
                 cduIds.append(id_)
-    if root == None:
+    if root is None:
         # check if we have a potential root
-        if potential_root != None:
+        if potential_root is not None:
             all_id = [d for d in eduIds]
             all_id.extend(cduIds)
             # create a fake root (should be removed later)
@@ -132,7 +128,7 @@ def readRS3Annotation(doc_root):
                    "text": segment.text.strip().replace("\n", " "),
                    "position": 0,
                    "relname": "span"}
-            if not potential_root.attrib['id'] in eduIds:  # Avoid the repeted segments
+            if potential_root.attrib['id'] not in eduIds:  # Avoid the repeted segments
                 eduList.append(edu)
                 eduIds.append(potential_root.attrib['id'])
     return eduList, groupList, root
@@ -141,7 +137,7 @@ def readRS3Annotation(doc_root):
 # ----------------------------------------------------------------------------------
 # EDU TEXT
 # ----------------------------------------------------------------------------------
-def retrieveEdu(tree, eduIds):
+def retrieveEdu(tree: data.SpanNode, eduIds: list[int]) -> tuple[dict[int, str], dict[int, list[int]]]:
     """
     Read information from the edus
     Use the TOKENIZER to get tokens
@@ -153,7 +149,7 @@ def retrieveEdu(tree, eduIds):
     gidx, tokendict, edudict = 0, {}, {}
     for eidx in eduIds:  # with this list, we are sure to have ordered Edus
         eduNode = findNodeTree(eidx, tree)
-        if eduNode == None:
+        if eduNode is None:
             sys.exit("EDU not found: " + str(eidx))
         text = eduNode.text
         edudict[eidx] = []
@@ -169,7 +165,12 @@ def retrieveEdu(tree, eduIds):
 # ----------------------------------------------------------------------------------
 # TREE UTILS
 # ----------------------------------------------------------------------------------
-def buildNodes(eduList, groupList, rootDict, relations):
+def buildNodes(
+    eduList: list[dict[str, Any]],
+    groupList: list[dict[str, Any]],
+    rootDict: dict[str, Any],
+    relations: dict[str, list[str]],
+) -> data.SpanNode:
     '''
     Build a tree using the SpanNode class defined in DPLP
 
@@ -180,7 +181,6 @@ def buildNodes(eduList, groupList, rootDict, relations):
     # Rename EDUs and CDUs to get continuous indexing for EDUs
     renameDus(eduList, groupList, rootDict)
     eduIds = [e["id"] for e in eduList]  # Ordered EDUs
-    cduIds = [e["id"] for e in groupList]  # CDUs
     units = [e for e in eduList]
     units.extend(groupList)  # All DU
     root = data.SpanNode("Root")  # Root node
@@ -191,7 +191,7 @@ def buildNodes(eduList, groupList, rootDict, relations):
         # Check if the corresponding node has been built already
         # (even an EDU can be a parent for now)
         node = findNode(e["id"], allNodes)
-        if node == None:
+        if node is None:
             newNode = data.SpanNode(None)  # Prop is unknown for now
             newNode._id, newNode.relation = e["id"], e["relname"]
             if e["id"] in eduIds:  # EDU ie isLeave
@@ -206,7 +206,11 @@ def buildNodes(eduList, groupList, rootDict, relations):
     return root
 
 
-def updateNuclearityEDU(allNodes, units, nucRelations):
+def updateNuclearityEDU(
+    allNodes: list[data.SpanNode],
+    units: list[dict[str, Any]],
+    nucRelations: dict[str, list[str]],
+) -> None:
     '''
     - if an EDU is annotated with a multinuc relation, it s a nucleus
     - if an EDU is annotated with a mononuc relation, it s a satellite and its parent a nucleus
@@ -225,12 +229,12 @@ def updateNuclearityEDU(allNodes, units, nucRelations):
                 n.prop = 'Satellite'
                 # in Discourse Graph, implies that the parent is a nucleus but not sure for the multi children cases
                 parent = findParentNode(n, allNodes)
-                if parent != None:
+                if parent is not None:
                     parent.prop = 'Nucleus'
-        if n.prop == None and n.relation == "span":
+        if n.prop is None and n.relation == "span":
             n.prop = 'Nucleus'
     for n in allNodes:
-        if n.prop == None:
+        if n.prop is None:
             if n.relation in nucRelations and "multinuc" in nucRelations[n.relation]:
                 n.prop = 'Nucleus'
                 print("PROP CHOSE NUC", n._id, n.prop, sorted([m._id for m in n.eduCovered]), n.relation)
@@ -238,7 +242,11 @@ def updateNuclearityEDU(allNodes, units, nucRelations):
                 print("PROP UNDEF", n._id, n.prop, sorted([m._id for m in n.eduCovered]), n.relation)
 
 
-def updateParentNodes(allNodes, units, eduIds):
+def updateParentNodes(
+    allNodes: list[data.SpanNode],
+    units: list[dict[str, Any]],
+    eduIds: list[int],
+) -> None:
     ''' Update eduCovered and nodelist '''
     for e in units:
         # retrieve the node
@@ -252,7 +260,7 @@ def updateParentNodes(allNodes, units, eduIds):
         n.eduCovered = getEduCoveredChildren(n, eduIds)
 
 
-def getEduCoveredChildren(node, eduIds):
+def getEduCoveredChildren(node: data.SpanNode, eduIds: list[int]) -> list[data.SpanNode]:
     eduCovered = set()
     queue = [m for m in node.nodelist if m._id != node._id]  # seems to happen in the spanish RST DT
     while queue:
@@ -264,7 +272,11 @@ def getEduCoveredChildren(node, eduIds):
     return list(eduCovered)
 
 
-def renameDus(eduList, groupList, rootDict):
+def renameDus(
+    eduList: list[dict[str, Any]],
+    groupList: list[dict[str, Any]],
+    rootDict: dict[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]] | None:
     '''
     Change the ID of the EDUs in order to have a continuous list of ID
     '''
@@ -306,7 +318,7 @@ def renameDus(eduList, groupList, rootDict):
             e["parent"] = mappingDus[e["parent"]]
 
 
-def orderSpanList(tree, eduIds):
+def orderSpanList(tree: data.SpanNode, eduIds: list[int]) -> None:
     # First sort node.eduCovered, and ordered eduSpan for each node
     queue = [tree]
     while queue:
@@ -327,28 +339,28 @@ def orderSpanList(tree, eduIds):
 
 
 # Utils fct when we do not yet have a tree
-def findNode(id_, allNodes):
+def findNode(id_: int, allNodes: list[data.SpanNode]) -> data.SpanNode | None:
     for n in allNodes:
         if n._id == id_:
             return n
     return None
 
 
-def findParentNode(child, allNodes):
+def findParentNode(child: data.SpanNode, allNodes: list[data.SpanNode]) -> data.SpanNode | None:
     for n in allNodes:
         if child in n.nodelist:
             return n
     return None
 
 
-def getParentDict(allGroup, parent):
+def getParentDict(allGroup: list[dict[str, Any]], parent: int) -> dict[str, Any] | None:
     for g in allGroup:
         if g["id"] == parent:
             return g
     return None
 
 
-def getParentNode(parent, allNodes):
+def getParentNode(parent: int, allNodes: list[data.SpanNode]) -> data.SpanNode | None:
     for n in allNodes:
         if n._id == parent:
             return n
@@ -356,7 +368,7 @@ def getParentNode(parent, allNodes):
 
 
 # Utils fct for tree structure
-def findNodeTree(id_, tree):
+def findNodeTree(id_: int, tree: data.SpanNode) -> data.SpanNode | None:
     queue = [tree]
     while queue:
         node = queue.pop(0)
@@ -367,7 +379,7 @@ def findNodeTree(id_, tree):
     return None
 
 
-def getParentTree(child, tree):
+def getParentTree(child: data.SpanNode, tree: data.SpanNode) -> data.SpanNode | None:
     queue = [tree]
     while queue:
         node = queue.pop(0)
@@ -382,7 +394,12 @@ def getParentTree(child, tree):
 # TREE: Clean
 # ----------------------------------------------------------------------------------
 
-def cleanTree(tree, eduIds, relationSet, doc):
+def cleanTree(
+    tree: data.SpanNode,
+    eduIds: list[int],
+    relationSet: dict[str, list[str]],
+    doc: Any,
+) -> None:
     '''
     DPLP code deals with: retrieving prop info and moving the relation from the
     children to the parent (see backprop()), and binarizing the tree (binarizeTree()).
@@ -406,7 +423,13 @@ def cleanTree(tree, eduIds, relationSet, doc):
     tree.prop = "Root"  # in case it has been changed somewhere..
 
 
-def cleanEmbedded(tree, eduIds, relationSet, allId, doc):
+def cleanEmbedded(
+    tree: data.SpanNode,
+    eduIds: list[int],
+    relationSet: dict[str, list[str]],
+    allId: list[int],
+    doc: Any,
+) -> None:
     '''
     Only deals with problematic cases leading to a pb in the order of the units
     - In general, we have Node_X ( Node_Y( e1-SU, e2-Ri, e4-SU ), e3-Rj )
@@ -426,16 +449,15 @@ def cleanEmbedded(tree, eduIds, relationSet, allId, doc):
                 # -> added in n.nodelist
                 id_linked = [m._id for m in n.nodelist]
                 missing_nodes_id = [i for i in range(min(id_linked), min(id_linked) + len(id_linked) + 1) if
-                                    not i in id_linked]
+                                    i not in id_linked]
                 parent = getParentTree(n, tree)
                 # check if these nodes are neighbors of the current node
                 neighbors_id = [m._id for m in parent.nodelist if not m._id == n._id]
                 check = True
                 for i in missing_nodes_id:
-                    if not i in neighbors_id:
+                    if i not in neighbors_id:
                         check = False
                 if check:
-                    new_nodelist = []
                     for m in parent.nodelist:
                         if m._id in missing_nodes_id:
                             n.nodelist.append(m)
@@ -445,7 +467,7 @@ def cleanEmbedded(tree, eduIds, relationSet, allId, doc):
             queue.append(m)
 
 
-def getNodeCovering(tree, eduIds, id_linked):
+def getNodeCovering(tree: data.SpanNode, eduIds: list[int], id_linked: list[int]) -> data.SpanNode | None:
     queue = [tree]
     while queue:
         n = queue.pop(0)
@@ -457,7 +479,12 @@ def getNodeCovering(tree, eduIds, id_linked):
     return None
 
 
-def cleanEDU(tree, eduIds, relationSet, allId):
+def cleanEDU(
+    tree: data.SpanNode,
+    eduIds: list[int],
+    relationSet: dict[str, list[str]],
+    allId: list[int],
+) -> None:
     """
     EDU with more than one child, happen often in Brazilian and German corpora
     e.g. CSTNews corpus doc D5_C11_GPovo): EDU_1 -> 2-4_elab 5_elab with 2-4 a CDU
@@ -507,7 +534,12 @@ def cleanEDU(tree, eduIds, relationSet, allId):
                 queue.append(m)
 
 
-def cleanLonelyEDU(rootNode, eduIds, relationSet, allId):
+def cleanLonelyEDU(
+    rootNode: data.SpanNode,
+    eduIds: list[int],
+    relationSet: dict[str, list[str]],
+    allId: list[int],
+) -> None:
     """
     (1) EDU with no neighbor: the parent CDU receives this EDU as lnode and its children
     as rnode
@@ -520,7 +552,7 @@ def cleanLonelyEDU(rootNode, eduIds, relationSet, allId):
         if n._id in eduIds and len(n.nodelist) == 1:  # Lonely child
             child = n.nodelist[0]
             parent = getParentTree(n, rootNode)
-            if parent == None:
+            if parent is None:
                 sys.exit("No parent found, but we are supposed to deal with an EDU ?!")
             # - EDU: 2 cas, soit l EDU a un voisin soit elle n en n a pas
             if len(parent.nodelist) > 1:  # (2) EDU with neighbor
@@ -556,7 +588,11 @@ def cleanLonelyEDU(rootNode, eduIds, relationSet, allId):
                 queue.append(m)
 
 
-def cleanLonelyCDU(rootNode, eduIds, relationSet):
+def cleanLonelyCDU(
+    rootNode: data.SpanNode,
+    eduIds: list[int],
+    relationSet: dict[str, list[str]],
+) -> None:
     """
     1- CDU with 1 CDU child: the CDU child should have the span relation, can be safely removed
     """
@@ -565,8 +601,8 @@ def cleanLonelyCDU(rootNode, eduIds, relationSet):
         n = queue.pop(0)
         if len(n.nodelist) == 1:  # Lonely child
             child = n.nodelist[0]
-            if not n._id in eduIds:  # CDU
-                if not child._id in eduIds:
+            if n._id not in eduIds:  # CDU
+                if child._id not in eduIds:
                     # We have parent -> n (a cdu) -> another cdu -> its children
                     # We want parent -> n -> its children
                     n.nodelist = child.nodelist
@@ -590,7 +626,7 @@ def cleanLonelyCDU(rootNode, eduIds, relationSet):
                 queue.append(m)
 
 
-def areAdjacent(sameunitNodes, eduIds):
+def areAdjacent(sameunitNodes: list[data.SpanNode], eduIds: list[int]) -> bool:
     eduCovered = []
     for n in sameunitNodes:
         getEduCovered(n, eduIds, eduCovered)
@@ -600,14 +636,18 @@ def areAdjacent(sameunitNodes, eduIds):
     return False
 
 
-def setEduCovered(n, eduIds, eduCovered):
+def setEduCovered(n: data.SpanNode, eduIds: list[int], eduCovered: list[data.SpanNode]) -> None:
     if n._id in eduIds:
         eduCovered.append(n)
     for m in n.nodelist:
         setEduCovered(m, eduIds, eduCovered)
 
 
-def getEduCovered(tree, eduIds, eduCovered):
+def getEduCovered(
+    tree: data.SpanNode,
+    eduIds: list[int],
+    eduCovered: list[data.SpanNode],
+) -> list[data.SpanNode]:
     queue = [tree]
     while queue:
         node = queue.pop(0)
@@ -619,29 +659,29 @@ def getEduCovered(tree, eduIds, eduCovered):
     return eduCovered
 
 
-def _markEmbed(tree):
+def _markEmbed(tree: data.SpanNode) -> None:
     queue = [tree]
     while queue:
         node = queue.pop(0)
-        if node.relation != None and node.relation.lower() != "span" and node.relation.lower() != "same-unit" and node.relation.lower()[
+        if node.relation is not None and node.relation.lower() != "span" and node.relation.lower() != "same-unit" and node.relation.lower()[
                                                                                                                   -2:] != "-e":
             node.relation += "-e"
         for m in node.nodelist:
             queue.append(m)
 
 
-def sortEdu(eduCovered, eduIds):
+def sortEdu(eduCovered: list[data.SpanNode], eduIds: list[int]) -> list[int]:
     # Only return a sorted list of id
     positions = [eduIds.index(i) for i in [n._id for n in eduCovered]]
-    sortedIds = [x for (y, x) in sorted(zip(positions, [n._id for n in eduCovered]))]
+    sortedIds = [x for (y, x) in sorted(zip(positions, [n._id for n in eduCovered], strict=True))]
     return sortedIds
 
 
-def orderNodeList(node):
+def orderNodeList(node: data.SpanNode) -> None:
     node.nodelist = sorted(node.nodelist, key=lambda x: x.eduspan[0])
 
 
-def getIdDu(tree):
+def getIdDu(tree: data.SpanNode) -> set[int]:
     idDu = set()
     queue = [tree]
     while queue:
@@ -661,7 +701,11 @@ def getIdDu(tree):
 # TREE: BINARIZE
 # ----------------------------------------------------------------------------------
 # TODO merge all the binarization fcts, should be the same
-def binarizeTreeGeneral(tree, doc, nucRelations=None):
+def binarizeTreeGeneral(
+    tree: data.SpanNode,
+    doc: Any,
+    nucRelations: dict[str, list[str]] | None = None,
+) -> None:
     """
     Convert a general RST tree to a binary RST tree
     < DPLP but modified: no more systematic right branching, depend of the relations
@@ -679,7 +723,6 @@ def binarizeTreeGeneral(tree, doc, nucRelations=None):
     :type tree: instance of SpanNode
     :param tree: a general RST tree
     """
-    cases = set()
     queue = [tree]
     while queue:
         node = queue.pop(0)
@@ -701,15 +744,15 @@ def binarizeTreeGeneral(tree, doc, nucRelations=None):
             if childrenNuclearity[-1].lower() == 'nucleus' or childrenRelations[-1].lower() == 'span' or snsPattern(
                     childrenRelations,
                     childrenNuclearity):  # last node = nucleus or span relation or specific pattern 'S N+ S'
-                newnode = rightAttach(node)
+                rightAttach(node)
             else:
-                newnode = leftAttach(node)  # last node = satellite except for the specific pattern
-        if node.lnode != None and node.rnode != None:
+                leftAttach(node)  # last node = satellite except for the specific pattern
+        if node.lnode is not None and node.rnode is not None:
             queue.append(node.lnode)
             queue.append(node.rnode)
 
 
-def snsPattern(relations, nuclearity):
+def snsPattern(relations: list[str], nuclearity: list[str]) -> bool:
     # At least 3 nodes, a satellite at the beg and at the end, and only nuclei in between or span
     if len(nuclearity) < 3:
         return False
@@ -724,7 +767,7 @@ def snsPattern(relations, nuclearity):
     return True
 
 
-def leftAttach(node):
+def leftAttach(node: data.SpanNode) -> data.SpanNode:
     node.rnode = node.nodelist.pop(-1)
     newnode = data.SpanNode('Nucleus')
     newnode.nodelist += node.nodelist
@@ -740,7 +783,7 @@ def leftAttach(node):
     return newnode
 
 
-def rightAttach(node):
+def rightAttach(node: data.SpanNode) -> data.SpanNode:
     node.lnode = node.nodelist.pop(0)
     newnode = data.SpanNode('Nucleus')
     newnode.nodelist += node.nodelist
@@ -760,7 +803,7 @@ def rightAttach(node):
 # WRITE
 # ----------------------------------------------------------------------------------
 
-def writeEdus(doc, ext, pathout):
+def writeEdus(doc: Any, ext: str, pathout: str | Path) -> None:
     """
     Write files similar to the .edus files in the RST DT for the other RST Treebanks.
 
@@ -768,25 +811,21 @@ def writeEdus(doc, ext, pathout):
     forigin: the discourse file, keep the same basename and path
     ext: the original extension (ie .rs3) to be replaced by the new one (ie .edus)
     """
-    edufile = os.path.join(pathout, os.path.basename(doc.path.replace(ext, ".edus")))
-    f = open(edufile, 'w', encoding="utf8")
-    for edu in doc.edudict:
-        line = " ".join([doc.tokendict[gidx] for gidx in doc.edudict[edu]])
-        f.write(line.strip() + "\n")
-    f.close()
+    edufile = Path(pathout) / Path(str(doc.path).replace(ext, ".edus")).name
+    with edufile.open('w', encoding="utf8") as f:
+        for edu in doc.edudict:
+            line = " ".join([doc.tokendict[gidx] for gidx in doc.edudict[edu]])
+            f.write(line.strip() + "\n")
 
 
-def printTreeRS3(tree):
+def printTreeRS3(tree: data.SpanNode) -> None:
     '''
     Print a tree when a node is associated with a nodelist
     '''
     queue = [tree]
     while queue:
         n = queue.pop(0)
-        try:
-            print("-->", n._id, n.relation, n.eduspan, n.prop, [m._id for m in n.nodelist])
-        except:
-            print("-->", n._id, n.relation.encode('utf8'), n.eduspan, n.prop, [m._id for m in n.nodelist])
+        print("-->", n._id, n.relation, n.eduspan, n.prop, [m._id for m in n.nodelist])
         for m in n.nodelist:
             queue.append(m)
 

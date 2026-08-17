@@ -30,8 +30,6 @@ Format dispatch by suffix: ``.md`` / ``.markdown`` → parse_markdown;
 One ``Parser`` is constructed and injected across all documents.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import math
@@ -40,6 +38,11 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from statistics import mean, median
 from typing import Any
+
+from isanlp_rst.doclang import parse_doclang
+from isanlp_rst.docling import parse_docling
+from isanlp_rst.markdown import parse_markdown
+from isanlp_rst.parser import Parser
 
 _THIN_PREFIXES = ("joint", "same-unit", "same_unit", "organization")
 _SECONDARY_BOUNDARY_KINDS = frozenset({"table", "code_block", "field_region"})
@@ -89,14 +92,15 @@ def _format_of(path: Path) -> str:
 
 
 def _parse(path: Path, fmt: str, parser: Any) -> Any:
-    if fmt == "markdown":
-        from isanlp_rst.markdown import parse_markdown
-        return parse_markdown(path, parser=parser)
-    if fmt == "docling":
-        from isanlp_rst.docling import parse_docling
-        return parse_docling(path, parser=parser)
-    from isanlp_rst.doclang import parse_doclang
-    return parse_doclang(path, parser=parser)
+    match fmt:
+        case "markdown":
+            return parse_markdown(path, parser=parser)
+        case "docling":
+            return parse_docling(path, parser=parser)
+        case "doclang":
+            return parse_doclang(path, parser=parser)
+        case _:
+            raise ValueError(f"Unsupported format {fmt!r} for {path}")
 
 
 def _metrics(path: Path, fmt: str, result: Any) -> DocMetrics:
@@ -193,8 +197,6 @@ def main(argv: list[str] | None = None) -> int:
     if not sources:
         print("No supported sources found.", file=sys.stderr)
         return 1
-
-    from isanlp_rst.parser import Parser
 
     parser = Parser(
         hf_model_version=args.model_version,

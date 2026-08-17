@@ -1,10 +1,15 @@
-import os
-import sys
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+if TYPE_CHECKING:
+    from nltk.tree import Tree
 
-def backprop(tree, doc):
+    from .data import Document, SpanNode
+
+
+def backprop(tree: SpanNode, doc: Document) -> SpanNode:
     """
     Starting from leaf node, propagating node information back to root node
 
@@ -37,7 +42,7 @@ def backprop(tree, doc):
     return treenodes[-1]
 
 
-def __getspaninfo(lnode, rnode):
+def __getspaninfo(lnode: SpanNode, rnode: SpanNode) -> tuple[int, int] | None:
     """
     Get span size for parent node
 
@@ -50,9 +55,10 @@ def __getspaninfo(lnode, rnode):
     except TypeError:
         print(lnode.prop, rnode.prop)
         print(lnode.nucspan, rnode.nucspan)
+        return None
 
 
-def __getforminfo(lnode, rnode):
+def __getforminfo(lnode: SpanNode, rnode: SpanNode) -> tuple[str, tuple[int, int]]:
     """
     Get Nucleus/Satellite form and Nucleus span
 
@@ -74,7 +80,7 @@ def __getforminfo(lnode, rnode):
     return form, nucspan
 
 
-def __getrelationinfo(lnode, rnode):
+def __getrelationinfo(lnode: SpanNode, rnode: SpanNode) -> str:
     """
     Get relation information
 
@@ -89,13 +95,13 @@ def __getrelationinfo(lnode, rnode):
         relation = rnode.relation
     else:
         print(lnode._id, rnode._id)
-        print('lnode.prop = {}, lnode.eduspan = {}'.format(lnode.prop, lnode.eduspan))
-        print('rnode.prop = {}, rnode.eduspan = {}'.format(rnode.prop, rnode.eduspan))
+        print(f'lnode.prop = {lnode.prop}, lnode.eduspan = {lnode.eduspan}')
+        print(f'rnode.prop = {rnode.prop}, rnode.eduspan = {rnode.eduspan}')
         raise ValueError("Error when find relation for new node")
     return relation
 
 
-def __gettextinfo(edudict, eduspan):
+def __gettextinfo(edudict: dict[int, Any], eduspan: tuple[int, int]) -> list[Any]:
     """
     Get text span for parent node
 
@@ -113,7 +119,7 @@ def __gettextinfo(edudict, eduspan):
     return text
 
 
-def parse(tree):
+def parse(tree: SpanNode) -> str:
     """
     Get parse tree in string format
 
@@ -122,11 +128,10 @@ def parse(tree):
         t = Tree.fromstring(parse)
         t.draw()
     """
-    parse = getParse(tree, "")
-    return parse
+    return getParse(tree, "")
 
 
-def getParse(tree, parse):
+def getParse(tree: SpanNode, parse: str) -> str:
     """
     Get parse tree
 
@@ -169,7 +174,7 @@ def getParse(tree, parse):
     return parse
 
 
-def getParseNobin(tree, parse):
+def getParseNobin(tree: SpanNode, parse: str) -> str:
     """
     Get parse tree
 
@@ -189,7 +194,7 @@ def getParseNobin(tree, parse):
     return parse
 
 
-def BFTbin(tree):
+def BFTbin(tree: SpanNode) -> list[SpanNode]:
     """
     Breadth-first treavsal on binary RST tree
 
@@ -209,7 +214,7 @@ def BFTbin(tree):
     return bft_nodelist
 
 
-def getRelation(label):
+def getRelation(label: str) -> tuple[str, str]:
     """
     Get the relation from the label used in the RST DT.
     Could be stg like RELATION-s-e, with -s linked to the nuclearity, -e meaning
@@ -232,26 +237,29 @@ def getRelation(label):
 # ----------------------------------------------------------------------------------
 # MAPPING
 # ----------------------------------------------------------------------------------
-def getLabelMapping(mappingFile, outputExt):
+def getLabelMapping(
+    mappingFile: str | Path | None,
+    outputExt: str,
+) -> tuple[dict[str, str] | None, str, int]:
     labelsMapping = None
     nbClasses = -1
-    if mappingFile != None:  # Modify the ext, add map+number of classes
+    if mappingFile is not None:  # Modify the ext, add map+number of classes
         labelsMapping = readMapping(mappingFile)
         # TODO span seems to be kept as a relation, should have been removed when building the tree
-        nbClasses = len(np.unique(labelsMapping.values()))
+        nbClasses = len(np.unique(list(labelsMapping.values())))
         outputExt = ".map" + str(nbClasses) + outputExt
     return labelsMapping, outputExt, nbClasses
 
 
-def readMapping(mappingFile):
+def readMapping(mappingFile: str | Path) -> dict[str, str]:
     '''
     Read a label mapping file and return a mapping (dict)
 
     :type mappingFile: file path
     :param mappingFile: the mapping file to read
     '''
-    mapping = {}
-    with open(mappingFile) as fin:
+    mapping: dict[str, str] = {}
+    with Path(mappingFile).open() as fin:
         _lines = fin.readlines()
         for l in _lines:
             l = l.strip()
@@ -261,11 +269,11 @@ def readMapping(mappingFile):
     return mapping
 
 
-def addLabels(tree, labelSet):
+def addLabels(tree: Tree | None, labelSet: set[tuple[str, str]]) -> None:
     """
     Fill the label set, used to check which relations exactly are used in the corpus
     """
-    if tree == None:
+    if tree is None:
         return
     for st in tree.subtrees():
         label = st.label()
@@ -274,11 +282,11 @@ def addLabels(tree, labelSet):
             labelSet.add(relation)
             if "span" in relation[0].lower():
                 print(relation)
-                sys.exit("Still a span relation?? " + " ".join([c.label() for c in st]))
+                raise SystemExit("Still a span relation?? " + " ".join([c.label() for c in st]))
 
 
-def countLabels(tree, rel2count):
-    if tree == None:
+def countLabels(tree: Tree | None, rel2count: dict[str, int]) -> None:
+    if tree is None:
         return
     for st in tree.subtrees():
         label = st.label()
@@ -289,7 +297,7 @@ def countLabels(tree, rel2count):
                 rel2count[label] = 1
 
 
-def mapLabels(tree, mappingDict):
+def mapLabels(tree: Tree, mappingDict: dict[str, str] | None) -> None:
     '''
     Modify the labels in the tree according to a predefined mapping.
 
@@ -300,14 +308,14 @@ def mapLabels(tree, mappingDict):
     :param mappingDict: mapping from the original relation to the mapped relation
     '''
     # Keep original label
-    if mappingDict == None:
+    if mappingDict is None:
         return
     for st in tree.subtrees():
         label = st.label()
         if not label.lower() == "edu":
             relation, nuc = getRelation(label)
-            if not relation in mappingDict:
-                sys.exit("Unknow label: " + label + ", " + relation)
+            if relation not in mappingDict:
+                raise SystemExit("Unknow label: " + label + ", " + relation)
             # Keep nuclearity information
             mappedRelation = mappingDict[relation]
             if nuc.lower() in ["ns", "sn", "nn"]:
@@ -315,21 +323,21 @@ def mapLabels(tree, mappingDict):
             st.set_label(mappedRelation)
 
 
-def performMapping(tree, mappingDict):
-    if mappingDict == None:
+def performMapping(tree: Tree, mappingDict: dict[str, str] | None) -> None:
+    if mappingDict is None:
         print("No mapping found !")
         return
     for st in tree.subtrees():
         label = st.label()
         if not label.lower() == "edu":
             relation, nuc = getRelation(label)
-            if not relation.lower() in mappingDict:
-                sys.exit("Unknown label: " + label + ", " + relation)
+            if relation.lower() not in mappingDict:
+                raise SystemExit("Unknown label: " + label + ", " + relation)
             # Keep nuclearity information
             if nuc.lower() in ["ns", "sn", "nn"]:
                 mappedRelation = nuc + '-' + mappingDict[relation.lower()]
             else:
-                sys.exit("Unknown nuclearity value:", nuc)
+                raise SystemExit("Unknown nuclearity value:", nuc)
             st.set_label(mappedRelation)
 
 
@@ -337,7 +345,7 @@ def performMapping(tree, mappingDict):
 # WRITE/DRAW/print
 # ----------------------------------------------------------------------------------
 
-def writeEdusFile(doc, ext, pathout):
+def writeEdusFile(doc: Document, ext: str, pathout: str | Path) -> None:
     """
     Write files similar to the .edus files in the RST DT for the other RST Treebanks.
 
@@ -345,19 +353,18 @@ def writeEdusFile(doc, ext, pathout):
     forigin: the discourse file, keep the same basename and path
     ext: the original extension (ie .rs3 or .thiago) to be replaced by the new one (ie .edus)
     """
-    edufile = os.path.join(pathout, os.path.basename(doc.path).replace(ext, ".edus"))
-    f = open(edufile, 'w', encoding="utf8")
-    for edu in doc.edudict:
-        f.write(doc.edudict[edu].strip() + "\n")
-    f.close()
+    edufile = Path(pathout) / Path(doc.path).name.replace(ext, ".edus")
+    with edufile.open('w', encoding="utf8") as f:
+        for edu in doc.edudict:
+            f.write(doc.edudict[edu].strip() + "\n")
 
 
-def printBinTree(tree):
+def printBinTree(tree: SpanNode) -> None:
     ''' Can only be used after binarize (+backprop ev) but backprop only completed in parse  '''
     queue = [tree]
     while queue:
         n = queue.pop()
-        if n.lnode != None:
+        if n.lnode is not None:
             print("-->", n._id, n.relation, n.eduspan, n.prop, n.lnode._id, n.rnode._id)
             queue.append(n.lnode)
             queue.append(n.rnode)
@@ -365,7 +372,7 @@ def printBinTree(tree):
             print("-->", n._id, n.relation, n.eduspan, n.prop)
 
 
-def checkTree(tree, doc):
+def checkTree(tree: Tree, doc: Document) -> bool:
     """ Check the final tree (ie Nltk Tree)  """
     idEduOrdered = []
     for st in tree.subtrees():

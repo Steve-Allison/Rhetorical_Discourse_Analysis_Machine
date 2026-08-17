@@ -17,8 +17,6 @@ host (Linux + CUDA-built PyTorch) to confirm the CUDA dispatch path of the
 Models are pulled from the HF Hub (~2 GB each on first run).
 """
 
-from __future__ import annotations
-
 import sys
 import time
 

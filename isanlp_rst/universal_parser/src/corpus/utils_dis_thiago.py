@@ -1,7 +1,7 @@
-import os
+from pathlib import Path
+from typing import Any
 
 import numpy as np
-# from nltk.tokenize import treebank
 
 from . import data
 from .utils_rs3 import CustomTokenizer
@@ -9,7 +9,7 @@ from .utils_rs3 import CustomTokenizer
 TOKENIZER = CustomTokenizer()
 
 # Modify the name of the RST DT files if in the list, for match with PTB
-file_mapping = {'file1': 'wsj_0764',
+file_mapping: dict[str, str] = {'file1': 'wsj_0764',
                 'file2': 'wsj_0430',
                 'file3': 'wsj_0766',
                 'file4': 'wsj_0778',
@@ -19,7 +19,7 @@ file_mapping = {'file1': 'wsj_0764',
 # ----------------------------------------------------------------------------------
 # Tree
 # ----------------------------------------------------------------------------------
-def convert_parens_in_rst_tree_str(rst_tree_str):
+def convert_parens_in_rst_tree_str(rst_tree_str: str) -> str:
     '''
     Deal with the parenthesis present in the text of some EDUs
     '''
@@ -28,7 +28,6 @@ def convert_parens_in_rst_tree_str(rst_tree_str):
     while i < len(rst_tree_str):
         c = rst_tree_str[i]
         if rst_tree_str[i:i + 13] == "text <s><EDU>":
-            end_text = False
             cur_str = rst_tree_str[i:i + 13]
             j = i + 13
             while rst_tree_str[j:j + 6] != "</EDU>":  # </EDU></s>
@@ -43,7 +42,6 @@ def convert_parens_in_rst_tree_str(rst_tree_str):
             new_tree += cur_str
             i = j
         elif rst_tree_str[i:i + 10] == "text <EDU>":
-            end_text = False
             cur_str = rst_tree_str[i:i + 10]
             j = i + 13
             while rst_tree_str[j:j + 6] != "</EDU>":  # </EDU></s>
@@ -63,7 +61,7 @@ def convert_parens_in_rst_tree_str(rst_tree_str):
     return new_tree
 
 
-def buildTree(text):
+def buildTree(text: str) -> tuple[data.SpanNode, list[int]]:
     """
     Build tree from *.dis file (from DPLP, by Yangfeng Ji)
 
@@ -88,7 +86,7 @@ def buildTree(text):
             content.reverse()  # Reverse to the original order
             # Parse according to the first content word
             if len(content) < 2:
-                raise ValueError("content = {}".format(content))
+                raise ValueError(f"content = {content}")
             label = content.pop(0)
             if label == 'Root':
                 node = data.SpanNode(prop=label)
@@ -126,14 +124,14 @@ def buildTree(text):
                 # ignore
                 continue
             else:
-                raise ValueError("Unrecognized parsing label: {} \n\twith content = {}\n".format(label, content))
+                raise ValueError(f"Unrecognized parsing label: {label} \n\twith content = {content}\n")
         else:
             # else, keep push into the stack
             stack.append(token)
     return stack[-1], eduIds
 
 
-def createnode(node, content):
+def createnode(node: data.SpanNode, content: list[Any]) -> data.SpanNode:
     """
     Assign value to an SpanNode instance (from DPLP, by Yangfeng Ji)
 
@@ -159,11 +157,11 @@ def createnode(node, content):
         elif c[0] == 'text':
             node.text = c[1]
         else:
-            raise ValueError("Unrecognized property: {}".format(c[0]))
+            raise ValueError(f"Unrecognized property: {c[0]}")
     return node
 
 
-def processtext(tokens):
+def processtext(tokens: list[str]) -> list[str]:
     """
     Preprocessing token list for filtering '(' and ')' in text
     (from DPLP, by Yangfeng Ji)
@@ -185,7 +183,7 @@ def processtext(tokens):
     return tokens
 
 
-def createtext(lst):
+def createtext(lst: list[str]) -> str:
     """ Create text from a list of tokens (from DPLP, by Yangfeng Ji)
 
     :type lst: list
@@ -200,7 +198,7 @@ def createtext(lst):
     return text  # .lower()
 
 
-def checkcontent(label, c):
+def checkcontent(label: str, c: list[Any]) -> None:
     """ Check whether the content is legal (from DPLP, by Yangfeng Ji)
 
     :type label: string
@@ -210,11 +208,11 @@ def checkcontent(label, c):
     :param c: list of tokens
     """
     if len(c) > 0:
-        raise ValueError("{} with content={}".format(label, c))
+        raise ValueError(f"{label} with content={c}")
 
 
 # TODO merge all the binarization fcts, should be the same
-def binarizeTreeRight(tree):
+def binarizeTreeRight(tree: data.SpanNode) -> data.SpanNode:
     """
     Convert a general RST tree to a binary RST tree (from DPLP, by Yangfeng Ji)
 
@@ -252,7 +250,7 @@ def binarizeTreeRight(tree):
     return tree
 
 
-def buildTreeThiago(text):
+def buildTreeThiago(text: str) -> tuple[data.SpanNode, list[int], list[data.SpanNode], dict[int, str]]:
     """
     Build tree from *.thiago file
 
@@ -280,7 +278,7 @@ def buildTreeThiago(text):
             content.reverse()  # Reverse to the original order
             # Parse according to the first content word
             if len(content) < 2:
-                raise ValueError("content = {}".format(content))
+                raise ValueError(f"content = {content}")
             label = content.pop(0)
             if label == 'Root':
                 node = data.SpanNode(prop=label)
@@ -323,7 +321,7 @@ def buildTreeThiago(text):
                 # ignore
                 continue
             else:
-                raise ValueError("Unrecognized parsing label: {} \n\twith content = {}\n".format(label, content))
+                raise ValueError(f"Unrecognized parsing label: {label} \n\twith content = {content}\n")
         else:
             # else, keep push into the stack
             stack.append(token)
@@ -333,7 +331,7 @@ def buildTreeThiago(text):
         return stack[-1], eduIds, allnodes, edus
 
 
-def createnodeThiago(node, content):
+def createnodeThiago(node: data.SpanNode, content: list[Any]) -> data.SpanNode:
     """
     Assign value to a SpanNode instance
 
@@ -359,22 +357,22 @@ def createnodeThiago(node, content):
         elif c[0] == 'text':
             node.text = c[1]
         else:
-            raise ValueError("Unrecognized property: {}".format(c[0]))
+            raise ValueError(f"Unrecognized property: {c[0]}")
     return node
 
 
-def findNodeT(m, allnodes):
+def findNodeT(m: data.SpanNode, allnodes: list[data.SpanNode]) -> data.SpanNode | None:
     for node in allnodes:
         if m.eduspan == node.eduspan:
             return node
     return None
 
 
-def findDuplicate(allnodes, verbose=False):
+def findDuplicate(allnodes: list[data.SpanNode], verbose: bool = False) -> list[data.SpanNode]:
     remove2kept = {}
     for i, n in enumerate(allnodes):
         for j, m in enumerate(allnodes):
-            if i != j and n.eduspan == m.eduspan and not j in remove2kept.keys() and not j in remove2kept.values() and not i in remove2kept.keys() and not i in remove2kept.values():
+            if i != j and n.eduspan == m.eduspan and j not in remove2kept.keys() and j not in remove2kept.values() and i not in remove2kept.keys() and i not in remove2kept.values():
                 if verbose:
                     print("--KEPT", n.relation, n.prop, n.eduspan, n.text)
                     print("--RM", m.relation, m.prop, m.eduspan, m.text)
@@ -384,12 +382,12 @@ def findDuplicate(allnodes, verbose=False):
                 if n.relation == "span" and m.relation != "span":  # --- keep relation and nuc
                     n.relation = m.relation
                     n.prop = m.prop
-                if n.text == None and m.text != None:  # --- keep text
+                if n.text is None and m.text is not None:  # --- keep text
                     n.text = m.text
                 if verbose:
                     print("--Final KEPT", n.relation, n.prop, n.eduspan, n.text)
     # Need to replace all instance of the nodes removed in the nodelist of the other nodes
-    for k, n in enumerate(allnodes):
+    for _k, n in enumerate(allnodes):
         if i in remove2kept:
             if verbose:
                 print("will be removed", n.eduspan)
@@ -410,7 +408,7 @@ def findDuplicate(allnodes, verbose=False):
     # Remove the nodes
     newnodes = []
     for i, n in enumerate(allnodes):
-        if not i in remove2kept:
+        if i not in remove2kept:
             n.nodelist = orderNodeList(n.nodelist)
             newnodes.append(n)
         else:
@@ -420,7 +418,7 @@ def findDuplicate(allnodes, verbose=False):
     return newnodes
 
 
-def cleanChildren(allnodes):
+def cleanChildren(allnodes: list[data.SpanNode]) -> list[data.SpanNode]:
     for n in allnodes:
         for c in n.nodelist:
             if n.eduspan == c.eduspan:
@@ -429,7 +427,7 @@ def cleanChildren(allnodes):
     return allnodes
 
 
-def correctThiago(allnodes, verbose=False):
+def correctThiago(allnodes: list[data.SpanNode], verbose: bool = False) -> list[data.SpanNode]:
     ''' Deal with some issues when reading the Thiago files '''
     if verbose:
         print('\n', '-' * 30)
@@ -454,7 +452,7 @@ def correctThiago(allnodes, verbose=False):
     return allnodes
 
 
-def findMisplacedChildren(allnodes):
+def findMisplacedChildren(allnodes: list[data.SpanNode]) -> list[data.SpanNode]:
     misplaced_children = []
     for node in allnodes:
         node.nodelist = orderNodeList(node.nodelist)
@@ -472,7 +470,7 @@ def findMisplacedChildren(allnodes):
     return misplaced_children
 
 
-def findLonelyParent(allnodes):
+def findLonelyParent(allnodes: list[data.SpanNode]) -> list[data.SpanNode]:
     parents = []
     for node in allnodes:
         eduCovered = sorted(list(set([m.eduspan[0] for m in node.nodelist])))
@@ -484,7 +482,7 @@ def findLonelyParent(allnodes):
     return parents
 
 
-def bTree(allnodes, path, verbose=False):
+def bTree(allnodes: list[data.SpanNode], path: str | Path, verbose: bool = False) -> data.SpanNode:
     allnodes = correctThiago(allnodes)
     # Reorganize children: some children have the wrong parent according to their span
     # - Find the children that have wrong parents, rm from the parent nodelist
@@ -514,7 +512,11 @@ def bTree(allnodes, path, verbose=False):
     return root
 
 
-def find_missing_eduspan_backup(node, misplaced_children, verbose=False):
+def find_missing_eduspan_backup(
+    node: data.SpanNode,
+    misplaced_children: list[data.SpanNode],
+    verbose: bool = False,
+) -> None:
     if verbose:
         print("\nBACKUP MISSING CHILDREN\n", node.eduspan, [m.eduspan for m in node.nodelist])
         print('misplaced_children', [m.eduspan for m in misplaced_children])
@@ -531,7 +533,11 @@ def find_missing_eduspan_backup(node, misplaced_children, verbose=False):
         misplaced_children.remove(c)
 
 
-def find_missing_eduspan(node, misplaced_children, verbose=False):
+def find_missing_eduspan(
+    node: data.SpanNode,
+    misplaced_children: list[data.SpanNode],
+    verbose: bool = False,
+) -> None:
     if verbose:
         print("\nMISSING CHILDREN\n", node.eduspan, [m.eduspan for m in node.nodelist])
     eduCovered = sorted(list(set([m.eduspan[0] for m in node.nodelist])))
@@ -542,33 +548,33 @@ def find_missing_eduspan(node, misplaced_children, verbose=False):
             if verbose:
                 print("\tMissing", node.eduspan[0], eduCovered[0] - 1)
             child = findChild(node.eduspan[0], eduCovered[0] - 1, misplaced_children)
-            if child != None:
+            if child is not None:
                 node.nodelist.append(child)
                 misplaced_children.remove(child)
         elif len(eduCovered) == 1:
             if verbose:
                 print("\tMissing, ", eduCovered[0] + 1, node.eduspan[1])
                 child = findChild(eduCovered[0] + 1, node.eduspan[1], misplaced_children)
-            if child != None:
+            if child is not None:
                 node.nodelist.append(child)
                 misplaced_children.remove(child)
         elif eduCovered[1] != node.eduspan[1]:
             if verbose:
                 print("\tMissing, ", eduCovered[1] + 1, node.eduspan[1])
             child = findChild(eduCovered[1] + 1, node.eduspan[1], misplaced_children)
-            if child != None:
+            if child is not None:
                 node.nodelist.append(child)
                 misplaced_children.remove(child)
 
 
-def findChild(beg, end, misplaced_children):
+def findChild(beg: int, end: int, misplaced_children: list[data.SpanNode]) -> data.SpanNode | None:
     for c in misplaced_children:
         if c.eduspan[0] == beg and c.eduspan[1] == end:
             return c
     return None
 
 
-def printThiagoList(tree):
+def printThiagoList(tree: data.SpanNode) -> None:
     queue = [tree]
     while queue:
         node = queue.pop(0)
@@ -576,17 +582,17 @@ def printThiagoList(tree):
             queue.extend([n for n in node.nodelist])
 
 
-def printThiago(tree):
+def printThiago(tree: data.SpanNode) -> None:
     queue = [tree]
     while queue:
         node = queue.pop(0)
-        if node.lnode != None and node.rnode != None:
+        if node.lnode is not None and node.rnode is not None:
             queue.append(node.lnode)
             queue.append(node.rnode)
 
 
 # TODO merge all the binarization fcts, should be the same
-def binarizeTreeRightThiago(tree, verbose=False):
+def binarizeTreeRightThiago(tree: data.SpanNode, verbose: bool = False) -> data.SpanNode:
     """
     Convert a general RST tree to a binary RST tree
 
@@ -622,17 +628,17 @@ def binarizeTreeRightThiago(tree, verbose=False):
             if childrenNuclearity[-1].lower() == 'nucleus' or childrenRelations[-1].lower() == 'span' or snsPattern(
                     childrenRelations,
                     childrenNuclearity):  # last node = nucleus or span relation or specific pattern 'S N+ S'
-                newnode = rightAttach(node)
+                rightAttach(node)
             else:
-                newnode = leftAttach(node)
-        if node.lnode != None and node.rnode != None:
+                leftAttach(node)
+        if node.lnode is not None and node.rnode is not None:
             queue.append(node.lnode)
             queue.append(node.rnode)
         node.nodelist = []
     return tree
 
 
-def snsPattern(relations, nuclearity):
+def snsPattern(relations: list[str], nuclearity: list[str]) -> bool:
     # At least 3 nodes, a satellite at the beg and at the end, and only nuclei in between or span
     if len(nuclearity) < 3:
         return False
@@ -647,7 +653,7 @@ def snsPattern(relations, nuclearity):
     return True
 
 
-def leftAttach(node):
+def leftAttach(node: data.SpanNode) -> data.SpanNode:
     node.rnode = node.nodelist.pop(-1)
     newnode = data.SpanNode('Nucleus')
     # has to be a nucleus since we do it when the last/right node is a satellite and we have a NS rel
@@ -661,7 +667,7 @@ def leftAttach(node):
     return newnode
 
 
-def rightAttach(node):
+def rightAttach(node: data.SpanNode) -> data.SpanNode:
     node.lnode = node.nodelist.pop(0)
     newnode = data.SpanNode('Nucleus')
     # has to be a nucleus since we do it when the last/right node is a nucleus node.nodelist[0].prop
@@ -675,7 +681,7 @@ def rightAttach(node):
     return newnode
 
 
-def orderNodeList(nodelist):
+def orderNodeList(nodelist: list[data.SpanNode]) -> list[data.SpanNode]:
     newlist = sorted([n for n in nodelist], key=lambda x: x.eduspan[1])
     return newlist
 
@@ -683,25 +689,23 @@ def orderNodeList(nodelist):
 # ----------------------------------------------------------------------------------
 # READ FILES
 # ----------------------------------------------------------------------------------
-def getDisFiles(tbpath):
-    disFiles = [os.path.join(tbpath, fname) for fname in os.listdir(tbpath) if fname.endswith(".dis")]
-    eduFiles = [os.path.join(tbpath, fname) for fname in os.listdir(tbpath) if fname.endswith(".edus")]
+def getDisFiles(tbpath: str | Path) -> tuple[list[Path], list[Path]]:
+    root = Path(tbpath)
+    disFiles = [path for path in root.iterdir() if path.name.endswith(".dis")]
+    eduFiles = [path for path in root.iterdir() if path.name.endswith(".edus")]
     return disFiles, eduFiles
 
 
-def findFile(eduFiles, basename_dis):
+def findFile(eduFiles: list[str | Path], basename_dis: str) -> Path | None:
     ''' Retrieve the edu file corresponding to the basename_dis '''
     for _file in eduFiles:
-
-        # basename = os.path.basename( _file ).split('.')[0]
-        basename = os.path.basename(_file).replace('.out', '').replace('.dis', '').replace('.txt', '').replace('.edus',
-                                                                                                               '')
+        basename = Path(_file).name.replace('.out', '').replace('.dis', '').replace('.txt', '').replace('.edus', '')
         if basename_dis == basename:
-            return _file
+            return Path(_file)
     return None
 
 
-def readEduDoc(fedu, doc):
+def readEduDoc(fedu: str | Path, doc: Any) -> Any:
     """
     Read information from the edu file, and fill the fields tokendict and edudict of the document
     Use the TOKENIZER to get tokens
@@ -709,16 +713,16 @@ def readEduDoc(fedu, doc):
     :type fedu: string
     :param fedu: edu file name
     """
-    if not os.path.isfile(fedu):
-        raise IOError("File doesn't exist: {}".format(fedu))
+    fedu_path = Path(fedu)
+    if not fedu_path.is_file():
+        raise FileNotFoundError(f"File doesn't exist: {fedu_path}")
     # EDU ids start at 1
     gidx, eidx, tokendict, edudict = 0, 1, {}, {}
-    with open(fedu, 'r') as fin:
+    with fedu_path.open('r') as fin:
         for line in fin:
             line = line.strip()
             if len(line) == 0:
                 continue
-            eduTxt = line
             edudict[eidx] = []
             # need to be tokenized, here simple nltk tokenization
             tokens = TOKENIZER.tokenize(line)

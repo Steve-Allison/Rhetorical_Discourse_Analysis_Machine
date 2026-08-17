@@ -38,8 +38,6 @@ is a synthetic boundary-only marker — no ``HarvestSpan`` carries it.
 Spans are concatenated with ``harvest_separator`` (default ``"\\n\\n"``).
 """
 
-from __future__ import annotations
-
 import re
 
 from markdown_it.token import Token

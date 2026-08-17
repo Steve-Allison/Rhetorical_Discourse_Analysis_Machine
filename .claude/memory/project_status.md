@@ -15,6 +15,6 @@ This repository (`Steve-Allison/isanlp_rst`) is Steve's project. The original RS
 - Contributing back to `tchewik/isanlp_rst` (Elena's repo) is not the default workflow. Only do it if Steve explicitly asks for a specific change to be sent there.
 - Don't write code as if defending against upstream review. This is Steve's codebase.
 - Attribution to Elena (MIT licence, CC BY-NC 4.0 on weights, citation block in README) stays — that's licence compliance and academic credit, not deference.
-- Inherited research modules (`*/src/parser/`, `*/src/corpus/`, `multiple_runs.py`, `data_manager.py`, `du_converter.py`, `rstviewer/`) are touched surgically. New modules use modern Python 3.13+ idioms. See [`.claude/rules/code-standards.md`](../rules/code-standards.md).
+- One quality bar on every module, including former research trees. Modern Python is **3.14** (deferred annotations; do not add `from __future__ import annotations`). See [`.claude/rules/code-standards.md`](../rules/code-standards.md).
 
 Related: [[licensing]], [[decision-consumer-agnostic]].

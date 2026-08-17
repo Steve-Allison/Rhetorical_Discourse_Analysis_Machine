@@ -7,9 +7,7 @@ so two objects with identical HF attrs cannot share a cache hit (the
 documented batch pattern reuses one object and therefore hits).
 """
 
-from __future__ import annotations
-
-from typing import Any
+from collections.abc import Callable
 
 
 def model_identity_knobs(
@@ -45,7 +43,7 @@ def resolve_result_model_meta(
     hf_model_version: str,
     relinventory: str | None,
     *,
-    resolve_inventory: Any,
+    resolve_inventory: Callable[[str, str | None], str],
 ) -> tuple[str, str]:
     """Return ``(model_version, inventory)`` for a result payload.
 

@@ -1,10 +1,12 @@
+from typing import Any, override
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import Tensor
 
 from .parsing_net import ParsingNet
 from .data import nucs_and_rels
-from .metrics import get_batch_metrics
 
 
 class ParsingNetBottomUp(ParsingNet):
@@ -16,7 +18,7 @@ class ParsingNetBottomUp(ParsingNet):
     transition system described in `Yu et al., 2020` (CoDI; ACL 2020).
     """
 
-    def __init__(self, *args, pair_hidden_size=256, **kwargs):
+    def __init__(self, *args: Any, pair_hidden_size: int = 256, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         # Remove top-down specific modules
@@ -33,7 +35,15 @@ class ParsingNetBottomUp(ParsingNet):
 
 
     class _Node:
-        def __init__(self, start, end, split, label, left=None, right=None):
+        def __init__(
+            self,
+            start: int,
+            end: int,
+            split: int | None,
+            label: int | None,
+            left: ParsingNetBottomUp._Node | None = None,
+            right: ParsingNetBottomUp._Node | None = None,
+        ) -> None:
             self.start = start
             self.end = end
             self.split = split
@@ -41,7 +51,15 @@ class ParsingNetBottomUp(ParsingNet):
             self.left = left
             self.right = right
 
-    def _build_tree(self, parsing_index, label_index, edu_number, start=0, end=None, idx=0):
+    def _build_tree(
+        self,
+        parsing_index: list[int],
+        label_index: list[int],
+        edu_number: int,
+        start: int = 0,
+        end: int | None = None,
+        idx: int = 0,
+    ) -> tuple[ParsingNetBottomUp._Node, int]:
         """Reconstructs the gold tree from pre-order traversal."""
         if end is None:
             end = edu_number - 1
@@ -57,7 +75,7 @@ class ParsingNetBottomUp(ParsingNet):
                                       start=split + 1, end=end, idx=idx)
         return self._Node(start, end, split, label, left, right), idx
 
-    def _postorder(self, node):
+    def _postorder(self, node: ParsingNetBottomUp._Node) -> list[ParsingNetBottomUp._Node]:
         if node.left is None:
             return []
         ops = []
@@ -66,7 +84,7 @@ class ParsingNetBottomUp(ParsingNet):
         ops.append(node)
         return ops
 
-    def _actions(self, node):
+    def _actions(self, node: ParsingNetBottomUp._Node) -> list[tuple[str, int | None]]:
         """Return gold transition sequence in postorder."""
         if node.left is None:
             return [("SHIFT", None)]
@@ -77,12 +95,23 @@ class ParsingNetBottomUp(ParsingNet):
         return actions
 
 
-    def _span_embedding(self, encodings, start, end):
+    def _span_embedding(self, encodings: Tensor, start: int, end: int) -> Tensor:
         return torch.mean(encodings[start:end + 1], dim=0, keepdim=True)
 
 
-    def training_loss(self, input_texts, sent_breaks, entity_ids, entity_position_ids,
-                      edu_breaks, label_index, parsing_index, decoder_input_index, dataset_index):
+    @override
+    def training_loss(
+        self,
+        input_texts: list[Any],
+        sent_breaks: list[Any] | None,
+        entity_ids: list[Any] | None,
+        entity_position_ids: list[Any] | None,
+        edu_breaks: list[list[int]],
+        label_index: list[list[int]],
+        parsing_index: list[list[int]],
+        decoder_input_index: list[list[int]],
+        dataset_index: list[int],
+    ) -> tuple[Tensor, Tensor, Tensor]:
         encoder_outputs, _, total_edu_loss, _ = self.encoder(
             input_texts, entity_ids, entity_position_ids, edu_breaks,
             sent_breaks=sent_breaks, dataset_index=dataset_index)
@@ -142,8 +171,20 @@ class ParsingNetBottomUp(ParsingNet):
         return loss_struct_batch, loss_label_batch, total_edu_loss
 
 
-    def testing_loss(self, input_sentence, input_sent_breaks, input_entity_ids, input_entity_position_ids,
-                     input_edu_breaks, label_index, parsing_index, generate_tree, use_pred_segmentation, dataset_index):
+    @override
+    def testing_loss(
+        self,
+        input_sentence: list[Any],
+        input_sent_breaks: list[Any] | None,
+        input_entity_ids: list[Any] | None,
+        input_entity_position_ids: list[Any] | None,
+        input_edu_breaks: list[list[int]],
+        label_index: list[list[int]],
+        parsing_index: list[list[int]],
+        generate_tree: bool,
+        use_pred_segmentation: bool,
+        dataset_index: list[int],
+    ) -> tuple[float, float, list[list[str]], tuple[list[int], list[int]], list[list[int]]]:
         encoder_outputs, _, _, _ = self.encoder(
             input_sentence, input_entity_ids, input_entity_position_ids, input_edu_breaks,
             sent_breaks=input_sent_breaks, is_test=True, dataset_index=dataset_index)

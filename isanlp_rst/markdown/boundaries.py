@@ -22,8 +22,6 @@ Boundary kinds:
   when content precedes the first heading.
 """
 
-from __future__ import annotations
-
 from .schema import Boundary, HarvestSpan, TableHarvest
 
 

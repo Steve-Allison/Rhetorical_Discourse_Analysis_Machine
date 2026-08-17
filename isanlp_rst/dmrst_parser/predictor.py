@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import json
-import os
-from typing import List, Optional, Sequence
+from collections.abc import Sequence
+from pathlib import Path
+from typing import Any
 
 import razdel
 import torch
@@ -19,28 +18,29 @@ from .src.parser.parsing_net import ParsingNet
 class PredictorDMRST(BasePredictor):
     def __init__(
         self,
-        model_dir: Optional[str] = None,
-        hf_model_name: Optional[str] = None,
-        hf_model_version: Optional[str] = None,
-        device: 'str | torch.device | None' = None,
-        cuda_device: 'int | None' = None,
-        dtype: 'str | torch.dtype | None' = None,
-    ):
+        model_dir: str | None = None,
+        hf_model_name: str | None = None,
+        hf_model_version: str | None = None,
+        device: str | torch.device | None = None,
+        cuda_device: int | None = None,
+        dtype: str | torch.dtype | None = None,
+    ) -> None:
         if model_dir is not None and hf_model_name is not None:
             raise ValueError(
                 'Pass exactly one of `model_dir` or `hf_model_name`, not both.'
             )
 
-        _file_model = 'best_weights.pt'
-        _file_config = 'config.json'
-        _file_relation_table = 'relation_table.txt'
+        model_filename = 'best_weights.pt'
+        config_filename = 'config.json'
+        relation_table_filename = 'relation_table.txt'
 
         if model_dir is not None:
             self.mode = 'local'
-            self.model_file = os.path.join(model_dir, _file_model)
-            self.config_path = os.path.join(model_dir, _file_config)
+            self.model_dir = Path(model_dir)
+            self.model_file = str(self.model_dir / model_filename)
+            self.config_path = str(self.model_dir / config_filename)
             self.relation_table = self._read_relation_table(
-                os.path.join(model_dir, _file_relation_table)
+                self.model_dir / relation_table_filename
             )
         elif hf_model_name is not None:
             self.mode = 'hf'
@@ -48,25 +48,24 @@ class PredictorDMRST(BasePredictor):
             self.hf_model_version = hf_model_version
             self.model_file = hf_hub_download(
                 repo_id=hf_model_name,
-                filename=_file_model,
+                filename=model_filename,
                 revision=hf_model_version,
             )
             self.config_path = hf_hub_download(
                 repo_id=hf_model_name,
-                filename=_file_config,
+                filename=config_filename,
                 revision=hf_model_version,
             )
             relation_table_path = hf_hub_download(
                 repo_id=hf_model_name,
-                filename=_file_relation_table,
+                filename=relation_table_filename,
                 revision=hf_model_version,
             )
             self.relation_table = self._read_relation_table(relation_table_path)
         else:
             raise ValueError('Pass either `model_dir` or `hf_model_name`.')
 
-        with open(self.config_path, 'r', encoding='utf8') as f:
-            self.config = json.load(f)
+        self.config = json.loads(Path(self.config_path).read_text(encoding='utf-8'))
 
         self._device = resolve_device(device, cuda_device)
         self._dtype = self._resolve_dtype(dtype)
@@ -74,15 +73,18 @@ class PredictorDMRST(BasePredictor):
         self._load_model()
 
     @staticmethod
-    def _read_relation_table(path: str) -> List[str]:
+    def _read_relation_table(path: str | Path) -> list[str]:
         """Load relation labels, matching UniRST (strip; drop blank lines)."""
-        with open(path, 'r', encoding='utf8') as f:
-            table = [line.strip() for line in f if line.strip()]
+        table = [
+            line.strip()
+            for line in Path(path).read_text(encoding='utf-8').splitlines()
+            if line.strip()
+        ]
         if not table:
             raise ValueError(f'relation_table at {path!r} has no non-blank labels.')
         return table
 
-    def _load_model(self):
+    def _load_model(self) -> None:
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.config['model']['transformer']['model_name'],
             use_fast=True,
@@ -110,8 +112,8 @@ class PredictorDMRST(BasePredictor):
         self.model.load_state_dict(self._load_torch_weights(self.model_file, self._device))
         self.model.eval()
 
-    def _get_model_configs(self):
-        config = {}
+    def _get_model_configs(self) -> dict[str, Any]:
+        config: dict[str, Any] = {}
 
         if 'normalize' in self.config['model']['transformer']:
             config['normalize_embeddings'] = self.config['model']['transformer'].get('normalize')
@@ -162,7 +164,7 @@ class PredictorDMRST(BasePredictor):
 
         return config
 
-    def tokenize(self, data):
+    def tokenize(self, data: Data) -> Data:
         """ Takes data with word level tokenization, run current transformer tokenizer and recount EDU boundaries."""
 
         # (word_start_char, word_end_char+1) for each token
@@ -200,7 +202,7 @@ class PredictorDMRST(BasePredictor):
             sibling=data.sibling
         )
 
-    def get_batches(self, data: Data, size: int):
+    def get_batches(self, data: Data, size: int) -> list[Data]:
         """ Splits a batch into multiple smaller with given size. """
 
         if len(data.input_sentences) < size:
@@ -237,7 +239,7 @@ class PredictorDMRST(BasePredictor):
 
         return batches
 
-    def parse_rst(self, text: str):
+    def parse_rst(self, text: str) -> dict[str, Any]:
         """
         Parses the given text to generate a tree of rhetorical structure.
 
@@ -301,6 +303,8 @@ class PredictorDMRST(BasePredictor):
         # Update predictions dictionary
         predictions['tokens'] += [self.tokenizer.convert_ids_to_tokens(text) for text in
                                   batch.input_sentences]
+        if span_batch is None:
+            raise RuntimeError('testing_loss returned no spans with generate_tree=True')
         predictions['spans'] += span_batch
         predictions['edu_breaks'] += predict_edu_breaks
         predictions['true_spans'] += batch.golden_metric
@@ -314,7 +318,7 @@ class PredictorDMRST(BasePredictor):
             'rst': [tree]
         }
 
-    def parse_from_edus(self, edus: Sequence[str]):
+    def parse_from_edus(self, edus: Sequence[str]) -> dict[str, Any]:
         """Parse a document using predefined EDU boundaries."""
 
         normalized_edus = self._validate_edus(edus)
@@ -330,7 +334,7 @@ class PredictorDMRST(BasePredictor):
         if len(normalized_edus) == 1:
             tree = DUConverter.dummy_tree(tokenized_text)
             self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
-            leaves: List[str] = []
+            leaves: list[str] = []
             self._collect_leaf_texts(tree, leaves)
             if leaves != normalized_edus:
                 raise ValueError('Failed to align the provided EDU with the parser output.')
@@ -374,6 +378,8 @@ class PredictorDMRST(BasePredictor):
 
         predictions['tokens'] += [self.tokenizer.convert_ids_to_tokens(text) for text in
                                   batch.input_sentences]
+        if span_batch is None:
+            raise RuntimeError('testing_loss returned no spans with generate_tree=True')
         predictions['spans'] += span_batch
         predictions['edu_breaks'] += predict_edu_breaks
         predictions['true_spans'] += batch.golden_metric
@@ -383,7 +389,7 @@ class PredictorDMRST(BasePredictor):
 
         self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
 
-        leaves: List[str] = []
+        leaves: list[str] = []
         self._collect_leaf_texts(tree, leaves)
         if leaves != normalized_edus:
             raise ValueError('The produced segmentation does not match the provided EDUs.')

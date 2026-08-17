@@ -10,8 +10,6 @@ Public API:
 - ``DoclingRstError`` and subclasses — error hierarchy.
 """
 
-from __future__ import annotations
-
 from ._entry import parse_docling
 from ._mimetypes import ensure_docling_mimetypes
 from .errors import (

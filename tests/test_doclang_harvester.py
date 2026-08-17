@@ -1,12 +1,11 @@
 """Unit tests for the doclang harvesters (main text + per-table)."""
 
-from __future__ import annotations
-
 from pathlib import Path
 
 import pytest
 from lxml import etree
 
+from isanlp_rst.doclang.errors import UnsupportedDoclangError
 from isanlp_rst.doclang.harvester import harvest_doclang_tables, harvest_doclang_text
 from isanlp_rst.doclang.loader import parse_doclang_xml
 
@@ -393,8 +392,6 @@ def test_head_element_text_not_in_harvest() -> None:
 
 
 def test_nested_table_raises_unsupported(tmp_path: Path) -> None:
-    from isanlp_rst.doclang.errors import UnsupportedDoclangError
-
     path = tmp_path / "nested.dclg.xml"
     path.write_text(
         """\

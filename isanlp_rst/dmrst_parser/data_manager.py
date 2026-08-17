@@ -1,7 +1,5 @@
 import copy
-import glob
-import os
-import pickle
+import json
 import random
 from collections import defaultdict
 from pathlib import Path
@@ -9,31 +7,64 @@ from pathlib import Path
 import fire
 from tqdm import tqdm
 
-from isanlp_rst.dmrst_parser.src.corpus.binary_tree import BinaryTree
+from isanlp_rst.dmrst_parser.src.corpus.binary_tree import BinaryTree, Node
 from isanlp_rst.dmrst_parser.src.corpus.data import Rs3Document
 from isanlp_rst.dmrst_parser.src.parser.data import Data
 from isanlp_rst.dmrst_parser.src.parser.data import RelationTableGUM, RelationTableRSTDT, RelationTableRuRSTB
+from isanlp_rst.universal_parser.inventory import (
+    RestrictedUnpickler,
+    dump_relation_inventory,
+    ensure_unirst_module_aliases,
+    import_relation_table_from_legacy_pickle,
+)
 
 random.seed(42)
 
 
 class ParserInput:
-    def __init__(self):
-        self.sentences = []
-        self.edu_breaks = []
-        self.label_for_metrics_list = []
+    def __init__(self) -> None:
+        self.sentences: list[str] = []
+        self.edu_breaks: list[int] = []
+        self.label_for_metrics_list: list[str] = []
         self.label_for_metrics = ''
-        self.parsing_index = []
-        self.relation = []
-        self.decoder_inputs = []
-        self.parents = []
-        self.siblings = []
-        self.sentence_span = []
+        self.parsing_index: list[int] = []
+        self.relation: list[int] = []
+        self.decoder_inputs: list[int] = []
+        self.parents: list[int] = []
+        self.siblings: list[int] = []
+        self.sentence_span: list[list[int]] = []
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "sentences": self.sentences,
+            "edu_breaks": self.edu_breaks,
+            "label_for_metrics_list": self.label_for_metrics_list,
+            "label_for_metrics": self.label_for_metrics,
+            "parsing_index": self.parsing_index,
+            "relation": self.relation,
+            "decoder_inputs": self.decoder_inputs,
+            "parents": self.parents,
+            "siblings": self.siblings,
+            "sentence_span": self.sentence_span,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: dict[str, object]) -> ParserInput:
+        obj = cls()
+        for key, value in payload.items():
+            setattr(obj, key, value)
+        return obj
+
+    def write_json(self, path: Path) -> None:
+        path.write_text(json.dumps(self.to_dict()) + "\n", encoding="utf-8")
+
+    @classmethod
+    def from_json(cls, path: Path) -> ParserInput:
+        return cls.from_dict(json.loads(path.read_text(encoding="utf-8")))
 
 
 class DataManager:
-    def __init__(self, corpus,
-                 cross_validation=False, nfolds=5, ):
+    def __init__(self, corpus: str, cross_validation: bool = False, nfolds: int = 5) -> None:
         """
         :param corpus: str  - from {'GUM', 'RST-DT', 'RuRSTB'}
         :param cross_validation: bool  - whether to split to stratified train/dev/tests randomly
@@ -49,21 +80,21 @@ class DataManager:
         elif corpus == 'RuRSTB':
             self._init_rurstb_corpus()
 
-    def _init_gum_corpus(self, cross_validation, nfolds):
-        self.input_path = 'data/gum_rs3'
+    def _init_gum_corpus(self, cross_validation: bool, nfolds: int) -> None:
+        self.input_path = Path('data/gum_rs3')
         self.output_path = Path('data/gum_prepared')
         self.output_path.mkdir(parents=True, exist_ok=True)
         self.cross_validation = cross_validation
         if self.cross_validation:
             self.nfolds = nfolds
-            self.folds = defaultdict(dict[int, dict])
-            self.mixed_folds_en = defaultdict(dict[int, list])
-            self.mixed_folds_ru = defaultdict(dict[int, list])
+            self.folds: dict[int, dict[str, list[str]]] = defaultdict(dict)
+            self.mixed_folds_en: dict[int, dict[int, dict[str, list[str]]]] = defaultdict(dict)
+            self.mixed_folds_ru: dict[int, dict[int, dict[str, list[str]]]] = defaultdict(dict)
         else:
-            self.corpus = dict()
+            self.corpus: dict[str, list[str]] = dict()
 
-            self.mixed_train_en = defaultdict(list[dict[int, list]])
-            self.mixed_train_ru = defaultdict(list[dict[int, list]])
+            self.mixed_train_en: dict[int, list[list[str]]] = defaultdict(list)
+            self.mixed_train_ru: dict[int, list[list[str]]] = defaultdict(list)
             self.mixed_folds = 5
             for i in [25, 50, 75, 100]:
                 self.mixed_train_en[i] = []
@@ -78,16 +109,16 @@ class DataManager:
             'restatement_sn': 'restatement_ns'  # 4 examples in GUM_conversation_gossip
         }
 
-    def _init_rstdt_corpus(self, nfolds):
+    def _init_rstdt_corpus(self, nfolds: int) -> None:
         # The corpus is converted to *.rs3 with https://github.com/rst-workbench/rst-converter-service
-        self.input_path = 'data/rstdt_rs3'
+        self.input_path = Path('data/rstdt_rs3')
         self.output_path = Path('data/rstdt_prepared')
         self.output_path.mkdir(parents=True, exist_ok=True)
 
         # There is no fixed validation part in RST-DT,
         # so we'll take random parts of training for validation for each "fold"
         self.nfolds = nfolds
-        self.folds = defaultdict(dict[int, dict])
+        self.folds: dict[int, dict[str, list[str]]] = defaultdict(dict)
 
         class2rel = {
             'Attribution': ['attribution', 'attribution-e', 'attribution-n', 'attribution-negative'],
@@ -140,17 +171,17 @@ class DataManager:
         self.relation_dic = {word.lower(): i for i, word in enumerate(RelationTableRSTDT)}
         self.relation_fixer = dict()
 
-    def _init_rurstb_corpus(self):
+    def _init_rurstb_corpus(self) -> None:
         # The corpus is splitted into separate trees (docname_part*.rs3)
         # "##### " are replaced with <P> tag as in the rst-dt
         # (although it still marks the beginning of a paragraph here, not the ending)
         # Also the corpus converted from rs3 -> isanlp -> rs3 to fix empty spans
 
-        self.input_path = 'data/rurstb_rs3'
+        self.input_path = Path('data/rurstb_rs3')
         self.output_path = Path('data/rurstb_prepared')
         self.output_path.mkdir(parents=True, exist_ok=True)
         self.cross_validation = False
-        self.corpus = {'train': [], 'dev': [], 'test': []}
+        self.corpus: dict[str, list[str]] = {'train': [], 'dev': [], 'test': []}
         class2rel = {
             'Attribution': ['attribution', 'antithesis'],  # Corpus analysis shows often mislabeling
             'Background': ['background'],
@@ -189,11 +220,11 @@ class DataManager:
             'background_ns': 'elaboration_ns',
         }
 
-    def from_rs3(self):
+    def from_rs3(self) -> None:
         # Collect all *.edus, *.lisp in the same directory
         self.prepare_lisp_format()
 
-        # Collect pickled binaries for each document
+        # Collect JSON parser-input files for each document
         self.prepare_parser_format()
 
         if self.corpus_name == 'GUM':
@@ -216,52 +247,67 @@ class DataManager:
         elif self.corpus_name in ['RST-DT', 'RuRSTB']:
             self.construct_corpus()
 
-    def from_pickle(self, filename):
-        with open(filename, 'rb') as f:
-            return pickle.load(f)
+    def from_pickle(self, filename: str | Path) -> list[str]:
+        """One-way import of a published HF pickle → relation labels only."""
+        return import_relation_table_from_legacy_pickle(Path(filename))
 
-    def save(self, filename):
-        with open(filename, 'wb') as f:
-            pickle.dump(self, f)
+    def save(self, filename: str | Path) -> None:
+        path = Path(filename)
+        if path.suffix in {".pickle", ".pkl"}:
+            path = path.with_suffix(".json")
+        dump_relation_inventory(path, list(self.relation_table), corpus_name=self.corpus_name)
 
-    def prepare_lisp_format(self):
+    def _load_prepared_doc(self, docname: str) -> ParserInput | None:
+        json_path = self.output_path / f"{docname}.json"
+        if json_path.is_file():
+            return ParserInput.from_json(json_path)
+        pkl_path = self.output_path / f"{docname}.pkl"
+        if not pkl_path.is_file():
+            return None
+        ensure_unirst_module_aliases()
+        with pkl_path.open("rb") as handle:
+            loaded = RestrictedUnpickler(handle).load()
+        if isinstance(loaded, ParserInput):
+            return loaded
+        return None
+
+    def prepare_lisp_format(self) -> None:
         if self.corpus_name == 'GUM':
             for lang in self.langs:
-                for rs3_file in glob.glob(os.path.join(self.input_path, lang, '*.rs3')):
-                    self.convert_doc(filename=os.path.basename(rs3_file),
-                                     input_dir=os.path.join(self.input_path, lang),
+                for rs3_file in (self.input_path / lang).glob('*.rs3'):
+                    self.convert_doc(filename=rs3_file.name,
+                                     input_dir=self.input_path / lang,
                                      output_dir=self.output_path)
 
         elif self.corpus_name == 'RST-DT':
             for part in ('TRAINING', 'TEST'):
-                for rs3_file in sorted(glob.glob(os.path.join(self.input_path, part, '*.rs3'))):
-                    self.convert_doc(filename=os.path.basename(rs3_file),
-                                     input_dir=os.path.join(self.input_path, part),
+                for rs3_file in sorted((self.input_path / part).glob('*.rs3')):
+                    self.convert_doc(filename=rs3_file.name,
+                                     input_dir=self.input_path / part,
                                      output_dir=self.output_path)
 
         elif self.corpus_name == 'RuRSTB':
-            for rs3_file in sorted(glob.glob(os.path.join(self.input_path, '*.rs3'))):
+            for rs3_file in sorted(self.input_path.glob('*.rs3')):
                 try:
-                    self.convert_doc(filename=os.path.basename(rs3_file),
+                    self.convert_doc(filename=rs3_file.name,
                                      input_dir=self.input_path,
                                      output_dir=self.output_path)
                 except Exception as e:
                     print(rs3_file)
                     raise e
 
-    def prepare_parser_format(self):
+    def prepare_parser_format(self) -> None:
         files = list(self.output_path.glob('*.edus'))
         for edu_path in tqdm(files, desc='Reading *.lisp files'):
-            lisp_path = edu_path.parent.joinpath(edu_path.name[:-5] + '.lisp')
+            lisp_path = edu_path.with_suffix('.lisp')
             try:
                 parser_input = self.generate_input(lisp_path, edu_path, edu_path)
             except Exception as e:
                 print('Exception is evoked by:', edu_path)
                 raise e
-            with open(edu_path.parent.joinpath(edu_path.name[:-5] + '.pkl'), 'wb') as f:
-                pickle.dump(parser_input, f)
+            parser_input.write_json(edu_path.with_suffix(".json"))
 
-    def get_fold(self, number, lang='en', mixed=0):
+    def get_fold(self, number: int, lang: str = 'en', mixed: int = 0) -> tuple[Data, Data, Data]:
         """
         :param number: int  - fold number
         :param lang: str  - (main) language
@@ -284,10 +330,18 @@ class DataManager:
 
         elif self.corpus_name == 'RST-DT':
             fold = copy.deepcopy(self.folds[number])
+        else:
+            raise KeyError(f'get_fold is not defined for corpus {self.corpus_name}')
 
-        result = {'train': None, 'dev': None, 'test': None}
-        for key in result.keys():
-            docs = [pickle.load(open(self.output_path.joinpath(docname + '.pkl'), 'rb')) for docname in fold[key]]
+        result: dict[str, Data] = {}
+        for key in ('train', 'dev', 'test'):
+            docs = []
+            for docname in fold[key]:
+                loaded = self._load_prepared_doc(docname)
+                if loaded is None:
+                    print('No such file in the corpus:', docname)
+                    continue
+                docs.append(loaded)
             input_sentences = [doc.sentences for doc in docs]
             edu_breaks = [doc.edu_breaks for doc in docs]
             decoder_input = [doc.decoder_inputs for doc in docs]
@@ -302,7 +356,7 @@ class DataManager:
 
         return result['train'], result['dev'], result['test']
 
-    def get_data(self, lang='en', mixed=0, mixed_fold=0):
+    def get_data(self, lang: str = 'en', mixed: int = 0, mixed_fold: int = 0) -> tuple[Data, Data, Data]:
         """
         :param lang: str  - (main) language
         :param mixed: int  - percentage for other part mixing
@@ -322,15 +376,15 @@ class DataManager:
                 else:
                     raise KeyError('No such language in the current data manager.')
 
-        result = {'train': None, 'dev': None, 'test': None}
-        for key in result.keys():
+        result: dict[str, Data] = {}
+        for key in ('train', 'dev', 'test'):
             docs = []
             for docname in corpus[key]:
-                filename = self.output_path.joinpath(docname + '.pkl')
-                try:
-                    docs.append(pickle.load(open(filename, 'rb')))
-                except FileNotFoundError:
-                    print('No such file in the corpus:', filename)
+                loaded = self._load_prepared_doc(docname)
+                if loaded is None:
+                    print('No such file in the corpus:', self.output_path / f"{docname}.json")
+                    continue
+                docs.append(loaded)
 
             input_sentences = [doc.sentences for doc in docs]
             edu_breaks = [doc.edu_breaks for doc in docs]
@@ -346,34 +400,38 @@ class DataManager:
 
         return result['train'], result['dev'], result['test']
 
-    def construct_corpus(self):
+    def construct_corpus(self) -> None:
         if self.corpus_name == 'GUM':
             for part in ('train', 'dev', 'test'):
-                self.corpus[part] = open(os.path.join('data', 'gum_file_lists', 'files.' + part),
-                                         'r').read().splitlines()
+                listing = Path('data') / 'gum_file_lists' / f'files.{part}'
+                self.corpus[part] = listing.read_text().splitlines()
 
         elif self.corpus_name == 'RST-DT':
-            test_files = [os.path.basename(filename)[:-4]
-                          for filename in glob.glob(os.path.join(self.input_path, 'TEST', '*.rs3'))]
-            all_train_files = [os.path.basename(filename)[:-4]
-                               for filename in glob.glob(os.path.join(self.input_path, 'TRAINING', '*.rs3'))]
+            test_files = [path.stem for path in (self.input_path / 'TEST').glob('*.rs3')]
+            all_train_files = [path.stem for path in (self.input_path / 'TRAINING').glob('*.rs3')]
 
             for fold in range(self.nfolds):
                 train_n = int(len(all_train_files) * 0.9)
                 train_files = random.sample(all_train_files, train_n)
-                dev_files = [file for file in all_train_files if not file in train_files]
+                dev_files = [file for file in all_train_files if file not in train_files]
 
                 self.folds[fold]['train'] = train_files
                 self.folds[fold]['dev'] = dev_files
                 self.folds[fold]['test'] = test_files
 
         elif self.corpus_name == 'RuRSTB':
-            for filename in glob.glob(os.path.join(self.output_path, '*.pkl')):
-                clear_filename = os.path.basename(filename)[:-4]
+            for json_path in self.output_path.glob('*.json'):
+                clear_filename = json_path.stem
                 part = clear_filename.split('.')[0]
                 self.corpus[part].append(clear_filename)
 
-    def _collect_mixed_train(self, train_data, genres: list, n: int, another_lang: str):
+    def _collect_mixed_train(
+        self,
+        train_data: list[str],
+        genres: list[str],
+        n: int,
+        another_lang: str,
+    ) -> list[str]:
         mixed_train = train_data[:]
         for genre in genres:
             g_train = [filename for filename in train_data if filename.startswith(f'GUM_{genre}')]
@@ -392,7 +450,7 @@ class DataManager:
 
         return mixed_train
 
-    def _mixed_train(self, n):
+    def _mixed_train(self, n: int) -> None:
         """ Makes self.mixed_train_* versions with 100% train files from first language and n% from the second. """
 
         if self.corpus_name == 'GUM':
@@ -401,6 +459,8 @@ class DataManager:
 
         elif self.corpus_name == 'RuRSTB':
             genres = ['news', 'blogs']
+        else:
+            raise KeyError(f'_mixed_train is not defined for corpus {self.corpus_name}')
 
         # Base English, mixing Russian #############
         for _ in range(self.mixed_folds):
@@ -428,18 +488,30 @@ class DataManager:
             self.mixed_train_ru[n].append(
                 self._collect_mixed_train(self.corpus['train'], genres, n=n, another_lang='en'))
 
-    def generate_input(self, lisp_path, text_path, edus_path, is_depth_manner=True):
+    def generate_input(
+        self,
+        lisp_path: str | Path,
+        text_path: str | Path,
+        edus_path: str | Path,
+        is_depth_manner: bool = True,
+    ) -> ParserInput:
         tree = BinaryTree(lisp_path, text_path, edus_path)
-        edus_list = [edu.split() for edu in open(edus_path, 'r').read().splitlines()]  # GUM is pre-tokenized
+        edus_list = [edu.split() for edu in Path(edus_path).read_text().splitlines()]  # GUM is pre-tokenized
         return self.find_document_span(tree.root, edus_list, is_depth_manner, tree.sentence_span)
 
-    def find_document_span(self, node, edus_list, is_depth_manner, sentence_span_dic):
+    def find_document_span(
+        self,
+        node: Node,
+        edus_list: list[list[str]],
+        is_depth_manner: bool,
+        sentence_span_dic: dict[str, int],
+    ) -> ParserInput:
         parser_input = self.parse_sentence(node, edus_list, is_depth_manner)
         parser_input.sentence_span = self.get_sentence_span_list(sentence_span_dic)
         return parser_input
 
     @staticmethod
-    def get_sentence_span_list(sentence_span_dic):
+    def get_sentence_span_list(sentence_span_dic: dict[str, int]) -> list[list[int]]:
         sentence_list = []
         for key in sentence_span_dic:
             tem_str = key.replace('[', '').replace(']', '')
@@ -449,7 +521,13 @@ class DataManager:
             sentence_list.append([left, right])
         return sentence_list
 
-    def parse_sentence(self, root_node, edus_list, is_depth_manner, coarse=True):
+    def parse_sentence(
+        self,
+        root_node: Node,
+        edus_list: list[list[str]],
+        is_depth_manner: bool,
+        coarse: bool = True,
+    ) -> ParserInput:
         def get_depth_manner_node_list(root):
             node_list = []
             stack = []
@@ -486,44 +564,53 @@ class DataManager:
 
         sentences_list = []
 
+        assert root_node.span is not None
         edu_start = root_node.span[0]
         for node in node_list:
             if node.edu_id is not None:
                 sentences_list.append([node.edu_id, edus_list[node.edu_id - 1]])
             else:
+                assert node.left is not None and node.right is not None
+                assert node.left.span is not None and node.right.span is not None
+                assert node.span is not None
+                assert node.relation is not None
+                relation_label = node.relation
                 parser_input.parsing_index.append(node.left.span[1] - edu_start)
                 parser_input.decoder_inputs.append(node.span[0] - edu_start)
 
-                parent_index = node.parent.span[1] - edu_start if node.parent is not None else 0
-                parser_input.parents.append(parent_index)
-
                 if node.parent is None:
+                    parent_index = 0
                     sibling_index = 99
                 else:
+                    assert node.parent.span is not None
+                    parent_index = node.parent.span[1] - edu_start
                     if node == node.parent.left:
                         sibling_index = 99
                     else:
+                        assert node.parent.left.span is not None
                         sibling_index = node.parent.left.span[1] - edu_start
 
+                parser_input.parents.append(parent_index)
                 parser_input.siblings.append(sibling_index)
 
-                #   LabelforMetric:
                 left_child_span = node.left.span
                 right_child_span = node.right.span
-                nuclearity = node.relation[:2]
-                relation = node.relation[3:]
+                nuclearity = relation_label[:2]
+                relation = relation_label[3:]
 
                 # Label to Class
                 if self.corpus_name == 'GUM':
                     if coarse and relation != 'same-unit':
                         relation = relation.split('-')[0]
                 elif self.corpus_name in ['RST-DT', 'RuRSTB']:
-                    relation = self.rel2class.get(relation.lower())
+                    mapped_relation = self.rel2class.get(relation.lower())
+                    assert mapped_relation is not None
+                    relation = mapped_relation
 
                 #   Relation:
                 lookup_relation = (relation + '_' + nuclearity).lower()
                 if lookup_relation in self.relation_fixer:
-                    lookup_relation = self.relation_fixer.get(lookup_relation)
+                    lookup_relation = self.relation_fixer[lookup_relation]
                     relation, nuclearity = lookup_relation.split('_')
                     nuclearity = nuclearity.upper()
                     if relation != 'same-unit':
@@ -549,7 +636,7 @@ class DataManager:
                     right_child_span[1] - edu_start + 1) + ')'
                 parser_input.label_for_metrics_list.append(label_string)
 
-        parser_input.LabelforMetric = [' '.join(parser_input.label_for_metrics_list)]
+        parser_input.label_for_metrics = ' '.join(parser_input.label_for_metrics_list)
         Sentences_list = sorted(sentences_list, key=lambda x: x[0])
 
         for i in range(len(Sentences_list)):
@@ -558,16 +645,16 @@ class DataManager:
 
         return parser_input
 
-    def convert_doc(self, filename, input_dir, output_dir):
+    def convert_doc(self, filename: str, input_dir: str | Path, output_dir: str | Path) -> None:
         """ Take all rs3 documents and save them in the same directory
             as *.edus and *.lisp files ready for processing. """
-        rs3 = Rs3Document(os.path.join(input_dir, filename))
+        rs3 = Rs3Document(Path(input_dir) / filename)
         rs3.read()
         rs3.writeEdu(output_dir)
         out_ext = '.lisp'
         rs3.writeTree(output_dir, out_ext)
 
-    def construct_folds(self):
+    def construct_folds(self) -> None:
         """ Scatter examples on folds divided into train/val/test.
             Preserve subclasses distribution in each fold and split. """
 
@@ -612,12 +699,12 @@ class DataManager:
                 'test': test_docs
             }
 
-    def _mixed_folds(self, n):
+    def _mixed_folds(self, n: int) -> None:
         """ Populates a self.mixed_folds_en{25: ..., 75: ..., 100: ...} dictionary
             with n% train files from first language and 100-n% from the second. """
 
-        mixed_folds_en = defaultdict(dict[str, list])
-        mixed_folds_ru = defaultdict(dict[str, list])
+        mixed_folds_en: dict[int, dict[str, list[str]]] = defaultdict(dict)
+        mixed_folds_ru: dict[int, dict[str, list[str]]] = defaultdict(dict)
         for fold_num, fold in self.folds.items():
             # Base English, mixing Russian #############
             mixed_folds_en[fold_num]['dev'] = fold['dev'][:]
@@ -650,7 +737,7 @@ class DataManager:
         self.mixed_folds_ru[n] = mixed_folds_ru
 
 
-def collect(corpus='GUM', output_path='data/data_manager.pickle'):
+def collect(corpus: str = 'GUM', output_path: str = 'data/data_manager.json') -> None:
     dp = DataManager(corpus=corpus)
     dp.from_rs3()
     dp.save(output_path)

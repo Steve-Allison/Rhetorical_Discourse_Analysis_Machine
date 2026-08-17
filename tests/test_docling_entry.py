@@ -11,8 +11,6 @@ and verify end-to-end behaviour on the real fixtures, including the
 parser-injection contract.
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,6 +30,7 @@ from isanlp_rst.docling._entry import (
     _serialise_source_origin,
 )
 from isanlp_rst.docling.errors import EmptyDoclingError, EmptyHarvestError, InputTooLargeError
+from isanlp_rst.parser import Parser
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "docling"
 PPTX_FIXTURE = FIXTURES / "pptx.docling.json"
@@ -46,8 +45,8 @@ class _Node:
 
     start: int
     end: int
-    left: "_Node | None" = None
-    right: "_Node | None" = None
+    left: _Node | None = None
+    right: _Node | None = None
     relation: str = ""
     nuclearity: str = ""
 
@@ -462,7 +461,6 @@ def test_empty_harvest_error_when_tables_disabled_on_table_only_doc(
 @pytest.fixture(scope="module")
 def parser():
     """Construct gumrrg parser once for the slow tests."""
-    from isanlp_rst.parser import Parser
     return Parser(hf_model_version="gumrrg", device="auto")
 
 

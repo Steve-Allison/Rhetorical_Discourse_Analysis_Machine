@@ -3,8 +3,6 @@ dropout is a no-op and emits UserWarning. DecoderRNN already gated this;
 ToNySegmenter did not.
 """
 
-from __future__ import annotations
-
 import warnings
 
 import pytest

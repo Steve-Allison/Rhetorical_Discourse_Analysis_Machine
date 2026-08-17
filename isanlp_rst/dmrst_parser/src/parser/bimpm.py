@@ -1,18 +1,30 @@
+from typing import override
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import List
+from torch import Tensor
 
 from isanlp_rst.utils.mps_init import orthogonal_ as mps_safe_orthogonal_
 
 
 class BiMPM(nn.Module):
-    def __init__(self, word_dim, hidden_size, class_number, num_perspective=10, dropout=0.4,
-                 max_len=1000,
-                 with_full_match=False, with_maxpool_match=True,
-                 with_attentive_match=True, with_max_attentive_match=True,
-                 cuda_device=None, use_amp=False):
-        super(BiMPM, self).__init__()
+    def __init__(
+        self,
+        word_dim: int,
+        hidden_size: int,
+        class_number: int,
+        num_perspective: int = 10,
+        dropout: float = 0.4,
+        max_len: int = 1000,
+        with_full_match: bool = False,
+        with_maxpool_match: bool = True,
+        with_attentive_match: bool = True,
+        with_max_attentive_match: bool = True,
+        cuda_device: torch.device | None = None,
+        use_amp: bool = False,
+    ) -> None:
+        super().__init__()
 
         self.d = word_dim
         self.l = num_perspective
@@ -58,7 +70,7 @@ class BiMPM(nn.Module):
 
         self.reset_parameters()
 
-    def reset_parameters(self):
+    def reset_parameters(self) -> None:
 
         # ----- Context Representation Layer -----
         nn.init.kaiming_normal_(self.context_LSTM.weight_ih_l0)
@@ -94,7 +106,7 @@ class BiMPM(nn.Module):
         nn.init.uniform_(self.pred_fc2.weight, -0.005, 0.005)
         nn.init.constant_(self.pred_fc2.bias, val=0)
 
-    def mp_matching_func(self, v1, v2, w):
+    def mp_matching_func(self, v1: Tensor, v2: Tensor, w: Tensor) -> Tensor:
         """
         :param v1: (batch, seq_len, hidden_size)
         :param v2: (batch, seq_len, hidden_size) or (batch, hidden_size)
@@ -115,7 +127,7 @@ class BiMPM(nn.Module):
         m = F.cosine_similarity(v1, v2, dim=2)
         return m
 
-    def mp_matching_func_pairwise(self, v1, v2, w):
+    def mp_matching_func_pairwise(self, v1: Tensor, v2: Tensor, w: Tensor) -> Tensor:
         """
         :param v1: (batch, seq_len1, hidden_size)
         :param v2: (batch, seq_len2, hidden_size)
@@ -142,7 +154,7 @@ class BiMPM(nn.Module):
         # (batch, seq_len1, seq_len2, l)
         return self.div_with_small_value(n, d).permute(0, 2, 3, 1)
 
-    def attention(self, v1, v2):
+    def attention(self, v1: Tensor, v2: Tensor) -> Tensor:
         """
         :param v1: (batch, seq_len1, hidden_size)
         :param v2: (batch, seq_len2, hidden_size)
@@ -164,12 +176,12 @@ class BiMPM(nn.Module):
 
         return self.div_with_small_value(a, d)
 
-    def div_with_small_value(self, n, d, eps=1e-8):
+    def div_with_small_value(self, n: Tensor, d: Tensor, eps: float = 1e-8) -> Tensor:
         # too small values are replaced by 1e-8 to prevent it from exploding.
         d = d * (d > eps).float() + eps * (d <= eps).float()
         return n / d
 
-    def _reduce_length(self, emb):
+    def _reduce_length(self, emb: Tensor) -> Tensor:
         """ Inputs can be of infinite length, hence BiMPM matching can cause OOM.
             This is a way to limit the input averaging the middle part of an unbearable long sequence.
 
@@ -183,7 +195,13 @@ class BiMPM(nn.Module):
                                   emb[:, -self.max_len//2:, :]], dim=1)
         return emb
 
-    def encode(self, left, right, len1=None, len2=None):
+    def encode(
+        self,
+        left: Tensor,
+        right: Tensor,
+        len1: int | None = None,
+        len2: int | None = None,
+    ) -> tuple[Tensor, Tensor, Tensor]:
         left = self._reduce_length(left)
         right = self._reduce_length(right)
 
@@ -196,9 +214,9 @@ class BiMPM(nn.Module):
         right = self.dropout(right)
 
         # If passing token embeddings, for EDU embeddings you should pass token lengths in the function
-        if not len1:
+        if len1 is None:
             len1 = left.size(1)
-        if not len2:
+        if len2 is None:
             len2 = right.size(1)
 
         # (batch, 2)
@@ -210,8 +228,8 @@ class BiMPM(nn.Module):
         con_h_fw, con_h_bw = torch.split(right, self.hidden_size, dim=-1)
 
         # array to keep the matching vectors for the two DUs
-        matching_vector_1: List[torch.Tensor] = []
-        matching_vector_2: List[torch.Tensor] = []
+        matching_vector_1: list[Tensor] = []
+        matching_vector_2: list[Tensor] = []
 
         # 0. unweighted cosine
         # First calculate the cosine similarities between each forward
@@ -345,7 +363,15 @@ class BiMPM(nn.Module):
 
         return agg_p_last, agg_h_last, lengths
 
-    def forward(self, left, right, len1=None, len2=None, **kwargs):
+    @override
+    def forward(
+        self,
+        left: Tensor,
+        right: Tensor,
+        len1: int | None = None,
+        len2: int | None = None,
+        **kwargs: object,
+    ) -> tuple[Tensor, Tensor]:
         agg_p_last, agg_h_last, lengths = self.encode(left, right, len1, len2)
 
         # 2 * (2, batch, hidden_size) -> 2 * (batch, hidden_size * 2) -> (batch, hidden_size * 4)

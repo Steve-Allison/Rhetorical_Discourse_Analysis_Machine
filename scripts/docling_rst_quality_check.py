@@ -12,8 +12,6 @@ the parsers were trained on prose.
 Run:  pixi run -- python scripts/docling_rst_quality_check.py
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import Any
 
@@ -164,7 +162,7 @@ def main() -> int:
     for path in sorted(FIXTURES_DIR.glob("*.docling.json")):
         try:
             quality_check(parser, path)
-        except Exception as exc:
+        except (KeyError, IndexError, OSError, RuntimeError, ValueError) as exc:
             print(f"\n=== {path.name} === ERROR\n{type(exc).__name__}: {exc}")
     return 0
 

@@ -27,8 +27,6 @@ Every source format also emits one ``table-N`` boundary per ``TableItem``.
 knobs so boundary memberships only cover content that was actually parsed.
 """
 
-from __future__ import annotations
-
 from collections.abc import Iterable
 
 from docling_core.types.doc.document import (

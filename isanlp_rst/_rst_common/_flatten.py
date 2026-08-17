@@ -12,16 +12,11 @@ exceed Python's default recursion limit with the recursive walk this
 replaces.
 """
 
-from __future__ import annotations
-
 from collections.abc import Callable, Sequence
-from typing import Any, TypeVar
+from typing import Any
 
 from ._overlap import NOTE_THRESHOLD, SpanIndex
 from ._split import split_refs_by_nuclearity
-
-R = TypeVar("R")
-E = TypeVar("E")
 
 # Adapter signatures (keyword-only at the call site):
 #   make_relation(id=, relation=, nuclearity=, nucleus_refs=, satellite_refs=,
@@ -29,9 +24,9 @@ E = TypeVar("E")
 #   make_edu(id=, refs=, depth=) -> E
 
 
-def flatten_tree(
+def flatten_tree[R, E](
     tree: Any,
-    span_index: SpanIndex,
+    span_index: SpanIndex[Any],
     boundaries: Sequence[tuple[str, frozenset[str]]],
     *,
     make_relation: Callable[..., R],

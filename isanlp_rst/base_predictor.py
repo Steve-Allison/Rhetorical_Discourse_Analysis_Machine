@@ -1,10 +1,11 @@
-from __future__ import annotations
-
 import os
 import warnings
 from bisect import bisect_right
+from collections.abc import Iterable, Sequence
+from contextlib import AbstractContextManager
 from dataclasses import dataclass
-from typing import Iterable, List, Optional, Sequence, Tuple
+from pathlib import Path
+from typing import Any, Protocol
 
 # Apple Silicon: enable CPU fallback for MPS-unsupported ops BEFORE torch is
 # imported. PyTorch 2.x lacks an MPS kernel for `torch.linalg.qr`, which is
@@ -17,7 +18,15 @@ os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
 import torch  # noqa: E402  (intentionally after env var setup above)
 
 
-def str2bool(value):
+class _OffsetToken(Protocol):
+    """Minimal razdel-token surface used by offset remapping."""
+
+    text: str
+    start: int
+    stop: int
+
+
+def str2bool(value: object) -> bool:
     """Robust string-to-bool conversion used in configs."""
     if isinstance(value, bool):
         return value
@@ -41,7 +50,7 @@ class DeviceProbe:
     mps_available: bool = False
 
     @classmethod
-    def detect(cls) -> 'DeviceProbe':
+    def detect(cls) -> DeviceProbe:
         """Probe the real host (CUDA, then MPS, else CPU-only)."""
         cuda_ok = torch.cuda.is_available()
         return cls(
@@ -60,7 +69,7 @@ def _mps_available() -> bool:
     )
 
 
-def _device_from_spec(spec: str, probe: DeviceProbe) -> 'torch.device':
+def _device_from_spec(spec: str, probe: DeviceProbe) -> torch.device:
     """Resolve the string device API to a ``torch.device``.
 
     ``"auto"`` picks the best available backend (CUDA, else MPS, else CPU) and
@@ -105,7 +114,7 @@ def _device_from_spec(spec: str, probe: DeviceProbe) -> 'torch.device':
     )
 
 
-def _device_from_legacy_int(cuda_device: int, probe: DeviceProbe) -> 'torch.device':
+def _device_from_legacy_int(cuda_device: int, probe: DeviceProbe) -> torch.device:
     """Reproduce the historical ``cuda_device: int`` selection exactly.
 
     ``-1`` -> CPU. ``>= 0`` -> ``cuda:<n>`` on an NVIDIA host, else ``mps`` on
@@ -135,11 +144,11 @@ def _device_from_legacy_int(cuda_device: int, probe: DeviceProbe) -> 'torch.devi
 
 
 def resolve_device(
-    device: 'str | torch.device | None' = None,
-    cuda_device: 'int | None' = None,
+    device: str | torch.device | None = None,
+    cuda_device: int | None = None,
     *,
     probe: DeviceProbe | None = None,
-) -> 'torch.device':
+) -> torch.device:
     """Resolve the compute device from the string API (or the deprecated int).
 
     ``device`` is the canonical API:
@@ -199,11 +208,11 @@ class BasePredictor:
     # ``_resolve_dtype`` resolve them. Declared here so Pyright can narrow
     # ``self._device`` and ``self._dtype`` on the base methods that use them
     # (``_autocast``, ``_load_torch_weights``).
-    _device: 'torch.device'
-    _dtype: 'torch.dtype'
+    _device: torch.device
+    _dtype: torch.dtype
 
     @staticmethod
-    def divide_chunks(_list: Sequence, n: int) -> Iterable[Sequence]:
+    def divide_chunks[T](_list: Sequence[T], n: int) -> Iterable[Sequence[T]]:
         """Yield chunks of size `n` from `_list` (handles empty lists)."""
         if _list:
             for i in range(0, len(_list), n):
@@ -215,8 +224,8 @@ class BasePredictor:
     def build_offset_converter_from_words(
         text: str,
         tokens: Sequence[str],
-        token_offsets: Optional[Sequence[Tuple[int, int]]] = None,
-    ) -> Tuple[List[int], List[int]]:
+        token_offsets: Sequence[tuple[int, int]] | None = None,
+    ) -> tuple[list[int], list[int]]:
         """Build offset converter from word tokens and optional (start, end) pairs.
 
         If `token_offsets` is omitted, a best-effort alignment is performed.
@@ -226,8 +235,8 @@ class BasePredictor:
         if token_offsets is None:
             token_offsets = BasePredictor._guess_token_offsets(text, tokens)
 
-        positions: List[int] = []
-        originals: List[int] = []
+        positions: list[int] = []
+        originals: list[int] = []
         cursor = 0
 
         for idx, (tok, (start, end)) in enumerate(zip(tokens, token_offsets, strict=True)):
@@ -250,11 +259,11 @@ class BasePredictor:
 
     @staticmethod
     def build_offset_converter_from_razdel(
-        tokens,
-    ) -> Tuple[List[int], List[int]]:
+        tokens: Sequence[_OffsetToken],
+    ) -> tuple[list[int], list[int]]:
         """Build offset converter from a list of `razdel.Token` objects."""
-        positions: List[int] = []
-        originals: List[int] = []
+        positions: list[int] = []
+        originals: list[int] = []
         cursor = 0
 
         for idx, token in enumerate(tokens):
@@ -275,7 +284,7 @@ class BasePredictor:
         return positions, originals
 
     @staticmethod
-    def _map_offset(value: int, positions: List[int], originals: List[int]) -> int:
+    def _map_offset(value: int, positions: list[int], originals: list[int]) -> int:
         if not positions:
             return value
         index = bisect_right(positions, value) - 1
@@ -287,9 +296,9 @@ class BasePredictor:
 
     def remap_tree_offsets(
         self,
-        unit,
-        positions: List[int],
-        originals: List[int],
+        unit: Any,
+        positions: list[int],
+        originals: list[int],
         original_text: str,
     ) -> None:
         """Recursively remap ``.start``/``.end`` of leaf/internal nodes from
@@ -328,7 +337,7 @@ class BasePredictor:
         unit.text = original_text[unit.start : unit.end]
 
     @staticmethod
-    def _guess_token_offsets(text: str, tokens: Sequence[str]) -> List[Tuple[int, int]]:
+    def _guess_token_offsets(text: str, tokens: Sequence[str]) -> list[tuple[int, int]]:
         """Best-effort alignment of already-tokenized `tokens` to raw `text`.
 
         Used when external word tokens are supplied without character-level
@@ -341,7 +350,7 @@ class BasePredictor:
             the function silently fell back to ``(cursor, cursor + len(token))``
             on misses, which produced wrong offsets downstream.
         """
-        offsets: List[Tuple[int, int]] = []
+        offsets: list[tuple[int, int]] = []
         cursor = 0
         for idx, token in enumerate(tokens):
             if not token:
@@ -362,7 +371,11 @@ class BasePredictor:
         return offsets
 
     @staticmethod
-    def _recount_spans(word_offsets, subword_offsets, word_span_boundaries):
+    def _recount_spans(
+        word_offsets: Sequence[tuple[int, int]],
+        subword_offsets: Sequence[tuple[int, int]],
+        word_span_boundaries: Sequence[int],
+    ) -> list[int]:
         """ Given word span boundaries, recount for subwords. """
         subword_span_boundaries = [0]
 
@@ -384,7 +397,7 @@ class BasePredictor:
         return subword_span_boundaries[1:]
 
     @staticmethod
-    def _collect_leaf_texts(unit, acc: List[str]) -> None:
+    def _collect_leaf_texts(unit: Any, acc: list[str]) -> None:
         left = getattr(unit, 'left', None)
         right = getattr(unit, 'right', None)
 
@@ -398,7 +411,7 @@ class BasePredictor:
             BasePredictor._collect_leaf_texts(right, acc)
 
     @staticmethod
-    def _validate_edus(edus: object) -> List[str]:
+    def _validate_edus(edus: object) -> list[str]:
         """Validate untrusted input as a sequence of EDU strings.
 
         Typed ``object`` because this is the input-validation boundary for the
@@ -421,7 +434,7 @@ class BasePredictor:
         if not edus:
             raise ValueError('`edus` must contain at least one EDU.')
 
-        normalized: List[str] = []
+        normalized: list[str] = []
         for idx, edu in enumerate(edus):
             if not isinstance(edu, str):
                 raise TypeError(f'EDU at position {idx} must be a string.')
@@ -432,11 +445,11 @@ class BasePredictor:
         return normalized
 
     @staticmethod
-    def _compute_edu_char_spans(edus: Sequence[str]) -> Tuple[str, List[Tuple[int, int]]]:
+    def _compute_edu_char_spans(edus: Sequence[str]) -> tuple[str, list[tuple[int, int]]]:
         """Concatenate `edus` with single-space separators and return the joined
         text plus the character span of each EDU within it."""
         text = ' '.join(edus)
-        spans: List[Tuple[int, int]] = []
+        spans: list[tuple[int, int]] = []
         cursor = 0
 
         for idx, edu in enumerate(edus):
@@ -454,9 +467,9 @@ class BasePredictor:
 
     @staticmethod
     def _char_spans_to_token_breaks(
-        offsets: Sequence[Tuple[int, int]],
-        spans: Sequence[Tuple[int, int]],
-    ) -> List[int]:
+        offsets: Sequence[tuple[int, int]],
+        spans: Sequence[tuple[int, int]],
+    ) -> list[int]:
         """Map EDU character spans onto token boundaries.
 
         Args:
@@ -470,7 +483,7 @@ class BasePredictor:
             raise ValueError('Unable to derive token boundaries from the provided EDUs.')
 
         token_stops = [stop for _, stop in offsets]
-        edu_breaks: List[int] = []
+        edu_breaks: list[int] = []
         token_idx = -1
 
         for span_idx, (_, edu_end) in enumerate(spans):
@@ -490,7 +503,7 @@ class BasePredictor:
         return edu_breaks
 
     @staticmethod
-    def _load_torch_weights(path: str, device: torch.device) -> dict:
+    def _load_torch_weights(path: str | Path, device: torch.device) -> dict[str, Any]:
         """Load a PyTorch state dict with ``weights_only=True``.
 
         All checkpoints published under ``tchewik/isanlp_rst_v3`` (verified
@@ -502,7 +515,7 @@ class BasePredictor:
 
     @staticmethod
     def _resolve_dtype(
-        dtype: 'str | torch.dtype | None',
+        dtype: str | torch.dtype | None,
     ) -> torch.dtype:
         """Normalise a dtype spec to a ``torch.dtype``.
 
@@ -547,7 +560,7 @@ class BasePredictor:
             f"Unsupported dtype {dtype!r}. Use float32, float16, or bfloat16."
         )
 
-    def _autocast(self):
+    def _autocast(self) -> AbstractContextManager[Any]:
         """Return a context manager enabling autocast for inference.
 
         When ``self._dtype`` is ``float32`` the context is a no-op (autocast
@@ -561,4 +574,3 @@ class BasePredictor:
             dtype=self._dtype,
             enabled=(self._dtype is not torch.float32),
         )
-

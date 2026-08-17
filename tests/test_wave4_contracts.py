@@ -1,7 +1,5 @@
 """Wave 4 — construct-path kwargs + formats-extra isolation."""
 
-from __future__ import annotations
-
 import json
 import subprocess
 import sys
@@ -24,8 +22,8 @@ MARKDOWN = FIXTURES / "markdown" / "minimal.md"
 class _Node:
     start: int
     end: int
-    left: "_Node | None" = None
-    right: "_Node | None" = None
+    left: _Node | None = None
+    right: _Node | None = None
     relation: str = ""
     nuclearity: str = ""
 

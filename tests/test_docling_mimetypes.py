@@ -1,7 +1,5 @@
 """Production MIME registration for Docling ImageRef validation."""
 
-from __future__ import annotations
-
 import mimetypes
 from pathlib import Path
 

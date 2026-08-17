@@ -9,8 +9,6 @@ Integration tests (``@pytest.mark.slow``) load ``gumrrg`` weights once
 and verify end-to-end behaviour on a representative DocLang fixture.
 """
 
-from __future__ import annotations
-
 import importlib
 from pathlib import Path
 
@@ -32,7 +30,9 @@ from isanlp_rst.doclang.errors import (
     InputTooLargeError,
     InvalidDoclangError,
 )
+from isanlp_rst.doclang.harvester import harvest_doclang_text
 from isanlp_rst.doclang.loader import parse_doclang_xml
+from isanlp_rst.parser import Parser
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "doclang"
 COMPREHENSIVE = FIXTURES / "ok_comprehensive.dclg.xml"
@@ -438,7 +438,6 @@ def test_table_only_with_cells_disabled_raises_empty_harvest() -> None:
 @pytest.fixture(scope="module")
 def parser():
     """Construct gumrrg parser once for the slow tests."""
-    from isanlp_rst.parser import Parser
     return Parser(hf_model_version="gumrrg", device="auto")
 
 
@@ -481,7 +480,6 @@ def test_parse_doclang_main_relations_never_reference_tables(parser) -> None:
 @pytest.mark.slow
 def test_parse_doclang_relation_xpaths_in_harvest_set(parser) -> None:
     """Every relation xpath points to a harvest span's xpath."""
-    from isanlp_rst.doclang.harvester import harvest_doclang_text
     tree = parse_doclang_xml(COMPREHENSIVE)
     expected = {s.xpath for s in harvest_doclang_text(tree).spans}
 

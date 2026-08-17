@@ -1,4 +1,4 @@
-![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![License](https://img.shields.io/badge/license-MIT_(code)_/_CC_BY--NC_4.0_(weights)-orange) ![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-MPS-blueviolet)
+![Python](https://img.shields.io/badge/python-3.14%2B-blue) ![License](https://img.shields.io/badge/license-MIT_(code)_/_CC_BY--NC_4.0_(weights)-orange) ![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-MPS-blueviolet)
 
 # IsaNLP RST Parser
 
@@ -128,7 +128,8 @@ For offline / air-gapped use, point `Parser` at a directory containing the check
 
 ```python
 # Family auto-detected:
-#   data_manager_*.pickle or config.json with `data.corpora`  -> UniRST
+#   data_manager_*.json / relation_table_<corpus>.txt / legacy data_manager_*.pickle
+#     or config.json with `data.corpora`  -> UniRST
 #   relation_table.txt                                        -> DMRST
 parser = Parser(model_dir='/path/to/checkpoint', device='auto')
 

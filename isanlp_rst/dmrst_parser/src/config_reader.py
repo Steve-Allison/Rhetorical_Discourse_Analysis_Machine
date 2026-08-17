@@ -1,22 +1,25 @@
 import json
+from pathlib import Path
+from typing import Any
+
 import _jsonnet
 
 
 class ConfigReader:
 
-    def __init__(self, config_file, ext_vars=None):
-        self.config = json.loads(_jsonnet.evaluate_file(config_file, ext_vars=ext_vars))
+    def __init__(self, config_file: str | Path, ext_vars: dict[str, str] | None = None) -> None:
+        self.config = json.loads(_jsonnet.evaluate_file(str(config_file), ext_vars=ext_vars))
 
-    def read(self, cls):
-        init_params = {}
-        stack = [('', self.config)]
+    def read(self, cls: type) -> Any:
+        init_params: dict[str, Any] = {}
+        stack: list[tuple[str, Any]] = [('', self.config)]
 
         while stack:
             prefix, value = stack.pop()
 
             if isinstance(value, dict):
                 for key, sub_value in value.items():
-                    if type(sub_value) == str:
+                    if isinstance(sub_value, str):
                         if sub_value == 'true':
                             sub_value = True
                         elif sub_value == 'false':

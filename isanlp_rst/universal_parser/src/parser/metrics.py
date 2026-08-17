@@ -1,11 +1,15 @@
 import re
+from typing import Any
+
+type MetricTriple = tuple[float, float, float]
+type SpanLabelMap = dict[str, list[str]]
 
 
 def _strip_entropy(span: str) -> str:
     return re.sub(r';entropy=[^:]+', '', span)
 
 
-def get_eval_data_rst_parseval(sen, edus):
+def get_eval_data_rst_parseval(sen: str, edus: list[Any]) -> SpanLabelMap:
     b = re.findall(r'\d+', sen)
     b = [str(edus[int(i) - 1]) for i in b]
     cur_new = []
@@ -28,7 +32,7 @@ def get_eval_data_rst_parseval(sen, edus):
     return dic
 
 
-def get_eval_data_parseval(tree_spans: str, edus: list):
+def get_eval_data_parseval(tree_spans: str, edus: list[Any]) -> SpanLabelMap:
     span_list = tree_spans.strip().split()
     dic = {}
     for i in range(len(span_list)):
@@ -50,7 +54,13 @@ def get_eval_data_parseval(tree_spans: str, edus: list):
     return dic
 
 
-def get_measurement(tree1_spans, tree2_spans, tree1_edus, tree2_edus, use_org_parseval):
+def get_measurement(
+    tree1_spans: str,
+    tree2_spans: str,
+    tree1_edus: list[Any],
+    tree2_edus: list[Any],
+    use_org_parseval: bool,
+) -> tuple[int, int, int, int, int, int]:
     if use_org_parseval:
         dic1 = get_eval_data_parseval(tree1_spans, tree1_edus)
         dic2 = get_eval_data_parseval(tree2_spans, tree2_edus)
@@ -85,7 +95,7 @@ def get_measurement(tree1_spans, tree2_spans, tree1_edus, tree2_edus, use_org_pa
     return correct_span, correct_relation, correct_nuclearity, correct_full, no_system, no_golden
 
 
-def get_seg_measure(pred_seg, gold_seg):
+def get_seg_measure(pred_seg: list[Any], gold_seg: list[Any]) -> tuple[int, int, int]:
     num_gold = len(gold_seg)
     num_pred = len(pred_seg)
     correct = len(set(pred_seg) & set(gold_seg))
@@ -93,8 +103,13 @@ def get_seg_measure(pred_seg, gold_seg):
     return num_gold, num_pred, correct
 
 
-def get_batch_metrics(pred_spans_batch, gold_spans_batch, pred_edu_breaks_batch, gold_edu_breaks_batch,
-                      use_org_parseval):
+def get_batch_metrics(
+    pred_spans_batch: list[Any],
+    gold_spans_batch: list[Any],
+    pred_edu_breaks_batch: list[Any],
+    gold_edu_breaks_batch: list[Any],
+    use_org_parseval: bool,
+) -> tuple[int, int, int, int, int, int, list[int], list[int], list[int], list[int], list[int], list[int], tuple[int, int, int]]:
     correct_span = 0
     correct_relation = 0
     correct_nuclearity = 0
@@ -171,8 +186,17 @@ def get_batch_metrics(pred_spans_batch, gold_spans_batch, pred_edu_breaks_batch,
             no_system_batch_list, no_golden_batch_list, (n_gold_seg, n_pred_seg, n_correct_seg))
 
 
-def get_micro_metrics(correct_span, correct_relation, correct_nuclearity, correct_full, n_sys, n_gold,
-                      n_gold_seg, n_pred_seg, n_correct_seg):
+def get_micro_metrics(
+    correct_span: float,
+    correct_relation: float,
+    correct_nuclearity: float,
+    correct_full: float,
+    n_sys: float,
+    n_gold: float,
+    n_gold_seg: float,
+    n_pred_seg: float,
+    n_correct_seg: float,
+) -> tuple[MetricTriple, MetricTriple, MetricTriple, float, MetricTriple]:
 
     n_sys = 1 if n_sys == 0 else n_sys
 
@@ -203,7 +227,7 @@ def get_micro_metrics(correct_span, correct_relation, correct_nuclearity, correc
         (precision_nuclearity, recall_nuclearity, f1_nuclearity), f1_Full, (precision_seg, recall_seg, f1_seg)
 
 
-def calc_metrics(n_correct, n_pred, n_gold):
+def calc_metrics(n_correct: float, n_pred: float, n_gold: float) -> MetricTriple:
     pr = n_correct / n_pred
     re = n_correct / n_gold
     f1 = (2 * n_correct) / (n_gold + n_pred)
@@ -211,8 +235,14 @@ def calc_metrics(n_correct, n_pred, n_gold):
     return pr, re, f1
 
 
-def get_macro_metrics(correct_span_list, correct_nuclearity_list, correct_relation_list, correct_full_list,
-                      no_system_list, no_golden_list):
+def get_macro_metrics(
+    correct_span_list: list[float],
+    correct_nuclearity_list: list[float],
+    correct_relation_list: list[float],
+    correct_full_list: list[float],
+    no_system_list: list[float],
+    no_golden_list: list[float],
+) -> tuple[MetricTriple, MetricTriple, MetricTriple, MetricTriple]:
     precision_span_list = []
     precision_relation_list = []
     precision_nuclearity_list = []

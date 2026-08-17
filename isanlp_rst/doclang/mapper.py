@@ -7,8 +7,6 @@ confirmed at most one ``<thread>`` per host element). The traversal
 itself lives in ``_rst_common._flatten``.
 """
 
-from __future__ import annotations
-
 from operator import attrgetter
 from typing import Any
 

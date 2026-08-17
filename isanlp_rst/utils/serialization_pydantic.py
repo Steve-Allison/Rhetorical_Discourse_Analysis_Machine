@@ -9,8 +9,6 @@ means the dependency-free dict helpers stay usable without ``pydantic``.
 Install with ``pip install isanlp_rst[pydantic]``.
 """
 
-from __future__ import annotations
-
 from pydantic import BaseModel, ConfigDict
 
 from isanlp.annotation_rst import DiscourseUnit
@@ -39,8 +37,10 @@ class RstNode(BaseModel):
     text: str | None = None
     proba: float | None = None
     entropy: float | None = None
-    left: RstNode | None = None
-    right: RstNode | None = None
+    # Quoted: Pydantic resolves field annotations at class creation
+    # (https://docs.pydantic.dev/latest/concepts/forward_annotations/).
+    left: 'RstNode | None' = None
+    right: 'RstNode | None' = None
 
     @classmethod
     def from_tree(cls, node: DiscourseUnit | None) -> RstNode | None:

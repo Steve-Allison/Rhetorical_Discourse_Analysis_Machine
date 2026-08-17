@@ -13,8 +13,6 @@ Public API:
   remirror 2026-08-16 is 42 files).
 """
 
-from __future__ import annotations
-
 from ._entry import parse_doclang
 from .errors import (
     DoclangRstError,

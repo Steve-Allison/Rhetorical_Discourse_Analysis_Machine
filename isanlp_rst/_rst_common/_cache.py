@@ -9,8 +9,6 @@ execute code on load.
 keeps the tool_version of the run that produced it.
 """
 
-from __future__ import annotations
-
 import hashlib
 import json
 import os
@@ -19,9 +17,7 @@ import tempfile
 from collections.abc import Callable, Mapping
 from dataclasses import asdict, fields, is_dataclass
 from pathlib import Path
-from typing import Any, TypeVar, get_args, get_origin, get_type_hints
-
-T = TypeVar("T")
+from typing import Any, get_args, get_origin, get_type_hints
 
 CACHE_FORMAT_VERSION = 1
 
@@ -91,7 +87,7 @@ def _coerce(annotation: Any, value: Any) -> Any:
     return value
 
 
-def dataclass_from_dict(cls: type[T], data: Mapping[str, Any]) -> T:
+def dataclass_from_dict[T](cls: type[T], data: Mapping[str, Any]) -> T:
     """Reconstruct a (nested) dataclass instance from ``asdict``-shaped data."""
     if not is_dataclass(cls):
         raise TypeError(f"{cls!r} is not a dataclass")
@@ -108,7 +104,7 @@ def dataclass_from_dict(cls: type[T], data: Mapping[str, Any]) -> T:
     return cls(**kwargs)
 
 
-def load_cached(
+def load_cached[T](
     cache_dir: Path,
     key: str,
     *,

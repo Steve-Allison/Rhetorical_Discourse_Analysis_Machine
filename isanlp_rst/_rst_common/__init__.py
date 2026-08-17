@@ -6,8 +6,6 @@ independent of the source format. ``isanlp_rst.docling``,
 ``isanlp_rst.doclang``, and ``isanlp_rst.markdown`` all import from here.
 """
 
-from __future__ import annotations
-
 from ._cache import dataclass_from_dict, load_cached, result_cache_key, store_cached
 from ._flatten import flatten_tree
 from ._identity import model_identity_knobs, resolve_result_model_meta

@@ -6,8 +6,6 @@ The traversal itself (iterative pre-order, shared id namespace, boundary
 memberships) lives in ``_rst_common._flatten``.
 """
 
-from __future__ import annotations
-
 from operator import attrgetter
 from typing import Any
 

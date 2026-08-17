@@ -1,0 +1,158 @@
+"""Relation-inventory I/O for UniRST.
+
+Native format is JSON (or a plain ``relation_table_*.txt``). Elena-era
+``data_manager_*.pickle`` files from HuggingFace are a **one-way import**:
+we extract ``relation_table`` and discard the object. We never pickle.dump.
+"""
+
+import ast
+import builtins
+import collections
+import json
+import pickle
+import pathlib
+import sys
+import types
+from importlib import import_module
+from pathlib import Path
+
+INVENTORY_FORMAT = "isanlp_rst_relation_inventory"
+INVENTORY_VERSION = 1
+
+
+class RestrictedUnpickler(pickle.Unpickler):
+    """Unpickler that only reconstructs inventory leaf types + containers.
+
+    Deliberately does **not** allow arbitrary ``isanlp_rst.*`` callables:
+    REDUCE gadgets targeting ``data_manager.collect``,
+    ``DataManager.from_pickle``, or ``load_cached`` must be refused.
+    ``DataManager`` itself is excluded so ATTR-based ``from_pickle`` gadgets
+    cannot be assembled after loading the class.
+    """
+
+    _ALLOWED_BUILTINS = frozenset({
+        "list", "dict", "tuple", "set", "frozenset", "str", "int", "float",
+        "bool", "bytes", "complex", "NoneType", "slice", "object",
+    })
+    _ALLOWED_COLLECTIONS = frozenset({"defaultdict", "OrderedDict"})
+    _ALLOWED_PATHLIB = frozenset({"Path", "PosixPath", "WindowsPath"})
+    _ALLOWED_CLASSES = frozenset({
+        ("isanlp_rst.universal_parser.data_manager", "ParserInput"),
+        ("src.universal_parser.data_manager", "ParserInput"),
+        ("isanlp_rst.dmrst_parser.data_manager", "ParserInput"),
+        ("src.dmrst_parser.data_manager", "ParserInput"),
+    })
+
+    def find_class(self, module: str, name: str) -> object:
+        if module == "builtins" and name in self._ALLOWED_BUILTINS:
+            if name == "NoneType":
+                return type(None)
+            return getattr(builtins, name)
+        if module == "collections" and name in self._ALLOWED_COLLECTIONS:
+            return getattr(collections, name)
+        if module in ("pathlib", "pathlib._local") and name in self._ALLOWED_PATHLIB:
+            return getattr(pathlib, name)
+
+        if (module, name) in self._ALLOWED_CLASSES:
+            return super().find_class(module, name)
+
+        raise pickle.UnpicklingError(
+            f"Refused to unpickle {module}.{name} (not on allow-list)."
+        )
+
+
+def relation_table_from_txt(text: str) -> list[str]:
+    return [line.strip() for line in text.splitlines() if line.strip()]
+
+
+def relation_table_from_json_obj(payload: object) -> list[str]:
+    if isinstance(payload, list) and all(isinstance(x, str) for x in payload):
+        return list(payload)
+    if not isinstance(payload, dict):
+        raise ValueError("relation inventory JSON must be an object or a string list")
+    table = payload.get("relation_table")
+    if not isinstance(table, list) or not all(isinstance(x, str) for x in table):
+        raise ValueError("relation inventory JSON missing string list 'relation_table'")
+    return [item.strip() for item in table if item.strip()]
+
+
+def dump_relation_inventory(path: Path, labels: list[str], *, corpus_name: str = "") -> None:
+    payload = {
+        "format": INVENTORY_FORMAT,
+        "version": INVENTORY_VERSION,
+        "corpus_name": corpus_name,
+        "relation_table": labels,
+    }
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def load_relation_inventory_json(path: Path) -> list[str]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return relation_table_from_json_obj(payload)
+
+
+def import_relation_table_from_legacy_pickle(path: Path) -> list[str]:
+    """One-way import: published HF pickles → ``relation_table`` labels only."""
+    # ParserInput must be importable before RestrictedUnpickler reconstructs it.
+    import isanlp_rst.universal_parser.data_manager as _data_manager  # noqa: F401
+
+    ensure_unirst_module_aliases()
+    with path.open("rb") as handle:
+        obj = RestrictedUnpickler(handle).load()
+    table = getattr(obj, "relation_table", None)
+    if table is None:
+        raise pickle.UnpicklingError(f"{path} has no relation_table")
+    return [str(item) for item in table]
+
+
+def ensure_unirst_module_aliases() -> None:
+    """Register Elena-era module paths so legacy pickles can unpickle ParserInput."""
+    aliases = {
+        "src.universal_parser.data_manager": "isanlp_rst.universal_parser.data_manager",
+        "src.universal_parser.du_converter": "isanlp_rst.utils.du_converter",
+        "src.dmrst_parser.data_manager": "isanlp_rst.dmrst_parser.data_manager",
+        "src.universal_parser.src.corpus.binary_tree": "isanlp_rst.universal_parser.src.corpus.binary_tree",
+        "src.universal_parser.src.corpus.data": "isanlp_rst.universal_parser.src.corpus.data",
+        "src.universal_parser.src.parser.data": "isanlp_rst.universal_parser.src.parser.data",
+        "src.universal_parser.src.parser.modules": "isanlp_rst.universal_parser.src.parser.modules",
+        "src.universal_parser.src.parser.segmenters": "isanlp_rst.universal_parser.src.parser.segmenters",
+        "src.universal_parser.src.parser.parsing_net": "isanlp_rst.universal_parser.src.parser.parsing_net",
+        "src.universal_parser.src.parser.parsing_net_bottom_up": "isanlp_rst.universal_parser.src.parser.parsing_net_bottom_up",
+        "src.universal_parser.src.parser.metrics": "isanlp_rst.universal_parser.src.parser.metrics",
+        "src.universal_parser.src.parser.training_manager": "isanlp_rst.universal_parser.src.parser.training_manager",
+    }
+    for alias, target in aliases.items():
+        if alias in sys.modules:
+            continue
+        module = import_module(target)
+        sys.modules[alias] = module
+        parent_name, _, child_name = alias.rpartition(".")
+        if parent_name:
+            parent = _ensure_parent_module(parent_name)
+            setattr(parent, child_name, module)
+
+
+def _ensure_parent_module(name: str) -> types.ModuleType:
+    if name in sys.modules:
+        existing = sys.modules[name]
+        if isinstance(existing, types.ModuleType):
+            return existing
+    module = types.ModuleType(name)
+    sys.modules[name] = module
+    parent_name, _, child_name = name.rpartition(".")
+    if parent_name:
+        parent = _ensure_parent_module(parent_name)
+        setattr(parent, child_name, module)
+    return module
+
+
+def parse_corpora_config(corpora: object) -> list[str]:
+    """``config['data']['corpora']`` is sometimes a Python-literal string."""
+    if isinstance(corpora, str):
+        parsed = ast.literal_eval(corpora)
+        if not isinstance(parsed, list):
+            raise ValueError("config data.corpora string must be a list literal")
+        return [str(item) for item in parsed]
+    if isinstance(corpora, list):
+        return [str(item) for item in corpora]
+    raise ValueError("config data.corpora must be a list or list-literal string")

@@ -9,8 +9,6 @@ addresses elements through it. Tests focus on:
 - behaviour on pathological inputs (empty docs, mixed siblings)
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 
 import pytest

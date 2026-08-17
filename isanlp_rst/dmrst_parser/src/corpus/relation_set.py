@@ -3,7 +3,7 @@ Relation sets and mappings for the corpora annotated within the RST
 '''
 
 # General mapping for all corpora to the 18 coarse grained classes (Carlson et al. 2001)
-mapping = {
+mapping: dict[str, str] = {
     u'ahalbideratzea': 'Enablement',
     u'alderantzizko-baldintza': 'Condition',
     u'alternativa': 'Condition',
@@ -142,7 +142,7 @@ mapping = {
 }
 
 # English RST DT usual mapping
-rstdt_mapping18 = {
+rstdt_mapping18: dict[str, str] = {
     'analogy': 'Comparison',
     'antithesis': 'Contrast',
     'attribution': 'Attribution',
@@ -206,7 +206,7 @@ rstdt_mapping18 = {
 # Dictionnaries with original labels as annotated in the data and possible
 # corrections if needed (ie translation to English, correction of errors)
 
-basque_labels = {
+basque_labels: dict[str, str] = {
     u'ahalbideratzea': u'enablement',
     u'alderantzizko-baldintza': u'unless',
     u'antitesia': u'antithesis',
@@ -240,7 +240,7 @@ basque_labels = {
     u'zirkunstantzia': u'circumstance'
 }
 
-brazilianCst_labels = {  # The most similar to the RST
+brazilianCst_labels: dict[str, str] = {  # The most similar to the RST
     u'antithesis': u'antithesis',
     u'attribution': u'attribution',
     u'background': u'background',
@@ -274,7 +274,7 @@ brazilianCst_labels = {  # The most similar to the RST
     u'volitional-result': u'volitional-result'
 }
 
-brazilianSum_labels = {
+brazilianSum_labels: dict[str, str] = {
     u'antithesis': u'antithesis',
     u'attribution': u'attribution',
     u'background': u'background',
@@ -306,7 +306,7 @@ brazilianSum_labels = {
     u'volitional-cause': u'volitional-cause'
 }
 
-brazilianTCC_labels = {
+brazilianTCC_labels: dict[str, str] = {
     u'antithesis': u'antithesis',
     u'attribution': u'attribution',
     u'background': u'background',
@@ -341,7 +341,7 @@ brazilianTCC_labels = {
     u'volitional-result': u'volitional-result'
 }
 
-germanPcc_labels = {
+germanPcc_labels: dict[str, str] = {
     u'antithesis': u'antithesis',
     u'background': u'background',
     u'cause': u'cause',
@@ -374,7 +374,7 @@ germanPcc_labels = {
     u'unless': u'unless'
 }
 
-spanish_labels = {
+spanish_labels: dict[str, str] = {
     u'alternativa': u'alternative',
     u'antítesis': u'antithesis',
     u'capacitación': u'enablement',
@@ -407,7 +407,7 @@ spanish_labels = {
     u'unless': u'unless'
 }
 
-dutch_labels = {
+dutch_labels: dict[str, str] = {
     u'antithesis': u'antithesis',
     u'background': u'background',
     u'circumstance': u'circumstance',

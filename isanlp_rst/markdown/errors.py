@@ -1,7 +1,5 @@
 """Custom exceptions for Markdown-native RST parsing."""
 
-from __future__ import annotations
-
 
 class MarkdownRstError(Exception):
     """Base class for parse_markdown errors."""

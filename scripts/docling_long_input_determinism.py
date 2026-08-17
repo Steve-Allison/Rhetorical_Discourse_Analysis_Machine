@@ -10,8 +10,6 @@ Records whether output is byte-equivalent across repeated runs.
 Run:  pixi run -- python scripts/docling_long_input_determinism.py
 """
 
-from __future__ import annotations
-
 import sys
 from pathlib import Path
 from typing import Any
@@ -75,7 +73,7 @@ def main() -> int:
         tree = result["rst"][0]
         n_leaves, n_internal, max_depth = walk_tree(tree)
         print(f"  PARSED OK — leaves={n_leaves} internal={n_internal} max_depth={max_depth}")
-    except Exception as exc:
+    except (KeyError, IndexError, MemoryError, OSError, RuntimeError, ValueError) as exc:
         print(f"  PARSE FAILED — {type(exc).__name__}: {exc}")
         return 1
 

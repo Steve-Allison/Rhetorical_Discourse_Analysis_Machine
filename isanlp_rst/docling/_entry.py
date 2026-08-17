@@ -11,8 +11,6 @@ call reloads the ~2 GB model from disk). An optional on-disk cache
 (``cache_dir=``) short-circuits repeat parses of unchanged sources.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -65,7 +63,7 @@ def _serialise_source_origin(origin: Any) -> dict[str, Any]:
 def parse_docling(
     path: str | Path,
     *,
-    parser: "Parser | None" = None,
+    parser: Parser | None = None,
     hf_model_name: str = "tchewik/isanlp_rst_v3",
     hf_model_version: str = "gumrrg",
     relinventory: str | None = None,

@@ -5,8 +5,6 @@ knob negative-space, table-harvest grid semantics, and the
 offset-tiling invariant the mapper depends on.
 """
 
-from __future__ import annotations
-
 from isanlp_rst.markdown.harvester import (
     _inline_text,
     harvest_markdown_tables,

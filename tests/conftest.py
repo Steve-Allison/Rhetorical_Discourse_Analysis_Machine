@@ -8,8 +8,6 @@ Docling JSON fixtures — even though the fixture correctly uses WebP
 content-type preference.
 """
 
-from __future__ import annotations
-
 import mimetypes
 
 # Idempotent: add_type replaces any prior mapping for the extension.

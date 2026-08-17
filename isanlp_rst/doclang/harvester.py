@@ -30,8 +30,6 @@ Off by default in the main harvest (opt-in via knobs):
   - ``<layer value="background">`` / ``<layer value="furniture">`` items
 """
 
-from __future__ import annotations
-
 from collections.abc import Iterable
 
 from lxml import etree

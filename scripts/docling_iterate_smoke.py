@@ -8,8 +8,6 @@ filter behaviour, picture-children traversal, no surprises.
 Run:  pixi run -- python scripts/docling_iterate_smoke.py
 """
 
-from __future__ import annotations
-
 import sys
 from collections import Counter
 from pathlib import Path

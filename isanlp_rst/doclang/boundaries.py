@@ -23,8 +23,6 @@ DocLang has no slide / speaker-turn concepts (Phase 0 verified) — those
 kinds are absent by design.
 """
 
-from __future__ import annotations
-
 from collections.abc import Iterable
 
 from lxml import etree

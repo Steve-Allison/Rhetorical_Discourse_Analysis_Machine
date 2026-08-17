@@ -4,8 +4,6 @@ These DO NOT load models. Each test asserts the predictor raises the right
 error type before any HF download or torch.load is reached.
 """
 
-from __future__ import annotations
-
 import json
 
 import pytest

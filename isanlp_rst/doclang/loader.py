@@ -15,8 +15,6 @@ XML parsing is hardened against XXE: external entities, network DTD
 fetches, and DTD loading are disabled.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 
 from lxml import etree

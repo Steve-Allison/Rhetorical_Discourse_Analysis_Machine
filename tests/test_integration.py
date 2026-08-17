@@ -24,8 +24,6 @@ per-test. ~5 GB of HF cache required (gumrrg, unirst); bench/full coverage
 needs all 5 models (~10 GB).
 """
 
-from __future__ import annotations
-
 import pytest
 import torch
 

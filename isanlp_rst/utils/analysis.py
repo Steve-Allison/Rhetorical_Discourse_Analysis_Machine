@@ -15,14 +15,12 @@ Three helpers are exposed:
 * :func:`tree_stats` — structural diagnostics over the tree.
 """
 
-from __future__ import annotations
-
 from collections import Counter
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 __all__ = ["find_cdu", "relation_category", "tree_stats"]
 
-RelationCategory = Literal["subject_matter", "presentational", "unknown"]
+type RelationCategory = Literal["subject_matter", "presentational", "unknown"]
 
 
 # Mann & Thompson 1988 + SFU online reference. Borderline cases (Restatement,
@@ -128,7 +126,7 @@ def find_cdu(tree: Any, *, force_leaf: bool = False) -> Any:
             return node
 
 
-def relation_category(label: str, inventory: Optional[str] = None) -> RelationCategory:
+def relation_category(label: str, inventory: str | None = None) -> RelationCategory:
     """Classify an RST relation label as subject-matter or presentational.
 
     Follows Mann & Thompson's 1988 taxonomy: subject-matter relations
@@ -148,7 +146,8 @@ def relation_category(label: str, inventory: Optional[str] = None) -> RelationCa
         The relation label produced by the parser.
     inventory:
         Reserved for per-inventory overrides (e.g. when a corpus uses a
-        non-canonical label). Currently ignored; accept for API stability.
+        label this taxonomy does not list). Currently ignored; accept for
+        API stability.
 
     Returns
     -------
@@ -264,7 +263,7 @@ def tree_stats(tree: Any) -> dict[str, Any]:
     n_count = nuclearity_chars.get("N", 0)
     s_count = nuclearity_chars.get("S", 0)
     nuc_sat_ratio: float = (n_count / s_count) if s_count else float("inf")
-    mean_entropy: Optional[float] = (
+    mean_entropy: float | None = (
         sum(entropies) / len(entropies) if entropies else None
     )
 

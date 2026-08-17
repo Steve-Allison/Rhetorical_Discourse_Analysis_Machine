@@ -42,8 +42,8 @@ The old “inherited research, surgical only, no aesthetic sweeps” split is
 
 | Tool | Strict on |
 |---|---|
-| ruff | `isanlp_rst/` (including `rstviewer`), `tests/`, `scripts/` |
-| pyright | the same set (`tool.pyright.include` / `exclude` in `pyproject.toml`) |
+| ruff | `isanlp_rst/` except `rstviewer`, `tests/`, `scripts/` |
+| pyright | public API, predictors, data_managers, format-native, tests, scripts. `rstviewer` and `*/src` are excluded |
 
 If new code lands outside `tool.pyright.include`, add it to that list.
 

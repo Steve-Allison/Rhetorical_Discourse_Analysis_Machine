@@ -15,37 +15,39 @@ For multilingual experiments:
                                         --corpus 'GUM' --lang 'en' --nfolds 5 evaluate
 """
 
-import os
-import sys
-import subprocess
-import fire
 import json
-from glob import glob
+import subprocess
+import sys
+from collections.abc import Iterable
+from pathlib import Path
+
+import fire
 
 
 class MultipleRunnerGeneral:
-    def __init__(self,
-                 corpora: list,
-                 lang: str,
-                 model_type: str,
-                 transformer_name: str = 'xlm-roberta-large',
-                 emb_size: int = 1024,
-                 freeze_first_n: int = 0,
-                 window_size: int = 400,
-                 window_padding: int = 55,
-                 cuda_device: int = 0,
-                 resume_training: bool = False,
-                 n_runs: int = 5,
-                 save_path: str = 'saves/',
-                 ):
+    def __init__(
+        self,
+        corpora: list[str],
+        lang: str,
+        model_type: str,
+        transformer_name: str = 'xlm-roberta-large',
+        emb_size: int = 1024,
+        freeze_first_n: int = 0,
+        window_size: int = 400,
+        window_padding: int = 55,
+        cuda_device: int = 0,
+        resume_training: bool = False,
+        n_runs: int = 5,
+        save_path: str = 'saves/',
+    ) -> None:
         """
-        :param corpus: (str)  - 'GUM' or 'RST-DT'
-        :param lang: (str)  - 'en' or 'ru'
-        :param model_type: (str)  - one of {'default', '+tony', '+tony+trainable_edus', '+tony+trainable_edus+bimpm'}
-        :param transformer_name: (str)  - model name or path to the pretrained LM
-        :param emb_size: (int)  - LM encodings size
-        :param cuda_device: (int)  - number of cuda device
-        :param resume_training: (bool)  - whether to rewrite previous saves
+        :param corpora: corpus names, e.g. ['GUM'] or ['RST-DT']
+        :param lang: 'en' or 'ru'
+        :param model_type: one of {'default', '+tony', '+tony+trainable_edus', '+tony+trainable_edus+bimpm'}
+        :param transformer_name: model name or path to the pretrained LM
+        :param emb_size: LM encodings size
+        :param cuda_device: number of cuda device
+        :param resume_training: whether to rewrite previous saves
         """
         self.corpora = corpora
         self.lang = lang
@@ -60,8 +62,8 @@ class MultipleRunnerGeneral:
         self.n_runs = n_runs
         self.save_path = save_path
 
-    def _general_parameters(self):
-        overrides = {
+    def _general_parameters(self) -> dict[str, object]:
+        overrides: dict[str, object] = {
             'corpora': self.corpora,
             'lang': self.lang,
             'cross_validation': 'false',
@@ -86,63 +88,6 @@ class MultipleRunnerGeneral:
             'save_path': self.save_path,
         }
 
-        # if self.corpus == 'RST-DT':
-        #     overrides.update({
-        #         'batch_size': 2,
-        #         'cross_validation': 'true',
-        #         'hidden_size': 1024,
-        #         'token_bilstm_hidden': 200,
-        #     })
-        #
-        # elif self.corpus == 'GUM':
-        #     overrides.update({
-        #         'batch_size': 1,
-        #         'cross_validation': 'false',
-        #         'hidden_size': 1024,
-        #     })
-        #
-        #     if self.transformer_name == 'deepvk/deberta-v1-base':
-        #         overrides.update({
-        #             'lr': 0.00005,
-        #         })
-        #
-        # elif self.corpus == 'RuRSTB':
-        #     overrides.update({
-        #         'lang': 'ru',
-        #         'batch_size': 6,
-        #         'cross_validation': 'false',
-        #         'hidden_size': 768,
-        #         'dwa_bs': 24,
-        #     })
-        #
-        #     if self.transformer_name == 'Tochka-AI/ruRoPEBert-e5-base-2k':
-        #         overrides.update({
-        #             'lr': 0.00005,
-        #         })
-        #
-        #     elif self.transformer_name == 'Tochka-AI/ruRoPEBert-e5-base-512':
-        #         overrides.update({
-        #             'lr': 0.001,
-        #         })
-        #
-        #     elif self.transformer_name == 'hivaze/ru-e5-large':
-        #         overrides.update({
-        #             'batch_size': 24,
-        #             'dwa_bs': 24,
-        #         })
-        #
-        #     elif self.transformer_name == 'deepvk/deberta-v1-base':
-        #         overrides.update({
-        #             'lr': 0.0005,
-        #         })
-        #
-        #     elif self.transformer_name == 'ai-forever/ruRoberta-large':
-        #         overrides.update({
-        #             'lr': 0.00005,
-        #             'batch_size': 24,
-        #             'dwa_bs': 24,
-        #         })
-
         # Default parameters
         overrides.update({
             'segmenter_type': 'linear',
@@ -164,7 +109,7 @@ class MultipleRunnerGeneral:
                 overrides['if_edu_start_loss'] = 'false'
                 overrides['segmenter_hidden_dim'] = 200
 
-                if self.corpus == 'RuRSTB':
+                if 'RuRSTB' in self.corpora:
                     overrides['segmenter_dropout'] = 0.5
 
             if 'no_crf' in types:
@@ -194,10 +139,10 @@ class MultipleRunnerGeneral:
 
         return overrides
 
-    def _get_variants(self):
-        return range(40, 40+self.n_runs)  # There is a fixed split, we just change the nn random seed
+    def _get_variants(self) -> Iterable[int]:
+        return range(40, 40 + self.n_runs)  # There is a fixed split, we just change the nn random seed
 
-    def train(self):
+    def train(self) -> None:
         general_parameters = self._general_parameters()
         for run in self._get_variants():
             general_parameters['foldnum'] = 0
@@ -208,7 +153,8 @@ class MultipleRunnerGeneral:
                 general_parameters[key] = str(value)
 
             if self.resume_training:
-                if os.path.isfile(os.path.join('saves', general_parameters['run_name'], 'best_metrics.json')):
+                metrics_path = Path('saves') / str(general_parameters['run_name']) / 'best_metrics.json'
+                if metrics_path.is_file():
                     continue
 
             p = subprocess.Popen(
@@ -218,8 +164,8 @@ class MultipleRunnerGeneral:
             )
             p.wait()
 
-    def evaluate(self):
-        results = {
+    def evaluate(self) -> None:
+        results: dict[str, list[object]] = {
             'e2e_test_f1_full': [],
             'e2e_test_f1_nuc': [],
             'e2e_test_f1_rel': [],
@@ -232,32 +178,32 @@ class MultipleRunnerGeneral:
         }
         for run in self._get_variants():
             run_name = f'{self.lang}_{"+".join(self.corpora)}_{self.model_type}_{run}'
-            run_path = os.path.join(self.save_path, run_name)
+            run_path = Path(self.save_path) / run_name
             try:
-                all_metrics = glob(os.path.join(run_path, 'metrics_epoch_*.json'))
-                best_epoch = sorted([int(os.path.basename(metrics)[14:-5]) for metrics in all_metrics])[-1]
-                best_dev_metrics = json.load(open(os.path.join(run_path, f'metrics_epoch_{best_epoch}.json')))
+                all_metrics = list(run_path.glob('metrics_epoch_*.json'))
+                best_epoch = sorted(int(metrics.name[14:-5]) for metrics in all_metrics)[-1]
+                best_dev_metrics = json.loads(
+                    (run_path / f'metrics_epoch_{best_epoch}.json').read_text(encoding='utf-8')
+                )
                 for key in results:
                     results[key].append(best_dev_metrics[key])
-            except:
+            except (OSError, ValueError, KeyError, IndexError, json.JSONDecodeError):
                 print(f'Run {run} is missing.')
 
-        # with open(f'{self.lang}_{self.corpus}_{self.model_type}_all_res.json', 'w') as f:
-        with open(f'{self.lang}_{"+".join(self.corpora)}_{self.model_type}_all_res.json', 'w') as f:
+        with Path(f'{self.lang}_{"+".join(self.corpora)}_{self.model_type}_all_res.json').open('w') as f:
             json.dump(results, f)
 
-    def train_mixed(self, mixed: int):
+    def train_mixed(self, mixed: int) -> None:
         """ Running training with second language injection of ``mixed`` % """
 
-        save_path = 'saves_mixed'
-        if not os.path.isdir(save_path):
-            os.mkdir(save_path)
+        save_path = Path('saves_mixed')
+        save_path.mkdir(exist_ok=True)
 
         general_parameters = self._general_parameters()
-        general_parameters['save_path'] = save_path
+        general_parameters['save_path'] = str(save_path)
 
         for run in range(self.n_runs):
-            assert self.corpus == 'GUM'  # Cross-lingual training is only for parallel corpus
+            assert 'GUM' in self.corpora  # Cross-lingual training is only for parallel corpus
 
             general_parameters['foldnum'] = 0
             general_parameters['seed'] = 40
@@ -271,7 +217,8 @@ class MultipleRunnerGeneral:
                 general_parameters[key] = str(value)
 
             if self.resume_training:
-                if os.path.isfile(os.path.join(save_path, general_parameters['run_name'], 'best_metrics.json')):
+                metrics_path = save_path / str(general_parameters['run_name']) / 'best_metrics.json'
+                if metrics_path.is_file():
                     continue
 
             p = subprocess.Popen(

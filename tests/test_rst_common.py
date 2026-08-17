@@ -5,8 +5,6 @@ guarantee of the iterative flatten, bisect-vs-linear overlap
 equivalence at boundaries, and the cache key/store/load contract.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -35,8 +33,8 @@ class _Span:
 class _Node:
     start: int
     end: int
-    left: "_Node | None" = None
-    right: "_Node | None" = None
+    left: _Node | None = None
+    right: _Node | None = None
     relation: str = ""
     nuclearity: str = ""
 

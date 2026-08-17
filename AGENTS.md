@@ -6,7 +6,7 @@ Full project briefing: [`CLAUDE.md`](CLAUDE.md). Hard rules in [`.claude/rules/`
 
 Treat **every** module in this repo as Steve Allison's production Python. Elena Chistova / `tchewik` provenance is licence and history, not a quality waiver.
 
-- One bar: modern, world-class Python (Mode A in [`.claude/rules/code-standards.md`](.claude/rules/code-standards.md)). Apply it **always**, including `*/src/parser/`, `*/src/corpus/`, `rstviewer/`, `data_manager.py`, `du_converter.py`, and anything else that started as research code.
+- One bar: modern, world-class Python 3.14 (Mode A in [`.claude/rules/code-standards.md`](.claude/rules/code-standards.md)). Apply it **always**, including `*/src/parser/`, `*/src/corpus/`, `rstviewer/`, `data_manager.py`, `du_converter.py`, and anything else that started as research code. Do not add `from __future__ import annotations` (PEP 563 stringification; 3.14 deferred evaluation is the default).
 - Always fix quality issues you encounter: warnings, no-op constructor args, footguns, outdated idioms, missing types on code you touch. Do not leave them because the file is “inherited” or “not the task.”
 - Never refuse a fix on “upstream wouldn't accept it” or “surgical touch only.” Those rules are retired.
 - Do not change trained architecture or inference maths in the name of style. Constructor no-ops and dead warnings are in scope; swapping a 1-layer LSTM for a 2-layer one is not.

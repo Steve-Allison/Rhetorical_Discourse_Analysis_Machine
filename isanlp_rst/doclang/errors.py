@@ -1,7 +1,5 @@
 """Custom exceptions for DocLang-native RST parsing."""
 
-from __future__ import annotations
-
 
 class DoclangRstError(Exception):
     """Base class for parse_doclang errors."""

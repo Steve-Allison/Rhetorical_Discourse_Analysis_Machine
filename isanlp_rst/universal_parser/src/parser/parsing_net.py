@@ -1,8 +1,8 @@
-import networkx as nx
-import numpy as np
+from typing import Any, override
+
 import torch
 import torch.nn as nn
-from PIL import Image
+from torch import Tensor
 
 from . import modules
 from . import segmenters
@@ -12,23 +12,56 @@ from .metrics import get_batch_metrics
 
 
 class ParsingNet(nn.Module):
-    def __init__(self, relation_tables, transformer, emb_dim=768, hidden_size=768,
-                 window_size=400, window_padding=55,
-                 decoder_input_size=768, normalize_embeddings=False, atten_model="Dotproduct", rnn_layers=1,
-                 segmenter_type='tony', segmenter_use_sent_boundaries=False, segmenter_hidden_dim=100,
-                 segmenter_dropout=0.2,
-                 segmenter_lstm_num_layers=1, segmenter_lstm_dropout=0.2, segmenter_lstm_bidirectional=True,
-                 segmenter_use_crf=False, segmenter_use_log_crf=True, segmenter_if_edu_start_loss=False,
-                 edu_encoding_kind='trainable', du_encoding_kind='avg', rel_classification_kind='default',
-                 encoder_document_enc_gru=True, encoder_add_first_and_last=True, edu_embedding_compression_rate=1 / 3,
-                 classifier_input_size=768, classifier_hidden_size=768, classes_numbers=None, classifier_bias=True,
-                 token_bilstm_hidden=100, label_weights=None, corpora_weights=None,
-                 dataset2classifier=None, relation_vocab=None, dataset_masks=None,
-                 dropout_e=0.5, dropout_d=0.5, dropout_c=0.5,
-                 use_discriminator=False, max_w=190, max_h=20,
-                 cuda_device=None, use_amp=False, separated_segmentation=True):
+    def __init__(
+        self,
+        relation_tables: list[list[str]],
+        transformer: nn.Module,
+        emb_dim: int = 768,
+        hidden_size: int = 768,
+        window_size: int = 400,
+        window_padding: int = 55,
+        decoder_input_size: int = 768,
+        normalize_embeddings: bool = False,
+        atten_model: str = "Dotproduct",
+        rnn_layers: int = 1,
+        segmenter_type: str = 'tony',
+        segmenter_use_sent_boundaries: bool = False,
+        segmenter_hidden_dim: int = 100,
+        segmenter_dropout: float = 0.2,
+        segmenter_lstm_num_layers: int = 1,
+        segmenter_lstm_dropout: float = 0.2,
+        segmenter_lstm_bidirectional: bool = True,
+        segmenter_use_crf: bool = False,
+        segmenter_use_log_crf: bool = True,
+        segmenter_if_edu_start_loss: bool = False,
+        edu_encoding_kind: str = 'trainable',
+        du_encoding_kind: str = 'avg',
+        rel_classification_kind: str = 'default',
+        encoder_document_enc_gru: bool = True,
+        encoder_add_first_and_last: bool = True,
+        edu_embedding_compression_rate: float = 1 / 3,
+        classifier_input_size: int = 768,
+        classifier_hidden_size: int = 768,
+        classes_numbers: list[int] | None = None,
+        classifier_bias: bool = True,
+        token_bilstm_hidden: int = 100,
+        label_weights: list[Tensor] | None = None,
+        corpora_weights: list[float] | None = None,
+        dataset2classifier: list[int] | None = None,
+        relation_vocab: list[str] | None = None,
+        dataset_masks: list[list[bool]] | None = None,
+        dropout_e: float = 0.5,
+        dropout_d: float = 0.5,
+        dropout_c: float = 0.5,
+        use_discriminator: bool = False,
+        max_w: int = 190,
+        max_h: int = 20,
+        cuda_device: torch.device | None = None,
+        use_amp: bool = False,
+        separated_segmentation: bool = True,
+    ) -> None:
 
-        super(ParsingNet, self).__init__()
+        super().__init__()
         """
             :param transformer: transformers.PreTrainedModel  - LM encoder
             :param emb_dim: int  - word embedding dimension (from LM)
@@ -60,16 +93,16 @@ class ParsingNet(nn.Module):
             :param rel_classification_kind: str  - Label classification kind, from {'default', 'with_bimpm'}
             :param encoder_document_enc_gru: bool  - Whether to use document-level GRU encoding in the encoder
             :param encoder_add_first_and_last: bool  - Whether to add first and last embeddings to the EDU encoding
-            :param edu_embedding_compression_rate: bool - 1/3 if EDU = concat([first_emb, gru_enc, last_emb]) 
+            :param edu_embedding_compression_rate: bool - 1/3 if EDU = concat([first_emb, gru_enc, last_emb])
             :param classifier_input_size: int  - classifier input size
             :param classifier_hidden_size: int  - classifier hidden size
-            :param classes_number: int  - (Is passed from data_manager, do not set manually) 
+            :param classes_number: int  - (Is passed from data_manager, do not set manually)
             :param classifier_bias: bool  - employ bias in the label classifier
             :param label_weights: None or torch.FloatTensor  - (Is also passed automatically)
             :param dropout_e: float  - dropout rate for encoder
             :param dropout_d: float  - dropout rate for decoder
             :param dropout_c: float  - dropout rate for label classifier
-            :param device: torch.device  - (Optional) cuda device if present        
+            :param device: torch.device  - (Optional) cuda device if present
         """
 
         self.hidden_size = hidden_size
@@ -98,7 +131,7 @@ class ParsingNet(nn.Module):
 
         if separated_segmentation:
             _segmenters = []
-            for i in range(len(self.dataset2classifier)):
+            for _ in range(len(self.dataset2classifier)):
                 if segmenter_type == 'linear':
                     _segmenters.append(segmenters.LinearSegmenter(emb_dim, cuda_device=self._cuda_device))
                 elif segmenter_type == 'tony':
@@ -187,7 +220,7 @@ class ParsingNet(nn.Module):
         self.max_w = max_w
         self.max_h = max_h
 
-    def turn_on_discriminator(self):
+    def turn_on_discriminator(self) -> None:
         self.use_discriminator = True
         self.down = nn.Sequential(nn.Conv2d(2, 32, (3, self.max_w // 2), 1, device=self._cuda_device), nn.ReLU())
         self.down.apply(self._init_weights)
@@ -195,20 +228,31 @@ class ParsingNet(nn.Module):
         self.discriminator = Discriminator(max_w=self.max_w, max_h=self.max_h, device=self._cuda_device)
 
     @staticmethod
-    def _init_weights(layer):
+    def _init_weights(layer: nn.Module) -> None:
         classname = layer.__class__.__name__
         if (classname.find("Conv") != -1) or (classname.find("Linear") != -1):
             nn.init.normal_(layer.weight.data, 0.0, 0.02)
 
-    def cnn_feat_ext(self, img):
+    def cnn_feat_ext(self, img: Tensor) -> Tensor:
         out = self.down(img)
         return self.max_p(out)
 
-    def forward(self):
+    @override
+    def forward(self) -> None:
         raise RuntimeError('Parsing Network does not have forward process.')
 
-    def training_loss(self, input_texts, sent_breaks, entity_ids, entity_position_ids, edu_breaks,
-                      label_index, parsing_index, decoder_input_index, dataset_index):
+    def training_loss(
+        self,
+        input_texts: list[Any],
+        sent_breaks: list[Any] | None,
+        entity_ids: list[Any] | None,
+        entity_position_ids: list[Any] | None,
+        edu_breaks: list[list[int]],
+        label_index: list[list[int]],
+        parsing_index: list[list[int]],
+        decoder_input_index: list[list[int]],
+        dataset_index: list[int],
+    ) -> tuple[Tensor, Tensor, Tensor]:
 
         # Obtain encoder outputs and last hidden states
         if self.du_encoding_kind == 'bert':
@@ -238,8 +282,6 @@ class ParsingNet(nn.Module):
             cur_parsing_index = parsing_index[i]
             cur_decoder_input_index = decoder_input_index[i]
             cur_dataset_index = dataset_index[i]
-
-            d_loss = 0.  # Default value for the elementary trees
 
             if len(edu_breaks[i]) == 1:
                 continue
@@ -391,8 +433,19 @@ class ParsingNet(nn.Module):
 
         return loss_tree_batch, loss_label_batch, total_edu_loss
 
-    def testing_loss(self, input_sentence, input_sent_breaks, input_entity_ids, input_entity_position_ids,
-                     input_edu_breaks, label_index, parsing_index, generate_tree, use_pred_segmentation, dataset_index):
+    def testing_loss(
+        self,
+        input_sentence: list[Any],
+        input_sent_breaks: list[Any] | None,
+        input_entity_ids: list[Any] | None,
+        input_entity_position_ids: list[Any] | None,
+        input_edu_breaks: list[list[int]],
+        label_index: list[list[int]],
+        parsing_index: list[list[int]],
+        generate_tree: bool,
+        use_pred_segmentation: bool,
+        dataset_index: list[int],
+    ) -> tuple[Any, Any, list[list[str]] | None, tuple[list[int], list[int]], list[list[int]]]:
         '''
             Input:
                 input_sentence: [batch_size, length]
@@ -422,10 +475,6 @@ class ParsingNet(nn.Module):
             edu_breaks = input_edu_breaks
 
         label_index = [[0, ] * (len(i) - 1) for i in edu_breaks]
-        parsing_index = [[0, ] * (len(i) - 1) for i in edu_breaks]
-
-        label_loss_function = nn.NLLLoss()
-        span_loss_function = nn.NLLLoss()
 
         loss_label_batch = torch.FloatTensor([0.0]).to(self._cuda_device)
         loss_tree_batch = torch.FloatTensor([0.0]).to(self._cuda_device)
@@ -443,8 +492,6 @@ class ParsingNet(nn.Module):
             cur_label = []
             cur_tree = []
 
-            cur_label_index = torch.tensor(label_index[i]).to(self._cuda_device)
-            cur_ParsingIndex = parsing_index[i]
             cur_dataset_index = dataset_index[i]
 
             if len(edu_breaks[i]) == 1:
@@ -690,7 +737,13 @@ class ParsingNet(nn.Module):
         return loss_tree_batch, loss_label_batch, (span_batch if generate_tree else None), (
             merged_label_gold, merged_label_pred), edu_breaks
 
-    def _encode_du(self, cur_encoder_outputs, left_boundary, du_break, right_boundary):
+    def _encode_du(
+        self,
+        cur_encoder_outputs: Tensor,
+        left_boundary: int,
+        du_break: int,
+        right_boundary: int,
+    ) -> tuple[Tensor, Tensor]:
         """
         :param cur_encoder_outputs: torch.FloatTensor  - EDU embeddings of shape (n_edus, embedding_dim)
         :param left_boundary: int  - Start boundary of the left DU
@@ -735,7 +788,15 @@ class ParsingNet(nn.Module):
 
         return input_left, input_right
 
-    def _encode_du_bert(self, token_ids, edu_breaks, left_boundary, du_break, right_boundary, embeddings):
+    def _encode_du_bert(
+        self,
+        token_ids: list[int],
+        edu_breaks: list[int],
+        left_boundary: int,
+        du_break: int,
+        right_boundary: int,
+        embeddings: Tensor,
+    ) -> tuple[Tensor, Tensor]:
         """
         :param token_ids: list  - token ids of shape (n_tokens,)
         :param edu_breaks: list  - positions of all edu breaks in tokens
@@ -787,7 +848,12 @@ class ParsingNet(nn.Module):
             normalized_entropy = raw_entropy / max_entropy
             return normalized_entropy.cpu().item()
 
-    def eval_loss(self, batch, use_pred_segmentation=True, use_org_parseval=True):
+    def eval_loss(
+        self,
+        batch: tuple[Any, ...],
+        use_pred_segmentation: bool = True,
+        use_org_parseval: bool = True,
+    ) -> tuple[tuple[Any, Any], Any]:
 
         (batch_input_sentences, batch_sent_breaks, batch_entity_ids, batch_entity_position_ids,
          batch_edu_breaks, batch_decoder_inputs, batch_relation_labels,

@@ -1,102 +1,44 @@
-from __future__ import annotations
-
-import ast
-import builtins
-import collections
 import json
 import logging
-import os
-import pathlib
 import pickle
-import sys
-import types
-from importlib import import_module
-from typing import Dict, List, Optional, Sequence, Tuple
+from collections.abc import Sequence
+from pathlib import Path
 
 import razdel
 import torch
 from huggingface_hub import hf_hub_download
 from huggingface_hub.errors import EntryNotFoundError
 from tqdm import tqdm
-from transformers import AutoModel, AutoTokenizer, AutoConfig
+from transformers import AutoConfig, AutoModel, AutoTokenizer
 
 from isanlp_rst.base_predictor import BasePredictor, resolve_device, str2bool
 from isanlp_rst.utils.du_converter import DUConverter
-from .data_manager import DataManager  # noqa: F401 - ensure module is registered for pickle
+
+from .inventory import (
+    ensure_unirst_module_aliases,
+    import_relation_table_from_legacy_pickle,
+    load_relation_inventory_json,
+    parse_corpora_config,
+    relation_table_from_txt,
+)
 from .src.parser.data import Data
 from .src.parser.parsing_net import ParsingNet
 from .src.parser.parsing_net_bottom_up import ParsingNetBottomUp
 
 
-class _RestrictedUnpickler(pickle.Unpickler):
-    """Unpickler that only reconstructs inventory leaf types + containers.
-
-    Deliberately does **not** allow arbitrary ``isanlp_rst.*`` callables:
-    REDUCE gadgets targeting ``data_manager.collect``,
-    ``DataManager.from_pickle``, or ``load_cached`` must be refused.
-    ``DataManager`` itself is excluded so ATTR-based ``from_pickle`` gadgets
-    cannot be assembled after loading the class.
-    """
-
-    _ALLOWED_BUILTINS = frozenset({
-        'list', 'dict', 'tuple', 'set', 'frozenset', 'str', 'int', 'float',
-        'bool', 'bytes', 'complex', 'NoneType', 'slice', 'object',
-    })
-    _ALLOWED_COLLECTIONS = frozenset({'defaultdict', 'OrderedDict'})
-    _ALLOWED_PATHLIB = frozenset({'Path', 'PosixPath', 'WindowsPath'})
-    # Inventory pickles used at inference only need ``ParserInput`` (relation
-    # table carrier). Keep the allow-list minimal and explicit.
-    _ALLOWED_CLASSES = frozenset({
-        ('isanlp_rst.universal_parser.data_manager', 'ParserInput'),
-        ('src.universal_parser.data_manager', 'ParserInput'),
-    })
-
-    def find_class(self, module: str, name: str):
-        if module == 'builtins' and name in self._ALLOWED_BUILTINS:
-            if name == 'NoneType':
-                return type(None)
-            return getattr(builtins, name)
-        if module == 'collections' and name in self._ALLOWED_COLLECTIONS:
-            return getattr(collections, name)
-        if module in ('pathlib', 'pathlib._local') and name in self._ALLOWED_PATHLIB:
-            return getattr(pathlib, name)
-
-        if (module, name) in self._ALLOWED_CLASSES:
-            return super().find_class(module, name)
-
-        raise pickle.UnpicklingError(
-            f'Refused to unpickle {module}.{name} (not on allow-list).'
-        )
-
-
 class PredictorUniRST(BasePredictor):
-    _MODULE_ALIASES = {
-        'src.universal_parser.data_manager': 'isanlp_rst.universal_parser.data_manager',
-        'src.universal_parser.du_converter': 'isanlp_rst.utils.du_converter',
-        'src.universal_parser.src.corpus.binary_tree': 'isanlp_rst.universal_parser.src.corpus.binary_tree',
-        'src.universal_parser.src.corpus.data': 'isanlp_rst.universal_parser.src.corpus.data',
-        'src.universal_parser.src.parser.data': 'isanlp_rst.universal_parser.src.parser.data',
-        'src.universal_parser.src.parser.modules': 'isanlp_rst.universal_parser.src.parser.modules',
-        'src.universal_parser.src.parser.segmenters': 'isanlp_rst.universal_parser.src.parser.segmenters',
-        'src.universal_parser.src.parser.parsing_net': 'isanlp_rst.universal_parser.src.parser.parsing_net',
-        'src.universal_parser.src.parser.parsing_net_bottom_up': 'isanlp_rst.universal_parser.src.parser.parsing_net_bottom_up',
-        'src.universal_parser.src.parser.metrics': 'isanlp_rst.universal_parser.src.parser.metrics',
-        'src.universal_parser.src.parser.training_manager': 'isanlp_rst.universal_parser.src.parser.training_manager',
-    }
-    _aliases_registered = False
-
     def __init__(
         self,
-        model_dir: Optional[str] = None,
-        hf_model_name: Optional[str] = None,
-        hf_model_version: Optional[str] = None,
-        relinventory: Optional[str] = None,
+        model_dir: str | None = None,
+        hf_model_name: str | None = None,
+        hf_model_version: str | None = None,
+        relinventory: str | None = None,
         relinventory_idx: int = 0,
-        device: 'str | torch.device | None' = None,
-        cuda_device: 'int | None' = None,
-        dtype: 'str | torch.dtype | None' = None,
+        device: str | torch.device | None = None,
+        cuda_device: int | None = None,
+        dtype: str | torch.dtype | None = None,
     ) -> None:
-        self._ensure_module_aliases()
+        ensure_unirst_module_aliases()
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
         if model_dir is not None and hf_model_name is not None:
@@ -109,11 +51,11 @@ class PredictorUniRST(BasePredictor):
 
         if model_dir is not None:
             self.mode = 'local'
-            self.model_dir = model_dir
+            self.model_dir = Path(model_dir)
             self.hf_model_name = None
             self.hf_model_version = None
-            self.model_file = os.path.join(model_dir, model_filename)
-            self.config_path = os.path.join(model_dir, config_filename)
+            self.model_file = str(self.model_dir / model_filename)
+            self.config_path = str(self.model_dir / config_filename)
         elif hf_model_name is not None:
             self.mode = 'hf'
             self.model_dir = None
@@ -132,13 +74,8 @@ class PredictorUniRST(BasePredictor):
         else:
             raise ValueError('Pass either `model_dir` or `hf_model_name`.')
 
-        with open(self.config_path, 'r', encoding='utf8') as f:
-            self.config = json.load(f)
-
-        corpora = self.config['data']['corpora']
-        if isinstance(corpora, str):
-            corpora = ast.literal_eval(corpora)
-        self.dataset_names = list(corpora)
+        self.config = json.loads(Path(self.config_path).read_text(encoding='utf-8'))
+        self.dataset_names = parse_corpora_config(self.config['data']['corpora'])
 
         self.relinventory = relinventory
         if self.relinventory is None:
@@ -158,71 +95,37 @@ class PredictorUniRST(BasePredictor):
                     f"Available datasets: {self.dataset_names}."
                 ) from exc
 
-        self.data_managers: List[Optional[object]] = []
-        self.relation_tables: List[Sequence[str]] = []
+        self.relation_tables: list[Sequence[str]] = []
         for corpus_name in self.dataset_names:
-            # Prefer plain relation_table.txt over unpickling data managers.
-            relation_table = self._load_relation_table(corpus_name)
-            if relation_table is not None:
-                self.data_managers.append(None)
-                self.relation_tables.append(relation_table)
-                continue
-            data_manager = self._load_data_manager(corpus_name)
-            self.data_managers.append(data_manager)
-            if data_manager is not None:
-                self.relation_tables.append(data_manager.relation_table)
-            else:
+            relation_table = self._load_inventory(corpus_name)
+            if relation_table is None:
                 raise FileNotFoundError(
                     f"Could not find relation inventory for corpus '{corpus_name}'. "
-                    'Ensure that relation_table files or data manager pickles are packaged with the model.'
+                    'Package relation_table_*.txt, data_manager_*.json, '
+                    'or a legacy data_manager_*.pickle with the model.'
                 )
+            self.relation_tables.append(relation_table)
 
         self._device = resolve_device(device, cuda_device)
         self._dtype = self._resolve_dtype(dtype)
 
         self._load_model()
 
-    @classmethod
-    def _ensure_module_aliases(cls) -> None:
-        if cls._aliases_registered:
-            return
-
-        cls._aliases_registered = True
-        for alias, target in cls._MODULE_ALIASES.items():
-            cls._register_alias(alias, target)
-
     @staticmethod
-    def _register_alias(alias: str, target: str) -> None:
-        module = import_module(target)
-        sys.modules[alias] = module
-        parent_name, _, child_name = alias.rpartition('.')
-        if parent_name:
-            parent = PredictorUniRST._ensure_parent_module(parent_name)
-            setattr(parent, child_name, module)
+    def _ensure_module_aliases() -> None:
+        ensure_unirst_module_aliases()
 
-    @staticmethod
-    def _ensure_parent_module(name: str):
-        if name in sys.modules:
-            return sys.modules[name]
-
-        module = types.ModuleType(name)
-        sys.modules[name] = module
-        parent_name, _, child_name = name.rpartition('.')
-        if parent_name:
-            parent = PredictorUniRST._ensure_parent_module(parent_name)
-            setattr(parent, child_name, module)
-        return module
-
-    def _resolve_resource(self, relative_path: str) -> Optional[str]:
-        if os.path.isabs(relative_path) and os.path.exists(relative_path):
-            return relative_path
+    def _resolve_resource(self, relative_path: str) -> str | None:
+        candidate = Path(relative_path)
+        if candidate.is_absolute() and candidate.exists():
+            return str(candidate)
 
         if self.mode == 'local':
             if self.model_dir is None:
                 return None
-            path = os.path.join(self.model_dir, relative_path)
-            if os.path.exists(path):
-                return path
+            path = self.model_dir / relative_path
+            if path.exists():
+                return str(path)
             return None
 
         # HF mode: distinguish "resource not in repo" (silent miss → next
@@ -242,7 +145,7 @@ class PredictorUniRST(BasePredictor):
             # missing" — re-raise so callers see the real cause.
             raise
 
-    def _corpus_variants(self, corpus_name: str) -> List[str]:
+    def _corpus_variants(self, corpus_name: str) -> list[str]:
         lower = corpus_name.lower()
         variants = {lower}
         variants.add(lower.replace('.', '_'))
@@ -259,43 +162,61 @@ class PredictorUniRST(BasePredictor):
             variants.add('gum')
         return [variant for variant in variants if variant]
 
-    def _load_data_manager(self, corpus_name: str):
-        candidates = []
-        for variant in self._corpus_variants(corpus_name):
-            filename = f'data_manager_{variant}.pickle'
-            candidates.append(filename)
-            candidates.append(os.path.join('data', filename))
-            candidates.append(os.path.join('data', 'dms', filename))
+    def _unique_candidates(self, filenames: list[str]) -> list[str]:
+        candidates: list[str] = []
+        for filename in filenames:
+            candidates.extend((filename, f'data/{filename}', f'data/dms/{filename}'))
+        return list(dict.fromkeys(candidates))
 
-        for rel_path in dict.fromkeys(candidates):  # preserve order, drop duplicates
+    def _load_inventory(self, corpus_name: str) -> list[str] | None:
+        """txt (published) → JSON (native) → legacy pickle (labels only)."""
+        return (
+            self._load_relation_table(corpus_name)
+            or self._load_inventory_json(corpus_name)
+            or self._load_legacy_pickle_inventory(corpus_name)
+        )
+
+    def _load_legacy_pickle_inventory(self, corpus_name: str) -> list[str] | None:
+        filenames = [f'data_manager_{variant}.pickle' for variant in self._corpus_variants(corpus_name)]
+        for rel_path in self._unique_candidates(filenames):
             resolved = self._resolve_resource(rel_path)
             if not resolved:
                 continue
             try:
-                with open(resolved, 'rb') as f:
-                    return _RestrictedUnpickler(f).load()
-            except (pickle.UnpicklingError, EOFError, OSError) as exc:
+                return import_relation_table_from_legacy_pickle(Path(resolved))
+            except (pickle.UnpicklingError, EOFError, OSError, ValueError) as exc:
                 self.logger.warning(
                     'Skipping unreadable data_manager pickle %s: %s', resolved, exc
                 )
                 continue
         return None
 
-    def _load_relation_table(self, corpus_name: str) -> Optional[List[str]]:
-        """Load ``relation_table_<variant>.txt`` using the same corpus aliases
-        as ``_load_data_manager`` (dots/underscores, ``-tr`` / ``_tr`` remaps).
-        """
-        for variant in self._corpus_variants(corpus_name):
-            filename = f'relation_table_{variant}.txt'
-            resolved = self._resolve_resource(filename)
+    def _load_inventory_json(self, corpus_name: str) -> list[str] | None:
+        filenames = [f'data_manager_{variant}.json' for variant in self._corpus_variants(corpus_name)]
+        for rel_path in self._unique_candidates(filenames):
+            resolved = self._resolve_resource(rel_path)
             if not resolved:
                 continue
-            with open(resolved, 'r', encoding='utf8') as f:
-                return [line.strip() for line in f if line.strip()]
+            try:
+                return load_relation_inventory_json(Path(resolved))
+            except (OSError, json.JSONDecodeError, ValueError) as exc:
+                self.logger.warning(
+                    'Skipping unreadable data_manager JSON %s: %s', resolved, exc
+                )
+                continue
+        return None
+
+    def _load_relation_table(self, corpus_name: str) -> list[str] | None:
+        """Load ``relation_table_<variant>.txt`` using corpus aliases."""
+        for variant in self._corpus_variants(corpus_name):
+            resolved = self._resolve_resource(f'relation_table_{variant}.txt')
+            if not resolved:
+                continue
+            return relation_table_from_txt(Path(resolved).read_text(encoding='utf-8'))
         return None
 
     @staticmethod
-    def _classifier_count_from_state_dict(state_dict) -> Optional[int]:
+    def _classifier_count_from_state_dict(state_dict: dict) -> int | None:
         """Count distinct ``label_classifiers.<N>.*`` indices in a state dict.
 
         Returns ``None`` if the checkpoint has no such keys (older variant,
@@ -337,10 +258,10 @@ class PredictorUniRST(BasePredictor):
         )
 
         if use_union:
-            union_table: List[str] = []
-            label2id: Dict[str, int] = {}
-            dataset_masks: List[List[bool]] = []
-            label_maps: List[List[int]] = []
+            union_table: list[str] = []
+            label2id: dict[str, int] = {}
+            dataset_masks: list[list[bool]] = []
+            label_maps: list[list[int]] = []
 
             for table in rel_tables:
                 for lbl in table:
@@ -388,8 +309,8 @@ class PredictorUniRST(BasePredictor):
                 classes_numbers = [len(t) for t in rel_tables]
                 dataset2classifier = list(range(n_corpora))
             elif ckpt_n_classifiers < n_corpora:
-                unique_tables: List[Sequence[str]] = []
-                mapping: List[int] = []
+                unique_tables: list[Sequence[str]] = []
+                mapping: list[int] = []
                 for table in rel_tables:
                     for idx, unique in enumerate(unique_tables):
                         if list(table) == list(unique):
@@ -562,7 +483,7 @@ class PredictorUniRST(BasePredictor):
             dataset_index=[self.relinventory_idx] * len(data.input_sentences),
         )
 
-    def get_batches(self, data: Data, size: int) -> List[Data]:
+    def get_batches(self, data: Data, size: int) -> list[Data]:
         """Splits a batch into multiple smaller batches of the given size.
 
         Note: ``data.dataset_index`` must be populated (the predictor's
@@ -630,8 +551,8 @@ class PredictorUniRST(BasePredictor):
     def parse_rst(
         self,
         text: str,
-        tokens: Optional[Sequence[str]] = None,
-        token_offsets: Optional[Sequence[Tuple[int, int]]] = None,
+        tokens: Sequence[str] | None = None,
+        token_offsets: Sequence[tuple[int, int]] | None = None,
     ) -> dict:
         """Parse text into an RST tree.
 
@@ -656,7 +577,7 @@ class PredictorUniRST(BasePredictor):
         if tokens is None:
             razdel_tokens = list(razdel.tokenize(text))
             word_tokens = [token.text for token in razdel_tokens]
-            offsets: List[Tuple[int, int]] = [(token.start, token.stop) for token in razdel_tokens]
+            offsets: list[tuple[int, int]] = [(token.start, token.stop) for token in razdel_tokens]
         else:
             word_tokens = list(tokens)
             if token_offsets is None:
@@ -693,6 +614,9 @@ class PredictorUniRST(BasePredictor):
         }
 
         batch = self.tokenize(input_data)
+        dataset_index = batch.dataset_index
+        if dataset_index is None:
+            raise ValueError('Data.dataset_index is None; call `tokenize` before parse.')
 
         with torch.inference_mode(), self._autocast():
             (
@@ -711,10 +635,12 @@ class PredictorUniRST(BasePredictor):
                 batch.parsing_breaks,
                 generate_tree=True,
                 use_pred_segmentation=True,
-                dataset_index=batch.dataset_index,
+                dataset_index=dataset_index,
             )
 
         predictions['tokens'] += [self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences]
+        if span_batch is None:
+            raise RuntimeError('testing_loss returned no spans with generate_tree=True')
         predictions['spans'] += span_batch
         predictions['edu_breaks'] += predict_edu_breaks
         predictions['true_spans'] += batch.golden_metric
@@ -745,7 +671,7 @@ class PredictorUniRST(BasePredictor):
         if len(normalized_edus) == 1:
             tree = DUConverter.dummy_tree(word_tokens)
             self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
-            leaves: List[str] = []
+            leaves: list[str] = []
             self._collect_leaf_texts(tree, leaves)
             if leaves != normalized_edus:
                 raise ValueError('Failed to align the provided EDU with the parser output.')
@@ -777,6 +703,9 @@ class PredictorUniRST(BasePredictor):
         }
 
         batch = self.tokenize(data)
+        dataset_index = batch.dataset_index
+        if dataset_index is None:
+            raise ValueError('Data.dataset_index is None; call `tokenize` before parse.')
 
         with torch.inference_mode(), self._autocast():
             (
@@ -795,12 +724,14 @@ class PredictorUniRST(BasePredictor):
                 batch.parsing_breaks,
                 generate_tree=True,
                 use_pred_segmentation=False,
-                dataset_index=batch.dataset_index,
+                dataset_index=dataset_index,
             )
 
         predictions['tokens'] += [
             self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences
         ]
+        if span_batch is None:
+            raise RuntimeError('testing_loss returned no spans with generate_tree=True')
         predictions['spans'] += span_batch
         predictions['edu_breaks'] += batch.edu_breaks
         predictions['true_spans'] += batch.golden_metric
@@ -809,7 +740,7 @@ class PredictorUniRST(BasePredictor):
         tree = DUConverter(predictions, tokenization_type='default').collect(tokens=[word_tokens])[0]
         self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
 
-        leaves: List[str] = []
+        leaves: list[str] = []
         self._collect_leaf_texts(tree, leaves)
         if leaves != normalized_edus:
             raise ValueError('The produced segmentation does not match the provided EDUs.')

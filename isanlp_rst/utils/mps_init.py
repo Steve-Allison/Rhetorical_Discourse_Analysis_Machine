@@ -9,8 +9,6 @@ back to the parameter's original device.
 For CPU and CUDA tensors the helper is a thin pass-through.
 """
 
-from __future__ import annotations
-
 import torch
 
 

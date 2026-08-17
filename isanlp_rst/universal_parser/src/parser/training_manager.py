@@ -1,10 +1,10 @@
 import json
 import logging
 import math
-import os
 import random
 import shutil
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import torch
@@ -47,14 +47,37 @@ class TrainingManager:
     Manages training for a single model.
     """
 
-    def __init__(self, model, train_data, dev_data, test_data,
-                 batch_size, eval_size, epochs,
-                 lr, transformer_lr_multiplier, lr_decay_epoch, lr_decay,
-                 weight_decay, grad_norm, grad_clipping_value,
-                 patience, use_micro_f1, use_dwa_loss, dwa_bs,
-                 save_dir, use_amp, warmup_epochs=0, combine_batches=False,
-                 use_discriminator=False, discriminator_warmup=0, discriminator_alpha=1.,
-                 project=None, run_name=None, config=None):
+    def __init__(
+        self,
+        model: nn.Module,
+        train_data: list[Data],
+        dev_data: list[Data],
+        test_data: list[Data],
+        batch_size: int,
+        eval_size: int,
+        epochs: int,
+        lr: float,
+        transformer_lr_multiplier: float | None,
+        lr_decay_epoch: int,
+        lr_decay: float,
+        weight_decay: float,
+        grad_norm: float,
+        grad_clipping_value: float,
+        patience: int,
+        use_micro_f1: bool,
+        use_dwa_loss: bool,
+        dwa_bs: int,
+        save_dir: str | Path,
+        use_amp: bool,
+        warmup_epochs: int = 0,
+        combine_batches: bool = False,
+        use_discriminator: bool = False,
+        discriminator_warmup: int = 0,
+        discriminator_alpha: float = 1.,
+        project: str | None = None,
+        run_name: str | None = None,
+        config: dict[str, Any] | None = None,
+    ) -> None:
         """
         Initializes the TrainingManager.
 
@@ -116,7 +139,7 @@ class TrainingManager:
 
         # self.run = wandb.init(project=project, name=run_name, config=config)
         # run_name = self.run.name if self.run.name else 'tmp'
-        self.save_dir = Path(os.path.join(save_dir, run_name))
+        self.save_dir = Path(save_dir) / run_name
         if self.save_dir.exists():
             shutil.rmtree(self.save_dir)
         self.save_dir.mkdir(parents=True)
@@ -152,7 +175,7 @@ class TrainingManager:
 
         self._cuda_cache_dump_frequency = .1
 
-    def _adjust_lr(self, epoch):
+    def _adjust_lr(self, epoch: int) -> None:
         """
         Default DMRST method for linear learning rate adjustment (deprecated).
         """
@@ -161,7 +184,7 @@ class TrainingManager:
             for param_group in self.optimizer.param_groups:
                 param_group['lr'] = max(param_group['lr'] * self.lr_decay, 1e-9)
 
-    def train(self):
+    def train(self) -> dict[str, Any]:
         """
         Trains the model.
 
@@ -238,14 +261,22 @@ class TrainingManager:
                 print(f'Early stopping at epoch {epoch}')
                 break
 
-        metric_path = self.save_dir / f'best_metrics.json'
+        metric_path = self.save_dir / 'best_metrics.json'
         with open(metric_path, 'w') as f:
             m = {k: float(v) for k, v in best_metrics.items()}
             json.dump(m, f, sort_keys=True, indent=4)
 
         return best_metrics
 
-    def _train_epoch(self, epoch, batches, label_loss_iter_list, tree_loss_iter_list, edu_loss_iter_list, dwa_T):
+    def _train_epoch(
+        self,
+        epoch: int,
+        batches: list[tuple[Any, ...]],
+        label_loss_iter_list: list[Any],
+        tree_loss_iter_list: list[Any],
+        edu_loss_iter_list: list[Any],
+        dwa_T: float,
+    ) -> tuple[list[Any], list[Any], list[Any], float]:
         """
         Trains the model for one epoch.
 
@@ -262,7 +293,7 @@ class TrainingManager:
         """
 
         if self.use_discriminator and epoch == self.discriminator_warmup:
-            print(f'Turning on the discriminator')
+            print('Turning on the discriminator')
             self.model.turn_on_discriminator()
 
         if self.use_amp:
@@ -272,7 +303,7 @@ class TrainingManager:
         self.model.train()
 
         pbar = tqdm(enumerate(batches), desc=f'Epoch {epoch + 1}/{self.epochs}', total=len(batches))
-        for i, batch in pbar:
+        for _i, batch in pbar:
 
             batch_input_sentences, batch_sent_breaks, batch_entity_ids, batch_entity_position_ids, \
                 batch_edu_breaks, batch_decoder_inputs, batch_relation_labels, \
@@ -333,24 +364,20 @@ class TrainingManager:
                 torch.cuda.empty_cache()
 
             pbar.set_postfix({'loss': f'{loss.cpu().item():.4f}'})
-            if self.use_discriminator and epoch >= self.discriminator_warmup:
-                train_loss_AL = losses[3] * self.discriminator_alpha
-            else:
-                train_loss_AL = 0
-
-            metrics_loss = {
-                'step': epoch * len(batches) + i,
-                'train_loss_edu': edu_loss_iter_list[-1].cpu().item(),
-                'train_loss_tree': tree_loss_iter_list[-1].cpu().item(),
-                'train_loss_label': label_loss_iter_list[-1].cpu().item(),
-                'train_loss_AL': train_loss_AL
-            }
             # wandb.log(metrics_loss)
 
         return label_loss_iter_list, tree_loss_iter_list, edu_loss_iter_list, dwa_T
 
-    def _final_loss(self, loss_tree_batch, loss_label_batch, loss_segment_batch,
-                    label_loss_iter_list, tree_loss_iter_list, edu_loss_iter_list, dwa_T):
+    def _final_loss(
+        self,
+        loss_tree_batch: torch.Tensor,
+        loss_label_batch: torch.Tensor,
+        loss_segment_batch: torch.Tensor,
+        label_loss_iter_list: list[Any],
+        tree_loss_iter_list: list[Any],
+        edu_loss_iter_list: list[Any],
+        dwa_T: float,
+    ) -> torch.Tensor:
         """
         Computes the DWA loss from the loss statistics.
 
@@ -401,7 +428,7 @@ class TrainingManager:
         return loss_tree_batch + loss_label_batch + loss_segment_batch
 
     @torch.no_grad()
-    def _eval(self):
+    def _eval(self) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
         """
         Evaluates the model on the development and test data.
 
@@ -423,7 +450,7 @@ class TrainingManager:
 
         return dev_metrics, test_metrics, dev_metrics_gs, test_metrics_gs
 
-    def _eval_data(self, data, desc, use_pred_segmentation=True):
+    def _eval_data(self, data: Data, desc: str, use_pred_segmentation: bool = True) -> dict[str, Any]:
         """
         Evaluates the model on the given data.
 
@@ -458,7 +485,7 @@ class TrainingManager:
 
         batches = self._get_batches(data, self.eval_size)
         pbar = tqdm(enumerate(batches), desc=desc, total=len(batches))
-        for i, batch in pbar:
+        for _i, batch in pbar:
             (loss_tree_batch, loss_label_batch), (
                 correct_span_batch, correct_relation_batch, correct_nuclearity_batch, correct_full_batch,
                 no_system_batch,
@@ -521,7 +548,7 @@ class TrainingManager:
 
         return metrics
 
-    def _merge_data(self, data: list):
+    def _merge_data(self, data: list[Data]) -> Data:
         all_data = {
             'input_sentences': [],
             'edu_breaks': [],
@@ -543,7 +570,7 @@ class TrainingManager:
 
         return Data(**all_data)
 
-    def _get_batches(self, data: Data, batch_size: int):
+    def _get_batches(self, data: Data, batch_size: int) -> list[tuple[Any, ...]]:
         """
         Splits the Data object into batches of given size.
 
@@ -625,7 +652,7 @@ class TrainingManager:
 
         return batches
 
-    def _combine_batches(self, batches, min_edus_number=6):
+    def _combine_batches(self, batches: list[tuple[Any, ...]], min_edus_number: int = 6) -> list[tuple[Any, ...]]:
         """
         Combines batches by appending contents of smaller batches to larger ones.
 
@@ -656,16 +683,18 @@ class TrainingManager:
         k = 0
         # Put the trivial batches in the batches with elaborates
         while len(trivials_stack):
-            for i in range(len(result)):
+            last_i = 0
+            for idx in range(len(result)):
+                last_i = idx
                 if not trivials_stack:
                     break
 
             k += 1
-            merge(sample=trivials_stack.pop(), batch=result[i])
+            merge(sample=trivials_stack.pop(), batch=result[last_i])
 
         return result
 
-    def _save_model(self, epoch, metrics):
+    def _save_model(self, epoch: int, metrics: dict[str, Any]) -> None:
         """
         Saves the model weights and evaluation metrics.
 

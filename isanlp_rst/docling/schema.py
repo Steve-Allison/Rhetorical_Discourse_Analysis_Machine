@@ -11,8 +11,6 @@ Cell addresses are real JSON pointers into the Docling document
 mechanically against the source.
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import asdict, dataclass
 from typing import Any

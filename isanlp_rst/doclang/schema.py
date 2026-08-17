@@ -16,8 +16,6 @@ mini-parse whose relations/edus land in
 marker's xpath (``.../table[1]/fcel[3]``).
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import asdict, dataclass
 from typing import Any

@@ -14,8 +14,6 @@ API verified against the live token stream emitted by ``markdown-it-py``
 3.x in the active pixi env on 2026-06-12.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from markdown_it import MarkdownIt

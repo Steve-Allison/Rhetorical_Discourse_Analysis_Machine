@@ -1,7 +1,5 @@
 """Unit tests for ``isanlp_rst.docling.boundaries.detect_boundaries``."""
 
-from __future__ import annotations
-
 from pathlib import Path
 
 import pytest

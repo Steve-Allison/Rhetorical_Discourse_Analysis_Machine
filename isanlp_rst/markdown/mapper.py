@@ -5,8 +5,6 @@ span's ``block_ref``; relations and edus are the markdown schema types.
 The traversal itself lives in ``_rst_common._flatten``.
 """
 
-from __future__ import annotations
-
 from operator import attrgetter
 from typing import Any
 

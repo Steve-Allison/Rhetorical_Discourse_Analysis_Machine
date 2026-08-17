@@ -5,8 +5,6 @@ The mapper is two pure functions — ``compute_overlap_refs`` and
 tuples and a tiny tree builder so no model load is required.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from isanlp_rst.docling.mapper import (
@@ -26,8 +24,8 @@ class FakeUnit:
 
     start: int
     end: int
-    left: "FakeUnit | None" = None
-    right: "FakeUnit | None" = None
+    left: FakeUnit | None = None
+    right: FakeUnit | None = None
     relation: str = ""
     nuclearity: str = ""
 

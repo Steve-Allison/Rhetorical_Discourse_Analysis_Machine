@@ -13,8 +13,6 @@ mini-parse whose relations/edus land in
 ``MarkdownRstResult.table_analyses``.
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import asdict, dataclass
 from typing import Any

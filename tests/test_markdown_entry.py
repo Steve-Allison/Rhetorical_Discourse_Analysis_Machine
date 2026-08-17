@@ -8,8 +8,7 @@ Integration tests (``@pytest.mark.slow``) load ``gumrrg`` weights once
 and verify end-to-end behaviour on representative markdown fixtures.
 """
 
-from __future__ import annotations
-
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -30,6 +29,9 @@ from isanlp_rst.markdown.errors import (
     EmptyMarkdownError,
     InputTooLargeError,
 )
+from isanlp_rst.markdown.harvester import harvest_markdown_text
+from isanlp_rst.markdown.loader import load_markdown
+from isanlp_rst.parser import Parser
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "markdown"
 MINIMAL = FIXTURES / "minimal.md"
@@ -46,8 +48,8 @@ class _Node:
 
     start: int
     end: int
-    left: "_Node | None" = None
-    right: "_Node | None" = None
+    left: _Node | None = None
+    right: _Node | None = None
     relation: str = ""
     nuclearity: str = ""
 
@@ -354,8 +356,6 @@ def test_non_utf8_markdown_raises_value_error(tmp_path: Path) -> None:
 
 def test_to_dict_round_trips_through_json(tmp_path: Path) -> None:
     """to_json must be valid JSON whose payload equals to_dict."""
-    import json
-
     p = tmp_path / "doc.md"
     p.write_text(TABLE_DOC)
     result = parse_markdown(p, parser=StubParser())  # type: ignore[arg-type]
@@ -369,14 +369,13 @@ def test_golden_output_shape(tmp_path: Path) -> None:
     """Golden-output regression: the serialised shape for a fixed source
     + deterministic stub tree must match the committed golden file
     (tool_version normalised — it varies per checkout state)."""
-    import json
-
     p = tmp_path / "golden_src.md"
     p.write_text("# Title\n\nFirst para.\n\nSecond para.\n")
     result = parse_markdown(p, parser=StubParser())  # type: ignore[arg-type]
     got = result.to_dict()
     got["tool_version"] = "<normalised>"
     golden = json.loads((FIXTURES / "golden_two_para.rst.json").read_text())
+    golden.pop("_meta", None)
     assert got == golden
 
 
@@ -388,7 +387,6 @@ def test_golden_output_shape(tmp_path: Path) -> None:
 @pytest.fixture(scope="module")
 def parser():
     """Construct gumrrg parser once for the slow tests."""
-    from isanlp_rst.parser import Parser
     return Parser(hf_model_version="gumrrg", device="auto")
 
 
@@ -436,8 +434,6 @@ def test_parse_markdown_table_analysis_end_to_end(parser) -> None:
 @pytest.mark.slow
 def test_parse_markdown_relation_refs_are_harvested_block_refs(parser) -> None:
     """Round-trip closure: every relation ref must be a HarvestSpan block_ref."""
-    from isanlp_rst.markdown.harvester import harvest_markdown_text
-    from isanlp_rst.markdown.loader import load_markdown
     src = MULTI_LEVEL.read_text(encoding="utf-8")
     expected = {s.block_ref for s in harvest_markdown_text(load_markdown(src).tokens).spans}
 

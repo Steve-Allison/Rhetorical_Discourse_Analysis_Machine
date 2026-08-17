@@ -15,8 +15,6 @@ Two harvesters:
 Spans are concatenated with ``harvest_separator`` (default ``"\\n\\n"``).
 """
 
-from __future__ import annotations
-
 from docling_core.types.doc.document import (
     ContentLayer,
     DoclingDocument,

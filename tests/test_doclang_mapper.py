@@ -8,8 +8,6 @@ itself is shared with the Docling mapper (covered by
 behaviour: xpath addressing and per-node thread_id resolution.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from isanlp_rst.doclang.mapper import (
@@ -29,8 +27,8 @@ class FakeUnit:
 
     start: int
     end: int
-    left: "FakeUnit | None" = None
-    right: "FakeUnit | None" = None
+    left: FakeUnit | None = None
+    right: FakeUnit | None = None
     relation: str = ""
     nuclearity: str = ""
 

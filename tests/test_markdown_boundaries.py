@@ -6,8 +6,6 @@ orphaned; synthetic ``#/tables/T`` marker never a span), and the
 two-level table boundary shape.
 """
 
-from __future__ import annotations
-
 from isanlp_rst.markdown.boundaries import detect_boundaries
 from isanlp_rst.markdown.harvester import (
     harvest_markdown_tables,

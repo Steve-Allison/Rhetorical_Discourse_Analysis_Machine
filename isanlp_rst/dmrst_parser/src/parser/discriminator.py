@@ -1,13 +1,18 @@
+from typing import override
+
+import torch
 import torch.nn as nn
+from torch import Tensor
 
 
 class Discriminator(nn.Module):
     """ Discriminator used in adversarial learning;
         Based on the code from https://github.com/NLP-Discourse-SoochowU/GAN_DP """
-    def __init__(self, in_channel_g=2, out_channel_g=32, ker_h_g=3, strip_g=1,
-                 p_w_g=3, p_h_g=3,
-                 max_w=300, max_h=20, max_pooling=True, device=None):
-        super(Discriminator, self).__init__()
+    def __init__(self, in_channel_g: int = 2, out_channel_g: int = 32, ker_h_g: int = 3, strip_g: int = 1,
+                 p_w_g: int = 3, p_h_g: int = 3,
+                 max_w: int = 300, max_h: int = 20, max_pooling: bool = True,
+                 device: torch.device | None = None) -> None:
+        super().__init__()
 
         self.max_pooling = max_pooling
         ker_w_g = max_w // 2  # All presets are from the original config
@@ -42,7 +47,7 @@ class Discriminator(nn.Module):
         self.apply(self.init_weights)
 
     @staticmethod
-    def init_weights(layer):
+    def init_weights(layer: nn.Module) -> None:
         classname = layer.__class__.__name__
         if (classname.find("Conv") != -1) or (classname.find("Linear") != -1):
             nn.init.normal_(layer.weight.data, 0.0, 0.02)
@@ -50,13 +55,14 @@ class Discriminator(nn.Module):
             nn.init.normal_(layer.weight.data, 1.0, 0.02)
             nn.init.constant_(layer.bias.data, 0.0)
 
-    def cnn_feat_ext(self, img):
+    def cnn_feat_ext(self, img: Tensor) -> Tensor:
         out = self.down(img)
         if self.max_pooling:
             out = self.max_p(out)
         return out
 
-    def forward(self, out):
+    @override
+    def forward(self, out: Tensor) -> Tensor:
         """ (batch, colors, height, width)
             (5, 3, 20, 80)
             16 * 19 * 1 = 304

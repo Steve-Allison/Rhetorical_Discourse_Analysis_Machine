@@ -18,14 +18,14 @@ Tree shapes from every (device, dtype) combination must match the CPU fp32
 baseline. The benchmark fails if any combination diverges in tree structure.
 """
 
-from __future__ import annotations
-
 import argparse
+import pickle
 import statistics
 import sys
 import time
 
 import torch
+from huggingface_hub.errors import EntryNotFoundError
 
 from isanlp_rst.parser import Parser
 
@@ -142,7 +142,7 @@ def main() -> int:
                 f"{per_char_us:>10.1f}µs {tree_match:>11}"
             )
 
-        except Exception as exc:
+        except (OSError, RuntimeError, ValueError, EntryNotFoundError, pickle.UnpicklingError) as exc:
             failed += 1
             print(f"{name:<14} FAILED: {type(exc).__name__}: {exc}")
 

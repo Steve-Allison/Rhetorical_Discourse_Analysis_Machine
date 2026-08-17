@@ -1,12 +1,11 @@
 """Tests for the RST-tree serialisation helpers (dict + optional pydantic)."""
 
-from __future__ import annotations
-
 import json
 
 from isanlp.annotation_rst import DiscourseUnit
 
 from isanlp_rst.utils.serialization import tree_from_dict, tree_to_dict
+from isanlp_rst.utils.serialization_pydantic import RstNode
 
 
 def _sample_tree() -> DiscourseUnit:
@@ -60,8 +59,6 @@ def test_empty_edges() -> None:
 
 
 def test_rstnode_round_trips_through_discourseunit() -> None:
-    from isanlp_rst.utils.serialization_pydantic import RstNode
-
     tree = _sample_tree()
     model = RstNode.from_tree(tree)
     assert model is not None
@@ -70,14 +67,10 @@ def test_rstnode_round_trips_through_discourseunit() -> None:
 
 
 def test_rstnode_validates_tree_to_dict_output() -> None:
-    from isanlp_rst.utils.serialization_pydantic import RstNode
-
     model = RstNode.model_validate(tree_to_dict(_sample_tree()))
     assert model.relation == "elaboration"
     assert model.left is not None and model.left.text == "Left edu."
 
 
 def test_rstnode_from_none_is_none() -> None:
-    from isanlp_rst.utils.serialization_pydantic import RstNode
-
     assert RstNode.from_tree(None) is None

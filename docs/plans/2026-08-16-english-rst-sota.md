@@ -1,269 +1,601 @@
-# English RST SOTA (trees + eRST)
+# English RST Capability Platform — 2026 world-class plan
 
-**Status:** Proposal (not started)
+**Status:** Capability architecture and delivery proposal (not started)
 **Date:** 2026-08-16
 **Driver:** Steve Allison
-**Scope:** English only. Both of: (1) classical RST trees on RST-DT, gold EDUs; (2) eRST graphs on GUM v12. Not a choice between them.
-**Out of scope:** beating UniRST on the 11 non-English treebanks as a success criterion. Do not *regress* those numbers as a side-effect; they are not the goal.
-**Estimated effort:** ASSUMED 2–4 weeks after gold data is on disk. Phase 0 is days. Phase 2 (labeler) and Phase 4 (eRST models) dominate.
+**Purpose:** Give Steve's projects one dependable, semantically governed English RST capability: classical RST trees, eRST graphs, lossless label mappings, confidence, provenance, document-format integration, and practical local inference.
+**Scope:** English. Raw text, provided EDUs, and document-native inputs. RST-DT trees and GUM eRST are quality and interoperability reference points, not the product itself.
+**Out of scope:** Multilingual SOTA as a release gate; a mandatory 70B runtime; a second local ontology authority; redistribution of licensed corpora or incompatible code.
 
 ---
 
-## Why this exists
+## Product statement
 
-This repo ships Chistova’s encoder parsers (`rstdt`, `gumrrg`, `unirst`). For **English RST in 2026** that is not enough:
+This is not an implementation-grade research programme. It is a plan for a
+world-class RST capability that other projects can call and trust.
 
-1. **Trees.** Maekawa et al. 2024 (EACL; Llama-2 70B, gold EDUs, Standard-Parseval) published RST-DT Full F1 **58.1**. This repo’s published `unirst` gold-segmentation Full on `eng.rst.rstdt` is **55.46** (`UniRST_Metrics.md`). Span is nearly tied (79.38 vs 79.8); nuclearity and relation are behind. Evidence: Maekawa Table 1; `UniRST_Metrics.md` gold-seg row `eng.rst.rstdt`.
-2. **Graphs.** Zeldes et al. 2025 (CL 51.1) define eRST: primary RST tree **plus** secondary / tree-breaking / concurrent edges **plus** signal types and token anchors. GUM gold is that graph. This parser emits only a projective binary `DiscourseUnit` tree. Secondary Full from this model is **0** because the type is missing, not because the score is low. Zeldes Table 8 / Table 10.
+Research benchmarks answer, “How do we know the capability is good?” They do
+not answer, “Why does the capability exist?” A consumer should be able to submit
+a document and receive a stable, typed, ontology-aligned representation of its
+discourse structure without knowing which corpus, parser family, spelling,
+model class index, or file format produced it.
 
-SOTA here means **both English outputs exist and beat the published English bars**, then a table in the README that says so with the scorer named.
-
----
-
-## What “done” means
-
-A public English table with three rows, all produced by **this** codebase:
-
-| Row | Input | Output | Beat |
-|---|---|---|---|
-| RST-DT gold-EDU tree | gold EDUs, RST-DT test (38 docs) | Span / Nuc / Rel / Full | Maekawa 2024 bottom-up Llama-2 70B: S 79.8 N 70.4 R 60.0 F **58.1** |
-| RST-DT / GUM end-to-end tree | raw text | Seg + S/N/R/Full | own published numbers as floor; English only for the SOTA claim |
-| GUM v12 eRST graph | gold EDUs first, then raw text | primary S/N/R/F + secondary S/N/R/F + signal detection / anchoring | Zeldes 2025 baseline (GUM V9, gold EDUs, predicted DMRST primary): primary Full **0.482**, secondary Full **0.030**, signal detection **0.483** (DMRST+DisCoDisCo). Re-run that baseline on **v12** before claiming a beat — V9 ≠ v12. |
-
-Do not claim SOTA if any row is blank.
-
-**ASSUMED (2026-08-16, to verify in Phase 0):** GUM **V12.1.0 (May 2026)** is the gold dump to score. Confirm on https://gucorpling.org/gum/download.html and the GUM git tag before locking the path.
-
-**ASSUMED (2026-08-16, to verify in Phase 0):** no English gold-EDU parser after Maekawa 2024 has published a higher RST-DT Full F1. Search ACL Anthology 2025–2026 for RST-DT Standard-Parseval Full before freezing the tree bar.
-
----
-
-## Hard constraints (do not violate)
-
-1. **Do not clone `nttcslab-nlp/RSTParser_EACL24` into this repo.** That repository is NTT “SOFTWARE LICENSE AGREEMENT FOR EVALUATION” (verified 2026-08-16: `LICENSE.txt` on `main`). Copying their `src/` into an MIT tree is a licence breach. Their `src/metrics/*.py` is the same licence. Reimplement Standard-Parseval here, or wrap **this** repo’s existing `metrics.py`.
-2. **Do not put LDC RST-DT in git.** `LDC2002T07` is licensed. Local path via env var. CI tests use synthetic trees only.
-3. **Do not replace the default English path with a 70B decoder.** Default stays encoder-scale (`rstdt` / `gumrrg` / `unirst`) so Docling / DocLang / Markdown entry points keep working. An optional stronger labeler is allowed; it is not the required runtime.
-4. **eRST is a second stage on the primary tree**, not a rewrite of `Parser`. Zeldes §5.3: predicted primary trees collapse secondary scores. Keep `Parser` / `from_edus`; add graph completion.
-5. **New modules = Mode A** (`.claude/rules/code-standards.md`). Inherited `*/src/parser/` = Mode B, surgical only.
-6. **Weights licence:** existing HF weights are CC BY-NC 4.0. New English checkpoints need an explicit licence decision before publish (keep NC vs retrain permissive). Do not silently upload NC weights as “SOTA release” without that decision.
-
----
-
-## Architecture
-
-```text
-English document
-  │
-  ├─→ Parser (existing)  ─ gold EDUs: Parser.from_edus
-  │                      ─ raw text:  Parser.__call__
-  │                      ─ versions:  rstdt | gumrrg | unirst+eng.erst.gum
-  │
-  ├─→ primary DiscourseUnit tree          # already shipped
-  │
-  ├─→ [optional] English labeler overlay  # Phase 2: Nuc/Rel only if Span stays
-  │
-  └─→ eRST completer (Phase 3–4)
-        ├─ secondary / concurrent / non-projective edges
-        ├─ signal types + token anchors
-        └─ .rs4 / graph result type
-```
-
-Two new packages, both Mode A:
-
-```text
-isanlp_rst/eval/     # comparable tree scores (Standard-Parseval)
-isanlp_rst/erst/     # graph types, GUM rs4 I/O, completer, Zeldes-compatible scoring wrapper
-scripts/rst_sota_english.py   # local gold runs; not CI
-```
-
-Existing files this work **reads**, and only touches if a surgical hook is required:
-
-| File | Role |
-|---|---|
-| `isanlp_rst/parser.py` | `Parser`, `from_edus` — public English entry |
-| `isanlp_rst/universal_parser/src/parser/metrics.py` | `get_measurement(..., use_org_parseval)` — already two counting modes |
-| `isanlp_rst/dmrst_parser/src/parser/metrics.py` | same pattern on the DMRST family |
-| `UniRST_Metrics.md` | published `unirst` numbers (floor, not the SOTA bar) |
-| `README.md` | Performance table — update only when rows are real |
-
----
-
-## Verified facts (this session)
-
-- Maekawa et al. 2024, EACL long: gold EDU segmentation; Standard-Parseval (Morey et al. 2017); RST-DT 18 coarse relations; Llama-2 70B bottom-up Full **58.1**. Paper: https://aclanthology.org/2024.eacl-long.171/
-- Chistova 2025 UniRST: 18 treebanks / 11 languages; end-to-end **and** gold-seg tables. Gold-seg `eng.rst.rstdt` Full **55.46** in this repo’s `UniRST_Metrics.md`. Encoder: `xlm-roberta-large`.
-- This repo `metrics.py` `use_org_parseval=True` uses `get_eval_data_parseval`; `False` uses `get_eval_data_rst_parseval`. **Which flag equals Maekawa’s Standard-Parseval is not verified.** Phase 0 must prove it on a fixture both scorers can read, or reimplement Standard-Parseval from Morey 2017 until a hand-counted tree matches.
-- Maekawa GitHub `src/metrics/` exists (`Parseval`, `OriginalParseval`, `RSTParseval`) but **must not be copied** (NTT evaluation licence, verified `LICENSE.txt` 2026-08-16).
-- Zeldes et al. 2025: eRST; official scorer mentioned in the paper; baseline Table 8 (GUM **V9** train 165 / dev 24 / test 24, gold EDUs). Secondary-instance shares Table 10 e.g. `causal-result` 14.10%, `explanation-justify` 11.70%, `adversative-concession` 10.30%.
-- `Parser.from_edus` exists (`isanlp_rst/parser.py`). Gold-EDU English eval does not need a new public API for trees.
-
----
-
-## Phase 0 — Measure, do not train
-
-**Goal:** one English numbers file from *this* parser, with the counting rule named.
-
-**Success:** `docs/plans/2026-08-16-english-rst-sota-phase0-log.md` (or a section appended here) records:
-
-- RST-DT path (local, not committed) or “blocked: no LDC”
-- GUM tag/version actually downloaded
-- `rstdt` and `gumrrg` (and `unirst` + `relinventory='eng.erst.gum'`) gold-EDU S/N/R/Full
-- which `use_org_parseval` value (or new function) was used
-- whether that function was shown to match Morey Standard-Parseval on ≥1 hand-labelled toy tree
-- ACL 2025–2026 search: any English RST-DT Full higher than 58.1 (cite or “none found”)
-
-**Files:**
-
-- Create: `isanlp_rst/eval/__init__.py`
-- Create: `isanlp_rst/eval/standard_parseval.py` — Span/Nuc/Rel/Full from two binarised trees. Independent implementation. Tests on synthetic trees in `tests/test_standard_parseval.py`.
-- Create: `isanlp_rst/eval/tree_convert.py` — `DiscourseUnit` → the span/bracket representation `standard_parseval` consumes. Right-heavy binarisation if the gold is n-ary (Maekawa §4.3: Sagae & Lavie 2005).
-- Create: `scripts/rst_sota_english.py` — CLI: `--corpus rstdt|gum --gold-edus --model-version rstdt|gumrrg|unirst --data-dir $PATH`. Writes JSON. Skips with a clear error if data-dir missing.
-- Create: `tests/test_standard_parseval.py` — no LDC. Toy gold vs identical pred → 1.0 all four; toy with wrong relation → Full < Rel or Rel < Span as designed.
-- Modify: `pyproject.toml` only if a new pixi task is added: `rst-sota-english` → `python scripts/rst_sota_english.py`.
-
-**Parseval alignment (blocking):**
-
-Until Standard-Parseval on a toy tree is hand-checked, do not subtract 55.46 from 58.1 in README. After alignment, re-score this parser; **that** Full number is the real English tree gap.
-
-**GUM primary trees:** score `gumrrg` / `unirst`+`eng.erst.gum` on GUM **v12** test split with gold EDUs (primary tree only). This is the primary-tree floor for Phase 4, not eRST.
-
-**Do not:** add `Evaluation/` and git-clone Maekawa.
-
----
-
-## Phase 1 — English tree labeler (close Maekawa)
-
-**Goal:** RST-DT gold-EDU Full ≥ 58.1 (or the Phase 0 replacement bar) without destroying Span.
-
-**When:** only after Phase 0 numbers exist. If Phase 0 Full is already ≥ bar, skip training; still keep the harness.
-
-**Approach (pick after Phase 0, do not pick in this proposal):**
-
-| Option | What changes | Use when |
-|---|---|---|
-| A | Fine-tune DMRST/UniRST nuclearity+relation heads on RST-DT; freeze or lightly-tune encoder | gap is ~2–3 Full and Span is already ~79 |
-| B | Second-pass labeler: existing tree spans kept; new classifier relabels Nuc/Rel given EDU texts | Span must not move; only labels |
-| C | Optional LLM labeler behind `Parser.from_edus` / a flag | A/B miss the bar; must stay optional, not default |
-
-**Files (Option B is the default recommendation — Span is already tied):**
-
-- Create: `isanlp_rst/eval/labeler.py` — `relabel_tree(tree: DiscourseUnit, model) -> DiscourseUnit` (new tree or in-place copy; do not mutate caller’s tree).
-- Create: training script under `scripts/` only if Option A/B need it. Training data = local RST-DT. Not in CI.
-- Test: `tests/test_labeler.py` — synthetic two-EDU tree; stub classifier returns a fixed relation; output nuclearity/relation match stub; spans unchanged.
-
-**Regression:** after any weight change, run `pixi run test-all` dtype-equivalence suite (`tests/test_integration.py`). English SOTA work that breaks topology-equivalence across dtypes is a bug.
-
-**Publish:** new checkpoint + licence note. README row with scorer name `Standard-Parseval (Morey 2017)`, gold EDUs, RST-DT official test.
-
----
-
-## Phase 2 — eRST data types and I/O (ontology + capture)
-
-**Goal:** this library can **load and emit** an eRST graph even with a dummy completer (identity: primary tree, zero secondary edges, zero signals). That is the schema. Models come in Phase 3.
-
-**Files:**
-
-- Create: `isanlp_rst/erst/__init__.py` — public: `ErstGraph`, `parse_erst`, `load_rs4`, `dump_rs4`
-- Create: `isanlp_rst/erst/types.py` — frozen dataclasses:
-  - `ErstEdge`: `source_id`, `target_id`, `relation`, `nuclearity`, `kind: Literal["primary", "secondary"]`
-  - `ErstSignal`: `edge_id`, `category`, `subtype`, `token_span: tuple[int, int] | None`
-  - `ErstGraph`: `edus`, `primary: DiscourseUnit`, `edges: tuple[ErstEdge, ...]`, `signals: tuple[ErstSignal, ...]`
-- Create: `isanlp_rst/erst/rs4.py` — read/write GUM `.rs4` (or whatever v12 actually ships). **Verify format against one downloaded GUM file before coding.** Do not invent rs4 from the paper’s prose.
-- Create: `isanlp_rst/erst/from_tree.py` — `primary_tree_to_graph(tree) -> ErstGraph` with only primary edges, empty signals.
-- Test: `tests/test_erst_types.py` — round-trip a tiny hand-written graph; `primary_tree_to_graph` edge count = internal nodes of a toy `DiscourseUnit`.
-- Fixture: one **tiny** `.rs4` snippet in `tests/fixtures/erst/` **only if GUM licence allows redistribution of a truncated example**. If not, tests load from `ERST_GUM_DIR` or skip.
-
-**Public API (English):**
+The north-star call is:
 
 ```python
-from isanlp_rst.parser import Parser
-from isanlp_rst.erst import parse_erst
-
-parser = Parser(hf_model_version="gumrrg", device="auto")
-graph = parse_erst(text, parser=parser)          # raw text
-graph = parse_erst.from_edus(edus, parser=parser)  # gold EDUs
+document = RstDocument.from_text(text, source=source_ref)
+analysis = rst.analyse(document, output="erst_graph")
 ```
 
-`parse_erst` in this phase = parse tree + `primary_tree_to_graph`. Completer is a no-op.
+The returned analysis must serve downstream retrieval, knowledge-graph,
+content, learning, document-understanding, and generation systems—not merely an
+evaluation script.
+
+## What “world-class” means
+
+| Dimension | Required capability |
+|---|---|
+| Semantic | Classical RST tree plus eRST secondary edges and anchored signals; no flattening to an unlabeled tree |
+| Interoperable | Canonical Central_Configs ontology release; complete mappings for corpus labels, enums, aliases, structural pseudo-labels, and model encodings |
+| Reliable | Typed results and failures, confidence and calibration, deterministic serialization, provenance, and no silent unmapped labels |
+| Document-aware | Original text, token and EDU offsets, sentence/paragraph boundaries, table sub-analyses, source references, and format-native projections |
+| Operational | Encoder-scale default; CPU, MPS, and CUDA paths; bounded long-document behaviour; batch and cache support; optional enhanced models |
+| Proven | Reproducible scorer parity, corpus/version manifests, genre and long-document evaluation, benchmark quality, and regression evidence |
+
+The ambition remains 2026 SOTA. Model results do not compensate for an
+incomplete capability contract, and a polished API does not compensate for weak
+discourse analysis.
 
 ---
 
-## Phase 3 — eRST completer (secondary edges + signals)
+## Authority and ownership
 
-**Goal:** predicted secondary edges and signals on GUM v12. Beat the **v12-rescored** Zeldes baseline, not the V9 table copied from the paper.
+### One ontology authority
 
-**Architecture (matches Zeldes §5):** primary tree from `Parser` → completer sees EDUs + primary edges + (optional) syntax/connectives → extra edges + signals.
+Central_Configs is the sole upstream ontology authority. This project must not
+copy its authored ontology, create a compatibility ontology, or mint competing
+identifiers.
 
-**Files:**
+The RST work therefore requires a **Central_Configs RST/eRST ontology module**
+and an immutable Central release. `isanlp_rst` consumes that release by version
+and digest and owns only operational behaviour.
 
-- Create: `isanlp_rst/erst/completer.py` — `complete(graph: ErstGraph, ...) -> ErstGraph`
-- Create: `isanlp_rst/erst/score.py` — wrap **Zeldes official scorer** if its licence allows a dependency or subprocess; otherwise reimplement the metrics **from the paper’s definitions** with tests against published toy numbers if any. Record the scorer git URL + commit in the phase log.
-- Training: GUM v12 train split, local. Not CI.
-- Test: `tests/test_erst_completer.py` — fixture graph missing a known secondary edge; stub completer adds it; scorer counts it. No 2 GB model in `pixi run test`.
+| Central_Configs owns | `isanlp_rst` owns |
+|---|---|
+| Canonical identifiers and definitions | Parsing, segmentation, tree construction, graph completion, and scoring |
+| RST/eRST concepts, schemes, enums, aliases, and semantic mappings | Corpus readers and writers, including RS4 |
+| Corpus, model-family, metric, scorer, and provenance vocabulary | Model class-index encodings and checked runtime adapters |
+| LinkML authority and generated release projections | Public Python API and dependency-light runtime models |
+| Deprecation, replacement, versioning, and release digest | Pinned ontology lock and consumer conformance tests |
 
-**Do not** require DisCoDisCo or AMALGUM as hard deps of core `isanlp_rst`. Optional extra e.g. `isanlp_rst[erst]` if those tools are needed. Core `Parser` must still import with no eRST extra.
+**Verified 2026-08-16:** Central declares
+`ontology/schema/coe.linkml.yaml` as its canonical import closure,
+`ontology/data/release.yaml` as an `OntologyRelease`, generated projections in
+`dist/ontology/<version>/`, and `release_status: working` for 4.0.0. This plan
+must not describe 4.0.0 as an immutable released dependency. The RST module must
+enter the next approved Central release; its version is a Central stewardship
+decision.
 
-Zeldes finding to respect: if primary Full is poor, secondary Full will be near zero. Phase 1 English tree quality on **GUM** (not only RST-DT) feeds this phase. `gumrrg` is the English GUM-oriented checkpoint; use it as the primary-tree default for eRST.
-
----
-
-## Phase 4 — README table and honesty
-
-**Goal:** README Performance section gains an **English SOTA** subsection that cannot be misread as 11-language UniRST.
-
-Must include:
-
-- scorer name and gold-EDU vs end-to-end
-- GUM version tag
-- “eRST secondary/signals: this version” or “not in this release” if Phase 3 slipped
-- no comparison of end-to-end Full to Maekawa 58.1 in the same cell
-
-Update `CLAUDE.md` Files-worth-knowing with `isanlp_rst/eval/` and `isanlp_rst/erst/` only after they exist.
-
----
-
-## Order of work
+### Proposed Central extension
 
 ```text
-Phase 0 measure  →  Phase 1 English tree labels  →  Phase 2 eRST schema
-                         │                              │
-                         └──────────────┬───────────────┘
-                                        ▼
-                              Phase 3 completer + v12 scores
-                                        ▼
-                              Phase 4 README
+Central_Configs/
+  ontology/schema/modules/discourse.linkml.yaml
+  ontology/data/domains/language/discourse/rst_ontology.yaml
+  ontology/data/domains/language/discourse/rst_mappings.yaml
+  ontology/data/domains/language/discourse/rst_quality.yaml
+  ontology/data/release.yaml                         # include the bundle
+  ontology/data/stewardship/consumer-registry.yaml  # register isanlp_rst
 ```
 
-Phase 2 can start in parallel with Phase 1 (schema does not need 58.1). Phase 3 must not start without Phase 2 types and a GUM v12 dump. Phase 1 must not start without Phase 0.
+These paths are proposed, not yet authoritative. Reconcile them with Central's
+domain registry before creation. Extend the existing `coe` namespace,
+`IdentifiedThing`, terminology/sense model, relation model, governance model,
+and release pipeline; do not build a separate `rst:` authority beside it.
+
+`isanlp_rst` should add only a lock and generated/operational consumers:
+
+```text
+config/ontology/central.lock.yaml
+isanlp_rst/ontology/    # release loader + checked adapters
+isanlp_rst/contracts/   # dependency-light public result types
+isanlp_rst/eval/        # pure scorers
+isanlp_rst/erst/        # RS4 I/O + graph completion
+```
+
+Generated artifacts are never hand-edited. Central authors LinkML and data,
+uses official LinkML generation/validation, publishes the manifest and digest,
+and this repository proves it consumes that exact release offline.
 
 ---
 
-## Tests vs gold runs
+## Normative ontology profile
 
-| | `pixi run test` | Local gold (`scripts/rst_sota_english.py`) |
+This is the required semantic content of the Central extension. Names below are
+**proposed semantic keys**, not permission for this repository to mint final
+`coe:` identifiers. Central must assign and release the canonical IDs.
+
+### Core classes
+
+| Class | Required meaning and fields |
+|---|---|
+| `DiscourseFormalism` | RST tree or eRST graph; identifier, version, specification source |
+| `AnnotationScheme` | Corpus/model vocabulary; scheme ID, version, formalism, authority, licence, source |
+| `RelationConcept` | Stable concept; canonical label, definition, arity, structure, broader/narrower concepts |
+| `RelationLabel` | Exact scheme-bound value; case-sensitive literal, scheme, concept, relation type |
+| `MappingAssertion` | Source, target, mapping kind, lossiness, constraints, evidence, version |
+| `SignalTypeConcept` | eRST signal type and definition |
+| `SignalSubtypeConcept` | Signal subtype, parent type, definition |
+| `CorpusRelease` | Corpus ID, version/tag, split manifest, scheme, licence, digest |
+| `ModelArtifact` | Model ID, revision/digest, family, training corpora, scheme, weights licence |
+| `ScorerDefinition` | Scorer ID, version/commit, formalism, metric definitions, counting policy |
+| `QualityMetric` | Metric concept, unit, direction, required input mode, scorer |
+| `RstDocument` | Text, tokens, EDUs, boundaries, source reference, language, provenance |
+| `DocumentToken` | Token ID, text, character offsets, sentence/paragraph membership |
+| `Edu` | EDU ID, token IDs, character offsets, text, source anchors |
+| `RstNode` | Node ID, node kind, EDU yield, character span, confidence |
+| `PrimaryRelationEdge` | Edge ID, endpoints, relation, nuclearity pattern, confidence |
+| `SecondaryRelationEdge` | Edge ID, endpoints, relation, confidence; no nuclearity |
+| `DiscourseSignal` | Signal ID, edge ID, type/subtype, ordered token IDs, status, confidence |
+| `RstAnalysis` | Input fingerprint, ontology/model/scorer provenance, graph/tree, timings, warnings |
+| `ProvenanceRecord` | Producer, revisions/digests, source, timestamp, derivation, software version |
+
+Primary and secondary edges are separate classes. One loose edge class would
+permit invalid secondary-edge nuclearity. Signals use ordered token IDs, not a
+single contiguous span: RS4 signals can be discontinuous, distant, or unanchored.
+
+### Required enums
+
+| Enum | Permissible values |
+|---|---|
+| `OutputFormalismEnum` | `rst_tree`, `erst_graph` |
+| `InputModeEnum` | `raw_text`, `text_with_edus`, `text_with_tokens_and_edus`, `document_native` |
+| `InputFidelityEnum` | `lossless`, `aligned`, `reconstructed`, `unknown` |
+| `NodeKindEnum` | `edu`, `span`, `multinuclear_group`, `root` |
+| `EdgeKindEnum` | `primary`, `secondary` |
+| `NuclearityPatternEnum` | `NS`, `SN`, `NN` |
+| `NuclearityRoleEnum` | `nucleus`, `satellite` |
+| `RelationStructureEnum` | `mononuclear`, `multinuclear`, `structural_pseudo` |
+| `RelationSchemeEnum` | `rst_dt_fine`, `rst_dt_coarse_18`, `gum_erst_fine`, `gum_erst_coarse`, `dmrst_rstdt_model_42`, `dmrst_gum_model_27`, `rs4_structural` |
+| `MappingKindEnum` | `exact`, `alias`, `broader_projection`, `narrower_projection`, `model_encoding`, `structural`, `deprecated`, `unsupported` |
+| `AnnotationStatusEnum` | `gold`, `silver`, `predicted`, `derived`, `imported`, `unknown` |
+| `ConfidenceKindEnum` | `probability`, `calibrated_probability`, `margin`, `not_available` |
+| `DeviceEnum` | `auto`, `cpu`, `mps`, `cuda` |
+| `CapabilityStatusEnum` | `declared`, `implemented`, `verified`, `released`, `deprecated` |
+| `FailureCodeEnum` | `invalid_input`, `alignment_failed`, `unsupported_scheme`, `unmapped_label`, `model_unavailable`, `resource_limit`, `scorer_mismatch`, `ontology_mismatch` |
+
+Enum values are serialized keys. Display titles, corpus literals, aliases, and
+ontology meanings are separate fields. Importers must retain the original
+literal and must not silently lowercase, hyphen-normalize, or title-case it.
+
+### RST-DT coarse 18 and fine-label mapping
+
+Canonical coarse concepts:
+
+```text
+Attribution  Background  Cause  Comparison  Condition  Contrast
+Elaboration  Enablement  Evaluation  Explanation  Joint  Manner-Means
+Same-unit  Summary  Temporal  Textual-organization  Topic-Change
+Topic-Comment
+```
+
+| Coarse concept | Fine labels |
+|---|---|
+| `Attribution` | `attribution`, `attribution-negative` |
+| `Background` | `background`, `circumstance` |
+| `Cause` | `cause`, `cause-result`, `consequence`, `result` |
+| `Comparison` | `analogy`, `comparison`, `preference`, `proportion` |
+| `Condition` | `condition`, `contingency`, `hypothetical`, `otherwise` |
+| `Contrast` | `antithesis`, `concession`, `contrast` |
+| `Elaboration` | `definition`, `elaboration-additional`, `elaboration-general-specific`, `elaboration-object-attribute`, `elaboration-part-whole`, `elaboration-process-step`, `elaboration-set-member`, `example` |
+| `Enablement` | `enablement`, `purpose` |
+| `Evaluation` | `comment`, `conclusion`, `evaluation`, `interpretation` |
+| `Explanation` | `evidence`, `explanation-argumentative`, `reason` |
+| `Joint` | `disjunction`, `list` |
+| `Manner-Means` | `manner`, `means` |
+| `Same-unit` | `same-unit` |
+| `Summary` | `restatement`, `summary` |
+| `Temporal` | `inverted-sequence`, `sequence`, `temporal-after`, `temporal-before`, `temporal-same-time` |
+| `Textual-organization` | `textual-organization`, `textualorganization` |
+| `Topic-Change` | `topic-drift`, `topic-shift` |
+| `Topic-Comment` | `comment-topic`, `problem-solution`, `question-answer`, `rhetorical-question`, `statement-response`, `topic-comment` |
+
+Fine-to-coarse projection is broader and lossy except where semantics are
+identical. Retain the source literal. `textualorganization` is an alias spelling,
+not a concept. Capitalization differences belong in scheme labels, not duplicate
+concepts.
+
+### GUM eRST fine labels and coarse projection
+
+The GUM V12.1 RS4 header inspected on 2026-08-16 declares these 32 labels. The
+release process must re-extract and compare the header from the pinned tag.
+
+| Coarse family | Fine labels |
+|---|---|
+| `adversative` | `adversative-antithesis`, `adversative-concession`, `adversative-contrast` |
+| `attribution` | `attribution-negative`, `attribution-positive` |
+| `causal` | `causal-cause`, `causal-result` |
+| `context` | `context-background`, `context-circumstance` |
+| `contingency` | `contingency-condition` |
+| `elaboration` | `elaboration-additional`, `elaboration-attribute` |
+| `evaluation` | `evaluation-comment` |
+| `explanation` | `explanation-evidence`, `explanation-justify`, `explanation-motivation` |
+| `joint` | `joint-disjunction`, `joint-list`, `joint-other`, `joint-sequence` |
+| `mode` | `mode-manner`, `mode-means` |
+| `organization` | `organization-heading`, `organization-phatic`, `organization-preparation` |
+| `purpose` | `purpose-attribute`, `purpose-goal` |
+| `restatement` | `restatement-partial`, `restatement-repetition` |
+| `same-unit` | `same-unit` |
+| `topic` | `topic-question`, `topic-solutionhood` |
+
+The 15 family projections are broader and lossy. The graph retains fine labels.
+RST-DT and GUM are not flattened into one universal enum. Cross-scheme mappings
+must be explicit and evidence-backed; lexical resemblance is not equivalence.
+
+### Structural and nuclearity semantics
+
+| Representation | Canonical interpretation |
+|---|---|
+| `NS` | left nucleus, right satellite |
+| `SN` | left satellite, right nucleus |
+| `NN` | both nuclei; permitted only for a multinuclear relation |
+| child relation `span` | structural pseudo-label on the nucleus side; never a semantic concept |
+| RS4 relation type `rst` | mononuclear semantic relation |
+| RS4 relation type `multinuc` | multinuclear semantic relation |
+| RS4 `secedge` | directed secondary relation; endpoints encode direction; no nuclearity |
+
+Invalid combinations fail validation: `joint` with `NS`, a secondary edge with
+nuclearity, `span` as a semantic prediction, or a mononuclear label with `NN`.
+
+### Current model encodings
+
+Model encodings are versioned adapter data, not concept IDs. Parse labels with
+`rpartition("_")` so relation names remain intact.
+
+GUM coarse model classes (27 values; the inherited comment incorrectly says 29):
+
+```text
+adversative_NN  adversative_NS  adversative_SN
+attribution_NS  attribution_SN  causal_NS  causal_SN
+context_NS  context_SN  contingency_NS  contingency_SN
+elaboration_NS  evaluation_NS  evaluation_SN
+explanation_NS  explanation_SN  joint_NN  mode_NS  mode_SN
+organization_NS  organization_SN  purpose_NS  purpose_SN
+restatement_NN  restatement_NS  same-unit_NN  topic_SN
+```
+
+RST-DT coarse model classes (42 values):
+
+```text
+Elaboration_NS  Attribution_SN  Joint_NN  same-unit_NN
+Attribution_NS  Explanation_NS  Enablement_NS  Background_NS
+Evaluation_NS  Cause_NS  Contrast_SN  Contrast_NN  Background_SN
+Temporal_NN  Comparison_NN  Contrast_NS  Topic-Change_NN
+Manner-Means_NS  textual-organization_NN  Temporal_NS  Condition_NS
+Condition_SN  Cause_SN  Summary_NS  Topic-Comment_NN  Cause_NN
+Summary_NN  Evaluation_SN  Temporal_SN  Explanation_SN  Enablement_SN
+Topic-Comment_NS  Comparison_NS  Elaboration_SN  Manner-Means_SN
+Comparison_SN  Summary_SN  Condition_NN  Topic-Comment_SN
+Topic-Change_NS  Evaluation_NN  Explanation_NN
+```
+
+Every encoding record requires model artifact ID, class index, exact literal,
+relation label/concept, nuclearity, validity constraints, and source revision.
+Every live class maps exactly once.
+
+### Complete eRST signal inventory
+
+| Signal type | Permitted subtypes |
+|---|---|
+| `dm` | `dm` |
+| `graphical` | `colon`, `dash`, `items_in_sequence`, `layout`, `parentheses`, `question_mark`, `quotation_marks`, `semicolon` |
+| `lexical` | `alternate_expression`, `indicative_phrase`, `indicative_word` |
+| `morphological` | `mood`, `tense` |
+| `numerical` | `same_count` |
+| `orphan` | `orphan` |
+| `reference` | `comparative_reference`, `demonstrative_reference`, `personal_reference`, `propositional_reference` |
+| `semantic` | `antonymy`, `attribution_source`, `lexical_chain`, `meronymy`, `negation`, `repetition`, `synonymy` |
+| `syntactic` | `causal_excess`, `infinitival_clause`, `interrupted_matrix_clause`, `modified_head`, `nominal_modifier`, `parallel_syntactic_construction`, `past_participial_clause`, `present_participial_clause`, `relative_clause`, `reported_speech`, `subject_auxiliary_inversion` |
+| `unsure` | `unsure` |
+
+A signal stores edge ID, exact type/subtype, ordered token IDs, and source status.
+Empty token IDs are valid; discontinuous anchors remain discontinuous. Preserve
+unknown source attributes in an extension bag, but reject unknown governed enum
+values until an ontology release recognizes them.
+
+### RS4 binding
+
+| RS4 construct | Internal contract |
+|---|---|
+| `<segment id>` | `Edu`; preserve ID, text, parent, relation literal, token alignment |
+| `<group type="span">` | `RstNode(kind=span)` |
+| `<group type="multinuc">` | `RstNode(kind=multinuclear_group)` |
+| node `relname="span"` | structural pseudo-label |
+| node semantic `relname` | primary relation resolved through pinned scheme |
+| `<secedge id source target relname>` | `SecondaryRelationEdge`; preserve edge ID |
+| `<signal source type subtype tokens status>` | `DiscourseSignal`; source resolves to edge ID |
+| header `<rel name type>` | relation inventory and constraint |
+| header `<sig type subtypes>` | signal inventory |
+
+Round-trip equality is semantic, not byte-identical XML: IDs, topology, exact
+labels, token IDs, status, and extension attributes survive; attribute order and
+insignificant whitespace need not.
+
+### Quality and scorer vocabulary
+
+```text
+edu_segmentation_precision  edu_segmentation_recall  edu_segmentation_f1
+span_precision  span_recall  span_f1
+nuclearity_precision  nuclearity_recall  nuclearity_f1
+relation_precision  relation_recall  relation_f1
+full_precision  full_recall  full_f1
+secondary_direction_f1  secondary_relation_f1  secondary_full_f1
+signal_detection_f1  signal_type_f1  signal_anchoring_f1
+tree_validity_rate  graph_validity_rate  exact_roundtrip_rate
+relation_calibration_ece  secondary_calibration_ece
+latency_ms  peak_memory_mb  throughput_documents_per_minute
+```
+
+Every score binds to corpus release/split digest, input mode, scorer and counting
+policy, ontology release, model artifact, device/dtype, timestamp, and code
+revision. “Full F1” without those qualifiers is not a reusable fact.
+
+---
+
+## Capability contracts
+
+### Lossless document input
+
+The canonical input is not `Sequence[str]`. Existing `Parser.from_edus(edus)`
+reconstructs text by joining EDUs with single spaces, so it cannot preserve
+original whitespace or token identity for anchored eRST signals.
+
+```python
+@dataclass(frozen=True)
+class RstDocument:
+    document_id: str
+    text: str
+    tokens: tuple[DocumentToken, ...]
+    edus: tuple[Edu, ...] | None
+    sentence_boundaries: tuple[TextSpan, ...]
+    paragraph_boundaries: tuple[TextSpan, ...]
+    source: SourceReference | None
+    provenance: ProvenanceRecord
+```
+
+Convenience constructors may infer fields but record `InputFidelityEnum`.
+Anchored-signal evaluation and lossless RS4 export require original text plus
+token and EDU alignment.
+
+### Typed public results
+
+```python
+tree_result = parser.parse_document(document)
+graph_result = erst_parser.parse_document(document)
+```
+
+Results carry ontology version/digest, model revision/digest/licence, input
+fingerprint/fidelity, scheme literals and concepts, per-edge confidence, source
+anchors, timings, warnings, failure codes, and derivation provenance.
+
+Keep `Parser.__call__`, `Parser.parse_tree`, and `Parser.from_edus` backward
+compatible. Add the typed API alongside them and document lossy calls. Prefer an
+`ErstParser` class; do not overload a function object with `parse_erst.from_edus`.
+
+Docling, DocLang, and Markdown entry points project the same contract while
+retaining native source references and separate table analyses. They never
+invent format-specific relation names. Before modifying those routes, obey the
+hard rule to verify current upstream Docling and DocLang specifications.
+
+---
+
+## Runtime architecture
+
+```text
+Central_Configs immutable ontology release
+  ├── LinkML source + governed RST/eRST data
+  ├── generated schema/code/linked-data projections
+  └── manifest + digest
+                  │ pinned by version and digest
+                  ▼
+RstDocument ──► alignment and validation
+                  ├──► primary English RST parser
+                  │       ├── segmentation when needed
+                  │       └── tree + nuclearity + relation + confidence
+                  └──► eRST graph completer
+                          ├── secondary-edge candidates
+                          ├── direction/relation
+                          ├── signal detection/type
+                          └── token anchoring
+                                  ▼
+                  ontology-resolved RstAnalysis
+                    ├── typed Python and deterministic JSON
+                    ├── RS4 import/export
+                    └── format-native projections
+```
+
+Default inference remains encoder-scale and local. A heavier/LLM labeler may be
+optional, never a core dependency. eRST completion builds on the primary tree;
+it does not fork the existing parser architecture.
+
+Production labelers belong in `isanlp_rst/english/`, not `eval/`. New packages
+use Mode A and enter the strict Pyright include. Inherited parser-family modules
+receive surgical changes only.
+
+---
+
+## Delivery plan
+
+### Phase 0 — Freeze contracts and evidence
+
+- Record current `rstdt`, `gumrrg`, and `unirst` behaviour for raw text and EDUs.
+- Hand-prove Standard-Parseval on synthetic trees before published comparisons.
+- Pin/digest GUM and extract RS4 relation/signal headers automatically.
+- Record corpus/data licences and local-only paths.
+- Refresh 2026 quality references and comparison qualifiers.
+- Approve the Central extension path and release owner.
+- Measure latency, memory, throughput, long documents, and calibration; then set
+  budgets from evidence.
+
+### Phase 1 — Release the ontology from Central_Configs
+
+- Add the discourse LinkML module and governed inventories above.
+- Reuse Central terminology, relation, provenance, and governance semantics;
+  extend rather than duplicate.
+- Add mapping assertions, lossiness, aliases, deprecations, and evidence.
+- Generate official LinkML projections and run Central's aggregate gates.
+- Publish a manifest/digest only after release status is legitimately `released`.
+- Register and prove `isanlp_rst` as an offline, digest-pinned consumer.
+
+No downstream code treats proposed keys as canonical before this release exists.
+
+### Phase 2 — Ship the typed tree capability
+
+- Implement lossless documents, typed results/errors, and deterministic JSON.
+- Add `Parser.parse_document` while preserving existing APIs.
+- Resolve every relation/nuclearity through the pinned ontology.
+- Expose and calibrate confidence.
+- Implement scorer parity tests and long-document policy with no silent loss.
+- Improve structure/nuclearity/relation after baseline error analysis; preserve
+  strong spans when a second-pass labeler is sufficient.
+
+### Phase 3 — Ship faithful eRST graph I/O
+
+- Implement separate primary/secondary edge types, stable IDs, and signals with
+  discontinuous token IDs.
+- Load/dump RS4 against the pinned GUM release and all header labels.
+- Convert primary trees without inventing secondary edges/signals.
+- Use synthetic redistributable fixtures and licence-safe local corpus tests.
+- Wrap a compatible official scorer or independently implement and prove parity.
+
+### Phase 4 — Predict complete eRST graphs
+
+- Implement candidates, direction/relation classification, signal detection and
+  typing, anchoring, graph constraints, and reported repairs.
+- Train on the pinned GUM release with manifests.
+- Use an oracle ladder to isolate primary-tree, candidate, classification,
+  signal, and anchor errors.
+- Calibrate secondary/signal confidence and improve the GUM primary-tree floor.
+
+### Phase 5 — Integrate Steve's projects
+
+- Project the contract through Docling, DocLang, and Markdown with native anchors.
+- Add batch, cache, preloading, and bounded-resource controls.
+- Provide JSON Schema contracts for non-Python consumers.
+- Prove representative document → persisted analysis → downstream use flows.
+- Every consumer pins the same Central release; none copy label enums.
+
+### Phase 6 — World-class release gate
+
+- Report capability as `implemented`, `verified`, or `released`; existence is not
+  verification.
+- Publish model cards, manifests, ontology digest, scorers, licences, device,
+  dtype, and reproducible commands.
+- Run unit, type, lint, serialization, ontology, scorer, model, format-native,
+  long-document, and consumer proof gates.
+- Publish exact RST-DT/GUM input, corpus, scheme, and scorer conditions.
+- Demonstrate local CPU/MPS operation and CUDA where claimed.
+
+---
+
+## Quality evidence and 2026 SOTA targets
+
+These are acceptance evidence, not the platform's purpose.
+
+| Capability | Reference evidence | Release requirement |
 |---|---|---|
-| Standard-Parseval toy trees | yes | — |
-| eRST types / rs4 round-trip | yes (or skip if no redistributable fixture) | — |
-| RST-DT 38-doc Full | **no** (LDC) | yes |
-| GUM v12 eRST | **no** (size + download) | yes |
-| HF model load | `slow` / `test-all` only | yes |
+| RST-DT gold-EDU tree | Maekawa et al. 2024 reports Standard-Parseval Full F1 58.1 | Refresh literature; match scorer/input/split; target verified improvement |
+| Raw-text English tree | Current project plus comparable refreshed systems | Report segmentation and S/N/R/Full; never compare mismatched input modes |
+| GUM primary tree | Pinned GUM, gold-EDU and raw-text modes | Reproducible baseline and genre/length slices |
+| GUM eRST graph | Zeldes et al. 2025 V9 is historical context | Rebuild on pinned current GUM; target secondary/signal improvement |
+| Ontology | All live corpus/model labels and RS4 headers | 100% mapped or explicitly unsupported; zero silent fallback |
+| RS4 fidelity | Pinned files plus synthetic edge cases | 100% semantic round-trip for supported constructs |
+| Confidence | Held-out English calibration | Publish ECE; uncalibrated scores are not called probabilities |
+| Project utility | Representative real flows | One end-to-end proof per adopted consumer |
+
+**Verified reference facts (2026-08-16):** Maekawa used gold EDUs and
+Standard-Parseval and reported 58.1; NTT code/metrics are evaluation-licensed and
+must not be copied. This repo publishes UniRST gold-segmentation 55.46 on
+`eng.rst.rstdt`, but no gap is valid before scorer parity. Zeldes defines eRST as
+primary tree plus secondary/tree-breaking edges and token-anchored signals; its
+GUM V9 numbers are not a current-release target. GUM V12.1.0 was inspected for
+this plan, but Phase 0 must pin/digest the actual artifact.
+
+No “SOTA” claim ships without a dated literature refresh, comparable conditions,
+reproducible evidence, and named capability scope. Useful capability tiers may
+release earlier if status and limits are explicit.
 
 ---
+
+## Mandatory conformance tests
+
+### Ontology
+
+- Every RST-DT fine label maps to one coarse-18 concept.
+- Every pinned GUM relation and signal header value exists.
+- Every model index maps once to a scheme label and valid nuclearity.
+- Aliases preserve the original literal; lossy projections declare loss.
+- Structural `span` cannot resolve as a semantic prediction.
+- Digest mismatch, unmapped value, and invalid combinations fail closed.
+
+### Data and I/O
+
+- Token/EDU offsets reconstruct exact source slices.
+- Discontinuous/empty signal anchors survive JSON and RS4 round-trip.
+- Secondary edges reject nuclearity; stable IDs retain signal attachment.
+- Serialization is deterministic and schema-versioned.
+- Existing Parser, dtype-equivalence, and format-native tests do not regress.
+
+### Scoring and models
+
+- Identical synthetic trees score 1.0; hand-counted errors distinguish metrics.
+- eRST cases test direction, relation, full, signal detection/type/anchoring.
+- Gold-primary and predicted-primary eRST results are never conflated.
+- Genre, length, calibration, device, and dtype slices remain in evidence.
+
+---
+
+## Licences and distribution
+
+- Never commit LDC RST-DT. Use local paths and synthetic CI fixtures.
+- Never copy NTT's evaluation-licensed parser/metrics into this MIT source.
+- Record annotation and underlying-text licences for every GUM artifact. Prefer
+  synthetic RS4 CI fixtures unless redistribution is verified.
+- Existing weights are CC BY-NC 4.0. Commercial capability needs permissively
+  licensed retraining/replacement weights.
+- Every model and ontology artifact carries its own provenance and licence; MIT
+  source licensing does not override them.
+
+## Risks and controls
+
+| Risk | Control |
+|---|---|
+| Central 4.0.0 is working, not released | Do not pin it as immutable; complete the approved Central gate first |
+| Universal enum erases corpus semantics | Preserve scheme labels and typed, lossy mappings |
+| Bare EDU strings destroy anchors | Require text/tokens/spans for lossless mode; mark reconstruction |
+| Primary/secondary edges are conflated | Separate types; secondary has direction but no nuclearity |
+| Incompatible scorers | Prove semantics; bind every score to full metadata |
+| Graph type exists but predicts nothing | Release I/O and prediction as separate levels; score secondary/signals |
+| Long documents silently truncate | Declare policy, surface provenance/warnings, test length slices |
+| Ontology/runtime drift | Digest pin, generated artifacts, exhaustive mappings, fail closed |
 
 ## Non-goals
 
-- Vendoring Maekawa’s Llama trainer or NTT-licensed metrics.
-- Making `unirst` default for English eRST (GUM inventory lives on `gumrrg` / `unirst`+`eng.erst.gum`; decide in Phase 0 by whichever primary Full is higher on v12).
-- Claiming SOTA from `UniRST_Metrics.md` alone.
-- Multilingual SOTA as a gate for this plan.
+- Rewriting Central_Configs or duplicating its ontology here.
+- Treating benchmark chasing, a paper, or a leaderboard as the product.
+- Vendoring licensed corpora, NTT code, or an incompatible scorer.
+- Making a huge decoder the default runtime.
+- Flattening RST-DT and GUM/eRST into one misleading label list.
+- Changing Docling/DocLang contracts without current upstream-spec evidence.
+- Claiming multilingual SOTA as part of this English release.
 
----
+## Intended outcome
 
-## Risks
+Steve's projects have one governed RST vocabulary and one dependable analysis
+contract. They can request a tree or complete eRST graph; trace every label to a
+canonical concept and every prediction to its model, ontology, and source span;
+move between corpus/model encodings without silent semantic loss; and run the
+capability locally at practical scale.
 
-- **Parseval mismatch.** Published 55.46 vs 58.1 may shrink or grow after Phase 0. Treat 2.6 Full as directional until the same scorer hits both.
-- **RST-DT access.** No LDC → Phase 1 cannot be claimed; GUM v12 eRST can still ship (GUM is downloadable).
-- **GUM v12 vs V9.** Zeldes numbers are V9. Must re-score their recipe or this parser on v12; do not beat a different dump.
-- **Licence of Zeldes scorer / rs4 tools.** Check before depending. If unusable, reimplement metrics from the paper and say so.
-- **CC BY-NC weights.** A “SOTA checkpoint” on HF still NC unless retrained.
-)
+That is the product. 2026 SOTA evidence is how the project proves the product is
+excellent.

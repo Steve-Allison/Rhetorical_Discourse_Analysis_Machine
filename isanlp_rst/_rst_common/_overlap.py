@@ -7,11 +7,10 @@ query in O(log n + k) via ``bisect`` instead of a full linear scan.
 results, builds a throwaway index).
 """
 
-from __future__ import annotations
-
 from bisect import bisect_right
 from collections.abc import Callable, Sequence
-from typing import Generic, Protocol, TypeVar
+from operator import itemgetter
+from typing import Protocol
 
 NOTE_THRESHOLD: float = 0.90
 
@@ -25,10 +24,7 @@ class SpanLike(Protocol):
     def end(self) -> int: ...
 
 
-S = TypeVar("S", bound=SpanLike)
-
-
-class SpanIndex(Generic[S]):
+class SpanIndex[S: SpanLike]:
     """Bisect-backed overlap lookup over an ordered span sequence.
 
     Precondition: ``spans`` are sorted ascending by ``start`` and
@@ -87,7 +83,7 @@ class SpanIndex(Generic[S]):
             return refs, None
 
         total = sum(o for _, o in overlaps)
-        dominant_ref, dominant_overlap = max(overlaps, key=lambda x: x[1])
+        dominant_ref, dominant_overlap = max(overlaps, key=itemgetter(1))
         if total > 0 and dominant_overlap / total >= note_threshold:
             minors = [(r, o) for r, o in overlaps if r != dominant_ref and o > 0]
             if minors:
@@ -103,7 +99,7 @@ class SpanIndex(Generic[S]):
         return refs, None
 
 
-def compute_overlap_refs(
+def compute_overlap_refs[S: SpanLike](
     start: int,
     end: int,
     spans: Sequence[S],

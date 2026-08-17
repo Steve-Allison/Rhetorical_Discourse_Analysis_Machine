@@ -11,8 +11,6 @@ JSON-schema export, see :mod:`isanlp_rst.utils.serialization_pydantic` (install
 the ``pydantic`` extra: ``pip install isanlp_rst[pydantic]``).
 """
 
-from __future__ import annotations
-
 from typing import Any
 
 from isanlp.annotation_rst import DiscourseUnit

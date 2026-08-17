@@ -30,7 +30,7 @@ pixi run mdlint    # markdownlint
 
 Adding dependencies: `pixi add <package>`. Never `pip install`.
 
-CI (`.github/workflows/ci.yml`) runs on macOS arm64 with the pixi lock (**Python 3.12**). `requires-python` is `>=3.10` for downstream installs; the project's tested path is 3.12. PRs also run a short CPU smoke (`--quick`: gumrrg + unirst) with an HF hub cache, plus `mdlint`.
+CI (`.github/workflows/ci.yml`) runs on macOS arm64 with the pixi lock (**Python 3.14**). `requires-python` is `>=3.14`. PRs also run a short CPU smoke (`--quick`: gumrrg + unirst) with an HF hub cache, plus `mdlint`.
 
 ## Project-specific overrides of global rules
 

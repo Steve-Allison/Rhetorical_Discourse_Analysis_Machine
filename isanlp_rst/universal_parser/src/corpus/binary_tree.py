@@ -1,39 +1,37 @@
 import re
+from pathlib import Path
 
 
 class Node:
-    def __init__(self):
-        self.left = None
-        self.right = None
-        self.edu_id = None
-        self.relation = None
-        self.span = None
-        self.parent = None
+    def __init__(self) -> None:
+        self.left: Node | None = None
+        self.right: Node | None = None
+        self.edu_id: int | None = None
+        self.relation: str | None = None
+        self.span: list[int] | None = None
+        self.parent: Node | None = None
         self.is_paragragh_span = False
         self.is_sentence_span = False
 
 
 class BinaryTree:
-    def __init__(self, dmrg_path, text_path, edus_path):
+    def __init__(self, dmrg_path: str | Path, text_path: str | Path, edus_path: str | Path) -> None:
         self.string = ''
-        self.sentence_span = {}
-        self.paragraph_span = {}
+        self.sentence_span: dict[str, int] = {}
+        self.paragraph_span: dict[str, int] = {}
         self.convert_file_to_string(dmrg_path)
         self.find_sentence_span(text_path, edus_path)
         self.root = self.build_tree(self.string)
 
-    def convert_file_to_string(self, dmrg_path):
+    def convert_file_to_string(self, dmrg_path: str | Path) -> None:
         '''
         :return: convert a dmrg file into a string.
         '''
-        lines = []
-        with open(dmrg_path, 'r') as file:
-            for line in file:
-                lines.append(line.strip())
-        self.string = ' '.join(lines)
+        lines = Path(dmrg_path).read_text().splitlines()
+        self.string = ' '.join(line.strip() for line in lines)
         self.string = self.string.replace(') (', ')(')  # remove space between bracket.
 
-    def find_span_index(self, string):
+    def find_span_index(self, string: str) -> int | None:
         '''
         :return: find a index which separate the left and right child.
         '''
@@ -45,8 +43,9 @@ class BinaryTree:
                 flag += -1
             if flag == 0:
                 return i
+        return None
 
-    def build_tree(self, string):
+    def build_tree(self, string: str) -> Node:
         '''
         :return: a binary tree.
         '''
@@ -79,23 +78,18 @@ class BinaryTree:
 
         return node
 
-    def find_sentence_span(self, text_file_path, edus_file_path):
+    def find_sentence_span(self, text_file_path: str | Path, edus_file_path: str | Path) -> None:
         '''
         :param text_file_path: text contains sentence and paragraph information.
         :param edus_file_path: lines of EDUS.
         :return: the span of each EDUS.
         '''
-        sentence_span = {}
-        paragraph_span = {}
-        text_file = open(text_file_path, 'r')
-        edus_file = open(edus_file_path, 'r')
-        text_lines = []
-        edus_lines = []
-
-        for line in text_file:
-            text_lines.append(line.strip())
-        for line in edus_file:
-            edus_lines.append(line.strip())
+        sentence_span: dict[str, int] = {}
+        paragraph_span: dict[str, int] = {}
+        text_lines = Path(text_file_path).read_text().splitlines()
+        edus_lines = Path(edus_file_path).read_text().splitlines()
+        text_lines = [line.strip() for line in text_lines]
+        edus_lines = [line.strip() for line in edus_lines]
         text_line = 0
         edus_line = 0
         last_sent_edu = 1  # the edu start from 1.
@@ -130,5 +124,3 @@ class BinaryTree:
         paragraph_span[str([last_para_edu, edus_line])] = 1  # add the last paragraph
         self.paragraph_span = paragraph_span
         self.sentence_span = sentence_span
-        text_file.close()
-        edus_file.close()

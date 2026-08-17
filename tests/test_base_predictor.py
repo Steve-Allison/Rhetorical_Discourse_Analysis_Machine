@@ -1,7 +1,5 @@
 """Unit tests for BasePredictor helpers — no model downloads, fast."""
 
-from __future__ import annotations
-
 from collections import OrderedDict
 
 import pytest

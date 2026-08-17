@@ -5,8 +5,6 @@ argument validation or runs ``_resolve_family`` / ``_detect_family_from_model_di
 directly.
 """
 
-from __future__ import annotations
-
 import json
 
 import pytest
@@ -116,7 +114,23 @@ class TestDetectFamilyFromModelDir:
         (d / "data" / "dms" / "data_manager_eng.rst.gum.pickle").write_bytes(b"fake")
         assert Parser._detect_family_from_model_dir(str(d)) == 'unirst'
 
-    def test_unirst_via_config_corpora(self, tmp_path):
+    def test_unirst_via_json_at_root(self, tmp_path):
+        d = tmp_path / "unirst"
+        d.mkdir()
+        (d / "data_manager_eng.rst.gum.json").write_text("{}", encoding="utf-8")
+        assert Parser._detect_family_from_model_dir(str(d)) == "unirst"
+
+    def test_unirst_via_named_relation_table_txt(self, tmp_path):
+        d = tmp_path / "unirst"
+        d.mkdir()
+        (d / "relation_table_eng.rst.gum.txt").write_text("elaboration\n", encoding="utf-8")
+        assert Parser._detect_family_from_model_dir(str(d)) == "unirst"
+
+    def test_named_relation_table_txt_does_not_match_dmrst_plain_table(self, tmp_path):
+        d = tmp_path / "dmrst"
+        d.mkdir()
+        (d / "relation_table.txt").write_text("elaboration\n", encoding="utf-8")
+        assert Parser._detect_family_from_model_dir(str(d)) == "dmrst"
         d = tmp_path / "unirst"
         d.mkdir()
         (d / "config.json").write_text(

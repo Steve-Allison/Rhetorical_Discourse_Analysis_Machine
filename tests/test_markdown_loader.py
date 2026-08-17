@@ -5,8 +5,6 @@ front-matter-only), invariants (front-matter stripped from body
 stream), and knob negative-space (gfm=False emits no table tokens).
 """
 
-from __future__ import annotations
-
 from isanlp_rst.markdown.loader import build_parser, load_markdown
 
 

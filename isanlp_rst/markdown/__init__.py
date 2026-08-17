@@ -12,8 +12,6 @@ Public API:
 Plan: ``docs/plans/2026-06-12-markdown-native-rst.md``.
 """
 
-from __future__ import annotations
-
 from ._entry import parse_markdown
 from .errors import (
     EmptyHarvestError,

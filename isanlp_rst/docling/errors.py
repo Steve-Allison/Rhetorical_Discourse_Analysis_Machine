@@ -1,7 +1,5 @@
 """Custom exceptions for Docling-native RST parsing."""
 
-from __future__ import annotations
-
 
 class DoclingRstError(Exception):
     """Base class for parse_docling errors."""

@@ -9,8 +9,6 @@ once and reuse it across many ``parse_markdown`` calls. An optional
 on-disk cache (``cache_dir=``) short-circuits repeat parses.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -64,7 +62,7 @@ def _source_origin(
 def parse_markdown(
     path: str | Path,
     *,
-    parser: "Parser | None" = None,
+    parser: Parser | None = None,
     hf_model_name: str = "tchewik/isanlp_rst_v3",
     hf_model_version: str = "gumrrg",
     relinventory: str | None = None,

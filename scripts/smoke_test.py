@@ -17,13 +17,16 @@ Verifies:
     ``_guess_token_offsets`` raise-on-miss in real flow.
 """
 
-from __future__ import annotations
-
 import argparse
-import os
+import json
+import pickle
 import sys
+import tempfile
 import traceback
-from typing import Sequence
+from collections.abc import Callable, Sequence
+from pathlib import Path
+
+from huggingface_hub.errors import EntryNotFoundError
 
 from isanlp_rst.parser import Parser
 
@@ -37,14 +40,33 @@ SAMPLE_EDUS: Sequence[str] = (
 QUICK_VERSIONS = ('gumrrg', 'unirst')
 FULL_VERSIONS = ('gumrrg', 'rstdt', 'rstreebank', 'rrtrrg', 'unirst')
 
+# Load failures from Parser() / HF download / torch / UniRST pickle import.
+_LOAD_ERRORS = (
+    OSError,
+    RuntimeError,
+    ValueError,
+    EntryNotFoundError,
+    pickle.UnpicklingError,
+)
+# Named-check failures: asserts plus parse/payload errors after a successful load.
+_CHECK_ERRORS = (
+    AssertionError,
+    KeyError,
+    IndexError,
+    OSError,
+    RuntimeError,
+    TypeError,
+    ValueError,
+)
+
 failures: list[str] = []
 
 
-def _check(name: str, fn) -> None:
+def _check(name: str, fn: Callable[[], None]) -> None:
     print(f"  • {name} ... ", end='', flush=True)
     try:
         fn()
-    except Exception:
+    except _CHECK_ERRORS:
         failures.append(name)
         print('FAIL')
         traceback.print_exc()
@@ -126,37 +148,41 @@ def test_facade_empty_model_dir() -> None:
         raise AssertionError("Parser(model_dir=<empty>) should raise")
 
 
-def test_facade_detect_dmrst_local(tmp_dir: str) -> None:
+def test_facade_detect_dmrst_local(tmp_dir: Path) -> None:
     """Auto-detect DMRST signature from a local dir containing relation_table.txt."""
-    family = Parser._detect_family_from_model_dir(tmp_dir + '/dmrst_dir')
+    family = Parser._detect_family_from_model_dir(str(tmp_dir / 'dmrst_dir'))
     assert family == 'dmrst', f"expected 'dmrst', got {family!r}"
 
 
-def test_facade_detect_unirst_local(tmp_dir: str) -> None:
+def test_facade_detect_unirst_local(tmp_dir: Path) -> None:
     """Auto-detect UniRST signature from data_manager_*.pickle."""
-    family = Parser._detect_family_from_model_dir(tmp_dir + '/unirst_dir')
+    family = Parser._detect_family_from_model_dir(str(tmp_dir / 'unirst_dir'))
     assert family == 'unirst', f"expected 'unirst', got {family!r}"
 
 
-def test_facade_detect_unirst_via_config(tmp_dir: str) -> None:
+def test_facade_detect_unirst_via_config(tmp_dir: Path) -> None:
     """Auto-detect UniRST signature from config.json data.corpora."""
-    family = Parser._detect_family_from_model_dir(tmp_dir + '/unirst_via_config')
+    family = Parser._detect_family_from_model_dir(str(tmp_dir / 'unirst_via_config'))
     assert family == 'unirst', f"expected 'unirst', got {family!r}"
 
 
-def _seed_detection_dirs(base: str) -> None:
-    os.makedirs(os.path.join(base, 'dmrst_dir'), exist_ok=True)
-    with open(os.path.join(base, 'dmrst_dir', 'relation_table.txt'), 'w') as f:
-        f.write('elaboration\ncontrast\n')
+def _seed_detection_dirs(base: Path) -> None:
+    dmrst_dir = base / 'dmrst_dir'
+    dmrst_dir.mkdir(exist_ok=True)
+    (dmrst_dir / 'relation_table.txt').write_text(
+        'elaboration\ncontrast\n', encoding='utf-8',
+    )
 
-    os.makedirs(os.path.join(base, 'unirst_dir'), exist_ok=True)
-    with open(os.path.join(base, 'unirst_dir', 'data_manager_eng.rst.gum.pickle'), 'wb') as f:
-        f.write(b'fake')
+    unirst_dir = base / 'unirst_dir'
+    unirst_dir.mkdir(exist_ok=True)
+    (unirst_dir / 'data_manager_eng.rst.gum.pickle').write_bytes(b'fake')
 
-    os.makedirs(os.path.join(base, 'unirst_via_config'), exist_ok=True)
-    import json as _json
-    with open(os.path.join(base, 'unirst_via_config', 'config.json'), 'w') as f:
-        _json.dump({'data': {'corpora': ['eng.rst.rstdt']}}, f)
+    config_dir = base / 'unirst_via_config'
+    config_dir.mkdir(exist_ok=True)
+    (config_dir / 'config.json').write_text(
+        json.dumps({'data': {'corpora': ['eng.rst.rstdt']}}),
+        encoding='utf-8',
+    )
 
 
 # ---- Family-level integration tests ----
@@ -252,15 +278,15 @@ def main() -> int:
     _check('Parser(family=bad) raises', test_facade_bad_family)
     _check('Parser(model_dir=empty) raises', test_facade_empty_model_dir)
 
-    import tempfile
     with tempfile.TemporaryDirectory() as tmp:
-        _seed_detection_dirs(tmp)
+        tmp_path = Path(tmp)
+        _seed_detection_dirs(tmp_path)
         _check('detect_family_from_model_dir DMRST',
-               lambda: test_facade_detect_dmrst_local(tmp))
+               lambda: test_facade_detect_dmrst_local(tmp_path))
         _check('detect_family_from_model_dir UniRST (pickle)',
-               lambda: test_facade_detect_unirst_local(tmp))
+               lambda: test_facade_detect_unirst_local(tmp_path))
         _check('detect_family_from_model_dir UniRST (config.corpora)',
-               lambda: test_facade_detect_unirst_via_config(tmp))
+               lambda: test_facade_detect_unirst_via_config(tmp_path))
 
     print(f"\n=== Loading {len(versions)} model version(s): {versions} ===", flush=True)
 
@@ -277,7 +303,7 @@ def main() -> int:
                     device=args.device,
                     relinventory='eng.erst.gum',
                 )
-        except Exception:
+        except _LOAD_ERRORS:
             failures.append(f'load:{version}')
             print(f'  LOAD FAILED for {version}')
             traceback.print_exc()

@@ -1,7 +1,5 @@
 """Unit tests for ``scripts/cleanup.py`` (stdlib-only project cleaner)."""
 
-from __future__ import annotations
-
 import importlib.util
 from pathlib import Path
 

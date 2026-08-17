@@ -5,8 +5,6 @@ not produce ``i=-1`` / empty wrong segments, and ``_get_child`` must
 raise when a constituent span is missing.
 """
 
-from __future__ import annotations
-
 import pytest
 from isanlp.annotation_rst import DiscourseUnit
 

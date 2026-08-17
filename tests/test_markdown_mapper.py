@@ -10,8 +10,6 @@ doclang mapper tests). These tests therefore focus on:
 - ``boundary_memberships`` intersection against markdown boundaries.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from isanlp_rst.markdown.mapper import compute_overlap_refs, flatten_tree
@@ -24,8 +22,8 @@ class FakeUnit:
 
     start: int
     end: int
-    left: "FakeUnit | None" = None
-    right: "FakeUnit | None" = None
+    left: FakeUnit | None = None
+    right: FakeUnit | None = None
     relation: str = ""
     nuclearity: str = ""
 

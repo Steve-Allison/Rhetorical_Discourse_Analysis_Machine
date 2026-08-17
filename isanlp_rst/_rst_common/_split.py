@@ -1,7 +1,5 @@
 """Nuclearity-based ref split, format-agnostic."""
 
-from __future__ import annotations
-
 
 def split_refs_by_nuclearity(
     left_refs: tuple[str, ...],

@@ -1,7 +1,5 @@
 """Unit tests for ``extract_root_tree`` and DMRST relation-table normalize."""
 
-from __future__ import annotations
-
 from pathlib import Path
 
 import pytest

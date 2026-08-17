@@ -8,8 +8,6 @@ test fixtures. Those are not temp files.
     ./cleanup.sh
 """
 
-from __future__ import annotations
-
 import argparse
 import shutil
 import sys

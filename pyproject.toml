@@ -7,7 +7,7 @@ name = "isanlp_rst"
 version = "3.2.0"
 description = "End-to-end RST parser across 11 languages (Steve Allison's evolution of the IsaNLP RST Parser by Elena Chistova)."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 license = "MIT"
 authors = [
   { name = "Steve Allison", email = "steve.allison@me.com" },
@@ -86,7 +86,7 @@ channels = ["conda-forge"]
 platforms = ["osx-arm64"]
 
 [tool.pixi.dependencies]
-python = "3.12.*"
+python = "3.14.*"
 markdownlint-cli2 = ">=0.14"
 
 [tool.pixi.pypi-dependencies]
@@ -94,23 +94,8 @@ isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats", "pydanti
 
 [tool.ruff]
 line-length = 120
-target-version = "py310"
-
-# Lint scope: only files we authored or substantially restructured. The
-# inherited research code under `*/src/parser/`, `*/src/corpus/`,
-# `dmrst_parser/multiple_runs.py`, `universal_parser/multiple_runs.py`,
-# `utils/du_converter.py`, and the rstviewer subpackage is left untouched
-# (per CLAUDE.md's surgical / upstream-aware rule). Bug fixes touching those
-# files are still in scope; lint of their pre-existing style is not.
+target-version = "py314"
 extend-exclude = [
-  "isanlp_rst/__init__.py",  # rstviewer surface (inherited)
-  "isanlp_rst/dmrst_parser/src",
-  "isanlp_rst/universal_parser/src",
-  "isanlp_rst/dmrst_parser/multiple_runs.py",
-  "isanlp_rst/dmrst_parser/data_manager.py",
-  "isanlp_rst/universal_parser/multiple_runs.py",
-  "isanlp_rst/universal_parser/data_manager.py",
-  "isanlp_rst/utils/du_converter.py",
   "isanlp_rst/rstviewer",
 ]
 
@@ -123,30 +108,10 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["B011"]
-# Pre-existing BLE001 (blind `except Exception`) at the point BLE was added
-# to select (2026-07-29) — grandfathered so the rule is live for new code
-# without a retroactive fix pass. Remove an entry (and fix the site) the
-# next time that file is touched.
-"scripts/bench.py" = ["BLE001"]
-"scripts/docling_long_input_determinism.py" = ["BLE001"]
-"scripts/docling_rst_quality_check.py" = ["BLE001"]
-"scripts/smoke_test.py" = ["BLE001"]
 
 [tool.pyright]
-# Strict on the stuff WE wrote, lenient on inherited research modules.
 include = [
-  "isanlp_rst/parser.py",
-  "isanlp_rst/base_predictor.py",
-  "isanlp_rst/dmrst_parser/predictor.py",
-  "isanlp_rst/universal_parser/predictor.py",
-  "isanlp_rst/utils/mps_init.py",
-  "isanlp_rst/utils/parse_result.py",
-  "isanlp_rst/utils/serialization.py",
-  "isanlp_rst/utils/serialization_pydantic.py",
-  "isanlp_rst/_rst_common",
-  "isanlp_rst/docling",
-  "isanlp_rst/doclang",
-  "isanlp_rst/markdown",
+  "isanlp_rst",
   "tests",
   "scripts",
 ]
@@ -154,8 +119,11 @@ exclude = [
   "**/__pycache__",
   ".pixi",
   "build",
+  "isanlp_rst/rstviewer",
+  "isanlp_rst/dmrst_parser/src",
+  "isanlp_rst/universal_parser/src",
 ]
-pythonVersion = "3.10"
+pythonVersion = "3.14"
 reportMissingImports = "warning"     # pyright runs against the active env
 # torch's runtime API exposes many names not in __all__ (e.g. torch.device,
 # torch.tensor, torch.equal); flagging them as private noise dwarfs real issues.

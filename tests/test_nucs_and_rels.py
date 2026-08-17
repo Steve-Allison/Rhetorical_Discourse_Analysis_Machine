@@ -1,7 +1,5 @@
 """DMRST ``nucs_and_rels`` must match UniRST ``rpartition`` semantics."""
 
-from __future__ import annotations
-
 import pytest
 
 from isanlp_rst.dmrst_parser.src.parser.data import nucs_and_rels as dmrst_nucs

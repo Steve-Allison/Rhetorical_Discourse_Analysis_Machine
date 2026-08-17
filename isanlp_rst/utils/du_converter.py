@@ -82,6 +82,8 @@ class DUConverter:
                 text = ''.join(tokens[prev_break:brk + 1]).replace('▁', ' ').strip()
             elif self.tokenization_type == 'rubert':
                 text = ' '.join(tokens[prev_break:brk + 1]).replace(' ##', '')
+            else:
+                raise ValueError(f'Unknown tokenization_type: {self.tokenization_type!r}')
 
             edu = DiscourseUnit(
                 id=i,
@@ -89,7 +91,7 @@ class DUConverter:
                 start=prev_chr_end,
                 relation='elementary'
             )
-            edu.end = edu.start + len(edu.text)
+            edu.end = prev_chr_end + len(text)
             prev_chr_end = edu.end + 1
             prev_break = brk + 1
             edus.append(edu)
@@ -98,7 +100,7 @@ class DUConverter:
             pred_texts = [edu.text for edu in edus]
             gold_texts = self.fix_segmented_strings(pred_texts, gold_tokens)
             fixed_edus = []
-            for edu, fixed_text in zip(edus, gold_texts):
+            for edu, fixed_text in zip(edus, gold_texts, strict=True):
                 edu.text = fixed_text
                 fixed_edus.append(edu)
             edus = fixed_edus
@@ -120,13 +122,8 @@ class DUConverter:
         for rel in description.split(' '):
             left, right = rel.split(',')
             left_start, left_label, left_end = left[1:].split(':')
-            prob = 1.0
             if ';prob=' in left_label:
-                left_label, prob_str = left_label.split(';prob=')
-                try:
-                    prob = float(prob_str)
-                except ValueError:
-                    prob = 1.0
+                left_label, _ = left_label.split(';prob=', 1)
             entropy = 0.0
             if ';entropy=' in left_label:
                 left_label, entropy_str = left_label.split(';entropy=')

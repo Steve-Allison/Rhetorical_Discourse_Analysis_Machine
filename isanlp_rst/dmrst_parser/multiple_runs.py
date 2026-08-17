@@ -12,23 +12,25 @@ For multilingual experiments:
     python dmrst_parser/multiple_runs.py --corpus "$CORPUS" --lang "$LANG" --model_type "$TYPE" train_mixed --mixed 100
 """
 
-import os
-import sys
-import subprocess
-import fire
 import json
-from glob import glob
+import subprocess
+import sys
+from pathlib import Path
+
+import fire
 
 
 class MultipleRunnerGeneral:
-    def __init__(self,
-                 corpus: str,
-                 lang: str,
-                 model_type: str,
-                 transformer_name: str = 'xlm-roberta-large',
-                 emb_size: int = 1024,
-                 cuda_device: int = 0,
-                 resume_training: bool = False):
+    def __init__(
+        self,
+        corpus: str,
+        lang: str,
+        model_type: str,
+        transformer_name: str = 'xlm-roberta-large',
+        emb_size: int = 1024,
+        cuda_device: int = 0,
+        resume_training: bool = False,
+    ) -> None:
         """
         :param corpus: (str)  - 'GUM' or 'RST-DT'
         :param lang: (str)  - 'en' or 'ru'
@@ -51,8 +53,8 @@ class MultipleRunnerGeneral:
         else:
             self.freeze_first_n = 0
 
-    def _general_parameters(self):
-        overrides = {
+    def _general_parameters(self) -> dict[str, str | int | float]:
+        overrides: dict[str, str | int | float] = {
             'corpus': self.corpus,
             'lang': self.lang,
             'data_manager_path': f'data/data_manager_{self.corpus.lower()}.pickle',
@@ -147,14 +149,16 @@ class MultipleRunnerGeneral:
 
         return overrides
 
-    def _get_variants(self):
+    def _get_variants(self) -> range:
         if self.corpus == 'RST-DT':
             return range(5)  # For there is no fixed dev in RST-DT, we select validation from the train randomly
 
-        elif self.corpus in ['GUM', 'RuRSTB']:
+        if self.corpus in ['GUM', 'RuRSTB']:
             return range(40, 45)  # There is a fixed split, we just change the nn random seed
 
-    def train(self):
+        raise ValueError(f'Unknown corpus: {self.corpus}')
+
+    def train(self) -> None:
         general_parameters = self._general_parameters()
         for run in self._get_variants():
             if self.corpus == 'RST-DT':
@@ -170,7 +174,8 @@ class MultipleRunnerGeneral:
                 general_parameters[key] = str(value)
 
             if self.resume_training:
-                if os.path.isfile(os.path.join('saves', general_parameters['run_name'], 'best_metrics.json')):
+                metrics_path = Path('saves') / str(general_parameters['run_name']) / 'best_metrics.json'
+                if metrics_path.is_file():
                     continue
 
             p = subprocess.Popen(
@@ -180,8 +185,8 @@ class MultipleRunnerGeneral:
             )
             p.wait()
 
-    def evaluate(self):
-        results = {
+    def evaluate(self) -> None:
+        results: dict[str, list[object]] = {
             'e2e_test_f1_full': [],
             'e2e_test_f1_nuc': [],
             'e2e_test_f1_rel': [],
@@ -194,28 +199,28 @@ class MultipleRunnerGeneral:
         }
         for run in self._get_variants():
             run_name = f'{self.lang}_{self.corpus}_{self.model_type}_{run}'
-            run_path = os.path.join('saves', run_name)
+            run_path = Path('saves') / run_name
             try:
-                all_metrics = glob(os.path.join(run_path, 'metrics_epoch_*.json'))
-                best_epoch = sorted([int(os.path.basename(metrics)[14:-5]) for metrics in all_metrics])[-1]
-                best_dev_metrics = json.load(open(os.path.join(run_path, f'metrics_epoch_{best_epoch}.json')))
+                all_metrics = list(run_path.glob('metrics_epoch_*.json'))
+                best_epoch = sorted(int(metrics.stem.removeprefix('metrics_epoch_')) for metrics in all_metrics)[-1]
+                best_dev_metrics = json.loads((run_path / f'metrics_epoch_{best_epoch}.json').read_text())
                 for key in results:
                     results[key].append(best_dev_metrics[key])
-            except:
+            except (FileNotFoundError, IndexError, json.JSONDecodeError, KeyError, OSError):
                 print(f'Run {run} is missing.')
 
-        with open(f'{self.lang}_{self.corpus}_{self.model_type}_all_res.json', 'w') as f:
-            json.dump(results, f)
+        Path(f'{self.lang}_{self.corpus}_{self.model_type}_all_res.json').write_text(
+            json.dumps(results)
+        )
 
-    def train_mixed(self, mixed: int):
+    def train_mixed(self, mixed: int) -> None:
         """ Running training with second language injection of ``mixed`` % """
 
-        save_path = 'saves_mixed'
-        if not os.path.isdir(save_path):
-            os.mkdir(save_path)
+        save_path = Path('saves_mixed')
+        save_path.mkdir(exist_ok=True)
 
         general_parameters = self._general_parameters()
-        general_parameters['save_path'] = save_path
+        general_parameters['save_path'] = str(save_path)
 
         for run in range(5):
             assert self.corpus == 'GUM'  # Cross-lingual training is only for parallel corpus
@@ -232,7 +237,8 @@ class MultipleRunnerGeneral:
                 general_parameters[key] = str(value)
 
             if self.resume_training:
-                if os.path.isfile(os.path.join(save_path, general_parameters['run_name'], 'best_metrics.json')):
+                metrics_path = save_path / str(general_parameters['run_name']) / 'best_metrics.json'
+                if metrics_path.is_file():
                     continue
 
             p = subprocess.Popen(

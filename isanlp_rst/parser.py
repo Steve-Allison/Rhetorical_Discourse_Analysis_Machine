@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 import json
-import os
-from glob import glob
-from typing import TYPE_CHECKING, Optional, Sequence
+from collections.abc import Sequence
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from isanlp.annotation_rst import DiscourseUnit
 
@@ -25,9 +23,9 @@ class Parser:
     1. Explicit ``family='dmrst'|'unirst'`` argument.
     2. ``hf_model_version`` (mapped to a family via ``DMRST_PARSERS`` /
        ``UNIVERSAL_PARSERS``).
-    3. ``model_dir`` content auto-detection (presence of
-       ``data_manager_*.pickle`` or a ``config.json`` with ``data.corpora``
-       implies UniRST; otherwise ``relation_table.txt`` implies DMRST).
+    3. ``model_dir`` content auto-detection (UniRST: ``data_manager_*.json``,
+       legacy ``data_manager_*.pickle``, ``relation_table_*.txt``, or a
+       ``config.json`` with ``data.corpora``; DMRST: ``relation_table.txt``).
 
     Device selection uses ``device=`` (``"auto"`` by default — CUDA if
     present, else MPS on Apple Silicon, else CPU). The legacy integer
@@ -39,23 +37,23 @@ class Parser:
         >>> Parser(model_dir='/path/to/checkpoint', family='dmrst')        # local
     """
 
-    DMRST_PARSERS = ('gumrrg', 'rstdt', 'rstreebank')
-    UNIVERSAL_PARSERS = ('rrtrrg', 'unirst')
+    DMRST_PARSERS = ("gumrrg", "rstdt", "rstreebank")
+    UNIVERSAL_PARSERS = ("rrtrrg", "unirst")
     AVAILABLE_VERSIONS = DMRST_PARSERS + UNIVERSAL_PARSERS
-    AVAILABLE_FAMILIES = ('dmrst', 'unirst')
-    _DEFAULT_HF_MODEL_NAME = 'tchewik/isanlp_rst_v3'
+    AVAILABLE_FAMILIES = ("dmrst", "unirst")
+    _DEFAULT_HF_MODEL_NAME = "tchewik/isanlp_rst_v3"
 
     def __init__(
         self,
-        model_dir: Optional[str] = None,
-        hf_model_name: Optional[str] = _DEFAULT_HF_MODEL_NAME,
-        hf_model_version: Optional[str] = None,
-        relinventory: Optional[str] = None,
+        model_dir: str | None = None,
+        hf_model_name: str | None = _DEFAULT_HF_MODEL_NAME,
+        hf_model_version: str | None = None,
+        relinventory: str | None = None,
         relinventory_idx: int = 0,
-        device: 'str | torch.device | None' = None,
-        cuda_device: 'int | None' = None,
-        family: Optional[str] = None,
-        dtype: 'str | torch.dtype | None' = None,
+        device: str | torch.device | None = None,
+        cuda_device: int | None = None,
+        family: str | None = None,
+        dtype: str | torch.dtype | None = None,
     ):
         if (
             model_dir is not None
@@ -63,8 +61,8 @@ class Parser:
             and hf_model_name != self._DEFAULT_HF_MODEL_NAME
         ):
             raise ValueError(
-                'Pass either `model_dir` or `hf_model_name`, not both. '
-                'When loading from disk, omit hf_model_name (or leave the default).'
+                "Pass either `model_dir` or `hf_model_name`, not both. "
+                "When loading from disk, omit hf_model_name (or leave the default)."
             )
 
         resolved_family = self._resolve_family(model_dir, hf_model_version, family)
@@ -78,7 +76,7 @@ class Parser:
         # predictor unambiguously selects local mode.
         effective_hf_name = None if model_dir is not None else hf_model_name
 
-        if resolved_family == 'dmrst':
+        if resolved_family == "dmrst":
             self.predictor = PredictorDMRST(
                 model_dir=model_dir,
                 hf_model_name=effective_hf_name,
@@ -102,9 +100,9 @@ class Parser:
     @classmethod
     def _resolve_family(
         cls,
-        model_dir: Optional[str],
-        hf_model_version: Optional[str],
-        family: Optional[str],
+        model_dir: str | None,
+        hf_model_version: str | None,
+        family: str | None,
     ) -> str:
         if family is not None:
             if family not in cls.AVAILABLE_FAMILIES:
@@ -117,7 +115,7 @@ class Parser:
                 )
             if hf_model_version is not None:
                 allowed = (
-                    cls.DMRST_PARSERS if family == 'dmrst' else cls.UNIVERSAL_PARSERS
+                    cls.DMRST_PARSERS if family == "dmrst" else cls.UNIVERSAL_PARSERS
                 )
                 if hf_model_version not in allowed:
                     raise ValueError(
@@ -136,9 +134,9 @@ class Parser:
 
         if hf_model_version is not None:
             if hf_model_version in cls.DMRST_PARSERS:
-                return 'dmrst'
+                return "dmrst"
             if hf_model_version in cls.UNIVERSAL_PARSERS:
-                return 'unirst'
+                return "unirst"
             raise ValueError(
                 f"Unknown hf_model_version {hf_model_version!r}. "
                 f"Available: {cls.AVAILABLE_VERSIONS}."
@@ -154,43 +152,56 @@ class Parser:
             return detected
 
         raise ValueError(
-            'Pass `hf_model_version` or `model_dir` (with `family` for local-disk loading). '
-            f'Available versions: {cls.AVAILABLE_VERSIONS}.'
+            "Pass `hf_model_version` or `model_dir` (with `family` for local-disk loading). "
+            f"Available versions: {cls.AVAILABLE_VERSIONS}."
         )
 
     @staticmethod
-    def _detect_family_from_model_dir(model_dir: str) -> Optional[str]:
+    def _detect_family_from_model_dir(model_dir: str) -> str | None:
         """Inspect a local checkpoint directory and infer the parser family.
 
         Returns ``'unirst'``, ``'dmrst'``, or ``None`` if no signature matches.
+        Published HuggingFace UniRST layouts still ship
+        ``data_manager_*.pickle``; those remain a detection signature. Native
+        inventories are ``data_manager_*.json`` or ``relation_table_<corpus>.txt``.
         """
-        unirst_pickles = (
-            glob(os.path.join(model_dir, 'data_manager_*.pickle'))
-            or glob(os.path.join(model_dir, 'data', 'data_manager_*.pickle'))
-            or glob(os.path.join(model_dir, 'data', 'dms', 'data_manager_*.pickle'))
-        )
-        if unirst_pickles:
-            return 'unirst'
+        root = Path(model_dir)
+        if Parser._has_unirst_inventory(root):
+            return "unirst"
 
-        cfg = Parser._safe_load_json(os.path.join(model_dir, 'config.json'))
-        if cfg is not None and 'corpora' in cfg.get('data', {}):
-            return 'unirst'
+        cfg = Parser._safe_load_json(root / "config.json")
+        if cfg is not None and "corpora" in cfg.get("data", {}):
+            return "unirst"
 
-        if os.path.isfile(os.path.join(model_dir, 'relation_table.txt')):
-            return 'dmrst'
+        if (root / "relation_table.txt").is_file():
+            return "dmrst"
 
         return None
 
     @staticmethod
-    def _safe_load_json(path: str) -> Optional[dict]:
+    def _has_unirst_inventory(root: Path) -> bool:
+        search_roots = (root, root / "data", root / "data" / "dms")
+        patterns = (
+            "data_manager_*.pickle",
+            "data_manager_*.json",
+            "relation_table_*.txt",
+        )
+        return any(
+            path
+            for directory in search_roots
+            for pattern in patterns
+            for path in directory.glob(pattern)
+        )
+
+    @staticmethod
+    def _safe_load_json(path: Path) -> dict | None:
         """Read ``path`` as JSON. Returns ``None`` if the file is missing,
         unreadable, or contains malformed JSON.
         """
-        if not os.path.isfile(path):
+        if not path.is_file():
             return None
         try:
-            with open(path, 'r', encoding='utf8') as f:
-                return json.load(f)
+            return json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             return None
 

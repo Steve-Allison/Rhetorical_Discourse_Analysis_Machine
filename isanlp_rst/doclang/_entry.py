@@ -15,8 +15,6 @@ once and reuse it across many ``parse_doclang`` calls. An optional
 on-disk cache (``cache_dir=``) short-circuits repeat parses.
 """
 
-from __future__ import annotations
-
 import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -121,7 +119,7 @@ def _source_origin(tree: Any) -> dict[str, Any]:
 def parse_doclang(
     path: str | Path,
     *,
-    parser: "Parser | None" = None,
+    parser: Parser | None = None,
     hf_model_name: str = "tchewik/isanlp_rst_v3",
     hf_model_version: str = "gumrrg",
     relinventory: str | None = None,
