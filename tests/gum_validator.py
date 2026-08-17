@@ -19,7 +19,7 @@ from isanlp_rst.contracts import (
 from isanlp_rst.erst.converter import du_to_analysis, rs4_to_document_and_analysis
 from isanlp_rst.erst.rs4 import RS4Document, RS4Reader
 from isanlp_rst.eval.erst_scorer import ErstScorer, SecondaryEdgeMetrics, SignalMetrics
-from isanlp_rst.eval.parseval import ParsevalMetrics, StandardParsevalScorer
+from isanlp_rst.eval.parseval import ParsevalMetrics, SoftParsevalScorer, StandardParsevalScorer
 from isanlp_rst.ontology.adapter import OntologyAdapter
 from isanlp_rst.parser import Parser
 
@@ -49,6 +49,8 @@ class GumValidationReport:
     standard_parseval: ParsevalMetrics
     rst_parseval: ParsevalMetrics
     coarse_parseval: ParsevalMetrics
+    char_parseval: ParsevalMetrics | None = None
+    soft_parseval: ParsevalMetrics | None = None
     secondary_metrics: SecondaryEdgeMetrics | None = None
     signal_metrics: SignalMetrics | None = None
     is_valid_tree: bool = True
@@ -72,11 +74,23 @@ class GumValidationReport:
             "",
             "| Evaluation Metric | Precision | Recall | F1 | Matched / Gold |",
             "| :--- | :--- | :--- | :--- | :--- |",
-            f"| **Standard Span** | {self.standard_parseval.span_precision:.3f} | {self.standard_parseval.span_recall:.3f} | {self.standard_parseval.span_f1:.3f} | {self.standard_parseval.matched_span} / {self.standard_parseval.gold_spans_count} |",
+            f"| **Standard Span (EDU-exact)** | {self.standard_parseval.span_precision:.3f} | {self.standard_parseval.span_recall:.3f} | {self.standard_parseval.span_f1:.3f} | {self.standard_parseval.matched_span} / {self.standard_parseval.gold_spans_count} |",
             f"| **Standard Nuclearity** | {self.standard_parseval.nuclearity_precision:.3f} | {self.standard_parseval.nuclearity_recall:.3f} | {self.standard_parseval.nuclearity_f1:.3f} | {self.standard_parseval.matched_nuclearity} / {self.standard_parseval.gold_spans_count} |",
             f"| **Standard Relation (Fine)** | {self.standard_parseval.relation_precision:.3f} | {self.standard_parseval.relation_recall:.3f} | {self.standard_parseval.relation_f1:.3f} | {self.standard_parseval.matched_relation} / {self.standard_parseval.gold_spans_count} |",
             f"| **Standard Relation (Coarse-18)** | {self.coarse_parseval.relation_precision:.3f} | {self.coarse_parseval.relation_recall:.3f} | {self.coarse_parseval.relation_f1:.3f} | {self.coarse_parseval.matched_relation} / {self.coarse_parseval.gold_spans_count} |",
             f"| **Standard Full (Span+Nuc+Rel)** | {self.standard_parseval.full_precision:.3f} | {self.standard_parseval.full_recall:.3f} | {self.standard_parseval.full_f1:.3f} | {self.standard_parseval.matched_full} / {self.standard_parseval.gold_spans_count} |",
+        ])
+
+        if self.char_parseval is not None:
+            lines.append(
+                f"| **Char Span (Exact)** | {self.char_parseval.span_precision:.3f} | {self.char_parseval.span_recall:.3f} | {self.char_parseval.span_f1:.3f} | {self.char_parseval.matched_span} / {self.char_parseval.gold_spans_count} |"
+            )
+        if self.soft_parseval is not None:
+            lines.append(
+                f"| **Soft Span (IoU>=0.80)** | {self.soft_parseval.span_precision:.3f} | {self.soft_parseval.span_recall:.3f} | {self.soft_parseval.span_f1:.3f} | {self.soft_parseval.matched_span} / {self.soft_parseval.gold_spans_count} |"
+            )
+
+        lines.extend([
             f"| **RST-Parseval Span** | {self.rst_parseval.span_precision:.3f} | {self.rst_parseval.span_recall:.3f} | {self.rst_parseval.span_f1:.3f} | {self.rst_parseval.matched_span} / {self.rst_parseval.gold_spans_count} |",
             f"| **RST-Parseval Relation (Fine)** | {self.rst_parseval.relation_precision:.3f} | {self.rst_parseval.relation_recall:.3f} | {self.rst_parseval.relation_f1:.3f} | {self.rst_parseval.matched_relation} / {self.rst_parseval.gold_spans_count} |",
         ])
@@ -182,6 +196,8 @@ class GumGoldValidator:
             include_root=False,
             label_mapper=coarse_mapper,
         )
+        self.char_scorer = SoftParsevalScorer(include_leaves=False, include_root=False, min_iou=1.0)
+        self.soft_scorer = SoftParsevalScorer(include_leaves=False, include_root=False, min_iou=0.80)
 
     def get_gold_path(self, doc_id: str) -> Path:
         filename = f"{doc_id}.rs4" if not doc_id.endswith(".rs4") else doc_id
@@ -225,6 +241,8 @@ class GumGoldValidator:
         std_metrics = self.standard_scorer.score(gold_analysis, predicted_analysis)
         rst_metrics = self.rst_parseval_scorer.score(gold_analysis, predicted_analysis)
         coarse_metrics = self.coarse_scorer.score(gold_analysis, predicted_analysis)
+        char_metrics = self.char_scorer.score(gold_analysis, predicted_analysis)
+        soft_metrics = self.soft_scorer.score(gold_analysis, predicted_analysis)
 
         # eRST metrics if present
         sec_metrics: SecondaryEdgeMetrics | None = None
@@ -248,6 +266,8 @@ class GumGoldValidator:
             standard_parseval=std_metrics,
             rst_parseval=rst_metrics,
             coarse_parseval=coarse_metrics,
+            char_parseval=char_metrics,
+            soft_parseval=soft_metrics,
             secondary_metrics=sec_metrics,
             signal_metrics=sig_metrics,
             is_valid_tree=is_valid,

@@ -14,9 +14,12 @@ from isanlp_rst.contracts import (
     SecondaryRelationEdge,
 )
 from isanlp_rst.eval import (
+    CharBracketSpan,
     ErstScorer,
+    SoftParsevalScorer,
     StandardParsevalScorer,
     compute_calibration_error,
+    compute_span_iou,
 )
 
 
@@ -236,4 +239,78 @@ def test_calibration_error_mismatched_and_empty() -> None:
     empty_summary = compute_calibration_error([], [])
     assert empty_summary.sample_count == 0
     assert empty_summary.expected_calibration_error == 0.0
+
+
+def test_compute_span_iou_math() -> None:
+    # CharBracketSpan properties
+    span = CharBracketSpan(start_char=10, end_char=25, nuclearity="NS", relation="elaboration")
+    assert span.start_char == 10
+    assert span.end_char == 25
+    assert span.length == 15
+    assert span.nuclearity == "NS"
+    assert span.relation == "elaboration"
+
+    # Exact overlap
+    assert compute_span_iou(0, 10, 0, 10) == 1.0
+    # No overlap
+    assert compute_span_iou(0, 5, 5, 10) == 0.0
+    assert compute_span_iou(0, 5, 10, 15) == 0.0
+    # Partial overlap: [0, 10] and [2, 10] -> intersection 8, union 10 -> 0.8
+    assert compute_span_iou(0, 10, 2, 10) == pytest.approx(0.8, rel=1e-6)
+    # Subset: [2, 8] inside [0, 10] -> intersection 6, union 10 -> 0.6
+    assert compute_span_iou(0, 10, 2, 8) == pytest.approx(0.6, rel=1e-6)
+    # Zero length
+    assert compute_span_iou(5, 5, 5, 5) == 0.0
+
+
+def test_soft_parseval_exact_and_fuzzy() -> None:
+    # Tree 1: [0, 50] contains [0, 20] (Elaboration) and [21, 50] (Joint)
+    nodes_gold = (
+        RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 20), text="EDU1"),
+        RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(21, 50), text="EDU2"),
+        RstNode(node_id=3, kind=NodeKindEnum.SPAN, edu_span=(1, 2), char_span=(0, 50), text="EDU1 EDU2"),
+        RstNode(node_id=4, kind=NodeKindEnum.ROOT, edu_span=(1, 3), char_span=(0, 100), text="All"),
+    )
+    edges_gold = (
+        PrimaryRelationEdge(edge_id="e1", parent_id=3, child_id=1, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
+        PrimaryRelationEdge(edge_id="e2", parent_id=4, child_id=3, nuclearity=NuclearityPatternEnum.NS, relation_raw="Joint", relation_concept="Joint"),
+    )
+    gold = RstAnalysis(document_id="g", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_gold, primary_edges=edges_gold)
+
+    # Pred has a slightly shifted boundary: [0, 48] instead of [0, 50] (e.g. trailing period segmentation difference)
+    nodes_pred = (
+        RstNode(node_id=10, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 20), text="EDU1"),
+        RstNode(node_id=20, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(21, 48), text="EDU2"),
+        RstNode(node_id=30, kind=NodeKindEnum.SPAN, edu_span=(1, 2), char_span=(0, 48), text="EDU1 EDU2"),
+        RstNode(node_id=40, kind=NodeKindEnum.ROOT, edu_span=(1, 3), char_span=(0, 100), text="All"),
+    )
+    edges_pred = (
+        PrimaryRelationEdge(edge_id="ep1", parent_id=30, child_id=10, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
+        PrimaryRelationEdge(edge_id="ep2", parent_id=40, child_id=30, nuclearity=NuclearityPatternEnum.NS, relation_raw="Joint", relation_concept="Joint"),
+    )
+    pred = RstAnalysis(document_id="p", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_pred, primary_edges=edges_pred)
+
+    # Exact character scorer: [0, 48] != [0, 50] -> 0 matched span
+    exact_scorer = SoftParsevalScorer(min_iou=1.0)
+    exact_metrics = exact_scorer.score(gold, pred)
+    assert exact_metrics.matched_span == 0
+    assert exact_metrics.span_f1 == 0.0
+
+    # Soft character scorer: IoU([0, 50], [0, 48]) = 48/50 = 0.96 >= 0.85 -> matched!
+    soft_scorer = SoftParsevalScorer(min_iou=0.85)
+    soft_metrics = soft_scorer.score(gold, pred)
+    assert soft_metrics.matched_span == 1
+    assert soft_metrics.span_f1 == 1.0
+    assert soft_metrics.nuclearity_f1 == 1.0
+    assert soft_metrics.relation_f1 == 1.0
+    assert soft_metrics.full_f1 == 1.0
+
+
+def test_soft_parseval_invalid_min_iou() -> None:
+    with pytest.raises(ValueError, match="min_iou must be in"):
+        SoftParsevalScorer(min_iou=0.0)
+
+    with pytest.raises(ValueError, match="min_iou must be in"):
+        SoftParsevalScorer(min_iou=1.5)
+
 
