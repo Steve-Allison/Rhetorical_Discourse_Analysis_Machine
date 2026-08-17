@@ -72,6 +72,12 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 
 - [`isanlp_rst/parser.py`](isanlp_rst/parser.py) — public entry point, dispatches to predictor families.
 - [`isanlp_rst/base_predictor.py`](isanlp_rst/base_predictor.py) — shared tokenisation, batching, offset remapping, MPS-safe init.
+- [`isanlp_rst/contracts/`](isanlp_rst/contracts/) — typed contracts: `RstAnalysis`, `RstDocument`, `SecondaryRelationEdge`, `DiscourseSignal`, envelope serializations.
+- [`isanlp_rst/erst/`](isanlp_rst/erst/) — Extended RST (eRST): `rs4` reader/writer, `AcyclicDagDecoder`, `NeuralSecondaryEdgeScorer`.
+- [`isanlp_rst/hierarchical/stitcher.py`](isanlp_rst/hierarchical/stitcher.py) — `MacroMicroStitcher`: two-stage hierarchical section/macro tree stitching.
+- [`isanlp_rst/eval/`](isanlp_rst/eval/) — evaluation suite: `ParsevalScorer`, `SoftParsevalScorer`, `ErstScorer`.
+- [`isanlp_rst/english/relations/primer.py`](isanlp_rst/english/relations/primer.py) — `DiscourseMarkerPrimer`: marker-primed relation classification.
+- [`isanlp_rst/segmentation/`](isanlp_rst/segmentation/) — `TransformerEduSegmenter` and dataset collation pipelines.
 - [`isanlp_rst/dmrst_parser/predictor.py`](isanlp_rst/dmrst_parser/predictor.py) — DMRST inference path.
 - [`isanlp_rst/universal_parser/predictor.py`](isanlp_rst/universal_parser/predictor.py) — UniRST inference path.
 - [`isanlp_rst/__init__.py`](isanlp_rst/__init__.py) — viewer convenience helpers (`render`, `to_html`, `to_png`, `to_pdf`).

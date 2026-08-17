@@ -10,10 +10,13 @@ End-to-end Rhetorical Structure Theory (RST) parser. Predicts discourse trees fr
 - [Installation & quick start](#installation--quick-start)
 - [Visualising the RST tree](#visualising-the-rst-tree)
 - [Advanced usage](#advanced-usage)
+- [Extended RST (eRST) & DAG decoding](#extended-rst-erst--dag-decoding)
+- [Hierarchical long document parsing](#hierarchical-long-document-parsing)
 - [Docling-native output](#docling-native-output)
 - [DocLang-native output](#doclang-native-output)
 - [Markdown-native output](#markdown-native-output)
 - [Quality diagnostics](#quality-diagnostics)
+- [Evaluation & metrics](#evaluation--metrics)
 - [Project status & licence](#project-status--licence)
 - [Citation](#citation)
 
@@ -177,7 +180,7 @@ The 18-corpus `unirst` model is faster on CPU than on MPS — multi-corpus class
 
 #### Verifying on NVIDIA CUDA hardware
 
-CI runs on macOS Apple Silicon with **Python 3.12** (pixi lock). Package metadata declares `requires-python >= 3.10` for downstream installs; that older floor is best-effort, not the CI matrix. The CUDA dispatch path isn't exercised in CI. To verify on an NVIDIA host:
+CI runs on macOS Apple Silicon with **Python 3.14** (pixi lock). Package metadata declares `requires-python >= 3.14`. The CUDA dispatch path isn't exercised in CI. To verify on an NVIDIA host:
 
 ```bash
 pixi run cuda-smoke
@@ -274,6 +277,35 @@ res["rst"][0].fill_textfields(full_text)  # repopulate later
 ```
 
 **Note:** `.to_rs3()` on a tree with cleared text fields will fail.
+
+---
+
+## Extended RST (eRST) & DAG decoding
+
+Beyond standard hierarchical trees, `isanlp_rst` supports **Extended RST (eRST)** graph structures with non-projective secondary discourse relations and discourse signals (as in GUM eRST / RS4 XML):
+
+- **Faithful RS4 XML Reader & Writer** (`isanlp_rst.erst.rs4`): Native serialization for segments, multinuclear groups, secondary edges (`<secedge>`), and signaling tokens (`<signal>`).
+- **Neural Secondary Edge Scorer** (`isanlp_rst.erst.neural_scorer.NeuralSecondaryEdgeScorer`): Learned bilinear / MLP scorer for candidate secondary discourse relations.
+- **Acyclic DAG Decoder** (`isanlp_rst.erst.dag_decoder.AcyclicDagDecoder`): Greedy decoder with cycle prevention and degree constraints, strictly guaranteeing 100% DAG acyclicity.
+
+```python
+from isanlp_rst.erst import rs4_to_document_and_analysis, parse_rs4_file
+
+doc, analysis = parse_rs4_file("document.rs4")
+# analysis.formalism: OutputFormalismEnum.ERST_GRAPH
+# analysis.secondary_edges: tuple of SecondaryRelationEdge
+# analysis.signals: tuple of DiscourseSignal
+```
+
+---
+
+## Hierarchical long document parsing
+
+For long documents exceeding single-window transformer limits, `isanlp_rst.hierarchical.stitcher.MacroMicroStitcher` provides two-stage macro/micro document stitching:
+
+1. **Micro-Stage**: Parses individual sections / paragraphs into coherent local RST subtrees.
+2. **Macro-Stage**: Predicts high-level discourse relations across section roots.
+3. **Stitching**: Glues local trees into a globally consistent, root-to-leaf discourse tree without recursion limits or offset drifts.
 
 ---
 
@@ -450,6 +482,14 @@ See the [walkthrough](docs/examples/markdown-native.md) for tree reconstruction,
 Use it to A/B any harvest-policy change before trusting it. `--json` for machine-readable output; `--model-version`, `--device`, `--dtype` as in the entry points.
 
 All three entry points also accept `cache_dir=` — an on-disk result cache keyed by source bytes + model identity + knobs, so batch re-runs skip unchanged documents entirely — and `dtype=` for mixed-precision overrides.
+
+---
+
+## Evaluation & metrics
+
+- **Standard Parseval** (`isanlp_rst.eval.parseval.ParsevalScorer`): Standard RST-Parseval metrics (Span, Nuclearity, Relation, Full) matching official evaluation scripts.
+- **Soft Parseval** (`isanlp_rst.eval.soft_parseval.SoftParsevalScorer`): Character-level overlap and soft boundary matching for continuous text spans.
+- **eRST Scorer** (`isanlp_rst.eval.erst_scorer.ErstScorer`): Precision, recall, and F1 evaluation for secondary edges and discourse signal detection.
 
 ---
 
