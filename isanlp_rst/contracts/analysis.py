@@ -100,9 +100,6 @@ class RstAnalysis:
     @property
     def root_node(self) -> RstNode | None:
         """Find the root node if present."""
-        for node in self.nodes:
-            if node.kind == NodeKindEnum.ROOT:
-                return node
         if not self.nodes:
             return None
 
@@ -110,10 +107,18 @@ class RstAnalysis:
         child_ids = {e.child_id for e in self.primary_edges}
         unparented = [n for n in self.nodes if n.node_id not in child_ids]
         if unparented:
+            # Prefer unparented node with kind == ROOT if present
+            for n in unparented:
+                if n.kind == NodeKindEnum.ROOT:
+                    return n
             return max(
                 unparented,
                 key=lambda n: (n.char_span[1] - n.char_span[0], n.edu_span[1] - n.edu_span[0]),
             )
+
+        for node in self.nodes:
+            if node.kind == NodeKindEnum.ROOT:
+                return node
 
         # Fallback: node with maximum character/edu span
         return max(

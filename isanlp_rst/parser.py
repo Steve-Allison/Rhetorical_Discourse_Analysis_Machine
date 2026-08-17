@@ -13,7 +13,7 @@ __all__ = ["ParseFailedError", "Parser", "extract_root_tree"]
 
 if TYPE_CHECKING:
     import torch
-    from isanlp_rst.contracts import RstAnalysis, RstDocument
+    from isanlp_rst.contracts import RstAnalysis, RstDocument, TextSpan
 
 
 class Parser:
@@ -272,4 +272,26 @@ class Parser:
             warnings=base_analysis.warnings,
             failure_code=base_analysis.failure_code,
         )
+
+    def parse_hierarchical(
+        self,
+        document: RstDocument,
+        custom_boundaries: Sequence[TextSpan] | None = None,
+        output: str = "rst_tree",
+    ) -> RstAnalysis:
+        """Parse a multi-section or long document using two-stage macro/micro parsing.
+
+        1. Parses each section or paragraph independently as a self-contained local subtree.
+        2. Parses the macro-level relationships connecting section root nodes.
+        3. Stitches them into a single coherent, valid document RstAnalysis tree.
+        """
+        from isanlp_rst.hierarchical.stitcher import HierarchicalSectionStitcher
+
+        stitcher = HierarchicalSectionStitcher(parser=self)
+        return stitcher.parse_hierarchical(
+            document=document,
+            custom_boundaries=custom_boundaries,
+            output=output,
+        )
+
 
