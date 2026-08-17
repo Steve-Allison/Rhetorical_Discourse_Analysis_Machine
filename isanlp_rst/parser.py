@@ -235,10 +235,12 @@ class Parser:
         self,
         document: RstDocument,
         output: str = "rst_tree",
+        prime_markers: bool = True,
     ) -> RstAnalysis:
         """Parse an RstDocument into a typed, ontology-aligned RstAnalysis."""
         import time
         from isanlp_rst.contracts import OutputFormalismEnum, ProvenanceRecord, RstAnalysis, TimingRecord
+        from isanlp_rst.english.relations.primer import DiscourseMarkerPrimer
         from isanlp_rst.erst.converter import du_to_analysis
 
         start_t = time.perf_counter()
@@ -260,7 +262,7 @@ class Parser:
         )
         timing = TimingRecord(parsing_ms=elapsed_ms, total_ms=elapsed_ms)
 
-        return RstAnalysis(
+        analysis = RstAnalysis(
             document_id=base_analysis.document_id,
             formalism=formalism,
             nodes=base_analysis.nodes,
@@ -272,6 +274,12 @@ class Parser:
             warnings=base_analysis.warnings,
             failure_code=base_analysis.failure_code,
         )
+
+        if prime_markers:
+            primer = DiscourseMarkerPrimer()
+            analysis = primer.prime_analysis(analysis, document)
+
+        return analysis
 
     def parse_hierarchical(
         self,
