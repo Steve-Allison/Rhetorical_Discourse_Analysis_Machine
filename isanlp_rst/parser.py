@@ -57,6 +57,8 @@ class Parser:
         dtype: str | torch.dtype | None = None,
         segmenter: Any | None = None,
         segmenter_model: str | None = None,
+        erst_scorer: Any | None = None,
+        erst_scorer_model: str | None = None,
     ):
         if (
             model_dir is not None
@@ -114,6 +116,18 @@ class Parser:
             )
         else:
             self.segmenter = None
+
+        if erst_scorer is not None:
+            self.erst_scorer = erst_scorer
+        elif erst_scorer_model is not None:
+            from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+
+            self.erst_scorer = NeuralSecondaryEdgeScorer(
+                model_name_or_path=erst_scorer_model,
+                device=device or "auto",
+            )
+        else:
+            self.erst_scorer = None
 
     @classmethod
     def _resolve_family(
@@ -296,6 +310,13 @@ class Parser:
         if prime_markers:
             primer = DiscourseMarkerPrimer()
             analysis = primer.prime_analysis(analysis, document)
+
+        if formalism == OutputFormalismEnum.ERST_GRAPH or output == "erst_graph":
+            from isanlp_rst.english.erst.completer import ErstCompleter
+
+            completer = ErstCompleter()
+            scorer = getattr(self, "erst_scorer", None)
+            analysis = completer.complete_graph(document, analysis, neural_scorer=scorer)
 
         return analysis
 

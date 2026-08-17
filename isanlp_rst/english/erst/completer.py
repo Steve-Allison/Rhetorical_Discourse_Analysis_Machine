@@ -1,6 +1,7 @@
 """eRST graph completer: secondary-edge candidate generation and signal anchoring."""
 
 from dataclasses import dataclass
+from typing import Any
 
 from isanlp_rst.contracts.analysis import (
     DiscourseSignal,
@@ -136,17 +137,63 @@ class ErstCompleter:
         self,
         document: RstDocument,
         primary_analysis: RstAnalysis,
+        neural_scorer: Any | None = None,
     ) -> RstAnalysis:
-        """Complete a classical primary tree into an eRST graph with signals."""
+        """Complete a classical primary tree into an eRST graph with signals and secondary edges."""
         signals = self.detect_lexical_signals(document, primary_analysis)
-        formalism = OutputFormalismEnum.ERST_GRAPH if signals or primary_analysis.secondary_edges else primary_analysis.formalism
+        secondary_edges = list(primary_analysis.secondary_edges)
+
+        if neural_scorer is not None and primary_analysis.nodes:
+            from isanlp_rst.erst.dag_decoder import AcyclicDagDecoder
+            from isanlp_rst.erst.dataset import GUMSecondaryEdgeDataset, extract_eRST_candidates_from_document
+
+            candidates = extract_eRST_candidates_from_document(document, primary_analysis)
+            if candidates:
+                import torch
+                from torch.utils.data import DataLoader
+
+                dataset = GUMSecondaryEdgeDataset(candidates, tokenizer=neural_scorer.tokenizer)
+                loader = DataLoader(dataset, batch_size=32, shuffle=False)
+
+                all_edge_probs: list[float] = []
+                all_rel_logits: list[list[float]] = []
+
+                neural_scorer.eval()
+                with torch.inference_mode():
+                    for batch in loader:
+                        src_input_ids = batch["src_input_ids"].to(neural_scorer.dev)
+                        src_attention_mask = batch["src_attention_mask"].to(neural_scorer.dev)
+                        tgt_input_ids = batch["tgt_input_ids"].to(neural_scorer.dev)
+                        tgt_attention_mask = batch["tgt_attention_mask"].to(neural_scorer.dev)
+                        struct_features = batch["struct_features"].to(neural_scorer.dev)
+
+                        out = neural_scorer(
+                            src_input_ids=src_input_ids,
+                            src_attention_mask=src_attention_mask,
+                            tgt_input_ids=tgt_input_ids,
+                            tgt_attention_mask=tgt_attention_mask,
+                            struct_features=struct_features,
+                        )
+
+                        all_edge_probs.extend(out["edge_probs"].cpu().tolist())
+                        all_rel_logits.extend(out["rel_logits"].cpu().tolist())
+
+                decoder = AcyclicDagDecoder(min_confidence_threshold=self.config.min_confidence_threshold)
+                decoded_sec_edges = decoder.decode(primary_analysis, candidates, all_edge_probs, all_rel_logits)
+                secondary_edges.extend(decoded_sec_edges)
+
+        formalism = (
+            OutputFormalismEnum.ERST_GRAPH
+            if signals or secondary_edges
+            else primary_analysis.formalism
+        )
 
         return RstAnalysis(
             document_id=primary_analysis.document_id,
             formalism=formalism,
             nodes=primary_analysis.nodes,
             primary_edges=primary_analysis.primary_edges,
-            secondary_edges=primary_analysis.secondary_edges,
+            secondary_edges=tuple(secondary_edges),
             signals=tuple(signals),
             provenance=primary_analysis.provenance,
             timing=primary_analysis.timing,
