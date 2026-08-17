@@ -42,6 +42,8 @@ def compute_calibration_error(
     """
     if len(confidences) != len(accuracies):
         raise ValueError(f"Length mismatch: {len(confidences)} confidences vs {len(accuracies)} accuracies")
+    if n_bins < 1:
+        raise ValueError(f"n_bins must be at least 1, got {n_bins}")
 
     total_samples = len(confidences)
     if total_samples == 0:

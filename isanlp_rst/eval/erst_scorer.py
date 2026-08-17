@@ -57,8 +57,8 @@ class SignalMetrics:
 
 
 def _calc_prf(matched: int | float, pred_count: int | float, gold_count: int | float) -> tuple[float, float, float]:
-    p = float(matched / pred_count) if pred_count > 0 else 1.0
-    r = float(matched / gold_count) if gold_count > 0 else 1.0
+    p = float(matched / pred_count) if pred_count > 0 else (1.0 if gold_count == 0 else 0.0)
+    r = float(matched / gold_count) if gold_count > 0 else (1.0 if pred_count == 0 else 0.0)
     f1 = float(2 * p * r / (p + r)) if (p + r) > 0 else 0.0
     return p, r, f1
 

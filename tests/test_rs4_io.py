@@ -87,6 +87,8 @@ def test_rs4_converter_roundtrip() -> None:
     # Check tokens converted back to 1-based
     assert len(rs4_converted.signals) > 1 and len(rs4_converted.signals[1].tokens) > 0
     assert rs4_converted.signals[1].tokens[0] == orig_first_tok
+    assert rs4_converted.signals[1].source == rs4_doc.signals[1].source
+
 
 
 def test_extract_rs4_headers() -> None:

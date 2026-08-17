@@ -272,7 +272,7 @@ def analysis_to_rs4(
     # Convert 0-based token index tuples back to 1-based RS4 token integers
     signals = [
         RS4Signal(
-            source=sig.edge_id,
+            source=sig.edge_id.split("_")[-1] if sig.edge_id.startswith("e_") else sig.edge_id,
             type=sig.signal_type,
             subtype=sig.signal_subtype,
             tokens=tuple(t + 1 for t in sig.token_ids),
@@ -299,10 +299,21 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
     nodes: list[RstNode] = []
     primary_edges: list[PrimaryRelationEdge] = []
 
+    def count_leaves(node: Any) -> int:
+        if node is None:
+            return 0
+        left = getattr(node, "left", None)
+        right = getattr(node, "right", None)
+        if left is None and right is None:
+            return 1
+        return count_leaves(left) + count_leaves(right)
+
+    total_leaves = max(count_leaves(unit), 1)
+    next_internal_id = total_leaves + 1
     curr_edu = 1
 
-    def walk(node: Any, parent_id: int | None = None, relname: str = "span", nuc_str: str = "") -> int:
-        nonlocal curr_edu
+    def walk(node: Any) -> int:
+        nonlocal curr_edu, next_internal_id
         node_id = getattr(node, "id", None)
         left = getattr(node, "left", None)
         right = getattr(node, "right", None)
@@ -315,10 +326,10 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
         if left is None and right is None:
             edu_idx = curr_edu
             curr_edu += 1
-            node_id = node_id if node_id is not None else edu_idx
+            assigned_id = int(node_id) if node_id is not None else edu_idx
             nodes.append(
                 RstNode(
-                    node_id=node_id,
+                    node_id=assigned_id,
                     kind=NodeKindEnum.EDU,
                     edu_span=(edu_idx, edu_idx),
                     char_span=(start_char, end_char),
@@ -326,20 +337,7 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
                     confidence=confidence,
                 )
             )
-            if parent_id is not None:
-                nuc = NuclearityPatternEnum(nuc_str) if nuc_str in NuclearityPatternEnum else NuclearityPatternEnum.NS
-                primary_edges.append(
-                    PrimaryRelationEdge(
-                        edge_id=f"e_{parent_id}_{node_id}",
-                        parent_id=parent_id,
-                        child_id=node_id,
-                        relation_raw=relname,
-                        relation_concept=relname,
-                        nuclearity=nuc,
-                        confidence=confidence,
-                    )
-                )
-            return node_id
+            return assigned_id
 
         # Internal node
         node_rel = str(getattr(node, "relation", "") or "span")
@@ -347,16 +345,21 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
 
         # Recurse children
         start_edu = curr_edu
-        left_id = walk(left, parent_id=None) if left is not None else None
-        right_id = walk(right, parent_id=None) if right is not None else None
+        left_id = walk(left) if left is not None else None
+        right_id = walk(right) if right is not None else None
         end_edu = max(curr_edu - 1, start_edu)
 
-        node_id = node_id if node_id is not None else (end_edu + 1000)
+        if node_id is not None:
+            assigned_id = int(node_id)
+        else:
+            assigned_id = next_internal_id
+            next_internal_id += 1
+
         kind = NodeKindEnum.MULTINUCLEAR_GROUP if node_nuc == "NN" else NodeKindEnum.SPAN
 
         nodes.append(
             RstNode(
-                node_id=node_id,
+                node_id=assigned_id,
                 kind=kind,
                 edu_span=(start_edu, end_edu),
                 char_span=(start_char, end_char),
@@ -366,13 +369,17 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
         )
 
         if left_id is not None:
+            # NS: left is Nucleus (span), right is Satellite (node_rel)
+            # SN: left is Satellite (node_rel), right is Nucleus (span)
+            # NN: left is Nucleus (node_rel), right is Nucleus (node_rel)
+            left_rel = "span" if node_nuc == "NS" else node_rel
             primary_edges.append(
                 PrimaryRelationEdge(
-                    edge_id=f"e_{node_id}_{left_id}",
-                    parent_id=node_id,
+                    edge_id=f"e_{assigned_id}_{left_id}",
+                    parent_id=assigned_id,
                     child_id=left_id,
-                    relation_raw=node_rel if node_nuc != "SN" else "span",
-                    relation_concept=node_rel if node_nuc != "SN" else "span",
+                    relation_raw=left_rel,
+                    relation_concept=left_rel,
                     nuclearity=NuclearityPatternEnum(node_nuc)
                     if node_nuc in NuclearityPatternEnum
                     else NuclearityPatternEnum.NS,
@@ -380,34 +387,21 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
             )
 
         if right_id is not None:
+            right_rel = "span" if node_nuc == "SN" else node_rel
             primary_edges.append(
                 PrimaryRelationEdge(
-                    edge_id=f"e_{node_id}_{right_id}",
-                    parent_id=node_id,
+                    edge_id=f"e_{assigned_id}_{right_id}",
+                    parent_id=assigned_id,
                     child_id=right_id,
-                    relation_raw=node_rel if node_nuc != "NS" else "span",
-                    relation_concept=node_rel if node_nuc != "NS" else "span",
+                    relation_raw=right_rel,
+                    relation_concept=right_rel,
                     nuclearity=NuclearityPatternEnum(node_nuc)
                     if node_nuc in NuclearityPatternEnum
                     else NuclearityPatternEnum.NS,
                 )
             )
 
-        if parent_id is not None:
-            nuc = NuclearityPatternEnum(nuc_str) if nuc_str in NuclearityPatternEnum else NuclearityPatternEnum.NS
-            primary_edges.append(
-                PrimaryRelationEdge(
-                    edge_id=f"e_{parent_id}_{node_id}",
-                    parent_id=parent_id,
-                    child_id=node_id,
-                    relation_raw=relname,
-                    relation_concept=relname,
-                    nuclearity=nuc,
-                    confidence=confidence,
-                )
-            )
-
-        return node_id
+        return assigned_id
 
     walk(unit)
 
@@ -418,3 +412,4 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
         primary_edges=tuple(primary_edges),
         provenance=ProvenanceRecord(producer="du_converter"),
     )
+

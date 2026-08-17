@@ -306,9 +306,27 @@ def test_calibration_error_mismatched_and_empty() -> None:
     with pytest.raises(ValueError, match="Length mismatch"):
         compute_calibration_error([0.5, 0.8], [True])
 
+    with pytest.raises(ValueError, match="n_bins must be at least 1"):
+        compute_calibration_error([0.5], [True], n_bins=0)
+
     empty_summary = compute_calibration_error([], [])
     assert empty_summary.sample_count == 0
     assert empty_summary.expected_calibration_error == 0.0
+
+
+def test_parseval_zero_prediction_against_nonempty_gold() -> None:
+    # Gold has spans, pred has 0 spans -> precision, recall, and F1 must all be 0.0
+    gold = _make_sample_tree_1()
+    empty_pred = RstAnalysis(document_id="empty", formalism=OutputFormalismEnum.RST_TREE, nodes=(), primary_edges=())
+    scorer = StandardParsevalScorer(include_leaves=False, include_root=False)
+    metrics = scorer.score(gold, empty_pred)
+
+    assert metrics.gold_spans_count == 2
+    assert metrics.pred_spans_count == 0
+    assert metrics.span_precision == 0.0
+    assert metrics.span_recall == 0.0
+    assert metrics.span_f1 == 0.0
+
 
 
 def test_compute_span_iou_math() -> None:

@@ -66,6 +66,9 @@ class AcyclicDagDecoder:
             if e_prob < self.min_confidence:
                 continue
 
+            if not r_log:
+                continue
+
             # Softmax over relation logits
             exp_logs = np.exp(np.array(r_log) - np.max(r_log))
             r_probs = exp_logs / np.sum(exp_logs)

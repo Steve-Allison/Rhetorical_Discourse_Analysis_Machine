@@ -33,7 +33,8 @@ class DUConverter:
                 gold_tokens=gold_tokens,
             )
             if len(edus) == 1:
-                return edus
+                data.append(edus[0])
+                continue
 
             self.du_id = len(edus)
             rels = self._tree_string_to_list(span_batch[0])

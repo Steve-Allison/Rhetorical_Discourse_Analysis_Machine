@@ -53,3 +53,27 @@ def test_get_child_missing_span_raises() -> None:
     conv = DUConverter({"tokens": []})
     with pytest.raises(ValueError):
         conv.construct_tree(0, edus, rels)
+
+
+def test_du_converter_collect_multidoc_with_single_edu() -> None:
+    """Multi-document batch where document 0 has 1 EDU and document 1 has 2 EDUs."""
+    predictions = {
+        "tokens": [["Hello", "world"], ["One", "two", "three", "four"]],
+        "edu_breaks": [[1], [1, 3]],
+        "spans": [
+            [],  # Doc 0 is single-EDU, no internal spans
+            ["(1:Nucleus=span:1,2:Satellite=elaboration:2)"],  # Doc 1 has 2 EDUs
+        ],
+    }
+    conv = DUConverter(predictions)
+    results = conv.collect()
+    assert len(results) == 2
+    # First doc is a single EDU DiscourseUnit
+    assert isinstance(results[0], DiscourseUnit)
+    assert results[0].text == "Helloworld"
+    # Second doc is a composite DiscourseUnit tree
+    assert isinstance(results[1], DiscourseUnit)
+    assert results[1].left is not None
+    assert results[1].right is not None
+    assert results[1].relation == "elaboration"
+

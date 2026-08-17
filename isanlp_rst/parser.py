@@ -108,7 +108,7 @@ class Parser:
 
             self.segmenter = TransformerEduSegmenter(
                 model_name_or_path=segmenter_model,
-                device=device or "auto",
+                device=self.predictor._device,
             )
         else:
             self.segmenter = None
@@ -120,7 +120,7 @@ class Parser:
 
             self.erst_scorer = NeuralSecondaryEdgeScorer(
                 model_name_or_path=erst_scorer_model,
-                device=device or "auto",
+                device=self.predictor._device,
             )
         else:
             self.erst_scorer = None

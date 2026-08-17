@@ -5,7 +5,7 @@ import json
 from isanlp.annotation_rst import DiscourseUnit
 
 from isanlp_rst.utils.serialization import tree_from_dict, tree_to_dict
-from isanlp_rst.utils.serialization_pydantic import RstNode
+from isanlp_rst.utils.serialization_pydantic import PydanticDiscourseUnit, RstNode
 
 
 def _sample_tree() -> DiscourseUnit:
@@ -65,19 +65,22 @@ def test_empty_edges() -> None:
 # --- pydantic model (requires the `pydantic` extra) ---
 
 
-def test_rstnode_round_trips_through_discourseunit() -> None:
+def test_pydantic_discourse_unit_alias_and_round_trip() -> None:
+    assert PydanticDiscourseUnit is RstNode
     tree = _sample_tree()
-    model = RstNode.from_tree(tree)
+    model = PydanticDiscourseUnit.from_tree(tree)
     assert model is not None
     # model -> DiscourseUnit -> dict must match the direct dict serialisation
     assert tree_to_dict(model.to_tree()) == tree_to_dict(tree)
 
 
 def test_rstnode_validates_tree_to_dict_output() -> None:
-    model = RstNode.model_validate(tree_to_dict(_sample_tree()))
+    model = PydanticDiscourseUnit.model_validate(tree_to_dict(_sample_tree()))
     assert model.relation == "elaboration"
     assert model.left is not None and model.left.text == "Left edu."
 
 
 def test_rstnode_from_none_is_none() -> None:
+    assert PydanticDiscourseUnit.from_tree(None) is None
     assert RstNode.from_tree(None) is None
+

@@ -54,3 +54,56 @@ def test_parse_document_from_edus(monkeypatch: pytest.MonkeyPatch) -> None:
     assert analysis.document_id == "doc-test-2"
     assert analysis.formalism == OutputFormalismEnum.ERST_GRAPH
     assert len(analysis.nodes) == 3
+
+
+def test_du_to_analysis_nuclearity_and_relations() -> None:
+    from isanlp_rst import SoftParsevalScorer
+    from isanlp_rst.contracts import NuclearityPatternEnum
+    from isanlp_rst.erst.converter import du_to_analysis
+
+    # 1. NS relation: left is Nucleus (span), right is Satellite (elaboration)
+    l1 = DiscourseUnit(id=1, text="Nucleus clause.", start=0, end=15, relation="span")
+    r1 = DiscourseUnit(id=2, text="Satellite clause.", start=16, end=33, relation="elaboration")
+    root_ns = DiscourseUnit(id=3, left=l1, right=r1, start=0, end=33, relation="elaboration", nuclearity="NS")
+
+    ana_ns = du_to_analysis(root_ns, document_id="doc-ns")
+    assert len(ana_ns.nodes) == 3
+    assert len(ana_ns.primary_edges) == 2
+    # Left edge connects root to left child with relation 'span'
+    left_edge = next(e for e in ana_ns.primary_edges if e.child_id == 1)
+    right_edge = next(e for e in ana_ns.primary_edges if e.child_id == 2)
+    assert left_edge.relation_raw == "span"
+    assert right_edge.relation_raw == "elaboration"
+    assert left_edge.nuclearity == NuclearityPatternEnum.NS
+    assert right_edge.nuclearity == NuclearityPatternEnum.NS
+
+    # 2. SN relation: left is Satellite (condition), right is Nucleus (span)
+    l2 = DiscourseUnit(id=1, text="If condition.", start=0, end=13, relation="condition")
+    r2 = DiscourseUnit(id=2, text="Main clause.", start=14, end=26, relation="span")
+    root_sn = DiscourseUnit(id=3, left=l2, right=r2, start=0, end=26, relation="condition", nuclearity="SN")
+
+    ana_sn = du_to_analysis(root_sn, document_id="doc-sn")
+    left_edge_sn = next(e for e in ana_sn.primary_edges if e.child_id == 1)
+    right_edge_sn = next(e for e in ana_sn.primary_edges if e.child_id == 2)
+    assert left_edge_sn.relation_raw == "condition"
+    assert right_edge_sn.relation_raw == "span"
+    assert left_edge_sn.nuclearity == NuclearityPatternEnum.SN
+    assert right_edge_sn.nuclearity == NuclearityPatternEnum.SN
+
+    # 3. NN relation: both left and right are Nuclei (joint)
+    l3 = DiscourseUnit(id=1, text="First point.", start=0, end=12, relation="joint")
+    r3 = DiscourseUnit(id=2, text="Second point.", start=13, end=26, relation="joint")
+    root_nn = DiscourseUnit(id=3, left=l3, right=r3, start=0, end=26, relation="joint", nuclearity="NN")
+
+    ana_nn = du_to_analysis(root_nn, document_id="doc-nn")
+    left_edge_nn = next(e for e in ana_nn.primary_edges if e.child_id == 1)
+    right_edge_nn = next(e for e in ana_nn.primary_edges if e.child_id == 2)
+    assert left_edge_nn.relation_raw == "joint"
+    assert right_edge_nn.relation_raw == "joint"
+    assert left_edge_nn.nuclearity == NuclearityPatternEnum.NN
+    assert right_edge_nn.nuclearity == NuclearityPatternEnum.NN
+
+    # Verify top-level SoftParsevalScorer export works
+    scorer = SoftParsevalScorer()
+    assert scorer is not None
+

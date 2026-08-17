@@ -125,6 +125,9 @@ class RstDocument:
         Note: Character offsets are reconstructed by joining EDUs with spaces.
         Fidelity is marked as RECONSTRUCTED.
         """
+        if not edus:
+            raise ValueError("edus sequence must not be empty.")
+
         doc_id = document_id or str(uuid4())
         prov = provenance or ProvenanceRecord()
 
@@ -133,6 +136,8 @@ class RstDocument:
         curr_offset = 0
 
         for idx, edu_str in enumerate(edus):
+            if not isinstance(edu_str, str) or not edu_str.strip():
+                raise ValueError(f"EDU at index {idx} must be a non-empty string.")
             if idx > 0:
                 constructed_parts.append(" ")
                 curr_offset += 1

@@ -68,6 +68,17 @@ def test_document_from_edus() -> None:
     assert restored.fidelity == doc.fidelity
 
 
+def test_document_from_edus_validation() -> None:
+    with pytest.raises(ValueError, match="edus sequence must not be empty"):
+        RstDocument.from_edus([])
+
+    with pytest.raises(ValueError, match="must be a non-empty string"):
+        RstDocument.from_edus(["valid EDU", "   "])
+
+    with pytest.raises(ValueError, match="must be a non-empty string"):
+        RstDocument.from_edus([""])
+
+
 def test_document_from_tokens_and_edus() -> None:
     text = "Hello world."
     tokens = (

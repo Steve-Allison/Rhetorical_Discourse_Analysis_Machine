@@ -31,6 +31,21 @@ def test_detect_sections_double_newline() -> None:
     assert sections[0].char_span == (0, 22)
 
 
+def test_detect_sections_with_leading_whitespace() -> None:
+    text = "   \n\n  Indented paragraph one.\n\n   Paragraph two with trailing space.  \n\n"
+    doc = RstDocument.from_text(text, document_id="doc_ws")
+    stitcher = HierarchicalSectionStitcher(parser=None)  # type: ignore[arg-type]
+    sections = stitcher.detect_sections(doc)
+
+    assert len(sections) == 2
+    assert sections[0].text == "Indented paragraph one."
+    assert sections[1].text == "Paragraph two with trailing space."
+    # Verify char_span slices text to match text exactly
+    for sec in sections:
+        assert text[sec.char_span[0] : sec.char_span[1]] == sec.text
+
+
+
 def test_detect_sections_custom_boundaries() -> None:
     text = "# Section 1\nContent A\n# Section 2\nContent B"
     doc = RstDocument.from_text(text, document_id="doc_custom")

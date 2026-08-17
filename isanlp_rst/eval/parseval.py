@@ -73,8 +73,8 @@ class ParsevalMetrics:
 
 
 def _calc_prf(matched: int, pred_count: int, gold_count: int) -> tuple[float, float, float]:
-    p = (matched / pred_count) if pred_count > 0 else 1.0
-    r = (matched / gold_count) if gold_count > 0 else 1.0
+    p = (matched / pred_count) if pred_count > 0 else (1.0 if gold_count == 0 else 0.0)
+    r = (matched / gold_count) if gold_count > 0 else (1.0 if pred_count == 0 else 0.0)
     f1 = (2 * p * r / (p + r)) if (p + r) > 0 else 0.0
     return p, r, f1
 

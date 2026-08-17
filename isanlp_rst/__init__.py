@@ -45,7 +45,7 @@ from .contracts import (
     TimingRecord,
 )
 from .erst import RS4Document, RS4Reader, RS4Writer
-from .eval import ErstScorer, StandardParsevalScorer
+from .eval import ErstScorer, SoftParsevalScorer, StandardParsevalScorer
 from .ontology import OntologyAdapter
 from .parser import Parser
 from .rstviewer import RenderedRST
@@ -107,6 +107,7 @@ __all__ = [
     "RstDocument",
     "RstNode",
     "SecondaryRelationEdge",
+    "SoftParsevalScorer",
     "StandardParsevalScorer",
     "TextSpan",
     "TimingRecord",

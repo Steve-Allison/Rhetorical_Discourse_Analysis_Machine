@@ -65,12 +65,24 @@ class HierarchicalSectionStitcher:
             for match in re.finditer(r"\n\s*\n+", raw_text):
                 block_start = pos
                 block_end = match.start()
-                if block_end > block_start and raw_text[block_start:block_end].strip():
-                    spans.append((block_start, block_end))
+                if block_end > block_start:
+                    raw_slice = raw_text[block_start:block_end]
+                    stripped = raw_slice.strip()
+                    if stripped:
+                        leading_ws = len(raw_slice) - len(raw_slice.lstrip())
+                        actual_start = block_start + leading_ws
+                        actual_end = actual_start + len(stripped)
+                        spans.append((actual_start, actual_end))
                 pos = match.end()
 
-            if pos < len(raw_text) and raw_text[pos:].strip():
-                spans.append((pos, len(raw_text)))
+            if pos < len(raw_text):
+                raw_slice = raw_text[pos:]
+                stripped = raw_slice.strip()
+                if stripped:
+                    leading_ws = len(raw_slice) - len(raw_slice.lstrip())
+                    actual_start = pos + leading_ws
+                    actual_end = actual_start + len(stripped)
+                    spans.append((actual_start, actual_end))
 
         if not spans:
             spans = [(0, len(raw_text))]

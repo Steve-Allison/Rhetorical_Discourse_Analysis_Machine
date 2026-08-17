@@ -101,6 +101,41 @@ def test_acyclic_dag_decoder_prevents_cycles() -> None:
     assert decoded[0].target_id == 2
 
 
+def test_acyclic_dag_decoder_empty_and_zero_len_cases() -> None:
+    analysis = RstAnalysis(
+        document_id="doc_empty",
+        formalism=OutputFormalismEnum.RST_TREE,
+        nodes=(),
+        primary_edges=(),
+    )
+    decoder = AcyclicDagDecoder()
+    assert decoder.decode(analysis, [], [], []) == ()
+
+    # Candidate with empty relation logits
+    cand = SecondaryEdgeCandidate(
+        source_id=1,
+        target_id=2,
+        source_text="1",
+        target_text="2",
+        source_char_span=(0, 5),
+        target_char_span=(6, 10),
+        structural_features=(1.0,) * 9,
+        is_gold_edge=False,
+    )
+    analysis_with_nodes = RstAnalysis(
+        document_id="doc_nodes",
+        formalism=OutputFormalismEnum.RST_TREE,
+        nodes=(
+            RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 5), text="1"),
+            RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(6, 10), text="2"),
+        ),
+        primary_edges=(),
+    )
+    # Empty r_log is skipped safely
+    assert decoder.decode(analysis_with_nodes, [cand], [0.95], [[]]) == ()
+
+
+
 def test_extract_erst_candidates_ancestry_pruning() -> None:
     doc = RstDocument.from_text("Statement one. Statement two. Statement three.", document_id="doc_prune")
 

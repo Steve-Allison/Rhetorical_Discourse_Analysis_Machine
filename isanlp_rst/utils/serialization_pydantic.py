@@ -14,8 +14,8 @@ from pydantic import BaseModel, ConfigDict
 from isanlp.annotation_rst import DiscourseUnit
 
 
-class RstNode(BaseModel):
-    """Validated, JSON-serialisable representation of one RST tree node.
+class PydanticDiscourseUnit(BaseModel):
+    """Validated, JSON-serialisable representation of one DiscourseUnit RST tree node.
 
     Fields mirror the serialised ``DiscourseUnit`` attributes; ``left`` /
     ``right`` recurse. All fields are optional so leaves (no relation /
@@ -39,12 +39,12 @@ class RstNode(BaseModel):
     entropy: float | None = None
     # Quoted: Pydantic resolves field annotations at class creation
     # (https://docs.pydantic.dev/latest/concepts/forward_annotations/).
-    left: "RstNode | None" = None
-    right: "RstNode | None" = None
+    left: "PydanticDiscourseUnit | None" = None
+    right: "PydanticDiscourseUnit | None" = None
 
     @classmethod
-    def from_tree(cls, node: DiscourseUnit | None) -> RstNode | None:
-        """Build an ``RstNode`` from a ``DiscourseUnit`` tree (recursive)."""
+    def from_tree(cls, node: DiscourseUnit | None) -> "PydanticDiscourseUnit | None":
+        """Build a ``PydanticDiscourseUnit`` from a ``DiscourseUnit`` tree (recursive)."""
         if node is None:
             return None
         return cls(
@@ -76,4 +76,8 @@ class RstNode(BaseModel):
         )
 
 
-__all__ = ["RstNode"]
+# Backward-compatible alias for existing consumers
+RstNode = PydanticDiscourseUnit
+
+__all__ = ["PydanticDiscourseUnit", "RstNode"]
+
