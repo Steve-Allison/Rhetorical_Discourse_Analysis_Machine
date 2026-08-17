@@ -58,8 +58,7 @@ def test_rendered_rst_repr_html_contract() -> None:
 
 def test_html_to_fragment_keeps_assets_and_body_inner() -> None:
     frag = _html_to_fragment(
-        "<html><head><style>a{}</style><script>x</script><title>t</title></head>"
-        "<body><p>hi</p></body></html>"
+        "<html><head><style>a{}</style><script>x</script><title>t</title></head><body><p>hi</p></body></html>"
     )
     assert frag == "<style>a{}</style><script>x</script><p>hi</p>"
 

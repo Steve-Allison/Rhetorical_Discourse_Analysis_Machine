@@ -178,9 +178,7 @@ def test_markdown_section_levels(markdown_doc: DoclingDocument) -> None:
     "doc_fixture",
     ["pptx_doc", "pdf_doc", "vtt_doc", "markdown_doc"],
 )
-def test_all_boundary_ids_unique(
-    doc_fixture: str, request: pytest.FixtureRequest
-) -> None:
+def test_all_boundary_ids_unique(doc_fixture: str, request: pytest.FixtureRequest) -> None:
     doc = request.getfixturevalue(doc_fixture)
     result = detect_boundaries(doc)
     ids = [b.id for b in result]
@@ -191,13 +189,9 @@ def test_all_boundary_ids_unique(
     "doc_fixture",
     ["pptx_doc", "pdf_doc", "vtt_doc", "markdown_doc"],
 )
-def test_all_self_refs_in_boundaries_are_unique(
-    doc_fixture: str, request: pytest.FixtureRequest
-) -> None:
+def test_all_self_refs_in_boundaries_are_unique(doc_fixture: str, request: pytest.FixtureRequest) -> None:
     """Within each boundary, self_refs has no duplicates."""
     doc = request.getfixturevalue(doc_fixture)
     result = detect_boundaries(doc)
     for b in result:
-        assert len(set(b.self_refs)) == len(b.self_refs), (
-            f"duplicate self_refs in boundary {b.id}: {b.self_refs}"
-        )
+        assert len(set(b.self_refs)) == len(b.self_refs), f"duplicate self_refs in boundary {b.id}: {b.self_refs}"

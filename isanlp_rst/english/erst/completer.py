@@ -46,12 +46,8 @@ class ErstCompleter:
             return []
 
         # Find existing primary connected pairs
-        existing_primary_pairs = {
-            (edge.parent_id, edge.child_id)
-            for edge in analysis.primary_edges
-        } | {
-            (edge.child_id, edge.parent_id)
-            for edge in analysis.primary_edges
+        existing_primary_pairs = {(edge.parent_id, edge.child_id) for edge in analysis.primary_edges} | {
+            (edge.child_id, edge.parent_id) for edge in analysis.primary_edges
         }
 
         candidates: list[tuple[int, int]] = []
@@ -108,9 +104,7 @@ class ErstCompleter:
 
             # Find tokens within child node span
             node_token_indices = [
-                t.token_id
-                for t in document.tokens
-                if child_char_start <= t.start and t.end <= child_char_end
+                t.token_id for t in document.tokens if child_char_start <= t.start and t.end <= child_char_end
             ]
 
             for tok_id in node_token_indices:
@@ -182,11 +176,7 @@ class ErstCompleter:
                 decoded_sec_edges = decoder.decode(primary_analysis, candidates, all_edge_probs, all_rel_logits)
                 secondary_edges.extend(decoded_sec_edges)
 
-        formalism = (
-            OutputFormalismEnum.ERST_GRAPH
-            if signals or secondary_edges
-            else primary_analysis.formalism
-        )
+        formalism = OutputFormalismEnum.ERST_GRAPH if signals or secondary_edges else primary_analysis.formalism
 
         return RstAnalysis(
             document_id=primary_analysis.document_id,

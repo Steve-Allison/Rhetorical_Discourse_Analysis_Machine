@@ -59,31 +59,36 @@ def reject_nested_tables(root: etree._Element) -> None:
                     "Flatten tables upstream."
                 )
 
+
 # Element-head children whose own text must NOT enter the harvest — they
 # are metadata, not prose.
-_HEAD_LOCALS: frozenset[str] = frozenset({
-    "label",
-    "thread",
-    "xref",
-    "href",
-    "layer",
-    "location",
-    "caption",
-    "custom",
-})
+_HEAD_LOCALS: frozenset[str] = frozenset(
+    {
+        "label",
+        "thread",
+        "xref",
+        "href",
+        "layer",
+        "location",
+        "caption",
+        "custom",
+    }
+)
 
 # Top-level semantic elements that we treat as discrete harvest units.
-_HARVEST_AS_BLOCK: frozenset[str] = frozenset({
-    "text", "heading", "footnote",
-})
+_HARVEST_AS_BLOCK: frozenset[str] = frozenset(
+    {
+        "text",
+        "heading",
+        "footnote",
+    }
+)
 
 # OTSL-style cell markers per the DocLang table model.
 _HEADER_CELL_MARKERS: frozenset[str] = frozenset({"ched", "rhed", "corn"})
 _BODY_CELL_MARKERS: frozenset[str] = frozenset({"fcel"})
 _POSITION_ONLY_MARKERS: frozenset[str] = frozenset({"ecel", "lcel", "ucel", "xcel"})
-_GRID_MARKERS: frozenset[str] = (
-    _HEADER_CELL_MARKERS | _BODY_CELL_MARKERS | _POSITION_ONLY_MARKERS
-)
+_GRID_MARKERS: frozenset[str] = _HEADER_CELL_MARKERS | _BODY_CELL_MARKERS | _POSITION_ONLY_MARKERS
 _ROW_BREAK: str = "nl"
 
 
@@ -295,15 +300,17 @@ def harvest_doclang_text(
             cursor += len(sep)
         start = cursor
         end = start + len(text)
-        spans.append(HarvestSpan(
-            xpath=xpath,
-            thread_id=thread_id,
-            layer=layer,
-            text=text,
-            start=start,
-            end=end,
-            kind=kind,
-        ))
+        spans.append(
+            HarvestSpan(
+                xpath=xpath,
+                thread_id=thread_id,
+                layer=layer,
+                text=text,
+                start=start,
+                end=end,
+                kind=kind,
+            )
+        )
         parts.append(text)
         cursor = end
 
@@ -357,8 +364,7 @@ def harvest_doclang_text(
             # Nested field_items under <value> are harvested recursively;
             # a leaf value is one span.
             has_nested_field_item = any(
-                isinstance(child.tag, str) and local_name(child) == "field_item"
-                for child in element
+                isinstance(child.tag, str) and local_name(child) == "field_item" for child in element
             )
             if has_nested_field_item:
                 for child in element:
@@ -482,25 +488,29 @@ def harvest_doclang_tables(
                     cursor += sep_len
                 start = cursor
                 end = start + len(text)
-                spans.append(HarvestSpan(
-                    xpath=local_path(marker),
-                    thread_id=thread,
-                    layer=layer,
-                    text=text,
-                    start=start,
-                    end=end,
-                    kind=kind,
-                    row_idx=row,
-                    col_idx=col,
-                ))
+                spans.append(
+                    HarvestSpan(
+                        xpath=local_path(marker),
+                        thread_id=thread,
+                        layer=layer,
+                        text=text,
+                        start=start,
+                        end=end,
+                        kind=kind,
+                        row_idx=row,
+                        col_idx=col,
+                    )
+                )
                 pieces.append(text)
                 cursor = end
-        harvests.append(TableHarvest(
-            table_idx=table_idx,
-            marker_xpath=local_path(table_el),
-            full_text=harvest_separator.join(pieces),
-            spans=tuple(spans),
-        ))
+        harvests.append(
+            TableHarvest(
+                table_idx=table_idx,
+                marker_xpath=local_path(table_el),
+                full_text=harvest_separator.join(pieces),
+                spans=tuple(spans),
+            )
+        )
 
     return tuple(harvests)
 

@@ -89,9 +89,7 @@ def harvest_docling_text(
             cursor += sep_len
         start = cursor
         end = start + len(text)
-        spans.append(
-            HarvestSpan(self_ref=self_ref, text=text, start=start, end=end, kind=kind)
-        )
+        spans.append(HarvestSpan(self_ref=self_ref, text=text, start=start, end=end, kind=kind))
         pieces.append(text)
         cursor = end
 

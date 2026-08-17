@@ -133,12 +133,7 @@ def test_code_block_boundary_references_its_span() -> None:
 
 def test_every_main_span_appears_in_at_least_one_boundary() -> None:
     """Invariant: no main-harvest span is orphaned."""
-    src = (
-        "lead\n\n# A\n\npara\n\n"
-        "| h |\n|---|\n| c |\n\n"
-        "```\ncode\n```\n\n"
-        "> quoted\n"
-    )
+    src = "lead\n\n# A\n\npara\n\n| h |\n|---|\n| c |\n\n```\ncode\n```\n\n> quoted\n"
     boundaries, spans, _ = _boundaries(src)
     boundary_union = set()
     for b in boundaries:

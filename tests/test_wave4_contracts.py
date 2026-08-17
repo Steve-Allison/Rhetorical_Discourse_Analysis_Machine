@@ -94,9 +94,7 @@ def _write_one_para_docling(path: Path) -> Path:
     "fmt",
     ["markdown", "doclang", "docling"],
 )
-def test_construct_path_forwards_device_dtype_hf(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, fmt: str
-) -> None:
+def test_construct_path_forwards_device_dtype_hf(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, fmt: str) -> None:
     """When ``parser is None``, entry points must forward device/dtype/hf kwargs."""
     _CapturingParser.last_kwargs = None
     monkeypatch.setattr("isanlp_rst.parser.Parser", _CapturingParser)

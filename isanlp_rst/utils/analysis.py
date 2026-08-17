@@ -27,42 +27,46 @@ type RelationCategory = Literal["subject_matter", "presentational", "unknown"]
 # Summary, Evaluation, Comparison) are placed per the original 1988 paper;
 # later inventories sometimes move them — adjust here if your downstream
 # analysis treats them as presentational.
-_SUBJECT_MATTER: frozenset[str] = frozenset({
-    "elaboration",
-    "circumstance",
-    "cause",
-    "volitional-cause",
-    "non-volitional-cause",
-    "result",
-    "volitional-result",
-    "non-volitional-result",
-    "purpose",
-    "condition",
-    "otherwise",
-    "interpretation",
-    "means",
-    "solutionhood",
-    "sequence",
-    "contrast",
-    "joint",
-    "list",
-    "same-unit",
-    "restatement",
-    "summary",
-    "evaluation",
-    "comparison",
-})
+_SUBJECT_MATTER: frozenset[str] = frozenset(
+    {
+        "elaboration",
+        "circumstance",
+        "cause",
+        "volitional-cause",
+        "non-volitional-cause",
+        "result",
+        "volitional-result",
+        "non-volitional-result",
+        "purpose",
+        "condition",
+        "otherwise",
+        "interpretation",
+        "means",
+        "solutionhood",
+        "sequence",
+        "contrast",
+        "joint",
+        "list",
+        "same-unit",
+        "restatement",
+        "summary",
+        "evaluation",
+        "comparison",
+    }
+)
 
-_PRESENTATIONAL: frozenset[str] = frozenset({
-    "motivation",
-    "antithesis",
-    "background",
-    "enablement",
-    "evidence",
-    "justify",
-    "concession",
-    "preparation",
-})
+_PRESENTATIONAL: frozenset[str] = frozenset(
+    {
+        "motivation",
+        "antithesis",
+        "background",
+        "enablement",
+        "evidence",
+        "justify",
+        "concession",
+        "preparation",
+    }
+)
 
 
 def _is_leaf(node: Any) -> bool:
@@ -263,9 +267,7 @@ def tree_stats(tree: Any) -> dict[str, Any]:
     n_count = nuclearity_chars.get("N", 0)
     s_count = nuclearity_chars.get("S", 0)
     nuc_sat_ratio: float = (n_count / s_count) if s_count else float("inf")
-    mean_entropy: float | None = (
-        sum(entropies) / len(entropies) if entropies else None
-    )
+    mean_entropy: float | None = sum(entropies) / len(entropies) if entropies else None
 
     return {
         "depth": depth,

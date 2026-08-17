@@ -42,22 +42,20 @@ class PredictorUniRST(BasePredictor):
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
 
         if model_dir is not None and hf_model_name is not None:
-            raise ValueError(
-                'Pass exactly one of `model_dir` or `hf_model_name`, not both.'
-            )
+            raise ValueError("Pass exactly one of `model_dir` or `hf_model_name`, not both.")
 
-        model_filename = 'best_weights.pt'
-        config_filename = 'config.json'
+        model_filename = "best_weights.pt"
+        config_filename = "config.json"
 
         if model_dir is not None:
-            self.mode = 'local'
+            self.mode = "local"
             self.model_dir = Path(model_dir)
             self.hf_model_name = None
             self.hf_model_version = None
             self.model_file = str(self.model_dir / model_filename)
             self.config_path = str(self.model_dir / config_filename)
         elif hf_model_name is not None:
-            self.mode = 'hf'
+            self.mode = "hf"
             self.model_dir = None
             self.hf_model_name = hf_model_name
             self.hf_model_version = hf_model_version
@@ -72,18 +70,18 @@ class PredictorUniRST(BasePredictor):
                 revision=hf_model_version,
             )
         else:
-            raise ValueError('Pass either `model_dir` or `hf_model_name`.')
+            raise ValueError("Pass either `model_dir` or `hf_model_name`.")
 
-        self.config = json.loads(Path(self.config_path).read_text(encoding='utf-8'))
-        self.dataset_names = parse_corpora_config(self.config['data']['corpora'])
+        self.config = json.loads(Path(self.config_path).read_text(encoding="utf-8"))
+        self.dataset_names = parse_corpora_config(self.config["data"]["corpora"])
 
         self.relinventory = relinventory
         if self.relinventory is None:
             self.relinventory_idx = relinventory_idx
             if not (0 <= self.relinventory_idx < len(self.dataset_names)):
                 raise ValueError(
-                    f'relinventory_idx={self.relinventory_idx} is out of bounds for '
-                    f'dataset_names ({self.dataset_names}).'
+                    f"relinventory_idx={self.relinventory_idx} is out of bounds for "
+                    f"dataset_names ({self.dataset_names})."
                 )
         else:
             key = self.relinventory.strip().lower()
@@ -91,8 +89,7 @@ class PredictorUniRST(BasePredictor):
                 self.relinventory_idx = self.dataset_names.index(key)
             except ValueError as exc:
                 raise ValueError(
-                    f"Unknown relinventory {self.relinventory!r}. "
-                    f"Available datasets: {self.dataset_names}."
+                    f"Unknown relinventory {self.relinventory!r}. Available datasets: {self.dataset_names}."
                 ) from exc
 
         self.relation_tables: list[Sequence[str]] = []
@@ -101,8 +98,8 @@ class PredictorUniRST(BasePredictor):
             if relation_table is None:
                 raise FileNotFoundError(
                     f"Could not find relation inventory for corpus '{corpus_name}'. "
-                    'Package relation_table_*.txt, data_manager_*.json, '
-                    'or a legacy data_manager_*.pickle with the model.'
+                    "Package relation_table_*.txt, data_manager_*.json, "
+                    "or a legacy data_manager_*.pickle with the model."
                 )
             self.relation_tables.append(relation_table)
 
@@ -120,7 +117,7 @@ class PredictorUniRST(BasePredictor):
         if candidate.is_absolute() and candidate.exists():
             return str(candidate)
 
-        if self.mode == 'local':
+        if self.mode == "local":
             if self.model_dir is None:
                 return None
             path = self.model_dir / relative_path
@@ -148,24 +145,24 @@ class PredictorUniRST(BasePredictor):
     def _corpus_variants(self, corpus_name: str) -> list[str]:
         lower = corpus_name.lower()
         variants = {lower}
-        variants.add(lower.replace('.', '_'))
-        variants.add(lower.replace('-', '_'))
-        if lower.endswith('-tr'):
+        variants.add(lower.replace(".", "_"))
+        variants.add(lower.replace("-", "_"))
+        if lower.endswith("-tr"):
             variants.add(lower[:-3])
-        if lower.endswith('_tr'):
+        if lower.endswith("_tr"):
             variants.add(lower[:-3])
-        if lower in {'rst-dt-tr', 'rst_dt_tr'}:
-            variants.add('rst-dt')
-            variants.add('rst_dt')
-        if lower in {'gum10-tr', 'gum10_tr'}:
-            variants.add('gum10')
-            variants.add('gum')
+        if lower in {"rst-dt-tr", "rst_dt_tr"}:
+            variants.add("rst-dt")
+            variants.add("rst_dt")
+        if lower in {"gum10-tr", "gum10_tr"}:
+            variants.add("gum10")
+            variants.add("gum")
         return [variant for variant in variants if variant]
 
     def _unique_candidates(self, filenames: list[str]) -> list[str]:
         candidates: list[str] = []
         for filename in filenames:
-            candidates.extend((filename, f'data/{filename}', f'data/dms/{filename}'))
+            candidates.extend((filename, f"data/{filename}", f"data/dms/{filename}"))
         return list(dict.fromkeys(candidates))
 
     def _load_inventory(self, corpus_name: str) -> list[str] | None:
@@ -177,7 +174,7 @@ class PredictorUniRST(BasePredictor):
         )
 
     def _load_legacy_pickle_inventory(self, corpus_name: str) -> list[str] | None:
-        filenames = [f'data_manager_{variant}.pickle' for variant in self._corpus_variants(corpus_name)]
+        filenames = [f"data_manager_{variant}.pickle" for variant in self._corpus_variants(corpus_name)]
         for rel_path in self._unique_candidates(filenames):
             resolved = self._resolve_resource(rel_path)
             if not resolved:
@@ -185,14 +182,12 @@ class PredictorUniRST(BasePredictor):
             try:
                 return import_relation_table_from_legacy_pickle(Path(resolved))
             except (pickle.UnpicklingError, EOFError, OSError, ValueError) as exc:
-                self.logger.warning(
-                    'Skipping unreadable data_manager pickle %s: %s', resolved, exc
-                )
+                self.logger.warning("Skipping unreadable data_manager pickle %s: %s", resolved, exc)
                 continue
         return None
 
     def _load_inventory_json(self, corpus_name: str) -> list[str] | None:
-        filenames = [f'data_manager_{variant}.json' for variant in self._corpus_variants(corpus_name)]
+        filenames = [f"data_manager_{variant}.json" for variant in self._corpus_variants(corpus_name)]
         for rel_path in self._unique_candidates(filenames):
             resolved = self._resolve_resource(rel_path)
             if not resolved:
@@ -200,19 +195,17 @@ class PredictorUniRST(BasePredictor):
             try:
                 return load_relation_inventory_json(Path(resolved))
             except (OSError, json.JSONDecodeError, ValueError) as exc:
-                self.logger.warning(
-                    'Skipping unreadable data_manager JSON %s: %s', resolved, exc
-                )
+                self.logger.warning("Skipping unreadable data_manager JSON %s: %s", resolved, exc)
                 continue
         return None
 
     def _load_relation_table(self, corpus_name: str) -> list[str] | None:
         """Load ``relation_table_<variant>.txt`` using corpus aliases."""
         for variant in self._corpus_variants(corpus_name):
-            resolved = self._resolve_resource(f'relation_table_{variant}.txt')
+            resolved = self._resolve_resource(f"relation_table_{variant}.txt")
             if not resolved:
                 continue
-            return relation_table_from_txt(Path(resolved).read_text(encoding='utf-8'))
+            return relation_table_from_txt(Path(resolved).read_text(encoding="utf-8"))
         return None
 
     @staticmethod
@@ -225,23 +218,25 @@ class PredictorUniRST(BasePredictor):
         """
         indices = set()
         for key in state_dict.keys():
-            if key.startswith('label_classifiers.'):
-                parts = key.split('.', 2)
+            if key.startswith("label_classifiers."):
+                parts = key.split(".", 2)
                 if len(parts) >= 2 and parts[1].isdigit():
                     indices.add(int(parts[1]))
         return (max(indices) + 1) if indices else None
 
     def _load_model(self) -> None:
         self.tokenizer = AutoTokenizer.from_pretrained(
-            self.config['model']['transformer']['model_name'],
+            self.config["model"]["transformer"]["model_name"],
             use_fast=True,
         )
-        self.tokenizer.model_max_length = int(1e9)  # The parser relies on a sliding window encoding, so we'll suppress the max_len warning this way.
+        self.tokenizer.model_max_length = int(
+            1e9
+        )  # The parser relies on a sliding window encoding, so we'll suppress the max_len warning this way.
 
-        transformer_config = AutoConfig.from_pretrained(self.config['model']['transformer']['model_name'])
+        transformer_config = AutoConfig.from_pretrained(self.config["model"]["transformer"]["model_name"])
         transformer = AutoModel.from_config(transformer_config).to(self._device)
 
-        self.tokenizer.add_tokens(['<P>'])
+        self.tokenizer.add_tokens(["<P>"])
         transformer.resize_token_embeddings(len(self.tokenizer))
 
         # Load weights ONCE, up front. The classifier count in the trained
@@ -252,10 +247,7 @@ class PredictorUniRST(BasePredictor):
         ckpt_n_classifiers = self._classifier_count_from_state_dict(state_dict)
 
         rel_tables = self.relation_tables
-        use_union = (
-            str2bool(self.config['model'].get('use_union_relations', False))
-            and len(rel_tables) > 1
-        )
+        use_union = str2bool(self.config["model"].get("use_union_relations", False)) and len(rel_tables) > 1
 
         if use_union:
             union_table: list[str] = []
@@ -285,11 +277,11 @@ class PredictorUniRST(BasePredictor):
             classes_numbers = [len(union_table)]
             dataset2classifier = list(range(len(rel_tables)))
             model_specific_config = {
-                'relation_tables': model_relation_tables,
-                'relation_vocab': union_table,
-                'dataset_masks': dataset_masks,
-                'classes_numbers': classes_numbers,
-                'dataset2classifier': dataset2classifier,
+                "relation_tables": model_relation_tables,
+                "relation_vocab": union_table,
+                "dataset_masks": dataset_masks,
+                "classes_numbers": classes_numbers,
+                "dataset2classifier": dataset2classifier,
             }
         else:
             # Non-union path: pick the architecture that matches the
@@ -321,40 +313,40 @@ class PredictorUniRST(BasePredictor):
                         unique_tables.append(table)
                 if len(unique_tables) != ckpt_n_classifiers:
                     raise RuntimeError(
-                        f'Checkpoint has {ckpt_n_classifiers} label classifier(s) '
-                        f'but relation-table dedup produced {len(unique_tables)}. '
-                        f'The published model assets likely lack the per-corpus '
-                        f'data_manager pickles needed to reconstruct distinct '
-                        f'relation tables. Affected corpora: {self.dataset_names}.'
+                        f"Checkpoint has {ckpt_n_classifiers} label classifier(s) "
+                        f"but relation-table dedup produced {len(unique_tables)}. "
+                        f"The published model assets likely lack the per-corpus "
+                        f"data_manager pickles needed to reconstruct distinct "
+                        f"relation tables. Affected corpora: {self.dataset_names}."
                     )
                 model_relation_tables = unique_tables
                 classes_numbers = [len(t) for t in unique_tables]
                 dataset2classifier = mapping
             else:
                 raise RuntimeError(
-                    f'Checkpoint declares {ckpt_n_classifiers} label classifier(s) '
-                    f'but only {n_corpora} corpora are configured '
-                    f'({self.dataset_names}). Cannot construct a consistent model.'
+                    f"Checkpoint declares {ckpt_n_classifiers} label classifier(s) "
+                    f"but only {n_corpora} corpora are configured "
+                    f"({self.dataset_names}). Cannot construct a consistent model."
                 )
 
             self.label_maps = None
             model_specific_config = {
-                'relation_tables': model_relation_tables,
-                'classes_numbers': classes_numbers,
-                'dataset2classifier': dataset2classifier,
+                "relation_tables": model_relation_tables,
+                "classes_numbers": classes_numbers,
+                "dataset2classifier": dataset2classifier,
             }
 
         model_config = {
-            'transformer': transformer,
-            'emb_dim': int(self.config['model']['transformer']['emb_size']),
+            "transformer": transformer,
+            "emb_dim": int(self.config["model"]["transformer"]["emb_size"]),
             # Inherited ParsingNet kwarg name; holds a torch.device (may be mps).
-            'cuda_device': self._device,
+            "cuda_device": self._device,
         }
         model_config.update(model_specific_config)
         model_config.update(self._get_model_configs())
 
-        parser_type = self.config['model'].get('parser_type', 'top-down')
-        model_cls = ParsingNet if parser_type == 'top-down' else ParsingNetBottomUp
+        parser_type = self.config["model"].get("parser_type", "top-down")
+        model_cls = ParsingNet if parser_type == "top-down" else ParsingNetBottomUp
 
         self.model = model_cls(**model_config).to(self._device)
         self.model.load_state_dict(state_dict)
@@ -363,70 +355,70 @@ class PredictorUniRST(BasePredictor):
     def _get_model_configs(self) -> dict:
         config: dict = {}
 
-        transformer_cfg = self.config['model'].get('transformer', {})
-        segmenter_cfg = self.config['model'].get('segmenter', {})
-        model_cfg = self.config.get('model', {})
+        transformer_cfg = self.config["model"].get("transformer", {})
+        segmenter_cfg = self.config["model"].get("segmenter", {})
+        model_cfg = self.config.get("model", {})
 
-        if 'normalize' in transformer_cfg:
-            config['normalize_embeddings'] = transformer_cfg.get('normalize')
+        if "normalize" in transformer_cfg:
+            config["normalize_embeddings"] = transformer_cfg.get("normalize")
 
-        if 'window_size' in transformer_cfg:
-            config['window_size'] = int(transformer_cfg.get('window_size'))
+        if "window_size" in transformer_cfg:
+            config["window_size"] = int(transformer_cfg.get("window_size"))
 
-        if 'window_padding' in transformer_cfg:
-            config['window_padding'] = int(transformer_cfg.get('window_padding'))
+        if "window_padding" in transformer_cfg:
+            config["window_padding"] = int(transformer_cfg.get("window_padding"))
 
-        if 'hidden_size' in model_cfg:
-            hidden_size = int(model_cfg.get('hidden_size'))
-            config['hidden_size'] = hidden_size
-            config['decoder_input_size'] = hidden_size
-            config['classifier_input_size'] = hidden_size
-            config['classifier_hidden_size'] = hidden_size
+        if "hidden_size" in model_cfg:
+            hidden_size = int(model_cfg.get("hidden_size"))
+            config["hidden_size"] = hidden_size
+            config["decoder_input_size"] = hidden_size
+            config["classifier_input_size"] = hidden_size
+            config["classifier_hidden_size"] = hidden_size
 
-        if 'type' in segmenter_cfg:
-            config['segmenter_type'] = segmenter_cfg.get('type')
+        if "type" in segmenter_cfg:
+            config["segmenter_type"] = segmenter_cfg.get("type")
 
-        if 'hidden_dim' in segmenter_cfg:
-            config['segmenter_hidden_dim'] = int(segmenter_cfg.get('hidden_dim'))
+        if "hidden_dim" in segmenter_cfg:
+            config["segmenter_hidden_dim"] = int(segmenter_cfg.get("hidden_dim"))
 
-        if 'lstm_num_layers' in segmenter_cfg:
-            config['segmenter_lstm_num_layers'] = segmenter_cfg.get('lstm_num_layers')
+        if "lstm_num_layers" in segmenter_cfg:
+            config["segmenter_lstm_num_layers"] = segmenter_cfg.get("lstm_num_layers")
 
-        if 'lstm_dropout' in segmenter_cfg:
-            config['segmenter_lstm_dropout'] = segmenter_cfg.get('lstm_dropout')
+        if "lstm_dropout" in segmenter_cfg:
+            config["segmenter_lstm_dropout"] = segmenter_cfg.get("lstm_dropout")
 
-        if 'lstm_bidirectional' in segmenter_cfg:
-            config['segmenter_lstm_bidirectional'] = str2bool(segmenter_cfg.get('lstm_bidirectional'))
+        if "lstm_bidirectional" in segmenter_cfg:
+            config["segmenter_lstm_bidirectional"] = str2bool(segmenter_cfg.get("lstm_bidirectional"))
 
-        if 'use_crf' in segmenter_cfg:
-            config['segmenter_use_crf'] = str2bool(segmenter_cfg.get('use_crf'))
+        if "use_crf" in segmenter_cfg:
+            config["segmenter_use_crf"] = str2bool(segmenter_cfg.get("use_crf"))
 
-        if 'use_log_crf' in segmenter_cfg:
-            config['segmenter_use_log_crf'] = str2bool(segmenter_cfg.get('use_log_crf'))
+        if "use_log_crf" in segmenter_cfg:
+            config["segmenter_use_log_crf"] = str2bool(segmenter_cfg.get("use_log_crf"))
 
-        if 'use_sent_boundaries' in segmenter_cfg:
-            config['segmenter_use_sent_boundaries'] = str2bool(segmenter_cfg.get('use_sent_boundaries'))
+        if "use_sent_boundaries" in segmenter_cfg:
+            config["segmenter_use_sent_boundaries"] = str2bool(segmenter_cfg.get("use_sent_boundaries"))
 
-        if 'separated' in segmenter_cfg:
-            config['separated_segmentation'] = str2bool(segmenter_cfg.get('separated'))
+        if "separated" in segmenter_cfg:
+            config["separated_segmentation"] = str2bool(segmenter_cfg.get("separated"))
 
-        if 'if_edu_start_loss' in segmenter_cfg:
-            config['segmenter_if_edu_start_loss'] = str2bool(segmenter_cfg.get('if_edu_start_loss'))
+        if "if_edu_start_loss" in segmenter_cfg:
+            config["segmenter_if_edu_start_loss"] = str2bool(segmenter_cfg.get("if_edu_start_loss"))
 
-        if 'edu_encoding_kind' in model_cfg:
-            config['edu_encoding_kind'] = model_cfg.get('edu_encoding_kind')
+        if "edu_encoding_kind" in model_cfg:
+            config["edu_encoding_kind"] = model_cfg.get("edu_encoding_kind")
 
-        if 'du_encoding_kind' in model_cfg:
-            config['du_encoding_kind'] = model_cfg.get('du_encoding_kind')
+        if "du_encoding_kind" in model_cfg:
+            config["du_encoding_kind"] = model_cfg.get("du_encoding_kind")
 
-        if 'rel_classification_kind' in model_cfg:
-            config['rel_classification_kind'] = model_cfg.get('rel_classification_kind')
+        if "rel_classification_kind" in model_cfg:
+            config["rel_classification_kind"] = model_cfg.get("rel_classification_kind")
 
-        if 'token_bilstm_hidden' in model_cfg:
-            config['token_bilstm_hidden'] = int(model_cfg.get('token_bilstm_hidden'))
+        if "token_bilstm_hidden" in model_cfg:
+            config["token_bilstm_hidden"] = int(model_cfg.get("token_bilstm_hidden"))
 
-        if 'use_discriminator' in model_cfg:
-            config['use_discriminator'] = str2bool(model_cfg.get('use_discriminator'))
+        if "use_discriminator" in model_cfg:
+            config["use_discriminator"] = str2bool(model_cfg.get("use_discriminator"))
 
         return config
 
@@ -443,25 +435,26 @@ class PredictorUniRST(BasePredictor):
                 cur_char += len(word) + 1
             word_offsets.append(doc_word_offsets)
 
-        texts = [' '.join(line).strip() for line in data.input_sentences]
+        texts = [" ".join(line).strip() for line in data.input_sentences]
         tokens = self.tokenizer(texts, add_special_tokens=False, return_offsets_mapping=True)
-        tokens['entity_ids'] = None
-        tokens['entity_position_ids'] = None
+        tokens["entity_ids"] = None
+        tokens["entity_position_ids"] = None
 
         # recount edu_breaks for subwords
         subword_edu_breaks = []
         for doc_word_offsets, doc_subword_offsets, edu_breaks in zip(
-            word_offsets, tokens['offset_mapping'], data.edu_breaks, strict=True,
+            word_offsets,
+            tokens["offset_mapping"],
+            data.edu_breaks,
+            strict=True,
         ):
-            subword_edu_breaks.append(
-                self._recount_spans(doc_word_offsets, doc_subword_offsets, edu_breaks)
-            )
+            subword_edu_breaks.append(self._recount_spans(doc_word_offsets, doc_subword_offsets, edu_breaks))
 
         if self.label_maps:
             if self.relinventory_idx >= len(self.label_maps):
                 raise IndexError(
-                    f'relinventory_idx={self.relinventory_idx} is out of bounds for relation inventories '
-                    f'of size {len(self.label_maps)}'
+                    f"relinventory_idx={self.relinventory_idx} is out of bounds for relation inventories "
+                    f"of size {len(self.label_maps)}"
                 )
             mapping = self.label_maps[self.relinventory_idx]
             remapped = [[mapping[idx] for idx in doc] for doc in data.relation_label]
@@ -469,9 +462,9 @@ class PredictorUniRST(BasePredictor):
             remapped = data.relation_label
 
         return Data(
-            input_sentences=tokens['input_ids'],
-            entity_ids=tokens['entity_ids'],
-            entity_position_ids=tokens['entity_position_ids'],
+            input_sentences=tokens["input_ids"],
+            entity_ids=tokens["entity_ids"],
+            entity_position_ids=tokens["entity_position_ids"],
             sent_breaks=None,
             edu_breaks=subword_edu_breaks,
             decoder_input=data.decoder_input,
@@ -495,9 +488,7 @@ class PredictorUniRST(BasePredictor):
             return [data]
 
         if data.dataset_index is None:
-            raise ValueError(
-                'Data.dataset_index is None; call `tokenize` before `get_batches`.'
-            )
+            raise ValueError("Data.dataset_index is None; call `tokenize` before `get_batches`.")
 
         _input_sentences = list(self.divide_chunks(data.input_sentences, size))
         _edu_breaks = list(self.divide_chunks(data.edu_breaks, size))
@@ -566,13 +557,11 @@ class PredictorUniRST(BasePredictor):
         """
 
         if text is None:
-            raise ValueError('`text` must be provided for parsing.')
+            raise ValueError("`text` must be provided for parsing.")
         if not isinstance(text, str):
-            raise TypeError(
-                f'`text` must be a str, got {type(text).__name__}.'
-            )
+            raise TypeError(f"`text` must be a str, got {type(text).__name__}.")
         if not text.strip():
-            raise ValueError('`text` must be non-empty (got empty/whitespace-only input).')
+            raise ValueError("`text` must be non-empty (got empty/whitespace-only input).")
 
         if tokens is None:
             razdel_tokens = list(razdel.tokenize(text))
@@ -591,32 +580,32 @@ class PredictorUniRST(BasePredictor):
             tree = DUConverter.dummy_tree(word_tokens)
             self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
             return {
-                'rst': [tree],
+                "rst": [tree],
             }
 
         data = {
-            'input_sentences': [word_tokens],
-            'edu_breaks': [[]],
-            'decoder_input': [[]],
-            'relation_label': [[]],
-            'parsing_breaks': [[]],
-            'golden_metric': [[]],
+            "input_sentences": [word_tokens],
+            "edu_breaks": [[]],
+            "decoder_input": [[]],
+            "relation_label": [[]],
+            "parsing_breaks": [[]],
+            "golden_metric": [[]],
         }
 
         input_data = Data(**data)
 
         predictions = {
-            'tokens': [],
-            'spans': [],
-            'edu_breaks': [],
-            'true_spans': [],
-            'true_edu_breaks': [],
+            "tokens": [],
+            "spans": [],
+            "edu_breaks": [],
+            "true_spans": [],
+            "true_edu_breaks": [],
         }
 
         batch = self.tokenize(input_data)
         dataset_index = batch.dataset_index
         if dataset_index is None:
-            raise ValueError('Data.dataset_index is None; call `tokenize` before parse.')
+            raise ValueError("Data.dataset_index is None; call `tokenize` before parse.")
 
         with torch.inference_mode(), self._autocast():
             (
@@ -638,19 +627,19 @@ class PredictorUniRST(BasePredictor):
                 dataset_index=dataset_index,
             )
 
-        predictions['tokens'] += [self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences]
+        predictions["tokens"] += [self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences]
         if span_batch is None:
-            raise RuntimeError('testing_loss returned no spans with generate_tree=True')
-        predictions['spans'] += span_batch
-        predictions['edu_breaks'] += predict_edu_breaks
-        predictions['true_spans'] += batch.golden_metric
-        predictions['true_edu_breaks'] += batch.edu_breaks
+            raise RuntimeError("testing_loss returned no spans with generate_tree=True")
+        predictions["spans"] += span_batch
+        predictions["edu_breaks"] += predict_edu_breaks
+        predictions["true_spans"] += batch.golden_metric
+        predictions["true_edu_breaks"] += batch.edu_breaks
 
-        tree = DUConverter(predictions, tokenization_type='default').collect(tokens=data['input_sentences'])[0]
+        tree = DUConverter(predictions, tokenization_type="default").collect(tokens=data["input_sentences"])[0]
         self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
 
         return {
-            'rst': [tree],
+            "rst": [tree],
         }
 
     def parse_from_edus(self, edus: Sequence[str]) -> dict:
@@ -666,7 +655,7 @@ class PredictorUniRST(BasePredictor):
         offset_positions, original_offsets = self.build_offset_converter_from_words(text, word_tokens, offsets)
 
         if not word_tokens:
-            raise ValueError('Unable to tokenize text derived from the provided EDUs.')
+            raise ValueError("Unable to tokenize text derived from the provided EDUs.")
 
         if len(normalized_edus) == 1:
             tree = DUConverter.dummy_tree(word_tokens)
@@ -674,9 +663,9 @@ class PredictorUniRST(BasePredictor):
             leaves: list[str] = []
             self._collect_leaf_texts(tree, leaves)
             if leaves != normalized_edus:
-                raise ValueError('Failed to align the provided EDU with the parser output.')
+                raise ValueError("Failed to align the provided EDU with the parser output.")
             return {
-                'rst': [tree],
+                "rst": [tree],
             }
 
         edu_breaks = self._char_spans_to_token_breaks(offsets, spans)
@@ -695,17 +684,17 @@ class PredictorUniRST(BasePredictor):
         )
 
         predictions = {
-            'tokens': [],
-            'spans': [],
-            'edu_breaks': [],
-            'true_spans': [],
-            'true_edu_breaks': [],
+            "tokens": [],
+            "spans": [],
+            "edu_breaks": [],
+            "true_spans": [],
+            "true_edu_breaks": [],
         }
 
         batch = self.tokenize(data)
         dataset_index = batch.dataset_index
         if dataset_index is None:
-            raise ValueError('Data.dataset_index is None; call `tokenize` before parse.')
+            raise ValueError("Data.dataset_index is None; call `tokenize` before parse.")
 
         with torch.inference_mode(), self._autocast():
             (
@@ -727,24 +716,22 @@ class PredictorUniRST(BasePredictor):
                 dataset_index=dataset_index,
             )
 
-        predictions['tokens'] += [
-            self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences
-        ]
+        predictions["tokens"] += [self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences]
         if span_batch is None:
-            raise RuntimeError('testing_loss returned no spans with generate_tree=True')
-        predictions['spans'] += span_batch
-        predictions['edu_breaks'] += batch.edu_breaks
-        predictions['true_spans'] += batch.golden_metric
-        predictions['true_edu_breaks'] += batch.edu_breaks
+            raise RuntimeError("testing_loss returned no spans with generate_tree=True")
+        predictions["spans"] += span_batch
+        predictions["edu_breaks"] += batch.edu_breaks
+        predictions["true_spans"] += batch.golden_metric
+        predictions["true_edu_breaks"] += batch.edu_breaks
 
-        tree = DUConverter(predictions, tokenization_type='default').collect(tokens=[word_tokens])[0]
+        tree = DUConverter(predictions, tokenization_type="default").collect(tokens=[word_tokens])[0]
         self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
 
         leaves: list[str] = []
         self._collect_leaf_texts(tree, leaves)
         if leaves != normalized_edus:
-            raise ValueError('The produced segmentation does not match the provided EDUs.')
+            raise ValueError("The produced segmentation does not match the provided EDUs.")
 
         return {
-            'rst': [tree],
+            "rst": [tree],
         }

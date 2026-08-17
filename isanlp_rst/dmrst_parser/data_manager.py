@@ -77,18 +77,18 @@ class DataManager:
         :param nfolds: int  - [If cross_validation == True] number of splits for cross validation
         """
         self.corpus_name = corpus
-        if self.corpus_name == 'GUM':
+        if self.corpus_name == "GUM":
             self._init_gum_corpus(cross_validation, nfolds)
 
-        elif self.corpus_name == 'RST-DT':
+        elif self.corpus_name == "RST-DT":
             self._init_rstdt_corpus(nfolds)
 
-        elif corpus == 'RuRSTB':
+        elif corpus == "RuRSTB":
             self._init_rurstb_corpus()
 
     def _init_gum_corpus(self, cross_validation: bool, nfolds: int) -> None:
-        self.input_path = Path('data/gum_rs3')
-        self.output_path = Path('data/gum_prepared')
+        self.input_path = Path("data/gum_rs3")
+        self.output_path = Path("data/gum_prepared")
         self.output_path.mkdir(parents=True, exist_ok=True)
         self.cross_validation = cross_validation
         if self.cross_validation:
@@ -106,19 +106,19 @@ class DataManager:
                 self.mixed_train_en[i] = []
                 self.mixed_train_ru[i] = []
 
-        self.langs = ['en', 'ru']
+        self.langs = ["en", "ru"]
 
         self.relation_table = RelationTableGUM
         self.relation_dic = {word.lower(): i for i, word in enumerate(RelationTableGUM)}
         self.relation_fixer = {
-            'topic_ns': 'contingency_ns',  # One example of this type in GUM v9.1
-            'restatement_sn': 'restatement_ns'  # 4 examples in GUM_conversation_gossip
+            "topic_ns": "contingency_ns",  # One example of this type in GUM v9.1
+            "restatement_sn": "restatement_ns",  # 4 examples in GUM_conversation_gossip
         }
 
     def _init_rstdt_corpus(self, nfolds: int) -> None:
         # The corpus is converted to *.rs3 with https://github.com/rst-workbench/rst-converter-service
-        self.input_path = Path('data/rstdt_rs3')
-        self.output_path = Path('data/rstdt_prepared')
+        self.input_path = Path("data/rstdt_rs3")
+        self.output_path = Path("data/rstdt_prepared")
         self.output_path.mkdir(parents=True, exist_ok=True)
 
         # There is no fixed validation part in RST-DT,
@@ -127,39 +127,102 @@ class DataManager:
         self.folds: dict[int, dict[str, list[str]]] = defaultdict(dict)
 
         class2rel = {
-            'Attribution': ['attribution', 'attribution-e', 'attribution-n', 'attribution-negative'],
-            'Background': ['background', 'background-e', 'circumstance', 'circumstance-e'],
-            'Cause': ['cause', 'cause-result', 'result', 'result-e', 'consequence', 'consequence-n-e',
-                      'consequence-n', 'consequence-s-e', 'consequence-s'],
-            'Comparison': ['comparison', 'comparison-e', 'preference', 'preference-e', 'analogy', 'analogy-e',
-                           'proportion'],
-            'Condition': ['condition', 'condition-e', 'hypothetical', 'contingency', 'otherwise'],
-            'Contrast': ['contrast', 'concession', 'concession-e', 'antithesis', 'antithesis-e'],
-            'Elaboration': ['elaboration-additional', 'elaboration-additional-e', 'elaboration-general-specific-e',
-                            'elaboration-general-specific', 'elaboration-part-whole', 'elaboration-part-whole-e',
-                            'elaboration-process-step', 'elaboration-process-step-e',
-                            'elaboration-object-attribute-e', 'elaboration-object-attribute',
-                            'elaboration-set-member', 'elaboration-set-member-e', 'example', 'example-e',
-                            'definition', 'definition-e'],
-            'Enablement': ['purpose', 'purpose-e', 'enablement', 'enablement-e'],
-            'Evaluation': ['evaluation', 'evaluation-n', 'evaluation-s-e', 'evaluation-s', 'interpretation-n',
-                           'interpretation-s-e', 'interpretation-s', 'interpretation', 'conclusion', 'comment',
-                           'comment-e', 'comment-topic'],
-            'Explanation': ['evidence', 'evidence-e', 'explanation-argumentative', 'explanation-argumentative-e',
-                            'reason', 'reason-e'],
-            'Joint': ['list', 'disjunction'],
-            'Manner-Means': ['manner', 'manner-e', 'means', 'means-e'],
-            'Topic-Comment': ['problem-solution', 'problem-solution-n', 'problem-solution-s', 'question-answer',
-                              'question-answer-n', 'question-answer-s', 'statement-response',
-                              'statement-response-n', 'statement-response-s', 'topic-comment', 'comment-topic',
-                              'rhetorical-question'],
-            'Summary': ['summary', 'summary-n', 'summary-s', 'restatement', 'restatement-e'],
-            'Temporal': ['temporal-before', 'temporal-before-e', 'temporal-after', 'temporal-after-e',
-                         'temporal-same-time', 'temporal-same-time-e', 'sequence', 'inverted-sequence'],
-            'Topic-Change': ['topic-shift', 'topic-drift'],
-            'textual-organization': ['textualorganization'],
-            'span': ['span'],
-            'same-unit': ['same-unit']
+            "Attribution": ["attribution", "attribution-e", "attribution-n", "attribution-negative"],
+            "Background": ["background", "background-e", "circumstance", "circumstance-e"],
+            "Cause": [
+                "cause",
+                "cause-result",
+                "result",
+                "result-e",
+                "consequence",
+                "consequence-n-e",
+                "consequence-n",
+                "consequence-s-e",
+                "consequence-s",
+            ],
+            "Comparison": [
+                "comparison",
+                "comparison-e",
+                "preference",
+                "preference-e",
+                "analogy",
+                "analogy-e",
+                "proportion",
+            ],
+            "Condition": ["condition", "condition-e", "hypothetical", "contingency", "otherwise"],
+            "Contrast": ["contrast", "concession", "concession-e", "antithesis", "antithesis-e"],
+            "Elaboration": [
+                "elaboration-additional",
+                "elaboration-additional-e",
+                "elaboration-general-specific-e",
+                "elaboration-general-specific",
+                "elaboration-part-whole",
+                "elaboration-part-whole-e",
+                "elaboration-process-step",
+                "elaboration-process-step-e",
+                "elaboration-object-attribute-e",
+                "elaboration-object-attribute",
+                "elaboration-set-member",
+                "elaboration-set-member-e",
+                "example",
+                "example-e",
+                "definition",
+                "definition-e",
+            ],
+            "Enablement": ["purpose", "purpose-e", "enablement", "enablement-e"],
+            "Evaluation": [
+                "evaluation",
+                "evaluation-n",
+                "evaluation-s-e",
+                "evaluation-s",
+                "interpretation-n",
+                "interpretation-s-e",
+                "interpretation-s",
+                "interpretation",
+                "conclusion",
+                "comment",
+                "comment-e",
+                "comment-topic",
+            ],
+            "Explanation": [
+                "evidence",
+                "evidence-e",
+                "explanation-argumentative",
+                "explanation-argumentative-e",
+                "reason",
+                "reason-e",
+            ],
+            "Joint": ["list", "disjunction"],
+            "Manner-Means": ["manner", "manner-e", "means", "means-e"],
+            "Topic-Comment": [
+                "problem-solution",
+                "problem-solution-n",
+                "problem-solution-s",
+                "question-answer",
+                "question-answer-n",
+                "question-answer-s",
+                "statement-response",
+                "statement-response-n",
+                "statement-response-s",
+                "topic-comment",
+                "comment-topic",
+                "rhetorical-question",
+            ],
+            "Summary": ["summary", "summary-n", "summary-s", "restatement", "restatement-e"],
+            "Temporal": [
+                "temporal-before",
+                "temporal-before-e",
+                "temporal-after",
+                "temporal-after-e",
+                "temporal-same-time",
+                "temporal-same-time-e",
+                "sequence",
+                "inverted-sequence",
+            ],
+            "Topic-Change": ["topic-shift", "topic-drift"],
+            "textual-organization": ["textualorganization"],
+            "span": ["span"],
+            "same-unit": ["same-unit"],
         }
         # rel_status_classes = []
         # for rel in class2rel:
@@ -183,30 +246,30 @@ class DataManager:
         # (although it still marks the beginning of a paragraph here, not the ending)
         # Also the corpus converted from rs3 -> isanlp -> rs3 to fix empty spans
 
-        self.input_path = Path('data/rurstb_rs3')
-        self.output_path = Path('data/rurstb_prepared')
+        self.input_path = Path("data/rurstb_rs3")
+        self.output_path = Path("data/rurstb_prepared")
         self.output_path.mkdir(parents=True, exist_ok=True)
         self.cross_validation = False
-        self.corpus: dict[str, list[str]] = {'train': [], 'dev': [], 'test': []}
+        self.corpus: dict[str, list[str]] = {"train": [], "dev": [], "test": []}
         class2rel = {
-            'Attribution': ['attribution', 'antithesis'],  # Corpus analysis shows often mislabeling
-            'Background': ['background'],
-            'Cause-effect': ['cause', 'effect', 'cause-effect'],
-            'Comparison': ['comparison'],
-            'Concession': ['concession'],
-            'Condition': ['condition', 'motivation'],
-            'Contrast': ['contrast'],
-            'Elaboration': ['elaboration'],
-            'Preparation': ['preparation'],
-            'Purpose': ['purpose'],
-            'Interpretation-evaluation': ['evaluation', 'interpretation', 'interpretation-evaluation'],
-            'Evidence': ['evidence'],
-            'Joint': ['joint'],
-            'Solutionhood': ['solutionhood'],
-            'Restatement': ['restatement', 'conclusion'],
-            'Sequence': ['sequence'],
-            'span': ['span'],
-            'same-unit': ['same-unit']
+            "Attribution": ["attribution", "antithesis"],  # Corpus analysis shows often mislabeling
+            "Background": ["background"],
+            "Cause-effect": ["cause", "effect", "cause-effect"],
+            "Comparison": ["comparison"],
+            "Concession": ["concession"],
+            "Condition": ["condition", "motivation"],
+            "Contrast": ["contrast"],
+            "Elaboration": ["elaboration"],
+            "Preparation": ["preparation"],
+            "Purpose": ["purpose"],
+            "Interpretation-evaluation": ["evaluation", "interpretation", "interpretation-evaluation"],
+            "Evidence": ["evidence"],
+            "Joint": ["joint"],
+            "Solutionhood": ["solutionhood"],
+            "Restatement": ["restatement", "conclusion"],
+            "Sequence": ["sequence"],
+            "span": ["span"],
+            "same-unit": ["same-unit"],
         }
 
         self.rel2class = {}
@@ -218,12 +281,12 @@ class DataManager:
         self.relation_table = RelationTableRuRSTB
         self.relation_dic = {word.lower(): i for i, word in enumerate(RelationTableRuRSTB)}
         self.relation_fixer = {
-            'restatement_sn': 'condition_sn',
-            'restatement_ns': 'elaboration_ns',
-            'solutionhood_ns': 'solutionhood_sn',
-            'preparation_ns': 'elaboration_ns',
-            'elaboration_sn': 'preparation_sn',
-            'background_ns': 'elaboration_ns',
+            "restatement_sn": "condition_sn",
+            "restatement_ns": "elaboration_ns",
+            "solutionhood_ns": "solutionhood_sn",
+            "preparation_ns": "elaboration_ns",
+            "elaboration_sn": "preparation_sn",
+            "background_ns": "elaboration_ns",
         }
 
     def from_rs3(self) -> None:
@@ -233,7 +296,7 @@ class DataManager:
         # Collect JSON parser-input files for each document
         self.prepare_parser_format()
 
-        if self.corpus_name == 'GUM':
+        if self.corpus_name == "GUM":
             if self.cross_validation:
                 # Prepare documents listings for each fold and split, including mixed variants.
                 # Populate self.folds = {1: {'train': [...], 'dev': [...], 'test': [...]}, 2: ...}
@@ -250,7 +313,7 @@ class DataManager:
                 self._mixed_train(75)
                 self._mixed_train(100)
 
-        elif self.corpus_name in ['RST-DT', 'RuRSTB']:
+        elif self.corpus_name in ["RST-DT", "RuRSTB"]:
             self.construct_corpus()
 
     def from_pickle(self, filename: str | Path) -> list[str]:
@@ -278,74 +341,72 @@ class DataManager:
         return None
 
     def prepare_lisp_format(self) -> None:
-        if self.corpus_name == 'GUM':
+        if self.corpus_name == "GUM":
             for lang in self.langs:
-                for rs3_file in (self.input_path / lang).glob('*.rs3'):
-                    self.convert_doc(filename=rs3_file.name,
-                                     input_dir=self.input_path / lang,
-                                     output_dir=self.output_path)
+                for rs3_file in (self.input_path / lang).glob("*.rs3"):
+                    self.convert_doc(
+                        filename=rs3_file.name, input_dir=self.input_path / lang, output_dir=self.output_path
+                    )
 
-        elif self.corpus_name == 'RST-DT':
-            for part in ('TRAINING', 'TEST'):
-                for rs3_file in sorted((self.input_path / part).glob('*.rs3')):
-                    self.convert_doc(filename=rs3_file.name,
-                                     input_dir=self.input_path / part,
-                                     output_dir=self.output_path)
+        elif self.corpus_name == "RST-DT":
+            for part in ("TRAINING", "TEST"):
+                for rs3_file in sorted((self.input_path / part).glob("*.rs3")):
+                    self.convert_doc(
+                        filename=rs3_file.name, input_dir=self.input_path / part, output_dir=self.output_path
+                    )
 
-        elif self.corpus_name == 'RuRSTB':
-            for rs3_file in sorted(self.input_path.glob('*.rs3')):
+        elif self.corpus_name == "RuRSTB":
+            for rs3_file in sorted(self.input_path.glob("*.rs3")):
                 try:
-                    self.convert_doc(filename=rs3_file.name,
-                                     input_dir=self.input_path,
-                                     output_dir=self.output_path)
+                    self.convert_doc(filename=rs3_file.name, input_dir=self.input_path, output_dir=self.output_path)
                 except Exception as e:
                     print(rs3_file)
                     raise e
 
     def prepare_parser_format(self) -> None:
-        files = list(self.output_path.glob('*.edus'))
-        for edu_path in tqdm(files, desc='Reading *.lisp files'):
-            lisp_path = edu_path.with_suffix('.lisp')
+        files = list(self.output_path.glob("*.edus"))
+        for edu_path in tqdm(files, desc="Reading *.lisp files"):
+            lisp_path = edu_path.with_suffix(".lisp")
             try:
                 parser_input = self.generate_input(lisp_path, edu_path, edu_path)
             except Exception as e:
-                print('Exception is evoked by:', edu_path)
+                print("Exception is evoked by:", edu_path)
                 raise e
             parser_input.write_json(edu_path.with_suffix(".json"))
 
-    def get_fold(self, number: int, lang: str = 'en', mixed: int = 0) -> tuple[Data, Data, Data]:
+    def get_fold(self, number: int, lang: str = "en", mixed: int = 0) -> tuple[Data, Data, Data]:
         """
         :param number: int  - fold number
         :param lang: str  - (main) language
         :param mixed: int  - percentage for other part mixing
         :return: tuple(src.parser.data.Data)  - train, dev, test:
         """
-        if self.corpus_name == 'GUM':
+        if self.corpus_name == "GUM":
             if mixed == 0:
                 fold = copy.deepcopy(self.folds[number])
-                if lang == 'ru':
-                    for key in ['train', 'dev', 'test']:
-                        fold[key] = [docname + '_RU' for docname in fold[key]]
+                if lang == "ru":
+                    for key in ["train", "dev", "test"]:
+                        fold[key] = [docname + "_RU" for docname in fold[key]]
             else:
-                if lang == 'en':
+                if lang == "en":
                     fold = copy.deepcopy(self.mixed_folds_en[mixed][number])
-                elif lang == 'ru':
+                elif lang == "ru":
                     fold = copy.deepcopy(self.mixed_folds_ru[mixed][number])
                 else:
-                    raise KeyError('No such language in the current data manager.')
+                    raise KeyError("No such language in the current data manager.")
 
-        elif self.corpus_name == 'RST-DT':
+        elif self.corpus_name == "RST-DT":
             fold = copy.deepcopy(self.folds[number])
         else:
-            raise KeyError(f'get_fold is not defined for corpus {self.corpus_name}')
+            raise KeyError(f"get_fold is not defined for corpus {self.corpus_name}")
 
         result: dict[str, Data] = {}
-        for key in ('train', 'dev', 'test'):
+        for key in ("train", "dev", "test"):
             docs = []
             for docname in fold[key]:
                 loaded = self._load_prepared_doc(docname)
                 if loaded is None:
-                    print('No such file in the corpus:', docname)
+                    print("No such file in the corpus:", docname)
                     continue
                 docs.append(loaded)
             input_sentences = [doc.sentences for doc in docs]
@@ -353,42 +414,49 @@ class DataManager:
             decoder_input = [doc.decoder_inputs for doc in docs]
             relation_label = [doc.relation for doc in docs]
             parsing_breaks = [doc.parsing_index for doc in docs]
-            golden_metric = [' '.join(doc.label_for_metrics_list) for doc in docs]
+            golden_metric = [" ".join(doc.label_for_metrics_list) for doc in docs]
             parents_index = [doc.parents for doc in docs]
             sibling = [doc.siblings for doc in docs]
-            result[key] = Data(input_sentences, edu_breaks, decoder_input,
-                               relation_label, parsing_breaks, golden_metric,
-                               parents_index, sibling)
+            result[key] = Data(
+                input_sentences,
+                edu_breaks,
+                decoder_input,
+                relation_label,
+                parsing_breaks,
+                golden_metric,
+                parents_index,
+                sibling,
+            )
 
-        return result['train'], result['dev'], result['test']
+        return result["train"], result["dev"], result["test"]
 
-    def get_data(self, lang: str = 'en', mixed: int = 0, mixed_fold: int = 0) -> tuple[Data, Data, Data]:
+    def get_data(self, lang: str = "en", mixed: int = 0, mixed_fold: int = 0) -> tuple[Data, Data, Data]:
         """
         :param lang: str  - (main) language
         :param mixed: int  - percentage for other part mixing
         :return: tuple(src.parser.data.Data)  - train, dev, test:
         """
         corpus = copy.deepcopy(self.corpus)
-        if self.corpus_name == 'GUM':
-            if lang == 'ru':
-                for key in ['train', 'dev', 'test']:
-                    corpus[key] = [docname + '_RU' for docname in corpus[key]]
+        if self.corpus_name == "GUM":
+            if lang == "ru":
+                for key in ["train", "dev", "test"]:
+                    corpus[key] = [docname + "_RU" for docname in corpus[key]]
 
             if mixed:
-                if lang == 'en':
-                    corpus['train'] = copy.deepcopy(self.mixed_train_en[mixed][mixed_fold])
-                elif lang == 'ru':
-                    corpus['train'] = copy.deepcopy(self.mixed_train_ru[mixed][mixed_fold])
+                if lang == "en":
+                    corpus["train"] = copy.deepcopy(self.mixed_train_en[mixed][mixed_fold])
+                elif lang == "ru":
+                    corpus["train"] = copy.deepcopy(self.mixed_train_ru[mixed][mixed_fold])
                 else:
-                    raise KeyError('No such language in the current data manager.')
+                    raise KeyError("No such language in the current data manager.")
 
         result: dict[str, Data] = {}
-        for key in ('train', 'dev', 'test'):
+        for key in ("train", "dev", "test"):
             docs = []
             for docname in corpus[key]:
                 loaded = self._load_prepared_doc(docname)
                 if loaded is None:
-                    print('No such file in the corpus:', self.output_path / f"{docname}.json")
+                    print("No such file in the corpus:", self.output_path / f"{docname}.json")
                     continue
                 docs.append(loaded)
 
@@ -397,38 +465,45 @@ class DataManager:
             decoder_input = [doc.decoder_inputs for doc in docs]
             relation_label = [doc.relation for doc in docs]
             parsing_breaks = [doc.parsing_index for doc in docs]
-            golden_metric = [' '.join(doc.label_for_metrics_list) for doc in docs]
+            golden_metric = [" ".join(doc.label_for_metrics_list) for doc in docs]
             parents_index = [doc.parents for doc in docs]
             sibling = [doc.siblings for doc in docs]
-            result[key] = Data(input_sentences, edu_breaks, decoder_input,
-                               relation_label, parsing_breaks, golden_metric,
-                               parents_index, sibling)
+            result[key] = Data(
+                input_sentences,
+                edu_breaks,
+                decoder_input,
+                relation_label,
+                parsing_breaks,
+                golden_metric,
+                parents_index,
+                sibling,
+            )
 
-        return result['train'], result['dev'], result['test']
+        return result["train"], result["dev"], result["test"]
 
     def construct_corpus(self) -> None:
-        if self.corpus_name == 'GUM':
-            for part in ('train', 'dev', 'test'):
-                listing = Path('data') / 'gum_file_lists' / f'files.{part}'
+        if self.corpus_name == "GUM":
+            for part in ("train", "dev", "test"):
+                listing = Path("data") / "gum_file_lists" / f"files.{part}"
                 self.corpus[part] = listing.read_text().splitlines()
 
-        elif self.corpus_name == 'RST-DT':
-            test_files = [path.stem for path in (self.input_path / 'TEST').glob('*.rs3')]
-            all_train_files = [path.stem for path in (self.input_path / 'TRAINING').glob('*.rs3')]
+        elif self.corpus_name == "RST-DT":
+            test_files = [path.stem for path in (self.input_path / "TEST").glob("*.rs3")]
+            all_train_files = [path.stem for path in (self.input_path / "TRAINING").glob("*.rs3")]
 
             for fold in range(self.nfolds):
                 train_n = int(len(all_train_files) * 0.9)
                 train_files = random.sample(all_train_files, train_n)
                 dev_files = [file for file in all_train_files if file not in train_files]
 
-                self.folds[fold]['train'] = train_files
-                self.folds[fold]['dev'] = dev_files
-                self.folds[fold]['test'] = test_files
+                self.folds[fold]["train"] = train_files
+                self.folds[fold]["dev"] = dev_files
+                self.folds[fold]["test"] = test_files
 
-        elif self.corpus_name == 'RuRSTB':
-            for json_path in self.output_path.glob('*.json'):
+        elif self.corpus_name == "RuRSTB":
+            for json_path in self.output_path.glob("*.json"):
                 clear_filename = json_path.stem
-                part = clear_filename.split('.')[0]
+                part = clear_filename.split(".")[0]
                 self.corpus[part].append(clear_filename)
 
     def _collect_mixed_train(
@@ -440,38 +515,51 @@ class DataManager:
     ) -> list[str]:
         mixed_train = train_data[:]
         for genre in genres:
-            g_train = [filename for filename in train_data if filename.startswith(f'GUM_{genre}')]
+            g_train = [filename for filename in train_data if filename.startswith(f"GUM_{genre}")]
 
-            if another_lang == 'ru':
+            if another_lang == "ru":
                 length_of_replacements = int(len(g_train) * n / 100)
                 another_lang_sample = random.sample(list(range(len(g_train))), length_of_replacements)
                 for ind in another_lang_sample:
-                    mixed_train.append(g_train[ind] + '_RU')
+                    mixed_train.append(g_train[ind] + "_RU")
 
             else:
                 length_of_replacements = int(len(g_train) * (100 - n) / 100)
                 ru_sample_ind = random.sample(list(range(len(g_train))), length_of_replacements)
                 for ind in ru_sample_ind:
-                    mixed_train.append(g_train[ind] + '_RU')
+                    mixed_train.append(g_train[ind] + "_RU")
 
         return mixed_train
 
     def _mixed_train(self, n: int) -> None:
-        """ Makes self.mixed_train_* versions with 100% train files from first language and n% from the second. """
+        """Makes self.mixed_train_* versions with 100% train files from first language and n% from the second."""
 
-        if self.corpus_name == 'GUM':
-            genres = ['academic', 'bio', 'conversation', 'fiction', 'interview', 'news', 'reddit',
-                      'speech', 'textbook', 'vlog', 'voyage', 'whow']
+        if self.corpus_name == "GUM":
+            genres = [
+                "academic",
+                "bio",
+                "conversation",
+                "fiction",
+                "interview",
+                "news",
+                "reddit",
+                "speech",
+                "textbook",
+                "vlog",
+                "voyage",
+                "whow",
+            ]
 
-        elif self.corpus_name == 'RuRSTB':
-            genres = ['news', 'blogs']
+        elif self.corpus_name == "RuRSTB":
+            genres = ["news", "blogs"]
         else:
-            raise KeyError(f'_mixed_train is not defined for corpus {self.corpus_name}')
+            raise KeyError(f"_mixed_train is not defined for corpus {self.corpus_name}")
 
         # Base English, mixing Russian #############
         for _ in range(self.mixed_folds):
             self.mixed_train_en[n].append(
-                self._collect_mixed_train(self.corpus['train'], genres, n=n, another_lang='ru'))
+                self._collect_mixed_train(self.corpus["train"], genres, n=n, another_lang="ru")
+            )
 
         # mixed_train = train[:]
         # for genre in genres:
@@ -492,7 +580,8 @@ class DataManager:
         # Base English, mixing Russian #############
         for _ in range(self.mixed_folds):
             self.mixed_train_ru[n].append(
-                self._collect_mixed_train(self.corpus['train'], genres, n=n, another_lang='en'))
+                self._collect_mixed_train(self.corpus["train"], genres, n=n, another_lang="en")
+            )
 
     def generate_input(
         self,
@@ -520,8 +609,8 @@ class DataManager:
     def get_sentence_span_list(sentence_span_dic: dict[str, int]) -> list[list[int]]:
         sentence_list = []
         for key in sentence_span_dic:
-            tem_str = key.replace('[', '').replace(']', '')
-            tokens = tem_str.split(',')
+            tem_str = key.replace("[", "").replace("]", "")
+            tokens = tem_str.split(",")
             left = int(tokens[0])
             right = int(tokens[1])
             sentence_list.append([left, right])
@@ -605,44 +694,58 @@ class DataManager:
                 relation = relation_label[3:]
 
                 # Label to Class
-                if self.corpus_name == 'GUM':
-                    if coarse and relation != 'same-unit':
-                        relation = relation.split('-')[0]
-                elif self.corpus_name in ['RST-DT', 'RuRSTB']:
+                if self.corpus_name == "GUM":
+                    if coarse and relation != "same-unit":
+                        relation = relation.split("-")[0]
+                elif self.corpus_name in ["RST-DT", "RuRSTB"]:
                     mapped_relation = self.rel2class.get(relation.lower())
                     assert mapped_relation is not None
                     relation = mapped_relation
 
                 #   Relation:
-                lookup_relation = (relation + '_' + nuclearity).lower()
+                lookup_relation = (relation + "_" + nuclearity).lower()
                 if lookup_relation in self.relation_fixer:
                     lookup_relation = self.relation_fixer[lookup_relation]
-                    relation, nuclearity = lookup_relation.split('_')
+                    relation, nuclearity = lookup_relation.split("_")
                     nuclearity = nuclearity.upper()
-                    if relation != 'same-unit':
+                    if relation != "same-unit":
                         relation = relation[0].upper() + relation[1:]
 
                 parser_input.relation.append(self.relation_dic[lookup_relation])
-                left_nuclearity = 'Nucleus' if nuclearity[0] == 'N' else 'Satellite'
-                right_nuclearity = 'Nucleus' if nuclearity[1] == 'N' else 'Satellite'
-                if nuclearity == 'NS' or nuclearity == 'SN':
-                    if nuclearity == 'NS':
-                        left_relation = 'span'
+                left_nuclearity = "Nucleus" if nuclearity[0] == "N" else "Satellite"
+                right_nuclearity = "Nucleus" if nuclearity[1] == "N" else "Satellite"
+                if nuclearity == "NS" or nuclearity == "SN":
+                    if nuclearity == "NS":
+                        left_relation = "span"
                         right_relation = relation
                     else:
                         left_relation = relation
-                        right_relation = 'span'
+                        right_relation = "span"
                 else:
                     left_relation = relation
                     right_relation = relation
-                label_string = '(' + str(
-                    left_child_span[0] - edu_start + 1) + ':' + left_nuclearity + '=' + left_relation + ':' + str(
-                    left_child_span[1] - edu_start + 1) + ',' + str(
-                    right_child_span[0] - edu_start + 1) + ':' + right_nuclearity + '=' + right_relation + ':' + str(
-                    right_child_span[1] - edu_start + 1) + ')'
+                label_string = (
+                    "("
+                    + str(left_child_span[0] - edu_start + 1)
+                    + ":"
+                    + left_nuclearity
+                    + "="
+                    + left_relation
+                    + ":"
+                    + str(left_child_span[1] - edu_start + 1)
+                    + ","
+                    + str(right_child_span[0] - edu_start + 1)
+                    + ":"
+                    + right_nuclearity
+                    + "="
+                    + right_relation
+                    + ":"
+                    + str(right_child_span[1] - edu_start + 1)
+                    + ")"
+                )
                 parser_input.label_for_metrics_list.append(label_string)
 
-        parser_input.label_for_metrics = ' '.join(parser_input.label_for_metrics_list)
+        parser_input.label_for_metrics = " ".join(parser_input.label_for_metrics_list)
         Sentences_list = sorted(sentences_list, key=lambda x: x[0])
 
         for i in range(len(Sentences_list)):
@@ -652,29 +755,29 @@ class DataManager:
         return parser_input
 
     def convert_doc(self, filename: str, input_dir: str | Path, output_dir: str | Path) -> None:
-        """ Take all rs3 documents and save them in the same directory
-            as *.edus and *.lisp files ready for processing. """
+        """Take all rs3 documents and save them in the same directory
+        as *.edus and *.lisp files ready for processing."""
         rs3 = Rs3Document(Path(input_dir) / filename)
         rs3.read()
         rs3.writeEdu(output_dir)
-        out_ext = '.lisp'
+        out_ext = ".lisp"
         rs3.writeTree(output_dir, out_ext)
 
     def construct_folds(self) -> None:
-        """ Scatter examples on folds divided into train/val/test.
-            Preserve subclasses distribution in each fold and split. """
+        """Scatter examples on folds divided into train/val/test.
+        Preserve subclasses distribution in each fold and split."""
 
         documents = defaultdict(list)
-        for edu_file in self.output_path.glob('*.edus'):
+        for edu_file in self.output_path.glob("*.edus"):
             name = edu_file.stem
-            doc_lang = 'ru' if '_RU' in name else 'en'
-            name = name[:-3] if '_RU' in name else name
+            doc_lang = "ru" if "_RU" in name else "en"
+            name = name[:-3] if "_RU" in name else name
             documents[doc_lang].append(name)
 
-        all_docs = documents['en']
+        all_docs = documents["en"]
         docs_by_class = defaultdict(list)
         for doc_name in all_docs:
-            cls = doc_name.split('_')[1]
+            cls = doc_name.split("_")[1]
             docs_by_class[cls].append(doc_name)
 
         for i in range(self.nfolds):
@@ -699,55 +802,50 @@ class DataManager:
                 remaining[c] = [d for d in remaining[c] if d not in val_docs]
                 test_docs.extend(remaining[c])
 
-            self.folds[i] = {
-                'train': train_docs,
-                'dev': val_docs,
-                'test': test_docs
-            }
+            self.folds[i] = {"train": train_docs, "dev": val_docs, "test": test_docs}
 
     def _mixed_folds(self, n: int) -> None:
-        """ Populates a self.mixed_folds_en{25: ..., 75: ..., 100: ...} dictionary
-            with n% train files from first language and 100-n% from the second. """
+        """Populates a self.mixed_folds_en{25: ..., 75: ..., 100: ...} dictionary
+        with n% train files from first language and 100-n% from the second."""
 
         mixed_folds_en: dict[int, dict[str, list[str]]] = defaultdict(dict)
         mixed_folds_ru: dict[int, dict[str, list[str]]] = defaultdict(dict)
         for fold_num, fold in self.folds.items():
             # Base English, mixing Russian #############
-            mixed_folds_en[fold_num]['dev'] = fold['dev'][:]
-            mixed_folds_en[fold_num]['test'] = fold['test'][:]
+            mixed_folds_en[fold_num]["dev"] = fold["dev"][:]
+            mixed_folds_en[fold_num]["test"] = fold["test"][:]
 
-            length_of_replacements = int(len(fold['train']) * n / 100)
-            ru_sample_ind = random.sample(list(range(len(fold['train']))), length_of_replacements)
-            train = fold['train'][:]
+            length_of_replacements = int(len(fold["train"]) * n / 100)
+            ru_sample_ind = random.sample(list(range(len(fold["train"]))), length_of_replacements)
+            train = fold["train"][:]
             for ind in ru_sample_ind:
-                train[ind] += '_RU'
+                train[ind] += "_RU"
 
-
-            mixed_folds_en[fold_num]['train'] = train
+            mixed_folds_en[fold_num]["train"] = train
 
             # Base Russian, mixing English #############
-            mixed_folds_ru[fold_num]['dev'] = fold['dev'][:]
-            mixed_folds_ru[fold_num]['test'] = fold['test'][:]
-            for ind in range(len(fold['dev'])):
-                mixed_folds_ru[fold_num]['dev'][ind] += '_RU'
+            mixed_folds_ru[fold_num]["dev"] = fold["dev"][:]
+            mixed_folds_ru[fold_num]["test"] = fold["test"][:]
+            for ind in range(len(fold["dev"])):
+                mixed_folds_ru[fold_num]["dev"][ind] += "_RU"
 
-            length_of_replacements = int(len(fold['train']) * (100 - n) / 100)
-            ru_sample_ind = random.sample(list(range(len(fold['train']))), length_of_replacements)
-            train = fold['train'][:]
+            length_of_replacements = int(len(fold["train"]) * (100 - n) / 100)
+            ru_sample_ind = random.sample(list(range(len(fold["train"]))), length_of_replacements)
+            train = fold["train"][:]
             for ind in ru_sample_ind:
-                train[ind] += '_RU'
+                train[ind] += "_RU"
 
-            mixed_folds_ru[fold_num]['train'] = train
+            mixed_folds_ru[fold_num]["train"] = train
 
         self.mixed_folds_en[n] = mixed_folds_en
         self.mixed_folds_ru[n] = mixed_folds_ru
 
 
-def collect(corpus: str = 'GUM', output_path: str = 'data/data_manager.json') -> None:
+def collect(corpus: str = "GUM", output_path: str = "data/data_manager.json") -> None:
     dp = DataManager(corpus=corpus)
     dp.from_rs3()
     dp.save(output_path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fire.Fire(collect)

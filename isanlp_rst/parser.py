@@ -60,11 +60,7 @@ class Parser:
         erst_scorer: Any | None = None,
         erst_scorer_model: str | None = None,
     ):
-        if (
-            model_dir is not None
-            and hf_model_name is not None
-            and hf_model_name != self._DEFAULT_HF_MODEL_NAME
-        ):
+        if model_dir is not None and hf_model_name is not None and hf_model_name != self._DEFAULT_HF_MODEL_NAME:
             raise ValueError(
                 "Pass either `model_dir` or `hf_model_name`, not both. "
                 "When loading from disk, omit hf_model_name (or leave the default)."
@@ -138,17 +134,11 @@ class Parser:
     ) -> str:
         if family is not None:
             if family not in cls.AVAILABLE_FAMILIES:
-                raise ValueError(
-                    f"Unknown family {family!r}. Available: {cls.AVAILABLE_FAMILIES}."
-                )
+                raise ValueError(f"Unknown family {family!r}. Available: {cls.AVAILABLE_FAMILIES}.")
             if hf_model_version is None and model_dir is None:
-                raise ValueError(
-                    f"family={family!r} requires hf_model_version or model_dir."
-                )
+                raise ValueError(f"family={family!r} requires hf_model_version or model_dir.")
             if hf_model_version is not None:
-                allowed = (
-                    cls.DMRST_PARSERS if family == "dmrst" else cls.UNIVERSAL_PARSERS
-                )
+                allowed = cls.DMRST_PARSERS if family == "dmrst" else cls.UNIVERSAL_PARSERS
                 if hf_model_version not in allowed:
                     raise ValueError(
                         f"hf_model_version={hf_model_version!r} is not valid for "
@@ -169,10 +159,7 @@ class Parser:
                 return "dmrst"
             if hf_model_version in cls.UNIVERSAL_PARSERS:
                 return "unirst"
-            raise ValueError(
-                f"Unknown hf_model_version {hf_model_version!r}. "
-                f"Available: {cls.AVAILABLE_VERSIONS}."
-            )
+            raise ValueError(f"Unknown hf_model_version {hf_model_version!r}. Available: {cls.AVAILABLE_VERSIONS}.")
 
         if model_dir is not None:
             detected = cls._detect_family_from_model_dir(model_dir)
@@ -218,12 +205,7 @@ class Parser:
             "data_manager_*.json",
             "relation_table_*.txt",
         )
-        return any(
-            path
-            for directory in search_roots
-            for pattern in patterns
-            for path in directory.glob(pattern)
-        )
+        return any(path for directory in search_roots for pattern in patterns for path in directory.glob(pattern))
 
     @staticmethod
     def _safe_load_json(path: Path) -> dict | None:
@@ -234,7 +216,7 @@ class Parser:
             return None
         try:
             return json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+        except OSError, json.JSONDecodeError:
             return None
 
     def __call__(self, text: str):
@@ -249,10 +231,7 @@ class Parser:
         result = self.predictor.parse_rst(text)
         root = extract_root_tree(result)
         if not isinstance(root, DiscourseUnit):
-            raise ParseFailedError(
-                "Parser produced an RST root with the wrong runtime type: "
-                f"{type(root).__name__}."
-            )
+            raise ParseFailedError(f"Parser produced an RST root with the wrong runtime type: {type(root).__name__}.")
         return root
 
     def from_edus(self, edus: Sequence[str]):
@@ -340,5 +319,3 @@ class Parser:
             custom_boundaries=custom_boundaries,
             output=output,
         )
-
-

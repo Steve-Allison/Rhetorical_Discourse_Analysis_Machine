@@ -99,4 +99,3 @@ def test_missing_lockfile_raises() -> None:
 
     with pytest.raises(FileNotFoundError):
         load_ontology_lock(Path("/non_existent_path/central.lock.yaml"))
-

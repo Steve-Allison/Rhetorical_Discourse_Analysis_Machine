@@ -41,15 +41,19 @@ from docling_core.types.doc.document import (
 
 from .schema import Boundary
 
-PPTX_MIMETYPES = frozenset({
-    "application/vnd.ms-powerpoint",
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-})
-SECTION_MIMETYPES = frozenset({
-    "application/pdf",
-    "text/markdown",
-    "text/html",
-})
+PPTX_MIMETYPES = frozenset(
+    {
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    }
+)
+SECTION_MIMETYPES = frozenset(
+    {
+        "application/pdf",
+        "text/markdown",
+        "text/html",
+    }
+)
 VTT_MIMETYPE = "text/vtt"
 
 
@@ -98,9 +102,7 @@ def detect_boundaries(
             include_furniture=include_furniture,
         )
     elif mimetype == VTT_MIMETYPE:
-        primary = _detect_vtt_turn_boundaries(
-            doc, coalesce=coalesce_speaker_turns, layers=layers
-        )
+        primary = _detect_vtt_turn_boundaries(doc, coalesce=coalesce_speaker_turns, layers=layers)
     elif mimetype in SECTION_MIMETYPES:
         primary = _detect_section_boundaries(doc, layers=layers)
     else:
@@ -119,9 +121,7 @@ def _label_value(thing: object) -> str:
     return value if isinstance(value, str) else str(thing)
 
 
-def _iter_body_self_refs(
-    doc: DoclingDocument, *, layers: set[ContentLayer]
-) -> Iterable[str]:
+def _iter_body_self_refs(doc: DoclingDocument, *, layers: set[ContentLayer]) -> Iterable[str]:
     """Yield self_refs of TextItem and PictureItem in iteration order."""
     for item, _depth in doc.iterate_items(
         traverse_pictures=True,
@@ -157,7 +157,7 @@ def _detect_pptx_slide_boundaries(
         for child_ref in group.children:
             try:
                 child = child_ref.resolve(doc)
-            except (AttributeError, LookupError, TypeError, ValueError, RuntimeError):
+            except AttributeError, LookupError, TypeError, ValueError, RuntimeError:
                 continue
             if not _layer_allowed(child, layers):
                 continue
@@ -184,9 +184,7 @@ def _detect_pptx_slide_boundaries(
 # --- VTT -------------------------------------------------------------------
 
 
-def _detect_vtt_turn_boundaries(
-    doc: DoclingDocument, *, coalesce: bool, layers: set[ContentLayer]
-) -> list[Boundary]:
+def _detect_vtt_turn_boundaries(doc: DoclingDocument, *, coalesce: bool, layers: set[ContentLayer]) -> list[Boundary]:
     boundaries: list[Boundary] = []
     current_voice: str | None = None
     current_refs: list[str] = []
@@ -229,9 +227,7 @@ def _detect_vtt_turn_boundaries(
 # --- Section-based formats (PDF / Markdown / HTML) -------------------------
 
 
-def _detect_section_boundaries(
-    doc: DoclingDocument, *, layers: set[ContentLayer]
-) -> list[Boundary]:
+def _detect_section_boundaries(doc: DoclingDocument, *, layers: set[ContentLayer]) -> list[Boundary]:
     # Buckets: first entry is the implicit pre-header "document" bucket;
     # each subsequent entry is one section opened by a SectionHeaderItem.
     buckets: list[tuple[str | None, int | None, list[str]]] = [(None, None, [])]
@@ -274,9 +270,7 @@ def _detect_section_boundaries(
 # --- Default fallback ------------------------------------------------------
 
 
-def _single_document_boundary(
-    doc: DoclingDocument, *, layers: set[ContentLayer]
-) -> list[Boundary]:
+def _single_document_boundary(doc: DoclingDocument, *, layers: set[ContentLayer]) -> list[Boundary]:
     refs = tuple(_iter_body_self_refs(doc, layers=layers))
     if not refs:
         return []
@@ -310,8 +304,7 @@ def _detect_table_boundaries(doc: DoclingDocument) -> tuple[Boundary, ...]:
         if parent is not None:
             parent_ref = getattr(parent, "cref", None)
         cell_refs = tuple(
-            f"{table.self_ref}/data/table_cells/{idx}"
-            for idx, _cell in enumerate(table.data.table_cells)
+            f"{table.self_ref}/data/table_cells/{idx}" for idx, _cell in enumerate(table.data.table_cells)
         )
         out.append(
             Boundary(

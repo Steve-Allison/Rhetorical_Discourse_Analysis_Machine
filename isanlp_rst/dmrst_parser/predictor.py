@@ -26,24 +26,20 @@ class PredictorDMRST(BasePredictor):
         dtype: str | torch.dtype | None = None,
     ) -> None:
         if model_dir is not None and hf_model_name is not None:
-            raise ValueError(
-                'Pass exactly one of `model_dir` or `hf_model_name`, not both.'
-            )
+            raise ValueError("Pass exactly one of `model_dir` or `hf_model_name`, not both.")
 
-        model_filename = 'best_weights.pt'
-        config_filename = 'config.json'
-        relation_table_filename = 'relation_table.txt'
+        model_filename = "best_weights.pt"
+        config_filename = "config.json"
+        relation_table_filename = "relation_table.txt"
 
         if model_dir is not None:
-            self.mode = 'local'
+            self.mode = "local"
             self.model_dir = Path(model_dir)
             self.model_file = str(self.model_dir / model_filename)
             self.config_path = str(self.model_dir / config_filename)
-            self.relation_table = self._read_relation_table(
-                self.model_dir / relation_table_filename
-            )
+            self.relation_table = self._read_relation_table(self.model_dir / relation_table_filename)
         elif hf_model_name is not None:
-            self.mode = 'hf'
+            self.mode = "hf"
             self.hf_model_name = hf_model_name
             self.hf_model_version = hf_model_version
             self.model_file = hf_hub_download(
@@ -63,9 +59,9 @@ class PredictorDMRST(BasePredictor):
             )
             self.relation_table = self._read_relation_table(relation_table_path)
         else:
-            raise ValueError('Pass either `model_dir` or `hf_model_name`.')
+            raise ValueError("Pass either `model_dir` or `hf_model_name`.")
 
-        self.config = json.loads(Path(self.config_path).read_text(encoding='utf-8'))
+        self.config = json.loads(Path(self.config_path).read_text(encoding="utf-8"))
 
         self._device = resolve_device(device, cuda_device)
         self._dtype = self._resolve_dtype(dtype)
@@ -75,36 +71,33 @@ class PredictorDMRST(BasePredictor):
     @staticmethod
     def _read_relation_table(path: str | Path) -> list[str]:
         """Load relation labels, matching UniRST (strip; drop blank lines)."""
-        table = [
-            line.strip()
-            for line in Path(path).read_text(encoding='utf-8').splitlines()
-            if line.strip()
-        ]
+        table = [line.strip() for line in Path(path).read_text(encoding="utf-8").splitlines() if line.strip()]
         if not table:
-            raise ValueError(f'relation_table at {path!r} has no non-blank labels.')
+            raise ValueError(f"relation_table at {path!r} has no non-blank labels.")
         return table
 
     def _load_model(self) -> None:
         self.tokenizer = AutoTokenizer.from_pretrained(
-            self.config['model']['transformer']['model_name'],
+            self.config["model"]["transformer"]["model_name"],
             use_fast=True,
         )
         self.tokenizer.model_max_length = int(
-            1e9)  # The parser relies on a sliding window encoding, so we'll suppress the max_len warning this way.
+            1e9
+        )  # The parser relies on a sliding window encoding, so we'll suppress the max_len warning this way.
 
-        transformer_config = AutoConfig.from_pretrained(self.config['model']['transformer']['model_name'])
+        transformer_config = AutoConfig.from_pretrained(self.config["model"]["transformer"]["model_name"])
         transformer = AutoModel.from_config(transformer_config).to(self._device)
 
-        self.tokenizer.add_tokens(['<P>'])
+        self.tokenizer.add_tokens(["<P>"])
         transformer.resize_token_embeddings(len(self.tokenizer))
 
         model_config = {
-            'relation_table': self.relation_table,
-            'classes_number': len(self.relation_table),
-            'transformer': transformer,
-            'emb_dim': int(self.config['model']['transformer']['emb_size']),
+            "relation_table": self.relation_table,
+            "classes_number": len(self.relation_table),
+            "transformer": transformer,
+            "emb_dim": int(self.config["model"]["transformer"]["emb_size"]),
             # Inherited ParsingNet kwarg name; holds a torch.device (may be mps).
-            'cuda_device': self._device
+            "cuda_device": self._device,
         }
 
         model_config.update(self._get_model_configs())
@@ -115,57 +108,58 @@ class PredictorDMRST(BasePredictor):
     def _get_model_configs(self) -> dict[str, Any]:
         config: dict[str, Any] = {}
 
-        if 'normalize' in self.config['model']['transformer']:
-            config['normalize_embeddings'] = self.config['model']['transformer'].get('normalize')
+        if "normalize" in self.config["model"]["transformer"]:
+            config["normalize_embeddings"] = self.config["model"]["transformer"].get("normalize")
 
-        if 'hidden_size' in self.config['model']:
-            hidden_size = int(self.config['model'].get('hidden_size'))
-            config['hidden_size'] = hidden_size
-            config['decoder_input_size'] = hidden_size
-            config['classifier_input_size'] = hidden_size
-            config['classifier_hidden_size'] = hidden_size
+        if "hidden_size" in self.config["model"]:
+            hidden_size = int(self.config["model"].get("hidden_size"))
+            config["hidden_size"] = hidden_size
+            config["decoder_input_size"] = hidden_size
+            config["classifier_input_size"] = hidden_size
+            config["classifier_hidden_size"] = hidden_size
 
-        if 'type' in self.config['model']['segmenter']:
-            config['segmenter_type'] = self.config['model']['segmenter'].get('type')
+        if "type" in self.config["model"]["segmenter"]:
+            config["segmenter_type"] = self.config["model"]["segmenter"].get("type")
 
-        if 'hidden_dim' in self.config['model']['segmenter']:
-            config['segmenter_hidden_dim'] = int(self.config['model']['segmenter'].get('hidden_dim'))
+        if "hidden_dim" in self.config["model"]["segmenter"]:
+            config["segmenter_hidden_dim"] = int(self.config["model"]["segmenter"].get("hidden_dim"))
 
-        if 'lstm_num_layers' in self.config['model']['segmenter']:
-            config['segmenter_lstm_num_layers'] = self.config['model']['segmenter'].get('lstm_num_layers')
+        if "lstm_num_layers" in self.config["model"]["segmenter"]:
+            config["segmenter_lstm_num_layers"] = self.config["model"]["segmenter"].get("lstm_num_layers")
 
-        if 'lstm_dropout' in self.config['model']['segmenter']:
-            config['segmenter_lstm_dropout'] = self.config['model']['segmenter'].get('lstm_dropout')
+        if "lstm_dropout" in self.config["model"]["segmenter"]:
+            config["segmenter_lstm_dropout"] = self.config["model"]["segmenter"].get("lstm_dropout")
 
-        if 'lstm_bidirectional' in self.config['model']['segmenter']:
-            config['segmenter_lstm_bidirectional'] = str2bool(
-                self.config['model']['segmenter'].get('lstm_bidirectional'))
+        if "lstm_bidirectional" in self.config["model"]["segmenter"]:
+            config["segmenter_lstm_bidirectional"] = str2bool(
+                self.config["model"]["segmenter"].get("lstm_bidirectional")
+            )
 
-        if 'use_crf' in self.config['model']['segmenter']:
-            config['segmenter_use_crf'] = str2bool(self.config['model']['segmenter'].get('use_crf'))
+        if "use_crf" in self.config["model"]["segmenter"]:
+            config["segmenter_use_crf"] = str2bool(self.config["model"]["segmenter"].get("use_crf"))
 
-        if 'use_log_crf' in self.config['model']['segmenter']:
-            config['segmenter_use_log_crf'] = str2bool(self.config['model']['segmenter'].get('use_log_crf'))
+        if "use_log_crf" in self.config["model"]["segmenter"]:
+            config["segmenter_use_log_crf"] = str2bool(self.config["model"]["segmenter"].get("use_log_crf"))
 
-        if 'if_edu_start_loss' in self.config['model']['segmenter']:
-            config['segmenter_if_edu_start_loss'] = str2bool(self.config['model']['segmenter'].get('if_edu_start_loss'))
+        if "if_edu_start_loss" in self.config["model"]["segmenter"]:
+            config["segmenter_if_edu_start_loss"] = str2bool(self.config["model"]["segmenter"].get("if_edu_start_loss"))
 
-        if 'edu_encoding_kind' in self.config['model']:
-            config['edu_encoding_kind'] = self.config['model'].get('edu_encoding_kind')
+        if "edu_encoding_kind" in self.config["model"]:
+            config["edu_encoding_kind"] = self.config["model"].get("edu_encoding_kind")
 
-        if 'du_encoding_kind' in self.config['model']:
-            config['du_encoding_kind'] = self.config['model'].get('du_encoding_kind')
+        if "du_encoding_kind" in self.config["model"]:
+            config["du_encoding_kind"] = self.config["model"].get("du_encoding_kind")
 
-        if 'rel_classification_kind' in self.config['model']:
-            config['rel_classification_kind'] = self.config['model'].get('rel_classification_kind')
+        if "rel_classification_kind" in self.config["model"]:
+            config["rel_classification_kind"] = self.config["model"].get("rel_classification_kind")
 
-        if 'token_bilstm_hidden' in self.config['model']:
-            config['token_bilstm_hidden'] = int(self.config['model'].get('token_bilstm_hidden'))
+        if "token_bilstm_hidden" in self.config["model"]:
+            config["token_bilstm_hidden"] = int(self.config["model"].get("token_bilstm_hidden"))
 
         return config
 
     def tokenize(self, data: Data) -> Data:
-        """ Takes data with word level tokenization, run current transformer tokenizer and recount EDU boundaries."""
+        """Takes data with word level tokenization, run current transformer tokenizer and recount EDU boundaries."""
 
         # (word_start_char, word_end_char+1) for each token
         word_offsets = []
@@ -177,21 +171,22 @@ class PredictorDMRST(BasePredictor):
                 cur_char += len(word) + 1
             word_offsets.append(doc_word_offsets)
 
-        texts = [' '.join(line).strip() for line in data.input_sentences]
+        texts = [" ".join(line).strip() for line in data.input_sentences]
         tokens = self.tokenizer(texts, add_special_tokens=False, return_offsets_mapping=True)
-        tokens['entity_ids'] = None
-        tokens['entity_position_ids'] = None
+        tokens["entity_ids"] = None
+        tokens["entity_position_ids"] = None
 
         # recount edu_breaks for subwords
         subword_edu_breaks = []
         for doc_word_offsets, doc_subword_offsets, edu_breaks in zip(
-                word_offsets, tokens['offset_mapping'], data.edu_breaks, strict=True):
+            word_offsets, tokens["offset_mapping"], data.edu_breaks, strict=True
+        ):
             subword_edu_breaks.append(self._recount_spans(doc_word_offsets, doc_subword_offsets, edu_breaks))
 
         return Data(
-            input_sentences=tokens['input_ids'],
-            entity_ids=tokens['entity_ids'],
-            entity_position_ids=tokens['entity_position_ids'],
+            input_sentences=tokens["input_ids"],
+            entity_ids=tokens["entity_ids"],
+            entity_position_ids=tokens["entity_position_ids"],
             sent_breaks=None,
             edu_breaks=subword_edu_breaks,
             decoder_input=data.decoder_input,
@@ -199,11 +194,11 @@ class PredictorDMRST(BasePredictor):
             parsing_breaks=data.parsing_breaks,
             golden_metric=data.golden_metric,
             parents_index=data.parents_index,
-            sibling=data.sibling
+            sibling=data.sibling,
         )
 
     def get_batches(self, data: Data, size: int) -> list[Data]:
-        """ Splits a batch into multiple smaller with given size. """
+        """Splits a batch into multiple smaller with given size."""
 
         if len(data.input_sentences) < size:
             return [data]
@@ -216,11 +211,18 @@ class PredictorDMRST(BasePredictor):
         _golden_metric = list(self.divide_chunks(data.golden_metric, size))
 
         batches = []
-        for (input_sentences, edu_breaks, decoder_input,
-             relation_label, parsing_breaks, golden_metric
-             ) in tqdm(zip(_input_sentences, _edu_breaks, _decoder_input,
-                           _relation_label, _parsing_breaks, _golden_metric, strict=True),
-                       total=len(_input_sentences)):
+        for input_sentences, edu_breaks, decoder_input, relation_label, parsing_breaks, golden_metric in tqdm(
+            zip(
+                _input_sentences,
+                _edu_breaks,
+                _decoder_input,
+                _relation_label,
+                _parsing_breaks,
+                _golden_metric,
+                strict=True,
+            ),
+            total=len(_input_sentences),
+        ):
             batches.append(
                 Data(
                     input_sentences=input_sentences,
@@ -233,7 +235,7 @@ class PredictorDMRST(BasePredictor):
                     parsing_breaks=parsing_breaks,
                     golden_metric=golden_metric,
                     parents_index=None,
-                    sibling=None
+                    sibling=None,
                 )
             )
 
@@ -250,45 +252,35 @@ class PredictorDMRST(BasePredictor):
             dict: Tokens and a tree representing the rhetorical structure based on the input text.
         """
         if text is None:
-            raise ValueError('`text` must be provided for parsing.')
+            raise ValueError("`text` must be provided for parsing.")
         if not isinstance(text, str):
-            raise TypeError(
-                f'`text` must be a str, got {type(text).__name__}.'
-            )
+            raise TypeError(f"`text` must be a str, got {type(text).__name__}.")
         if not text.strip():
-            raise ValueError('`text` must be non-empty (got empty/whitespace-only input).')
+            raise ValueError("`text` must be non-empty (got empty/whitespace-only input).")
 
         # Prepare the input data
         razdel_tokens = list(razdel.tokenize(text))
         tokenized_text = [token.text for token in razdel_tokens]
         offset_positions, original_offsets = self.build_offset_converter_from_razdel(razdel_tokens)
         data = {
-            'input_sentences': [tokenized_text],
-            'edu_breaks': [[]],
-            'decoder_input': [[]],
-            'relation_label': [[]],
-            'parsing_breaks': [[]],
-            'golden_metric': [[]],
+            "input_sentences": [tokenized_text],
+            "edu_breaks": [[]],
+            "decoder_input": [[]],
+            "relation_label": [[]],
+            "parsing_breaks": [[]],
+            "golden_metric": [[]],
         }
 
         if len(tokenized_text) < 3:
             tree = DUConverter.dummy_tree(tokenized_text)
             self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
 
-            return {
-                'rst': [tree]
-            }
+            return {"rst": [tree]}
 
         # Initialize predictions dictionary
         input_data = Data(**data)
 
-        predictions = {
-            'tokens': [],
-            'spans': [],
-            'edu_breaks': [],
-            'true_spans': [],
-            'true_edu_breaks': []
-        }
+        predictions = {"tokens": [], "spans": [], "edu_breaks": [], "true_spans": [], "true_edu_breaks": []}
 
         # Tokenize the input for the transformer
         batch = self.tokenize(input_data)
@@ -296,27 +288,31 @@ class PredictorDMRST(BasePredictor):
         # Perform forward pass
         with torch.inference_mode(), self._autocast():
             _, _, span_batch, _, predict_edu_breaks = self.model.testing_loss(
-                batch.input_sentences, batch.sent_breaks, batch.entity_ids, batch.entity_position_ids,
-                batch.edu_breaks, batch.relation_label, batch.parsing_breaks,
-                generate_tree=True, use_pred_segmentation=True)
+                batch.input_sentences,
+                batch.sent_breaks,
+                batch.entity_ids,
+                batch.entity_position_ids,
+                batch.edu_breaks,
+                batch.relation_label,
+                batch.parsing_breaks,
+                generate_tree=True,
+                use_pred_segmentation=True,
+            )
 
         # Update predictions dictionary
-        predictions['tokens'] += [self.tokenizer.convert_ids_to_tokens(text) for text in
-                                  batch.input_sentences]
+        predictions["tokens"] += [self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences]
         if span_batch is None:
-            raise RuntimeError('testing_loss returned no spans with generate_tree=True')
-        predictions['spans'] += span_batch
-        predictions['edu_breaks'] += predict_edu_breaks
-        predictions['true_spans'] += batch.golden_metric
-        predictions['true_edu_breaks'] += batch.edu_breaks
+            raise RuntimeError("testing_loss returned no spans with generate_tree=True")
+        predictions["spans"] += span_batch
+        predictions["edu_breaks"] += predict_edu_breaks
+        predictions["true_spans"] += batch.golden_metric
+        predictions["true_edu_breaks"] += batch.edu_breaks
 
         # Convert predictions to a tree structure
-        tree = DUConverter(predictions, tokenization_type='default').collect()[0]
+        tree = DUConverter(predictions, tokenization_type="default").collect()[0]
         self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
 
-        return {
-            'rst': [tree]
-        }
+        return {"rst": [tree]}
 
     def parse_from_edus(self, edus: Sequence[str]) -> dict[str, Any]:
         """Parse a document using predefined EDU boundaries."""
@@ -329,7 +325,7 @@ class PredictorDMRST(BasePredictor):
         offset_positions, original_offsets = self.build_offset_converter_from_razdel(razdel_tokens)
 
         if not tokenized_text:
-            raise ValueError('Unable to tokenize text derived from the provided EDUs.')
+            raise ValueError("Unable to tokenize text derived from the provided EDUs.")
 
         if len(normalized_edus) == 1:
             tree = DUConverter.dummy_tree(tokenized_text)
@@ -337,10 +333,8 @@ class PredictorDMRST(BasePredictor):
             leaves: list[str] = []
             self._collect_leaf_texts(tree, leaves)
             if leaves != normalized_edus:
-                raise ValueError('Failed to align the provided EDU with the parser output.')
-            return {
-                'rst': [tree]
-            }
+                raise ValueError("Failed to align the provided EDU with the parser output.")
+            return {"rst": [tree]}
 
         razdel_offsets = [(t.start, t.stop) for t in razdel_tokens]
         edu_breaks = self._char_spans_to_token_breaks(razdel_offsets, spans)
@@ -360,40 +354,38 @@ class PredictorDMRST(BasePredictor):
 
         input_data = data
 
-        predictions = {
-            'tokens': [],
-            'spans': [],
-            'edu_breaks': [],
-            'true_spans': [],
-            'true_edu_breaks': []
-        }
+        predictions = {"tokens": [], "spans": [], "edu_breaks": [], "true_spans": [], "true_edu_breaks": []}
 
         batch = self.tokenize(input_data)
 
         with torch.inference_mode(), self._autocast():
             _, _, span_batch, _, predict_edu_breaks = self.model.testing_loss(
-                batch.input_sentences, batch.sent_breaks, batch.entity_ids, batch.entity_position_ids,
-                batch.edu_breaks, batch.relation_label, batch.parsing_breaks,
-                generate_tree=True, use_pred_segmentation=False)
+                batch.input_sentences,
+                batch.sent_breaks,
+                batch.entity_ids,
+                batch.entity_position_ids,
+                batch.edu_breaks,
+                batch.relation_label,
+                batch.parsing_breaks,
+                generate_tree=True,
+                use_pred_segmentation=False,
+            )
 
-        predictions['tokens'] += [self.tokenizer.convert_ids_to_tokens(text) for text in
-                                  batch.input_sentences]
+        predictions["tokens"] += [self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences]
         if span_batch is None:
-            raise RuntimeError('testing_loss returned no spans with generate_tree=True')
-        predictions['spans'] += span_batch
-        predictions['edu_breaks'] += predict_edu_breaks
-        predictions['true_spans'] += batch.golden_metric
-        predictions['true_edu_breaks'] += batch.edu_breaks
+            raise RuntimeError("testing_loss returned no spans with generate_tree=True")
+        predictions["spans"] += span_batch
+        predictions["edu_breaks"] += predict_edu_breaks
+        predictions["true_spans"] += batch.golden_metric
+        predictions["true_edu_breaks"] += batch.edu_breaks
 
-        tree = DUConverter(predictions, tokenization_type='default').collect()[0]
+        tree = DUConverter(predictions, tokenization_type="default").collect()[0]
 
         self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
 
         leaves: list[str] = []
         self._collect_leaf_texts(tree, leaves)
         if leaves != normalized_edus:
-            raise ValueError('The produced segmentation does not match the provided EDUs.')
+            raise ValueError("The produced segmentation does not match the provided EDUs.")
 
-        return {
-            'rst': [tree]
-        }
+        return {"rst": [tree]}

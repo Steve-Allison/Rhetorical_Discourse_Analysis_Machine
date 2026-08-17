@@ -73,10 +73,7 @@ def _resolve_dbpath(dbpath: str | None = None) -> str:
         return dbpath
     active = _active_dbpath.get()
     if active is None:
-        raise RuntimeError(
-            "No active viewer SQLite path. Use temporary_db() "
-            "(rs3tohtml does this automatically)."
-        )
+        raise RuntimeError("No active viewer SQLite path. Use temporary_db() (rs3tohtml does this automatically).")
     return active
 
 
@@ -158,11 +155,35 @@ def import_document(
             node = rst_nodes[key]
             cur.execute(
                 "INSERT INTO rst_nodes VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-                (node.id, node.left, node.right, node.parent, node.depth, node.kind, node.text, node.relname, doc, project, user),
+                (
+                    node.id,
+                    node.left,
+                    node.right,
+                    node.parent,
+                    node.depth,
+                    node.kind,
+                    node.text,
+                    node.relname,
+                    doc,
+                    project,
+                    user,
+                ),
             )
             cur.execute(
                 "INSERT INTO rst_nodes VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-                (node.id, node.left, node.right, node.parent, node.depth, node.kind, node.text, node.relname, doc, project, "_orig"),
+                (
+                    node.id,
+                    node.left,
+                    node.right,
+                    node.parent,
+                    node.depth,
+                    node.kind,
+                    node.text,
+                    node.relname,
+                    doc,
+                    project,
+                    "_orig",
+                ),
             )
         for key in rel_hash:
             cur.execute(
@@ -242,9 +263,15 @@ def update_parent(node_id: str, new_parent_id: str, doc: str, project: str, user
     if prev_parent:
         if not count_children(prev_parent, doc, project, user) > 0 and not prev_parent == "0":
             delete_node(prev_parent, doc, project, user)
-        elif get_kind(prev_parent, doc, project, user) == "span" and count_span_children(prev_parent, doc, project, user) == 0:
+        elif (
+            get_kind(prev_parent, doc, project, user) == "span"
+            and count_span_children(prev_parent, doc, project, user) == 0
+        ):
             delete_node(prev_parent, doc, project, user)
-        elif get_kind(prev_parent, doc, project, user) == "multinuc" and count_multinuc_children(prev_parent, doc, project, user) == 0:
+        elif (
+            get_kind(prev_parent, doc, project, user) == "multinuc"
+            and count_multinuc_children(prev_parent, doc, project, user) == 0
+        ):
             delete_node(prev_parent, doc, project, user)
 
 
@@ -289,7 +316,10 @@ def update_rel(node_id: str, new_rel: str, doc: str, project: str, user: str) ->
     if get_kind(parent_id, doc, project, user) == "multinuc":
         new_rel_type = get_rel_type(new_rel, doc, project)
         if new_rel_type == "rst":
-            if count_multinuc_children(parent_id, doc, project, user) == 1 and get_rel_type(get_rel(node_id, doc, project, user), doc, project) == "multinuc":
+            if (
+                count_multinuc_children(parent_id, doc, project, user) == 1
+                and get_rel_type(get_rel(node_id, doc, project, user), doc, project) == "multinuc"
+            ):
                 new_rel = get_def_rel("rst", doc, project)
                 children = get_children(parent_id, doc, project, user)
                 for child in children:
@@ -402,9 +432,14 @@ def delete_node(node_id: str, doc: str, project: str, user: str) -> None:
         if not parent == "0":
             if not count_children(parent, doc, project, user) > 0:
                 delete_node(parent, doc, project, user)
-            elif get_kind(parent, doc, project, user) == "span" and count_span_children(parent, doc, project, user) == 0:
+            elif (
+                get_kind(parent, doc, project, user) == "span" and count_span_children(parent, doc, project, user) == 0
+            ):
                 delete_node(parent, doc, project, user)
-            elif get_kind(parent, doc, project, user) == "multinuc" and count_multinuc_children(parent, doc, project, user) == 0:
+            elif (
+                get_kind(parent, doc, project, user) == "multinuc"
+                and count_multinuc_children(parent, doc, project, user) == 0
+            ):
                 delete_node(parent, doc, project, user)
 
 

@@ -92,12 +92,12 @@ pip install "isanlp_rst[pydantic] @ git+https://github.com/Steve-Allison/isanlp_
 from isanlp_rst.parser import Parser
 
 # Choose a model version
-version = 'gumrrg'  # one of: 'gumrrg', 'rstdt', 'rstreebank', 'rrtrrg', 'unirst'
+version = "gumrrg"  # one of: 'gumrrg', 'rstdt', 'rstreebank', 'rrtrrg', 'unirst'
 
 # Initialise the parser (downloads weights from HF on first call)
-parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                hf_model_version=version,
-                device='auto')  # 'auto' (default) | 'cpu' | 'mps' | 'cuda' | 'cuda:N'
+parser = Parser(
+    hf_model_name="tchewik/isanlp_rst_v3", hf_model_version=version, device="auto"
+)  # 'auto' (default) | 'cpu' | 'mps' | 'cuda' | 'cuda:N'
 
 text = """
 On Saturday, in the ninth edition of the T20 Men's Cricket World Cup, Team India won against South Africa by seven runs.
@@ -110,16 +110,15 @@ and Jasprit Bumrah took two wickets.
 """
 
 res = parser(text)  # res['rst'] contains the binary discourse tree
-print(vars(res['rst'][0]))
+print(vars(res["rst"][0]))
 ```
 
 For the multilingual `unirst` model, specify the relation inventory:
 
 ```python
-parser = Parser(hf_model_name='tchewik/isanlp_rst_v3',
-                hf_model_version='unirst',
-                device='auto',
-                relinventory='eng.erst.gum')  # see UniRST_Metrics.md for options
+parser = Parser(
+    hf_model_name="tchewik/isanlp_rst_v3", hf_model_version="unirst", device="auto", relinventory="eng.erst.gum"
+)  # see UniRST_Metrics.md for options
 ```
 
 #### Loading from a local checkpoint
@@ -131,10 +130,10 @@ For offline / air-gapped use, point `Parser` at a directory containing the check
 #   data_manager_*.json / relation_table_<corpus>.txt / legacy data_manager_*.pickle
 #     or config.json with `data.corpora`  -> UniRST
 #   relation_table.txt                                        -> DMRST
-parser = Parser(model_dir='/path/to/checkpoint', device='auto')
+parser = Parser(model_dir="/path/to/checkpoint", device="auto")
 
 # Override auto-detection:
-parser = Parser(model_dir='/path/to/checkpoint', family='dmrst', device='auto')
+parser = Parser(model_dir="/path/to/checkpoint", family="dmrst", device="auto")
 ```
 
 #### Device selection (`device=`)
@@ -156,8 +155,8 @@ Forward passes go through `torch.autocast`, so the model runs in `float32`, `flo
 
 ```python
 import torch
-parser = Parser(hf_model_version='gumrrg', device='auto',
-                dtype=torch.bfloat16)   # also accepts 'bf16', 'fp16', 'fp32'
+
+parser = Parser(hf_model_version="gumrrg", device="auto", dtype=torch.bfloat16)  # also accepts 'bf16', 'fp16', 'fp32'
 ```
 
 Default is `float32` on every device. On Apple Silicon (M-series, PyTorch 2.11) at ~1k-char inputs, `float32` beats `bfloat16` / `float16` for every published model — per-op autocast dispatch overhead dominates the matmul speedup at this scale. On large-batch CUDA workloads with native bf16 (Hopper / Ada Tensor Cores), `bfloat16` is likely faster — measure with `pixi run bench` before pinning a choice.
@@ -213,7 +212,7 @@ Leaves are EDUs; internal nodes are relations. Every node has `start` / `end` in
 ### 1. Save to RS3
 
 ```python
-res['rst'][0].to_rs3('filename.rs3')
+res["rst"][0].to_rs3("filename.rs3")
 ```
 
 Open `filename.rs3` in external tools like **RSTTool** or **rstWeb** for editing.
@@ -259,10 +258,7 @@ isanlp_rst.to_pdf("filename.rs3", "filename.pdf")
 ### Parsing pre-segmented EDUs
 
 ```python
-my_edus = [
-    "On Saturday, Team India won against South Africa.",
-    "The final match was played in Barbados."
-]
+my_edus = ["On Saturday, Team India won against South Africa.", "The final match was played in Barbados."]
 
 res = parser.from_edus(my_edus)
 ```
@@ -272,9 +268,9 @@ res = parser.from_edus(my_edus)
 When parsing many documents, the resulting `DiscourseUnit` trees can consume significant memory — each node stores its corresponding text span.
 
 ```python
-res['rst'][0].clear_textfields()   # drop .text on every node, keep structure
+res["rst"][0].clear_textfields()  # drop .text on every node, keep structure
 # ... pickle / store ...
-res['rst'][0].fill_textfields(full_text)   # repopulate later
+res["rst"][0].fill_textfields(full_text)  # repopulate later
 ```
 
 **Note:** `.to_rs3()` on a tree with cleared text fields will fail.

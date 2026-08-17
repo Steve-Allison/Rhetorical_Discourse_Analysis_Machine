@@ -118,7 +118,9 @@ def train_segmenter(
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=0.01)
     total_steps = len(train_loader) * epochs
     warmup_steps = int(total_steps * 0.1)
-    scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
+    scheduler = get_cosine_schedule_with_warmup(
+        optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps
+    )
 
     weight_tensor = torch.tensor([1.0, pos_weight], device=dev)
     loss_fn = nn.CrossEntropyLoss(weight=weight_tensor, ignore_index=-100)
@@ -149,7 +151,9 @@ def train_segmenter(
             total_loss += loss.item()
 
             if (step + 1) % max(1, len(train_loader) // 5) == 0:
-                logger.info("Epoch %d/%d | Step %d/%d | Loss: %.4f", epoch, epochs, step + 1, len(train_loader), loss.item())
+                logger.info(
+                    "Epoch %d/%d | Step %d/%d | Loss: %.4f", epoch, epochs, step + 1, len(train_loader), loss.item()
+                )
 
         avg_train_loss = total_loss / len(train_loader)
 

@@ -44,7 +44,6 @@ PACKAGE_ROOT_DIR = Path(__file__).resolve().parent
 DATA_ROOT_DIR = PACKAGE_ROOT_DIR / "data"
 
 
-
 def _html_to_fragment(full_html: str) -> str:
     """
     Convert a full HTML document into a safe inline fragment:
@@ -99,34 +98,34 @@ def _rs3tohtml_with_db(
 
     header = header.replace(
         '<link rel="stylesheet" href="**css_dir**/rst.css" type="text/css" charset="utf-8"/>',
-        '<style>\n' + _load_asset_text('css', 'rst.css') + '\n</style>\n'
-                                                           '<style>\n'
-                                                           '.rst_rel_wrap{display:inline-flex;align-items:center;justify-content:center}'
-                                                           '.rst_rel_label{font-size:8pt;font-weight:bold;'
-                                                           ' color:red;background-color:rgba(255,255,255,0.85);'
-                                                           ' padding:0 2px;border-radius:3px;user-select:none;'
-                                                           ' white-space: nowrap; '
-                                                           '}'
-                                                           '</style>'
+        "<style>\n" + _load_asset_text("css", "rst.css") + "\n</style>\n"
+        "<style>\n"
+        ".rst_rel_wrap{display:inline-flex;align-items:center;justify-content:center}"
+        ".rst_rel_label{font-size:8pt;font-weight:bold;"
+        " color:red;background-color:rgba(255,255,255,0.85);"
+        " padding:0 2px;border-radius:3px;user-select:none;"
+        " white-space: nowrap; "
+        "}"
+        "</style>",
     )
 
     def _inline_script_tag(script_filename: str) -> str:
-        script_text = _load_asset_text('script', script_filename)
-        script_text = script_text.replace('</script>', '<\\/script>')
-        return '<script>\n' + script_text + '\n</script>'
+        script_text = _load_asset_text("script", script_filename)
+        script_text = script_text.replace("</script>", "<\\/script>")
+        return "<script>\n" + script_text + "\n</script>"
 
     header = header.replace(
         '<script src="**script_dir**/jquery-1.11.3.min.js"></script>',
-        _inline_script_tag('jquery-1.11.3.min.js'),
+        _inline_script_tag("jquery-1.11.3.min.js"),
     )
     header = header.replace(
         '<script src="**script_dir**/jquery-ui.min.js"></script>',
-        _inline_script_tag('jquery-ui.min.js'),
+        _inline_script_tag("jquery-ui.min.js"),
     )
 
     cpout = ""
     cpout += header
-    cpout += '''<div>\n'''
+    cpout += """<div>\n"""
 
     rels = get_rst_rels(current_doc, current_project)
     def_rstrel = get_def_rel("rst", current_doc, current_project)
@@ -136,18 +135,12 @@ def _rs3tohtml_with_db(
     for rel in rels:
         value = str(rel[0])
         if rel[1] == "multinuc":
-            multi_rel_entries.append(
-                {"value": value, "label": value.replace("_m", "")}
-            )
+            multi_rel_entries.append({"value": value, "label": value.replace("_m", "")})
             rel_kinds[value] = "multinuc"
         else:
-            rst_rel_entries.append(
-                {"value": value, "label": value.replace("_r", "")}
-            )
+            rst_rel_entries.append({"value": value, "label": value.replace("_r", "")})
             rel_kinds[value] = "rst"
-    multi_rel_entries.append(
-        {"value": str(def_rstrel), "label": "(satellite...)"}
-    )
+    multi_rel_entries.append({"value": str(def_rstrel), "label": "(satellite...)"})
 
     nodes: dict[str, NODE] = {}
     rows = get_rst_doc(current_doc, current_project, user)
@@ -206,11 +199,13 @@ def _rs3tohtml_with_db(
             if node.relname == "span":
                 if node.id in anchors:
                     anchors[parent.id] = str(
-                        ((node.left - parent.left) * px_unit) / parent_wid + float(anchors[node.id]) * float(
-                            child_wid / parent_wid))
+                        ((node.left - parent.left) * px_unit) / parent_wid
+                        + float(anchors[node.id]) * float(child_wid / parent_wid)
+                    )
                 else:
                     anchors[parent.id] = str(
-                        ((node.left - parent.left) * px_unit) / parent_wid + (0.5 * child_wid) / parent_wid)
+                        ((node.left - parent.left) * px_unit) / parent_wid + (0.5 * child_wid) / parent_wid
+                    )
             elif node.relkind == "multinuc" and parent.kind == "multinuc":
                 lr = get_multinuc_children_lr(node.parent, current_doc, current_project, user)
                 lr_wid = (lr[0] + lr[1]) / 2
@@ -223,9 +218,17 @@ def _rs3tohtml_with_db(
                     if left_child in anchors and right_child in anchors:
                         len_left = nodes[left_child].right - nodes[left_child].left + 1
                         len_right = nodes[right_child].right - nodes[right_child].left + 1
-                        anchors[parent.id] = str(((float(anchors[left_child]) * len_left * px_unit + float(
-                            anchors[right_child]) * len_right * px_unit + (nodes[
-                                                                               right_child].left - parent.left) * px_unit) / 2) / parent_wid)
+                        anchors[parent.id] = str(
+                            (
+                                (
+                                    float(anchors[left_child]) * len_left * px_unit
+                                    + float(anchors[right_child]) * len_right * px_unit
+                                    + (nodes[right_child].left - parent.left) * px_unit
+                                )
+                                / 2
+                            )
+                            / parent_wid
+                        )
                     else:
                         anchors[parent.id] = str((lr_wid - parent.left + 1) / (parent.right - parent.left + 1))
             else:
@@ -235,10 +238,15 @@ def _rs3tohtml_with_db(
     # Place anchor element to center on proportional position relative to parent
     for key in nodes:
         node = nodes[key]
-        pix_anchors[node.id] = str(int(
-            3 + node.left * px_unit - px_unit - 39 +
-            float(anchors[node.id]) * ((node.right - node.left + 1) * px_unit - 4)
-        ))
+        pix_anchors[node.id] = str(
+            int(
+                3
+                + node.left * px_unit
+                - px_unit
+                - 39
+                + float(anchors[node.id]) * ((node.right - node.left + 1) * px_unit - 4)
+            )
+        )
 
     for key in nodes:
         node = nodes[key]
@@ -248,19 +256,17 @@ def _rs3tohtml_with_db(
             top_px = int(top_spacing + layer_spacing + node.depth * layer_spacing)
             cpout += (
                 f'<div id="lg{node.id}" class="group" style="left: '
-                f"{left_px}px; width: {g_wid}px; top:{top_px}px; z-index:1\">\n"
+                f'{left_px}px; width: {g_wid}px; top:{top_px}px; z-index:1">\n'
             )
             cpout += f'\t<div id="wsk{node.id}" class="whisker" style="width:{g_wid}px;"></div>\n</div>\n'
             num_top = int(4 + top_spacing + layer_spacing + node.depth * layer_spacing)
             z_index = int(200 - (node.right - node.left))
             cpout += (
                 f'<div id="g{node.id}" class="num_cont" style="position: absolute; left:'
-                f"{pix_anchors[node.id]}px; top:{num_top}px; z-index:{z_index}\">\n"
+                f'{pix_anchors[node.id]}px; top:{num_top}px; z-index:{z_index}">\n'
             )
-            cpout += "\t<table class=\"btn_tb\">\n\t\t<tr>"
-            cpout += (
-                f'\n\t\t\t<td rowspan="2"><span class="num_id">{int(node.left)}-{int(node.right)}</span></td>\n'
-            )
+            cpout += '\t<table class="btn_tb">\n\t\t<tr>'
+            cpout += f'\n\t\t\t<td rowspan="2"><span class="num_id">{int(node.left)}-{int(node.right)}</span></td>\n'
             cpout += "\t</table>\n</div>\n<br/>\n\n"
 
         elif node.kind == "edu":
@@ -268,24 +274,20 @@ def _rs3tohtml_with_db(
             edu_top = int(top_spacing + layer_spacing + node.depth * layer_spacing)
             cpout += (
                 f'<div id="edu{node.id}" class="edu" title="{node.id}" style="left:'
-                f"{edu_left}px; top:{edu_top}px; width: {int(edu_inner_w)}px\">\n"
+                f'{edu_left}px; top:{edu_top}px; width: {int(edu_inner_w)}px">\n'
             )
             cpout += f'\t<div id="wsk{node.id}" class="whisker" style="width:{int(edu_inner_w)}px;"></div>'
-            cpout += "\n\t<div class=\"edu_num_cont\">"
+            cpout += '\n\t<div class="edu_num_cont">'
             cpout += '\n\t\t<table class="btn_tb">\n\t\t\t<tr>'
             cpout += f'\n\t\t\t\t<td rowspan="2"><span class="num_id">&nbsp;{int(node.left)}&nbsp;</span></td>\n'
             cpout += "</table>\n</div>" + html.escape(node.text or "", quote=False) + "</div>\n"
 
-    jsplumb_src = _load_asset_text('script', 'jquery.jsPlumb-1.7.5-min.js')
-    cpout += '<script>\n' + jsplumb_src + '\n</script>\n<script>\n'
+    jsplumb_src = _load_asset_text("script", "jquery.jsPlumb-1.7.5-min.js")
+    cpout += "<script>\n" + jsplumb_src + "\n</script>\n<script>\n"
 
-    cpout += 'var multi_rel_entries = ' + json.dumps(
-        multi_rel_entries, ensure_ascii=False
-    ) + ';\n'
-    cpout += 'var rst_rel_entries = ' + json.dumps(
-        rst_rel_entries, ensure_ascii=False
-    ) + ';\n'
-    cpout += '''function options_html_from_entries(entries){
+    cpout += "var multi_rel_entries = " + json.dumps(multi_rel_entries, ensure_ascii=False) + ";\n"
+    cpout += "var rst_rel_entries = " + json.dumps(rst_rel_entries, ensure_ascii=False) + ";\n"
+    cpout += """function options_html_from_entries(entries){
         return entries.map(function(e){
             var opt = document.createElement("option");
             opt.value = e.value;
@@ -300,9 +302,9 @@ def _rs3tohtml_with_db(
         var repl = "<option selected='selected' value='" + my_rel + "'";
         return html.split(needle).join(repl);
     }
-'''
+"""
 
-    cpout += '''function rel_display(rel){
+    cpout += """function rel_display(rel){
         return (rel || "").replace(/_(m|r)$/, "");
     }
     function make_relchooser(id, option_type, rel){
@@ -318,9 +320,9 @@ def _rs3tohtml_with_db(
         label.textContent = rel_display(rel);
         wrap.appendChild(label);
         return $(wrap);
-    }'''
+    }"""
 
-    cpout += '''
+    cpout += """
         var rstStyleTarget = document.body || document.documentElement;
         var rstComputedStyle = (rstStyleTarget && window.getComputedStyle) ? window.getComputedStyle(rstStyleTarget) : null;
         var rstConnectorStroke = '';
@@ -370,7 +372,7 @@ def _rs3tohtml_with_db(
              jsPlumb.ready(function() {
 
     jsPlumb.setContainer(document.getElementById("inner_canvas"));
-    '''
+    """
 
     cpout += "jsPlumb.setSuspendDrawing(true);"
 
@@ -398,25 +400,39 @@ def _rs3tohtml_with_db(
                 parent_id_str = "g" + parent.id
 
             if node.relname == "span":
-                cpout += 'jsPlumb.connect({source:"' + node_id_str + '",target:"' + parent_id_str + '", connector:"Straight", anchors: ["Top","Bottom"]});'
+                cpout += (
+                    'jsPlumb.connect({source:"'
+                    + node_id_str
+                    + '",target:"'
+                    + parent_id_str
+                    + '", connector:"Straight", anchors: ["Top","Bottom"]});'
+                )
             elif parent.kind == "multinuc" and node.relkind == "multinuc":
                 cpout += (
-                    'jsPlumb.connect({source:"' + node_id_str + '",target:"'
+                    'jsPlumb.connect({source:"'
+                    + node_id_str
+                    + '",target:"'
                     + parent_id_str
                     + '", connector:"Straight", anchors: ["Top","Bottom"], overlays: [ ["Custom", {create:function(component) {return make_relchooser('
-                    + json.dumps(str(node.id)) + ',"multi",' + json.dumps(str(node.relname))
+                    + json.dumps(str(node.id))
+                    + ',"multi",'
+                    + json.dumps(str(node.relname))
                     + ');},location:0.2,id:"customOverlay"}]]});'
                 )
             else:
                 cpout += (
-                    'jsPlumb.connect({source:"' + node_id_str + '",target:"'
+                    'jsPlumb.connect({source:"'
+                    + node_id_str
+                    + '",target:"'
                     + parent_id_str
                     + '", overlays: [ ["Arrow" , { width:12, length:12, location:0.95 }],["Custom", {create:function(component) {return make_relchooser('
-                    + json.dumps(str(node.id)) + ',"rst",' + json.dumps(str(node.relname))
+                    + json.dumps(str(node.id))
+                    + ',"rst",'
+                    + json.dumps(str(node.relname))
                     + ');},location:0.1,id:"customOverlay"}]]});'
                 )
 
-    cpout += '''
+    cpout += """
         jsPlumb.setSuspendDrawing(false,true);
 
         jsPlumb.bind("connection", function(info) {
@@ -426,9 +442,9 @@ def _rs3tohtml_with_db(
 
         jsPlumb.bind("beforeDrop", function(info) {
             $(".minibtn").prop("disabled",true);
-    '''
+    """
 
-    cpout += '''
+    cpout += """
             var node_id = "n"+info.sourceId.replace(/edu|g|lg/,"");
             var new_parent_id = "n"+info.targetId.replace(/edu|g|lg/,"");
 
@@ -471,7 +487,7 @@ def _rs3tohtml_with_db(
 </div>
 </body>
 </html>
-'''
+"""
     return cpout
 
 
@@ -490,9 +506,7 @@ def rs3topng(
         pass
     else:
         raise RuntimeError(
-            "Detected running asyncio loop. "
-            "Use the async-safe version instead:\n"
-            "    await rs3topng_async(...)\n"
+            "Detected running asyncio loop. Use the async-safe version instead:\n    await rs3topng_async(...)\n"
         )
 
     html_str = rs3tohtml(os.fspath(rs3_filepath))
@@ -501,11 +515,7 @@ def rs3topng(
         try:
             browser = launch_chromium(p)
         except Exception as exc:
-            raise ImportError(
-                "Browser is not installed.\n"
-                "Run:\n"
-                "  playwright install chromium"
-            ) from exc
+            raise ImportError("Browser is not installed.\nRun:\n  playwright install chromium") from exc
         context = browser.new_context(
             device_scale_factor=device_scale_factor,
             color_scheme="light",
@@ -548,11 +558,7 @@ async def rs3topng_async(
         try:
             browser = await launch_chromium_async(p)
         except Exception as exc:
-            raise ImportError(
-                "Browser is not installed.\n"
-                "Run:\n"
-                "  playwright install chromium"
-            ) from exc
+            raise ImportError("Browser is not installed.\nRun:\n  playwright install chromium") from exc
         context = await browser.new_context(
             device_scale_factor=device_scale_factor,
             viewport={"width": viewport_width, "height": viewport_height},
@@ -572,10 +578,12 @@ async def rs3topng_async(
         y = max(bbox["y"] - margin_px, 0)
         w = bbox["width"] + margin_px * 2
         h = bbox["height"] + margin_px * 2
-        await page.set_viewport_size({
-            "width": max(viewport_width, x + w + 20),
-            "height": max(viewport_height, y + h + 20),
-        })
+        await page.set_viewport_size(
+            {
+                "width": max(viewport_width, x + w + 20),
+                "height": max(viewport_height, y + h + 20),
+            }
+        )
         png_bytes: bytes = await page.screenshot(
             type="png",
             clip={"x": x, "y": y, "width": w, "height": h},
@@ -602,11 +610,7 @@ async def rs3topdf_async(
         try:
             browser = await launch_chromium_async(p)
         except Exception as exc:
-            raise ImportError(
-                "Browser is not installed.\n"
-                "Run:\n"
-                "  playwright install chromium"
-            ) from exc
+            raise ImportError("Browser is not installed.\nRun:\n  playwright install chromium") from exc
 
         context = await browser.new_context(
             device_scale_factor=device_scale_factor,
@@ -628,7 +632,8 @@ async def rs3topdf_async(
         w = bbox["width"] + margin_px * 2
         h = bbox["height"] + margin_px * 2
 
-        await page.add_style_tag(content=f"""
+        await page.add_style_tag(
+            content=f"""
 html, body {{
   margin: 0 !important;
   padding: 0 !important;
@@ -645,7 +650,8 @@ html, body {{
   size: {w}px {h}px;
   margin: 0;
 }}
-""")
+"""
+        )
         await page.pdf(
             path=pdf_path,
             width=f"{w}px",
@@ -672,6 +678,7 @@ def _emit_png(
         Path(png_filepath).write_bytes(png_bytes)
         return None
     return png_bytes
+
 
 class RenderedRST(str):
     """String subclass that cooperates with IPython display hooks."""
@@ -757,7 +764,7 @@ def _wrap_for_notebook(html_str: str) -> str:
         f'<div id="{root_id}" '
         'style="margin:0;padding:0;max-width:100%;overflow-x:auto;overflow-y:visible;">'
         f"{frag}</div>\n"
-        f"<script data-rst-resize=\"{root_id}\">\n"
+        f'<script data-rst-resize="{root_id}">\n'
         "(function() {\n"
         f"  var ROOT_ID = {root_id!r};\n"
         "  var cachedScript = null;\n"
@@ -891,5 +898,5 @@ def cli(argv: list[str] | None = None) -> None:
                 sys.stdout.write(rs3tohtml(args.rs3_file))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli(sys.argv[1:])

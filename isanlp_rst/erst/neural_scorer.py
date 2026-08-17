@@ -119,9 +119,7 @@ class NeuralSecondaryEdgeScorer(nn.Module):
         )
 
         # 5. Asymmetric Bilinear Scorer: h_u^T W h_v
-        self.bilinear = nn.Bilinear(proj_dim, proj_dim, 1, bias=False).to(
-            device=self.dev, dtype=self.dtype
-        )
+        self.bilinear = nn.Bilinear(proj_dim, proj_dim, 1, bias=False).to(device=self.dev, dtype=self.dtype)
 
         # 6. Pairwise Deep MLP: [h_u; h_v; h_u * h_v; |h_u - h_v|; f_struct]
         mlp_in_dim = (proj_dim * 4) + num_struct_features

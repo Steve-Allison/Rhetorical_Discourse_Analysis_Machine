@@ -16,9 +16,11 @@ from isanlp_rst.markdown import parse_markdown
 
 result = parse_markdown(Path("design-notes.md"), device="auto")
 
-print(f"{len(result.edus)} EDUs, {len(result.relations)} relations, "
-      f"{len(result.boundaries)} boundaries, "
-      f"{len(result.table_analyses)} table analyses")
+print(
+    f"{len(result.edus)} EDUs, {len(result.relations)} relations, "
+    f"{len(result.boundaries)} boundaries, "
+    f"{len(result.table_analyses)} table analyses"
+)
 ```
 
 `result` is a `MarkdownRstResult` — a frozen dataclass. Its main attributes:
@@ -48,10 +50,7 @@ from isanlp_rst.markdown import parse_markdown
 
 parser = Parser(hf_model_version="gumrrg", device="auto")
 
-results = [
-    parse_markdown(p, parser=parser, cache_dir=".rst-cache")
-    for p in Path("docs").rglob("*.md")
-]
+results = [parse_markdown(p, parser=parser, cache_dir=".rst-cache") for p in Path("docs").rglob("*.md")]
 ```
 
 The cache key covers the source bytes, model identity, and every knob —
@@ -67,16 +66,16 @@ Defaults are "analyse everything":
 ```python
 result = parse_markdown(
     "doc.md",
-    gfm=True,                  # GFM tables + strikethrough (default on)
+    gfm=True,  # GFM tables + strikethrough (default on)
     include_blockquotes=True,  # gates ALL quoted constructs as one region
     include_table_cells=True,  # two-level table analysis (default on)
     include_code_blocks=True,  # fenced + indented (default on)
-    include_html=True,         # raw HTML blocks, tags stripped to text
+    include_html=True,  # raw HTML blocks, tags stripped to text
     harvest_separator="\n\n",
-    note_threshold=0.90,       # ratio that triggers RstRelation.note
-    max_harvest_chars=200_000, # checked for main + each table harvest
-    device="auto",             # GPU when torch reports one, else CPU
-    dtype=None,                # "bf16" / "fp16" mixed-precision override
+    note_threshold=0.90,  # ratio that triggers RstRelation.note
+    max_harvest_chars=200_000,  # checked for main + each table harvest
+    device="auto",  # GPU when torch reports one, else CPU
+    dtype=None,  # "bf16" / "fp16" mixed-precision override
 )
 ```
 
@@ -91,10 +90,9 @@ Each analysis is a self-contained mini-tree over one table's cells:
 ```python
 for analysis in result.table_analyses:
     boundary = next(b for b in result.boundaries if b.id == analysis.id)
-    print(f"{analysis.id}: {len(analysis.edus)} cell EDUs, "
-          f"{len(analysis.relations)} relations")
+    print(f"{analysis.id}: {len(analysis.edus)} cell EDUs, {len(analysis.relations)} relations")
     for edu in analysis.edus:
-        print("  ", edu.block_refs)   # e.g. ('#/tables/0/cells/3',)
+        print("  ", edu.block_refs)  # e.g. ('#/tables/0/cells/3',)
 ```
 
 Cell refs (`#/tables/T/cells/K`) resolve against the table boundary's
@@ -118,7 +116,8 @@ print(result.source_origin)
 
 # Parse the YAML yourself if you need it (no PyYAML dep in this package):
 import yaml
-meta = yaml.safe_load(result.source_origin['front_matter'])
+
+meta = yaml.safe_load(result.source_origin["front_matter"])
 ```
 
 ## Group relations by boundary
@@ -137,8 +136,7 @@ for relation in result.relations:
 
 for boundary in result.boundaries:
     rels = per_boundary[boundary.id]
-    print(f"{boundary.id} ({boundary.kind}, level={boundary.level}): "
-          f"{len(rels)} relations touch this boundary")
+    print(f"{boundary.id} ({boundary.kind}, level={boundary.level}): {len(rels)} relations touch this boundary")
 ```
 
 ## Reconstruct the tree
@@ -152,6 +150,7 @@ nodes.update({e.id: e for e in result.edus})
 
 root = result.relations[0]  # relations[] is pre-order DFS — root first
 
+
 def walk(node_id: int, depth: int = 0) -> None:
     node = nodes[node_id]
     indent = "  " * depth
@@ -161,6 +160,7 @@ def walk(node_id: int, depth: int = 0) -> None:
         walk(node.right_id, depth + 1)
     else:  # RstEdu
         print(f"{indent}EDU {node.id}: {node.block_refs}")
+
 
 walk(root.id)
 ```

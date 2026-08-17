@@ -45,8 +45,22 @@ def test_acyclic_dag_decoder_prevents_cycles() -> None:
             RstNode(node_id=3, kind=NodeKindEnum.ROOT, edu_span=(1, 2), char_span=(0, 20), text="Node 1 Node 2"),
         ),
         primary_edges=(
-            PrimaryRelationEdge(edge_id="p1", parent_id=3, child_id=1, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
-            PrimaryRelationEdge(edge_id="p2", parent_id=3, child_id=2, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
+            PrimaryRelationEdge(
+                edge_id="p1",
+                parent_id=3,
+                child_id=1,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Elaboration",
+                relation_concept="Elaboration",
+            ),
+            PrimaryRelationEdge(
+                edge_id="p2",
+                parent_id=3,
+                child_id=2,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Elaboration",
+                relation_concept="Elaboration",
+            ),
         ),
     )
 
@@ -101,9 +115,30 @@ def test_extract_erst_candidates_ancestry_pruning() -> None:
             RstNode(node_id=4, kind=NodeKindEnum.ROOT, edu_span=(1, 3), char_span=(0, 46), text="Full text"),
         ),
         primary_edges=(
-            PrimaryRelationEdge(edge_id="e1", parent_id=4, child_id=1, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
-            PrimaryRelationEdge(edge_id="e2", parent_id=4, child_id=2, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
-            PrimaryRelationEdge(edge_id="e3", parent_id=4, child_id=3, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
+            PrimaryRelationEdge(
+                edge_id="e1",
+                parent_id=4,
+                child_id=1,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Elaboration",
+                relation_concept="Elaboration",
+            ),
+            PrimaryRelationEdge(
+                edge_id="e2",
+                parent_id=4,
+                child_id=2,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Elaboration",
+                relation_concept="Elaboration",
+            ),
+            PrimaryRelationEdge(
+                edge_id="e3",
+                parent_id=4,
+                child_id=3,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Elaboration",
+                relation_concept="Elaboration",
+            ),
         ),
     )
 
@@ -157,12 +192,32 @@ def test_erst_completer_integration_with_neural_scorer() -> None:
         formalism=OutputFormalismEnum.RST_TREE,
         nodes=(
             RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 13), text="First clause."),
-            RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(14, 44), text="However second clause follows."),
+            RstNode(
+                node_id=2,
+                kind=NodeKindEnum.EDU,
+                edu_span=(2, 2),
+                char_span=(14, 44),
+                text="However second clause follows.",
+            ),
             RstNode(node_id=3, kind=NodeKindEnum.ROOT, edu_span=(1, 2), char_span=(0, 44), text="Full text"),
         ),
         primary_edges=(
-            PrimaryRelationEdge(edge_id="e1", parent_id=3, child_id=1, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
-            PrimaryRelationEdge(edge_id="e2", parent_id=3, child_id=2, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
+            PrimaryRelationEdge(
+                edge_id="e1",
+                parent_id=3,
+                child_id=1,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Elaboration",
+                relation_concept="Elaboration",
+            ),
+            PrimaryRelationEdge(
+                edge_id="e2",
+                parent_id=3,
+                child_id=2,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Elaboration",
+                relation_concept="Elaboration",
+            ),
         ),
     )
 

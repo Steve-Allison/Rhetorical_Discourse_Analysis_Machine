@@ -47,13 +47,7 @@ def test_parse_rs4_to_sentences() -> None:
 def test_parse_disrpt_tok_mock(tmp_path: Path) -> None:
     tok_file = tmp_path / "sample.tok"
     tok_content = (
-        "# newdoc id = test_doc\n"
-        "1\tAlthough\tSeg=B-EDU\n"
-        "2\tit\t_\n"
-        "3\trained,\t_\n"
-        "4\twe\tSeg=B-EDU\n"
-        "5\twalked.\t_\n"
-        "\n"
+        "# newdoc id = test_doc\n1\tAlthough\tSeg=B-EDU\n2\tit\t_\n3\trained,\t_\n4\twe\tSeg=B-EDU\n5\twalked.\t_\n\n"
     )
     tok_file.write_text(tok_content, encoding="utf-8")
 
@@ -79,7 +73,7 @@ def test_transformer_segmenter_character_invariance() -> None:
 
     # Verify 0-drift character offsets
     for edu in edus:
-        assert text[edu.start:edu.end] == edu.text
+        assert text[edu.start : edu.end] == edu.text
         assert edu.start >= 0
         assert edu.end <= len(text)
 

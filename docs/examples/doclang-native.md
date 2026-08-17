@@ -16,8 +16,7 @@ from isanlp_rst.doclang import parse_doclang
 
 result = parse_doclang(Path("document.dclg.xml"), device="auto")
 
-print(f"{len(result.edus)} EDUs, {len(result.relations)} relations, "
-      f"{len(result.boundaries)} boundaries")
+print(f"{len(result.edus)} EDUs, {len(result.relations)} relations, {len(result.boundaries)} boundaries")
 print(f"source: {result.source}, namespace: {result.source_origin['namespace']}")
 ```
 
@@ -61,10 +60,7 @@ from isanlp_rst.doclang import parse_doclang
 
 parser = Parser(hf_model_version="gumrrg", device="auto")
 
-results = [
-    parse_doclang(p, parser=parser)
-    for p in Path("corpus").glob("*.dclg.xml")
-]
+results = [parse_doclang(p, parser=parser) for p in Path("corpus").glob("*.dclg.xml")]
 ```
 
 The injected parser is reused for every call. Model knobs
@@ -77,17 +73,17 @@ constructs its own.
 ```python
 result = parse_doclang(
     "doc.dclg.xml",
-    include_picture_captions=True,   # <picture><caption>...</caption>
-    include_background=False,        # <layer value="background"/>
-    include_furniture=False,         # <layer value="furniture"/> +
-                                     # <page_header> / <page_footer>
-    include_field_regions=False,     # <field_region> body
-    include_code_blocks=False,       # <code> blocks (source code; not prose)
-    include_formulas=False,          # <formula> blocks (LaTeX; not prose)
-    harvest_separator="\n\n",        # inserted between spans
-    note_threshold=0.90,             # ratio that triggers RstRelation.note
-    validate_xml=True,               # gate the file through doclang.validate
-    max_harvest_chars=200_000,       # raises InputTooLargeError above this
+    include_picture_captions=True,  # <picture><caption>...</caption>
+    include_background=False,  # <layer value="background"/>
+    include_furniture=False,  # <layer value="furniture"/> +
+    # <page_header> / <page_footer>
+    include_field_regions=False,  # <field_region> body
+    include_code_blocks=False,  # <code> blocks (source code; not prose)
+    include_formulas=False,  # <formula> blocks (LaTeX; not prose)
+    harvest_separator="\n\n",  # inserted between spans
+    note_threshold=0.90,  # ratio that triggers RstRelation.note
+    validate_xml=True,  # gate the file through doclang.validate
+    max_harvest_chars=200_000,  # raises InputTooLargeError above this
 )
 ```
 
@@ -128,8 +124,7 @@ spans:
 ```python
 for relation in result.relations:
     if relation.nucleus_thread_ids:
-        print(f"{relation.relation}: nucleus spans threads "
-              f"{relation.nucleus_thread_ids}")
+        print(f"{relation.relation}: nucleus spans threads {relation.nucleus_thread_ids}")
 ```
 
 A relation whose nucleus spans a page break will show
@@ -156,11 +151,13 @@ for boundary in result.boundaries:
 
 ```python
 within = [r for r in result.relations if len(r.boundary_memberships) == 1]
-cross  = [r for r in result.relations if len(r.boundary_memberships) >  1]
+cross = [r for r in result.relations if len(r.boundary_memberships) > 1]
 
 print(f"within-boundary: {len(within)} relations")
-print(f"cross-boundary:  {len(cross)} relations  ← typically heading-to-heading "
-      "arcs or thread-continuation across page breaks")
+print(
+    f"cross-boundary:  {len(cross)} relations  ← typically heading-to-heading "
+    "arcs or thread-continuation across page breaks"
+)
 ```
 
 ## Reconstruct the tree
@@ -175,6 +172,7 @@ nodes.update({e.id: e for e in result.edus})
 
 root = result.relations[0]  # relations[] is pre-order DFS — root first
 
+
 def walk(node_id: int, depth: int = 0) -> None:
     node = nodes[node_id]
     indent = "  " * depth
@@ -184,6 +182,7 @@ def walk(node_id: int, depth: int = 0) -> None:
         walk(node.right_id, depth + 1)
     else:  # RstEdu
         print(f"{indent}EDU {node.id}: {node.xpaths}")
+
 
 walk(root.id)
 ```
@@ -218,7 +217,7 @@ the table xpath itself is the synthetic boundary marker and carries no
 harvest span.
 
 ```python
-result = parse_doclang("doc.dclg.xml")              # analyses on by default
+result = parse_doclang("doc.dclg.xml")  # analyses on by default
 for analysis in result.table_analyses:
     print(analysis.id, len(analysis.edus), "cell EDUs")
 ```

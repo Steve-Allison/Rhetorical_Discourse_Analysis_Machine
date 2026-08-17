@@ -16,7 +16,7 @@ class Node:
 
 class BinaryTree:
     def __init__(self, dmrg_path: str | Path, text_path: str | Path, edus_path: str | Path) -> None:
-        self.string = ''
+        self.string = ""
         self.sentence_span: dict[str, int] = {}
         self.paragraph_span: dict[str, int] = {}
         self.convert_file_to_string(dmrg_path)
@@ -24,36 +24,36 @@ class BinaryTree:
         self.root = self.build_tree(self.string)
 
     def convert_file_to_string(self, dmrg_path: str | Path) -> None:
-        '''
+        """
         :return: convert a dmrg file into a string.
-        '''
+        """
         lines = Path(dmrg_path).read_text().splitlines()
-        self.string = ' '.join(line.strip() for line in lines)
-        self.string = self.string.replace(') (', ')(')  # remove space between bracket.
+        self.string = " ".join(line.strip() for line in lines)
+        self.string = self.string.replace(") (", ")(")  # remove space between bracket.
 
     def find_span_index(self, string: str) -> int | None:
-        '''
+        """
         :return: find a index which separate the left and right child.
-        '''
+        """
         flag = 0
         for i, c in enumerate(string):
-            if c == '(':
+            if c == "(":
                 flag += 1
-            if c == ')':
+            if c == ")":
                 flag += -1
             if flag == 0:
                 return i
         return None
 
     def build_tree(self, string: str) -> Node:
-        '''
+        """
         :return: a binary tree.
-        '''
+        """
         node = Node()
 
-        space_index = string.find(' ')
+        space_index = string.find(" ")
         value = string[1:space_index]
-        if value == 'EDU':
+        if value == "EDU":
             idx = int(re.findall(r"\d+?\d*", string)[0])
             node.edu_id = idx
             node.span = [idx, idx]
@@ -64,11 +64,11 @@ class BinaryTree:
             return node
 
         node.relation = value
-        sub_string = string[space_index + 1:-1]
+        sub_string = string[space_index + 1 : -1]
         span_index = self.find_span_index(sub_string)
-        node.left = self.build_tree(sub_string[:span_index + 1])
+        node.left = self.build_tree(sub_string[: span_index + 1])
         node.left.parent = node
-        node.right = self.build_tree(sub_string[span_index + 1:])
+        node.right = self.build_tree(sub_string[span_index + 1 :])
         node.right.parent = node
         node.span = [node.left.span[0], node.right.span[1]]
         if str(node.span) in self.paragraph_span:
@@ -79,11 +79,11 @@ class BinaryTree:
         return node
 
     def find_sentence_span(self, text_file_path: str | Path, edus_file_path: str | Path) -> None:
-        '''
+        """
         :param text_file_path: text contains sentence and paragraph information.
         :param edus_file_path: lines of EDUS.
         :return: the span of each EDUS.
-        '''
+        """
         sentence_span: dict[str, int] = {}
         paragraph_span: dict[str, int] = {}
         text_lines = Path(text_file_path).read_text().splitlines()
@@ -96,21 +96,21 @@ class BinaryTree:
         last_para_edu = 1
 
         while text_line < len(text_lines):
-            line_punctuation = ''.join(re.findall(r'\W', text_lines[text_line].replace(' ', '')))
+            line_punctuation = "".join(re.findall(r"\W", text_lines[text_line].replace(" ", "")))
             # end of paragraph.
-            if text_lines[text_line] == '':
+            if text_lines[text_line] == "":
                 paragraph_span[str([last_para_edu, edus_line])] = 1
                 last_para_edu = edus_line + 1
                 text_line += 1
                 continue
-            sentence_punctuation = ''
+            sentence_punctuation = ""
             while edus_line < len(edus_lines):
                 if len(sentence_punctuation) > len(line_punctuation):
                     # print('EDU include more than one line.')
                     text_line += 1
-                    line_punctuation += ''.join(re.findall(r'\W', text_lines[text_line].replace(' ', '')))
+                    line_punctuation += "".join(re.findall(r"\W", text_lines[text_line].replace(" ", "")))
                     continue
-                sentence_punctuation += ''.join(re.findall(r'\W', edus_lines[edus_line].replace(' ', '')))
+                sentence_punctuation += "".join(re.findall(r"\W", edus_lines[edus_line].replace(" ", "")))
 
                 # end of sentence.
                 if sentence_punctuation == line_punctuation:

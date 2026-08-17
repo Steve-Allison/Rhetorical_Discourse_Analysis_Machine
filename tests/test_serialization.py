@@ -13,9 +13,16 @@ def _sample_tree() -> DiscourseUnit:
     left = DiscourseUnit(id=1, start=0, end=8, text="Left edu.")
     right = DiscourseUnit(id=2, start=10, end=19, text="Right edu.")
     return DiscourseUnit(
-        id=3, left=left, right=right, start=0, end=19,
+        id=3,
+        left=left,
+        right=right,
+        start=0,
+        end=19,
         text="Left edu.  Right edu.",
-        relation="elaboration", nuclearity="NS", proba=0.91, entropy=0.34,
+        relation="elaboration",
+        nuclearity="NS",
+        proba=0.91,
+        entropy=0.34,
     )
 
 
@@ -25,7 +32,7 @@ def test_tree_to_dict_captures_full_field_set() -> None:
     assert d["relation"] == "elaboration"
     assert d["nuclearity"] == "NS"
     assert d["proba"] == 0.91
-    assert d["entropy"] == 0.34            # full field set, not the legacy 7
+    assert d["entropy"] == 0.34  # full field set, not the legacy 7
     assert d["left"]["text"] == "Left edu."
     assert d["right"]["id"] == 2
 

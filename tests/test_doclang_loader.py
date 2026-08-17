@@ -75,14 +75,8 @@ def test_namespaced_doc_path_never_contains_wildcard() -> None:
 )
 def test_local_path_is_unique_within_document(fixture_name: str) -> None:
     tree = parse_doclang_xml(FIXTURES / fixture_name)
-    paths = [
-        local_path(el)
-        for el in tree.iter()
-        if isinstance(el.tag, str)
-    ]
-    assert len(paths) == len(set(paths)), (
-        f"duplicate paths in {fixture_name}"
-    )
+    paths = [local_path(el) for el in tree.iter() if isinstance(el.tag, str)]
+    assert len(paths) == len(set(paths)), f"duplicate paths in {fixture_name}"
 
 
 @pytest.mark.parametrize(
@@ -181,4 +175,3 @@ def test_parse_doclang_xml_refuses_external_entity_xxe(tmp_path: Path) -> None:
         return
     blob = "".join(tree.getroot().itertext())
     assert "TOP_SECRET_PAYLOAD_XYZ" not in blob
-

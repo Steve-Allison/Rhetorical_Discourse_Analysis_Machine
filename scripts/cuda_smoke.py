@@ -34,13 +34,10 @@ SAMPLE_EDUS = [
 
 
 def _assert_aligned(tree, text: str) -> None:
-    expected = text[tree.start:tree.end]
+    expected = text[tree.start : tree.end]
     if tree.text != expected:
-        raise AssertionError(
-            f"alignment failed: tree.text={tree.text!r} != "
-            f"text[{tree.start}:{tree.end}]={expected!r}"
-        )
-    for child in (getattr(tree, 'left', None), getattr(tree, 'right', None)):
+        raise AssertionError(f"alignment failed: tree.text={tree.text!r} != text[{tree.start}:{tree.end}]={expected!r}")
+    for child in (getattr(tree, "left", None), getattr(tree, "right", None)):
         if child is not None:
             _assert_aligned(child, text)
 
@@ -49,7 +46,7 @@ def _collect_leaves(tree) -> list[str]:
     out: list[str] = []
 
     def walk(u) -> None:
-        l, r = getattr(u, 'left', None), getattr(u, 'right', None)
+        l, r = getattr(u, "left", None), getattr(u, "right", None)
         if l is None and r is None:
             out.append(u.text)
             return
@@ -74,10 +71,10 @@ def main() -> int:
     print(f"CUDA: {torch.cuda.get_device_name(0)} | torch {torch.__version__}")
 
     cases: list[tuple[str, dict]] = [
-        ('DMRST gumrrg', dict(hf_model_version='gumrrg')),
+        ("DMRST gumrrg", dict(hf_model_version="gumrrg")),
         (
-            'UniRST unirst',
-            dict(hf_model_version='unirst', relinventory='eng.erst.gum'),
+            "UniRST unirst",
+            dict(hf_model_version="unirst", relinventory="eng.erst.gum"),
         ),
     ]
 
@@ -85,22 +82,24 @@ def main() -> int:
         print(f"\n--- {name} ---")
         t0 = time.time()
         parser = Parser(
-            hf_model_name='tchewik/isanlp_rst_v3', device='cuda', **kwargs,
+            hf_model_name="tchewik/isanlp_rst_v3",
+            device="cuda",
+            **kwargs,
         )
         device = parser.predictor._device
-        if device.type != 'cuda':
+        if device.type != "cuda":
             print(f"FAIL — expected cuda device, got {device}", file=sys.stderr)
             return 1
         print(f"  loaded in {time.time() - t0:.1f}s on {device}")
 
         t0 = time.time()
         res = parser(SAMPLE_TEXT)
-        _assert_aligned(res['rst'][0], SAMPLE_TEXT)
+        _assert_aligned(res["rst"][0], SAMPLE_TEXT)
         print(f"  parse_rst: {time.time() - t0:.2f}s, alignment OK")
 
         t0 = time.time()
         res = parser.from_edus(SAMPLE_EDUS)
-        leaves = _collect_leaves(res['rst'][0])
+        leaves = _collect_leaves(res["rst"][0])
         if leaves != SAMPLE_EDUS:
             print(
                 f"FAIL — EDU round-trip mismatch: {leaves} != {SAMPLE_EDUS}",
@@ -113,5 +112,5 @@ def main() -> int:
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

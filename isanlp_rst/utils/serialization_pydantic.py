@@ -39,8 +39,8 @@ class RstNode(BaseModel):
     entropy: float | None = None
     # Quoted: Pydantic resolves field annotations at class creation
     # (https://docs.pydantic.dev/latest/concepts/forward_annotations/).
-    left: 'RstNode | None' = None
-    right: 'RstNode | None' = None
+    left: "RstNode | None" = None
+    right: "RstNode | None" = None
 
     @classmethod
     def from_tree(cls, node: DiscourseUnit | None) -> RstNode | None:

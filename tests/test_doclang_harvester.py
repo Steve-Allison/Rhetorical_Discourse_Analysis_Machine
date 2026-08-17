@@ -73,9 +73,7 @@ def test_separator_reconstructs_full_text() -> None:
 
 
 def test_custom_separator_round_trips() -> None:
-    result = harvest_doclang_text(
-        _tree("ok_comprehensive.dclg.xml"), harvest_separator=" | "
-    )
+    result = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"), harvest_separator=" | ")
     assert " | ".join(s.text for s in result.spans) == result.full_text
 
 
@@ -134,7 +132,12 @@ def test_table_harvests_carry_cells_in_doc_order() -> None:
     assert [th.table_idx for th in harvests] == [0, 1, 2]
     first = harvests[0]
     assert [s.text for s in first.spans] == [
-        "Method", "Accuracy", "Baseline", "0.85", "Proposed", "0.92",
+        "Method",
+        "Accuracy",
+        "Baseline",
+        "0.85",
+        "Proposed",
+        "0.92",
     ]
     assert first.marker_xpath == "/doclang[1]/table[1]"
 
@@ -201,9 +204,7 @@ def test_main_harvest_has_no_grid_markers(fixture_name: str) -> None:
     for span in result.spans:
         last = span.xpath.rsplit("/", 1)[-1]
         local = last.split("[", 1)[0]
-        assert local not in grid_markers, (
-            f"grid marker {local!r} leaked into main harvest: {span.xpath}"
-        )
+        assert local not in grid_markers, f"grid marker {local!r} leaked into main harvest: {span.xpath}"
 
 
 # --- Thread-aware joins (B4) ------------------------------------------------
@@ -222,12 +223,7 @@ def test_thread_continuation_joins_with_single_space() -> None:
 
 def test_unthreaded_spans_join_with_separator() -> None:
     """Spans without a shared thread keep the paragraph separator."""
-    xml = (
-        b'<doclang xmlns="https://www.doclang.ai/ns/v0">'
-        b"<text>First.</text>"
-        b"<text>Second.</text>"
-        b"</doclang>"
-    )
+    xml = b'<doclang xmlns="https://www.doclang.ai/ns/v0"><text>First.</text><text>Second.</text></doclang>'
     tree = etree.ElementTree(etree.fromstring(xml))
     result = harvest_doclang_text(tree)
     a, b = result.spans
@@ -244,9 +240,7 @@ def test_list_item_per_ldiv_marker() -> None:
     ldiv_spans = [s for s in result.spans if "/ldiv[" in s.xpath]
     # The fixture has 7 lists; some markers have empty text and are dropped.
     # Verify each present ldiv span's xpath actually points at an ldiv marker.
-    assert len(ldiv_spans) >= 12, (
-        f"expected >=12 list items, got {len(ldiv_spans)}"
-    )
+    assert len(ldiv_spans) >= 12, f"expected >=12 list items, got {len(ldiv_spans)}"
 
 
 def test_list_item_xpath_points_at_marker() -> None:
@@ -282,9 +276,7 @@ def test_picture_caption_excluded_when_disabled() -> None:
     """``doclang_example.dclg.xml`` has a picture with caption; toggling
     ``include_picture_captions=False`` must drop it."""
     with_ = harvest_doclang_text(_tree("doclang_example.dclg.xml"))
-    without = harvest_doclang_text(
-        _tree("doclang_example.dclg.xml"), include_picture_captions=False
-    )
+    without = harvest_doclang_text(_tree("doclang_example.dclg.xml"), include_picture_captions=False)
     caption_xpaths_with = {s.xpath for s in with_.spans if "/caption[" in s.xpath}
     caption_xpaths_without = {s.xpath for s in without.spans if "/caption[" in s.xpath}
     assert caption_xpaths_with != caption_xpaths_without
@@ -304,9 +296,7 @@ def test_code_blocks_excluded_by_default() -> None:
 
 def test_code_blocks_included_when_toggled() -> None:
     without = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"))
-    with_ = harvest_doclang_text(
-        _tree("ok_comprehensive.dclg.xml"), include_code_blocks=True
-    )
+    with_ = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"), include_code_blocks=True)
     assert len(with_.spans) > len(without.spans)
 
 
@@ -318,9 +308,7 @@ def test_formulas_excluded_by_default() -> None:
 
 def test_formulas_included_when_toggled() -> None:
     without = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"))
-    with_ = harvest_doclang_text(
-        _tree("ok_comprehensive.dclg.xml"), include_formulas=True
-    )
+    with_ = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"), include_formulas=True)
     assert len(with_.spans) > len(without.spans)
 
 
@@ -350,9 +338,7 @@ def test_location_element_head_skipped() -> None:
 def test_field_regions_excluded_by_default() -> None:
     """``ok_field_item_nested_descendant_key_scope`` has a field_region
     with text — must not be in default harvest."""
-    result = harvest_doclang_text(
-        _tree("ok_field_item_nested_descendant_key_scope.dclg.xml")
-    )
+    result = harvest_doclang_text(_tree("ok_field_item_nested_descendant_key_scope.dclg.xml"))
     for span in result.spans:
         assert "/field_region[" not in span.xpath
 
@@ -370,11 +356,7 @@ def test_field_regions_included_when_opted_in() -> None:
     assert "Key 2 (inner)" in joined
     assert "Inner value 2a" in joined
     xpath_blob = " ".join(s.xpath for s in result.spans)
-    assert (
-        "/field_region[" in xpath_blob
-        or "/key[" in xpath_blob
-        or "/value[" in xpath_blob
-    )
+    assert "/field_region[" in xpath_blob or "/key[" in xpath_blob or "/value[" in xpath_blob
 
 
 # --- Head element skipped --------------------------------------------------

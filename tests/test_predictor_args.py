@@ -50,9 +50,7 @@ class TestUniRSTArgValidation:
         with pytest.raises(TypeError, match="must be a str"):
             PredictorUniRST.parse_rst(dummy, b"bytes")  # type: ignore[arg-type]
 
-    def test_relinventory_idx_out_of_bounds_raises_before_weight_load(
-        self, tmp_path
-    ):
+    def test_relinventory_idx_out_of_bounds_raises_before_weight_load(self, tmp_path):
         """OOB idx must fail on config alone — never reach torch.load."""
         (tmp_path / "config.json").write_text(
             json.dumps(

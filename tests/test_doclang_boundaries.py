@@ -41,9 +41,9 @@ def test_heading_includes_following_prose_xpaths() -> None:
     until the next heading (markdown-style section bucketing)."""
     xml = (
         b'<doclang xmlns="https://www.doclang.ai/ns/v0">'
-        b"<heading level=\"1\">First</heading>"
+        b'<heading level="1">First</heading>'
         b"<text>Prose under first.</text>"
-        b"<heading level=\"1\">Second</heading>"
+        b'<heading level="1">Second</heading>'
         b"<text>Prose under second.</text>"
         b"</doclang>"
     )
@@ -178,9 +178,7 @@ def test_table_boundary_excludes_ecel_and_nl() -> None:
 
 
 def test_field_region_boundary_emitted() -> None:
-    result = detect_boundaries(
-        _tree("ok_field_item_nested_descendant_key_scope.dclg.xml")
-    )
+    result = detect_boundaries(_tree("ok_field_item_nested_descendant_key_scope.dclg.xml"))
     field_regions = [b for b in result if b.kind == "field_region"]
     assert len(field_regions) >= 1
 
@@ -204,15 +202,9 @@ def test_code_formula_eligible_when_knobs_on() -> None:
     tree = _tree("ok_comprehensive.dclg.xml")
     root = tree.getroot()
     default = set(_harvest_eligible_xpaths(root))
-    widened = set(
-        _harvest_eligible_xpaths(
-            root, include_code_blocks=True, include_formulas=True
-        )
-    )
+    widened = set(_harvest_eligible_xpaths(root, include_code_blocks=True, include_formulas=True))
     assert widened >= default
-    assert any("/code[" in xp for xp in widened - default) or any(
-        "/formula[" in xp for xp in widened - default
-    )
+    assert any("/code[" in xp for xp in widened - default) or any("/formula[" in xp for xp in widened - default)
 
 
 # --- Document fallback -----------------------------------------------------
@@ -244,7 +236,7 @@ def test_pre_heading_content_gets_document_bucket() -> None:
     xml = (
         b'<doclang xmlns="https://www.doclang.ai/ns/v0">'
         b"<text>Lead-in before any heading.</text>"
-        b"<heading level=\"1\">Title</heading>"
+        b'<heading level="1">Title</heading>'
         b"<text>Under the title.</text>"
         b"</doclang>"
     )
@@ -290,9 +282,7 @@ def test_all_boundary_ids_unique(fixture_name: str) -> None:
 def test_xpaths_within_boundary_are_unique(fixture_name: str) -> None:
     result = detect_boundaries(_tree(fixture_name))
     for b in result:
-        assert len(set(b.xpaths)) == len(b.xpaths), (
-            f"duplicate xpaths in boundary {b.id}"
-        )
+        assert len(set(b.xpaths)) == len(b.xpaths), f"duplicate xpaths in boundary {b.id}"
 
 
 def test_no_slide_or_turn_boundary_kinds() -> None:

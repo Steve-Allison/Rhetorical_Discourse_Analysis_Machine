@@ -150,9 +150,7 @@ def test_cache_key_sensitive_to_source_and_knobs() -> None:
 
 
 def test_cache_key_order_insensitive_for_knobs() -> None:
-    assert result_cache_key(b"x", {"a": 1, "b": 2}) == result_cache_key(
-        b"x", {"b": 2, "a": 1}
-    )
+    assert result_cache_key(b"x", {"a": 1, "b": 2}) == result_cache_key(b"x", {"b": 2, "a": 1})
 
 
 def test_cache_store_load_round_trip(tmp_path: Path) -> None:
@@ -251,24 +249,16 @@ def test_model_identity_knobs_construct_vs_injected_vs_stub() -> None:
 
 def test_model_identity_knobs_different_stubs_differ() -> None:
     a, b = object(), object()
-    ka = model_identity_knobs(
-        hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=a
-    )
-    kb = model_identity_knobs(
-        hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=b
-    )
+    ka = model_identity_knobs(hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=a)
+    kb = model_identity_knobs(hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=b)
     assert ka["parser_id"] != kb["parser_id"]
     assert ka != kb
 
 
 def test_model_identity_knobs_same_stub_stable() -> None:
     stub = object()
-    ka = model_identity_knobs(
-        hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=stub
-    )
-    kb = model_identity_knobs(
-        hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=stub
-    )
+    ka = model_identity_knobs(hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=stub)
+    kb = model_identity_knobs(hf_model_name="r", hf_model_version="gumrrg", relinventory=None, parser=stub)
     assert ka == kb
     assert ka["parser_id"] == id(stub)
 

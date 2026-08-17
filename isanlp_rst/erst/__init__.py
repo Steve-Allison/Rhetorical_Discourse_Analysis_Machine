@@ -51,4 +51,3 @@ __all__ = [
     "load_gum_erst_corpus",
     "rs4_to_document_and_analysis",
 ]
-

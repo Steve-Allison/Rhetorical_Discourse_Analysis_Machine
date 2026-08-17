@@ -186,4 +186,3 @@ def test_gum_corpus_macro_benchmark(
     summary_table = corpus_report.summary_table()
     assert "GUM Gold Benchmark Summary" in summary_table
     assert "Macro Average" in summary_table
-

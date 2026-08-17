@@ -107,15 +107,9 @@ def test_synthetic_rs4_creation() -> None:
             RS4Segment(id=1, text="Unit 1", parent=3, relname="span"),
             RS4Segment(id=2, text="Unit 2", parent=1, relname="elaboration-additional"),
         ),
-        groups=(
-            RS4Group(id=3, type="span", parent=None, relname="span"),
-        ),
-        secedges=(
-            RS4SecEdge(id="1-2", source=1, target=2, relname="joint-list"),
-        ),
-        signals=(
-            RS4Signal(source="2", type="dm", subtype="dm", tokens=(1,), status="gold"),
-        ),
+        groups=(RS4Group(id=3, type="span", parent=None, relname="span"),),
+        secedges=(RS4SecEdge(id="1-2", source=1, target=2, relname="joint-list"),),
+        signals=(RS4Signal(source="2", type="dm", subtype="dm", tokens=(1,), status="gold"),),
     )
 
     xml_str = RS4Writer.to_string(doc)
@@ -135,4 +129,3 @@ def test_rs4_reader_malformed_xml_raises() -> None:
 
     with pytest.raises(ValueError, match="Missing <body>"):
         RS4Reader.read_string("<rst><header/></rst>")
-

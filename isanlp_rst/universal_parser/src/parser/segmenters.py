@@ -11,17 +11,23 @@ from . import modules
 
 
 class PointerSegmenter(nn.Module):
-
-    def __init__(self, hidden_size: int, atten_model: str | None = None,
-                 decoder_input_size: int | None = None, rnn_layers: int | None = None,
-                 dropout_d: float | None = None,
-                 if_edu_start_loss: bool = True, cuda_device: torch.device | None = None) -> None:
+    def __init__(
+        self,
+        hidden_size: int,
+        atten_model: str | None = None,
+        decoder_input_size: int | None = None,
+        rnn_layers: int | None = None,
+        dropout_d: float | None = None,
+        if_edu_start_loss: bool = True,
+        cuda_device: torch.device | None = None,
+    ) -> None:
         super().__init__()
 
         self.hidden_size = hidden_size
         self.pointer = modules.PointerAtten(atten_model, hidden_size)
-        self.encoder = nn.GRU(hidden_size, int(hidden_size / 2), num_layers=1, batch_first=True, dropout=0,
-                              bidirectional=True)
+        self.encoder = nn.GRU(
+            hidden_size, int(hidden_size / 2), num_layers=1, batch_first=True, dropout=0, bidirectional=True
+        )
         self.decoder = modules.DecoderRNN(decoder_input_size, hidden_size, rnn_layers, dropout_d, cuda_device)
         self.loss_fn = nn.NLLLoss()
         self.if_edu_start_loss = if_edu_start_loss
@@ -29,7 +35,7 @@ class PointerSegmenter(nn.Module):
 
     @override
     def forward(self) -> None:
-        raise RuntimeError('Segmenter does not have forward process.')
+        raise RuntimeError("Segmenter does not have forward process.")
 
     def train_segment_loss(self, word_embeddings: Tensor, edu_breaks: list[int]) -> Tensor:
         outputs, last_hidden = self.encoder(word_embeddings.unsqueeze(0))
@@ -38,8 +44,9 @@ class PointerSegmenter(nn.Module):
         edu_breaks = [0] + edu_breaks
         total_loss = torch.FloatTensor([0.0]).to(self._cuda_device)
         for step, start_index in enumerate(edu_breaks[:-1]):
-            cur_decoder_output, cur_decoder_hidden = self.decoder(outputs[start_index].unsqueeze(0).unsqueeze(0),
-                                                                  last_hidden=cur_decoder_hidden)
+            cur_decoder_output, cur_decoder_hidden = self.decoder(
+                outputs[start_index].unsqueeze(0).unsqueeze(0), last_hidden=cur_decoder_hidden
+            )
 
             _, log_atten_weights = self.pointer(outputs[start_index:], cur_decoder_output.squeeze(0).squeeze(0))
             cur_ground_index = torch.tensor([edu_breaks[step + 1] - start_index]).to(self._cuda_device)
@@ -55,10 +62,12 @@ class PointerSegmenter(nn.Module):
         predict_segment = []
         sentence_length = outputs.shape[0]
         while start_index < sentence_length:
-            cur_decoder_output, cur_decoder_hidden = self.decoder(outputs[start_index].unsqueeze(0).unsqueeze(0),
-                                                                  last_hidden=cur_decoder_hidden)
-            atten_weights, log_atten_weights = self.pointer(outputs[start_index:],
-                                                            cur_decoder_output.squeeze(0).squeeze(0))
+            cur_decoder_output, cur_decoder_hidden = self.decoder(
+                outputs[start_index].unsqueeze(0).unsqueeze(0), last_hidden=cur_decoder_hidden
+            )
+            atten_weights, log_atten_weights = self.pointer(
+                outputs[start_index:], cur_decoder_output.squeeze(0).squeeze(0)
+            )
             _, top_index_seg = atten_weights.topk(1)
 
             seg_index = int(top_index_seg[0][0]) + start_index
@@ -72,8 +81,13 @@ class PointerSegmenter(nn.Module):
 
 
 class LinearSegmenter(nn.Module):
-    def __init__(self, hidden_size: int, use_sentence_boundaries: bool = False,
-                 if_edu_start_loss: bool = True, cuda_device: torch.device | None = None) -> None:
+    def __init__(
+        self,
+        hidden_size: int,
+        use_sentence_boundaries: bool = False,
+        if_edu_start_loss: bool = True,
+        cuda_device: torch.device | None = None,
+    ) -> None:
         super().__init__()
 
         self.hidden_size = hidden_size
@@ -95,10 +109,11 @@ class LinearSegmenter(nn.Module):
 
     @override
     def forward(self) -> None:
-        raise RuntimeError('Segmenter does not have forward process.')
+        raise RuntimeError("Segmenter does not have forward process.")
 
-    def train_segment_loss(self, word_embeddings: Tensor, edu_breaks: list[int],
-                           sent_breaks: list[int] | None = None) -> Tensor:
+    def train_segment_loss(
+        self, word_embeddings: Tensor, edu_breaks: list[int], sent_breaks: list[int] | None = None
+    ) -> Tensor:
         edu_break_target = torch.zeros(word_embeddings.size(0), dtype=torch.long, device=self._cuda_device)
         edu_start_target = torch.zeros(word_embeddings.size(0), dtype=torch.long, device=self._cuda_device)
 
@@ -124,8 +139,8 @@ class LinearSegmenter(nn.Module):
         outputs = self.linear(self.dropout(word_embeddings))
         if self.use_sentence_boundaries:
             for i in sent_breaks:
-                outputs[i][0] = 0.
-                outputs[i][1] = 1.
+                outputs[i][0] = 0.0
+                outputs[i][1] = 1.0
 
         pred = torch.argmax(outputs, dim=1).detach().cpu().numpy().tolist()
         predict_segment = [i for i, k in enumerate(pred) if k == 1]
@@ -177,13 +192,13 @@ class CRF(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        torch.nn.init.uniform_(self.start_transitions, -1., 1.)
-        torch.nn.init.uniform_(self.end_transitions, -1., 1.)
-        torch.nn.init.uniform_(self.transitions, -1., 1.)
+        torch.nn.init.uniform_(self.start_transitions, -1.0, 1.0)
+        torch.nn.init.uniform_(self.end_transitions, -1.0, 1.0)
+        torch.nn.init.uniform_(self.transitions, -1.0, 1.0)
 
     @override
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(num_tags={self.num_tags})'
+        return f"{self.__class__.__name__}(num_tags={self.num_tags})"
 
     @override
     def forward(self, emissions: Tensor, tags: Tensor, mask: Tensor | None = None) -> Tensor:
@@ -393,7 +408,7 @@ class CRF(nn.Module):
 
             best_tags.append(best_last_tag)
 
-            for hist in reversed(history[:seq_ends[idx]]):
+            for hist in reversed(history[: seq_ends[idx]]):
                 best_last_tag = hist[idx][best_tags[-1]]
                 best_tags.append(best_last_tag)
 
@@ -408,21 +423,22 @@ class CRF(nn.Module):
 
 
 class ToNySegmenter(nn.Module):
-
-    def __init__(self,
-                 embedding_dim: int,
-                 use_sentence_boundaries: bool = False,
-                 dropout: float = 0.2,
-                 use_lstm: bool = True,
-                 hidden_dim: int = 100,
-                 num_layers: int = 1,
-                 lstm_dropout: float = 0.4,
-                 bidirectional: bool = True,
-                 use_crf: bool = False,
-                 use_log_crf: bool = True,
-                 scale_crf: bool = False,
-                 if_edu_start_loss: bool = False,
-                 cuda_device: torch.device | None = None) -> None:
+    def __init__(
+        self,
+        embedding_dim: int,
+        use_sentence_boundaries: bool = False,
+        dropout: float = 0.2,
+        use_lstm: bool = True,
+        hidden_dim: int = 100,
+        num_layers: int = 1,
+        lstm_dropout: float = 0.4,
+        bidirectional: bool = True,
+        use_crf: bool = False,
+        use_log_crf: bool = True,
+        scale_crf: bool = False,
+        if_edu_start_loss: bool = False,
+        cuda_device: torch.device | None = None,
+    ) -> None:
 
         super().__init__()
 
@@ -439,12 +455,14 @@ class ToNySegmenter(nn.Module):
         self._cuda_device = cuda_device
 
         if self.use_lstm:
-            self.lstm = nn.LSTM(embedding_dim,
-                                hidden_dim,
-                                num_layers=self.num_layers,
-                                dropout=(0 if self.num_layers == 1 else self.lstm_dropout),
-                                bidirectional=self.bidirectional,
-                                device=self._cuda_device)
+            self.lstm = nn.LSTM(
+                embedding_dim,
+                hidden_dim,
+                num_layers=self.num_layers,
+                dropout=(0 if self.num_layers == 1 else self.lstm_dropout),
+                bidirectional=self.bidirectional,
+                device=self._cuda_device,
+            )
             self._init_weights(self.lstm)
 
         linear_input_size = hidden_dim if self.use_lstm else embedding_dim
@@ -466,11 +484,11 @@ class ToNySegmenter(nn.Module):
     def _init_weights(layer):
         if isinstance(layer, nn.LSTM):
             for name, param in layer.named_parameters():
-                if 'weight_ih' in name:
+                if "weight_ih" in name:
                     torch.nn.init.xavier_uniform_(param.data)
-                elif 'weight_hh' in name:
+                elif "weight_hh" in name:
                     mps_safe_orthogonal_(param.data)
-                elif 'bias' in name:
+                elif "bias" in name:
                     param.data.fill_(0)
 
     @override
@@ -478,7 +496,7 @@ class ToNySegmenter(nn.Module):
         logits = self.hidden2tag(encodings)
 
         if self.use_sentence_boundaries and sent_breaks is not None:
-            logits[sent_breaks][0] = -300.  # inf breaks half-precision computation
+            logits[sent_breaks][0] = -300.0  # inf breaks half-precision computation
 
         return F.log_softmax(logits, dim=1)
 

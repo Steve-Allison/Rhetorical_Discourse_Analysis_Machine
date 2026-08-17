@@ -30,18 +30,34 @@ class RestrictedUnpickler(pickle.Unpickler):
     cannot be assembled after loading the class.
     """
 
-    _ALLOWED_BUILTINS = frozenset({
-        "list", "dict", "tuple", "set", "frozenset", "str", "int", "float",
-        "bool", "bytes", "complex", "NoneType", "slice", "object",
-    })
+    _ALLOWED_BUILTINS = frozenset(
+        {
+            "list",
+            "dict",
+            "tuple",
+            "set",
+            "frozenset",
+            "str",
+            "int",
+            "float",
+            "bool",
+            "bytes",
+            "complex",
+            "NoneType",
+            "slice",
+            "object",
+        }
+    )
     _ALLOWED_COLLECTIONS = frozenset({"defaultdict", "OrderedDict"})
     _ALLOWED_PATHLIB = frozenset({"Path", "PosixPath", "WindowsPath"})
-    _ALLOWED_CLASSES = frozenset({
-        ("isanlp_rst.universal_parser.data_manager", "ParserInput"),
-        ("src.universal_parser.data_manager", "ParserInput"),
-        ("isanlp_rst.dmrst_parser.data_manager", "ParserInput"),
-        ("src.dmrst_parser.data_manager", "ParserInput"),
-    })
+    _ALLOWED_CLASSES = frozenset(
+        {
+            ("isanlp_rst.universal_parser.data_manager", "ParserInput"),
+            ("src.universal_parser.data_manager", "ParserInput"),
+            ("isanlp_rst.dmrst_parser.data_manager", "ParserInput"),
+            ("src.dmrst_parser.data_manager", "ParserInput"),
+        }
+    )
 
     def find_class(self, module: str, name: str) -> object:
         if module == "builtins" and name in self._ALLOWED_BUILTINS:
@@ -56,9 +72,7 @@ class RestrictedUnpickler(pickle.Unpickler):
         if (module, name) in self._ALLOWED_CLASSES:
             return super().find_class(module, name)
 
-        raise pickle.UnpicklingError(
-            f"Refused to unpickle {module}.{name} (not on allow-list)."
-        )
+        raise pickle.UnpicklingError(f"Refused to unpickle {module}.{name} (not on allow-list).")
 
 
 def relation_table_from_txt(text: str) -> list[str]:

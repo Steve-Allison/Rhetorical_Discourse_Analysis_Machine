@@ -306,4 +306,3 @@ class MarkdownRstResult:
             table_analyses=table_map,
             node_map=node_map,
         )
-

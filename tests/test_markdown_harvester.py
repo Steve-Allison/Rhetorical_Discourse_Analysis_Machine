@@ -141,17 +141,7 @@ def test_quoted_heading_kind_is_blockquote_heading() -> None:
 def test_include_blockquotes_false_gates_all_quoted_constructs() -> None:
     """The knob gates the whole quoted region: paragraphs, headings,
     lists, code fences, and HTML blocks alike."""
-    src = (
-        "Plain.\n\n"
-        "> # Quoted heading\n"
-        "> quoted para\n"
-        ">\n"
-        "> - quoted item\n"
-        ">\n"
-        "> ```\n"
-        "> quoted code\n"
-        "> ```\n"
-    )
+    src = "Plain.\n\n> # Quoted heading\n> quoted para\n>\n> - quoted item\n>\n> ```\n> quoted code\n> ```\n"
     spans = _harvest(src, include_blockquotes=False)
     assert [s.kind for s in spans] == ["paragraph"]
 
@@ -207,9 +197,7 @@ def test_table_cells_emitted_row_major_with_indices() -> None:
 def test_table_cell_refs_use_grid_position_namespace() -> None:
     """Cell refs are #/tables/T/cells/K with K counting grid positions."""
     (th,) = _tables(TABLE_SRC)
-    assert [s.block_ref for s in th.spans] == [
-        f"#/tables/0/cells/{k}" for k in range(6)
-    ]
+    assert [s.block_ref for s in th.spans] == [f"#/tables/0/cells/{k}" for k in range(6)]
 
 
 def test_multiple_tables_assigned_distinct_table_idx() -> None:
@@ -253,14 +241,12 @@ def test_table_harvest_offsets_tile_full_text() -> None:
 
 def test_include_code_blocks_false_emits_no_code_block_spans() -> None:
     src = "```\ncode\n```\n"
-    assert not [s for s in _harvest(src, include_code_blocks=False)
-                if s.kind == "code_block"]
+    assert not [s for s in _harvest(src, include_code_blocks=False) if s.kind == "code_block"]
 
 
 def test_include_html_false_emits_no_html_block_spans() -> None:
     src = "<div>raw html</div>\n"
-    assert not [s for s in _harvest(src, include_html=False)
-                if s.kind == "html_block"]
+    assert not [s for s in _harvest(src, include_html=False) if s.kind == "html_block"]
 
 
 # --- Offset-tiling invariant ----------------------------------------------

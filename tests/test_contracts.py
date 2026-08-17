@@ -75,9 +75,7 @@ def test_document_from_tokens_and_edus() -> None:
         DocumentToken(token_id=1, text="world", start=6, end=11, sentence_id=0),
         DocumentToken(token_id=2, text=".", start=11, end=12, sentence_id=0),
     )
-    edus = (
-        Edu(edu_id=1, text="Hello world.", start=0, end=12, token_ids=(0, 1, 2)),
-    )
+    edus = (Edu(edu_id=1, text="Hello world.", start=0, end=12, token_ids=(0, 1, 2)),)
     doc = RstDocument.from_tokens_and_edus(
         text=text,
         tokens=tokens,
@@ -239,4 +237,3 @@ def test_malformed_json_deserialization_raises() -> None:
 
     with pytest.raises(ValueError, match="Expected JSON object"):
         format_analysis_from_json("123")
-

@@ -34,9 +34,7 @@ def leaf(start: int, end: int) -> FakeUnit:
     return FakeUnit(start=start, end=end)
 
 
-def node(
-    left: FakeUnit, right: FakeUnit, relation: str = "elaboration", nuclearity: str = "NS"
-) -> FakeUnit:
+def node(left: FakeUnit, right: FakeUnit, relation: str = "elaboration", nuclearity: str = "NS") -> FakeUnit:
     return FakeUnit(
         start=left.start,
         end=right.end,
@@ -270,7 +268,7 @@ def test_boundary_memberships_intersection() -> None:
     # Relation spanning all three texts touches both slides.
     tree = node(
         node(leaf(0, 1), leaf(2, 3)),  # in slide-0 only
-        leaf(4, 5),                    # in slide-1 only
+        leaf(4, 5),  # in slide-1 only
     )
     relations, _ = flatten_tree(tree, spans, boundaries)
     # Root relation covers 0..5 → touches both slides

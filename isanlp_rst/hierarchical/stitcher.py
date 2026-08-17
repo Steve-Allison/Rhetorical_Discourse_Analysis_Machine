@@ -238,11 +238,7 @@ class HierarchicalSectionStitcher:
                 if node.kind == NodeKindEnum.EDU:
                     local_edu_count += 1
 
-                node_kind = (
-                    NodeKindEnum.SPAN
-                    if node.kind == NodeKindEnum.ROOT
-                    else node.kind
-                )
+                node_kind = NodeKindEnum.SPAN if node.kind == NodeKindEnum.ROOT else node.kind
 
                 all_nodes.append(
                     RstNode(
@@ -338,7 +334,9 @@ class HierarchicalSectionStitcher:
                 last_sec = sections[min(max(0, end_sec_idx), len(sections) - 1)]
 
                 # Find EDU span of first and last section roots
-                first_root_node = next((n for n in all_nodes if n.node_id == section_root_global_ids[start_sec_idx]), None)
+                first_root_node = next(
+                    (n for n in all_nodes if n.node_id == section_root_global_ids[start_sec_idx]), None
+                )
                 last_root_node = next((n for n in all_nodes if n.node_id == section_root_global_ids[end_sec_idx]), None)
 
                 start_edu = first_root_node.edu_span[0] if first_root_node is not None else 1

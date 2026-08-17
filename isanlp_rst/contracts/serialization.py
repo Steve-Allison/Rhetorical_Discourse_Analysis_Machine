@@ -94,12 +94,10 @@ def document_from_dict(payload: dict[str, Any]) -> RstDocument:
         )
 
     sentence_boundaries = tuple(
-        TextSpan(start=s["start"], end=s["end"], text=s["text"])
-        for s in payload.get("sentence_boundaries", [])
+        TextSpan(start=s["start"], end=s["end"], text=s["text"]) for s in payload.get("sentence_boundaries", [])
     )
     paragraph_boundaries = tuple(
-        TextSpan(start=p["start"], end=p["end"], text=p["text"])
-        for p in payload.get("paragraph_boundaries", [])
+        TextSpan(start=p["start"], end=p["end"], text=p["text"]) for p in payload.get("paragraph_boundaries", [])
     )
 
     source: SourceReference | None = None
@@ -248,10 +246,7 @@ def format_analysis_from_dict(payload: dict[str, Any]) -> FormatRstAnalysis:
         raise ValueError(f"Expected JSON object / dict, got {type(payload).__name__}")
 
     doc_analysis = analysis_from_dict(payload["document_analysis"])
-    table_analyses = {
-        key: analysis_from_dict(val)
-        for key, val in payload.get("table_analyses", {}).items()
-    }
+    table_analyses = {key: analysis_from_dict(val) for key, val in payload.get("table_analyses", {}).items()}
     node_map = dict(payload.get("node_map", {}))
     return FormatRstAnalysis(
         document_analysis=doc_analysis,

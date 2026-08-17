@@ -2,9 +2,9 @@ from isanlp.annotation_rst import DiscourseUnit
 
 
 class DUConverter:
-    def __init__(self, predictions, tokenization_type='default'):
+    def __init__(self, predictions, tokenization_type="default"):
         self.predictions = predictions
-        assert tokenization_type in ('default', 'rubert')
+        assert tokenization_type in ("default", "rubert")
         self.tokenization_type = tokenization_type
 
         self.du_id = 0
@@ -21,12 +21,10 @@ class DUConverter:
         #    predictions = pickle.load(f)
 
         data = []
-        token_docs = self.predictions['tokens']
-        edu_docs = self.predictions['edu_breaks']
-        span_docs = self.predictions['spans']
-        for i, (doc_tokens, edu_breaks, span_batch) in enumerate(
-            zip(token_docs, edu_docs, span_docs, strict=True)
-        ):
+        token_docs = self.predictions["tokens"]
+        edu_docs = self.predictions["edu_breaks"]
+        span_docs = self.predictions["spans"]
+        for i, (doc_tokens, edu_breaks, span_batch) in enumerate(zip(token_docs, edu_docs, span_docs, strict=True)):
             gold_tokens = tokens[i] if tokens else None
 
             edus = self._lists_to_isanlp_format(
@@ -50,9 +48,9 @@ class DUConverter:
         start_token = 0
 
         for segment in predicted_segments:
-            segment_len = len(''.join(segment.split()))
+            segment_len = len("".join(segment.split()))
             if segment_len == 0:
-                fixed_segments.append('')
+                fixed_segments.append("")
                 continue
 
             n = 0
@@ -61,7 +59,7 @@ class DUConverter:
                 accumulated += len(gold_tokens[start_token + n])
                 n += 1
 
-            fixed_segment = ' '.join(gold_tokens[start_token:start_token + n])
+            fixed_segment = " ".join(gold_tokens[start_token : start_token + n])
             fixed_segments.append(fixed_segment.strip())
             start_token += n
 
@@ -84,19 +82,14 @@ class DUConverter:
         edus = []
         for i, brk in enumerate(edu_breaks):
             match self.tokenization_type:
-                case 'default':
-                    text = ''.join(tokens[prev_break:brk + 1]).replace('▁', ' ').strip()
-                case 'rubert':
-                    text = ' '.join(tokens[prev_break:brk + 1]).replace(' ##', '')
+                case "default":
+                    text = "".join(tokens[prev_break : brk + 1]).replace("▁", " ").strip()
+                case "rubert":
+                    text = " ".join(tokens[prev_break : brk + 1]).replace(" ##", "")
                 case _:
-                    raise ValueError(f'Unknown tokenization_type: {self.tokenization_type!r}')
+                    raise ValueError(f"Unknown tokenization_type: {self.tokenization_type!r}")
 
-            edu = DiscourseUnit(
-                id=i,
-                text=text,
-                start=prev_chr_end,
-                relation='elementary'
-            )
+            edu = DiscourseUnit(id=i, text=text, start=prev_chr_end, relation="elementary")
             edu.end = prev_chr_end + len(text)
             prev_chr_end = edu.end + 1
             prev_break = brk + 1
@@ -125,28 +118,32 @@ class DUConverter:
             List of tuples describing constituents.
         """
         rels = []
-        for rel in description.split(' '):
-            left, right = rel.split(',')
-            left_start, left_label, left_end = left[1:].split(':')
-            if ';prob=' in left_label:
-                left_label, _ = left_label.split(';prob=', 1)
+        for rel in description.split(" "):
+            left, right = rel.split(",")
+            left_start, left_label, left_end = left[1:].split(":")
+            if ";prob=" in left_label:
+                left_label, _ = left_label.split(";prob=", 1)
             entropy = 0.0
-            if ';entropy=' in left_label:
-                left_label, entropy_str = left_label.split(';entropy=')
+            if ";entropy=" in left_label:
+                left_label, entropy_str = left_label.split(";entropy=")
                 try:
                     entropy = float(entropy_str)
                 except ValueError:
                     entropy = 0.0
-            right_start, right_label, right_end = right[:-1].split(':')
+            right_start, right_label, right_end = right[:-1].split(":")
             nuclearity = left_label[0] + right_label[0]
-            relation = left_label.split('=')[1] if nuclearity == 'SN' else right_label.split('=')[1]
-            rels.append((int(left_start) - 1,
-                         int(left_end) - 1,
-                         relation,
-                         nuclearity,
-                         int(right_start) - 1,
-                         int(right_end) - 1,
-                         entropy))
+            relation = left_label.split("=")[1] if nuclearity == "SN" else right_label.split("=")[1]
+            rels.append(
+                (
+                    int(left_start) - 1,
+                    int(left_end) - 1,
+                    relation,
+                    nuclearity,
+                    int(right_start) - 1,
+                    int(right_end) - 1,
+                    entropy,
+                )
+            )
         return rels
 
     @staticmethod
@@ -167,9 +164,7 @@ class DUConverter:
             left_start, _, _, _, _, right_end, *_ = rel
             if left_start == start and right_end == end:
                 return idx
-        raise ValueError(
-            f'No discourse unit found for span ({start}, {end}).'
-        )
+        raise ValueError(f"No discourse unit found for span ({start}, {end}).")
 
     def construct_tree(self, root, edus, rels):
         """
@@ -199,17 +194,19 @@ class DUConverter:
             right = self.construct_tree(right_root, edus, rels)
 
         self.du_id += 1
-        du = DiscourseUnit(id=self.du_id,
-                           left=left,
-                           right=right,
-                           entropy=entropy,
-                           relation=relation,
-                           nuclearity=nuclearity,
-                           start=left.start,
-                           end=right.end,
-                           text=left.text + ' ' + right.text)
+        du = DiscourseUnit(
+            id=self.du_id,
+            left=left,
+            right=right,
+            entropy=entropy,
+            relation=relation,
+            nuclearity=nuclearity,
+            start=left.start,
+            end=right.end,
+            text=left.text + " " + right.text,
+        )
         return du
 
     @staticmethod
     def dummy_tree(tokens):
-        return DiscourseUnit(id=0, text=' '.join(tokens), relation='elementary', start=0, end=len(' '.join(tokens)))
+        return DiscourseUnit(id=0, text=" ".join(tokens), relation="elementary", start=0, end=len(" ".join(tokens)))

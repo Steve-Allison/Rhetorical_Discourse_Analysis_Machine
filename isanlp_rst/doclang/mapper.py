@@ -39,9 +39,7 @@ def compute_overlap_refs(
     DocLang-specific wrapper over the generic overlap function — the
     address is each span's ``xpath``.
     """
-    return _generic_compute_overlap_refs(
-        start, end, spans, ref_of=_xpath, note_threshold=note_threshold
-    )
+    return _generic_compute_overlap_refs(start, end, spans, ref_of=_xpath, note_threshold=note_threshold)
 
 
 def _thread_ids_for_xpaths(

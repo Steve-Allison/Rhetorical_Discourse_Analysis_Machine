@@ -89,9 +89,7 @@ def test_main_harvest_never_contains_table_refs(doc_fixture: str, request: pytes
     doc = request.getfixturevalue(doc_fixture)
     result = harvest_docling_text(doc)
     for span in result.spans:
-        assert not span.self_ref.startswith("#/tables/"), (
-            f"table ref {span.self_ref!r} leaked into main harvest"
-        )
+        assert not span.self_ref.startswith("#/tables/"), f"table ref {span.self_ref!r} leaked into main harvest"
 
 
 def test_table_harvest_refs_are_real_json_pointers(pdf_doc: DoclingDocument) -> None:

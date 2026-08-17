@@ -219,8 +219,10 @@ def harvest_markdown_text(
             continue
 
         if ttype in {
-            "bullet_list_open", "bullet_list_close",
-            "ordered_list_open", "ordered_list_close",
+            "bullet_list_open",
+            "bullet_list_close",
+            "ordered_list_open",
+            "ordered_list_close",
         }:
             i += 1
             continue

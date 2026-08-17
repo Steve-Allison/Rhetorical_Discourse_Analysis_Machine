@@ -17,23 +17,38 @@ class EncoderRNN(nn.Module):
         encoder_hidden: [rnn_layers, batch, hidden_size]
     """
 
-    def __init__(self, transformer, word_dim, hidden_size, rnn_layers, dropout, normalize_embeddings,
-                 segmenter, edu_encoding_kind, document_enc_gru, add_first_and_last, edu_embedding_compression_rate,
-                 window_size, window_padding,
-                 edu_dropout=0.3, token_bilstm_hidden=100, cuda_device=None):
+    def __init__(
+        self,
+        transformer,
+        word_dim,
+        hidden_size,
+        rnn_layers,
+        dropout,
+        normalize_embeddings,
+        segmenter,
+        edu_encoding_kind,
+        document_enc_gru,
+        add_first_and_last,
+        edu_embedding_compression_rate,
+        window_size,
+        window_padding,
+        edu_dropout=0.3,
+        token_bilstm_hidden=100,
+        cuda_device=None,
+    ):
         """
-            :param transformer: transformers.PreTrainedModel  - LM encoder
-            :param word_dim: int  - word embedding dimension (from LM)
-            :param hidden_size: int  - hidden size for encoder and decoder
-            :param rnn_layers: int  - encoder and decoder layer number
-            :param dropout: float  - dropout rate to be applied to the embeddings
-            :param segmenter: nn.Module  - segmentation module
-            :param edu_encoding_kind: str  - strategy of EDU encoding, {'avg', 'trainable', 'gru', 'bigru'}
-            :param document_enc_gru: bool  - whether to pass EDU encodings through document-level GRU
-            :param add_first_and_last: bool  - whether to add first and last embeddings to EDU encoding
-            :param edu_embedding_compression_rate: float  - rate of the final linear layer for EDU encoding
-                                                            (1 for no compressing, 1/3 in the original implementation)
-            :param cuda_device: torch.device  - (Optional) cuda device if present
+        :param transformer: transformers.PreTrainedModel  - LM encoder
+        :param word_dim: int  - word embedding dimension (from LM)
+        :param hidden_size: int  - hidden size for encoder and decoder
+        :param rnn_layers: int  - encoder and decoder layer number
+        :param dropout: float  - dropout rate to be applied to the embeddings
+        :param segmenter: nn.Module  - segmentation module
+        :param edu_encoding_kind: str  - strategy of EDU encoding, {'avg', 'trainable', 'gru', 'bigru'}
+        :param document_enc_gru: bool  - whether to pass EDU encodings through document-level GRU
+        :param add_first_and_last: bool  - whether to add first and last embeddings to EDU encoding
+        :param edu_embedding_compression_rate: float  - rate of the final linear layer for EDU encoding
+                                                        (1 for no compressing, 1/3 in the original implementation)
+        :param cuda_device: torch.device  - (Optional) cuda device if present
         """
 
         super().__init__()
@@ -55,42 +70,55 @@ class EncoderRNN(nn.Module):
 
         self.add_first_and_last = add_first_and_last
         self.edu_embedding_compression_rate = edu_embedding_compression_rate
-        if self.add_first_and_last and self.edu_embedding_compression_rate < 1.:
+        if self.add_first_and_last and self.edu_embedding_compression_rate < 1.0:
             reduce_dim_input_size = self.hidden_size
             if add_first_and_last:
                 reduce_dim_input_size += 2 * self.word_dim
-            self.reduce_dim_layer = nn.Linear(reduce_dim_input_size,
-                                              int(self.hidden_size * 3 * self.edu_embedding_compression_rate),
-                                              bias=False, device=self._cuda_device)
+            self.reduce_dim_layer = nn.Linear(
+                reduce_dim_input_size,
+                int(self.hidden_size * 3 * self.edu_embedding_compression_rate),
+                bias=False,
+                device=self._cuda_device,
+            )
 
         self.segmenter = segmenter
         self.edu_encoding_kind = edu_encoding_kind
-        if self.edu_encoding_kind == 'trainable':
+        if self.edu_encoding_kind == "trainable":
             self._edu_attention = torch.nn.Linear(word_dim, 1, device=self._cuda_device)
             self._init_weights(self._edu_attention)
             self._edu_attention_dropout = nn.Dropout(0.2)
 
-        elif self.edu_encoding_kind == 'gru':
+        elif self.edu_encoding_kind == "gru":
             self._edu_gru = nn.GRU(word_dim, word_dim, batch_first=True, device=self._cuda_device)
             self._init_weights(self._edu_gru)
 
-        elif self.edu_encoding_kind == 'bigru':
-            self._edu_gru = nn.GRU(word_dim, word_dim // 2, batch_first=True,
-                                   bidirectional=True, device=self._cuda_device)
+        elif self.edu_encoding_kind == "bigru":
+            self._edu_gru = nn.GRU(
+                word_dim, word_dim // 2, batch_first=True, bidirectional=True, device=self._cuda_device
+            )
             self._init_weights(self._edu_gru)
 
-        elif self.edu_encoding_kind == 'bilstm':
-            self._edu_lstm = nn.LSTM(word_dim, word_dim // 2, batch_first=True,
-                                     bidirectional=True, device=self._cuda_device)
+        elif self.edu_encoding_kind == "bilstm":
+            self._edu_lstm = nn.LSTM(
+                word_dim, word_dim // 2, batch_first=True, bidirectional=True, device=self._cuda_device
+            )
 
         self.document_enc_gru = document_enc_gru
         if self.document_enc_gru:
-            self.doc_gru_enc = nn.GRU(word_dim, hidden_size // 2, num_layers=2, batch_first=True, dropout=0.2,
-                                      bidirectional=True, device=self._cuda_device)
+            self.doc_gru_enc = nn.GRU(
+                word_dim,
+                hidden_size // 2,
+                num_layers=2,
+                batch_first=True,
+                dropout=0.2,
+                bidirectional=True,
+                device=self._cuda_device,
+            )
 
         self._token_bilstm_hidden = token_bilstm_hidden
-        self._embedding_bilstm = nn.LSTM(word_dim, token_bilstm_hidden, num_layers=1,
-                                         bidirectional=True, device=self._cuda_device)
+        self._embedding_bilstm = nn.LSTM(
+            word_dim, token_bilstm_hidden, num_layers=1, bidirectional=True, device=self._cuda_device
+        )
 
     @staticmethod
     def _init_weights(layer: nn.Module) -> None:
@@ -99,23 +127,24 @@ class EncoderRNN(nn.Module):
 
         elif isinstance(layer, nn.GRU):
             for name, param in layer.named_parameters():
-                if 'weight' in name:
+                if "weight" in name:
                     mps_safe_orthogonal_(param)
-                elif 'bias' in name:
+                elif "bias" in name:
                     nn.init.zeros_(param)
 
         elif isinstance(layer, nn.LSTM):
             for name, param in layer.named_parameters():
-                if 'weight_ih' in name:
+                if "weight_ih" in name:
                     torch.nn.init.xavier_uniform_(param.data)
-                elif 'weight_hh' in name:
+                elif "weight_hh" in name:
                     mps_safe_orthogonal_(param.data)
-                elif 'bias' in name:
+                elif "bias" in name:
                     nn.init.zeros_(param)
 
     @override
-    def forward(self, input_tokenized_texts, entity_ids, entity_position_ids,
-                edu_breaks, sent_breaks=None, is_test=False):
+    def forward(
+        self, input_tokenized_texts, entity_ids, entity_position_ids, edu_breaks, sent_breaks=None, is_test=False
+    ):
         all_outputs = []
         all_hidden = []
 
@@ -127,8 +156,9 @@ class EncoderRNN(nn.Module):
         for i in range(len(input_tokenized_texts)):
             token_ids = torch.LongTensor(input_tokenized_texts[i]).to(self._cuda_device)
             entity_ids_i = torch.LongTensor(entity_ids[i]).to(self._cuda_device) if entity_ids else None
-            entity_position_ids_i = torch.LongTensor(entity_position_ids[i]).to(self._cuda_device
-                                                                                ) if entity_position_ids else None
+            entity_position_ids_i = (
+                torch.LongTensor(entity_position_ids[i]).to(self._cuda_device) if entity_position_ids else None
+            )
             # Shape: (n_subwords, 768)
             embeddings = self._fixed_sliding_window(token_ids, entity_ids_i, entity_position_ids_i)
             if self.normalize_embeddings:
@@ -152,8 +182,9 @@ class EncoderRNN(nn.Module):
             batch_size, cur_break_num, edu_dim = output.shape
             all_outputs.append(
                 torch.cat(
-                    [output, torch.zeros(1, max_edu_break_num - cur_break_num, edu_dim).to(self._cuda_device)],
-                    dim=1))
+                    [output, torch.zeros(1, max_edu_break_num - cur_break_num, edu_dim).to(self._cuda_device)], dim=1
+                )
+            )
 
         res_merged_output = torch.cat(all_outputs, dim=0)
         res_merged_hidden = torch.cat(all_hidden, dim=1)
@@ -162,11 +193,15 @@ class EncoderRNN(nn.Module):
 
     def encode_edus(self, embeddings, cur_edu_break):
         tmp_edus_list = []
-        tmp_break_list = [0, ] + [tmp_j + 1 for tmp_j in cur_edu_break]
+        tmp_break_list = [
+            0,
+        ] + [tmp_j + 1 for tmp_j in cur_edu_break]
 
         for tmp_i in range(len(tmp_break_list) - 1):
             assert tmp_break_list[tmp_i] < tmp_break_list[tmp_i + 1]
-            edu_embeddings = embeddings[tmp_break_list[tmp_i]:tmp_break_list[tmp_i + 1], :]  # Shape: (n_subwords, 768)
+            edu_embeddings = embeddings[
+                tmp_break_list[tmp_i] : tmp_break_list[tmp_i + 1], :
+            ]  # Shape: (n_subwords, 768)
             edu_embedding = self._encode_edu(edu_embeddings)  # Shape: (1, word_emb_shape)
             tmp_edus_list.append(edu_embedding)
 
@@ -184,10 +219,16 @@ class EncoderRNN(nn.Module):
                 first_words.append(embeddings[tmp_break_list[tmp_i]].unsqueeze(dim=0))
                 last_words.append(embeddings[tmp_break_list[tmp_i + 1] - 1].unsqueeze(dim=0))
 
-            outputs = torch.cat((outputs, torch.cat(first_words, dim=0).unsqueeze(dim=0),
-                                 torch.cat(last_words, dim=0).unsqueeze(dim=0)), dim=2)
+            outputs = torch.cat(
+                (
+                    outputs,
+                    torch.cat(first_words, dim=0).unsqueeze(dim=0),
+                    torch.cat(last_words, dim=0).unsqueeze(dim=0),
+                ),
+                dim=2,
+            )
 
-            if self.add_first_and_last and self.edu_embedding_compression_rate < 1.:
+            if self.add_first_and_last and self.edu_embedding_compression_rate < 1.0:
                 outputs = self.reduce_dim_layer(outputs)
 
         return outputs, hidden
@@ -197,10 +238,10 @@ class EncoderRNN(nn.Module):
         :param edu_embeddings: torch.FloatTensor  - Subwords embeddings of shape (n_subwords, embedding_dim)
         :return: one EDU embedding of size (1, embedding_dim).
         """
-        if self.edu_encoding_kind == 'avg':
+        if self.edu_encoding_kind == "avg":
             return torch.mean(edu_embeddings, dim=0, keepdim=True)
 
-        if self.edu_encoding_kind == 'trainable':
+        if self.edu_encoding_kind == "trainable":
             # (n_subwords, 1)
             attn_weights = self._edu_attention_dropout(F.softmax(self._edu_attention(edu_embeddings), dim=0))
 
@@ -211,19 +252,19 @@ class EncoderRNN(nn.Module):
             # counts = torch.sum(weights, 1).unsqueeze(-1)
             # return summed / counts
 
-        if self.edu_encoding_kind in ('gru', 'bigru'):
+        if self.edu_encoding_kind in ("gru", "bigru"):
             edu_gru_enc, _ = self._edu_gru(edu_embeddings.unsqueeze(0))
 
-            if self.edu_encoding_kind == 'gru':
+            if self.edu_encoding_kind == "gru":
                 return edu_gru_enc[:, -1]
 
-            if self.edu_encoding_kind == 'bigru':
+            if self.edu_encoding_kind == "bigru":
                 hidden_size = edu_gru_enc.size(-1) // 2
                 forward_output = edu_gru_enc[:, -1, :hidden_size]
                 backward_output = edu_gru_enc[:, 0, hidden_size:]
                 return torch.cat((forward_output, backward_output), dim=1)
 
-        elif self.edu_encoding_kind == 'bilstm':
+        elif self.edu_encoding_kind == "bilstm":
             lstm_enc, _ = self._edu_lstm(self.edu_dropout(edu_embeddings.unsqueeze(0)))
             hidden_size = lstm_enc.size(-1) // 2
             forward_output = lstm_enc[:, -1, :hidden_size]
@@ -231,7 +272,7 @@ class EncoderRNN(nn.Module):
             return torch.cat((forward_output, backward_output), dim=1)
 
     def _fixed_sliding_window(self, token_ids, entity_ids, entity_position_ids, use_bilstm=False):
-        """ Sliding window for encoding long sequences. """
+        """Sliding window for encoding long sequences."""
 
         use_entities = entity_ids is not None and entity_position_ids is not None
         if use_entities:
@@ -257,46 +298,58 @@ class EncoderRNN(nn.Module):
 
                 if use_entities:
                     # print(f'{entity_position_ids = }') [[[ 27,  ...
-                    cur_entities = [i for i, entity_positions in enumerate(entity_position_ids[0])
-                                    if entity_positions[0] < end]
-                    one_win_res = self.transformer(cur_token_ids,
-                                                   entity_ids=entity_ids[:, cur_entities],
-                                                   entity_position_ids=entity_position_ids[:, cur_entities]
-                                                   )[0][:, :self.window_size, :]
+                    cur_entities = [
+                        i for i, entity_positions in enumerate(entity_position_ids[0]) if entity_positions[0] < end
+                    ]
+                    one_win_res = self.transformer(
+                        cur_token_ids,
+                        entity_ids=entity_ids[:, cur_entities],
+                        entity_position_ids=entity_position_ids[:, cur_entities],
+                    )[0][:, : self.window_size, :]
                 else:
-                    one_win_res = self.transformer(cur_token_ids)[0][:, :self.window_size, :]
+                    one_win_res = self.transformer(cur_token_ids)[0][:, : self.window_size, :]
 
             elif tmp_step == slide_steps - 1:
                 start = sequence_length - ((sequence_length - (self.window_size * tmp_step)) + 2 * self.window_padding)
                 if False:
                     end = start + token_ids[:, start:].shape[1]
-                    cur_entities = [i for i, entity_positions in enumerate(entity_position_ids[0])
-                                    if start <= entity_positions[0] and max(entity_positions) < end]
+                    cur_entities = [
+                        i
+                        for i, entity_positions in enumerate(entity_position_ids[0])
+                        if start <= entity_positions[0] and max(entity_positions) < end
+                    ]
                     current_position_ids = entity_position_ids[:, cur_entities].clone()
                     current_position_ids = torch.where(current_position_ids == -1, -1, current_position_ids - start)
                     # print(f'212 ::: {current_position_ids = }, {token_ids[:, start:].shape}')
-                    one_win_res = self.transformer(token_ids[:, start:],
-                                                   entity_ids=entity_ids[:, cur_entities],
-                                                   entity_position_ids=current_position_ids)[0][:, 2 * self.window_padding:, :]
+                    one_win_res = self.transformer(
+                        token_ids[:, start:],
+                        entity_ids=entity_ids[:, cur_entities],
+                        entity_position_ids=current_position_ids,
+                    )[0][:, 2 * self.window_padding :, :]
                 else:
-                    one_win_res = self.transformer(token_ids[:, start:])[0][:, 2 * self.window_padding:, :]
+                    one_win_res = self.transformer(token_ids[:, start:])[0][:, 2 * self.window_padding :, :]
             else:
                 start = self.window_size * tmp_step - self.window_padding
                 end = self.window_size * (tmp_step + 1) + self.window_padding
 
                 if use_entities:
-                    cur_entities = [i for i, entity_positions in enumerate(entity_position_ids[0])
-                                    if start <= entity_positions[0] <= max(entity_positions) < end]
+                    cur_entities = [
+                        i
+                        for i, entity_positions in enumerate(entity_position_ids[0])
+                        if start <= entity_positions[0] <= max(entity_positions) < end
+                    ]
                     current_position_ids = entity_position_ids[:, cur_entities].clone()
                     current_position_ids = torch.where(current_position_ids == -1, -1, current_position_ids - start)
 
-                    one_win_res = self.transformer(token_ids[:, start:end],
-                                                   entity_ids=entity_ids[:, cur_entities],
-                                                   entity_position_ids=current_position_ids
-                                                   )[0][:, self.window_padding:self.window_size + self.window_padding, :]
+                    one_win_res = self.transformer(
+                        token_ids[:, start:end],
+                        entity_ids=entity_ids[:, cur_entities],
+                        entity_position_ids=current_position_ids,
+                    )[0][:, self.window_padding : self.window_size + self.window_padding, :]
                 else:
-                    one_win_res = self.transformer(token_ids[:, start:end])[0][:,
-                                  self.window_padding:self.window_size + self.window_padding, :]
+                    one_win_res = self.transformer(token_ids[:, start:end])[0][
+                        :, self.window_padding : self.window_size + self.window_padding, :
+                    ]
 
             if use_bilstm:
                 one_win_res, _ = self._embedding_bilstm(one_win_res)
@@ -309,30 +362,37 @@ class EncoderRNN(nn.Module):
         return embeddings
 
     def encode_du_pair(self, token_ids, breaking_point, use_bilstm=False):
-        """ Encodes the sequence of tokens, returns two matrices: for left and right texts. """
+        """Encodes the sequence of tokens, returns two matrices: for left and right texts."""
         token_ids = torch.LongTensor(token_ids).to(self._cuda_device)
 
         # Shape: (1, n_subwords, emb_dim|bilstm_hidden_size)
         embeddings = self._fixed_sliding_window(token_ids, use_bilstm=use_bilstm)
-        return embeddings[:, :breaking_point + 1, :], embeddings[:, breaking_point + 1:, :]
+        return embeddings[:, : breaking_point + 1, :], embeddings[:, breaking_point + 1 :, :]
 
 
 class DecoderRNN(nn.Module):
-    def __init__(self, input_size: int, hidden_size: int, rnn_layers: int, dropout: float,
-                 cuda_device: torch.device | None) -> None:
+    def __init__(
+        self, input_size: int, hidden_size: int, rnn_layers: int, dropout: float, cuda_device: torch.device | None
+    ) -> None:
         super().__init__()
 
-        '''
+        """
         Input:
             input: [1,length,input_size]
             initial_hidden_state: [rnn_layer,1,hidden_size]
         Output:
             output: [1,length,input_size]
             hidden_states: [rnn_layer,1,hidden_size]
-        '''
+        """
         # Define GRU layer
-        self.gru = nn.GRU(input_size, hidden_size, num_layers=rnn_layers, batch_first=True,
-                          dropout=(0 if rnn_layers == 1 else dropout), device=cuda_device)
+        self.gru = nn.GRU(
+            input_size,
+            hidden_size,
+            num_layers=rnn_layers,
+            batch_first=True,
+            dropout=(0 if rnn_layers == 1 else dropout),
+            device=cuda_device,
+        )
 
     @override
     def forward(self, input_hidden_states: Tensor, last_hidden: Tensor) -> tuple[Tensor, Tensor]:
@@ -346,7 +406,7 @@ class PointerAtten(nn.Module):
     def __init__(self, atten_model: str | None, hidden_size: int) -> None:
         super().__init__()
 
-        '''
+        """
         Input:
             Encoder_outputs: [length,encoder_hidden_size]
             Current_decoder_output: [decoder_hidden_size]
@@ -355,7 +415,7 @@ class PointerAtten(nn.Module):
         Output:
             attention_weights: [1,length]
             log_attention_weights: [1,length]
-        '''
+        """
 
         self.atten_model = atten_model
         self.weight1 = nn.Linear(hidden_size, hidden_size, bias=False)
@@ -364,8 +424,7 @@ class PointerAtten(nn.Module):
     @override
     def forward(self, encoder_outputs: Tensor, cur_decoder_output: Tensor) -> tuple[Tensor, Tensor]:
 
-        if self.atten_model == 'Biaffine':
-
+        if self.atten_model == "Biaffine":
             EW1_temp = self.weight1(encoder_outputs)
             EW1 = torch.matmul(EW1_temp, cur_decoder_output).unsqueeze(1)
             EW2 = self.weight2(encoder_outputs)
@@ -376,8 +435,7 @@ class PointerAtten(nn.Module):
             atten_weights = F.softmax(bi_affine, 0)
             log_atten_weights = F.log_softmax(bi_affine + 1e-6, 0)
 
-        elif self.atten_model == 'Dotproduct':
-
+        elif self.atten_model == "Dotproduct":
             dot_prod = torch.matmul(encoder_outputs, cur_decoder_output).unsqueeze(0)
             # Obtain attention weights and logits (to compute loss)
             atten_weights = F.softmax(dot_prod, 1)
@@ -388,8 +446,7 @@ class PointerAtten(nn.Module):
 
 
 class DefaultLabelClassifier(nn.Module):
-    def __init__(self, input_size, hidden_size, classes_number,
-                 bias=True, dropout=0.5, cuda_device=None):
+    def __init__(self, input_size, hidden_size, classes_number, bias=True, dropout=0.5, cuda_device=None):
         """
         :param input_size: int  - input size
         :param hidden_size: int  - hidden size of linear DU encoders
@@ -411,8 +468,7 @@ class DefaultLabelClassifier(nn.Module):
         self.weight_left = nn.Linear(hidden_size, classes_number, bias=False)
         self.weight_right = nn.Linear(hidden_size, classes_number, bias=False)
 
-        self.weight_bilateral = nn.Bilinear(hidden_size, hidden_size, classes_number, bias=bias,
-                                            device=cuda_device)
+        self.weight_bilateral = nn.Bilinear(hidden_size, hidden_size, classes_number, bias=bias, device=cuda_device)
 
         self._cuda_device = cuda_device
 
@@ -421,8 +477,11 @@ class DefaultLabelClassifier(nn.Module):
         labelspace_left = self.dropout(F.elu(self.labelspace_left(input_left)))
         labelspace_right = self.dropout(F.elu(self.labelspace_right(input_right)))
 
-        output = (self.weight_bilateral(labelspace_left, labelspace_right) + self.weight_left(
-            labelspace_left) + self.weight_right(labelspace_right))
+        output = (
+            self.weight_bilateral(labelspace_left, labelspace_right)
+            + self.weight_left(labelspace_left)
+            + self.weight_right(labelspace_right)
+        )
 
         # Obtain relation weights and log relation weights (for loss)
         relation_weights = F.softmax(output, 1)
@@ -440,17 +499,19 @@ class DefaultPlusBiMPMClassifier(nn.Module):
 
         # Update input size of the default encoder
         self._default_encoder.input_size += self._bimpm_encoder.hidden_size * 2 + 1
-        self._default_encoder.labelspace_left = nn.Linear(self._default_encoder.input_size,
-                                                          self._default_encoder.hidden_size, bias=False)
-        self._default_encoder.labelspace_right = nn.Linear(self._default_encoder.input_size,
-                                                           self._default_encoder.hidden_size, bias=False)
+        self._default_encoder.labelspace_left = nn.Linear(
+            self._default_encoder.input_size, self._default_encoder.hidden_size, bias=False
+        )
+        self._default_encoder.labelspace_right = nn.Linear(
+            self._default_encoder.input_size, self._default_encoder.hidden_size, bias=False
+        )
 
         self._cuda_device = self._default_encoder._cuda_device
 
     @override
     def forward(self, left_edus, right_edus, left_du, right_du):
-        """ Default classifier takes as input averaged DU representations,
-            BiMPM computes over sequences of EDUs. """
+        """Default classifier takes as input averaged DU representations,
+        BiMPM computes over sequences of EDUs."""
 
         # 1. Acquire the BiMPM hidden representations for left and right DU #####
 
@@ -458,10 +519,14 @@ class DefaultPlusBiMPMClassifier(nn.Module):
         bimpm_left, bimpm_right, lengths = self._bimpm_encoder.encode(left_edus, right_edus)
 
         # (batch_size, self._bimpm_encoder.hidden_size * 2 + 1)
-        x_left = torch.cat([bimpm_left.permute(1, 0, 2).contiguous().view(-1, self._bimpm_encoder.hidden_size * 2),
-                            lengths[:, :1]], dim=1)
-        x_right = torch.cat([bimpm_left.permute(1, 0, 2).contiguous().view(-1, self._bimpm_encoder.hidden_size * 2),
-                             lengths[:, :1]], dim=1)
+        x_left = torch.cat(
+            [bimpm_left.permute(1, 0, 2).contiguous().view(-1, self._bimpm_encoder.hidden_size * 2), lengths[:, :1]],
+            dim=1,
+        )
+        x_right = torch.cat(
+            [bimpm_left.permute(1, 0, 2).contiguous().view(-1, self._bimpm_encoder.hidden_size * 2), lengths[:, :1]],
+            dim=1,
+        )
 
         # 2. Concat bimpm representations & parser's du representations for left and right unit #####
 

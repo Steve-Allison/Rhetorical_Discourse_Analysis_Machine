@@ -76,7 +76,7 @@ def compute_structural_features(
     undirected = primary_graph.to_undirected()
     try:
         hop_dist = float(nx.shortest_path_length(undirected, source=u.node_id, target=v.node_id))
-    except (nx.NetworkXNoPath, nx.NodeNotFound):
+    except nx.NetworkXNoPath, nx.NodeNotFound:
         hop_dist = 20.0
 
     # 4. Spans length log-ratio
@@ -213,7 +213,7 @@ def load_gum_erst_corpus(data_dir: Path | str) -> list[SecondaryEdgeCandidate]:
             doc, analysis = rs4_to_document_and_analysis(rs4_doc, document_id=rs4_file.stem)
             cands = extract_eRST_candidates_from_document(doc, analysis)
             all_candidates.extend(cands)
-        except (OSError, ValueError, RuntimeError, KeyError):
+        except OSError, ValueError, RuntimeError, KeyError:
             # Skip malformed files gracefully
             continue
 

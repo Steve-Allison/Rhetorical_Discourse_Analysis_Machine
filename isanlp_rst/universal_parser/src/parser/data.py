@@ -23,42 +23,120 @@ from numpy.typing import ArrayLike
 
 # Coarse-grained labels (29)
 RelationTableGUM = [
-    'adversative_NN', 'adversative_NS', 'adversative_SN', 'attribution_NS', 'attribution_SN', 'causal_NS',
-    'causal_SN', 'context_NS', 'context_SN', 'contingency_NS', 'contingency_SN', 'elaboration_NS',
-    'evaluation_NS', 'evaluation_SN', 'explanation_NS', 'explanation_SN', 'joint_NN', 'mode_NS', 'mode_SN',
-    'organization_NS', 'organization_SN', 'purpose_NS', 'purpose_SN', 'restatement_NN', 'restatement_NS',
-    'same-unit_NN', 'topic_SN']
+    "adversative_NN",
+    "adversative_NS",
+    "adversative_SN",
+    "attribution_NS",
+    "attribution_SN",
+    "causal_NS",
+    "causal_SN",
+    "context_NS",
+    "context_SN",
+    "contingency_NS",
+    "contingency_SN",
+    "elaboration_NS",
+    "evaluation_NS",
+    "evaluation_SN",
+    "explanation_NS",
+    "explanation_SN",
+    "joint_NN",
+    "mode_NS",
+    "mode_SN",
+    "organization_NS",
+    "organization_SN",
+    "purpose_NS",
+    "purpose_SN",
+    "restatement_NN",
+    "restatement_NS",
+    "same-unit_NN",
+    "topic_SN",
+]
 
 # Coarse-grained labels (42)
-RelationTableRSTDT = ['Elaboration_NS', 'Attribution_SN', 'Joint_NN', 'same-unit_NN',
-       'Attribution_NS', 'Explanation_NS', 'Enablement_NS', 'Background_NS',
-       'Evaluation_NS', 'Cause_NS', 'Contrast_SN', 'Contrast_NN',
-       'Background_SN', 'Temporal_NN', 'Comparison_NN', 'Contrast_NS',
-       'Topic-Change_NN', 'Manner-Means_NS', 'textual-organization_NN',
-       'Temporal_NS', 'Condition_NS', 'Condition_SN', 'Cause_SN', 'Summary_NS',
-       'Topic-Comment_NN', 'Cause_NN', 'Summary_NN', 'Evaluation_SN',
-       'Temporal_SN', 'Explanation_SN', 'Enablement_SN', 'Topic-Comment_NS',
-       'Comparison_NS', 'Elaboration_SN', 'Manner-Means_SN', 'Comparison_SN',
-       'Summary_SN', 'Condition_NN', 'Topic-Comment_SN', 'Topic-Change_NS',
-       'Evaluation_NN', 'Explanation_NN']
+RelationTableRSTDT = [
+    "Elaboration_NS",
+    "Attribution_SN",
+    "Joint_NN",
+    "same-unit_NN",
+    "Attribution_NS",
+    "Explanation_NS",
+    "Enablement_NS",
+    "Background_NS",
+    "Evaluation_NS",
+    "Cause_NS",
+    "Contrast_SN",
+    "Contrast_NN",
+    "Background_SN",
+    "Temporal_NN",
+    "Comparison_NN",
+    "Contrast_NS",
+    "Topic-Change_NN",
+    "Manner-Means_NS",
+    "textual-organization_NN",
+    "Temporal_NS",
+    "Condition_NS",
+    "Condition_SN",
+    "Cause_SN",
+    "Summary_NS",
+    "Topic-Comment_NN",
+    "Cause_NN",
+    "Summary_NN",
+    "Evaluation_SN",
+    "Temporal_SN",
+    "Explanation_SN",
+    "Enablement_SN",
+    "Topic-Comment_NS",
+    "Comparison_NS",
+    "Elaboration_SN",
+    "Manner-Means_SN",
+    "Comparison_SN",
+    "Summary_SN",
+    "Condition_NN",
+    "Topic-Comment_SN",
+    "Topic-Change_NS",
+    "Evaluation_NN",
+    "Explanation_NN",
+]
 
-RelationTableRuRSTB = ['Joint_NN', 'Elaboration_NS', 'Contrast_NN', 'Attribution_SN', 'Interpretation-evaluation_NS',
-                       'Preparation_SN', 'Cause-effect_SN', 'Sequence_NN', 'Cause-effect_NS',
-                       'same-unit_NN', 'Condition_SN', 'Purpose_NS', 'Attribution_NS', 'Condition_NS',
-                       'Comparison_NN', 'Concession_SN', 'Background_SN', 'Solutionhood_SN', 'Evidence_NS',
-                       'Concession_NS', 'Interpretation-evaluation_SN', 'Restatement_NN', 'Concession_SN',
-                       'Evidence_SN', 'Purpose_SN']
+RelationTableRuRSTB = [
+    "Joint_NN",
+    "Elaboration_NS",
+    "Contrast_NN",
+    "Attribution_SN",
+    "Interpretation-evaluation_NS",
+    "Preparation_SN",
+    "Cause-effect_SN",
+    "Sequence_NN",
+    "Cause-effect_NS",
+    "same-unit_NN",
+    "Condition_SN",
+    "Purpose_NS",
+    "Attribution_NS",
+    "Condition_NS",
+    "Comparison_NN",
+    "Concession_SN",
+    "Background_SN",
+    "Solutionhood_SN",
+    "Evidence_NS",
+    "Concession_NS",
+    "Interpretation-evaluation_SN",
+    "Restatement_NN",
+    "Concession_SN",
+    "Evidence_SN",
+    "Purpose_SN",
+]
+
 
 def getLabelOrdered(Original_Order: ArrayLike) -> list[Any]:
-    '''
+    """
     Get the right order of lable for stacks manner.
     E.g.
     [8,3,9,2,6,10,1,5,7,11,4] to [8,3,2,1,6,5,4,7,9,10,11]
-    '''
+    """
     Original_Order = np.array(Original_Order)
     target = []
-    stacks = ['root', Original_Order]
-    while stacks[-1] != 'root':
+    stacks = ["root", Original_Order]
+    while stacks[-1] != "root":
         head = stacks[-1]
         if len(head) < 3:
             target.extend(head.tolist())
@@ -79,18 +157,18 @@ def getLabelOrdered(Original_Order: ArrayLike) -> list[Any]:
 
 def nucs_and_rels(label_index: int, relation_table: list[str]) -> tuple[str, str, str, str]:
     relation = relation_table[label_index]
-    label, _, nuclearities = relation.rpartition('_')
+    label, _, nuclearities = relation.rpartition("_")
 
-    nuc_left, nuc_right = 'Nucleus', 'Nucleus'
+    nuc_left, nuc_right = "Nucleus", "Nucleus"
     rel_left, rel_right = label, label
 
     match nuclearities.lower():
-        case 'ns':
-            nuc_right = 'Satellite'
-            rel_left = 'span'
-        case 'sn':
-            nuc_left = 'Satellite'
-            rel_right = 'span'
+        case "ns":
+            nuc_right = "Satellite"
+            rel_left = "span"
+        case "sn":
+            nuc_left = "Satellite"
+            rel_right = "span"
         case _:
             pass
 

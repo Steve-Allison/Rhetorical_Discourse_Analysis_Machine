@@ -45,22 +45,34 @@ class BiMPM(nn.Module):
             num_layers=1,
             bidirectional=True,
             batch_first=True,
-            device=self._cuda_device
+            device=self._cuda_device,
         )
 
         # ----- Matching Layer -----
         for i in range(1, 9):
-            setattr(self, f'mp_w{i}', nn.Parameter(torch.rand(self.l, hidden_size)))
+            setattr(self, f"mp_w{i}", nn.Parameter(torch.rand(self.l, hidden_size)))
 
         # ----- Aggregation Layer -----
         self.aggregation_LSTM = nn.LSTM(
-            input_size=2 + self.l * 2 * sum([int(v) for v in [self.with_full_match, self.with_maxpool_match,
-                                                              self.with_attentive_match, self.with_max_attentive_match]]),
+            input_size=2
+            + self.l
+            * 2
+            * sum(
+                [
+                    int(v)
+                    for v in [
+                        self.with_full_match,
+                        self.with_maxpool_match,
+                        self.with_attentive_match,
+                        self.with_max_attentive_match,
+                    ]
+                ]
+            ),
             hidden_size=hidden_size,
             num_layers=1,
             bidirectional=True,
             batch_first=True,
-            device=self._cuda_device
+            device=self._cuda_device,
         )
 
         # ----- Prediction Layer -----
@@ -85,7 +97,7 @@ class BiMPM(nn.Module):
 
         # ----- Matching Layer -----
         for i in range(1, 9):
-            w = getattr(self, f'mp_w{i}')
+            w = getattr(self, f"mp_w{i}")
             nn.init.kaiming_normal_(w)
 
         # ----- Aggregation Layer -----
@@ -182,17 +194,22 @@ class BiMPM(nn.Module):
         return n / d
 
     def _reduce_length(self, emb: Tensor) -> Tensor:
-        """ Inputs can be of infinite length, hence BiMPM matching can cause OOM.
-            This is a way to limit the input averaging the middle part of an unbearable long sequence.
+        """Inputs can be of infinite length, hence BiMPM matching can cause OOM.
+        This is a way to limit the input averaging the middle part of an unbearable long sequence.
 
-            :param: emb (torch.FloatTensor)  - all embeddings of [1, seq_length, emb_size]
-            Output (torch.FloatTensor)  - embeddings of [1, self.max_len+1, emb_size]
-            """
+        :param: emb (torch.FloatTensor)  - all embeddings of [1, seq_length, emb_size]
+        Output (torch.FloatTensor)  - embeddings of [1, self.max_len+1, emb_size]
+        """
         if self.max_len:
             if emb.size(1) > self.max_len + 1:
-                return torch.cat([emb[:, :self.max_len//2, :],
-                                  emb[:, self.max_len//2:-self.max_len//2, :].mean(dim=1, keepdim=True),
-                                  emb[:, -self.max_len//2:, :]], dim=1)
+                return torch.cat(
+                    [
+                        emb[:, : self.max_len // 2, :],
+                        emb[:, self.max_len // 2 : -self.max_len // 2, :].mean(dim=1, keepdim=True),
+                        emb[:, -self.max_len // 2 :, :],
+                    ],
+                    dim=1,
+                )
         return emb
 
     def encode(
@@ -220,8 +237,9 @@ class BiMPM(nn.Module):
             len2 = right.size(1)
 
         # (batch, 2)
-        lengths = torch.tensor([len1 / (len1 + len2), len2 / (len1 + len2)],
-                               dtype=torch.float, device=self._cuda_device).unsqueeze(0)
+        lengths = torch.tensor(
+            [len1 / (len1 + len2), len2 / (len1 + len2)], dtype=torch.float, device=self._cuda_device
+        ).unsqueeze(0)
 
         # (batch, seq_len, hidden_size)
         con_p_fw, con_p_bw = torch.split(left, self.hidden_size, dim=-1)
@@ -311,10 +329,12 @@ class BiMPM(nn.Module):
             att_mean_h_bw = self.div_with_small_value(att_h_bw.sum(dim=2), att_bw.sum(dim=2, keepdim=True))
 
             # (batch, seq_len2, hidden_size) / (batch, seq_len2, 1) -> (batch, seq_len2, hidden_size)
-            att_mean_p_fw = self.div_with_small_value(att_p_fw.sum(dim=1),
-                                                      att_fw.sum(dim=1, keepdim=True).permute(0, 2, 1))
-            att_mean_p_bw = self.div_with_small_value(att_p_bw.sum(dim=1),
-                                                      att_bw.sum(dim=1, keepdim=True).permute(0, 2, 1))
+            att_mean_p_fw = self.div_with_small_value(
+                att_p_fw.sum(dim=1), att_fw.sum(dim=1, keepdim=True).permute(0, 2, 1)
+            )
+            att_mean_p_bw = self.div_with_small_value(
+                att_p_bw.sum(dim=1), att_bw.sum(dim=1, keepdim=True).permute(0, 2, 1)
+            )
 
             # (batch, seq_len, l)
             mv_p_att_mean_fw = self.mp_matching_func(con_p_fw, att_mean_h_fw, self.mp_w5)
@@ -376,8 +396,12 @@ class BiMPM(nn.Module):
 
         # 2 * (2, batch, hidden_size) -> 2 * (batch, hidden_size * 2) -> (batch, hidden_size * 4)
         x = torch.cat(
-            [agg_p_last.permute(1, 0, 2).contiguous().view(-1, self.hidden_size * 2),
-             agg_h_last.permute(1, 0, 2).contiguous().view(-1, self.hidden_size * 2)], dim=1)
+            [
+                agg_p_last.permute(1, 0, 2).contiguous().view(-1, self.hidden_size * 2),
+                agg_h_last.permute(1, 0, 2).contiguous().view(-1, self.hidden_size * 2),
+            ],
+            dim=1,
+        )
         x = self.dropout(x)
 
         # (batch, hidden_size * 4 + 2)

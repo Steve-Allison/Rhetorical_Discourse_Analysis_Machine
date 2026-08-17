@@ -40,9 +40,7 @@ def _root_ns(path: Path) -> str:
 
 
 _DOCLING_JSON = sorted(DOCLING_FIXTURES.glob("*.docling.json"))
-_NAMESPACED_DOCLANG = sorted(
-    p for p in DOCLANG_FIXTURES.glob("*.dclg.xml") if _root_ns(p) == DOCLANG_NS
-)
+_NAMESPACED_DOCLANG = sorted(p for p in DOCLANG_FIXTURES.glob("*.dclg.xml") if _root_ns(p) == DOCLANG_NS)
 
 
 def test_compat_fixtures_present() -> None:
@@ -50,9 +48,7 @@ def test_compat_fixtures_present() -> None:
     an empty parametrize set would pass vacuously, which is the exact silent-green
     failure mode this whole module exists to prevent."""
     assert _DOCLING_JSON, "no docling fixtures found — compat guard would no-op"
-    assert _NAMESPACED_DOCLANG, (
-        "no namespaced doclang fixtures found — compat guard would no-op"
-    )
+    assert _NAMESPACED_DOCLANG, "no namespaced doclang fixtures found — compat guard would no-op"
 
 
 @pytest.mark.parametrize("fixture", _DOCLING_JSON, ids=lambda p: p.name)
@@ -76,9 +72,7 @@ def test_docling_current_package_parses_fixtures(fixture: Path) -> None:
     field change that the version compare alone would miss."""
     doc = DoclingDocument.load_from_json(fixture)
     result = harvest_docling_text(doc)
-    assert result.spans, (
-        f"{fixture.name}: harvester produced no spans under the installed docling-core"
-    )
+    assert result.spans, f"{fixture.name}: harvester produced no spans under the installed docling-core"
 
 
 def test_doclang_namespace_is_current() -> None:

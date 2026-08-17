@@ -246,57 +246,63 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+
 @dataclass(frozen=True, slots=True)
 class HarvestSpan:
-    self_ref: str        # e.g. "#/texts/47"
+    self_ref: str  # e.g. "#/texts/47"
     text: str
-    start: int           # offset in the concatenated harvest
-    end: int             # exclusive
+    start: int  # offset in the concatenated harvest
+    end: int  # exclusive
+
 
 @dataclass(frozen=True, slots=True)
 class HarvestResult:
     full_text: str
     spans: tuple[HarvestSpan, ...]
 
+
 @dataclass(frozen=True, slots=True)
 class Boundary:
-    id: str                                  # e.g. "slide-0", "section-3", "turn-7", "table-0"
-    kind: str                                # "slide" | "slide-notes" | "section" | "turn" | "table" | "document"
-    label: str | None                        # human-readable (slide title, speaker voice, section heading)
-    parent_self_ref: str | None              # e.g. "#/groups/0" for slide groups; None for document boundary
-    self_refs: tuple[str, ...]               # self_refs this boundary covers
-    level: int | None = None                 # section level passthrough (None if not a section)
-    page_no: int | None = None               # page number passthrough where applicable
+    id: str  # e.g. "slide-0", "section-3", "turn-7", "table-0"
+    kind: str  # "slide" | "slide-notes" | "section" | "turn" | "table" | "document"
+    label: str | None  # human-readable (slide title, speaker voice, section heading)
+    parent_self_ref: str | None  # e.g. "#/groups/0" for slide groups; None for document boundary
+    self_refs: tuple[str, ...]  # self_refs this boundary covers
+    level: int | None = None  # section level passthrough (None if not a section)
+    page_no: int | None = None  # page number passthrough where applicable
+
 
 @dataclass(frozen=True, slots=True)
 class RstRelation:
-    id: int                                  # unique within DoclingRstResult; shared namespace with RstEdu.id
-    relation: str                            # e.g. "Elaboration"
-    nuclearity: str                          # "NS" / "NN" / ""
+    id: int  # unique within DoclingRstResult; shared namespace with RstEdu.id
+    relation: str  # e.g. "Elaboration"
+    nuclearity: str  # "NS" / "NN" / ""
     nucleus_refs: tuple[str, ...]
     satellite_refs: tuple[str, ...]
     depth: int
-    left_id: int                             # child node id (relation or edu)
-    right_id: int                            # child node id (relation or edu)
-    boundary_memberships: tuple[str, ...]    # ids of boundaries this relation touches
-    note: str | None = None                  # populated for ≥ 90% lopsided overlaps; omitted from JSON when None
+    left_id: int  # child node id (relation or edu)
+    right_id: int  # child node id (relation or edu)
+    boundary_memberships: tuple[str, ...]  # ids of boundaries this relation touches
+    note: str | None = None  # populated for ≥ 90% lopsided overlaps; omitted from JSON when None
+
 
 @dataclass(frozen=True, slots=True)
 class RstEdu:
-    id: int                                  # unique within DoclingRstResult; shared namespace with RstRelation.id
+    id: int  # unique within DoclingRstResult; shared namespace with RstRelation.id
     self_refs: tuple[str, ...]
     depth: int
 
+
 @dataclass(frozen=True, slots=True)
 class DoclingRstResult:
-    schema_name: str                         # "isanlp_rst_docling"
-    schema_version: str                      # "1.0"
-    tool: str                                # "isanlp_rst"
-    tool_version: str                        # see §Decisions: tool_version
-    model_version: str                       # e.g. "gumrrg"
-    inventory: str                           # e.g. "eng.rst.rstdt"
-    source: str                              # basename of input path
-    source_origin: dict[str, Any]            # doc.origin.model_dump(mode="json")
+    schema_name: str  # "isanlp_rst_docling"
+    schema_version: str  # "1.0"
+    tool: str  # "isanlp_rst"
+    tool_version: str  # see §Decisions: tool_version
+    model_version: str  # e.g. "gumrrg"
+    inventory: str  # e.g. "eng.rst.rstdt"
+    source: str  # basename of input path
+    source_origin: dict[str, Any]  # doc.origin.model_dump(mode="json")
     boundaries: tuple[Boundary, ...]
     relations: tuple[RstRelation, ...]
     edus: tuple[RstEdu, ...]

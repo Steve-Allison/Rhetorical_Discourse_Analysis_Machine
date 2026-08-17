@@ -14,7 +14,7 @@ from typing import Any, Protocol
 # this flag, MPS users hit `NotImplementedError` at first use. Setting it here
 # (idempotent via setdefault) keeps user environments untouched if they've
 # already opted in or out.
-os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
+os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 
 import torch  # noqa: E402  (intentionally after env var setup above)
 
@@ -63,11 +63,7 @@ class DeviceProbe:
 
 def _mps_available() -> bool:
     """True when this host has a usable MPS (Apple Silicon Metal) backend."""
-    return (
-        hasattr(torch.backends, 'mps')
-        and torch.backends.mps.is_available()
-        and torch.backends.mps.is_built()
-    )
+    return hasattr(torch.backends, "mps") and torch.backends.mps.is_available() and torch.backends.mps.is_built()
 
 
 def _device_from_spec(spec: str, probe: DeviceProbe) -> torch.device:
@@ -79,40 +75,35 @@ def _device_from_spec(spec: str, probe: DeviceProbe) -> torch.device:
     backend is not present on the host (per ``probe``).
     """
     key = spec.strip().lower()
-    if key == 'cpu':
-        return torch.device('cpu')
-    if key == 'auto':
+    if key == "cpu":
+        return torch.device("cpu")
+    if key == "auto":
         if probe.cuda_available:
-            return torch.device('cuda:0')
+            return torch.device("cuda:0")
         if probe.mps_available:
-            os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
-            return torch.device('mps')
-        return torch.device('cpu')
-    if key == 'mps':
+            os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
+            return torch.device("mps")
+        return torch.device("cpu")
+    if key == "mps":
         if not probe.mps_available:
             raise RuntimeError("device='mps' requested but MPS is not available on this host.")
-        os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
-        return torch.device('mps')
-    if key == 'cuda' or key.startswith('cuda:'):
+        os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
+        return torch.device("mps")
+    if key == "cuda" or key.startswith("cuda:"):
         if not probe.cuda_available:
             raise RuntimeError(f"device={spec!r} requested but CUDA is not available on this host.")
-        if key == 'cuda':
-            return torch.device('cuda:0')
+        if key == "cuda":
+            return torch.device("cuda:0")
         try:
-            index = int(key.split(':', 1)[1])
+            index = int(key.split(":", 1)[1])
         except ValueError as exc:
             raise ValueError(f"Invalid CUDA device specifier: {spec!r}") from exc
         if index < 0:
             raise ValueError(f"CUDA device index must be non-negative: {spec!r}")
         if index >= probe.cuda_device_count:
-            raise ValueError(
-                f"CUDA device index {index} is out of range "
-                f"(device_count={probe.cuda_device_count})."
-            )
-        return torch.device(f'cuda:{index}')
-    raise ValueError(
-        f"Unrecognised device {spec!r}. Expected 'auto', 'cpu', 'mps', 'cuda', or 'cuda:N'."
-    )
+            raise ValueError(f"CUDA device index {index} is out of range (device_count={probe.cuda_device_count}).")
+        return torch.device(f"cuda:{index}")
+    raise ValueError(f"Unrecognised device {spec!r}. Expected 'auto', 'cpu', 'mps', 'cuda', or 'cuda:N'.")
 
 
 def _device_from_legacy_int(cuda_device: int, probe: DeviceProbe) -> torch.device:
@@ -123,23 +114,18 @@ def _device_from_legacy_int(cuda_device: int, probe: DeviceProbe) -> torch.devic
     integer path behaves as it always did.
     """
     if isinstance(cuda_device, bool) or not isinstance(cuda_device, int):
-        raise ValueError(
-            f'cuda_device must be an int (-1 for CPU, or >= 0 for GPU); '
-            f'got {cuda_device!r}.'
-        )
+        raise ValueError(f"cuda_device must be an int (-1 for CPU, or >= 0 for GPU); got {cuda_device!r}.")
     if cuda_device < -1:
-        raise ValueError(
-            f'cuda_device must be -1 (CPU) or >= 0 (GPU); got {cuda_device}.'
-        )
+        raise ValueError(f"cuda_device must be -1 (CPU) or >= 0 (GPU); got {cuda_device}.")
     if cuda_device == -1:
-        return torch.device('cpu')
+        return torch.device("cpu")
     if probe.cuda_available:
-        return torch.device(f'cuda:{cuda_device}')
+        return torch.device(f"cuda:{cuda_device}")
     if probe.mps_available:
-        os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
-        return torch.device('mps')
+        os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
+        return torch.device("mps")
     raise RuntimeError(
-        f'cuda_device={cuda_device} requested but no GPU backend is '
+        f"cuda_device={cuda_device} requested but no GPU backend is "
         'available (neither CUDA nor MPS). Pass device="cpu" for CPU.'
     )
 
@@ -172,9 +158,7 @@ def resolve_device(
 
     if cuda_device is not None:
         if device is not None:
-            raise ValueError(
-                'Pass either `device` (preferred) or `cuda_device` (deprecated), not both.'
-            )
+            raise ValueError("Pass either `device` (preferred) or `cuda_device` (deprecated), not both.")
         warnings.warn(
             "`cuda_device` is deprecated and will be removed in a future release; "
             "use `device=` instead (e.g. device='auto'|'cpu'|'mps'|'cuda:0'). "
@@ -186,11 +170,11 @@ def resolve_device(
         return _device_from_legacy_int(cuda_device, resolved_probe)
 
     if device is None:
-        return _device_from_spec('auto', resolved_probe)
+        return _device_from_spec("auto", resolved_probe)
     if isinstance(device, torch.device):
         # Same availability rules as the string API — do not silently accept
         # an unavailable backend via passthrough.
-        if device.type == 'cpu':
+        if device.type == "cpu":
             return device
         return _device_from_spec(str(device), resolved_probe)
     return _device_from_spec(device, resolved_probe)
@@ -331,8 +315,8 @@ class BasePredictor:
             unit.end = right.end
         else:
             raise ValueError(
-                'remap_tree_offsets received a unary node (one of left/right is None). '
-                'DUConverter is expected to produce strictly binary trees.'
+                "remap_tree_offsets received a unary node (one of left/right is None). "
+                "DUConverter is expected to produce strictly binary trees."
             )
 
         unit.text = original_text[unit.start : unit.end]
@@ -363,9 +347,7 @@ class BasePredictor:
             while start <= last_start and text[start : start + len(token)] != token:
                 start += 1
             if start > last_start:
-                raise ValueError(
-                    f"Cannot locate token {idx} ({token!r}) in text at or after position {cursor}."
-                )
+                raise ValueError(f"Cannot locate token {idx} ({token!r}) in text at or after position {cursor}.")
             end = start + len(token)
             offsets.append((start, end))
             cursor = end
@@ -377,7 +359,7 @@ class BasePredictor:
         subword_offsets: Sequence[tuple[int, int]],
         word_span_boundaries: Sequence[int],
     ) -> list[int]:
-        """ Given word span boundaries, recount for subwords. """
+        """Given word span boundaries, recount for subwords."""
         subword_span_boundaries = [0]
 
         for w_end in word_span_boundaries:
@@ -399,8 +381,8 @@ class BasePredictor:
 
     @staticmethod
     def _collect_leaf_texts(unit: Any, acc: list[str]) -> None:
-        left = getattr(unit, 'left', None)
-        right = getattr(unit, 'right', None)
+        left = getattr(unit, "left", None)
+        right = getattr(unit, "right", None)
 
         if left is None and right is None:
             acc.append(unit.text)
@@ -424,23 +406,23 @@ class BasePredictor:
             TypeError: if `edus` is not a non-string sequence of strings.
         """
         if edus is None:
-            raise ValueError('`edus` must be provided for parsing.')
+            raise ValueError("`edus` must be provided for parsing.")
 
         if isinstance(edus, (str, bytes)):
-            raise TypeError('`edus` must be a sequence of strings, not a single string.')
+            raise TypeError("`edus` must be a sequence of strings, not a single string.")
 
         if not isinstance(edus, Sequence):
-            raise TypeError('`edus` must be a sequence of strings.')
+            raise TypeError("`edus` must be a sequence of strings.")
 
         if not edus:
-            raise ValueError('`edus` must contain at least one EDU.')
+            raise ValueError("`edus` must contain at least one EDU.")
 
         normalized: list[str] = []
         for idx, edu in enumerate(edus):
             if not isinstance(edu, str):
-                raise TypeError(f'EDU at position {idx} must be a string.')
+                raise TypeError(f"EDU at position {idx} must be a string.")
             if not edu:
-                raise ValueError(f'EDU at position {idx} is empty.')
+                raise ValueError(f"EDU at position {idx} is empty.")
             normalized.append(edu)
 
         return normalized
@@ -449,7 +431,7 @@ class BasePredictor:
     def _compute_edu_char_spans(edus: Sequence[str]) -> tuple[str, list[tuple[int, int]]]:
         """Concatenate `edus` with single-space separators and return the joined
         text plus the character span of each EDU within it."""
-        text = ' '.join(edus)
+        text = " ".join(edus)
         spans: list[tuple[int, int]] = []
         cursor = 0
 
@@ -457,7 +439,7 @@ class BasePredictor:
             start = cursor
             end = start + len(edu)
             if text[start:end] != edu:
-                raise ValueError(f'EDU at position {idx} does not align after concatenation.')
+                raise ValueError(f"EDU at position {idx} does not align after concatenation.")
             spans.append((start, end))
             if idx < len(edus) - 1:
                 cursor = end + 1
@@ -481,7 +463,7 @@ class BasePredictor:
             For each EDU, the index of its last token in the flat token list.
         """
         if not offsets:
-            raise ValueError('Unable to derive token boundaries from the provided EDUs.')
+            raise ValueError("Unable to derive token boundaries from the provided EDUs.")
 
         token_stops = [stop for _, stop in offsets]
         edu_breaks: list[int] = []
@@ -492,14 +474,12 @@ class BasePredictor:
                 token_idx += 1
 
             if token_idx == -1 or token_stops[token_idx] != edu_end:
-                raise ValueError(
-                    f'EDU at position {span_idx} does not align with tokenizer boundaries.'
-                )
+                raise ValueError(f"EDU at position {span_idx} does not align with tokenizer boundaries.")
 
             edu_breaks.append(token_idx)
 
         if edu_breaks[-1] != len(token_stops) - 1:
-            raise ValueError('EDU boundaries do not cover the entire tokenized text.')
+            raise ValueError("EDU boundaries do not cover the entire tokenized text.")
 
         return edu_breaks
 
@@ -545,21 +525,22 @@ class BasePredictor:
         if isinstance(dtype, str):
             key = dtype.lower().strip()
             mapping = {
-                'float32': torch.float32, 'fp32': torch.float32,
-                'float16': torch.float16, 'fp16': torch.float16, 'half': torch.float16,
-                'bfloat16': torch.bfloat16, 'bf16': torch.bfloat16,
+                "float32": torch.float32,
+                "fp32": torch.float32,
+                "float16": torch.float16,
+                "fp16": torch.float16,
+                "half": torch.float16,
+                "bfloat16": torch.bfloat16,
+                "bf16": torch.bfloat16,
             }
             if key not in mapping:
                 raise ValueError(
-                    f"Unknown dtype {dtype!r}. Supported: "
-                    "'float32'/'fp32', 'float16'/'fp16'/'half', 'bfloat16'/'bf16'."
+                    f"Unknown dtype {dtype!r}. Supported: 'float32'/'fp32', 'float16'/'fp16'/'half', 'bfloat16'/'bf16'."
                 )
             return mapping[key]
         if dtype in (torch.float32, torch.float16, torch.bfloat16):
             return dtype
-        raise ValueError(
-            f"Unsupported dtype {dtype!r}. Use float32, float16, or bfloat16."
-        )
+        raise ValueError(f"Unsupported dtype {dtype!r}. Use float32, float16, or bfloat16.")
 
     def _autocast(self) -> AbstractContextManager[Any]:
         """Return a context manager enabling autocast for inference.

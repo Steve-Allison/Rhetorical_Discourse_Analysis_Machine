@@ -317,7 +317,10 @@ def test_cache_misses_when_knobs_change(tmp_path: Path) -> None:
     parse_docling(path, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
     calls_after_first = len(stub.calls)
     parse_docling(
-        path, parser=stub, cache_dir=cache, include_table_cells=False  # type: ignore[arg-type]
+        path,
+        parser=stub,  # type: ignore[arg-type]
+        cache_dir=cache,
+        include_table_cells=False,
     )
     assert len(stub.calls) > calls_after_first
 
@@ -337,11 +340,17 @@ def test_cache_misses_when_device_changes(tmp_path: Path) -> None:
     cache = tmp_path / "cache"
     stub = StubParser()
     parse_docling(
-        path, parser=stub, cache_dir=cache, device="cpu"  # type: ignore[arg-type]
+        path,
+        parser=stub,  # type: ignore[arg-type]
+        cache_dir=cache,
+        device="cpu",
     )
     calls_after_first = len(stub.calls)
     parse_docling(
-        path, parser=stub, cache_dir=cache, device="mps"  # type: ignore[arg-type]
+        path,
+        parser=stub,  # type: ignore[arg-type]
+        cache_dir=cache,
+        device="mps",
     )
     assert len(stub.calls) > calls_after_first
 

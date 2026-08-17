@@ -38,9 +38,7 @@ def compute_overlap_refs(
     Docling-specific wrapper over the generic overlap function — the
     address is each span's ``self_ref``.
     """
-    return _generic_compute_overlap_refs(
-        start, end, spans, ref_of=_self_ref, note_threshold=note_threshold
-    )
+    return _generic_compute_overlap_refs(start, end, spans, ref_of=_self_ref, note_threshold=note_threshold)
 
 
 def _make_edu(*, id: int, refs: tuple[str, ...], depth: int) -> RstEdu:

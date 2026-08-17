@@ -16,46 +16,54 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # Never descend into these, even if they contain bytecode.
-SKIP_DIR_NAMES = frozenset({
-    ".git",
-    ".pixi",
-    ".venv",
-    "venv",
-    "node_modules",
-})
+SKIP_DIR_NAMES = frozenset(
+    {
+        ".git",
+        ".pixi",
+        ".venv",
+        "venv",
+        "node_modules",
+    }
+)
 
-JUNK_DIR_NAMES = frozenset({
-    "__pycache__",
-    ".pytest_cache",
-    ".ruff_cache",
-    ".mypy_cache",
-    ".pytype",
-    ".hypothesis",
-    ".ipynb_checkpoints",
-    ".tox",
-    ".nox",
-    ".eggs",
-    "htmlcov",
-    "build",
-    "dist",
-})
+JUNK_DIR_NAMES = frozenset(
+    {
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".mypy_cache",
+        ".pytype",
+        ".hypothesis",
+        ".ipynb_checkpoints",
+        ".tox",
+        ".nox",
+        ".eggs",
+        "htmlcov",
+        "build",
+        "dist",
+    }
+)
 
-JUNK_FILE_NAMES = frozenset({
-    ".DS_Store",
-    "Thumbs.db",
-    ".coverage",
-    "coverage.xml",
-})
+JUNK_FILE_NAMES = frozenset(
+    {
+        ".DS_Store",
+        "Thumbs.db",
+        ".coverage",
+        "coverage.xml",
+    }
+)
 
-JUNK_SUFFIXES = frozenset({
-    ".pyc",
-    ".pyo",
-    ".pyd",
-    ".tmp",
-    ".temp",
-    ".swp",
-    ".swo",
-})
+JUNK_SUFFIXES = frozenset(
+    {
+        ".pyc",
+        ".pyo",
+        ".pyd",
+        ".tmp",
+        ".temp",
+        ".swp",
+        ".swo",
+    }
+)
 
 
 def is_junk_dir(path: Path) -> bool:

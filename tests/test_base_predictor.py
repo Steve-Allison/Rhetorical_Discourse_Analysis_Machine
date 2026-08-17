@@ -159,8 +159,7 @@ def test_char_spans_to_token_breaks_empty_offsets_raises():
 
 
 def test_load_torch_weights_pure_tensors(tmp_path):
-    state = OrderedDict([("a.weight", torch.tensor([1.0, 2.0])),
-                         ("a.bias", torch.tensor([0.5]))])
+    state = OrderedDict([("a.weight", torch.tensor([1.0, 2.0])), ("a.bias", torch.tensor([0.5]))])
     path = tmp_path / "weights.pt"
     torch.save(state, str(path))
 
@@ -174,6 +173,7 @@ def test_load_torch_weights_pure_tensors(tmp_path):
 
 class _FakeNode:
     """Stand-in for isanlp.DiscourseUnit with the attributes used by remap."""
+
     def __init__(self, start, end, left=None, right=None):
         self.start = start
         self.end = end
@@ -248,15 +248,15 @@ def test_resolve_dtype_default_is_float32():
 @pytest.mark.parametrize(
     "spec,expected",
     [
-        ('float32', torch.float32),
-        ('fp32', torch.float32),
-        ('float16', torch.float16),
-        ('fp16', torch.float16),
-        ('half', torch.float16),
-        ('bfloat16', torch.bfloat16),
-        ('bf16', torch.bfloat16),
-        ('FP16', torch.float16),
-        ('  bf16  ', torch.bfloat16),
+        ("float32", torch.float32),
+        ("fp32", torch.float32),
+        ("float16", torch.float16),
+        ("fp16", torch.float16),
+        ("half", torch.float16),
+        ("bfloat16", torch.bfloat16),
+        ("bf16", torch.bfloat16),
+        ("FP16", torch.float16),
+        ("  bf16  ", torch.bfloat16),
     ],
 )
 def test_resolve_dtype_string_parsing(spec, expected):
@@ -273,7 +273,7 @@ def test_resolve_dtype_passthrough(spec):
 
 def test_resolve_dtype_unknown_string_raises():
     with pytest.raises(ValueError, match="Unknown dtype"):
-        BasePredictor._resolve_dtype('quantum-float8')
+        BasePredictor._resolve_dtype("quantum-float8")
 
 
 def test_resolve_dtype_unsupported_torch_dtype_raises():
@@ -286,110 +286,110 @@ def test_resolve_dtype_unsupported_torch_dtype_raises():
 
 
 def test_resolve_device_cpu_string():
-    assert resolve_device('cpu', probe=DeviceProbe()) == torch.device('cpu')
+    assert resolve_device("cpu", probe=DeviceProbe()) == torch.device("cpu")
 
 
 def test_resolve_device_auto_no_accelerator_is_cpu():
-    assert resolve_device('auto', probe=DeviceProbe()) == torch.device('cpu')
+    assert resolve_device("auto", probe=DeviceProbe()) == torch.device("cpu")
 
 
 def test_resolve_device_none_defaults_to_auto():
-    assert resolve_device(None, probe=DeviceProbe()) == torch.device('cpu')
+    assert resolve_device(None, probe=DeviceProbe()) == torch.device("cpu")
 
 
 def test_resolve_device_auto_prefers_cuda_when_probe_says_so():
     """CUDA wins over MPS when both are available (API contract; rare on macOS)."""
     probe = DeviceProbe(cuda_available=True, cuda_device_count=1, mps_available=True)
-    assert resolve_device('auto', probe=probe) == torch.device('cuda:0')
+    assert resolve_device("auto", probe=probe) == torch.device("cuda:0")
 
 
 def test_resolve_device_auto_falls_back_to_mps():
     """macOS primary path: no CUDA → MPS."""
     probe = DeviceProbe(cuda_available=False, mps_available=True)
-    assert resolve_device('auto', probe=probe).type == 'mps'
+    assert resolve_device("auto", probe=probe).type == "mps"
 
 
 def test_resolve_device_explicit_mps_unavailable_raises():
-    with pytest.raises(RuntimeError, match='MPS is not available'):
-        resolve_device('mps', probe=DeviceProbe(mps_available=False))
+    with pytest.raises(RuntimeError, match="MPS is not available"):
+        resolve_device("mps", probe=DeviceProbe(mps_available=False))
 
 
 def test_resolve_device_explicit_cuda_unavailable_raises():
-    with pytest.raises(RuntimeError, match='CUDA is not available'):
-        resolve_device('cuda:1', probe=DeviceProbe(cuda_available=False))
+    with pytest.raises(RuntimeError, match="CUDA is not available"):
+        resolve_device("cuda:1", probe=DeviceProbe(cuda_available=False))
 
 
 def test_resolve_device_cuda_index_parsed():
     probe = DeviceProbe(cuda_available=True, cuda_device_count=4)
-    dev = resolve_device('cuda:2', probe=probe)
-    assert dev.type == 'cuda' and dev.index == 2
+    dev = resolve_device("cuda:2", probe=probe)
+    assert dev.type == "cuda" and dev.index == 2
 
 
 def test_resolve_device_cuda_index_out_of_range_raises():
     probe = DeviceProbe(cuda_available=True, cuda_device_count=1)
-    with pytest.raises(ValueError, match='out of range'):
-        resolve_device('cuda:2', probe=probe)
+    with pytest.raises(ValueError, match="out of range"):
+        resolve_device("cuda:2", probe=probe)
 
 
 def test_resolve_device_negative_cuda_index_raises():
     probe = DeviceProbe(cuda_available=True, cuda_device_count=1)
-    with pytest.raises(ValueError, match='non-negative'):
-        resolve_device('cuda:-1', probe=probe)
+    with pytest.raises(ValueError, match="non-negative"):
+        resolve_device("cuda:-1", probe=probe)
 
 
 def test_resolve_device_invalid_spec_raises():
-    with pytest.raises(ValueError, match='Unrecognised device'):
-        resolve_device('gpu', probe=DeviceProbe())
+    with pytest.raises(ValueError, match="Unrecognised device"):
+        resolve_device("gpu", probe=DeviceProbe())
 
 
 def test_resolve_device_torch_device_cpu_passthrough():
-    d = torch.device('cpu')
+    d = torch.device("cpu")
     assert resolve_device(d, probe=DeviceProbe()) is d
 
 
 def test_resolve_device_torch_device_mps_unavailable_raises():
     with pytest.raises(RuntimeError, match="mps"):
-        resolve_device(torch.device('mps'), probe=DeviceProbe(mps_available=False))
+        resolve_device(torch.device("mps"), probe=DeviceProbe(mps_available=False))
 
 
 def test_resolve_device_legacy_int_warns_and_maps_cpu():
-    with pytest.warns(DeprecationWarning, match='cuda_device'):
+    with pytest.warns(DeprecationWarning, match="cuda_device"):
         dev = resolve_device(cuda_device=-1, probe=DeviceProbe())
-    assert dev == torch.device('cpu')
+    assert dev == torch.device("cpu")
 
 
 def test_resolve_device_legacy_int_maps_to_mps_on_apple_probe():
-    with pytest.warns(DeprecationWarning, match='cuda_device'):
+    with pytest.warns(DeprecationWarning, match="cuda_device"):
         dev = resolve_device(
             cuda_device=0,
             probe=DeviceProbe(cuda_available=False, mps_available=True),
         )
-    assert dev.type == 'mps'
+    assert dev.type == "mps"
 
 
 def test_resolve_device_both_args_raises():
-    with pytest.raises(ValueError, match='not both'):
-        resolve_device('cpu', cuda_device=-1, probe=DeviceProbe())
+    with pytest.raises(ValueError, match="not both"):
+        resolve_device("cpu", cuda_device=-1, probe=DeviceProbe())
 
 
 def test_device_probe_detect_matches_host_mps_or_cpu():
     """On this macOS-first project, detect() is MPS or CPU — never invent CUDA."""
     probe = DeviceProbe.detect()
     assert probe.cuda_available is False or probe.cuda_device_count >= 0
-    resolved = resolve_device('auto', probe=probe)
+    resolved = resolve_device("auto", probe=probe)
     if probe.mps_available:
-        assert resolved.type == 'mps'
+        assert resolved.type == "mps"
     elif not probe.cuda_available:
-        assert resolved == torch.device('cpu')
+        assert resolved == torch.device("cpu")
 
 
 # ---------- _recount_spans (regression — _recount_spans is delicate) ----------
 
 
 def test_recount_spans_simple():
-    word_offsets = [(0, 5), (6, 11)]            # "hello world"
+    word_offsets = [(0, 5), (6, 11)]  # "hello world"
     subword_offsets = [(0, 3), (3, 5), (6, 11)]  # "hel" "lo" "world"
-    word_breaks = [0]                            # EDU ends after first word
+    word_breaks = [0]  # EDU ends after first word
     breaks = BasePredictor._recount_spans(word_offsets, subword_offsets, word_breaks)
     # Last subword index that ends at word 0's end (5) is index 1.
     # Function appends final-subword index too; covers whole input.

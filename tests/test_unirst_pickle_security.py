@@ -133,18 +133,17 @@ def test_legacy_pickle_import_returns_labels_only(tmp_path: Path) -> None:
     pred = _local_shell(tmp_path)
     labels = pred._load_legacy_pickle_inventory("eng.rst.gum")
     assert labels == ["joint", "attribution"]
-    assert import_relation_table_from_legacy_pickle(
-        tmp_path / "data_manager_eng.rst.gum.pickle"
-    ) == ["joint", "attribution"]
+    assert import_relation_table_from_legacy_pickle(tmp_path / "data_manager_eng.rst.gum.pickle") == [
+        "joint",
+        "attribution",
+    ]
 
 
 def test_relation_table_txt_preferred_over_pickle_with_different_labels(
     tmp_path: Path,
 ) -> None:
     """When both exist, plain text wins — pickle must not override labels."""
-    (tmp_path / "relation_table_eng.rst.gum.txt").write_text(
-        "from_txt_a\nfrom_txt_b\n", encoding="utf-8"
-    )
+    (tmp_path / "relation_table_eng.rst.gum.txt").write_text("from_txt_a\nfrom_txt_b\n", encoding="utf-8")
     _write_allowlisted_inventory_pickle(
         tmp_path / "data_manager_eng.rst.gum.pickle",
         ["from_pickle_SHOULD_NOT_WIN"],
@@ -191,9 +190,7 @@ def test_txt_preferred_over_json(tmp_path: Path) -> None:
         ("eng.rst.gum", "relation_table_eng_rst_gum.txt"),
     ],
 )
-def test_relation_table_txt_uses_corpus_variants(
-    tmp_path: Path, corpus: str, filename: str
-) -> None:
+def test_relation_table_txt_uses_corpus_variants(tmp_path: Path, corpus: str, filename: str) -> None:
     """Txt resolution must share ``_corpus_variants`` with pickle lookup."""
     (tmp_path / filename).write_text("joint\nelaboration\n", encoding="utf-8")
     pred = _local_shell(tmp_path)

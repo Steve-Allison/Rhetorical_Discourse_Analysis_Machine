@@ -66,10 +66,7 @@ def _coerce(annotation: Any, value: Any) -> Any:
         inner = args[0]
         if len(args) == 2 and args[1] is Ellipsis:
             return tuple(_coerce(inner, item) for item in value)
-        return tuple(
-            _coerce(args[i] if i < len(args) else Any, item)
-            for i, item in enumerate(value)
-        )
+        return tuple(_coerce(args[i] if i < len(args) else Any, item) for i, item in enumerate(value))
 
     if origin is list:
         args = get_args(annotation)
@@ -131,7 +128,7 @@ def load_cached[T](
         if rebuild is not None:
             return rebuild(payload)
         return payload
-    except (OSError, json.JSONDecodeError, TypeError, ValueError, KeyError):
+    except OSError, json.JSONDecodeError, TypeError, ValueError, KeyError:
         return None
 
 
@@ -146,10 +143,7 @@ def store_cached(cache_dir: Path, key: str, value: object) -> None:
     elif isinstance(value, Mapping):
         payload = value
     else:
-        raise TypeError(
-            f"cache value must be a dataclass instance or mapping; "
-            f"got {type(value).__name__}"
-        )
+        raise TypeError(f"cache value must be a dataclass instance or mapping; got {type(value).__name__}")
 
     envelope = {"v": CACHE_FORMAT_VERSION, "payload": payload}
     text = json.dumps(envelope, ensure_ascii=False, separators=(",", ":"))

@@ -14,7 +14,7 @@ class BracketSpan:
     start_edu: int
     end_edu: int
     nuclearity: str  # e.g., "NS", "SN", "NN" or empty for unlabeled
-    relation: str    # normalized relation string
+    relation: str  # normalized relation string
 
     @property
     def is_leaf(self) -> bool:
@@ -28,7 +28,7 @@ class CharBracketSpan:
     start_char: int
     end_char: int
     nuclearity: str  # e.g., "NS", "SN", "NN" or empty for unlabeled
-    relation: str    # normalized relation string
+    relation: str  # normalized relation string
 
     @property
     def length(self) -> int:
@@ -77,7 +77,6 @@ def _calc_prf(matched: int, pred_count: int, gold_count: int) -> tuple[float, fl
     r = (matched / gold_count) if gold_count > 0 else 1.0
     f1 = (2 * p * r / (p + r)) if (p + r) > 0 else 0.0
     return p, r, f1
-
 
 
 class StandardParsevalScorer:
@@ -147,6 +146,7 @@ class StandardParsevalScorer:
 
         # First pass: find total EDUs
         edu_count = 0
+
         def count_leaves(node: object) -> None:
             nonlocal edu_count
             left = getattr(node, "left", None)
@@ -163,6 +163,7 @@ class StandardParsevalScorer:
         total_edus = max(edu_count, 1)
 
         curr_edu = 1
+
         def walk(node: object) -> tuple[int, int]:
             nonlocal curr_edu
             left = getattr(node, "left", None)
@@ -368,11 +369,7 @@ class SoftParsevalScorer:
         for node in analysis.nodes:
             if not self.include_leaves and node.kind == NodeKindEnum.EDU:
                 continue
-            if (
-                not self.include_root
-                and node.char_span == doc_char_span
-                and num_edus > 1
-            ):
+            if not self.include_root and node.char_span == doc_char_span and num_edus > 1:
                 continue
 
             edge = child_to_edge.get(node.node_id)
@@ -380,11 +377,7 @@ class SoftParsevalScorer:
                 nuc = edge.nuclearity.value
                 rel = self.normalize_label(edge.relation_concept or edge.relation_raw)
             else:
-                nuc = (
-                    NuclearityPatternEnum.NN.value
-                    if node.kind == NodeKindEnum.MULTINUCLEAR_GROUP
-                    else "ROOT"
-                )
+                nuc = NuclearityPatternEnum.NN.value if node.kind == NodeKindEnum.MULTINUCLEAR_GROUP else "ROOT"
                 rel = "span"
 
             spans.append(
@@ -429,8 +422,7 @@ class SoftParsevalScorer:
                     if any(c.relation == p.relation for c in candidates):
                         matched_relation += 1
                     if any(
-                        c.nuclearity.upper() == p.nuclearity.upper() and c.relation == p.relation
-                        for c in candidates
+                        c.nuclearity.upper() == p.nuclearity.upper() and c.relation == p.relation for c in candidates
                     ):
                         matched_full += 1
         else:
@@ -455,10 +447,7 @@ class SoftParsevalScorer:
                         matched_nuclearity += 1
                     if g_match.relation == p.relation:
                         matched_relation += 1
-                    if (
-                        g_match.nuclearity.upper() == p.nuclearity.upper()
-                        and g_match.relation == p.relation
-                    ):
+                    if g_match.nuclearity.upper() == p.nuclearity.upper() and g_match.relation == p.relation:
                         matched_full += 1
 
         span_p, span_r, span_f1 = _calc_prf(matched_span, pred_count, gold_count)
@@ -547,4 +536,3 @@ class SoftParsevalScorer:
             matched_relation=total_matched_rel,
             matched_full=total_matched_full,
         )
-

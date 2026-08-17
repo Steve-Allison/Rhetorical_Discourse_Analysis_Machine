@@ -85,10 +85,7 @@ def _format_of(path: Path) -> str:
         return "doclang"
     if path.suffix in (".md", ".markdown"):
         return "markdown"
-    raise ValueError(
-        f"Unsupported source {path} — expected .md/.markdown, "
-        f"*.docling.json, or *.dclg.xml"
-    )
+    raise ValueError(f"Unsupported source {path} — expected .md/.markdown, *.docling.json, or *.dclg.xml")
 
 
 def _parse(path: Path, fmt: str, parser: Any) -> Any:
@@ -109,25 +106,15 @@ def _metrics(path: Path, fmt: str, result: Any) -> DocMetrics:
     n_rel = len(relations)
     n_edu = len(edus)
 
-    thin = sum(
-        1 for r in relations if r.relation.lower().startswith(_THIN_PREFIXES)
-    )
+    thin = sum(1 for r in relations if r.relation.lower().startswith(_THIN_PREFIXES))
     joint_ratio = thin / n_rel if n_rel else 0.0
 
-    max_depth = max(
-        (r.depth for r in relations), default=0
-    )
+    max_depth = max((r.depth for r in relations), default=0)
     skew_base = math.ceil(math.log2(n_edu)) if n_edu > 1 else 1
     tree_skew = max_depth / skew_base if skew_base else 0.0
 
-    primary_ids = {
-        b.id for b in result.boundaries if b.kind not in _SECONDARY_BOUNDARY_KINDS
-    }
-    cross = sum(
-        1
-        for r in relations
-        if len(primary_ids.intersection(r.boundary_memberships)) > 1
-    )
+    primary_ids = {b.id for b in result.boundaries if b.kind not in _SECONDARY_BOUNDARY_KINDS}
+    cross = sum(1 for r in relations if len(primary_ids.intersection(r.boundary_memberships)) > 1)
     cross_ratio = cross / n_rel if n_rel else 0.0
 
     noted = sum(1 for r in relations if r.note is not None)
@@ -147,22 +134,22 @@ def _metrics(path: Path, fmt: str, result: Any) -> DocMetrics:
 
 
 def _print_table(rows: list[DocMetrics]) -> None:
-    headers = (
-        "source", "fmt", "edus", "rels", "joint", "skew", "cross", "note", "tables"
-    )
+    headers = ("source", "fmt", "edus", "rels", "joint", "skew", "cross", "note", "tables")
     cells = [
         (
-            m.source, m.format, str(m.edus), str(m.relations),
-            f"{m.joint_ratio:.3f}", f"{m.tree_skew:.2f}",
-            f"{m.cross_boundary_ratio:.3f}", f"{m.note_ratio:.3f}",
+            m.source,
+            m.format,
+            str(m.edus),
+            str(m.relations),
+            f"{m.joint_ratio:.3f}",
+            f"{m.tree_skew:.2f}",
+            f"{m.cross_boundary_ratio:.3f}",
+            f"{m.note_ratio:.3f}",
             str(m.table_analyses),
         )
         for m in rows
     ]
-    widths = [
-        max(len(h), *(len(c[i]) for c in cells)) if cells else len(h)
-        for i, h in enumerate(headers)
-    ]
+    widths = [max(len(h), *(len(c[i]) for c in cells)) if cells else len(h) for i, h in enumerate(headers)]
     print("  ".join(h.ljust(w) for h, w in zip(headers, widths, strict=True)))
     for c in cells:
         print("  ".join(v.ljust(w) for v, w in zip(c, widths, strict=True)))
@@ -175,16 +162,11 @@ def _print_table(rows: list[DocMetrics]) -> None:
             ("cross_boundary_ratio", [m.cross_boundary_ratio for m in rows]),
             ("note_ratio", [m.note_ratio for m in rows]),
         ):
-            print(
-                f"{label}: mean={mean(values):.3f} median={median(values):.3f} "
-                f"max={max(values):.3f}"
-            )
+            print(f"{label}: mean={mean(values):.3f} median={median(values):.3f} max={max(values):.3f}")
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(
-        description="RST quality diagnostics over a corpus — no gold annotations required."
-    )
+    ap = argparse.ArgumentParser(description="RST quality diagnostics over a corpus — no gold annotations required.")
     ap.add_argument("paths", nargs="+", type=Path, help="source files or directories")
     ap.add_argument("--model-version", default="gumrrg", dest="model_version")
     ap.add_argument("--relinventory", default=None)

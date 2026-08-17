@@ -155,15 +155,10 @@ def parse_markdown(
     try:
         source_text = source_bytes.decode("utf-8")
     except UnicodeDecodeError as exc:
-        raise ValueError(
-            f"Markdown file at {src_path} is not valid UTF-8."
-        ) from exc
+        raise ValueError(f"Markdown file at {src_path} is not valid UTF-8.") from exc
     loaded = load_markdown(source_text, gfm=gfm)
     if not loaded.tokens:
-        raise EmptyMarkdownError(
-            f"Markdown file at {src_path} has no body content "
-            f"(only whitespace or front-matter)."
-        )
+        raise EmptyMarkdownError(f"Markdown file at {src_path} has no body content (only whitespace or front-matter).")
 
     harvest = harvest_markdown_text(
         loaded.tokens,
@@ -188,9 +183,7 @@ def parse_markdown(
             f"thematic breaks, or all eligible content was excluded by knobs."
         )
 
-    for label, text in (("main", harvest.full_text), *(
-        (th.marker_ref, th.full_text) for th in table_harvests
-    )):
+    for label, text in (("main", harvest.full_text), *((th.marker_ref, th.full_text) for th in table_harvests)):
         if len(text) > max_harvest_chars:
             raise InputTooLargeError(
                 f"Harvested text for {label} is {len(text)} chars, exceeds "
@@ -202,6 +195,7 @@ def parse_markdown(
 
     if parser is None:
         from isanlp_rst.parser import Parser  # lazy — avoids loading on every import
+
         parser = Parser(
             hf_model_name=hf_model_name,
             hf_model_version=hf_model_version,
@@ -216,9 +210,7 @@ def parse_markdown(
 
     if harvest.full_text:
         rst_tree = extract_root_tree(parser(harvest.full_text))
-        relations, edus = flatten_tree(
-            rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
-        )
+        relations, edus = flatten_tree(rst_tree, harvest.spans, boundaries, note_threshold=note_threshold)
     else:
         relations, edus = (), ()
 
@@ -234,9 +226,7 @@ def parse_markdown(
             (table_boundaries[boundary_id],),
             note_threshold=note_threshold,
         )
-        table_analyses.append(
-            TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus)
-        )
+        table_analyses.append(TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus))
 
     result = MarkdownRstResult(
         schema_name=SCHEMA_NAME,
@@ -246,9 +236,7 @@ def parse_markdown(
         model_version=model_version,
         inventory=inventory,
         source=src_path.name,
-        source_origin=_source_origin(
-            loaded.front_matter, loaded.front_matter_format, gfm=gfm
-        ),
+        source_origin=_source_origin(loaded.front_matter, loaded.front_matter_format, gfm=gfm),
         boundaries=boundaries,
         relations=relations,
         edus=edus,

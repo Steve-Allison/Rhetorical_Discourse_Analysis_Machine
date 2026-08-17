@@ -25,13 +25,11 @@ def backprop(tree: SpanNode, doc: Document) -> SpanNode:
             node.text = __gettextinfo(doc.edudict, node.eduspan)
             if node.relation is None:
                 # If it is a new node created by binarization
-                if node.prop == 'Root':
+                if node.prop == "Root":
                     pass
                 else:
-                    node.relation = __getrelationinfo(node.lnode,
-                                                      node.rnode)
-            node.form, node.nucspan = __getforminfo(node.lnode,
-                                                    node.rnode)
+                    node.relation = __getrelationinfo(node.lnode, node.rnode)
+            node.form, node.nucspan = __getforminfo(node.lnode, node.rnode)
         elif (node.lnode is None) and (node.rnode is not None):
             raise ValueError("Unexpected left node")
         elif (node.lnode is not None) and (node.rnode is None):
@@ -65,15 +63,15 @@ def __getforminfo(lnode: SpanNode, rnode: SpanNode) -> tuple[str, tuple[int, int
     :type lnode,rnode: SpanNode instance
     :param lnode,rnode: Left/Right children nodes
     """
-    if (lnode.prop == 'Nucleus') and (rnode.prop == 'Satellite'):
+    if (lnode.prop == "Nucleus") and (rnode.prop == "Satellite"):
         nucspan = lnode.eduspan
-        form = 'NS'
-    elif (lnode.prop == 'Satellite') and (rnode.prop == 'Nucleus'):
+        form = "NS"
+    elif (lnode.prop == "Satellite") and (rnode.prop == "Nucleus"):
         nucspan = rnode.eduspan
-        form = 'SN'
-    elif (lnode.prop == 'Nucleus') and (rnode.prop == 'Nucleus'):
+        form = "SN"
+    elif (lnode.prop == "Nucleus") and (rnode.prop == "Nucleus"):
         nucspan = (lnode.eduspan[0], rnode.eduspan[1])
-        form = 'NN'
+        form = "NN"
     else:
         print(lnode.prop, lnode.eduspan, rnode.prop, rnode.eduspan)
         raise ValueError("Form:" + lnode.prop)
@@ -87,16 +85,16 @@ def __getrelationinfo(lnode: SpanNode, rnode: SpanNode) -> str:
     :type lnode,rnode: SpanNode instance
     :param lnode,rnode: Left/Right children nodes
     """
-    if (lnode.prop == 'Nucleus') and (rnode.prop == 'Nucleus'):
+    if (lnode.prop == "Nucleus") and (rnode.prop == "Nucleus"):
         relation = lnode.relation
-    elif (lnode.prop == 'Nucleus') and (rnode.prop == 'Satellite'):
+    elif (lnode.prop == "Nucleus") and (rnode.prop == "Satellite"):
         relation = lnode.relation
-    elif (lnode.prop == 'Satellite') and (rnode.prop == 'Nucleus'):
+    elif (lnode.prop == "Satellite") and (rnode.prop == "Nucleus"):
         relation = rnode.relation
     else:
         print(lnode._id, rnode._id)
-        print(f'lnode.prop = {lnode.prop}, lnode.eduspan = {lnode.eduspan}')
-        print(f'rnode.prop = {rnode.prop}, rnode.eduspan = {rnode.eduspan}')
+        print(f"lnode.prop = {lnode.prop}, lnode.eduspan = {lnode.eduspan}")
+        print(f"rnode.prop = {rnode.prop}, rnode.eduspan = {rnode.eduspan}")
         raise ValueError("Error when find relation for new node")
     return relation
 
@@ -151,17 +149,17 @@ def getParse(tree: SpanNode, parse: str) -> str:
     else:
         parse += " ( " + tree.form
         # get the relation from its satellite node
-        if tree.form == 'NN':
+        if tree.form == "NN":
             if tree.rnode.relation == "span":
                 parse += "-" + tree.lnode.relation
                 # parse += "-" + extractrelation(tree.lnode.relation)
             else:
                 parse += "-" + tree.rnode.relation
                 # parse += "-" + extractrelation(tree.rnode.relation)
-        elif tree.form == 'NS':
+        elif tree.form == "NS":
             parse += "-" + tree.rnode.relation
             # parse += "-" + extractrelation(tree.rnode.relation)
-        elif tree.form == 'SN':
+        elif tree.form == "SN":
             parse += "-" + tree.lnode.relation
             # parse += "-" + extractrelation(tree.lnode.relation)
         else:
@@ -186,7 +184,7 @@ def getParseNobin(tree: SpanNode, parse: str) -> str:
     :type parse: string
     :param parse: parse tree in string format
     """
-    parse += " ( " + str(tree._id) + "-" + str(tree.prop) + '-' + str(tree.relation)
+    parse += " ( " + str(tree._id) + "-" + str(tree.prop) + "-" + str(tree.relation)
     if len(tree.nodelist) != 0:
         for m in tree.nodelist:
             parse = getParseNobin(m, parse)
@@ -221,16 +219,16 @@ def getRelation(label: str) -> tuple[str, str]:
     that we have an embedded relation (TODO: check if previous studies keep this -e)
     """
     relation = label
-    nuc = label.split('-')[0]
+    nuc = label.split("-")[0]
     if nuc.lower() in ["ns", "sn", "nn"]:
-        relation = '-'.join(label.split('-')[1:])
+        relation = "-".join(label.split("-")[1:])
     # Order matters: could have REL-n-e
-    if relation.split('-')[-1].lower() == 'e':
-        relation = '-'.join(relation.split('-')[:-1])
-    if relation.split('-')[-1].lower() == 's':
-        relation = '-'.join(relation.split('-')[:-1])
-    if relation.split('-')[-1].lower() == 'n':
-        relation = '-'.join(relation.split('-')[:-1])
+    if relation.split("-")[-1].lower() == "e":
+        relation = "-".join(relation.split("-")[:-1])
+    if relation.split("-")[-1].lower() == "s":
+        relation = "-".join(relation.split("-")[:-1])
+    if relation.split("-")[-1].lower() == "n":
+        relation = "-".join(relation.split("-")[:-1])
     return relation, nuc
 
 
@@ -252,18 +250,18 @@ def getLabelMapping(
 
 
 def readMapping(mappingFile: str | Path) -> dict[str, str]:
-    '''
+    """
     Read a label mapping file and return a mapping (dict)
 
     :type mappingFile: file path
     :param mappingFile: the mapping file to read
-    '''
+    """
     mapping: dict[str, str] = {}
     with Path(mappingFile).open() as fin:
         _lines = fin.readlines()
         for l in _lines:
             l = l.strip()
-            relation, group = l.split(' ')
+            relation, group = l.split(" ")
             # original relation --> class
             mapping[relation] = group
     return mapping
@@ -298,7 +296,7 @@ def countLabels(tree: Tree | None, rel2count: dict[str, int]) -> None:
 
 
 def mapLabels(tree: Tree, mappingDict: dict[str, str] | None) -> None:
-    '''
+    """
     Modify the labels in the tree according to a predefined mapping.
 
     :type tree: SpanNode
@@ -306,7 +304,7 @@ def mapLabels(tree: Tree, mappingDict: dict[str, str] | None) -> None:
 
     :type mappingDict: dict of String
     :param mappingDict: mapping from the original relation to the mapped relation
-    '''
+    """
     # Keep original label
     if mappingDict is None:
         return
@@ -319,7 +317,7 @@ def mapLabels(tree: Tree, mappingDict: dict[str, str] | None) -> None:
             # Keep nuclearity information
             mappedRelation = mappingDict[relation]
             if nuc.lower() in ["ns", "sn", "nn"]:
-                mappedRelation = nuc + '-' + mappingDict[relation]
+                mappedRelation = nuc + "-" + mappingDict[relation]
             st.set_label(mappedRelation)
 
 
@@ -335,7 +333,7 @@ def performMapping(tree: Tree, mappingDict: dict[str, str] | None) -> None:
                 raise SystemExit("Unknown label: " + label + ", " + relation)
             # Keep nuclearity information
             if nuc.lower() in ["ns", "sn", "nn"]:
-                mappedRelation = nuc + '-' + mappingDict[relation.lower()]
+                mappedRelation = nuc + "-" + mappingDict[relation.lower()]
             else:
                 raise SystemExit("Unknown nuclearity value:", nuc)
             st.set_label(mappedRelation)
@@ -344,6 +342,7 @@ def performMapping(tree: Tree, mappingDict: dict[str, str] | None) -> None:
 # ----------------------------------------------------------------------------------
 # WRITE/DRAW/print
 # ----------------------------------------------------------------------------------
+
 
 def writeEdusFile(doc: Document, ext: str, pathout: str | Path) -> None:
     """
@@ -354,13 +353,13 @@ def writeEdusFile(doc: Document, ext: str, pathout: str | Path) -> None:
     ext: the original extension (ie .rs3 or .thiago) to be replaced by the new one (ie .edus)
     """
     edufile = Path(pathout) / Path(doc.path).name.replace(ext, ".edus")
-    with edufile.open('w', encoding="utf8") as f:
+    with edufile.open("w", encoding="utf8") as f:
         for edu in doc.edudict:
             f.write(doc.edudict[edu].strip() + "\n")
 
 
 def printBinTree(tree: SpanNode) -> None:
-    ''' Can only be used after binarize (+backprop ev) but backprop only completed in parse  '''
+    """Can only be used after binarize (+backprop ev) but backprop only completed in parse"""
     queue = [tree]
     while queue:
         n = queue.pop()
@@ -373,22 +372,22 @@ def printBinTree(tree: SpanNode) -> None:
 
 
 def checkTree(tree: Tree, doc: Document) -> bool:
-    """ Check the final tree (ie Nltk Tree)  """
+    """Check the final tree (ie Nltk Tree)"""
     idEduOrdered = []
     for st in tree.subtrees():
         label = st.label()
-        if label is None or label.lower() == 'none':
+        if label is None or label.lower() == "none":
             print(doc.path, "\nUnknown label", st.label())
             return False
         if label.lower() == "edu":
             id_edu = [c for c in st][0]
-            if id_edu is None or id_edu == 'None':
+            if id_edu is None or id_edu == "None":
                 print(doc.path, "\nEDU with None id", st.label())
                 return False
             idEduOrdered.append(int(id_edu))  # id of the EDU
         else:
-            prop = st.label().split('-')[0]
-            if prop not in ['NS', 'NN', 'SN']:
+            prop = st.label().split("-")[0]
+            if prop not in ["NS", "NN", "SN"]:
                 print(doc.path, "\nNode prop unknown", st.label())
                 return False
             if len([c for c in st]) == 0:

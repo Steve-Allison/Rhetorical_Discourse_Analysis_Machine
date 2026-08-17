@@ -140,11 +140,7 @@ def test_empty_doclang_error_on_root_only(tmp_path: Path) -> None:
 def test_empty_doclang_error_with_head_only(tmp_path: Path) -> None:
     """A doc whose only child is ``<head>`` has no body."""
     path = tmp_path / "head_only.dclg.xml"
-    path.write_bytes(
-        b'<doclang xmlns="https://www.doclang.ai/ns/v0">'
-        b"<head><title>x</title></head>"
-        b"</doclang>"
-    )
+    path.write_bytes(b'<doclang xmlns="https://www.doclang.ai/ns/v0"><head><title>x</title></head></doclang>')
     with pytest.raises(EmptyDoclangError):
         parse_doclang(path, validate_xml=False)
 
@@ -155,16 +151,13 @@ def test_table_only_raises_only_when_table_analysis_disabled() -> None:
     when ``include_table_cells=False`` removes the last harvestable
     content."""
     with pytest.raises(EmptyHarvestError):
-        parse_doclang(
-            TABLE_ONLY, validate_xml=False, include_table_cells=False
-        )
+        parse_doclang(TABLE_ONLY, validate_xml=False, include_table_cells=False)
 
 
 class _StubNode:
     """Duck-typed DiscourseUnit stand-in for two-level orchestration tests."""
 
-    def __init__(self, start: int, end: int, left=None, right=None,
-                 relation: str = "", nuclearity: str = "") -> None:
+    def __init__(self, start: int, end: int, left=None, right=None, relation: str = "", nuclearity: str = "") -> None:
         self.start = start
         self.end = end
         self.left = left
@@ -192,8 +185,7 @@ class _StubParser:
         n = len(text)
         if "\n\n" in text:
             cut = text.index("\n\n")
-            root = _StubNode(0, n, _StubNode(0, cut), _StubNode(cut + 2, n),
-                             "elaboration", "NS")
+            root = _StubNode(0, n, _StubNode(0, cut), _StubNode(cut + 2, n), "elaboration", "NS")
         else:
             root = _StubNode(0, n)
         return {"rst": [root]}
@@ -308,11 +300,17 @@ def test_cache_misses_when_injected_parser_identity_differs(tmp_path: Path) -> N
     cache = tmp_path / "cache"
     stub_a = _StubParser()
     parse_doclang(
-        COMPREHENSIVE, parser=stub_a, validate_xml=False, cache_dir=cache  # type: ignore[arg-type]
+        COMPREHENSIVE,
+        parser=stub_a,  # type: ignore[arg-type]
+        validate_xml=False,
+        cache_dir=cache,
     )
     stub_b = _StubParser(hf_model_version="rstdt")
     parse_doclang(
-        COMPREHENSIVE, parser=stub_b, validate_xml=False, cache_dir=cache  # type: ignore[arg-type]
+        COMPREHENSIVE,
+        parser=stub_b,  # type: ignore[arg-type]
+        validate_xml=False,
+        cache_dir=cache,
     )
     assert len(stub_b.calls) > 0
 
@@ -493,9 +491,7 @@ def test_parse_doclang_relation_xpaths_in_harvest_set(parser) -> None:
 def test_parse_doclang_thread_ids_captured_when_present(parser) -> None:
     """``ok_thread.dclg.xml`` — both ``<text>`` elements carry
     ``thread_id=1``. Any relation over them must mention thread id 1."""
-    result = parse_doclang(
-        FIXTURES / "ok_thread.dclg.xml", parser=parser, validate_xml=False
-    )
+    result = parse_doclang(FIXTURES / "ok_thread.dclg.xml", parser=parser, validate_xml=False)
     seen = set()
     for relation in result.relations:
         seen.update(relation.nucleus_thread_ids)

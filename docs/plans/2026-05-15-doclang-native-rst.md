@@ -110,27 +110,30 @@ Filter by `<layer>`:
 ```python
 @dataclass(frozen=True, slots=True)
 class DoclangHarvestSpan:
-    xpath: str                          # e.g. "/doclang[1]/text[3]" — local-name canonical
-    thread_id: int | None               # None when host has no <thread> (most spans)
-    layer: str                          # "body" | "background" | "furniture"
+    xpath: str  # e.g. "/doclang[1]/text[3]" — local-name canonical
+    thread_id: int | None  # None when host has no <thread> (most spans)
+    layer: str  # "body" | "background" | "furniture"
     text: str
     start: int
     end: int
+
 
 @dataclass(frozen=True, slots=True)
 class DoclangHarvestResult:
     full_text: str
     spans: tuple[DoclangHarvestSpan, ...]
 
+
 @dataclass(frozen=True, slots=True)
 class DoclangBoundary:
-    id: str                             # e.g. "heading-3", "page-2", "group-1", "table-0"
-    kind: str                           # heading | page | group | table | field_region | document
-    label: str | None                   # heading text where applicable
+    id: str  # e.g. "heading-3", "page-2", "group-1", "table-0"
+    kind: str  # heading | page | group | table | field_region | document
+    label: str | None  # heading text where applicable
     parent_xpath: str | None
     xpaths: tuple[str, ...]
-    level: int | None = None            # for headings
-    page_no: int | None = None          # for page boundaries
+    level: int | None = None  # for headings
+    page_no: int | None = None  # for page boundaries
+
 
 @dataclass(frozen=True, slots=True)
 class DoclangRstRelation:
@@ -139,7 +142,7 @@ class DoclangRstRelation:
     nuclearity: str
     nucleus_xpaths: tuple[str, ...]
     satellite_xpaths: tuple[str, ...]
-    nucleus_thread_ids: tuple[int, ...]      # only those nucleus spans carrying a thread (deduplicated)
+    nucleus_thread_ids: tuple[int, ...]  # only those nucleus spans carrying a thread (deduplicated)
     satellite_thread_ids: tuple[int, ...]
     depth: int
     left_id: int
@@ -147,23 +150,25 @@ class DoclangRstRelation:
     boundary_memberships: tuple[str, ...]
     note: str | None = None
 
+
 @dataclass(frozen=True, slots=True)
 class DoclangRstEdu:
     id: int
     xpaths: tuple[str, ...]
-    thread_ids: tuple[int, ...]                # only spans carrying a thread
+    thread_ids: tuple[int, ...]  # only spans carrying a thread
     depth: int
+
 
 @dataclass(frozen=True, slots=True)
 class DoclangRstResult:
-    schema_name: str                    # "isanlp_rst_doclang"
+    schema_name: str  # "isanlp_rst_doclang"
     schema_version: str
     tool: str
     tool_version: str
     model_version: str
     inventory: str
     source: str
-    source_origin: dict[str, Any]       # doclang version, head metadata, namespace
+    source_origin: dict[str, Any]  # doclang version, head metadata, namespace
     boundaries: tuple[DoclangBoundary, ...]
     relations: tuple[DoclangRstRelation, ...]
     edus: tuple[DoclangRstEdu, ...]
@@ -189,14 +194,14 @@ result: DoclangRstResult = parse_doclang(
     include_picture_captions=True,
     include_background=False,
     include_furniture=False,
-    include_field_regions=False,        # ASSUMED off; consumers can opt in
-    include_code_blocks=False,          # ASSUMED off; code is not prose
-    include_formulas=False,             # ASSUMED off; LaTeX is not prose
+    include_field_regions=False,  # ASSUMED off; consumers can opt in
+    include_code_blocks=False,  # ASSUMED off; code is not prose
+    include_formulas=False,  # ASSUMED off; LaTeX is not prose
     harvest_separator="\n\n",
     # Overlap rule
     note_threshold=0.90,
     # Validation
-    validate_xml=True,                  # call doclang.validate before parsing; raise on invalid
+    validate_xml=True,  # call doclang.validate before parsing; raise on invalid
     max_harvest_chars=200_000,
 )
 ```

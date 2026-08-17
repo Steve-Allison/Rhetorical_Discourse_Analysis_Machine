@@ -157,9 +157,7 @@ def parse_docling(
 
     body_children = getattr(getattr(doc, "body", None), "children", None) or ()
     if not body_children:
-        raise EmptyDoclingError(
-            f"DoclingDocument at {src_path} has an empty body — nothing to harvest."
-        )
+        raise EmptyDoclingError(f"DoclingDocument at {src_path} has an empty body — nothing to harvest.")
 
     harvest = harvest_docling_text(
         doc,
@@ -168,21 +166,14 @@ def parse_docling(
         include_furniture=include_furniture,
         harvest_separator=harvest_separator,
     )
-    table_harvests = (
-        harvest_docling_tables(doc, harvest_separator=harvest_separator)
-        if include_table_cells
-        else ()
-    )
+    table_harvests = harvest_docling_tables(doc, harvest_separator=harvest_separator) if include_table_cells else ()
 
     if not harvest.full_text and not any(th.full_text for th in table_harvests):
         raise EmptyHarvestError(
-            f"No text harvested from {src_path}. Document may have all "
-            f"content layers filtered out."
+            f"No text harvested from {src_path}. Document may have all content layers filtered out."
         )
 
-    for label, text in (("main", harvest.full_text), *(
-        (th.marker_ref, th.full_text) for th in table_harvests
-    )):
+    for label, text in (("main", harvest.full_text), *((th.marker_ref, th.full_text) for th in table_harvests)):
         if len(text) > max_harvest_chars:
             raise InputTooLargeError(
                 f"Harvested text for {label} is {len(text)} chars, exceeds "
@@ -199,6 +190,7 @@ def parse_docling(
 
     if parser is None:
         from isanlp_rst.parser import Parser  # lazy import — avoids loading on every import
+
         parser = Parser(
             hf_model_name=hf_model_name,
             hf_model_version=hf_model_version,
@@ -213,9 +205,7 @@ def parse_docling(
 
     if harvest.full_text:
         tree = extract_root_tree(parser(harvest.full_text))
-        relations, edus = flatten_tree(
-            tree, harvest.spans, boundaries, note_threshold=note_threshold
-        )
+        relations, edus = flatten_tree(tree, harvest.spans, boundaries, note_threshold=note_threshold)
     else:
         relations, edus = (), ()
 
@@ -231,9 +221,7 @@ def parse_docling(
             (table_boundaries[boundary_id],),
             note_threshold=note_threshold,
         )
-        table_analyses.append(
-            TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus)
-        )
+        table_analyses.append(TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus))
 
     result = DoclingRstResult(
         schema_name=SCHEMA_NAME,

@@ -100,9 +100,7 @@ def _detect_heading_boundaries(
         try:
             level = int(level_str)
         except ValueError as exc:
-            raise ValueError(
-                f"<heading> at {local_path(el)} has non-integer level={level_str!r}"
-            ) from exc
+            raise ValueError(f"<heading> at {local_path(el)} has non-integer level={level_str!r}") from exc
         label = "".join(el.itertext()).strip() or None
         heading_meta[local_path(el)] = (label, level)
 
@@ -163,8 +161,7 @@ def _detect_page_boundaries(root: etree._Element) -> list[Boundary]:
     """
     body = list(root)
     break_positions: list[int] = [
-        i for i, child in enumerate(body)
-        if isinstance(child.tag, str) and local_name(child) == "page_break"
+        i for i, child in enumerate(body) if isinstance(child.tag, str) and local_name(child) == "page_break"
     ]
     if not break_positions:
         return []

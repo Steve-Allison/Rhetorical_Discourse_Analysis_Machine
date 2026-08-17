@@ -47,8 +47,7 @@ def get_depth(orig_node: NODE, probe_node: NODE, nodes: NodeMap) -> None:
     while current.parent != "0":
         parent = nodes[current.parent]
         if parent.kind != "edu" and (
-            current.relname == "span"
-            or (parent.kind == "multinuc" and current.relkind == "multinuc")
+            current.relname == "span" or (parent.kind == "multinuc" and current.relkind == "multinuc")
         ):
             orig_node.depth += 1
             orig_node.sortdepth += 1

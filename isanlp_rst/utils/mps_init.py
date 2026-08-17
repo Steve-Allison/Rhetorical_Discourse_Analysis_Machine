@@ -23,7 +23,7 @@ def orthogonal_(tensor: torch.Tensor, gain: float = 1.0) -> torch.Tensor:
     Returns:
         The initialised tensor (same object as ``tensor``).
     """
-    if tensor.device.type == 'mps':
+    if tensor.device.type == "mps":
         cpu_view = tensor.detach().cpu().clone()
         torch.nn.init.orthogonal_(cpu_view, gain=gain)
         tensor.data.copy_(cpu_view.to(tensor.device))

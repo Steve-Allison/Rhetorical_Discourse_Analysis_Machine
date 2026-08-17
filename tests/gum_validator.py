@@ -70,16 +70,18 @@ class GumValidationReport:
             for err in self.structural_errors:
                 lines.append(f"  - ⚠️ {err}")
 
-        lines.extend([
-            "",
-            "| Evaluation Metric | Precision | Recall | F1 | Matched / Gold |",
-            "| :--- | :--- | :--- | :--- | :--- |",
-            f"| **Standard Span (EDU-exact)** | {self.standard_parseval.span_precision:.3f} | {self.standard_parseval.span_recall:.3f} | {self.standard_parseval.span_f1:.3f} | {self.standard_parseval.matched_span} / {self.standard_parseval.gold_spans_count} |",
-            f"| **Standard Nuclearity** | {self.standard_parseval.nuclearity_precision:.3f} | {self.standard_parseval.nuclearity_recall:.3f} | {self.standard_parseval.nuclearity_f1:.3f} | {self.standard_parseval.matched_nuclearity} / {self.standard_parseval.gold_spans_count} |",
-            f"| **Standard Relation (Fine)** | {self.standard_parseval.relation_precision:.3f} | {self.standard_parseval.relation_recall:.3f} | {self.standard_parseval.relation_f1:.3f} | {self.standard_parseval.matched_relation} / {self.standard_parseval.gold_spans_count} |",
-            f"| **Standard Relation (Coarse-18)** | {self.coarse_parseval.relation_precision:.3f} | {self.coarse_parseval.relation_recall:.3f} | {self.coarse_parseval.relation_f1:.3f} | {self.coarse_parseval.matched_relation} / {self.coarse_parseval.gold_spans_count} |",
-            f"| **Standard Full (Span+Nuc+Rel)** | {self.standard_parseval.full_precision:.3f} | {self.standard_parseval.full_recall:.3f} | {self.standard_parseval.full_f1:.3f} | {self.standard_parseval.matched_full} / {self.standard_parseval.gold_spans_count} |",
-        ])
+        lines.extend(
+            [
+                "",
+                "| Evaluation Metric | Precision | Recall | F1 | Matched / Gold |",
+                "| :--- | :--- | :--- | :--- | :--- |",
+                f"| **Standard Span (EDU-exact)** | {self.standard_parseval.span_precision:.3f} | {self.standard_parseval.span_recall:.3f} | {self.standard_parseval.span_f1:.3f} | {self.standard_parseval.matched_span} / {self.standard_parseval.gold_spans_count} |",
+                f"| **Standard Nuclearity** | {self.standard_parseval.nuclearity_precision:.3f} | {self.standard_parseval.nuclearity_recall:.3f} | {self.standard_parseval.nuclearity_f1:.3f} | {self.standard_parseval.matched_nuclearity} / {self.standard_parseval.gold_spans_count} |",
+                f"| **Standard Relation (Fine)** | {self.standard_parseval.relation_precision:.3f} | {self.standard_parseval.relation_recall:.3f} | {self.standard_parseval.relation_f1:.3f} | {self.standard_parseval.matched_relation} / {self.standard_parseval.gold_spans_count} |",
+                f"| **Standard Relation (Coarse-18)** | {self.coarse_parseval.relation_precision:.3f} | {self.coarse_parseval.relation_recall:.3f} | {self.coarse_parseval.relation_f1:.3f} | {self.coarse_parseval.matched_relation} / {self.coarse_parseval.gold_spans_count} |",
+                f"| **Standard Full (Span+Nuc+Rel)** | {self.standard_parseval.full_precision:.3f} | {self.standard_parseval.full_recall:.3f} | {self.standard_parseval.full_f1:.3f} | {self.standard_parseval.matched_full} / {self.standard_parseval.gold_spans_count} |",
+            ]
+        )
 
         if self.char_parseval is not None:
             lines.append(
@@ -90,28 +92,34 @@ class GumValidationReport:
                 f"| **Soft Span (IoU>=0.80)** | {self.soft_parseval.span_precision:.3f} | {self.soft_parseval.span_recall:.3f} | {self.soft_parseval.span_f1:.3f} | {self.soft_parseval.matched_span} / {self.soft_parseval.gold_spans_count} |"
             )
 
-        lines.extend([
-            f"| **RST-Parseval Span** | {self.rst_parseval.span_precision:.3f} | {self.rst_parseval.span_recall:.3f} | {self.rst_parseval.span_f1:.3f} | {self.rst_parseval.matched_span} / {self.rst_parseval.gold_spans_count} |",
-            f"| **RST-Parseval Relation (Fine)** | {self.rst_parseval.relation_precision:.3f} | {self.rst_parseval.relation_recall:.3f} | {self.rst_parseval.relation_f1:.3f} | {self.rst_parseval.matched_relation} / {self.rst_parseval.gold_spans_count} |",
-        ])
+        lines.extend(
+            [
+                f"| **RST-Parseval Span** | {self.rst_parseval.span_precision:.3f} | {self.rst_parseval.span_recall:.3f} | {self.rst_parseval.span_f1:.3f} | {self.rst_parseval.matched_span} / {self.rst_parseval.gold_spans_count} |",
+                f"| **RST-Parseval Relation (Fine)** | {self.rst_parseval.relation_precision:.3f} | {self.rst_parseval.relation_recall:.3f} | {self.rst_parseval.relation_f1:.3f} | {self.rst_parseval.matched_relation} / {self.rst_parseval.gold_spans_count} |",
+            ]
+        )
 
         if self.secondary_metrics is not None and self.secondary_metrics.gold_count > 0:
-            lines.extend([
-                "",
-                "| eRST Secondary Edges | Precision | Recall | F1 | Matched / Gold |",
-                "| :--- | :--- | :--- | :--- | :--- |",
-                f"| **Secondary Edge Direction** | {self.secondary_metrics.direction_precision:.3f} | {self.secondary_metrics.direction_recall:.3f} | {self.secondary_metrics.direction_f1:.3f} | {self.secondary_metrics.matched_direction} / {self.secondary_metrics.gold_count} |",
-                f"| **Secondary Edge Relation** | {self.secondary_metrics.relation_precision:.3f} | {self.secondary_metrics.relation_recall:.3f} | {self.secondary_metrics.relation_f1:.3f} | {self.secondary_metrics.matched_relation} / {self.secondary_metrics.gold_count} |",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "| eRST Secondary Edges | Precision | Recall | F1 | Matched / Gold |",
+                    "| :--- | :--- | :--- | :--- | :--- |",
+                    f"| **Secondary Edge Direction** | {self.secondary_metrics.direction_precision:.3f} | {self.secondary_metrics.direction_recall:.3f} | {self.secondary_metrics.direction_f1:.3f} | {self.secondary_metrics.matched_direction} / {self.secondary_metrics.gold_count} |",
+                    f"| **Secondary Edge Relation** | {self.secondary_metrics.relation_precision:.3f} | {self.secondary_metrics.relation_recall:.3f} | {self.secondary_metrics.relation_f1:.3f} | {self.secondary_metrics.matched_relation} / {self.secondary_metrics.gold_count} |",
+                ]
+            )
 
         if self.signal_metrics is not None and self.signal_metrics.gold_signals_count > 0:
-            lines.extend([
-                "",
-                "| eRST Discourse Signals | Precision | Recall | F1 | Matched / Gold |",
-                "| :--- | :--- | :--- | :--- | :--- |",
-                f"| **Signal Detection** | {self.signal_metrics.detection_precision:.3f} | {self.signal_metrics.detection_recall:.3f} | {self.signal_metrics.detection_f1:.3f} | {self.signal_metrics.matched_detection} / {self.signal_metrics.gold_signals_count} |",
-                f"| **Signal Token Match** | {self.signal_metrics.token_precision:.3f} | {self.signal_metrics.token_recall:.3f} | {self.signal_metrics.token_f1:.3f} | Tokens |",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "| eRST Discourse Signals | Precision | Recall | F1 | Matched / Gold |",
+                    "| :--- | :--- | :--- | :--- | :--- |",
+                    f"| **Signal Detection** | {self.signal_metrics.detection_precision:.3f} | {self.signal_metrics.detection_recall:.3f} | {self.signal_metrics.detection_f1:.3f} | {self.signal_metrics.matched_detection} / {self.signal_metrics.gold_signals_count} |",
+                    f"| **Signal Token Match** | {self.signal_metrics.token_precision:.3f} | {self.signal_metrics.token_recall:.3f} | {self.signal_metrics.token_f1:.3f} | Tokens |",
+                ]
+            )
 
         return "\n".join(lines)
 
@@ -169,10 +177,12 @@ class GumCorpusValidationReport:
                 f"| `{r.doc_id}` | {r.gold_edu_count}/{r.pred_edu_count} | {r.standard_parseval.span_f1:.3f} | {r.standard_parseval.nuclearity_f1:.3f} | {r.standard_parseval.relation_f1:.3f} | {r.coarse_parseval.relation_f1:.3f} | {r.standard_parseval.full_f1:.3f} | {status} |"
             )
 
-        lines.extend([
-            "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
-            f"| **Macro Average** | - | **{self.macro_span_f1:.3f}** | **{self.macro_nuclearity_f1:.3f}** | **{self.macro_relation_fine_f1:.3f}** | **{self.macro_relation_coarse_f1:.3f}** | **{self.macro_full_f1:.3f}** | **{len(self.document_reports)} docs** |",
-        ])
+        lines.extend(
+            [
+                "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
+                f"| **Macro Average** | - | **{self.macro_span_f1:.3f}** | **{self.macro_nuclearity_f1:.3f}** | **{self.macro_relation_fine_f1:.3f}** | **{self.macro_relation_coarse_f1:.3f}** | **{self.macro_full_f1:.3f}** | **{len(self.document_reports)} docs** |",
+            ]
+        )
         return "\n".join(lines)
 
 
@@ -333,8 +343,5 @@ class GumGoldValidator:
         from_edus: bool = True,
     ) -> GumCorpusValidationReport:
         """Validate all GUM gold fixture documents with a neural parser."""
-        reports = tuple(
-            self.validate_document_with_parser(doc_id, parser, from_edus=from_edus)
-            for doc_id in doc_ids
-        )
+        reports = tuple(self.validate_document_with_parser(doc_id, parser, from_edus=from_edus) for doc_id in doc_ids)
         return GumCorpusValidationReport(document_reports=reports)

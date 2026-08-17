@@ -35,9 +35,30 @@ def _make_sample_tree_1() -> RstAnalysis:
         RstNode(node_id=7, kind=NodeKindEnum.ROOT, edu_span=(1, 4), char_span=(0, 20), text="EDU1 EDU2 EDU3 EDU4"),
     )
     primary_edges = (
-        PrimaryRelationEdge(edge_id="e1", parent_id=5, child_id=2, relation_raw="Elaboration", relation_concept="Elaboration", nuclearity=NuclearityPatternEnum.NS),
-        PrimaryRelationEdge(edge_id="e2", parent_id=6, child_id=3, relation_raw="Attribution", relation_concept="Attribution", nuclearity=NuclearityPatternEnum.SN),
-        PrimaryRelationEdge(edge_id="e3", parent_id=7, child_id=4, relation_raw="Cause", relation_concept="Cause", nuclearity=NuclearityPatternEnum.NS),
+        PrimaryRelationEdge(
+            edge_id="e1",
+            parent_id=5,
+            child_id=2,
+            relation_raw="Elaboration",
+            relation_concept="Elaboration",
+            nuclearity=NuclearityPatternEnum.NS,
+        ),
+        PrimaryRelationEdge(
+            edge_id="e2",
+            parent_id=6,
+            child_id=3,
+            relation_raw="Attribution",
+            relation_concept="Attribution",
+            nuclearity=NuclearityPatternEnum.SN,
+        ),
+        PrimaryRelationEdge(
+            edge_id="e3",
+            parent_id=7,
+            child_id=4,
+            relation_raw="Cause",
+            relation_concept="Cause",
+            nuclearity=NuclearityPatternEnum.NS,
+        ),
     )
     return RstAnalysis(
         document_id="doc-proof-1",
@@ -59,9 +80,30 @@ def _make_sample_tree_2() -> RstAnalysis:
         RstNode(node_id=7, kind=NodeKindEnum.ROOT, edu_span=(1, 4), char_span=(0, 20), text="EDU1 EDU2 EDU3 EDU4"),
     )
     primary_edges = (
-        PrimaryRelationEdge(edge_id="e1", parent_id=5, child_id=2, relation_raw="Elaboration", relation_concept="Elaboration", nuclearity=NuclearityPatternEnum.NS),
-        PrimaryRelationEdge(edge_id="e2", parent_id=6, child_id=3, relation_raw="Cause", relation_concept="Cause", nuclearity=NuclearityPatternEnum.NS),
-        PrimaryRelationEdge(edge_id="e3", parent_id=7, child_id=4, relation_raw="Cause", relation_concept="Cause", nuclearity=NuclearityPatternEnum.NS),
+        PrimaryRelationEdge(
+            edge_id="e1",
+            parent_id=5,
+            child_id=2,
+            relation_raw="Elaboration",
+            relation_concept="Elaboration",
+            nuclearity=NuclearityPatternEnum.NS,
+        ),
+        PrimaryRelationEdge(
+            edge_id="e2",
+            parent_id=6,
+            child_id=3,
+            relation_raw="Cause",
+            relation_concept="Cause",
+            nuclearity=NuclearityPatternEnum.NS,
+        ),
+        PrimaryRelationEdge(
+            edge_id="e3",
+            parent_id=7,
+            child_id=4,
+            relation_raw="Cause",
+            relation_concept="Cause",
+            nuclearity=NuclearityPatternEnum.NS,
+        ),
     )
     return RstAnalysis(
         document_id="doc-proof-2",
@@ -125,20 +167,49 @@ def test_standard_parseval_hand_computed_math() -> None:
 
 def test_erst_secondary_and_signals_scoring() -> None:
     gold_sec = (
-        SecondaryRelationEdge(edge_id="s1", source_id=1, target_id=3, relation_raw="Antithesis", relation_concept="Contrast"),
-        SecondaryRelationEdge(edge_id="s2", source_id=2, target_id=4, relation_raw="Concession", relation_concept="Contrast"),
+        SecondaryRelationEdge(
+            edge_id="s1", source_id=1, target_id=3, relation_raw="Antithesis", relation_concept="Contrast"
+        ),
+        SecondaryRelationEdge(
+            edge_id="s2", source_id=2, target_id=4, relation_raw="Concession", relation_concept="Contrast"
+        ),
     )
     pred_sec = (
-        SecondaryRelationEdge(edge_id="s1", source_id=1, target_id=3, relation_raw="Antithesis", relation_concept="Contrast"),
-        SecondaryRelationEdge(edge_id="s3", source_id=2, target_id=3, relation_raw="Contrast", relation_concept="Contrast"),
+        SecondaryRelationEdge(
+            edge_id="s1", source_id=1, target_id=3, relation_raw="Antithesis", relation_concept="Contrast"
+        ),
+        SecondaryRelationEdge(
+            edge_id="s3", source_id=2, target_id=3, relation_raw="Contrast", relation_concept="Contrast"
+        ),
     )
 
     gold_sig = (
-        DiscourseSignal(signal_id="sig1", edge_id="s1", signal_type="dm", signal_subtype="dm", token_ids=(1, 2), status=AnnotationStatusEnum.GOLD),
+        DiscourseSignal(
+            signal_id="sig1",
+            edge_id="s1",
+            signal_type="dm",
+            signal_subtype="dm",
+            token_ids=(1, 2),
+            status=AnnotationStatusEnum.GOLD,
+        ),
     )
     pred_sig = (
-        DiscourseSignal(signal_id="sig1", edge_id="s1", signal_type="dm", signal_subtype="dm", token_ids=(1, 2), status=AnnotationStatusEnum.PREDICTED),
-        DiscourseSignal(signal_id="sig2", edge_id="s3", signal_type="lexical", signal_subtype="indicative_word", token_ids=(5,), status=AnnotationStatusEnum.PREDICTED),
+        DiscourseSignal(
+            signal_id="sig1",
+            edge_id="s1",
+            signal_type="dm",
+            signal_subtype="dm",
+            token_ids=(1, 2),
+            status=AnnotationStatusEnum.PREDICTED,
+        ),
+        DiscourseSignal(
+            signal_id="sig2",
+            edge_id="s3",
+            signal_type="lexical",
+            signal_subtype="indicative_word",
+            token_ids=(5,),
+            status=AnnotationStatusEnum.PREDICTED,
+        ),
     )
 
     scorer = ErstScorer()
@@ -176,7 +247,6 @@ def test_erst_empty_and_asymmetric_edges() -> None:
     sec_gold_empty = scorer.score_secondary_edges((), (sec_edge,))
     assert sec_gold_empty.full_f1 == 0.0
     assert sec_gold_empty.direction_precision == 0.0
-
 
 
 def test_calibration_ece_hand_computed() -> None:
@@ -272,10 +342,26 @@ def test_soft_parseval_exact_and_fuzzy() -> None:
         RstNode(node_id=4, kind=NodeKindEnum.ROOT, edu_span=(1, 3), char_span=(0, 100), text="All"),
     )
     edges_gold = (
-        PrimaryRelationEdge(edge_id="e1", parent_id=3, child_id=1, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
-        PrimaryRelationEdge(edge_id="e2", parent_id=4, child_id=3, nuclearity=NuclearityPatternEnum.NS, relation_raw="Joint", relation_concept="Joint"),
+        PrimaryRelationEdge(
+            edge_id="e1",
+            parent_id=3,
+            child_id=1,
+            nuclearity=NuclearityPatternEnum.NS,
+            relation_raw="Elaboration",
+            relation_concept="Elaboration",
+        ),
+        PrimaryRelationEdge(
+            edge_id="e2",
+            parent_id=4,
+            child_id=3,
+            nuclearity=NuclearityPatternEnum.NS,
+            relation_raw="Joint",
+            relation_concept="Joint",
+        ),
     )
-    gold = RstAnalysis(document_id="g", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_gold, primary_edges=edges_gold)
+    gold = RstAnalysis(
+        document_id="g", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_gold, primary_edges=edges_gold
+    )
 
     # Pred has a slightly shifted boundary: [0, 48] instead of [0, 50] (e.g. trailing period segmentation difference)
     nodes_pred = (
@@ -285,10 +371,26 @@ def test_soft_parseval_exact_and_fuzzy() -> None:
         RstNode(node_id=40, kind=NodeKindEnum.ROOT, edu_span=(1, 3), char_span=(0, 100), text="All"),
     )
     edges_pred = (
-        PrimaryRelationEdge(edge_id="ep1", parent_id=30, child_id=10, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
-        PrimaryRelationEdge(edge_id="ep2", parent_id=40, child_id=30, nuclearity=NuclearityPatternEnum.NS, relation_raw="Joint", relation_concept="Joint"),
+        PrimaryRelationEdge(
+            edge_id="ep1",
+            parent_id=30,
+            child_id=10,
+            nuclearity=NuclearityPatternEnum.NS,
+            relation_raw="Elaboration",
+            relation_concept="Elaboration",
+        ),
+        PrimaryRelationEdge(
+            edge_id="ep2",
+            parent_id=40,
+            child_id=30,
+            nuclearity=NuclearityPatternEnum.NS,
+            relation_raw="Joint",
+            relation_concept="Joint",
+        ),
     )
-    pred = RstAnalysis(document_id="p", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_pred, primary_edges=edges_pred)
+    pred = RstAnalysis(
+        document_id="p", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_pred, primary_edges=edges_pred
+    )
 
     # Exact character scorer: [0, 48] != [0, 50] -> 0 matched span
     exact_scorer = SoftParsevalScorer(min_iou=1.0)
@@ -312,5 +414,3 @@ def test_soft_parseval_invalid_min_iou() -> None:
 
     with pytest.raises(ValueError, match="min_iou must be in"):
         SoftParsevalScorer(min_iou=1.5)
-
-

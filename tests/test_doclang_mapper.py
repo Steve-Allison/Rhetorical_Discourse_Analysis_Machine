@@ -37,9 +37,7 @@ def leaf(start: int, end: int) -> FakeUnit:
     return FakeUnit(start=start, end=end)
 
 
-def node(
-    left: FakeUnit, right: FakeUnit, relation: str = "elaboration", nuclearity: str = "NS"
-) -> FakeUnit:
+def node(left: FakeUnit, right: FakeUnit, relation: str = "elaboration", nuclearity: str = "NS") -> FakeUnit:
     return FakeUnit(
         start=left.start,
         end=right.end,
@@ -196,9 +194,7 @@ def test_boundary_membership_via_xpath_intersection() -> None:
 
 
 def test_ids_preorder_relations_and_edus_share_namespace() -> None:
-    spans = tuple(
-        _span(f"/doclang[1]/text[{i + 1}]", i * 2, i * 2 + 1) for i in range(4)
-    )
+    spans = tuple(_span(f"/doclang[1]/text[{i + 1}]", i * 2, i * 2 + 1) for i in range(4))
     tree = node(
         node(leaf(0, 1), leaf(2, 3)),
         node(leaf(4, 5), leaf(6, 7)),
@@ -213,9 +209,7 @@ def test_ids_preorder_relations_and_edus_share_namespace() -> None:
 
 
 def test_relations_in_preorder_relation_label() -> None:
-    spans = tuple(
-        _span(f"/doclang[1]/text[{i + 1}]", i * 2, i * 2 + 1) for i in range(4)
-    )
+    spans = tuple(_span(f"/doclang[1]/text[{i + 1}]", i * 2, i * 2 + 1) for i in range(4))
     tree = node(
         node(leaf(0, 1), leaf(2, 3), relation="left-internal"),
         node(leaf(4, 5), leaf(6, 7), relation="right-internal"),

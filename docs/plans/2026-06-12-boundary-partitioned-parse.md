@@ -149,10 +149,7 @@ def offset_ids(
         )
         for r in relations
     )
-    new_edus = tuple(
-        dataclasses.replace(e, id=e.id + offset)
-        for e in edus
-    )
+    new_edus = tuple(dataclasses.replace(e, id=e.id + offset) for e in edus)
     return new_relations, new_edus
 
 
@@ -201,10 +198,7 @@ def rebase_spans_doclang(
     for i, span in enumerate(spans):
         if i > 0:
             prev = spans[i - 1]
-            continuation = (
-                span.thread_id is not None
-                and prev.thread_id == span.thread_id
-            )
+            continuation = span.thread_id is not None and prev.thread_id == span.thread_id
             sep = " " if continuation else harvest_separator
             parts.append(sep)
             cursor += len(sep)
@@ -267,10 +261,10 @@ from ._partition import (
 )
 
 # add to __all__:
-"offset_ids",
-"partition_spans_by_refs",
-"rebase_spans_doclang",
-"rebase_spans_uniform",
+("offset_ids",)
+("partition_spans_by_refs",)
+("rebase_spans_doclang",)
+("rebase_spans_uniform",)
 ```
 
 ---
@@ -336,9 +330,7 @@ for label, text in (("main", harvest.full_text), ...):
 
 if harvest.full_text:
     rst_tree = parser(harvest.full_text)["rst"][0]
-    relations, edus = flatten_tree(
-        rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
-    )
+    relations, edus = flatten_tree(rst_tree, harvest.spans, boundaries, note_threshold=note_threshold)
 else:
     relations, edus = (), ()
 ```
@@ -347,9 +339,7 @@ Replacement:
 
 ```python
 # Table harvests: size guard is unchanged (tables are already partitioned)
-for label, text in (
-    (th.marker_ref, th.full_text) for th in table_harvests
-):
+for label, text in ((th.marker_ref, th.full_text) for th in table_harvests):
     if text and len(text) > max_section_chars:
         raise InputTooLargeError(
             f"Table harvest for {label} is {len(text)} chars, exceeds "
@@ -378,9 +368,7 @@ else:
             f"Use parse_mode='boundary' or raise the limit."
         )
     rst_tree = parser(harvest.full_text)["rst"][0]
-    relations, edus = flatten_tree(
-        rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
-    )
+    relations, edus = flatten_tree(rst_tree, harvest.spans, boundaries, note_threshold=note_threshold)
 ```
 
 ### `_should_partition` helper (module-level, not exported)
@@ -399,9 +387,7 @@ def _should_partition(
         return True
     if parse_mode == "auto":
         return len(full_text) > max_harvest_chars
-    raise ValueError(
-        f"Unknown parse_mode={parse_mode!r}. Expected 'document', 'boundary', or 'auto'."
-    )
+    raise ValueError(f"Unknown parse_mode={parse_mode!r}. Expected 'document', 'boundary', or 'auto'.")
 ```
 
 ### `_partitioned_parse_docling` helper (module-level, not exported)
@@ -434,9 +420,7 @@ def _partitioned_parse_docling(
         # (Should not happen given detect_boundaries always emits at least
         # one primary boundary, but be safe.)
         rst_tree = parser(harvest.full_text)["rst"][0]
-        return flatten_tree(
-            rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
-        )
+        return flatten_tree(rst_tree, harvest.spans, boundaries, note_threshold=note_threshold)
 
     partitions = partition_spans_by_refs(
         harvest.spans,
@@ -523,9 +507,7 @@ def _partitioned_parse_doclang(
     primary = [b for b in boundaries if b.kind in _PARTITION_KINDS]
     if not primary:
         rst_tree = parser(harvest.full_text)["rst"][0]
-        return flatten_tree(
-            rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
-        )
+        return flatten_tree(rst_tree, harvest.spans, boundaries, note_threshold=note_threshold)
 
     partitions = partition_spans_by_refs(
         harvest.spans,
@@ -549,8 +531,7 @@ def _partitioned_parse_doclang(
 
         if len(full_text) > max_section_chars:
             raise InputTooLargeError(
-                f"Partition '{b.id}' harvest is {len(full_text)} chars, exceeds "
-                f"max_section_chars={max_section_chars}."
+                f"Partition '{b.id}' harvest is {len(full_text)} chars, exceeds max_section_chars={max_section_chars}."
             )
 
         rst_tree = parser(full_text)["rst"][0]
@@ -599,9 +580,7 @@ def _partitioned_parse_markdown(
     primary = [b for b in boundaries if b.kind in _PARTITION_KINDS]
     if not primary:
         rst_tree = parser(harvest.full_text)["rst"][0]
-        return flatten_tree(
-            rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
-        )
+        return flatten_tree(rst_tree, harvest.spans, boundaries, note_threshold=note_threshold)
 
     partitions = partition_spans_by_refs(
         harvest.spans,
@@ -625,8 +604,7 @@ def _partitioned_parse_markdown(
 
         if len(full_text) > max_section_chars:
             raise InputTooLargeError(
-                f"Partition '{b.id}' harvest is {len(full_text)} chars, exceeds "
-                f"max_section_chars={max_section_chars}."
+                f"Partition '{b.id}' harvest is {len(full_text)} chars, exceeds max_section_chars={max_section_chars}."
             )
 
         rst_tree = parser(full_text)["rst"][0]

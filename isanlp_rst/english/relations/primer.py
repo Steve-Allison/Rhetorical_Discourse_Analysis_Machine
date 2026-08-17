@@ -47,7 +47,6 @@ DISCOURSE_MARKER_RULES: tuple[MarkerRule, ...] = (
     MarkerRule("yet", "Contrast", "contrast", NuclearityPatternEnum.NS),
     MarkerRule("but", "Contrast", "contrast", NuclearityPatternEnum.NS),
     MarkerRule("conversely", "Contrast", "contrast", NuclearityPatternEnum.NS),
-
     # Cause / Causal
     MarkerRule("as a result", "Cause", "result", NuclearityPatternEnum.NS, is_multiword=True),
     MarkerRule("consequently", "Cause", "result", NuclearityPatternEnum.NS),
@@ -58,7 +57,6 @@ DISCOURSE_MARKER_RULES: tuple[MarkerRule, ...] = (
     MarkerRule("due to", "Cause", "cause", NuclearityPatternEnum.SN, is_multiword=True),
     MarkerRule("owing to", "Cause", "cause", NuclearityPatternEnum.SN, is_multiword=True),
     MarkerRule("for this reason", "Cause", "result", NuclearityPatternEnum.NS, is_multiword=True),
-
     # Condition / Contingency
     MarkerRule("if", "Condition", "condition", NuclearityPatternEnum.SN),
     MarkerRule("unless", "Condition", "condition", NuclearityPatternEnum.SN),
@@ -67,7 +65,6 @@ DISCOURSE_MARKER_RULES: tuple[MarkerRule, ...] = (
     MarkerRule("assuming that", "Condition", "condition", NuclearityPatternEnum.SN, is_multiword=True),
     MarkerRule("in case", "Condition", "contingency", NuclearityPatternEnum.SN, is_multiword=True),
     MarkerRule("otherwise", "Condition", "otherwise", NuclearityPatternEnum.NS),
-
     # Explanation / Evidence
     MarkerRule("for example", "Explanation", "evidence", NuclearityPatternEnum.NS, is_multiword=True),
     MarkerRule("for instance", "Explanation", "evidence", NuclearityPatternEnum.NS, is_multiword=True),
@@ -76,13 +73,11 @@ DISCOURSE_MARKER_RULES: tuple[MarkerRule, ...] = (
     MarkerRule("indeed", "Explanation", "evidence", NuclearityPatternEnum.NS),
     MarkerRule("namely", "Elaboration", "elaboration-additional", NuclearityPatternEnum.NS),
     MarkerRule("that is", "Elaboration", "elaboration-additional", NuclearityPatternEnum.NS, is_multiword=True),
-
     # Enablement / Purpose
     MarkerRule("in order to", "Enablement", "purpose", NuclearityPatternEnum.NS, is_multiword=True),
     MarkerRule("so that", "Enablement", "purpose", NuclearityPatternEnum.NS, is_multiword=True),
     MarkerRule("so as to", "Enablement", "purpose", NuclearityPatternEnum.NS, is_multiword=True),
     MarkerRule("to that end", "Enablement", "purpose", NuclearityPatternEnum.NS, is_multiword=True),
-
     # Temporal / Sequence
     MarkerRule("firstly", "Temporal", "sequence", NuclearityPatternEnum.NN),
     MarkerRule("secondly", "Temporal", "sequence", NuclearityPatternEnum.NN),
@@ -92,19 +87,16 @@ DISCOURSE_MARKER_RULES: tuple[MarkerRule, ...] = (
     MarkerRule("meanwhile", "Temporal", "temporal-same-time", NuclearityPatternEnum.NN),
     MarkerRule("simultaneously", "Temporal", "temporal-same-time", NuclearityPatternEnum.NN),
     MarkerRule("as soon as", "Temporal", "temporal-before", NuclearityPatternEnum.SN, is_multiword=True),
-
     # Joint / List
     MarkerRule("furthermore", "Joint", "list", NuclearityPatternEnum.NN),
     MarkerRule("moreover", "Joint", "list", NuclearityPatternEnum.NN),
     MarkerRule("in addition", "Joint", "list", NuclearityPatternEnum.NN, is_multiword=True),
     MarkerRule("additionally", "Joint", "list", NuclearityPatternEnum.NN),
     MarkerRule("besides", "Joint", "list", NuclearityPatternEnum.NN),
-
     # Comparison
     MarkerRule("similarly", "Comparison", "comparison", NuclearityPatternEnum.NN),
     MarkerRule("likewise", "Comparison", "comparison", NuclearityPatternEnum.NN),
     MarkerRule("in the same way", "Comparison", "comparison", NuclearityPatternEnum.NN, is_multiword=True),
-
     # Summary
     MarkerRule("in conclusion", "Summary", "summary", NuclearityPatternEnum.NS, is_multiword=True),
     MarkerRule("in summary", "Summary", "summary", NuclearityPatternEnum.NS, is_multiword=True),
@@ -181,9 +173,8 @@ class DiscourseMarkerPrimer:
                 target_concept = rule.coarse_concept.lower()
 
                 # Override if current prediction is generic/mismatched and model confidence is not overwhelmingly high
-                should_prime = (
-                    current_concept != target_concept
-                    and (edge.confidence is None or edge.confidence < min_model_confidence_to_override)
+                should_prime = current_concept != target_concept and (
+                    edge.confidence is None or edge.confidence < min_model_confidence_to_override
                 )
 
                 if should_prime:

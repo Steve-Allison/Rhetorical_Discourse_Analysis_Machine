@@ -80,11 +80,31 @@ def test_stitch_trees_synthetic() -> None:
         nodes=(
             RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 13), text="Sentence one."),
             RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(14, 27), text="Sentence two."),
-            RstNode(node_id=3, kind=NodeKindEnum.ROOT, edu_span=(1, 2), char_span=(0, 27), text="Sentence one. Sentence two."),
+            RstNode(
+                node_id=3,
+                kind=NodeKindEnum.ROOT,
+                edu_span=(1, 2),
+                char_span=(0, 27),
+                text="Sentence one. Sentence two.",
+            ),
         ),
         primary_edges=(
-            PrimaryRelationEdge(edge_id="e1", parent_id=3, child_id=1, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
-            PrimaryRelationEdge(edge_id="e2", parent_id=3, child_id=2, nuclearity=NuclearityPatternEnum.NS, relation_raw="Elaboration", relation_concept="Elaboration"),
+            PrimaryRelationEdge(
+                edge_id="e1",
+                parent_id=3,
+                child_id=1,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Elaboration",
+                relation_concept="Elaboration",
+            ),
+            PrimaryRelationEdge(
+                edge_id="e2",
+                parent_id=3,
+                child_id=2,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Elaboration",
+                relation_concept="Elaboration",
+            ),
         ),
     )
 
@@ -95,11 +115,31 @@ def test_stitch_trees_synthetic() -> None:
         nodes=(
             RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 15), text="Sentence three."),
             RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(16, 30), text="Sentence four."),
-            RstNode(node_id=3, kind=NodeKindEnum.ROOT, edu_span=(1, 2), char_span=(0, 30), text="Sentence three. Sentence four."),
+            RstNode(
+                node_id=3,
+                kind=NodeKindEnum.ROOT,
+                edu_span=(1, 2),
+                char_span=(0, 30),
+                text="Sentence three. Sentence four.",
+            ),
         ),
         primary_edges=(
-            PrimaryRelationEdge(edge_id="e1", parent_id=3, child_id=1, nuclearity=NuclearityPatternEnum.NN, relation_raw="Joint", relation_concept="Joint"),
-            PrimaryRelationEdge(edge_id="e2", parent_id=3, child_id=2, nuclearity=NuclearityPatternEnum.NN, relation_raw="Joint", relation_concept="Joint"),
+            PrimaryRelationEdge(
+                edge_id="e1",
+                parent_id=3,
+                child_id=1,
+                nuclearity=NuclearityPatternEnum.NN,
+                relation_raw="Joint",
+                relation_concept="Joint",
+            ),
+            PrimaryRelationEdge(
+                edge_id="e2",
+                parent_id=3,
+                child_id=2,
+                nuclearity=NuclearityPatternEnum.NN,
+                relation_raw="Joint",
+                relation_concept="Joint",
+            ),
         ),
     )
 
@@ -113,8 +153,22 @@ def test_stitch_trees_synthetic() -> None:
             RstNode(node_id=3, kind=NodeKindEnum.ROOT, edu_span=(1, 2), char_span=(0, 20), text="Sec1 Sec2"),
         ),
         primary_edges=(
-            PrimaryRelationEdge(edge_id="me1", parent_id=3, child_id=1, nuclearity=NuclearityPatternEnum.NS, relation_raw="Contrast", relation_concept="Contrast"),
-            PrimaryRelationEdge(edge_id="me2", parent_id=3, child_id=2, nuclearity=NuclearityPatternEnum.NS, relation_raw="Contrast", relation_concept="Contrast"),
+            PrimaryRelationEdge(
+                edge_id="me1",
+                parent_id=3,
+                child_id=1,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Contrast",
+                relation_concept="Contrast",
+            ),
+            PrimaryRelationEdge(
+                edge_id="me2",
+                parent_id=3,
+                child_id=2,
+                nuclearity=NuclearityPatternEnum.NS,
+                relation_raw="Contrast",
+                relation_concept="Contrast",
+            ),
         ),
     )
 
@@ -182,4 +236,3 @@ def test_hierarchical_single_section_delegates(parser_cpu: Parser) -> None:
     analysis = parser_cpu.parse_hierarchical(doc)
     assert analysis.document_id == "doc_single"
     assert len(analysis.nodes) >= 1
-

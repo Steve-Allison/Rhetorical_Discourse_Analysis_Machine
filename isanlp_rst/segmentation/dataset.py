@@ -127,6 +127,7 @@ def parse_rs4_to_sentences(file_path: Path | str) -> list[SegmentedSentence]:
         labels: list[int] = []
 
         import re
+
         for match in re.finditer(r"\S+", line):
             word = match.group(0)
             abs_start = curr_char + match.start()

@@ -64,15 +64,9 @@ def compute_calibration_error(
 
         # In last bin, include right edge 1.0
         if i == n_bins - 1:
-            indices = [
-                idx for idx, conf in enumerate(confidences)
-                if lower <= conf <= upper
-            ]
+            indices = [idx for idx, conf in enumerate(confidences) if lower <= conf <= upper]
         else:
-            indices = [
-                idx for idx, conf in enumerate(confidences)
-                if lower <= conf < upper
-            ]
+            indices = [idx for idx, conf in enumerate(confidences) if lower <= conf < upper]
 
         bin_count = len(indices)
         if bin_count > 0:

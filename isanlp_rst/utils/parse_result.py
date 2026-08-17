@@ -16,17 +16,11 @@ def extract_root_tree(result: Mapping[str, Any] | Any) -> Any:
     an empty or malformed payload.
     """
     if not isinstance(result, Mapping):
-        raise ParseFailedError(
-            f"Parse result must be a mapping with an 'rst' key; "
-            f"got {type(result).__name__}."
-        )
+        raise ParseFailedError(f"Parse result must be a mapping with an 'rst' key; got {type(result).__name__}.")
     try:
         rst = result["rst"]
     except KeyError as exc:
-        raise ParseFailedError(
-            "Parse result is missing the 'rst' key "
-            f"(keys={sorted(result.keys())!r})."
-        ) from exc
+        raise ParseFailedError(f"Parse result is missing the 'rst' key (keys={sorted(result.keys())!r}).") from exc
 
     if rst is None:
         raise ParseFailedError("Parse result['rst'] is None.")
@@ -35,9 +29,7 @@ def extract_root_tree(result: Mapping[str, Any] | Any) -> Any:
             raise ParseFailedError("Parse result['rst'] is empty.")
         root = rst[0]
     except TypeError as exc:
-        raise ParseFailedError(
-            f"Parse result['rst'] is not a sequence; got {type(rst).__name__}."
-        ) from exc
+        raise ParseFailedError(f"Parse result['rst'] is not a sequence; got {type(rst).__name__}.") from exc
 
     if root is None:
         raise ParseFailedError("Parse result['rst'][0] is None.")

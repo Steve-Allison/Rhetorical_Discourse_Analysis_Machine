@@ -124,8 +124,10 @@ def quality_check(parser: Parser, path: Path) -> None:
     doc = DoclingDocument.load_from_json(path)
     harvest_text, n_text_items, n_picture_descs = harvest_body_text(doc)
     n_chars = len(harvest_text)
-    print(f"harvest: {n_text_items} text items, {n_picture_descs} picture VLM descriptions, "
-          f"{n_chars} chars, {harvest_text.count(SEPARATOR)} separator gaps")
+    print(
+        f"harvest: {n_text_items} text items, {n_picture_descs} picture VLM descriptions, "
+        f"{n_chars} chars, {harvest_text.count(SEPARATOR)} separator gaps"
+    )
 
     if n_chars == 0:
         print("EMPTY harvest, skipping parse.")
@@ -150,8 +152,10 @@ def quality_check(parser: Parser, path: Path) -> None:
     for i, (rel, depth) in enumerate(rels[:15]):
         relation = getattr(rel, "relation", None)
         nuclearity = getattr(rel, "nuclearity", None)
-        print(f"  [{i}] d={depth} {relation:<24} {nuclearity:<4} "
-              f"span=({rel.start},{rel.end}) ({rel.end - rel.start} chars)")
+        print(
+            f"  [{i}] d={depth} {relation:<24} {nuclearity:<4} "
+            f"span=({rel.start},{rel.end}) ({rel.end - rel.start} chars)"
+        )
 
 
 def main() -> int:

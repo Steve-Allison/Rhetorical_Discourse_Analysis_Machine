@@ -73,8 +73,20 @@ def test_primer_primes_low_confidence_and_generic_edges() -> None:
         formalism=OutputFormalismEnum.RST_TREE,
         nodes=(
             RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 20), text="The system was fast."),
-            RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(21, 55), text="However, it used excessive memory."),
-            RstNode(node_id=3, kind=NodeKindEnum.ROOT, edu_span=(1, 2), char_span=(0, 55), text="The system was fast. However, it used excessive memory."),
+            RstNode(
+                node_id=2,
+                kind=NodeKindEnum.EDU,
+                edu_span=(2, 2),
+                char_span=(21, 55),
+                text="However, it used excessive memory.",
+            ),
+            RstNode(
+                node_id=3,
+                kind=NodeKindEnum.ROOT,
+                edu_span=(1, 2),
+                char_span=(0, 55),
+                text="The system was fast. However, it used excessive memory.",
+            ),
         ),
         primary_edges=(
             PrimaryRelationEdge(
@@ -118,8 +130,16 @@ def test_primer_respects_high_confidence_predictions() -> None:
         formalism=OutputFormalismEnum.RST_TREE,
         nodes=(
             RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 12), text="Statement A."),
-            RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(13, 34), text="However, Statement B."),
-            RstNode(node_id=3, kind=NodeKindEnum.ROOT, edu_span=(1, 2), char_span=(0, 34), text="Statement A. However, Statement B."),
+            RstNode(
+                node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(13, 34), text="However, Statement B."
+            ),
+            RstNode(
+                node_id=3,
+                kind=NodeKindEnum.ROOT,
+                edu_span=(1, 2),
+                char_span=(0, 34),
+                text="Statement A. However, Statement B.",
+            ),
         ),
         primary_edges=(
             PrimaryRelationEdge(
@@ -142,7 +162,9 @@ def test_primer_respects_high_confidence_predictions() -> None:
 @pytest.mark.slow
 def test_parser_parse_document_with_marker_priming() -> None:
     parser = Parser(hf_model_version="gumrrg", device="cpu")
-    doc = RstDocument.from_text("The algorithm ran efficiently. Because the dataset was pre-cached, latency stayed low.")
+    doc = RstDocument.from_text(
+        "The algorithm ran efficiently. Because the dataset was pre-cached, latency stayed low."
+    )
 
     analysis = parser.parse_document(doc, prime_markers=True)
 

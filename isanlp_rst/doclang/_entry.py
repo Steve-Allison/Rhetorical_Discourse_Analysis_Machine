@@ -77,8 +77,7 @@ def _validate_xml(path: Path) -> None:
         doclang_pkg = importlib.import_module("doclang")
     except ImportError as exc:
         raise InvalidDoclangError(
-            f"{path}: validate_xml=True requires the doclang package. "
-            "Install doclang or pass validate_xml=False."
+            f"{path}: validate_xml=True requires the doclang package. Install doclang or pass validate_xml=False."
         ) from exc
     try:
         doclang_pkg.validate(path)
@@ -104,9 +103,7 @@ def _source_origin(tree: Any) -> dict[str, Any]:
     head_children: list[str] = []
     for child in root:
         if isinstance(child.tag, str) and local_name(child) == "head":
-            head_children = [
-                local_name(c) for c in child if isinstance(c.tag, str)
-            ]
+            head_children = [local_name(c) for c in child if isinstance(c.tag, str)]
             break
     return {
         "format": "doclang",
@@ -232,14 +229,9 @@ def parse_doclang(
     tree = parse_doclang_xml(src_path)
     root = tree.getroot()
 
-    body_children = [
-        c for c in root
-        if isinstance(c.tag, str) and local_name(c) != "head"
-    ]
+    body_children = [c for c in root if isinstance(c.tag, str) and local_name(c) != "head"]
     if not body_children:
-        raise EmptyDoclangError(
-            f"DocLang document at {src_path} has no body content — nothing to harvest."
-        )
+        raise EmptyDoclangError(f"DocLang document at {src_path} has no body content — nothing to harvest.")
 
     harvest = harvest_doclang_text(
         tree,
@@ -264,13 +256,10 @@ def parse_doclang(
 
     if not harvest.full_text and not any(th.full_text for th in table_harvests):
         raise EmptyHarvestError(
-            f"No text harvested from {src_path}. Document may have all "
-            f"eligible content excluded by knobs."
+            f"No text harvested from {src_path}. Document may have all eligible content excluded by knobs."
         )
 
-    for label, text in (("main", harvest.full_text), *(
-        (th.marker_xpath, th.full_text) for th in table_harvests
-    )):
+    for label, text in (("main", harvest.full_text), *((th.marker_xpath, th.full_text) for th in table_harvests)):
         if len(text) > max_harvest_chars:
             raise InputTooLargeError(
                 f"Harvested text for {label} is {len(text)} chars, exceeds "
@@ -287,6 +276,7 @@ def parse_doclang(
 
     if parser is None:
         from isanlp_rst.parser import Parser
+
         parser = Parser(
             hf_model_name=hf_model_name,
             hf_model_version=hf_model_version,
@@ -301,9 +291,7 @@ def parse_doclang(
 
     if harvest.full_text:
         rst_tree = extract_root_tree(parser(harvest.full_text))
-        relations, edus = flatten_tree(
-            rst_tree, harvest.spans, boundaries, note_threshold=note_threshold
-        )
+        relations, edus = flatten_tree(rst_tree, harvest.spans, boundaries, note_threshold=note_threshold)
     else:
         relations, edus = (), ()
 
@@ -319,9 +307,7 @@ def parse_doclang(
             (table_boundaries[boundary_id],),
             note_threshold=note_threshold,
         )
-        table_analyses.append(
-            TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus)
-        )
+        table_analyses.append(TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus))
 
     result = DoclangRstResult(
         schema_name=SCHEMA_NAME,

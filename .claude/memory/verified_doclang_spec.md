@@ -131,7 +131,9 @@ Read verbatim from `doclang/__init__.py`, `doclang/validation.py`, `doclang/cli.
 ```python
 # doclang/__init__.py — entire content:
 """DocLang reference validator."""
+
 from doclang.validation import ValidationError, validate
+
 __all__ = ["ValidationError", "validate"]
 ```
 

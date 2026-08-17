@@ -90,7 +90,9 @@ def main() -> int:
     else:
         print(f"  NON-DETERMINISTIC — sig_a has {len(sig_a)} relations, sig_b has {len(sig_b)}")
         diffs = sum(1 for a, b in zip(sig_a, sig_b, strict=False) if a != b)
-        print(f"  first divergence index: {next((i for i, (a, b) in enumerate(zip(sig_a, sig_b, strict=False)) if a != b), None)}")
+        print(
+            f"  first divergence index: {next((i for i, (a, b) in enumerate(zip(sig_a, sig_b, strict=False)) if a != b), None)}"
+        )
         print(f"  divergent relations (within shared prefix): {diffs}")
 
     return 0

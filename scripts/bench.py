@@ -30,9 +30,7 @@ from huggingface_hub.errors import EntryNotFoundError
 from isanlp_rst.parser import Parser
 
 
-SHORT_TEXT = (
-    "The cat sat on the mat. It was a black cat. The mat was red."
-)
+SHORT_TEXT = "The cat sat on the mat. It was a black cat. The mat was red."
 
 LONG_TEXT = (
     "Climate scientists have been documenting an alarming acceleration in the "
@@ -49,8 +47,8 @@ LONG_TEXT = (
 
 
 def _shape(unit) -> tuple:
-    if not getattr(unit, 'left', None) and not getattr(unit, 'right', None):
-        return ('LEAF', unit.start, unit.end)
+    if not getattr(unit, "left", None) and not getattr(unit, "right", None):
+        return ("LEAF", unit.start, unit.end)
     return (unit.relation, _shape(unit.left), _shape(unit.right))
 
 
@@ -59,7 +57,7 @@ def _time_parse(parser: Parser, text: str, runs: int) -> tuple[float, tuple]:
     # Warm-up — first run on accelerator includes kernel compile / autocast
     # init cost which we don't want in the timing distribution.
     res = parser(text)
-    shape = _shape(res['rst'][0])
+    shape = _shape(res["rst"][0])
 
     timings: list[float] = []
     for _ in range(runs):
@@ -70,49 +68,43 @@ def _time_parse(parser: Parser, text: str, runs: int) -> tuple[float, tuple]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=(__doc__ or '').split('\n\n')[0])
-    ap.add_argument('--version', default='gumrrg',
-                    choices=('gumrrg', 'rstdt', 'rstreebank', 'rrtrrg', 'unirst'))
-    ap.add_argument('--relinventory', default='eng.erst.gum',
-                    help='Only used for unirst.')
-    ap.add_argument('--runs', type=int, default=5)
-    ap.add_argument('--text-length', choices=('short', 'long'), default='long')
+    ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
+    ap.add_argument("--version", default="gumrrg", choices=("gumrrg", "rstdt", "rstreebank", "rrtrrg", "unirst"))
+    ap.add_argument("--relinventory", default="eng.erst.gum", help="Only used for unirst.")
+    ap.add_argument("--runs", type=int, default=5)
+    ap.add_argument("--text-length", choices=("short", "long"), default="long")
     args = ap.parse_args()
 
-    text = SHORT_TEXT if args.text_length == 'short' else LONG_TEXT
+    text = SHORT_TEXT if args.text_length == "short" else LONG_TEXT
 
-    print(
-        f"Bench: version={args.version}, runs={args.runs}, "
-        f"text-length={args.text_length} ({len(text)} chars)"
-    )
+    print(f"Bench: version={args.version}, runs={args.runs}, text-length={args.text_length} ({len(text)} chars)")
     print(f"PyTorch: {torch.__version__}")
     print()
 
-    extras = {'relinventory': args.relinventory} if args.version == 'unirst' else {}
+    extras = {"relinventory": args.relinventory} if args.version == "unirst" else {}
 
     configs: list[tuple[str, dict]] = [
-        ('CPU fp32', dict(device='cpu')),
+        ("CPU fp32", dict(device="cpu")),
     ]
     if torch.cuda.is_available():
-        configs.extend([
-            ('CUDA fp32', dict(device='cuda', dtype=torch.float32)),
-            ('CUDA bf16', dict(device='cuda', dtype=torch.bfloat16)),
-            ('CUDA fp16', dict(device='cuda', dtype=torch.float16)),
-        ])
-    elif (
-        hasattr(torch.backends, 'mps')
-        and torch.backends.mps.is_available()
-        and torch.backends.mps.is_built()
-    ):
-        configs.extend([
-            ('MPS fp32', dict(device='mps', dtype=torch.float32)),
-            ('MPS bf16', dict(device='mps', dtype=torch.bfloat16)),
-            ('MPS fp16', dict(device='mps', dtype=torch.float16)),
-        ])
+        configs.extend(
+            [
+                ("CUDA fp32", dict(device="cuda", dtype=torch.float32)),
+                ("CUDA bf16", dict(device="cuda", dtype=torch.bfloat16)),
+                ("CUDA fp16", dict(device="cuda", dtype=torch.float16)),
+            ]
+        )
+    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available() and torch.backends.mps.is_built():
+        configs.extend(
+            [
+                ("MPS fp32", dict(device="mps", dtype=torch.float32)),
+                ("MPS bf16", dict(device="mps", dtype=torch.bfloat16)),
+                ("MPS fp16", dict(device="mps", dtype=torch.float16)),
+            ]
+        )
 
-    print(f"{'config':<14} {'load':>8} {'parse (median)':>16} {'per char':>12} "
-          f"{'tree match':>11}")
-    print('-' * 65)
+    print(f"{'config':<14} {'load':>8} {'parse (median)':>16} {'per char':>12} {'tree match':>11}")
+    print("-" * 65)
 
     baseline_shape = None
     failed = 0
@@ -120,9 +112,10 @@ def main() -> int:
         try:
             t0 = time.perf_counter()
             parser = Parser(
-                hf_model_name='tchewik/isanlp_rst_v3',
+                hf_model_name="tchewik/isanlp_rst_v3",
                 hf_model_version=args.version,
-                **extras, **kwargs,
+                **extras,
+                **kwargs,
             )
             load_s = time.perf_counter() - t0
 
@@ -130,17 +123,14 @@ def main() -> int:
 
             if baseline_shape is None:
                 baseline_shape = shape
-                tree_match = 'baseline'
+                tree_match = "baseline"
             else:
-                tree_match = 'OK' if shape == baseline_shape else 'DIVERGED'
+                tree_match = "OK" if shape == baseline_shape else "DIVERGED"
                 if shape != baseline_shape:
                     failed += 1
 
             per_char_us = median / max(len(text), 1) * 1e6
-            print(
-                f"{name:<14} {load_s:>7.1f}s {median*1000:>14.1f}ms "
-                f"{per_char_us:>10.1f}µs {tree_match:>11}"
-            )
+            print(f"{name:<14} {load_s:>7.1f}s {median * 1000:>14.1f}ms {per_char_us:>10.1f}µs {tree_match:>11}")
 
         except (OSError, RuntimeError, ValueError, EntryNotFoundError, pickle.UnpicklingError) as exc:
             failed += 1
@@ -154,5 +144,5 @@ def main() -> int:
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

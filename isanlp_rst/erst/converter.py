@@ -196,7 +196,9 @@ def rs4_to_document_and_analysis(
             signal_type=sig.type,
             signal_subtype=sig.subtype,
             token_ids=tuple(t - 1 for t in sig.tokens if t > 0),
-            status=AnnotationStatusEnum(sig.status) if sig.status in AnnotationStatusEnum else AnnotationStatusEnum.PREDICTED,
+            status=AnnotationStatusEnum(sig.status)
+            if sig.status in AnnotationStatusEnum
+            else AnnotationStatusEnum.PREDICTED,
         )
         for idx, sig in enumerate(rs4.signals)
     ]
@@ -371,7 +373,9 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
                     child_id=left_id,
                     relation_raw=node_rel if node_nuc != "SN" else "span",
                     relation_concept=node_rel if node_nuc != "SN" else "span",
-                    nuclearity=NuclearityPatternEnum(node_nuc) if node_nuc in NuclearityPatternEnum else NuclearityPatternEnum.NS,
+                    nuclearity=NuclearityPatternEnum(node_nuc)
+                    if node_nuc in NuclearityPatternEnum
+                    else NuclearityPatternEnum.NS,
                 )
             )
 
@@ -383,7 +387,9 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
                     child_id=right_id,
                     relation_raw=node_rel if node_nuc != "NS" else "span",
                     relation_concept=node_rel if node_nuc != "NS" else "span",
-                    nuclearity=NuclearityPatternEnum(node_nuc) if node_nuc in NuclearityPatternEnum else NuclearityPatternEnum.NS,
+                    nuclearity=NuclearityPatternEnum(node_nuc)
+                    if node_nuc in NuclearityPatternEnum
+                    else NuclearityPatternEnum.NS,
                 )
             )
 

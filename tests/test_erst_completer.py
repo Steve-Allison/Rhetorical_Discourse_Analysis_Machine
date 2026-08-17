@@ -21,8 +21,22 @@ def test_secondary_candidate_generation_bounds() -> None:
         for i in range(1, 6)
     )
     primary_edges = (
-        PrimaryRelationEdge(edge_id="e1", parent_id=10, child_id=1, relation_raw="span", relation_concept="span", nuclearity=NuclearityPatternEnum.NS),
-        PrimaryRelationEdge(edge_id="e2", parent_id=10, child_id=2, relation_raw="Elaboration", relation_concept="Elaboration", nuclearity=NuclearityPatternEnum.NS),
+        PrimaryRelationEdge(
+            edge_id="e1",
+            parent_id=10,
+            child_id=1,
+            relation_raw="span",
+            relation_concept="span",
+            nuclearity=NuclearityPatternEnum.NS,
+        ),
+        PrimaryRelationEdge(
+            edge_id="e2",
+            parent_id=10,
+            child_id=2,
+            relation_raw="Elaboration",
+            relation_concept="Elaboration",
+            nuclearity=NuclearityPatternEnum.NS,
+        ),
     )
 
     analysis = RstAnalysis(
@@ -70,7 +84,14 @@ def test_lexical_signal_detection() -> None:
         RstNode(node_id=3, kind=NodeKindEnum.ROOT, edu_span=(1, 2), char_span=(0, 38), text=text),
     )
     primary_edges = (
-        PrimaryRelationEdge(edge_id="e1", parent_id=3, child_id=2, relation_raw="Contrast", relation_concept="Contrast", nuclearity=NuclearityPatternEnum.NS),
+        PrimaryRelationEdge(
+            edge_id="e1",
+            parent_id=3,
+            child_id=2,
+            relation_raw="Contrast",
+            relation_concept="Contrast",
+            nuclearity=NuclearityPatternEnum.NS,
+        ),
     )
     analysis = RstAnalysis(
         document_id="doc-sig",

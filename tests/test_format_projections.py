@@ -60,9 +60,7 @@ def test_docling_to_format_analysis() -> None:
             boundary_memberships=("table-0",),
         ),
     )
-    tables = (
-        DoclingTableAnalysis(id="table-0", relations=tbl_relations, edus=tbl_edus),
-    )
+    tables = (DoclingTableAnalysis(id="table-0", relations=tbl_relations, edus=tbl_edus),)
     result = DoclingRstResult(
         schema_name="isanlp_rst_docling",
         schema_version="1.1",
@@ -72,7 +70,9 @@ def test_docling_to_format_analysis() -> None:
         inventory="rst_dt",
         source="doc1.json",
         source_origin={},
-        boundaries=(DoclingBoundary(id="doc", kind="document", label=None, parent_self_ref=None, self_refs=("#/texts/0",)),),
+        boundaries=(
+            DoclingBoundary(id="doc", kind="document", label=None, parent_self_ref=None, self_refs=("#/texts/0",)),
+        ),
         relations=relations,
         edus=edus,
         table_analyses=tables,
@@ -159,7 +159,9 @@ def test_markdown_to_format_analysis() -> None:
         inventory="rst_dt",
         source="doc1.md",
         source_origin={},
-        boundaries=(MarkdownBoundary(id="doc", kind="document", label=None, parent_block_ref=None, block_refs=("block-0",)),),
+        boundaries=(
+            MarkdownBoundary(id="doc", kind="document", label=None, parent_block_ref=None, block_refs=("block-0",)),
+        ),
         relations=relations,
         edus=edus,
     )

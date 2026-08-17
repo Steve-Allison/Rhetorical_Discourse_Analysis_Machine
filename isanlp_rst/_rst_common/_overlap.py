@@ -108,9 +108,7 @@ def compute_overlap_refs[S: SpanLike](
     note_threshold: float = NOTE_THRESHOLD,
 ) -> tuple[tuple[str, ...], str | None]:
     """One-shot functional form of ``SpanIndex.overlap``."""
-    return SpanIndex(spans, ref_of=ref_of).overlap(
-        start, end, note_threshold=note_threshold
-    )
+    return SpanIndex(spans, ref_of=ref_of).overlap(start, end, note_threshold=note_threshold)
 
 
 __all__ = ["NOTE_THRESHOLD", "SpanIndex", "SpanLike", "compute_overlap_refs"]

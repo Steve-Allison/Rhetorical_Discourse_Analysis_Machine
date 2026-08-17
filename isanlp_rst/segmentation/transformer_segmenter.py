@@ -187,6 +187,7 @@ class TransformerEduSegmenter:
 
         # Extract word tokens with regex
         import re
+
         tokens: list[DocumentToken] = []
         tok_id = 0
         for match in re.finditer(r"\S+", text):

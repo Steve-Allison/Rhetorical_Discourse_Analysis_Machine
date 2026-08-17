@@ -73,9 +73,9 @@ The async / sync dispatch in `isanlp_rst/__init__.py:_run_coro_sync_result` is l
 `DiscourseUnit` trees keep the substring per node, which dominates memory on large corpora. Pattern:
 
 ```python
-res['rst'][0].clear_textfields()      # drop .text on every node — keep structure
+res["rst"][0].clear_textfields()  # drop .text on every node — keep structure
 # … serialise / store …
-tree.fill_textfields(full_text)       # repopulate from the original document
+tree.fill_textfields(full_text)  # repopulate from the original document
 ```
 
 Calling `.to_rs3()` on a tree with cleared textfields will fail.

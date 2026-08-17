@@ -7,18 +7,19 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-#from dmrst_parser import keys
+# from dmrst_parser import keys
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-#import wandb
+
+# import wandb
 from tqdm import tqdm
 
 from .data import Data
 from .metrics import get_micro_metrics, get_macro_metrics
 
-#os.environ["WANDB_API_KEY"] = keys.WANDB_KEY
+# os.environ["WANDB_API_KEY"] = keys.WANDB_KEY
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -56,7 +57,6 @@ def _metrics_as_floats(metrics: dict[str, object]) -> dict[str, float]:
 
 
 class TrainingManager:
-
     def __init__(
         self,
         model: Any,
@@ -83,7 +83,7 @@ class TrainingManager:
         combine_batches: bool = False,
         use_discriminator: bool = False,
         discriminator_warmup: int = 0,
-        discriminator_alpha: float = 1.,
+        discriminator_alpha: float = 1.0,
         project: str | None = None,
         run_name: str | None = None,
         config: dict[str, object] | None = None,
@@ -114,13 +114,13 @@ class TrainingManager:
         self.discriminator_alpha = discriminator_alpha
         self.use_amp = use_amp
 
-        #self.run = wandb.init(project=project, name=run_name, config=config)
-        resolved_run_name = run_name if run_name else 'tmp'
+        # self.run = wandb.init(project=project, name=run_name, config=config)
+        resolved_run_name = run_name if run_name else "tmp"
         self.save_dir = Path(save_dir) / resolved_run_name
         if self.save_dir.exists():
             shutil.rmtree(self.save_dir)
         self.save_dir.mkdir(parents=True)
-        with (self.save_dir / 'config.json').open('w') as f:
+        with (self.save_dir / "config.json").open("w") as f:
             json.dump(config, f)
 
         if transformer_lr_multiplier:
@@ -128,36 +128,39 @@ class TrainingManager:
             other_parameters = filter(lambda p: id(p) not in transformer_parameters_ids, self.model.parameters())
             transformer_parameters = filter(lambda p: id(p) in transformer_parameters_ids, self.model.parameters())
 
-            self.optimizer = optim.AdamW([
-                {'params': other_parameters, 'lr': self.lr},
-                {'params': transformer_parameters, 'lr': self.lr * transformer_lr_multiplier}
-            ], weight_decay=self.weight_decay)
+            self.optimizer = optim.AdamW(
+                [
+                    {"params": other_parameters, "lr": self.lr},
+                    {"params": transformer_parameters, "lr": self.lr * transformer_lr_multiplier},
+                ],
+                weight_decay=self.weight_decay,
+            )
 
         else:
-            self.optimizer = optim.AdamW(
-                self.model.parameters(),
-                lr=self.lr,
-                weight_decay=self.weight_decay
-            )
+            self.optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
 
         # Schedule LR based on e2e_val_f1_full
         self.lr_scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, 'max', min_lr=1e-8, factor=0.5, patience=2,
+            self.optimizer,
+            "max",
+            min_lr=1e-8,
+            factor=0.5,
+            patience=2,
         )
 
-        self._cuda_cache_dump_frequency = .5
+        self._cuda_cache_dump_frequency = 0.5
 
     def _adjust_lr(self, epoch: int) -> None:
         if (epoch % self.lr_decay_epoch == 0) and (epoch != 0):
             for param_group in self.optimizer.param_groups:
-                param_group['lr'] = max(param_group['lr'] * self.lr_decay, 1e-9)
+                param_group["lr"] = max(param_group["lr"] * self.lr_decay, 1e-9)
 
     def train(self) -> dict[str, object]:
 
         self.best_epoch = 0
         best_metrics = {
-            'epoch': 0,
-            'e2e_val_f1_span': 0,
+            "epoch": 0,
+            "e2e_val_f1_span": 0,
         }
         patience_counter = 0
 
@@ -170,48 +173,48 @@ class TrainingManager:
 
         batches = self._get_batches(self.train_data, self.batch_size)
         for epoch in range(self.epochs):
-
-            logger.info(f'Epoch {epoch + 1}/{self.epochs}')
+            logger.info(f"Epoch {epoch + 1}/{self.epochs}")
 
             label_loss_iter_list, tree_loss_iter_list, edu_loss_iter_list, dwa_T = self._train_epoch(
-                epoch, batches, label_loss_iter_list, tree_loss_iter_list, edu_loss_iter_list, dwa_T)
+                epoch, batches, label_loss_iter_list, tree_loss_iter_list, edu_loss_iter_list, dwa_T
+            )
 
             metrics_dev, metrics_test, metrics_gs_dev, metrics_gs_test = self._eval()
             metrics_all = {
-                'epoch': epoch,
-                'step': (epoch + 1) * len(batches),
-                'gs_val_f1_span': metrics_gs_dev['f1_span'],
-                'gs_val_f1_nuc': metrics_gs_dev['f1_nuclearity'],
-                'gs_val_f1_rel': metrics_gs_dev['f1_relation'],
-                'gs_val_f1_full': metrics_gs_dev['f1_full'],
-                'gs_test_f1_span': metrics_gs_test['f1_span'],
-                'gs_test_f1_nuc': metrics_gs_test['f1_nuclearity'],
-                'gs_test_f1_rel': metrics_gs_test['f1_relation'],
-                'gs_test_f1_full': metrics_gs_test['f1_full'],
-                'e2e_val_f1_seg': metrics_dev['f1_seg'],
-                'e2e_val_f1_span': metrics_dev['f1_span'],
-                'e2e_val_f1_nuc': metrics_dev['f1_nuclearity'],
-                'e2e_val_f1_rel': metrics_dev['f1_relation'],
-                'e2e_val_f1_full': metrics_dev['f1_full'],
-                'e2e_test_f1_seg': metrics_test['f1_seg'],
-                'e2e_test_f1_span': metrics_test['f1_span'],
-                'e2e_test_f1_nuc': metrics_test['f1_nuclearity'],
-                'e2e_test_f1_rel': metrics_test['f1_relation'],
-                'e2e_test_f1_full': metrics_test['f1_full'],
+                "epoch": epoch,
+                "step": (epoch + 1) * len(batches),
+                "gs_val_f1_span": metrics_gs_dev["f1_span"],
+                "gs_val_f1_nuc": metrics_gs_dev["f1_nuclearity"],
+                "gs_val_f1_rel": metrics_gs_dev["f1_relation"],
+                "gs_val_f1_full": metrics_gs_dev["f1_full"],
+                "gs_test_f1_span": metrics_gs_test["f1_span"],
+                "gs_test_f1_nuc": metrics_gs_test["f1_nuclearity"],
+                "gs_test_f1_rel": metrics_gs_test["f1_relation"],
+                "gs_test_f1_full": metrics_gs_test["f1_full"],
+                "e2e_val_f1_seg": metrics_dev["f1_seg"],
+                "e2e_val_f1_span": metrics_dev["f1_span"],
+                "e2e_val_f1_nuc": metrics_dev["f1_nuclearity"],
+                "e2e_val_f1_rel": metrics_dev["f1_relation"],
+                "e2e_val_f1_full": metrics_dev["f1_full"],
+                "e2e_test_f1_seg": metrics_test["f1_seg"],
+                "e2e_test_f1_span": metrics_test["f1_span"],
+                "e2e_test_f1_nuc": metrics_test["f1_nuclearity"],
+                "e2e_test_f1_rel": metrics_test["f1_relation"],
+                "e2e_test_f1_full": metrics_test["f1_full"],
             }
 
-            self.lr_scheduler.step(metrics_all['e2e_val_f1_full'])
+            self.lr_scheduler.step(metrics_all["e2e_val_f1_full"])
 
             # log metrics
-            #wandb.log(metrics_all)
+            # wandb.log(metrics_all)
 
-            if metrics_all['e2e_test_f1_full'] == 0:
+            if metrics_all["e2e_test_f1_full"] == 0:
                 shutil.rmtree(self.save_dir)
-                raise RuntimeError('Zero metrics. Stopping the loop.')
+                raise RuntimeError("Zero metrics. Stopping the loop.")
 
             # save best model
-            if metrics_all['e2e_val_f1_span'] > best_metrics['e2e_val_f1_span']:
-                print(f'New best result! Saving the model for epoch {epoch}.')
+            if metrics_all["e2e_val_f1_span"] > best_metrics["e2e_val_f1_span"]:
+                print(f"New best result! Saving the model for epoch {epoch}.")
                 best_metrics = metrics_all
                 self.best_epoch = epoch
                 patience_counter = 0
@@ -220,11 +223,11 @@ class TrainingManager:
                 patience_counter += 1
 
             if patience_counter >= self.patience:
-                print(f'Early stopping at epoch {epoch}')
+                print(f"Early stopping at epoch {epoch}")
                 break
 
-        metric_path = self.save_dir / 'best_metrics.json'
-        with metric_path.open('w') as f:
+        metric_path = self.save_dir / "best_metrics.json"
+        with metric_path.open("w") as f:
             json.dump(_metrics_as_floats(best_metrics), f, sort_keys=True, indent=4)
 
         return best_metrics
@@ -240,7 +243,7 @@ class TrainingManager:
     ) -> tuple[list, list, list, float]:
 
         if self.use_discriminator and epoch == self.discriminator_warmup:
-            print('Turning on the discriminator')
+            print("Turning on the discriminator")
             self.model.turn_on_discriminator()
 
         scaler: Any = None
@@ -250,32 +253,55 @@ class TrainingManager:
         # self._adjust_lr(epoch)
         self.model.train()
 
-        pbar = tqdm(enumerate(batches), desc=f'Epoch {epoch + 1}/{self.epochs}', total=len(batches))
+        pbar = tqdm(enumerate(batches), desc=f"Epoch {epoch + 1}/{self.epochs}", total=len(batches))
         for _i, batch in pbar:
-
-            batch_input_sentences, batch_sent_breaks, batch_entity_ids, batch_entity_position_ids,\
-                batch_edu_breaks, batch_decoder_inputs, batch_relation_labels, \
-                batch_parsing_breaks, batch_golden_metrics = batch
+            (
+                batch_input_sentences,
+                batch_sent_breaks,
+                batch_entity_ids,
+                batch_entity_position_ids,
+                batch_edu_breaks,
+                batch_decoder_inputs,
+                batch_relation_labels,
+                batch_parsing_breaks,
+                batch_golden_metrics,
+            ) = batch
 
             self.optimizer.zero_grad()
 
             if self.use_amp:
-                with torch.amp.autocast(device_type='cuda', dtype=torch.float16):
+                with torch.amp.autocast(device_type="cuda", dtype=torch.float16):
                     losses = self.model.training_loss(
-                        batch_input_sentences, batch_sent_breaks, batch_entity_ids, batch_entity_position_ids,
-                        batch_edu_breaks, batch_relation_labels, batch_parsing_breaks, batch_decoder_inputs)
+                        batch_input_sentences,
+                        batch_sent_breaks,
+                        batch_entity_ids,
+                        batch_entity_position_ids,
+                        batch_edu_breaks,
+                        batch_relation_labels,
+                        batch_parsing_breaks,
+                        batch_decoder_inputs,
+                    )
             else:
                 losses = self.model.training_loss(
-                    batch_input_sentences, batch_sent_breaks, batch_entity_ids, batch_entity_position_ids,
-                    batch_edu_breaks, batch_relation_labels, batch_parsing_breaks, batch_decoder_inputs)
+                    batch_input_sentences,
+                    batch_sent_breaks,
+                    batch_entity_ids,
+                    batch_entity_position_ids,
+                    batch_edu_breaks,
+                    batch_relation_labels,
+                    batch_parsing_breaks,
+                    batch_decoder_inputs,
+                )
 
             try:
-                loss = self._final_loss(*losses[:3],
-                                        label_loss_iter_list=label_loss_iter_list,
-                                        tree_loss_iter_list=tree_loss_iter_list,
-                                        edu_loss_iter_list=edu_loss_iter_list,
-                                        dwa_T=dwa_T,
-                                        epoch=epoch)
+                loss = self._final_loss(
+                    *losses[:3],
+                    label_loss_iter_list=label_loss_iter_list,
+                    tree_loss_iter_list=tree_loss_iter_list,
+                    edu_loss_iter_list=edu_loss_iter_list,
+                    dwa_T=dwa_T,
+                    epoch=epoch,
+                )
                 if self.model.use_discriminator:
                     loss += losses[3] * self.discriminator_alpha
             except OverflowError:
@@ -298,8 +324,9 @@ class TrainingManager:
 
             # To avoid exploding gradient
             nn.utils.clip_grad_norm_([p for p in self.model.parameters() if p.grad is not None], self.grad_norm)
-            nn.utils.clip_grad_value_([p for p in self.model.parameters() if p.grad is not None],
-                                      self.grad_clipping_value)
+            nn.utils.clip_grad_value_(
+                [p for p in self.model.parameters() if p.grad is not None], self.grad_clipping_value
+            )
 
             if self.use_amp:
                 scaler.step(self.optimizer)
@@ -310,7 +337,7 @@ class TrainingManager:
             if random.random() < self._cuda_cache_dump_frequency:
                 torch.cuda.empty_cache()
 
-            pbar.set_postfix({'loss': f'{loss.cpu().item():.4f}'})
+            pbar.set_postfix({"loss": f"{loss.cpu().item():.4f}"})
             # wandb.log(metrics_loss)
 
         return label_loss_iter_list, tree_loss_iter_list, edu_loss_iter_list, dwa_T
@@ -329,13 +356,12 @@ class TrainingManager:
     ):
 
         def get_weight(list_losses, k):
-            return torch.tensor(list_losses[-k:]).sum() / torch.tensor(list_losses[-2*k:-k]).sum()
+            return torch.tensor(list_losses[-k:]).sum() / torch.tensor(list_losses[-2 * k : -k]).sum()
 
-        if self.model.segmenter_type == 'tony' and self.model.segmenter.use_crf:
+        if self.model.segmenter_type == "tony" and self.model.segmenter.use_crf:
             loss_segment_batch *= 0.01
 
         if self.use_dwa_loss:
-
             if len(label_loss_iter_list) >= 2 * self.dwa_bs:
                 r_label = get_weight(label_loss_iter_list, self.dwa_bs)
                 r_tree = get_weight(tree_loss_iter_list, self.dwa_bs)
@@ -351,11 +377,11 @@ class TrainingManager:
                 tree_loss_iter_list.append(loss_tree_batch)
                 edu_loss_iter_list.append(loss_segment_batch)
 
-                #wandb.log({
+                # wandb.log({
                 #    'w_label': w_label,
                 #    'w_tree': w_tree,
                 #    'w_edu': w_edu,
-                #})
+                # })
 
                 return w_label * loss_label_batch + w_tree * loss_tree_batch + w_edu * loss_segment_batch
 
@@ -366,13 +392,13 @@ class TrainingManager:
 
         self.model.eval()
 
-        dev_metrics_gs = self._eval_data(self.dev_data, desc='Validation', use_pred_segmentation=False)
-        test_metrics_gs = self._eval_data(self.test_data, desc='Testing', use_pred_segmentation=False)
+        dev_metrics_gs = self._eval_data(self.dev_data, desc="Validation", use_pred_segmentation=False)
+        test_metrics_gs = self._eval_data(self.test_data, desc="Testing", use_pred_segmentation=False)
         print(f"Dev metrics (gold segmentation): {dev_metrics_gs}")
         print(f"Test metrics (gold segmentation): {test_metrics_gs}")
 
-        dev_metrics = self._eval_data(self.dev_data, desc='Validation')
-        test_metrics = self._eval_data(self.test_data, desc='Testing')
+        dev_metrics = self._eval_data(self.dev_data, desc="Validation")
+        test_metrics = self._eval_data(self.test_data, desc="Testing")
         print(f"Dev metrics (end-to-end): {dev_metrics}")
         print(f"Test metrics (end-to-end): {test_metrics}")
 
@@ -403,12 +429,23 @@ class TrainingManager:
         batches = self._get_batches(data, self.eval_size)
         pbar = tqdm(enumerate(batches), desc=desc, total=len(batches))
         for _i, batch in pbar:
-            (loss_tree_batch, loss_label_batch), (
-                correct_span_batch, correct_relation_batch, correct_nuclearity_batch, correct_full_batch,
-                no_system_batch,
-                no_golden_batch, correct_span_batch_list, correct_relation_batch_list, correct_nuclearity_batch_list,
-                correct_full_batch_list,
-                no_system_batch_list, no_golden_batch_list, segment_results_list
+            (
+                (loss_tree_batch, loss_label_batch),
+                (
+                    correct_span_batch,
+                    correct_relation_batch,
+                    correct_nuclearity_batch,
+                    correct_full_batch,
+                    no_system_batch,
+                    no_golden_batch,
+                    correct_span_batch_list,
+                    correct_relation_batch_list,
+                    correct_nuclearity_batch_list,
+                    correct_full_batch_list,
+                    no_system_batch_list,
+                    no_golden_batch_list,
+                    segment_results_list,
+                ),
             ) = self.model.eval_loss(batch, use_pred_segmentation=use_pred_segmentation)
 
             loss_tree_all.append(loss_tree_batch)
@@ -432,19 +469,26 @@ class TrainingManager:
             no_system_list += no_system_batch_list
             no_golden_list += no_golden_batch_list
 
-        span_points, relation_points, nuclearity_points, f1_full, segment_points = get_micro_metrics(correct_span,
-                                                                                                     correct_relation,
-                                                                                                     correct_nuclearity,
-                                                                                                     correct_full,
-                                                                                                     no_system,
-                                                                                                     no_golden,
-                                                                                                     no_gold_seg,
-                                                                                                     no_pred_seg,
-                                                                                                     no_correct_seg)
+        span_points, relation_points, nuclearity_points, f1_full, segment_points = get_micro_metrics(
+            correct_span,
+            correct_relation,
+            correct_nuclearity,
+            correct_full,
+            no_system,
+            no_golden,
+            no_gold_seg,
+            no_pred_seg,
+            no_correct_seg,
+        )
         if not self.use_micro_f1:
             span_points, nuclearity_points, relation_points, full_points = get_macro_metrics(
-                correct_span_list, correct_nuclearity_list, correct_relation_list, correct_full_list,
-                no_system_list, no_golden_list)
+                correct_span_list,
+                correct_nuclearity_list,
+                correct_relation_list,
+                correct_full_list,
+                no_system_list,
+                no_golden_list,
+            )
 
             full_pr, full_re, f1_full = full_points
 
@@ -454,13 +498,13 @@ class TrainingManager:
         rel_pr, rel_re, rel_f1 = relation_points
 
         metrics = {
-            'loss_tree': np.mean(loss_tree_all),
-            'loss_label': np.mean(loss_label_all),
-            'f1_seg': seg_f1,
-            'f1_span': span_f1,
-            'f1_nuclearity': nuc_f1,
-            'f1_relation': rel_f1,
-            'f1_full': f1_full,
+            "loss_tree": np.mean(loss_tree_all),
+            "loss_label": np.mean(loss_label_all),
+            "f1_seg": seg_f1,
+            "f1_span": span_f1,
+            "f1_nuclearity": nuc_f1,
+            "f1_relation": rel_f1,
+            "f1_full": f1_full,
         }
 
         return metrics
@@ -468,12 +512,8 @@ class TrainingManager:
     def _get_batches(self, data: Data, batch_size: int) -> list[tuple]:
 
         input_sentences = np.array(data.input_sentences, dtype=object)
-        sent_breaks: np.ndarray | None = (
-            np.array(data.sent_breaks, dtype=object) if data.sent_breaks else None
-        )
-        entity_ids: np.ndarray | None = (
-            np.array(data.entity_ids, dtype=object) if data.entity_ids else None
-        )
+        sent_breaks: np.ndarray | None = np.array(data.sent_breaks, dtype=object) if data.sent_breaks else None
+        entity_ids: np.ndarray | None = np.array(data.entity_ids, dtype=object) if data.entity_ids else None
         entity_position_ids: np.ndarray | None = (
             np.array(data.entity_position_ids, dtype=object) if data.entity_position_ids else None
         )
@@ -489,14 +529,12 @@ class TrainingManager:
         random.shuffle(indices)
 
         for i in range(0, len(input_sentences), batch_size):
-            batch_indices = indices[i:i + batch_size]
+            batch_indices = indices[i : i + batch_size]
 
             batch_input_sentences = input_sentences[batch_indices]
             batch_sent_breaks = sent_breaks[batch_indices] if sent_breaks is not None else None
             batch_entity_ids = entity_ids[batch_indices] if entity_ids is not None else None
-            batch_entity_position_ids = (
-                entity_position_ids[batch_indices] if entity_position_ids is not None else None
-            )
+            batch_entity_position_ids = entity_position_ids[batch_indices] if entity_position_ids is not None else None
             batch_edu_breaks = edu_breaks[batch_indices]
             batch_decoder_inputs = decoder_inputs[batch_indices]
             batch_relation_labels = relation_labels[batch_indices]
@@ -506,15 +544,10 @@ class TrainingManager:
             # sort batches by input sentence length
             sorted_idxs = np.argsort([len(x) for x in batch_input_sentences])[::-1]
             batch_input_sentences = batch_input_sentences[sorted_idxs].tolist()
-            batch_sent_breaks = (
-                batch_sent_breaks[sorted_idxs].tolist() if batch_sent_breaks is not None else None
-            )
-            batch_entity_ids = (
-                batch_entity_ids[sorted_idxs].tolist() if batch_entity_ids is not None else None
-            )
+            batch_sent_breaks = batch_sent_breaks[sorted_idxs].tolist() if batch_sent_breaks is not None else None
+            batch_entity_ids = batch_entity_ids[sorted_idxs].tolist() if batch_entity_ids is not None else None
             batch_entity_position_ids = (
-                batch_entity_position_ids[sorted_idxs].tolist()
-                if batch_entity_position_ids is not None else None
+                batch_entity_position_ids[sorted_idxs].tolist() if batch_entity_position_ids is not None else None
             )
             batch_edu_breaks = batch_edu_breaks[sorted_idxs].tolist()
             batch_decoder_inputs = batch_decoder_inputs[sorted_idxs].tolist()
@@ -531,7 +564,7 @@ class TrainingManager:
                 batch_decoder_inputs,
                 batch_relation_labels,
                 batch_parsing_breaks,
-                batch_golden_metrics
+                batch_golden_metrics,
             )
 
             batches.append(batch)
@@ -543,11 +576,8 @@ class TrainingManager:
 
     def _combine_batches(self, batches: list[tuple], min_edus_number: int = 8) -> list[tuple]:
         def merge(sample: tuple, batch: tuple) -> tuple:
-            """ Basically merges two batches: appends contents of the 'sample' at the end of the 'batch'. """
-            return tuple(
-                b if s is None else s if b is None else b + s
-                for b, s in zip(batch, sample, strict=True)
-            )
+            """Basically merges two batches: appends contents of the 'sample' at the end of the 'batch'."""
+            return tuple(b if s is None else s if b is None else b + s for b, s in zip(batch, sample, strict=True))
 
         result: list[tuple] = []
         trivials_stack: list[tuple] = []
@@ -575,9 +605,9 @@ class TrainingManager:
 
     def _save_model(self, epoch: int, metrics: dict[str, object]) -> None:
 
-        model_path = self.save_dir / 'best_weights.pt'
+        model_path = self.save_dir / "best_weights.pt"
         torch.save(self.model.state_dict(), model_path)
 
-        metric_path = self.save_dir / f'metrics_epoch_{epoch}.json'
-        with metric_path.open('w') as f:
+        metric_path = self.save_dir / f"metrics_epoch_{epoch}.json"
+        with metric_path.open("w") as f:
             json.dump(_metrics_as_floats(metrics), f, sort_keys=True, indent=4)

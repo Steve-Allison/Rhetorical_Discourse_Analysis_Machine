@@ -72,9 +72,7 @@ def flatten_tree[R, E](
         my_id = id_map[id(node)]
         left = node.left
         right = node.right
-        node_refs, node_note = span_index.overlap(
-            node.start, node.end, note_threshold=note_threshold
-        )
+        node_refs, node_note = span_index.overlap(node.start, node.end, note_threshold=note_threshold)
 
         if left is None and right is None:
             edus.append(make_edu(id=my_id, refs=node_refs, depth=depth))
@@ -87,9 +85,7 @@ def flatten_tree[R, E](
         right_refs, _ = span_index.overlap(right.start, right.end)
         nuclearity = node.nuclearity or ""
         relation = node.relation or ""
-        nucleus_refs, satellite_refs = split_refs_by_nuclearity(
-            left_refs, right_refs, nuclearity
-        )
+        nucleus_refs, satellite_refs = split_refs_by_nuclearity(left_refs, right_refs, nuclearity)
 
         positions = {pos for ref in node_refs for pos in ref_to_bpos.get(ref, ())}
         memberships = tuple(boundary_ids[pos] for pos in sorted(positions))

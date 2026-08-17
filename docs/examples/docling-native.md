@@ -13,8 +13,7 @@ from isanlp_rst.docling import parse_docling
 
 result = parse_docling(Path("deck.docling.json"), device="auto")
 
-print(f"{len(result.edus)} EDUs, {len(result.relations)} relations, "
-      f"{len(result.boundaries)} boundaries")
+print(f"{len(result.edus)} EDUs, {len(result.relations)} relations, {len(result.boundaries)} boundaries")
 print(f"source: {result.source}, mimetype: {result.source_origin.get('mimetype')}")
 ```
 
@@ -40,10 +39,7 @@ from isanlp_rst.docling import parse_docling
 
 parser = Parser(hf_model_version="gumrrg", device="auto")
 
-results = [
-    parse_docling(p, parser=parser)
-    for p in Path("corpus").glob("*.docling.json")
-]
+results = [parse_docling(p, parser=parser) for p in Path("corpus").glob("*.docling.json")]
 ```
 
 The injected parser is reused for every call. Model knobs
@@ -57,12 +53,12 @@ constructs its own.
 result = parse_docling(
     "doc.docling.json",
     include_picture_descriptions=True,  # picture.meta.description.text where present
-    include_slide_notes=True,           # ContentLayer.NOTES (PPTX speaker notes)
-    include_furniture=False,            # ContentLayer.FURNITURE (PDF page headers / footers)
-    harvest_separator="\n\n",           # inserted between spans
-    coalesce_speaker_turns=True,        # VTT only
-    note_threshold=0.90,                # ratio that triggers RstRelation.note
-    max_harvest_chars=200_000,          # raises InputTooLargeError above this
+    include_slide_notes=True,  # ContentLayer.NOTES (PPTX speaker notes)
+    include_furniture=False,  # ContentLayer.FURNITURE (PDF page headers / footers)
+    harvest_separator="\n\n",  # inserted between spans
+    coalesce_speaker_turns=True,  # VTT only
+    note_threshold=0.90,  # ratio that triggers RstRelation.note
+    max_harvest_chars=200_000,  # raises InputTooLargeError above this
 )
 ```
 
@@ -93,7 +89,7 @@ relations:
 
 ```python
 within = [r for r in result.relations if len(r.boundary_memberships) == 1]
-cross  = [r for r in result.relations if len(r.boundary_memberships) >  1]
+cross = [r for r in result.relations if len(r.boundary_memberships) > 1]
 
 print(f"within-boundary: {len(within)} relations")
 print(f"cross-boundary:  {len(cross)} relations  ← typically slide-to-slide / section-to-section arcs")
@@ -111,6 +107,7 @@ nodes.update({e.id: e for e in result.edus})
 
 root = result.relations[0]  # relations[] is pre-order DFS — root first
 
+
 def walk(node_id: int, depth: int = 0) -> None:
     node = nodes[node_id]
     indent = "  " * depth
@@ -120,6 +117,7 @@ def walk(node_id: int, depth: int = 0) -> None:
         walk(node.right_id, depth + 1)
     else:  # RstEdu
         print(f"{indent}EDU {node.id}: {node.self_refs}")
+
 
 walk(root.id)
 ```
@@ -148,7 +146,7 @@ boundary marker that no `HarvestSpan` carries. The `table-N` boundary's
 `self_refs` is `(#/tables/N, <cell pointers>)`.
 
 ```python
-result = parse_docling("doc.docling.json")          # analyses on by default
+result = parse_docling("doc.docling.json")  # analyses on by default
 for analysis in result.table_analyses:
     print(analysis.id, len(analysis.edus), "cell EDUs")
 ```
