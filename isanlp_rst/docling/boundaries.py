@@ -311,7 +311,7 @@ def _detect_table_boundaries(doc: DoclingDocument) -> tuple[Boundary, ...]:
             parent_ref = getattr(parent, "cref", None)
         cell_refs = tuple(
             f"{table.self_ref}/data/table_cells/{idx}"
-            for idx in range(len(table.data.table_cells))
+            for idx, _cell in enumerate(table.data.table_cells)
         )
         out.append(
             Boundary(

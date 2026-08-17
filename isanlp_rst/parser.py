@@ -76,26 +76,29 @@ class Parser:
         # predictor unambiguously selects local mode.
         effective_hf_name = None if model_dir is not None else hf_model_name
 
-        if resolved_family == "dmrst":
-            self.predictor = PredictorDMRST(
-                model_dir=model_dir,
-                hf_model_name=effective_hf_name,
-                hf_model_version=hf_model_version,
-                device=device,
-                cuda_device=cuda_device,
-                dtype=dtype,
-            )
-        else:  # 'unirst'
-            self.predictor = PredictorUniRST(
-                model_dir=model_dir,
-                hf_model_name=effective_hf_name,
-                hf_model_version=hf_model_version,
-                relinventory=relinventory,
-                relinventory_idx=relinventory_idx,
-                device=device,
-                cuda_device=cuda_device,
-                dtype=dtype,
-            )
+        match resolved_family:
+            case "dmrst":
+                self.predictor = PredictorDMRST(
+                    model_dir=model_dir,
+                    hf_model_name=effective_hf_name,
+                    hf_model_version=hf_model_version,
+                    device=device,
+                    cuda_device=cuda_device,
+                    dtype=dtype,
+                )
+            case "unirst":
+                self.predictor = PredictorUniRST(
+                    model_dir=model_dir,
+                    hf_model_name=effective_hf_name,
+                    hf_model_version=hf_model_version,
+                    relinventory=relinventory,
+                    relinventory_idx=relinventory_idx,
+                    device=device,
+                    cuda_device=cuda_device,
+                    dtype=dtype,
+                )
+            case _:
+                raise ValueError(f"Unknown family {resolved_family!r}.")
 
     @classmethod
     def _resolve_family(

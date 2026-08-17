@@ -2,6 +2,7 @@ import copy
 import json
 import random
 from collections import defaultdict
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any
 
@@ -22,21 +23,25 @@ from isanlp_rst.universal_parser.src.parser.data import RelationTableGUM, Relati
 random.seed(42)
 
 
+@dataclass
 class ParserInput:
-    def __init__(self) -> None:
-        self.LabelforMetric: list[str] = []
-        self.sentences = []
-        self.edu_breaks = []
-        self.label_for_metrics_list = []
-        self.label_for_metrics = ''
-        self.parsing_index = []
-        self.relation = []
-        self.decoder_inputs = []
-        self.parents = []
-        self.siblings = []
-        self.sentence_span = []
+    """Mutable per-document parser example. Extra attributes (legacy pickle
+    ``relation_table``, Elena-era ``LabelforMetric``) stay settable — no slots.
+    """
 
-    def to_dict(self) -> dict[str, object]:
+    sentences: list = field(default_factory=list)
+    edu_breaks: list = field(default_factory=list)
+    label_for_metrics_list: list = field(default_factory=list)
+    label_for_metrics: str = ""
+    parsing_index: list = field(default_factory=list)
+    relation: list = field(default_factory=list)
+    decoder_inputs: list = field(default_factory=list)
+    parents: list = field(default_factory=list)
+    siblings: list = field(default_factory=list)
+    sentence_span: list = field(default_factory=list)
+    LabelforMetric: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "sentences": self.sentences,
             "edu_breaks": self.edu_breaks,
@@ -51,10 +56,12 @@ class ParserInput:
         }
 
     @classmethod
-    def from_dict(cls, payload: dict[str, object]) -> ParserInput:
-        obj = cls()
+    def from_dict(cls, payload: dict[str, Any]) -> ParserInput:
+        known = {f.name for f in fields(cls)}
+        obj = cls(**{k: payload[k] for k in known if k in payload})
         for key, value in payload.items():
-            setattr(obj, key, value)
+            if key not in known:
+                setattr(obj, key, value)
         return obj
 
     def write_json(self, path: Path) -> None:

@@ -4,6 +4,7 @@ from bisect import bisect_right
 from collections.abc import Iterable, Sequence
 from contextlib import AbstractContextManager
 from dataclasses import dataclass
+from itertools import batched
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -214,11 +215,11 @@ class BasePredictor:
     @staticmethod
     def divide_chunks[T](_list: Sequence[T], n: int) -> Iterable[Sequence[T]]:
         """Yield chunks of size `n` from `_list` (handles empty lists)."""
-        if _list:
-            for i in range(0, len(_list), n):
-                yield _list[i : min(i + n, len(_list))]
-        else:
+        if not _list:
             yield _list
+            return
+        for chunk in batched(_list, n, strict=False):
+            yield list(chunk)
 
     @staticmethod
     def build_offset_converter_from_words(
@@ -241,7 +242,7 @@ class BasePredictor:
 
         for idx, (tok, (start, end)) in enumerate(zip(tokens, token_offsets, strict=True)):
             token_text = tok or ""
-            for _ in range(len(token_text)):
+            for _ in token_text:
                 positions.append(cursor)
                 originals.append(start)
                 start += 1
@@ -268,7 +269,7 @@ class BasePredictor:
 
         for idx, token in enumerate(tokens):
             token_text = token.text
-            for char_idx in range(len(token_text)):
+            for char_idx, _ in enumerate(token_text):
                 positions.append(cursor)
                 originals.append(token.start + char_idx)
                 cursor += 1

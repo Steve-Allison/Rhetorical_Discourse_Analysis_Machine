@@ -21,19 +21,24 @@ class DUConverter:
         #    predictions = pickle.load(f)
 
         data = []
-        for i in range(len(self.predictions['tokens'])):
-            gold_tokens = None
-            if tokens:
-                gold_tokens = tokens[i]
+        token_docs = self.predictions['tokens']
+        edu_docs = self.predictions['edu_breaks']
+        span_docs = self.predictions['spans']
+        for i, (doc_tokens, edu_breaks, span_batch) in enumerate(
+            zip(token_docs, edu_docs, span_docs, strict=True)
+        ):
+            gold_tokens = tokens[i] if tokens else None
 
-            edus = self._lists_to_isanlp_format(tokens=self.predictions['tokens'][i],
-                                                edu_breaks=self.predictions['edu_breaks'][i],
-                                                gold_tokens=gold_tokens)
+            edus = self._lists_to_isanlp_format(
+                tokens=doc_tokens,
+                edu_breaks=edu_breaks,
+                gold_tokens=gold_tokens,
+            )
             if len(edus) == 1:
                 return edus
 
             self.du_id = len(edus)
-            rels = self._tree_string_to_list(self.predictions['spans'][i][0])
+            rels = self._tree_string_to_list(span_batch[0])
             tree = self.construct_tree(0, edus, rels)
             data.append(tree)
 
@@ -78,12 +83,13 @@ class DUConverter:
         prev_chr_end = 0
         edus = []
         for i, brk in enumerate(edu_breaks):
-            if self.tokenization_type == 'default':
-                text = ''.join(tokens[prev_break:brk + 1]).replace('▁', ' ').strip()
-            elif self.tokenization_type == 'rubert':
-                text = ' '.join(tokens[prev_break:brk + 1]).replace(' ##', '')
-            else:
-                raise ValueError(f'Unknown tokenization_type: {self.tokenization_type!r}')
+            match self.tokenization_type:
+                case 'default':
+                    text = ''.join(tokens[prev_break:brk + 1]).replace('▁', ' ').strip()
+                case 'rubert':
+                    text = ' '.join(tokens[prev_break:brk + 1]).replace(' ##', '')
+                case _:
+                    raise ValueError(f'Unknown tokenization_type: {self.tokenization_type!r}')
 
             edu = DiscourseUnit(
                 id=i,

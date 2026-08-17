@@ -2,7 +2,9 @@ import copy
 import json
 import random
 from collections import defaultdict
+from dataclasses import dataclass, field, fields
 from pathlib import Path
+from typing import Any
 
 import fire
 from tqdm import tqdm
@@ -21,20 +23,22 @@ from isanlp_rst.universal_parser.inventory import (
 random.seed(42)
 
 
+@dataclass
 class ParserInput:
-    def __init__(self) -> None:
-        self.sentences: list[str] = []
-        self.edu_breaks: list[int] = []
-        self.label_for_metrics_list: list[str] = []
-        self.label_for_metrics = ''
-        self.parsing_index: list[int] = []
-        self.relation: list[int] = []
-        self.decoder_inputs: list[int] = []
-        self.parents: list[int] = []
-        self.siblings: list[int] = []
-        self.sentence_span: list[list[int]] = []
+    """Mutable per-document parser example. Extra attributes stay settable."""
 
-    def to_dict(self) -> dict[str, object]:
+    sentences: list[str] = field(default_factory=list)
+    edu_breaks: list[int] = field(default_factory=list)
+    label_for_metrics_list: list[str] = field(default_factory=list)
+    label_for_metrics: str = ""
+    parsing_index: list[int] = field(default_factory=list)
+    relation: list[int] = field(default_factory=list)
+    decoder_inputs: list[int] = field(default_factory=list)
+    parents: list[int] = field(default_factory=list)
+    siblings: list[int] = field(default_factory=list)
+    sentence_span: list[list[int]] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "sentences": self.sentences,
             "edu_breaks": self.edu_breaks,
@@ -49,10 +53,12 @@ class ParserInput:
         }
 
     @classmethod
-    def from_dict(cls, payload: dict[str, object]) -> ParserInput:
-        obj = cls()
+    def from_dict(cls, payload: dict[str, Any]) -> ParserInput:
+        known = {f.name for f in fields(cls)}
+        obj = cls(**{k: payload[k] for k in known if k in payload})
         for key, value in payload.items():
-            setattr(obj, key, value)
+            if key not in known:
+                setattr(obj, key, value)
         return obj
 
     def write_json(self, path: Path) -> None:

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -83,51 +84,32 @@ def nucs_and_rels(label_index: int, relation_table: list[str]) -> tuple[str, str
     nuc_left, nuc_right = 'Nucleus', 'Nucleus'
     rel_left, rel_right = label, label
 
-    if nuclearities.lower() == 'ns':
-        nuc_right = 'Satellite'
-        rel_left = 'span'
-
-    elif nuclearities.lower() == 'sn':
-        nuc_left = 'Satellite'
-        rel_right = 'span'
+    match nuclearities.lower():
+        case 'ns':
+            nuc_right = 'Satellite'
+            rel_left = 'span'
+        case 'sn':
+            nuc_left = 'Satellite'
+            rel_right = 'span'
+        case _:
+            pass
 
     return nuc_left, nuc_right, rel_left, rel_right
 
 
+@dataclass(slots=True)
 class Data:
-    def __init__(self, input_sentences: list, edu_breaks: list, decoder_input: list,
-                 relation_label: list, parsing_breaks: list, golden_metric: list,
-                 dataset_index: list | None = None,
-                 entity_ids: list | None = None, entity_position_ids: list | None = None,
-                 sent_breaks: list | None = None, parents_index: list | None = None,
-                 sibling: list | None = None) -> None:
-        """
-        input_sentences (list[list[str]]): Subtokens for each document.
-            ex.: [['▁A', 'e', 'sthetic', '▁Ap', 'preci', 'ation', '▁and', '▁Spanish', '▁Art', '▁:', ...] ...]
-        edu_breaks (list[list[[int]]): Positions of each right EDU border.
-            ex.: [[9, ...] ...] for example above
-        decoder_input (list[list[int]])): ???
-            ex.: [[0, 0, 2, 2, 3, 4, 6, ...] ...] for example above
-        relation_label (list[list[int]]): Relation labels indices
-            ex.: [[14, 7, 36, 36, 36, 14, ...] ...] for example above
-        parsing_breaks (list[list[int]]): ???
-            ex.: [[1, 0, 5, 2, 3, 4, ...] ...] for example above
-        golden_metric (list[str]): document trees in the string format
-            ex.: ['(1:Satellite=Background:2,3:Nucleus=span:74) (1:Nucleus=span:1,2:Satellite=Elaboration:2) ...', ...]
-        parents_index (list[list[int]]): ???
-            ex.: [[0, 73, 73, 73, 5, 5, ...] ...] for example above
-        sibling (list[list[int]]): ???
-            ex.: [[99, 99, 1, 99, 2, 3, ...] ...] for example above
-        """
-        self.input_sentences = input_sentences
-        self.sent_breaks = sent_breaks
-        self.entity_ids = entity_ids
-        self.entity_position_ids = entity_position_ids
-        self.edu_breaks = edu_breaks
-        self.decoder_input = decoder_input
-        self.relation_label = relation_label
-        self.parsing_breaks = parsing_breaks
-        self.golden_metric = golden_metric
-        self.parents_index = parents_index
-        self.sibling = sibling
-        self.dataset_index = dataset_index
+    """One batched parser example. Field order matches the historical constructor."""
+
+    input_sentences: list
+    edu_breaks: list
+    decoder_input: list
+    relation_label: list
+    parsing_breaks: list
+    golden_metric: list
+    dataset_index: list | None = None
+    entity_ids: list | None = None
+    entity_position_ids: list | None = None
+    sent_breaks: list | None = None
+    parents_index: list | None = None
+    sibling: list | None = None
