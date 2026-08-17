@@ -27,6 +27,8 @@ dependencies = [
   "nltk",
   "numpy>=1.26.4",
   "transformers",
+  "sentencepiece>=0.2.1",
+  "tiktoken>=0.7.0",
   "torch>=2.0",
   "huggingface-hub>=0.16.4",
   "tqdm>=4.42",
