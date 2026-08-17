@@ -1,7 +1,7 @@
 import json
 from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from isanlp.annotation_rst import DiscourseUnit
 
@@ -55,6 +55,8 @@ class Parser:
         cuda_device: int | None = None,
         family: str | None = None,
         dtype: str | torch.dtype | None = None,
+        segmenter: Any | None = None,
+        segmenter_model: str | None = None,
     ):
         if (
             model_dir is not None
@@ -100,6 +102,18 @@ class Parser:
                 )
             case _:
                 raise ValueError(f"Unknown family {resolved_family!r}.")
+
+        if segmenter is not None:
+            self.segmenter = segmenter
+        elif segmenter_model is not None:
+            from isanlp_rst.segmentation.transformer_segmenter import TransformerEduSegmenter
+
+            self.segmenter = TransformerEduSegmenter(
+                model_name_or_path=segmenter_model,
+                device=device or "auto",
+            )
+        else:
+            self.segmenter = None
 
     @classmethod
     def _resolve_family(
@@ -244,8 +258,12 @@ class Parser:
         from isanlp_rst.erst.converter import du_to_analysis
 
         start_t = time.perf_counter()
+        segmenter = getattr(self, "segmenter", None)
         if document.edus is not None:
             raw_res = self.predictor.parse_from_edus([edu.text for edu in document.edus])
+        elif segmenter is not None:
+            segmented_edus = segmenter.segment(document.text)
+            raw_res = self.predictor.parse_from_edus([edu.text for edu in segmented_edus])
         else:
             raw_res = self.predictor.parse_rst(document.text)
         elapsed_ms = (time.perf_counter() - start_t) * 1000.0

@@ -88,6 +88,8 @@ platforms = ["osx-arm64"]
 [tool.pixi.dependencies]
 python = "3.14.*"
 markdownlint-cli2 = ">=0.14"
+sentencepiece = ">=0.2.1,<0.3"
+tiktoken = ">=0.13.0,<0.14"
 
 [tool.pixi.pypi-dependencies]
 isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats", "pydantic"] }
