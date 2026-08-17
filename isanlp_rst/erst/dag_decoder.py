@@ -4,6 +4,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 
 import networkx as nx
+import numpy as np
 
 from isanlp_rst.contracts.analysis import RstAnalysis, SecondaryRelationEdge
 from isanlp_rst.erst.dataset import COARSE_CONCEPTS, SecondaryEdgeCandidate
@@ -59,8 +60,6 @@ class AcyclicDagDecoder:
             dag.add_edge(p_edge.parent_id, p_edge.child_id)
 
         # 2. Score and rank candidate edges
-        import numpy as np
-
         scored_candidates: list[ScoredEdgeCandidate] = []
         for cand, e_prob, r_log in zip(candidates, edge_probs, rel_logits, strict=True):
             if e_prob < self.min_confidence:
@@ -76,13 +75,13 @@ class AcyclicDagDecoder:
             best_idx = int(np.argmax(r_probs))
             best_concept = COARSE_CONCEPTS[best_idx] if best_idx < len(COARSE_CONCEPTS) else "Elaboration"
             best_concept_prob = float(r_probs[best_idx])
-            joint_score = float(e_prob * best_concept_prob)
+            joint_score = e_prob * best_concept_prob
 
             scored_candidates.append(
                 ScoredEdgeCandidate(
                     source_id=cand.source_id,
                     target_id=cand.target_id,
-                    edge_prob=float(e_prob),
+                    edge_prob=e_prob,
                     best_concept=best_concept,
                     best_concept_prob=best_concept_prob,
                     joint_score=joint_score,

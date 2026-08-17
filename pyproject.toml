@@ -124,6 +124,8 @@ exclude = [
   "isanlp_rst/universal_parser/src",
 ]
 pythonVersion = "3.14"
+venvPath = "."
+venv = ".pixi/envs/default"
 reportMissingImports = "warning"     # pyright runs against the active env
 # torch's runtime API exposes many names not in __all__ (e.g. torch.device,
 # torch.tensor, torch.equal); flagging them as private noise dwarfs real issues.

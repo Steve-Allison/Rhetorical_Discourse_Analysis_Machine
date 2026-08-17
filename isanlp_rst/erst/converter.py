@@ -192,7 +192,7 @@ def rs4_to_document_and_analysis(
     signals = [
         DiscourseSignal(
             signal_id=f"sig_{idx + 1}",
-            edge_id=str(sig.source),
+            edge_id=sig.source,
             signal_type=sig.type,
             signal_subtype=sig.subtype,
             token_ids=tuple(t - 1 for t in sig.tokens if t > 0),
