@@ -10,6 +10,7 @@ from . import common
 from . import relation_set
 from . import utils_dis_thiago
 from . import utils_rs3
+from .span_node import SpanNode as SpanNode
 
 """
 TODO:
@@ -269,42 +270,6 @@ class ThiagoDocument(Document):
 
     def writeEdu(self, outpath: str | Path) -> None:
         common.writeEdusFile(self, ".txt.lisp.thiago", outpath)
-
-
-# ----------------------------------------------------------------------------------
-# ----------------------------------------------------------------------------------
-class SpanNode:
-    """
-    RST tree node (from DPLP, by Yangfeng Ji)
-    """
-
-    def __init__(self, prop: str | None) -> None:
-        """
-        Initialization of SpanNode
-        :type text: string
-        :param text: text of this span
-        """
-        self.text: Any = None  # Text of this span / Discourse relation
-        self.relation: Any = None
-        self.eduspan: Any = None  # EDU span / Nucleus span (begin, end) index id EDU
-        self.nucspan: Any = None
-        self.nucedu: Any = None  # Nucleus single EDU (itself id for an EDU)s
-        self.prop = prop  # Property: Nucleus/Satellite/Roots
-        self.lnode: SpanNode | None = None  # Children nodes (for binary RST tree only)
-        self.rnode: SpanNode | None = None
-        self.pnode: SpanNode | None = None  # Parent node
-        self.nodelist: list[SpanNode] = []  # Node list (for general RST tree only)
-        self.form: str | None = None  # Relation form: NN, NS, SN
-        self.eduCovered: Any = []  # Ids or nodes, depending on processing stage
-        self._id: Any = None  # Id (int) of a DU, only from rs3 files (CHLOE Added)
-        self.eduSpan: Any = None
-        self.position: Any = None
-
-    def __str__(self) -> str:
-        return self._info() + "\n" + "\n".join("\t" + n._info() for n in self.nodelist)
-
-    def _info(self) -> str:
-        return "eduspan: " + str(self.eduspan)
 
 
 # ----------------------------------------------------------------------------------

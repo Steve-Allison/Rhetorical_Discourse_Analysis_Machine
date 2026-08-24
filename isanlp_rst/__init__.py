@@ -7,14 +7,13 @@ serialising ``isanlp.annotation_rst.DiscourseUnit`` trees back into the
 """
 
 import asyncio
-import logging
 import os
-import threading
-import warnings
 from collections.abc import Awaitable
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import IO, Any
+from typing import IO
 
+from ._version import resolve_installed_package_version
 from .contracts import (
     AnnotationStatusEnum,
     CapabilityStatusEnum,
@@ -44,35 +43,13 @@ from .contracts import (
     TextSpan,
     TimingRecord,
 )
-from .erst import RS4Document, RS4Reader, RS4Writer
+from .erst import ErstCapabilityError, RS4Document, RS4Reader, RS4Writer
 from .eval import ErstScorer, SoftParsevalScorer, StandardParsevalScorer
 from .ontology import OntologyAdapter
 from .parser import Parser
 from .rstviewer import RenderedRST
 from .rstviewer import main as _rst_main
 from .utils.analysis import find_cdu, relation_category, tree_stats
-
-try:
-    from isanlp.annotation_rst import DiscourseUnit
-except ImportError:
-    DiscourseUnit = None  # type: ignore[misc, assignment]
-
-try:
-    import transformers  # noqa: F401
-
-    logging.getLogger("transformers").setLevel(logging.ERROR)
-except ImportError:
-    pass
-
-warnings.filterwarnings(
-    "ignore",
-    message=r"The new embeddings will be initialized from a multivariate normal distribution",
-)
-warnings.filterwarnings(
-    "ignore",
-    message=r"dropout option adds dropout after all but last recurrent layer",
-    module=r"torch\.nn\.modules\.rnn",
-)
 
 __all__ = [
     "AnnotationStatusEnum",
@@ -83,6 +60,7 @@ __all__ = [
     "DocumentToken",
     "EdgeKindEnum",
     "Edu",
+    "ErstCapabilityError",
     "ErstScorer",
     "FailureCodeEnum",
     "FormatRstAnalysis",
@@ -118,7 +96,10 @@ __all__ = [
     "to_pdf",
     "to_png",
     "tree_stats",
+    "__version__",
 ]
+
+__version__ = resolve_installed_package_version()
 
 type PathLike = str | os.PathLike[str]
 
@@ -233,18 +214,5 @@ def _run_coro_sync_result[T](coro: Awaitable[T]) -> T:
     except RuntimeError:
         return asyncio.run(coro)
 
-    result: dict[str, Any] = {"exc": None, "value": None}
-
-    def _runner() -> None:
-        try:
-            result["value"] = asyncio.run(coro)
-        except BaseException as exc:  # noqa: BLE001
-            result["exc"] = exc
-
-    thread = threading.Thread(target=_runner, daemon=True)
-    thread.start()
-    thread.join()
-
-    if result["exc"] is not None:
-        raise result["exc"]
-    return result["value"]
+    with ThreadPoolExecutor(max_workers=1, thread_name_prefix="isanlp-rst-async") as executor:
+        return executor.submit(asyncio.run, coro).result()

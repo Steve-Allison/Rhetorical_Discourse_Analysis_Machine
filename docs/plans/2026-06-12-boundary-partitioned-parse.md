@@ -40,7 +40,7 @@ For structured documents it is wrong because:
 
 Instead of one `parser(harvest.full_text)` call → **N calls**, one per primary boundary region.
 
-```
+```text
 Current:  harvest all → check total size → parse one big string → flatten
 Proposed: harvest all → detect boundaries → partition spans by boundary →
           parse each partition → offset IDs → concatenate → flatten each partition
@@ -657,7 +657,7 @@ All three `_entry.py` files: add `"parse_mode"` and `"max_section_chars"` to the
 
 Each entry point's docstring gains:
 
-```
+```text
 parse_mode: ``"auto"`` (default) — switch to boundary mode when total
     harvest exceeds ``max_harvest_chars``; ``"boundary"`` — always
     partition at structural boundaries (slides, sections, headings, pages,

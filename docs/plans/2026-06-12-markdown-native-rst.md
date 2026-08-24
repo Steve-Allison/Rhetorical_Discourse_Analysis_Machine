@@ -168,7 +168,7 @@ Fixtures: `minimal.md`, `multi-level.md`, `gfm-rich.md` + the golden JSON.
 
 ## Quality measurement
 
-`pixi run rst-diag <paths>` parses any mix of `.md` / `*.docling.json` / `*.dclg.xml` sources and emits per-document proxy metrics (joint-chain ratio, tree skew, cross-boundary ratio, note ratio, table-analysis count) plus corpus summaries — the measuring stick for any future harvest-policy change. See `scripts/rst_diag.py`.
+`pixi run rst-diag <paths>` parses any mix of `.md` / `*.docling.json` / `*.dclg` sources and emits per-document proxy metrics (joint-chain ratio, tree skew, cross-boundary ratio, note ratio, table-analysis count) plus corpus summaries — the measuring stick for any future harvest-policy change. See `scripts/rst_diag.py`.
 
 ## Out of scope
 

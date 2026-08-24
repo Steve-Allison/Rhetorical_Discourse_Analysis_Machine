@@ -486,3 +486,67 @@ The review began at clean tracked commit
 `graphify-out/**` artifacts and this report were created. No production source,
 test, configuration, documentation, commit, remote branch, or external system
 was changed.
+
+## 4.0.0 remediation closure — 2026-08-24
+
+The original report above remains the before-state. Its exact original form and
+the original Graphify evidence are preserved by commit `f47507d`. This section
+records the authorised remediation outcome. The release decision is fail-closed:
+the corrected 4.0.0 interfaces and reproduced current baseline capability may
+ship, but no new canonical eRST checkpoint, benchmark result, public weight,
+private Hugging Face upload, or SOTA claim exists.
+
+### Finding closure matrix
+
+| ID | Closure | Evidence / release disposition |
+|---|---|---|
+| F-01 | Closed | One shared projection computes exact source text, half-open character spans, one-based inclusive EDU spans, leaf order, and ancestor coverage for Docling 1.2, DocLang 1.1, and Markdown 1.1. Round-trip, hierarchy, Parseval, and downstream eRST tests pass. |
+| F-02 | Closed | The single DocLang metadata-aware walker excludes `description` and `summary` heads at any depth while emitting eligible text and tails exactly once. Current fixture and nested text/tail regressions pass. |
+| F-03 | Closed | Installed distribution metadata is the semantic package-version authority; source revision is separate. Clean installation reports both distribution and module version `4.0.0`. |
+| F-04 | Closed | Pydantic corpus receipts/failures, official document partitions, source hashes, fail-closed loading, and document/hash-disjoint split validation replace silent flatten-and-split behaviour. Private corpus bytes and derived weights remain unpublished. |
+| F-05 | Closed | One immutable DocLang eligibility policy governs harvest and document/page/group/heading/table/list/code/formula boundaries; the option matrix passes. |
+| F-06 | Closed | Both formerly excluded parser trees are included. Full `pyright` reports `0 errors, 0 warnings, 0 informations`; no production ignore was introduced. |
+| F-07 | Closed | The lock contains PyTorch 2.13.0 and setuptools 84.0.0. Python 3.14 warning-as-error full tests and all five CPU/MPS parser smokes pass; the dependency audit finds no known vulnerability. |
+| F-08 | Closed | Fast-token offsets now supply lexical span ends rather than the special `[SEP]` position; padded and unpadded boundary regressions pass. |
+| F-09 | Closed | Package-wide warning filters and Transformers logger mutation are removed. Production suppression scan is empty and `PYTHONWARNINGS=error` passes full tests and CPU/MPS smokes. |
+| F-10 | Closed | A sorted manifest governs 63 tracked Markdown files. Exactly 35 generated Spec Kit projections and one intentional Markdown syntax fixture are excluded; all governed files lint with zero issues. |
+| F-11 | Closed | The active build backend is setuptools 84.0.0. Fresh wheel/sdist creation, archive inspection, and dependency audit pass. |
+| F-12 | Closed | All 42 DocLang fixtures use `.dclg`; immutable-upstream parity at commit `6d3b3d3c195d1f63333c5c5fcba8da17937a33bd` reports equal names and hashes, with counts derived at runtime. |
+| N-01 | Closed | Normalized source basename is part of result-cache identity; equal bytes under two names miss and preserve the second basename. |
+| N-02 | Closed | Envelope schema version is part of every result-cache key; pre-bump entries miss. |
+| N-03 | Closed | One complete candidate generator serves train/dev/test/test2/inference. Candidate-identity tests cover every mode. |
+| N-04 | Closed | Gold labels annotate but cannot create candidates; gold-shuffle invariance passes and hard-negative selection is train-only. |
+| N-05 | Closed | The eRST decoder enforces only valid signal, no self-loop, no duplicate directed pair, and no invented node. Cyclic, non-projective, concurrent, reverse, and primary-overlap conformance tests pass. |
+| N-06 | Closed | Typed signals retain type, subtype, overlapping token anchors, confidence, and detector provenance; validated discourse-marker and morphosyntactic trigger coverage replaces the phrase heuristic. |
+| N-07 | Closed | Raw GUM eRST relations are preserved and projected separately through the ontology adapter; reversible raw/coarse tests pass. |
+| N-08 | Closed | Missing corpus, malformed documents, zero candidates, zero steps, and absent checkpoints are typed errors with regression coverage. |
+| N-09 | Closed | Complete safetensors bundles carry strict component/config/tokenizer/calibration/inventory/decoder state plus a hashed Pydantic manifest; save/reload parity passes. No promoted bundle exists. |
+| N-10 | Closed | Parser argument is `erst_scorer_checkpoint`; an `erst_graph` request without a validated completion bundle raises an explicit capability error. |
+| N-11 | Blocked, fail-closed | Exact GUM V9.2 authority is pinned, but the paper's claimed public official scorer cannot be resolved and released baseline code carries no stated code licence. Baseline-authority receipt SHA-256: `d97961ef5f9c7f524e5beaeb634d033476c866dcb4b442f966da6d6bf03dec0e`; reproduction-diagnosis SHA-256: `a9f5fc7ce5aadc0c094e0358c12d40b9ecd5b9e071e9213c8faaada5b3acf0b4`. No baseline run was started. |
+| N-12 | Blocked, fail-closed | Because N-11 is a hard prerequisite, no mandatory architecture saw corpus/test data and no champion was selected. Research-diagnosis SHA-256: `2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9`; no-promotion decision SHA-256: `34270305f49e52a2d5155ecf4025f1f83d76ac13bb914cc6131a8fcd10872651`. |
+| N-13 | Closed | Repository-root `.env` loading is explicit and non-logging. `HF_TOKEN` has precedence and `HUGGINGFACEHUB_API_TOKEN` is fallback; only operation-relevant values are loaded and secret values are never serialized. |
+| N-14 | Closed | Runtime tokenizers use verified fast artifacts; compatibility/parity receipts and warning-as-error CPU/MPS paths pass. |
+| N-15 | Closed | Fresh build, member inspection, isolated install, representative three-format/cache/import execution, five-parser CPU/MPS smokes, audit, and secret scans provide package and clean-machine proof. |
+
+### Exact release-candidate evidence
+
+| Gate | Command / observed result |
+|---|---|
+| Locked environment | `pixi install --locked` — passed in 0.03 s. Lock: Python 3.14, PyTorch 2.13.0, Transformers 5.15.1, setuptools 84.0.0, docling-core 2.92.0, DocLang 0.7.3. |
+| Full tests | `PYTHONWARNINGS=error pixi run --no-config --locked test-all` — `907 passed in 460.47s`; process wall time 461.36 s. |
+| Static quality | `pixi run --no-config --locked lint` — all checks passed. `pixi run --no-config --locked typecheck` — zero errors/warnings. Production suppression scan — zero matches. |
+| Documentation | `python scripts/verify_markdown_manifest.py --lint` — 63 linted, 36 approved exclusions, zero issues. |
+| Contract currency | `python scripts/verify_doclang_fixtures.py` — local/upstream 42, names and hashes equal. `pytest -q tests/test_version_compat.py tests/test_doclang_fixture_parity.py` — 94 passed. |
+| Primary CPU runtime | `PYTHONWARNINGS=error pixi run --no-config --locked smoke-full` — all five variants and error/offset guards passed in 70.38 s. |
+| Primary MPS runtime | `PYTHONWARNINGS=error pixi run --no-config --locked smoke-full-mps` — all five variants and error/offset guards passed in 63.61 s. |
+| Build | Fresh build produced wheel SHA-256 `6639d499891b184b115144112faa72acaaf285674907c1e216a216567b3936fe` (150 members) and sdist SHA-256 `a49160f75eff53dbd9a0cceb6f8215e6b6d4cac0f1345ac2df67fd28786f3c1b` (253 members); forbidden-member count zero. |
+| Clean install | Isolated Python 3.14.6 environment reports `4.0.0`; Docling 1.2, DocLang 1.1, Markdown 1.1 self-contained outputs, basename-sensitive cache provenance, and both corpus import graphs pass. |
+| Dependency audit | `uvx pip-audit --path .pixi/envs/default/lib/python3.14/site-packages` — no known vulnerabilities. `isanlp` 0.0.7 (VCS) and local `isanlp-rst` 4.0.0 are explicitly unauditable via PyPI. |
+| Secret audit | 682 tracked/staged files scanned. Structural credential/private-key patterns: zero. `detect-secrets` reports 1,468 entropy findings, all generated hashes/fingerprints, plus one intentional secret-keyword test proving non-disclosure. `.env` remains ignored and uncommitted. |
+| Graph health | Directed Graphify graph: 4,620 nodes, 10,352 edges, 227 labeled communities; zero missing/dangling endpoints, self-loops, exact duplicates, or directed same-endpoint collapses; no import cycle detected. Graphify package 0.9.44 warned that its installed skill is 0.9.45, and 21 JSON/config sources emitted no AST nodes; neither condition created a structural defect. |
+
+CUDA remains unverified because the release-candidate machine is an Apple M5
+Max with MPS and no NVIDIA device. No CPU/MPS result is represented as CUDA
+evidence. The exact public Git commit and remote branch equality are verified
+after this closure record is committed; no report edits are made after the
+final candidate validation.

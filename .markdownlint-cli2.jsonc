@@ -1,47 +1,31 @@
 {
-  // Project-local markdownlint config. Disables rules that conflict with the
-  // README's intentional style choices (HTML badges, performance tables, long
-  // descriptive paragraphs) and the UniRST_Metrics.md table-only document.
+  // Repository Markdown is governed by config/markdownlint/tracked-markdown.txt.
+  // Only rules that conflict with durable document semantics are disabled.
   "config": {
-    // Long lines: badges, citation BibTeX, performance tables, long URLs.
+    // Long lines are required for opaque URLs, generated hashes, and wide
+    // evidence tables; wrapping them would change or obscure their meaning.
     "MD013": false,
 
-    // Inline HTML: README uses <details>/<summary> for collapsible installation
-    // notes and <img> tags for status badges and logos.
+    // Inline HTML is a required authoring primitive for README badges,
+    // collapsible details, and rendered evidence anchors.
     "MD033": false,
 
-    // First-line H1: UniRST_Metrics.md is an appendix that begins with H3.
-    "MD041": false,
-
-    // Trailing punctuation in headings: a few section titles use a colon
-    // ("Detailed metrics:", "Coverage:") as a stylistic choice.
-    "MD026": false,
-
-    // Multiple consecutive blanks: tolerate the existing layout; not a
-    // correctness issue.
-    "MD012": false,
-
-    // List style (* vs -): the README mixes both intentionally; not enforcing
-    // one form avoids churn in inherited content.
-    "MD004": false,
-
-    // List marker spacing: pre-existing in the README's bullet style.
-    "MD030": false,
-
-    // Trailing spaces: pre-existing two-space line breaks in some paragraphs.
-    "MD009": false,
-
-    // Blanks around fenced code: pre-existing in the README's BibTeX block.
-    "MD031": false,
-
-    // Heading-increment: README intentionally starts at H3 inside numbered
-    // sections; the structure is a pre-existing design choice.
-    "MD001": false,
-
-    // Indented bullet lists: pre-existing TOC formatting under numbered items.
-    "MD007": false,
-
-    // Table column style: CLAUDE.md uses compact pipe tables.
+    // Tables use valid compact, tight, and alignment-focused forms according
+    // to their content; rendered column integrity is enforced by MD056.
     "MD060": false
-  }
+  },
+  "overrides": [
+    {
+      // Project-memory records carry their title in required YAML front matter.
+      "filter": [".claude/memory/*.md"],
+      "config": { "MD041": false },
+      "combine": "merge"
+    },
+    {
+      // This parser fixture intentionally begins with lead-in prose before H2.
+      "filter": ["tests/fixtures/markdown/multi-level.md"],
+      "config": { "MD041": false },
+      "combine": "merge"
+    }
+  ]
 }

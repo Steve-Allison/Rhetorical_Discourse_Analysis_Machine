@@ -1,6 +1,6 @@
-### Detailed metrics for `unirst` model
+# Detailed metrics for `unirst` model
 
-#### End-to-End metrics (including EDU prediction):
+## End-to-End metrics (including EDU prediction)
 
 | rel_idx | corpus           | Seg F1 | Span F1 | Nuc F1 | Rel F1 | Full F1 |
 | :-----: | ---------------- | :----: | :-----: | :----: | :----: | :-----: |
@@ -23,7 +23,7 @@
 |    16   | zho.rst.gcdt     |  92.96 |  64.46  |  50.68 |  45.87 |  44.61  |
 |    17   | nld.rst.nldt     |  97.97 |  61.79  |  49.76 |  36.75 |  35.77  |
 
-#### Detailed Gold Segmentation metrics:
+## Detailed Gold Segmentation metrics
 
 | rel_idx | corpus           | Seg F1 | Span F1 | Nuc F1 | Rel F1 | Full F1 |
 | :-----: | ---------------- | :----: | :-----: | :----: | :----: | :-----: |

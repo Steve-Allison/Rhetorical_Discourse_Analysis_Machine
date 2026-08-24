@@ -377,6 +377,7 @@ Anchored-signal evaluation and lossless RS4 export require original text plus
 token and EDU alignment.
 
 Coordinate and indexing conventions:
+
 - Character offsets use standard Python 0-based half-open intervals `[start, end)`.
 - Internal token IDs (`DocumentToken.token_id`, `Edu.token_ids`, `DiscourseSignal.token_ids`)
   are 0-based integer tuples. The RS4 serializer/deserializer translates between

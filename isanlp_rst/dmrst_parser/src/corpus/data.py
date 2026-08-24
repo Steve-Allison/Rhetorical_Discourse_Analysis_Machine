@@ -10,6 +10,7 @@ from . import common
 from . import relation_set
 from . import utils_dis_thiago
 from . import utils_rs3
+from .span_node import SpanNode as SpanNode
 
 """
 TODO:
@@ -266,42 +267,6 @@ class ThiagoDocument(Document):
 
     def writeEdu(self, outpath: str | Path) -> None:
         common.writeEdusFile(self, ".txt.lisp.thiago", outpath)
-
-
-# ----------------------------------------------------------------------------------
-# ----------------------------------------------------------------------------------
-class SpanNode:
-    """
-    RST tree node (from DPLP, by Yangfeng Ji)
-    """
-
-    def __init__(self, prop: str | None) -> None:
-        """
-        Initialization of SpanNode
-        :type text: string
-        :param text: text of this span
-        """
-        self.text: Any = None  # Text of this span / token ids
-        self.relation: Any = None  # Discourse relation
-        self.eduspan: Any = None  # EDU span (begin, end)
-        self.nucspan: Any = None  # Nucleus span (begin, end)
-        self.nucedu: Any = None  # Nucleus single EDU
-        self.prop = prop  # Property: Nucleus/Satellite/Roots
-        self.lnode: SpanNode | None = None  # Children nodes (for binary RST tree only)
-        self.rnode: SpanNode | None = None
-        self.pnode: SpanNode | None = None  # Parent node
-        self.nodelist: list[SpanNode] = []  # Node list (for general RST tree only)
-        self.form: str | None = None  # Relation form: NN, NS, SN
-        self.eduCovered: Any = []  # EDUs covered by a CDU (nodes or ids, depending on caller)
-        self._id: Any = None  # Id of a DU, only from rs3 files (CHLOE Added)
-        self.eduSpan: Any = None  # rs3 builder alias for the EDU span
-        self.position: Any = None  # EDU position in the source document
-
-    def __str__(self) -> str:
-        return self._info() + "\n" + "\n".join("\t" + n._info() for n in self.nodelist)
-
-    def _info(self) -> str:
-        return "eduspan: " + str(self.eduspan)
 
 
 # ----------------------------------------------------------------------------------

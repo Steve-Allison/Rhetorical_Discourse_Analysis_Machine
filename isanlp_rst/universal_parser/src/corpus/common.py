@@ -1,12 +1,19 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 import numpy as np
 
 if TYPE_CHECKING:
     from nltk.tree import Tree
 
-    from .data import Document, SpanNode
+from .span_node import SpanNode
+
+
+class Document(Protocol):
+    """Structural corpus-document surface required by shared tree helpers."""
+
+    path: str
+    edudict: Any
 
 
 def backprop(tree: SpanNode, doc: Document) -> SpanNode:

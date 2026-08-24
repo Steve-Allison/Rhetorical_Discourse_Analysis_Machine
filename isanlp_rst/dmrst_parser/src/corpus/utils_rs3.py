@@ -7,7 +7,7 @@ import numpy as np
 from lxml import etree
 from lxml.etree import _Element, _ElementTree
 
-from . import data
+from .span_node import SpanNode
 
 
 class CustomTokenizer:
@@ -197,7 +197,7 @@ def buildNodes(
     [e["id"] for e in groupList]  # CDUs
     units = [e for e in eduList]
     units.extend(groupList)  # All DU
-    root = data.SpanNode("Root")  # Root node
+    root = SpanNode("Root")  # Root node
     root._id, root.eduSpan = rootDict["id"], tuple([eduIds[0], eduIds[-1]])  # Set the span for the root
     # Build the other nodes
     allNodes = [root]
@@ -206,7 +206,7 @@ def buildNodes(
         # (even an EDU can be a parent for now)
         node = findNode(e["id"], allNodes)
         if node is None:
-            newNode = data.SpanNode(None)  # Prop is unknown for now
+            newNode = SpanNode(None)  # Prop is unknown for now
             newNode._id, newNode.relation = e["id"], e["relname"]
             if e["id"] in eduIds:  # EDU ie isLeave
                 newNode.text = e["text"]
@@ -524,7 +524,7 @@ def cleanEDU(
     while queue:
         node = queue.pop(0)
         if node._id in eduIds and len(node.nodelist) > 1:
-            newnode = data.SpanNode(node.prop)  # Keep the nuclearity of the group
+            newnode = SpanNode(node.prop)  # Keep the nuclearity of the group
             newnode.nodelist = [node]
             newnode.nodelist.extend([m for m in node.nodelist])
             node.nodelist = []  # an EDU has no children
@@ -541,7 +541,7 @@ def cleanEDU(
             parent.nodelist.remove(node)
             parent.nodelist.append(newnode)
             # left attach
-            left_node = data.SpanNode("Nucleus")  # Has to be a nucleus to give the correct interpretation
+            left_node = SpanNode("Nucleus")  # Has to be a nucleus to give the correct interpretation
             left_node.relation = "span"
             left_node.nodelist = newnode.nodelist[:-1]
             newnode.nodelist = [left_node, newnode.nodelist[-1]]
@@ -583,7 +583,7 @@ def cleanLonelyEDU(
             # - EDU: 2 cas, soit l EDU a un voisin soit elle n en n a pas
             if len(parent.nodelist) > 1:  # (2) EDU with neighbor
                 # New CDU with the same parent as n and n and its children as children
-                newnode = data.SpanNode(n.prop)
+                newnode = SpanNode(n.prop)
                 newnode.relation = n.relation
                 n.relation = "span"
                 newnode.nodelist = [n]
@@ -812,7 +812,7 @@ def snsPattern(relations: list[str], nuclearity: list[str]) -> bool:
 
 def leftAttach(node: Any) -> Any:
     node.rnode = node.nodelist.pop(-1)
-    newnode = data.SpanNode("Nucleus")
+    newnode = SpanNode("Nucleus")
     newnode.nodelist += node.nodelist
     # ADDED
     newnode.eduspan = tuple([newnode.nodelist[0].eduspan[0], newnode.nodelist[-1].eduspan[1]])
@@ -828,7 +828,7 @@ def leftAttach(node: Any) -> Any:
 
 def rightAttach(node: Any) -> Any:
     node.lnode = node.nodelist.pop(0)
-    newnode = data.SpanNode("Nucleus")
+    newnode = SpanNode("Nucleus")
     newnode.nodelist += node.nodelist
     # ADDED
     newnode.eduspan = tuple([newnode.nodelist[0].eduspan[0], newnode.nodelist[-1].eduspan[1]])

@@ -7,7 +7,7 @@ import numpy as np
 from lxml import etree
 from lxml.etree import _Element, _ElementTree
 
-from . import data
+from .span_node import SpanNode
 
 
 class CustomTokenizer:
@@ -155,7 +155,7 @@ def readRS3Annotation(
 # ----------------------------------------------------------------------------------
 # EDU TEXT
 # ----------------------------------------------------------------------------------
-def retrieveEdu(tree: data.SpanNode, eduIds: list[int]) -> tuple[dict[int, str], dict[int, list[int]]]:
+def retrieveEdu(tree: SpanNode, eduIds: list[int]) -> tuple[dict[int, str], dict[int, list[int]]]:
     """
     Read information from the edus
     Use the TOKENIZER to get tokens
@@ -188,7 +188,7 @@ def buildNodes(
     groupList: list[dict[str, Any]],
     rootDict: dict[str, Any],
     relations: dict[str, list[str]],
-) -> data.SpanNode:
+) -> SpanNode:
     """
     Build a tree using the SpanNode class defined in DPLP
 
@@ -201,7 +201,7 @@ def buildNodes(
     eduIds = [e["id"] for e in eduList]  # Ordered EDUs
     units = [e for e in eduList]
     units.extend(groupList)  # All DU
-    root = data.SpanNode("Root")  # Root node
+    root = SpanNode("Root")  # Root node
     root._id, root.eduSpan = rootDict["id"], tuple([eduIds[0], eduIds[-1]])  # Set the span for the root
     # Build the other nodes
     allNodes = [root]
@@ -210,7 +210,7 @@ def buildNodes(
         # (even an EDU can be a parent for now)
         node = findNode(e["id"], allNodes)
         if node is None:
-            newNode = data.SpanNode(None)  # Prop is unknown for now
+            newNode = SpanNode(None)  # Prop is unknown for now
             newNode._id, newNode.relation = e["id"], e["relname"]
             if e["id"] in eduIds:  # EDU ie isLeave
                 newNode.text = e["text"]
@@ -225,7 +225,7 @@ def buildNodes(
 
 
 def updateNuclearityEDU(
-    allNodes: list[data.SpanNode],
+    allNodes: list[SpanNode],
     units: list[dict[str, Any]],
     nucRelations: dict[str, list[str]],
 ) -> None:
@@ -261,7 +261,7 @@ def updateNuclearityEDU(
 
 
 def updateParentNodes(
-    allNodes: list[data.SpanNode],
+    allNodes: list[SpanNode],
     units: list[dict[str, Any]],
     eduIds: list[int],
 ) -> None:
@@ -283,7 +283,7 @@ def updateParentNodes(
         n.eduCovered = getEduCoveredChildren(n, eduIds)
 
 
-def getEduCoveredChildren(node: data.SpanNode, eduIds: list[int]) -> list[data.SpanNode]:
+def getEduCoveredChildren(node: SpanNode, eduIds: list[int]) -> list[SpanNode]:
     eduCovered = set()
     queue = [m for m in node.nodelist if m._id != node._id]  # seems to happen in the spanish RST DT
     while queue:
@@ -341,7 +341,7 @@ def renameDus(
             e["parent"] = mappingDus[e["parent"]]
 
 
-def orderSpanList(tree: data.SpanNode, eduIds: list[int]) -> None:
+def orderSpanList(tree: SpanNode, eduIds: list[int]) -> None:
     # First sort node.eduCovered, and ordered eduSpan for each node
     queue = [tree]
     while queue:
@@ -362,14 +362,14 @@ def orderSpanList(tree: data.SpanNode, eduIds: list[int]) -> None:
 
 
 # Utils fct when we do not yet have a tree
-def findNode(id_: int, allNodes: list[data.SpanNode]) -> data.SpanNode | None:
+def findNode(id_: int, allNodes: list[SpanNode]) -> SpanNode | None:
     for n in allNodes:
         if n._id == id_:
             return n
     return None
 
 
-def findParentNode(child: data.SpanNode, allNodes: list[data.SpanNode]) -> data.SpanNode | None:
+def findParentNode(child: SpanNode, allNodes: list[SpanNode]) -> SpanNode | None:
     for n in allNodes:
         if child in n.nodelist:
             return n
@@ -383,7 +383,7 @@ def getParentDict(allGroup: list[dict[str, Any]], parent: int) -> dict[str, Any]
     return None
 
 
-def getParentNode(parent: int, allNodes: list[data.SpanNode]) -> data.SpanNode | None:
+def getParentNode(parent: int, allNodes: list[SpanNode]) -> SpanNode | None:
     for n in allNodes:
         if n._id == parent:
             return n
@@ -391,7 +391,7 @@ def getParentNode(parent: int, allNodes: list[data.SpanNode]) -> data.SpanNode |
 
 
 # Utils fct for tree structure
-def findNodeTree(id_: int, tree: data.SpanNode) -> data.SpanNode | None:
+def findNodeTree(id_: int, tree: SpanNode) -> SpanNode | None:
     queue = [tree]
     while queue:
         node = queue.pop(0)
@@ -402,7 +402,7 @@ def findNodeTree(id_: int, tree: data.SpanNode) -> data.SpanNode | None:
     return None
 
 
-def getParentTree(child: data.SpanNode, tree: data.SpanNode) -> data.SpanNode | None:
+def getParentTree(child: SpanNode, tree: SpanNode) -> SpanNode | None:
     queue = [tree]
     while queue:
         node = queue.pop(0)
@@ -419,7 +419,7 @@ def getParentTree(child: data.SpanNode, tree: data.SpanNode) -> data.SpanNode | 
 
 
 def cleanTree(
-    tree: data.SpanNode,
+    tree: SpanNode,
     eduIds: list[int],
     relationSet: dict[str, list[str]],
     doc: Any,
@@ -448,7 +448,7 @@ def cleanTree(
 
 
 def cleanEmbedded(
-    tree: data.SpanNode,
+    tree: SpanNode,
     eduIds: list[int],
     relationSet: dict[str, list[str]],
     allId: list[int],
@@ -494,7 +494,7 @@ def cleanEmbedded(
             queue.append(m)
 
 
-def getNodeCovering(tree: data.SpanNode, eduIds: list[int], id_linked: list[int]) -> data.SpanNode | None:
+def getNodeCovering(tree: SpanNode, eduIds: list[int], id_linked: list[int]) -> SpanNode | None:
     queue = [tree]
     while queue:
         n = queue.pop(0)
@@ -507,7 +507,7 @@ def getNodeCovering(tree: data.SpanNode, eduIds: list[int], id_linked: list[int]
 
 
 def cleanEDU(
-    tree: data.SpanNode,
+    tree: SpanNode,
     eduIds: list[int],
     relationSet: dict[str, list[str]],
     allId: list[int],
@@ -527,7 +527,7 @@ def cleanEDU(
     while queue:
         node = queue.pop(0)
         if node._id in eduIds and len(node.nodelist) > 1:
-            newnode = data.SpanNode(node.prop)  # Keep the nuclearity of the group
+            newnode = SpanNode(node.prop)  # Keep the nuclearity of the group
             newnode.nodelist = [node]
             newnode.nodelist.extend([m for m in node.nodelist])
             node.nodelist = []  # an EDU has no children
@@ -544,7 +544,7 @@ def cleanEDU(
             parent.nodelist.remove(node)
             parent.nodelist.append(newnode)
             # left attach
-            left_node = data.SpanNode("Nucleus")  # Has to be a nucleus to give the correct interpretation
+            left_node = SpanNode("Nucleus")  # Has to be a nucleus to give the correct interpretation
             left_node.relation = "span"
             left_node.nodelist = newnode.nodelist[:-1]
             newnode.nodelist = [left_node, newnode.nodelist[-1]]
@@ -564,7 +564,7 @@ def cleanEDU(
 
 
 def cleanLonelyEDU(
-    rootNode: data.SpanNode,
+    rootNode: SpanNode,
     eduIds: list[int],
     relationSet: dict[str, list[str]],
     allId: list[int],
@@ -586,7 +586,7 @@ def cleanLonelyEDU(
             # - EDU: 2 cas, soit l EDU a un voisin soit elle n en n a pas
             if len(parent.nodelist) > 1:  # (2) EDU with neighbor
                 # New CDU with the same parent as n and n and its children as children
-                newnode = data.SpanNode(n.prop)
+                newnode = SpanNode(n.prop)
                 newnode.relation = n.relation
                 n.relation = "span"
                 newnode.nodelist = [n]
@@ -618,7 +618,7 @@ def cleanLonelyEDU(
 
 
 def cleanLonelyCDU(
-    rootNode: data.SpanNode,
+    rootNode: SpanNode,
     eduIds: list[int],
     relationSet: dict[str, list[str]],
 ) -> None:
@@ -657,7 +657,7 @@ def cleanLonelyCDU(
                 queue.append(m)
 
 
-def areAdjacent(sameunitNodes: list[data.SpanNode], eduIds: list[int]) -> bool:
+def areAdjacent(sameunitNodes: list[SpanNode], eduIds: list[int]) -> bool:
     eduCovered = []
     for n in sameunitNodes:
         getEduCovered(n, eduIds, eduCovered)
@@ -667,7 +667,7 @@ def areAdjacent(sameunitNodes: list[data.SpanNode], eduIds: list[int]) -> bool:
     return False
 
 
-def setEduCovered(n: data.SpanNode, eduIds: list[int], eduCovered: list[data.SpanNode]) -> None:
+def setEduCovered(n: SpanNode, eduIds: list[int], eduCovered: list[SpanNode]) -> None:
     if n._id in eduIds:
         eduCovered.append(n)
     for m in n.nodelist:
@@ -675,10 +675,10 @@ def setEduCovered(n: data.SpanNode, eduIds: list[int], eduCovered: list[data.Spa
 
 
 def getEduCovered(
-    tree: data.SpanNode,
+    tree: SpanNode,
     eduIds: list[int],
-    eduCovered: list[data.SpanNode] | None = None,
-) -> list[data.SpanNode]:
+    eduCovered: list[SpanNode] | None = None,
+) -> list[SpanNode]:
     if eduCovered is None:
         eduCovered = []
     queue = [tree]
@@ -692,7 +692,7 @@ def getEduCovered(
     return eduCovered
 
 
-def _markEmbed(tree: data.SpanNode) -> None:
+def _markEmbed(tree: SpanNode) -> None:
     queue = [tree]
     while queue:
         node = queue.pop(0)
@@ -707,18 +707,18 @@ def _markEmbed(tree: data.SpanNode) -> None:
             queue.append(m)
 
 
-def sortEdu(eduCovered: list[data.SpanNode], eduIds: list[int]) -> list[int]:
+def sortEdu(eduCovered: list[SpanNode], eduIds: list[int]) -> list[int]:
     # Only return a sorted list of id
     positions = [eduIds.index(i) for i in [n._id for n in eduCovered]]
     sortedIds = [x for (y, x) in sorted(zip(positions, [n._id for n in eduCovered], strict=True))]
     return sortedIds
 
 
-def orderNodeList(node: data.SpanNode) -> None:
+def orderNodeList(node: SpanNode) -> None:
     node.nodelist = sorted(node.nodelist, key=lambda x: x.eduspan[0])
 
 
-def getIdDu(tree: data.SpanNode) -> set[int]:
+def getIdDu(tree: SpanNode) -> set[int]:
     idDu = set()
     queue = [tree]
     while queue:
@@ -739,7 +739,7 @@ def getIdDu(tree: data.SpanNode) -> set[int]:
 # ----------------------------------------------------------------------------------
 # TODO merge all the binarization fcts, should be the same
 def binarizeTreeGeneral(
-    tree: data.SpanNode,
+    tree: SpanNode,
     doc: Any,
     nucRelations: dict[str, list[str]] | None = None,
 ) -> None:
@@ -813,9 +813,9 @@ def snsPattern(relations: list[str], nuclearity: list[str]) -> bool:
     return True
 
 
-def leftAttach(node: data.SpanNode) -> data.SpanNode:
+def leftAttach(node: SpanNode) -> SpanNode:
     node.rnode = node.nodelist.pop(-1)
-    newnode = data.SpanNode("Nucleus")
+    newnode = SpanNode("Nucleus")
     newnode.nodelist += node.nodelist
     # ADDED
     newnode.eduspan = tuple([newnode.nodelist[0].eduspan[0], newnode.nodelist[-1].eduspan[1]])
@@ -829,9 +829,9 @@ def leftAttach(node: data.SpanNode) -> data.SpanNode:
     return newnode
 
 
-def rightAttach(node: data.SpanNode) -> data.SpanNode:
+def rightAttach(node: SpanNode) -> SpanNode:
     node.lnode = node.nodelist.pop(0)
-    newnode = data.SpanNode("Nucleus")
+    newnode = SpanNode("Nucleus")
     newnode.nodelist += node.nodelist
     # ADDED
     newnode.eduspan = tuple([newnode.nodelist[0].eduspan[0], newnode.nodelist[-1].eduspan[1]])
@@ -865,7 +865,7 @@ def writeEdus(doc: Any, ext: str, pathout: str | Path) -> None:
             f.write(line.strip() + "\n")
 
 
-def printTreeRS3(tree: data.SpanNode) -> None:
+def printTreeRS3(tree: SpanNode) -> None:
     """
     Print a tree when a node is associated with a nodelist
     """

@@ -1,6 +1,6 @@
 # DocLang-native RST output — walkthrough
 
-`isanlp_rst.doclang.parse_doclang()` turns a DocLang `.dclg.xml`
+`isanlp_rst.doclang.parse_doclang()` turns a DocLang `.dclg`
 file into a flat list of RST relations and EDUs, each indexed by a
 DocLang-native local-name XPath and annotated with the structural
 boundaries (heading / page / group / table / field_region) its content
@@ -14,7 +14,7 @@ coercion of one shape into the other.
 from pathlib import Path
 from isanlp_rst.doclang import parse_doclang
 
-result = parse_doclang(Path("document.dclg.xml"), device="auto")
+result = parse_doclang(Path("document.dclg"), device="auto")
 
 print(f"{len(result.edus)} EDUs, {len(result.relations)} relations, {len(result.boundaries)} boundaries")
 print(f"source: {result.source}, namespace: {result.source_origin['namespace']}")
@@ -28,8 +28,9 @@ print(f"source: {result.source}, namespace: {result.source_origin['namespace']}"
 | `edus` | `tuple[RstEdu, ...]` | left-to-right reading order. |
 | `boundaries` | `tuple[Boundary, ...]` | headings / pages / groups / tables / field_regions, with a `document` fallback. |
 | `source_origin` | `dict[str, Any]` | `{"format": "doclang", "namespace": ..., "version": ..., "head_children": [...]}`. |
-| `schema_name`, `schema_version` | `str` | Always `"isanlp_rst_doclang"` / `"1.0"` for now. |
-| `tool_version` | `str` | `git describe` when in a checkout; package version when installed; `"unknown"` otherwise. |
+| `schema_name`, `schema_version` | `str` | `"isanlp_rst_doclang"` / `"1.1"`. |
+| `tool_version` | `str` | Installed `isanlp-rst` distribution version; `"unknown"` only when distribution metadata does not exist. |
+| `source_revision` | `str` | Source Git commit, independently marked `-dirty` when applicable. |
 
 ## How addresses work — local-name canonical XPath
 
@@ -45,9 +46,9 @@ plain sibling-position resolution.
 > **Why not `lxml.etree.ElementTree.getpath()`?** On default-namespaced
 > documents `getpath()` emits `/*/*[3]`-style wildcards because XPath 1.0
 > has no concept of default namespaces. The local-name path is
-> namespace-agnostic and human-readable. Verified Phase 1 against the
-> then-40 upstream valid fixtures (464 elements in the comprehensive fixture
-> alone, 100% round-trip). Remirror 2026-08-16 is 42 files.
+> namespace-agnostic and human-readable. The pinned upstream manifest and
+> derived fixture tests verify exact filename, byte-hash, validator, and path
+> round-trip parity without maintaining a prose fixture count.
 
 ## Batch parsing — inject one Parser
 
@@ -60,7 +61,7 @@ from isanlp_rst.doclang import parse_doclang
 
 parser = Parser(hf_model_version="gumrrg", device="auto")
 
-results = [parse_doclang(p, parser=parser) for p in Path("corpus").glob("*.dclg.xml")]
+results = [parse_doclang(p, parser=parser) for p in Path("corpus").glob("*.dclg")]
 ```
 
 The injected parser is reused for every call. Model knobs
@@ -72,7 +73,7 @@ constructs its own.
 
 ```python
 result = parse_doclang(
-    "doc.dclg.xml",
+    "doc.dclg",
     include_picture_captions=True,  # <picture><caption>...</caption>
     include_background=False,  # <layer value="background"/>
     include_furniture=False,  # <layer value="furniture"/> +
@@ -90,8 +91,8 @@ result = parse_doclang(
 `validate_xml=True` (default) runs the file through the official
 `doclang` PyPI package's `validate(path)` function before parsing. The
 `doclang` package is validator-only (no DOM) — we parse with `lxml`
-ourselves. If `doclang` is not importable in the active environment,
-validation is silently skipped.
+ourselves. Validation fails closed when `doclang` is unavailable; callers must
+explicitly set `validate_xml=False` to request best-effort parsing.
 
 ## Boundary kinds
 
@@ -102,7 +103,7 @@ in the spec. The boundary set reflects what DocLang **does** model:
 |---|---|
 | `heading-N` | Each `<heading level="N">` opens a `heading-N` boundary, in document order. `label` carries the heading text; `level` carries the attribute (default 1). |
 | `page-N` | Content between successive `<page_break/>` markers (only allowed as children of `<doclang>`). The first boundary covers pre-break content. |
-| `group-N` | Each top-level `<group>`. A nested group becomes `group-N-M` (one level of nesting). |
+| `group-N` | Each top-level `<group>`. Nested groups receive hierarchical `group-N-M-…` identifiers at arbitrary depth. |
 | `table-N` | Each `<table>` — cells are excluded from the prose harvest. |
 | `field_region-N` | Each `<field_region>` — by default field content is excluded from prose. |
 | `document` | Fallback covering all harvest-eligible xpaths when no structural boundary applies. |
@@ -217,7 +218,7 @@ the table xpath itself is the synthetic boundary marker and carries no
 harvest span.
 
 ```python
-result = parse_doclang("doc.dclg.xml")  # analyses on by default
+result = parse_doclang("doc.dclg")  # analyses on by default
 for analysis in result.table_analyses:
     print(analysis.id, len(analysis.edus), "cell EDUs")
 ```
@@ -262,4 +263,4 @@ For the full design rationale and the Phase 0–2 verification chain see
 and the project-memory at
 [`.claude/memory/verified_doclang_spec.md`](../../.claude/memory/verified_doclang_spec.md)
 
-+ [`.claude/memory/verified_doclang_fixtures.md`](../../.claude/memory/verified_doclang_fixtures.md).
+- [`.claude/memory/verified_doclang_fixtures.md`](../../.claude/memory/verified_doclang_fixtures.md).
