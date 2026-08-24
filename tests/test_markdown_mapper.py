@@ -12,8 +12,8 @@ doclang mapper tests). These tests therefore focus on:
 
 from dataclasses import dataclass
 
-from isanlp_rst.markdown.mapper import compute_overlap_refs, flatten_tree
-from isanlp_rst.markdown.schema import Boundary, HarvestSpan
+from isanlp_rst.markdown.mapper import compute_overlap_refs, flatten_tree as _flatten_tree
+from isanlp_rst.markdown.schema import Boundary, HarvestSpan, RstEdu, RstRelation
 
 
 @dataclass
@@ -38,6 +38,22 @@ def _span(block_ref: str, start: int, end: int, kind: str = "paragraph") -> Harv
         line_begin=0,
         line_end=0,
     )
+
+
+def _materialize_source(spans: tuple[HarvestSpan, ...]) -> str:
+    chars = [" "] * max((span.end for span in spans), default=0)
+    for span in spans:
+        assert len(span.text) == span.end - span.start
+        chars[span.start : span.end] = span.text
+    return "".join(chars)
+
+
+def flatten_tree(
+    tree: FakeUnit,
+    spans: tuple[HarvestSpan, ...],
+    boundaries: tuple[Boundary, ...],
+) -> tuple[tuple[RstRelation, ...], tuple[RstEdu, ...]]:
+    return _flatten_tree(tree, spans, boundaries, source_text=_materialize_source(spans))
 
 
 # --- compute_overlap_refs binding contract --------------------------------

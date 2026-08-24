@@ -103,6 +103,16 @@ class AnnotationStatusEnum(StrEnum):
     UNKNOWN = "unknown"
 
 
+class SignalDetectionMethod(StrEnum):
+    """How a discourse signal entered the analysis."""
+
+    GOLD = "gold"
+    IMPORTED = "imported"
+    RULE = "rule"
+    MODEL = "model"
+    HYBRID = "hybrid"
+
+
 class ConfidenceKindEnum(StrEnum):
     """Kind of confidence metric."""
 

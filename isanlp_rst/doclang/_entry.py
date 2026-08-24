@@ -17,16 +17,21 @@ on-disk cache (``cache_dir=``) short-circuits repeat parses.
 
 import importlib
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
+from .._version import DOCLANG_SCHEMA_NAME as SCHEMA_NAME
+from .._version import DOCLANG_SCHEMA_VERSION as SCHEMA_VERSION
+from .._version import TOOL_NAME
 from .._rst_common import (
     dataclass_from_dict,
     load_cached,
     model_identity_knobs,
     resolve_inventory,
     resolve_result_model_meta,
+    resolve_source_revision,
     resolve_tool_version,
     result_cache_key,
+    RstParser,
     store_cached,
 )
 from ..utils.parse_result import extract_root_tree
@@ -37,17 +42,12 @@ from .errors import (
     InputTooLargeError,
     InvalidDoclangError,
 )
+from .eligibility import DoclangEligibility
 from .harvester import harvest_doclang_tables, harvest_doclang_text
 from .loader import local_name, parse_doclang_xml
 from .mapper import flatten_tree
 from .schema import DoclangRstResult, TableAnalysis
 
-if TYPE_CHECKING:
-    from isanlp_rst.parser import Parser
-
-SCHEMA_NAME = "isanlp_rst_doclang"
-SCHEMA_VERSION = "1.0"
-TOOL_NAME = "isanlp_rst"
 DEFAULT_MAX_HARVEST_CHARS = 200_000
 
 # DocLang XML namespace per spec.md:219-241 (default xmlns when declared).
@@ -116,7 +116,7 @@ def _source_origin(tree: Any) -> dict[str, Any]:
 def parse_doclang(
     path: str | Path,
     *,
-    parser: Parser | None = None,
+    parser: RstParser | None = None,
     hf_model_name: str = "tchewik/isanlp_rst_v3",
     hf_model_version: str = "gumrrg",
     relinventory: str | None = None,
@@ -138,7 +138,7 @@ def parse_doclang(
     """Parse a DocLang XML file and return its RST analysis.
 
     Args:
-        path: filesystem path to a ``.dclg.xml`` file.
+        path: filesystem path to a ``.dclg`` file.
         parser: a pre-constructed ``Parser`` to reuse. Batch consumers
             should construct once and inject — otherwise each call
             reloads the model from disk.
@@ -213,7 +213,7 @@ def parse_doclang(
         ),
     }
     cache_path = Path(cache_dir) if cache_dir is not None else None
-    cache_key = result_cache_key(source_bytes, knobs)
+    cache_key = result_cache_key(source_bytes, knobs, source_basename=src_path.name)
     if cache_path is not None:
         cached = load_cached(
             cache_path,
@@ -233,25 +233,24 @@ def parse_doclang(
     if not body_children:
         raise EmptyDoclangError(f"DocLang document at {src_path} has no body content — nothing to harvest.")
 
-    harvest = harvest_doclang_text(
-        tree,
+    eligibility = DoclangEligibility(
         include_picture_captions=include_picture_captions,
         include_background=include_background,
         include_furniture=include_furniture,
         include_field_regions=include_field_regions,
         include_code_blocks=include_code_blocks,
         include_formulas=include_formulas,
-        harvest_separator=harvest_separator,
+        include_table_cells=include_table_cells,
     )
-    table_harvests = (
-        harvest_doclang_tables(
-            tree,
-            include_background=include_background,
-            include_furniture=include_furniture,
-            harvest_separator=harvest_separator,
-        )
-        if include_table_cells
-        else ()
+    harvest = harvest_doclang_text(
+        tree,
+        harvest_separator=harvest_separator,
+        eligibility=eligibility,
+    )
+    table_harvests = harvest_doclang_tables(
+        tree,
+        harvest_separator=harvest_separator,
+        eligibility=eligibility,
     )
 
     if not harvest.full_text and not any(th.full_text for th in table_harvests):
@@ -268,9 +267,9 @@ def parse_doclang(
 
     boundaries = detect_boundaries(
         tree,
-        include_code_blocks=include_code_blocks,
-        include_formulas=include_formulas,
-        include_field_regions=include_field_regions,
+        eligibility=eligibility,
+        harvest=harvest,
+        table_harvests=table_harvests,
     )
     table_boundaries = {b.id: b for b in boundaries if b.kind == "table"}
 
@@ -291,7 +290,13 @@ def parse_doclang(
 
     if harvest.full_text:
         rst_tree = extract_root_tree(parser(harvest.full_text))
-        relations, edus = flatten_tree(rst_tree, harvest.spans, boundaries, note_threshold=note_threshold)
+        relations, edus = flatten_tree(
+            rst_tree,
+            harvest.spans,
+            boundaries,
+            source_text=harvest.full_text,
+            note_threshold=note_threshold,
+        )
     else:
         relations, edus = (), ()
 
@@ -305,6 +310,7 @@ def parse_doclang(
             table_tree,
             th.spans,
             (table_boundaries[boundary_id],),
+            source_text=th.full_text,
             note_threshold=note_threshold,
         )
         table_analyses.append(TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus))
@@ -314,6 +320,7 @@ def parse_doclang(
         schema_version=SCHEMA_VERSION,
         tool=TOOL_NAME,
         tool_version=resolve_tool_version(),
+        source_revision=resolve_source_revision(),
         model_version=model_version,
         inventory=inventory,
         source=src_path.name,

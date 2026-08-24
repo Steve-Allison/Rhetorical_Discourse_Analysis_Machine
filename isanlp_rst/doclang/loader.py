@@ -1,10 +1,10 @@
-"""Parse a DocLang ``.dclg.xml`` file into a usable element tree.
+"""Parse a DocLang ``.dclg`` file into a usable element tree.
 
 The ``doclang`` PyPI package (``doclang-project/doclang``) is
 validator-only — it exposes ``validate(path)`` and ``ValidationError``
 and has no DOM. We parse the XML ourselves with ``lxml`` and provide
 the canonical addressing helper ``local_path`` (verified Phase 1 to
-round-trip 100% across the 42-fixture corpus).
+round-trip against the pinned upstream fixture manifest).
 
 ``lxml.etree.ElementTree.getpath()`` is NOT used: on default-namespaced
 documents it emits ``/*/*[N]`` wildcards (`spec.md:219-241` recommends a
@@ -43,7 +43,7 @@ def local_path(element: etree._Element) -> str:
     Each step is ``local_name[i]`` where ``i`` is the 1-based position
     among siblings sharing the same local name (case-sensitive). The
     output is identical regardless of whether the source declares an
-    XML namespace; verified Phase 1 against all 40 valid fixtures.
+    XML namespace; verified against the pinned upstream valid-fixture manifest.
 
     Example output: ``"/doclang[1]/heading[2]/text[1]"``.
     """
@@ -63,7 +63,7 @@ def local_path(element: etree._Element) -> str:
 
 
 def parse_doclang_xml(path: Path) -> etree._ElementTree:
-    """Parse the ``.dclg.xml`` file at ``path`` and return the ElementTree.
+    """Parse the ``.dclg`` file at ``path`` and return the ElementTree.
 
     Uses a hardened ``XMLParser`` that refuses external entities and
     network DTD loads. Schema validation is delegated to

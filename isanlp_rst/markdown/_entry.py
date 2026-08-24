@@ -10,16 +10,21 @@ on-disk cache (``cache_dir=``) short-circuits repeat parses.
 """
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
+from .._version import MARKDOWN_SCHEMA_NAME as SCHEMA_NAME
+from .._version import MARKDOWN_SCHEMA_VERSION as SCHEMA_VERSION
+from .._version import TOOL_NAME
 from .._rst_common import (
     dataclass_from_dict,
     load_cached,
     model_identity_knobs,
     resolve_inventory,
     resolve_result_model_meta,
+    resolve_source_revision,
     resolve_tool_version,
     result_cache_key,
+    RstParser,
     store_cached,
 )
 from ..utils.parse_result import extract_root_tree
@@ -30,12 +35,6 @@ from .loader import load_markdown
 from .mapper import flatten_tree
 from .schema import MarkdownRstResult, TableAnalysis
 
-if TYPE_CHECKING:
-    from isanlp_rst.parser import Parser
-
-SCHEMA_NAME = "isanlp_rst_markdown"
-SCHEMA_VERSION = "1.0"
-TOOL_NAME = "isanlp_rst"
 DEFAULT_MAX_HARVEST_CHARS = 200_000
 
 # Backwards-compatible aliases — tests and external callers import these
@@ -62,7 +61,7 @@ def _source_origin(
 def parse_markdown(
     path: str | Path,
     *,
-    parser: Parser | None = None,
+    parser: RstParser | None = None,
     hf_model_name: str = "tchewik/isanlp_rst_v3",
     hf_model_version: str = "gumrrg",
     relinventory: str | None = None,
@@ -142,7 +141,7 @@ def parse_markdown(
         ),
     }
     cache_path = Path(cache_dir) if cache_dir is not None else None
-    cache_key = result_cache_key(source_bytes, knobs)
+    cache_key = result_cache_key(source_bytes, knobs, source_basename=src_path.name)
     if cache_path is not None:
         cached = load_cached(
             cache_path,
@@ -210,7 +209,13 @@ def parse_markdown(
 
     if harvest.full_text:
         rst_tree = extract_root_tree(parser(harvest.full_text))
-        relations, edus = flatten_tree(rst_tree, harvest.spans, boundaries, note_threshold=note_threshold)
+        relations, edus = flatten_tree(
+            rst_tree,
+            harvest.spans,
+            boundaries,
+            source_text=harvest.full_text,
+            note_threshold=note_threshold,
+        )
     else:
         relations, edus = (), ()
 
@@ -224,6 +229,7 @@ def parse_markdown(
             table_tree,
             th.spans,
             (table_boundaries[boundary_id],),
+            source_text=th.full_text,
             note_threshold=note_threshold,
         )
         table_analyses.append(TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus))
@@ -233,6 +239,7 @@ def parse_markdown(
         schema_version=SCHEMA_VERSION,
         tool=TOOL_NAME,
         tool_version=resolve_tool_version(),
+        source_revision=resolve_source_revision(),
         model_version=model_version,
         inventory=inventory,
         source=src_path.name,

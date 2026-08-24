@@ -35,8 +35,8 @@ from isanlp_rst.doclang.loader import parse_doclang_xml
 from isanlp_rst.parser import Parser
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "doclang"
-COMPREHENSIVE = FIXTURES / "ok_comprehensive.dclg.xml"
-TABLE_ONLY = FIXTURES / "ok_table_rectangular.dclg.xml"
+COMPREHENSIVE = FIXTURES / "ok_comprehensive.dclg"
+TABLE_ONLY = FIXTURES / "ok_table_rectangular.dclg"
 
 
 # ===========================================================================
@@ -80,13 +80,13 @@ def test_source_origin_includes_namespace_when_declared() -> None:
 
 
 def test_source_origin_empty_namespace_when_absent() -> None:
-    tree = parse_doclang_xml(FIXTURES / "ok_no_namespace.dclg.xml")
+    tree = parse_doclang_xml(FIXTURES / "ok_no_namespace.dclg")
     origin = _source_origin(tree)
     assert origin["namespace"] == ""
 
 
 def test_source_origin_lists_head_children_when_present() -> None:
-    """``ok_comprehensive.dclg.xml`` has ``<head>`` with several children
+    """``ok_comprehensive.dclg`` has ``<head>`` with several children
     (title, author, date, keywords, custom-field)."""
     tree = parse_doclang_xml(COMPREHENSIVE)
     origin = _source_origin(tree)
@@ -95,7 +95,7 @@ def test_source_origin_lists_head_children_when_present() -> None:
 
 
 def test_source_origin_no_head_returns_empty_list() -> None:
-    tree = parse_doclang_xml(FIXTURES / "ok_no_namespace.dclg.xml")
+    tree = parse_doclang_xml(FIXTURES / "ok_no_namespace.dclg")
     origin = _source_origin(tree)
     assert origin["head_children"] == []
 
@@ -105,7 +105,7 @@ def test_source_origin_no_head_returns_empty_list() -> None:
 
 def test_schema_constants() -> None:
     assert SCHEMA_NAME == "isanlp_rst_doclang"
-    assert SCHEMA_VERSION == "1.0"
+    assert SCHEMA_VERSION == "1.1"
     assert TOOL_NAME == "isanlp_rst"
     assert DEFAULT_MAX_HARVEST_CHARS == 200_000
 
@@ -131,7 +131,7 @@ def test_input_too_large_error_str_and_path_equivalent() -> None:
 
 def test_empty_doclang_error_on_root_only(tmp_path: Path) -> None:
     """A ``<doclang/>`` with no body must raise ``EmptyDoclangError``."""
-    empty_path = tmp_path / "empty.dclg.xml"
+    empty_path = tmp_path / "empty.dclg"
     empty_path.write_bytes(b'<doclang xmlns="https://www.doclang.ai/ns/v0"/>')
     with pytest.raises(EmptyDoclangError):
         parse_doclang(empty_path, validate_xml=False)
@@ -139,7 +139,7 @@ def test_empty_doclang_error_on_root_only(tmp_path: Path) -> None:
 
 def test_empty_doclang_error_with_head_only(tmp_path: Path) -> None:
     """A doc whose only child is ``<head>`` has no body."""
-    path = tmp_path / "head_only.dclg.xml"
+    path = tmp_path / "head_only.dclg"
     path.write_bytes(b'<doclang xmlns="https://www.doclang.ai/ns/v0"><head><title>x</title></head></doclang>')
     with pytest.raises(EmptyDoclangError):
         parse_doclang(path, validate_xml=False)
@@ -195,7 +195,7 @@ def test_table_only_doc_produces_analyses_with_empty_main_tree() -> None:
     """The 3-table fixture parses to an empty main tree + 3 analyses
     whose refs resolve against their boundaries."""
     stub = _StubParser()
-    result = parse_doclang(TABLE_ONLY, parser=stub, validate_xml=False)  # type: ignore[arg-type]
+    result = parse_doclang(TABLE_ONLY, parser=stub, validate_xml=False)
     assert result.relations == ()
     assert result.edus == ()
     assert [a.id for a in result.table_analyses] == ["table-0", "table-1", "table-2"]
@@ -213,14 +213,14 @@ def test_cache_round_trip_skips_reparse(tmp_path: Path) -> None:
     stub = _StubParser()
     first = parse_doclang(
         COMPREHENSIVE,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
         cache_dir=cache,
     )
     calls_after_first = len(stub.calls)
     second = parse_doclang(
         COMPREHENSIVE,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
         cache_dir=cache,
     )
@@ -241,7 +241,7 @@ def test_cache_misses_when_validate_xml_changes(tmp_path: Path) -> None:
     stub = _StubParser()
     parse_doclang(
         COMPREHENSIVE,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
         cache_dir=cache,
     )
@@ -249,7 +249,7 @@ def test_cache_misses_when_validate_xml_changes(tmp_path: Path) -> None:
     try:
         parse_doclang(
             COMPREHENSIVE,
-            parser=stub,  # type: ignore[arg-type]
+            parser=stub,
             validate_xml=True,
             cache_dir=cache,
         )
@@ -265,13 +265,13 @@ def test_cache_misses_when_validate_xml_changes(tmp_path: Path) -> None:
 def test_cache_misses_when_source_changes(tmp_path: Path) -> None:
     cache = tmp_path / "cache"
     stub = _StubParser()
-    path = tmp_path / "doc.dclg.xml"
+    path = tmp_path / "doc.dclg"
     original = COMPREHENSIVE.read_text(encoding="utf-8")
     path.write_text(original, encoding="utf-8")
-    parse_doclang(path, parser=stub, validate_xml=False, cache_dir=cache)  # type: ignore[arg-type]
+    parse_doclang(path, parser=stub, validate_xml=False, cache_dir=cache)
     # Trailing whitespace changes source bytes without breaking XML.
     path.write_text(original + "\n", encoding="utf-8")
-    parse_doclang(path, parser=stub, validate_xml=False, cache_dir=cache)  # type: ignore[arg-type]
+    parse_doclang(path, parser=stub, validate_xml=False, cache_dir=cache)
     assert len(stub.calls) >= 2
 
 
@@ -280,7 +280,7 @@ def test_cache_misses_when_hf_model_name_changes(tmp_path: Path) -> None:
     stub = _StubParser()
     parse_doclang(
         COMPREHENSIVE,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
         cache_dir=cache,
         hf_model_name="repo/model-a",
@@ -288,7 +288,7 @@ def test_cache_misses_when_hf_model_name_changes(tmp_path: Path) -> None:
     calls_after_first = len(stub.calls)
     parse_doclang(
         COMPREHENSIVE,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
         cache_dir=cache,
         hf_model_name="repo/model-b",
@@ -301,14 +301,14 @@ def test_cache_misses_when_injected_parser_identity_differs(tmp_path: Path) -> N
     stub_a = _StubParser()
     parse_doclang(
         COMPREHENSIVE,
-        parser=stub_a,  # type: ignore[arg-type]
+        parser=stub_a,
         validate_xml=False,
         cache_dir=cache,
     )
     stub_b = _StubParser(hf_model_version="rstdt")
     parse_doclang(
         COMPREHENSIVE,
-        parser=stub_b,  # type: ignore[arg-type]
+        parser=stub_b,
         validate_xml=False,
         cache_dir=cache,
     )
@@ -321,7 +321,7 @@ def test_cache_misses_when_device_changes(tmp_path: Path) -> None:
     stub = _StubParser()
     parse_doclang(
         COMPREHENSIVE,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
         cache_dir=cache,
         device="cpu",
@@ -329,7 +329,7 @@ def test_cache_misses_when_device_changes(tmp_path: Path) -> None:
     calls_after_first = len(stub.calls)
     parse_doclang(
         COMPREHENSIVE,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
         cache_dir=cache,
         device="mps",
@@ -351,7 +351,7 @@ def test_validate_xml_import_error_fail_closed(monkeypatch: pytest.MonkeyPatch) 
     with pytest.raises(InvalidDoclangError, match="requires the doclang package"):
         parse_doclang(
             COMPREHENSIVE,
-            parser=stub,  # type: ignore[arg-type]
+            parser=stub,
             validate_xml=True,
         )
     assert stub.calls == []
@@ -362,7 +362,7 @@ def test_main_relations_never_reference_table_cell_xpaths() -> None:
     stub = _StubParser()
     result = parse_doclang(
         COMPREHENSIVE,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
     )
     for relation in result.relations:
@@ -377,7 +377,7 @@ def test_include_table_cells_false_drops_analyses() -> None:
     stub = _StubParser()
     result = parse_doclang(
         COMPREHENSIVE,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
         include_table_cells=False,
     )
@@ -388,7 +388,7 @@ def test_result_metadata_follows_injected_parser_not_kwargs() -> None:
     stub = _StubParser(hf_model_version="rstdt")
     result = parse_doclang(
         TABLE_ONLY,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         validate_xml=False,
         hf_model_version="gumrrg",
     )
@@ -407,7 +407,7 @@ def test_validate_xml_true_fail_closed_wraps_backend_errors() -> None:
     try:
         parse_doclang(
             COMPREHENSIVE,
-            parser=stub,  # type: ignore[arg-type]
+            parser=stub,
             validate_xml=True,
         )
     except InvalidDoclangError as exc:
@@ -422,7 +422,7 @@ def test_table_only_with_cells_disabled_raises_empty_harvest() -> None:
     with pytest.raises(EmptyHarvestError):
         parse_doclang(
             TABLE_ONLY,
-            parser=_StubParser(),  # type: ignore[arg-type]
+            parser=_StubParser(),
             validate_xml=False,
             include_table_cells=False,
         )
@@ -446,7 +446,7 @@ def test_parse_doclang_end_to_end(parser) -> None:
     assert result.schema_name == SCHEMA_NAME
     assert result.schema_version == SCHEMA_VERSION
     assert result.tool == TOOL_NAME
-    assert result.source == "ok_comprehensive.dclg.xml"
+    assert result.source == "ok_comprehensive.dclg"
     assert result.model_version == "gumrrg"
     assert result.inventory == "gumrrg"
 
@@ -489,9 +489,9 @@ def test_parse_doclang_relation_xpaths_in_harvest_set(parser) -> None:
 
 @pytest.mark.slow
 def test_parse_doclang_thread_ids_captured_when_present(parser) -> None:
-    """``ok_thread.dclg.xml`` — both ``<text>`` elements carry
+    """``ok_thread.dclg`` — both ``<text>`` elements carry
     ``thread_id=1``. Any relation over them must mention thread id 1."""
-    result = parse_doclang(FIXTURES / "ok_thread.dclg.xml", parser=parser, validate_xml=False)
+    result = parse_doclang(FIXTURES / "ok_thread.dclg", parser=parser, validate_xml=False)
     seen = set()
     for relation in result.relations:
         seen.update(relation.nucleus_thread_ids)

@@ -13,9 +13,9 @@ from dataclasses import dataclass
 from isanlp_rst.doclang.mapper import (
     NOTE_THRESHOLD,
     compute_overlap_refs,
-    flatten_tree,
+    flatten_tree as _flatten_tree,
 )
-from isanlp_rst.doclang.schema import Boundary, HarvestSpan
+from isanlp_rst.doclang.schema import Boundary, HarvestSpan, RstEdu, RstRelation
 
 
 # --- Synthetic tree node ---------------------------------------------------
@@ -57,6 +57,22 @@ def _span(xpath: str, start: int, end: int, thread_id: int | None = None) -> Har
         start=start,
         end=end,
     )
+
+
+def _materialize_source(spans: tuple[HarvestSpan, ...]) -> str:
+    chars = [" "] * max((span.end for span in spans), default=0)
+    for span in spans:
+        assert len(span.text) == span.end - span.start
+        chars[span.start : span.end] = span.text
+    return "".join(chars)
+
+
+def flatten_tree(
+    tree: FakeUnit,
+    spans: tuple[HarvestSpan, ...],
+    boundaries: tuple[Boundary, ...],
+) -> tuple[tuple[RstRelation, ...], tuple[RstEdu, ...]]:
+    return _flatten_tree(tree, spans, boundaries, source_text=_materialize_source(spans))
 
 
 # ===========================================================================

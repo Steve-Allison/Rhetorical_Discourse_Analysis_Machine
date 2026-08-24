@@ -18,17 +18,33 @@ from collections.abc import Callable, Mapping
 from dataclasses import asdict, fields, is_dataclass
 from pathlib import Path
 from typing import Any, get_args, get_origin, get_type_hints
+import unicodedata
 
 CACHE_FORMAT_VERSION = 1
 
 
-def result_cache_key(source_bytes: bytes, parts: Mapping[str, object]) -> str:
+def normalize_source_basename(source_basename: str) -> str:
+    """Return the NFC-normalized filename component used in cache identity."""
+
+    basename = Path(source_basename).name
+    if basename in ("", ".", ".."):
+        raise ValueError("source_basename must identify a file")
+    return unicodedata.normalize("NFC", basename)
+
+
+def result_cache_key(
+    source_bytes: bytes,
+    parts: Mapping[str, object],
+    *,
+    source_basename: str,
+) -> str:
     """Compute a stable hex key from source bytes + sorted knob parts.
 
     Values are serialised with ``repr``. Callers must pass only
     repr-stable scalars (``str``, ``bool``, ``int``, ``float``, ``None``).
     """
     h = hashlib.sha256(source_bytes)
+    h.update(f"|source_basename={normalize_source_basename(source_basename)!r}".encode())
     for name in sorted(parts):
         value = parts[name]
         if type(value) not in (str, bool, int, float, type(None)):
@@ -165,6 +181,7 @@ __all__ = [
     "CACHE_FORMAT_VERSION",
     "dataclass_from_dict",
     "load_cached",
+    "normalize_source_basename",
     "result_cache_key",
     "store_cached",
 ]

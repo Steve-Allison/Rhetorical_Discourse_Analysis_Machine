@@ -40,7 +40,7 @@ def _root_ns(path: Path) -> str:
 
 
 _DOCLING_JSON = sorted(DOCLING_FIXTURES.glob("*.docling.json"))
-_NAMESPACED_DOCLANG = sorted(p for p in DOCLANG_FIXTURES.glob("*.dclg.xml") if _root_ns(p) == DOCLANG_NS)
+_NAMESPACED_DOCLANG = sorted(p for p in DOCLANG_FIXTURES.glob("*.dclg") if _root_ns(p) == DOCLANG_NS)
 
 
 def test_compat_fixtures_present() -> None:

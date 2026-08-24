@@ -14,7 +14,7 @@ from isanlp_rst.docling import parse_docling
 from isanlp_rst.markdown import parse_markdown
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
-DOCLANG = FIXTURES / "doclang" / "ok_comprehensive.dclg.xml"
+DOCLANG = FIXTURES / "doclang" / "ok_comprehensive.dclg"
 MARKDOWN = FIXTURES / "markdown" / "minimal.md"
 
 
