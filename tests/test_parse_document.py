@@ -4,6 +4,7 @@ from isanlp.annotation_rst import DiscourseUnit
 import pytest
 
 from isanlp_rst import (
+    ErstCapabilityError,
     OutputFormalismEnum,
     Parser,
     RstAnalysis,
@@ -27,7 +28,7 @@ class DummyPredictor:
 
 def test_parse_document_from_text(monkeypatch: pytest.MonkeyPatch) -> None:
     parser = Parser.__new__(Parser)
-    parser.predictor = DummyPredictor()  # type: ignore[assignment]
+    object.__setattr__(parser, "predictor", DummyPredictor())
     parser.hf_model_version = "gumrrg"
 
     doc = RstDocument.from_text("First sentence. Second sentence.", document_id="doc-test-1")
@@ -40,20 +41,18 @@ def test_parse_document_from_text(monkeypatch: pytest.MonkeyPatch) -> None:
     assert len(analysis.primary_edges) == 2
     assert analysis.timing.total_ms >= 0.0
     assert analysis.provenance.model_id == "gumrrg"
+    assert analysis.provenance.software_version == "4.0.0"
+    assert analysis.provenance.source_revision is not None
 
 
-def test_parse_document_from_edus(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_document_from_edus_requires_validated_erst_bundle(monkeypatch: pytest.MonkeyPatch) -> None:
     parser = Parser.__new__(Parser)
-    parser.predictor = DummyPredictor()  # type: ignore[assignment]
+    object.__setattr__(parser, "predictor", DummyPredictor())
     parser.hf_model_version = "rstdt"
 
     doc = RstDocument.from_edus(["First sentence.", "Second sentence."], document_id="doc-test-2")
-    analysis = parser.parse_document(doc, output="erst_graph")
-
-    assert isinstance(analysis, RstAnalysis)
-    assert analysis.document_id == "doc-test-2"
-    assert analysis.formalism == OutputFormalismEnum.ERST_GRAPH
-    assert len(analysis.nodes) == 3
+    with pytest.raises(ErstCapabilityError, match="validated completion bundle"):
+        parser.parse_document(doc, output="erst_graph")
 
 
 def test_du_to_analysis_nuclearity_and_relations() -> None:
@@ -106,4 +105,3 @@ def test_du_to_analysis_nuclearity_and_relations() -> None:
     # Verify top-level SoftParsevalScorer export works
     scorer = SoftParsevalScorer()
     assert scorer is not None
-

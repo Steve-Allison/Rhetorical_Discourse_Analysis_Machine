@@ -1,9 +1,15 @@
-"""Unit tests for NeuralSecondaryEdgeScorer, AcyclicDagDecoder, and eRST candidate generation."""
+"""Unit tests for NeuralSecondaryEdgeScorer and eRST candidate generation."""
 
 import pytest
 import torch
+from tokenizers import Tokenizer
+from tokenizers.models import WordLevel
+from tokenizers.pre_tokenizers import Whitespace
+from tokenizers.processors import TemplateProcessing
+from transformers import BertConfig, PreTrainedTokenizerFast
 
 from isanlp_rst.contracts import (
+    DiscourseSignal,
     NodeKindEnum,
     NuclearityPatternEnum,
     OutputFormalismEnum,
@@ -11,15 +17,59 @@ from isanlp_rst.contracts import (
     RstAnalysis,
     RstDocument,
     RstNode,
+    SignalDetectionMethod,
+    SignalDetectorProvenance,
 )
 from isanlp_rst.english.erst.completer import ErstCompleter
-from isanlp_rst.erst.dag_decoder import AcyclicDagDecoder
 from isanlp_rst.erst.dataset import (
-    SecondaryEdgeCandidate,
     extract_eRST_candidates_from_document,
 )
 from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from scripts.train_erst_scorer import compute_edge_metrics
+
+_RAW_RELATIONS = ("adversative-contrast", "elaboration-additional")
+
+
+def _tiny_neural_scorer() -> NeuralSecondaryEdgeScorer:
+    vocabulary = {
+        "[PAD]": 0,
+        "[UNK]": 1,
+        "[CLS]": 2,
+        "[SEP]": 3,
+        "first": 4,
+        "however": 5,
+        "second": 6,
+        ".": 7,
+    }
+    backend = Tokenizer(WordLevel(vocab=vocabulary, unk_token="[UNK]"))
+    backend.pre_tokenizer = Whitespace()
+    backend.post_processor = TemplateProcessing(
+        single="[CLS] $A [SEP]",
+        special_tokens=(("[CLS]", 2), ("[SEP]", 3)),
+    )
+    tokenizer = PreTrainedTokenizerFast(
+        tokenizer_object=backend,
+        unk_token="[UNK]",
+        pad_token="[PAD]",
+        cls_token="[CLS]",
+        sep_token="[SEP]",
+    )
+    config = BertConfig(
+        vocab_size=len(vocabulary),
+        hidden_size=16,
+        num_hidden_layers=1,
+        num_attention_heads=2,
+        intermediate_size=32,
+        max_position_embeddings=64,
+    )
+    return NeuralSecondaryEdgeScorer(
+        model_name_or_path="tiny-bert-test",
+        raw_relation_inventory=_RAW_RELATIONS,
+        device="cpu",
+        encoder_config=config,
+        tokenizer=tokenizer,
+        proj_dim=8,
+    )
 
 
 def test_compute_edge_metrics_math() -> None:
@@ -34,109 +84,7 @@ def test_compute_edge_metrics_math() -> None:
     assert metrics["recall"] == pytest.approx(2 / 3)
 
 
-def test_acyclic_dag_decoder_prevents_cycles() -> None:
-    # Build a simple primary tree: 3 -> 1 and 3 -> 2
-    analysis = RstAnalysis(
-        document_id="doc_dag_test",
-        formalism=OutputFormalismEnum.RST_TREE,
-        nodes=(
-            RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 10), text="Node 1"),
-            RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(11, 20), text="Node 2"),
-            RstNode(node_id=3, kind=NodeKindEnum.ROOT, edu_span=(1, 2), char_span=(0, 20), text="Node 1 Node 2"),
-        ),
-        primary_edges=(
-            PrimaryRelationEdge(
-                edge_id="p1",
-                parent_id=3,
-                child_id=1,
-                nuclearity=NuclearityPatternEnum.NS,
-                relation_raw="Elaboration",
-                relation_concept="Elaboration",
-            ),
-            PrimaryRelationEdge(
-                edge_id="p2",
-                parent_id=3,
-                child_id=2,
-                nuclearity=NuclearityPatternEnum.NS,
-                relation_raw="Elaboration",
-                relation_concept="Elaboration",
-            ),
-        ),
-    )
-
-    # Synthetic candidate edges that would form a cycle if both accepted: 1 -> 2 and 2 -> 1
-    cands = [
-        SecondaryEdgeCandidate(
-            source_id=1,
-            target_id=2,
-            source_text="Node 1",
-            target_text="Node 2",
-            source_char_span=(0, 10),
-            target_char_span=(11, 20),
-            structural_features=(1.0,) * 9,
-            is_gold_edge=False,
-        ),
-        SecondaryEdgeCandidate(
-            source_id=2,
-            target_id=1,
-            source_text="Node 2",
-            target_text="Node 1",
-            source_char_span=(11, 20),
-            target_char_span=(0, 10),
-            structural_features=(1.0,) * 9,
-            is_gold_edge=False,
-        ),
-    ]
-
-    # Both have high edge prob, but 1->2 has higher joint score
-    edge_probs = [0.95, 0.90]
-    rel_logits = [[1.0] + [0.0] * 17, [1.0] + [0.0] * 17]
-
-    decoder = AcyclicDagDecoder(min_confidence_threshold=0.50)
-    decoded = decoder.decode(analysis, cands, edge_probs, rel_logits)
-
-    # Exactly 1 edge must be accepted; the 2nd edge (creating a cycle) MUST be rejected!
-    assert len(decoded) == 1
-    assert decoded[0].source_id == 1
-    assert decoded[0].target_id == 2
-
-
-def test_acyclic_dag_decoder_empty_and_zero_len_cases() -> None:
-    analysis = RstAnalysis(
-        document_id="doc_empty",
-        formalism=OutputFormalismEnum.RST_TREE,
-        nodes=(),
-        primary_edges=(),
-    )
-    decoder = AcyclicDagDecoder()
-    assert decoder.decode(analysis, [], [], []) == ()
-
-    # Candidate with empty relation logits
-    cand = SecondaryEdgeCandidate(
-        source_id=1,
-        target_id=2,
-        source_text="1",
-        target_text="2",
-        source_char_span=(0, 5),
-        target_char_span=(6, 10),
-        structural_features=(1.0,) * 9,
-        is_gold_edge=False,
-    )
-    analysis_with_nodes = RstAnalysis(
-        document_id="doc_nodes",
-        formalism=OutputFormalismEnum.RST_TREE,
-        nodes=(
-            RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 5), text="1"),
-            RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(6, 10), text="2"),
-        ),
-        primary_edges=(),
-    )
-    # Empty r_log is skipped safely
-    assert decoder.decode(analysis_with_nodes, [cand], [0.95], [[]]) == ()
-
-
-
-def test_extract_erst_candidates_ancestry_pruning() -> None:
+def test_extract_erst_candidates_includes_primary_ancestors_and_descendants() -> None:
     doc = RstDocument.from_text("Statement one. Statement two. Statement three.", document_id="doc_prune")
 
     # Primary tree: Root 4 -> Span 1, 2 (Node 3) and Node 3 -> Node 1, Node 2
@@ -175,36 +123,57 @@ def test_extract_erst_candidates_ancestry_pruning() -> None:
                 relation_concept="Elaboration",
             ),
         ),
+        signals=(
+            DiscourseSignal(
+                signal_id="sig-unanchored",
+                edge_id=None,
+                signal_type="graphical",
+                signal_subtype="layout",
+                compatible_relations=("Elaboration",),
+                detector=SignalDetectorProvenance(
+                    detector_id="candidate-regression",
+                    detector_version="1.0.0",
+                    method=SignalDetectionMethod.IMPORTED,
+                ),
+            ),
+        ),
     )
 
     candidates = extract_eRST_candidates_from_document(doc, analysis)
-    assert len(candidates) > 0
-
-    # Verify no candidate links a node to its direct ancestor (Node 4)
-    for c in candidates:
-        assert c.source_id != c.target_id
-        # Primary parent 4 cannot be target from child or vice versa
-        assert not (c.source_id == 4 and c.target_id in (1, 2, 3))
-        assert not (c.source_id in (1, 2, 3) and c.target_id == 4)
+    pairs = {(candidate.source_id, candidate.target_id) for candidate in candidates}
+    assert len(pairs) == 12
+    assert {(4, 1), (1, 4), (4, 2), (2, 4), (4, 3), (3, 4)} <= pairs
 
 
 @pytest.mark.slow
 def test_neural_secondary_edge_scorer_forward() -> None:
-    scorer = NeuralSecondaryEdgeScorer(model_name_or_path="microsoft/deberta-v3-base", device="cpu")
+    scorer = _tiny_neural_scorer()
 
-    src_ids = torch.randint(1, 1000, (2, 16))
+    src_ids = torch.randint(1, 8, (2, 16))
     src_mask = torch.ones((2, 16), dtype=torch.long)
-    tgt_ids = torch.randint(1, 1000, (2, 16))
+    tgt_ids = torch.randint(1, 8, (2, 16))
     tgt_mask = torch.ones((2, 16), dtype=torch.long)
     struct_feats = torch.randn((2, 9), dtype=torch.float)
     edge_labels = torch.tensor([1.0, 0.0], dtype=torch.float)
-    rel_labels = torch.tensor([2, -100], dtype=torch.long)
+    rel_labels = torch.tensor([1, -100], dtype=torch.long)
+    special_tokens_mask = torch.zeros((2, 16), dtype=torch.long)
+    token_offsets = torch.stack(
+        (
+            torch.arange(16, dtype=torch.long),
+            torch.arange(1, 17, dtype=torch.long),
+        ),
+        dim=-1,
+    ).unsqueeze(0).expand(2, -1, -1)
 
     out = scorer(
         src_input_ids=src_ids,
         src_attention_mask=src_mask,
+        src_special_tokens_mask=special_tokens_mask,
+        src_offset_mapping=token_offsets,
         tgt_input_ids=tgt_ids,
         tgt_attention_mask=tgt_mask,
+        tgt_special_tokens_mask=special_tokens_mask,
+        tgt_offset_mapping=token_offsets,
         struct_features=struct_feats,
         edge_label=edge_labels,
         rel_label=rel_labels,
@@ -215,7 +184,7 @@ def test_neural_secondary_edge_scorer_forward() -> None:
     assert "rel_logits" in out
     assert "loss" in out
     assert out["edge_probs"].shape == (2,)
-    assert out["rel_logits"].shape == (2, 18)
+    assert out["rel_logits"].shape == (2, len(_RAW_RELATIONS))
     assert out["loss"].item() > 0.0
 
 
@@ -256,7 +225,7 @@ def test_erst_completer_integration_with_neural_scorer() -> None:
         ),
     )
 
-    scorer = NeuralSecondaryEdgeScorer(model_name_or_path="microsoft/deberta-v3-base", device="cpu")
+    scorer = _tiny_neural_scorer()
     completer = ErstCompleter()
     completed_analysis = completer.complete_graph(doc, analysis, neural_scorer=scorer)
 

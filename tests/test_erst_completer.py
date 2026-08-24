@@ -11,52 +11,64 @@ from isanlp_rst.contracts import (
     RstDocument,
     RstNode,
 )
-from isanlp_rst.english.erst import CompleterConfig, ErstCompleter
+from isanlp_rst.english.erst import ErstCompleter
 
 
-def test_secondary_candidate_generation_bounds() -> None:
-    # 5 EDUs in a tree
-    nodes = tuple(
-        RstNode(node_id=i, kind=NodeKindEnum.EDU, edu_span=(i, i), char_span=(i * 10, (i + 1) * 10), text=f"EDU {i}")
-        for i in range(1, 6)
-    )
-    primary_edges = (
-        PrimaryRelationEdge(
-            edge_id="e1",
-            parent_id=10,
-            child_id=1,
-            relation_raw="span",
-            relation_concept="span",
-            nuclearity=NuclearityPatternEnum.NS,
+def test_completer_delegates_to_complete_signal_sufficient_generator() -> None:
+    document = RstDocument.from_tokens_and_edus(
+        text="First. However second.",
+        tokens=(
+            DocumentToken(token_id=0, text="First.", start=0, end=6),
+            DocumentToken(token_id=1, text="However", start=7, end=14),
+            DocumentToken(token_id=2, text="second.", start=15, end=22),
         ),
-        PrimaryRelationEdge(
-            edge_id="e2",
-            parent_id=10,
-            child_id=2,
-            relation_raw="Elaboration",
-            relation_concept="Elaboration",
-            nuclearity=NuclearityPatternEnum.NS,
-        ),
+        edus=(),
+        document_id="doc-test",
     )
-
     analysis = RstAnalysis(
         document_id="doc-test",
         formalism=OutputFormalismEnum.RST_TREE,
-        nodes=nodes,
-        primary_edges=primary_edges,
+        nodes=(
+            RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 6), text="First."),
+            RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(7, 22), text="However second."),
+            RstNode(
+                node_id=3,
+                kind=NodeKindEnum.ROOT,
+                edu_span=(1, 2),
+                char_span=(0, 22),
+                text="First. However second.",
+            ),
+        ),
+        primary_edges=(
+            PrimaryRelationEdge(
+                edge_id="p-3-1",
+                parent_id=3,
+                child_id=1,
+                relation_raw="span",
+                relation_concept="span",
+                nuclearity=NuclearityPatternEnum.NS,
+            ),
+            PrimaryRelationEdge(
+                edge_id="p-3-2",
+                parent_id=3,
+                child_id=2,
+                relation_raw="adversative-contrast",
+                relation_concept="Contrast",
+                nuclearity=NuclearityPatternEnum.NS,
+            ),
+        ),
     )
-
-    completer = ErstCompleter(CompleterConfig(max_edu_distance=2, max_candidates_per_document=10))
-    candidates = completer.generate_secondary_candidates(analysis)
-
-    assert len(candidates) > 0
-    assert len(candidates) <= 10
-    # Verify distance constraint
-    for src, tgt in candidates:
-        src_node = analysis.get_node(src)
-        tgt_node = analysis.get_node(tgt)
-        assert src_node is not None and tgt_node is not None
-        assert abs(src_node.edu_span[0] - tgt_node.edu_span[0]) <= 2
+    completer = ErstCompleter()
+    signals = tuple(completer.detect_lexical_signals(document, analysis))
+    candidates = completer.generate_secondary_candidates(document, analysis, signals)
+    assert {(candidate.source_id, candidate.target_id) for candidate in candidates} == {
+        (1, 2),
+        (1, 3),
+        (2, 1),
+        (2, 3),
+        (3, 1),
+        (3, 2),
+    }
 
 
 def test_lexical_signal_detection() -> None:
@@ -85,6 +97,14 @@ def test_lexical_signal_detection() -> None:
     )
     primary_edges = (
         PrimaryRelationEdge(
+            edge_id="e0",
+            parent_id=3,
+            child_id=1,
+            relation_raw="span",
+            relation_concept="span",
+            nuclearity=NuclearityPatternEnum.NS,
+        ),
+        PrimaryRelationEdge(
             edge_id="e1",
             parent_id=3,
             child_id=2,
@@ -106,5 +126,5 @@ def test_lexical_signal_detection() -> None:
     assert completed.formalism == OutputFormalismEnum.ERST_GRAPH
     assert len(completed.signals) == 1
     assert completed.signals[0].signal_type == "dm"
-    assert completed.signals[0].signal_subtype == "dm"
+    assert completed.signals[0].signal_subtype == "discourse_marker"
     assert completed.signals[0].token_ids == (4,)

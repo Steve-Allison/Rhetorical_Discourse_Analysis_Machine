@@ -74,7 +74,15 @@ def test_gum_label_resolution() -> None:
     adapter = OntologyAdapter()
     label, concept = adapter.resolve_label("adversative-antithesis", RelationSchemeEnum.GUM_ERST_FINE)
     assert label == "adversative-antithesis"
-    assert concept == "adversative"
+    assert concept == "Contrast"
+
+
+def test_every_locked_gum_fine_label_resolves_to_a_canonical_concept() -> None:
+    adapter = OntologyAdapter()
+    for raw_label in adapter.lock_data.gum_fine_to_coarse:
+        canonical_label, concept = adapter.resolve_label(raw_label, RelationSchemeEnum.GUM_ERST_FINE)
+        assert canonical_label == raw_label
+        assert concept in adapter.lock_data.coarse_concepts
 
 
 def test_unmapped_label_fails_closed() -> None:

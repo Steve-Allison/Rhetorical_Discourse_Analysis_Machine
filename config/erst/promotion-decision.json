@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0",
+  "package_version": "4.0.0",
+  "outcome": "no_promotion",
+  "authority_receipt_sha256": "d97961ef5f9c7f524e5beaeb634d033476c866dcb4b442f966da6d6bf03dec0e",
+  "baseline_diagnosis_sha256": "a9f5fc7ce5aadc0c094e0358c12d40b9ecd5b9e071e9213c8faaada5b3acf0b4",
+  "research_diagnosis_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+  "gates": [
+    {
+      "gate": "dev_full_improvement",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    },
+    {
+      "gate": "paired_bootstrap",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    },
+    {
+      "gate": "test_full_improvement",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    },
+    {
+      "gate": "test_component_regression",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    },
+    {
+      "gate": "calibration",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    },
+    {
+      "gate": "longest_document",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    },
+    {
+      "gate": "peak_rss",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    },
+    {
+      "gate": "mps_latency",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    },
+    {
+      "gate": "tied_system_efficiency",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    },
+    {
+      "gate": "cpu_mps_parity",
+      "passed": false,
+      "evidence_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9",
+      "reason": "baseline reproduction gate is blocked by unavailable official scorer authority"
+    }
+  ],
+  "champion_manifest_sha256": null,
+  "canonical_checkpoint_manifest_sha256": null,
+  "test_data_accessed": false,
+  "test2_data_accessed": false,
+  "upload_permitted": false,
+  "allowed_claims": [
+    "corrected eRST interfaces",
+    "paper-defined scorer adapter",
+    "no benchmark reproduction claim",
+    "no canonical eRST checkpoint"
+  ],
+  "receipt_sha256": "34270305f49e52a2d5155ecf4025f1f83d76ac13bb914cc6131a8fcd10872651"
+}

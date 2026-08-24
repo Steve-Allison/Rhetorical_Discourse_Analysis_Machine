@@ -105,8 +105,10 @@ class GumValidationReport:
                     "",
                     "| eRST Secondary Edges | Precision | Recall | F1 | Matched / Gold |",
                     "| :--- | :--- | :--- | :--- | :--- |",
+                    f"| **Secondary Edge Span** | {self.secondary_metrics.span_precision:.3f} | {self.secondary_metrics.span_recall:.3f} | {self.secondary_metrics.span_f1:.3f} | {self.secondary_metrics.matched_span} / {self.secondary_metrics.gold_count} |",
                     f"| **Secondary Edge Direction** | {self.secondary_metrics.direction_precision:.3f} | {self.secondary_metrics.direction_recall:.3f} | {self.secondary_metrics.direction_f1:.3f} | {self.secondary_metrics.matched_direction} / {self.secondary_metrics.gold_count} |",
                     f"| **Secondary Edge Relation** | {self.secondary_metrics.relation_precision:.3f} | {self.secondary_metrics.relation_recall:.3f} | {self.secondary_metrics.relation_f1:.3f} | {self.secondary_metrics.matched_relation} / {self.secondary_metrics.gold_count} |",
+                    f"| **Secondary Edge Full** | {self.secondary_metrics.full_precision:.3f} | {self.secondary_metrics.full_recall:.3f} | {self.secondary_metrics.full_f1:.3f} | {self.secondary_metrics.matched_full} / {self.secondary_metrics.gold_count} |",
                 ]
             )
 
@@ -258,8 +260,8 @@ class GumGoldValidator:
         sec_metrics: SecondaryEdgeMetrics | None = None
         if gold_analysis.secondary_edges or predicted_analysis.secondary_edges:
             sec_metrics = self.erst_scorer.score_secondary_edges(
-                gold_analysis.secondary_edges,
-                predicted_analysis.secondary_edges,
+                gold_analysis,
+                predicted_analysis,
             )
 
         sig_metrics: SignalMetrics | None = None

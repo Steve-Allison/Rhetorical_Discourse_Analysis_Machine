@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "package_version": "4.0.0",
+  "authority_receipt_sha256": "d97961ef5f9c7f524e5beaeb634d033476c866dcb4b442f966da6d6bf03dec0e",
+  "baseline_diagnosis_sha256": "a9f5fc7ce5aadc0c094e0358c12d40b9ecd5b9e071e9213c8faaada5b3acf0b4",
+  "systems": [
+    {
+      "system": "published_electra_cross_encoder",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    },
+    {
+      "system": "existing_dual_encoder_bilinear_structural",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    },
+    {
+      "system": "structural_only_calibrated",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    },
+    {
+      "system": "text_only_cross_encoder",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    },
+    {
+      "system": "modernbert_base_signal_aware",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    },
+    {
+      "system": "modernbert_large_signal_aware",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    },
+    {
+      "system": "xlm_roberta_large_hidac",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    },
+    {
+      "system": "qwen3_4b_dedisco_peft",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    },
+    {
+      "system": "edge_featured_graph_attention",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    },
+    {
+      "system": "signal_plus_rule",
+      "status": "blocked_by_baseline_authority",
+      "implementation_started": false,
+      "screening_runs_started": 0
+    }
+  ],
+  "test_data_accessed": false,
+  "test2_data_accessed": false,
+  "ablation_runs_started": 0,
+  "bootstrap_resamples_run": 0,
+  "calibration_fitted": false,
+  "receipt_sha256": "2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9"
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "package_version": "4.0.0",
+  "python_version": "3.14.7",
+  "transformers_version": "5.15.1",
+  "tokenizers_version": "0.22.2",
+  "mps_available": true,
+  "probes": [
+    {
+      "model_id": "google/electra-base-discriminator",
+      "revision": "1ae76a97c7e84a4e640876a07453fccd636f0667",
+      "tokenizer_class": "BertTokenizer",
+      "is_fast": true,
+      "encoding_sha256": "1fe5ee6610eae95e57b0db7f3f8aaa8d53eee25ae342d44d8087342e503b18cb",
+      "local_reload_sha256": "1fe5ee6610eae95e57b0db7f3f8aaa8d53eee25ae342d44d8087342e503b18cb",
+      "local_reload_equal": true,
+      "mps_tensor_roundtrip": true,
+      "succeeded": true,
+      "failure_type": null,
+      "failure_message": null
+    },
+    {
+      "model_id": "microsoft/deberta-v3-base",
+      "revision": "8ccc9b6f36199bec6961081d44eb72fb3f7353f3",
+      "tokenizer_class": null,
+      "is_fast": false,
+      "encoding_sha256": null,
+      "local_reload_sha256": null,
+      "local_reload_equal": false,
+      "mps_tensor_roundtrip": false,
+      "succeeded": false,
+      "failure_type": "ValueError",
+      "failure_message": "Pinned fast-tokenizer load, parity, or MPS tensor probe failed"
+    },
+    {
+      "model_id": "answerdotai/ModernBERT-base",
+      "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+      "tokenizer_class": "TokenizersBackend",
+      "is_fast": true,
+      "encoding_sha256": "4e26fd13beb885c058a4dd94466813602f541414e0568d3fc6afe0f71d677bc9",
+      "local_reload_sha256": "4e26fd13beb885c058a4dd94466813602f541414e0568d3fc6afe0f71d677bc9",
+      "local_reload_equal": true,
+      "mps_tensor_roundtrip": true,
+      "succeeded": true,
+      "failure_type": null,
+      "failure_message": null
+    },
+    {
+      "model_id": "answerdotai/ModernBERT-large",
+      "revision": "45bb4654a4d5aaff24dd11d4781fa46d39bf8c13",
+      "tokenizer_class": "TokenizersBackend",
+      "is_fast": true,
+      "encoding_sha256": "4e26fd13beb885c058a4dd94466813602f541414e0568d3fc6afe0f71d677bc9",
+      "local_reload_sha256": "4e26fd13beb885c058a4dd94466813602f541414e0568d3fc6afe0f71d677bc9",
+      "local_reload_equal": true,
+      "mps_tensor_roundtrip": true,
+      "succeeded": true,
+      "failure_type": null,
+      "failure_message": null
+    },
+    {
+      "model_id": "FacebookAI/xlm-roberta-large",
+      "revision": "c23d21b0620b635a76227c604d44e43a9f0ee389",
+      "tokenizer_class": "XLMRobertaTokenizer",
+      "is_fast": true,
+      "encoding_sha256": "95a2072d5e5027cbcb22438e45b8659f7b91e8f13b4b1dedfad1e39ae0b2821c",
+      "local_reload_sha256": "95a2072d5e5027cbcb22438e45b8659f7b91e8f13b4b1dedfad1e39ae0b2821c",
+      "local_reload_equal": true,
+      "mps_tensor_roundtrip": true,
+      "succeeded": true,
+      "failure_type": null,
+      "failure_message": null
+    },
+    {
+      "model_id": "Qwen/Qwen3-4B",
+      "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+      "tokenizer_class": "Qwen2Tokenizer",
+      "is_fast": true,
+      "encoding_sha256": "437b4b0c430b016417a53e0554792dedc66ad1d3296ec141f758ed06d1841391",
+      "local_reload_sha256": "437b4b0c430b016417a53e0554792dedc66ad1d3296ec141f758ed06d1841391",
+      "local_reload_equal": true,
+      "mps_tensor_roundtrip": true,
+      "succeeded": true,
+      "failure_type": null,
+      "failure_message": null
+    }
+  ],
+  "succeeded": false,
+  "receipt_sha256": "230be4cfbe960b67eb9d4d7a76d2d34ffc5b945bad75721287b2588dc1e48f70"
+}

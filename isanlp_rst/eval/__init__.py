@@ -6,6 +6,7 @@ from isanlp_rst.eval.calibration import (
     compute_calibration_error,
 )
 from isanlp_rst.eval.erst_scorer import (
+    ERST_SCORER_AUTHORITY,
     ErstScorer,
     SecondaryEdgeMetrics,
     SignalMetrics,
@@ -24,6 +25,7 @@ __all__ = [
     "CalibrationBin",
     "CalibrationSummary",
     "CharBracketSpan",
+    "ERST_SCORER_AUTHORITY",
     "ErstScorer",
     "ParsevalMetrics",
     "SecondaryEdgeMetrics",

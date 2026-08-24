@@ -57,8 +57,7 @@ class Parser:
         dtype: str | torch.dtype | None = None,
         segmenter: Any | None = None,
         segmenter_model: str | None = None,
-        erst_scorer: Any | None = None,
-        erst_scorer_model: str | None = None,
+        erst_scorer_checkpoint: str | Path | None = None,
     ):
         if model_dir is not None and hf_model_name is not None and hf_model_name != self._DEFAULT_HF_MODEL_NAME:
             raise ValueError(
@@ -113,17 +112,15 @@ class Parser:
         else:
             self.segmenter = None
 
-        if erst_scorer is not None:
-            self.erst_scorer = erst_scorer
-        elif erst_scorer_model is not None:
-            from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+        if erst_scorer_checkpoint is not None:
+            from isanlp_rst.erst.checkpoint import load_erst_checkpoint_bundle
 
-            self.erst_scorer = NeuralSecondaryEdgeScorer(
-                model_name_or_path=erst_scorer_model,
+            self.erst_checkpoint = load_erst_checkpoint_bundle(
+                erst_scorer_checkpoint,
                 device=self.predictor._device,
             )
         else:
-            self.erst_scorer = None
+            self.erst_checkpoint = None
 
     @classmethod
     def _resolve_family(
@@ -246,9 +243,20 @@ class Parser:
     ) -> RstAnalysis:
         """Parse an RstDocument into a typed, ontology-aligned RstAnalysis."""
         import time
+        from isanlp_rst._rst_common import resolve_package_version, resolve_source_revision
         from isanlp_rst.contracts import OutputFormalismEnum, ProvenanceRecord, RstAnalysis, TimingRecord
         from isanlp_rst.english.relations.primer import DiscourseMarkerPrimer
         from isanlp_rst.erst.converter import du_to_analysis
+
+        formalism = OutputFormalismEnum(output)
+        erst_checkpoint = getattr(self, "erst_checkpoint", None)
+        if formalism == OutputFormalismEnum.ERST_GRAPH and erst_checkpoint is None:
+            from isanlp_rst.erst.checkpoint import ErstCapabilityError
+
+            raise ErstCapabilityError(
+                "output='erst_graph' requires a validated completion bundle via "
+                "Parser(erst_scorer_checkpoint=...)"
+            )
 
         start_t = time.perf_counter()
         segmenter = getattr(self, "segmenter", None)
@@ -264,10 +272,10 @@ class Parser:
         root_unit = extract_root_tree(raw_res)
         base_analysis = du_to_analysis(root_unit, document_id=document.document_id)
 
-        formalism = OutputFormalismEnum(output)
         prov = ProvenanceRecord(
             producer="isanlp_rst.parser",
-            software_version="1.0.0",
+            software_version=resolve_package_version(),
+            source_revision=resolve_source_revision(),
             model_id=self.hf_model_version or str(getattr(self.predictor, "model_dir", "unknown")),
             ontology_version="4.1.0-discourse",
         )
@@ -291,11 +299,22 @@ class Parser:
             analysis = primer.prime_analysis(analysis, document)
 
         if formalism == OutputFormalismEnum.ERST_GRAPH or output == "erst_graph":
-            from isanlp_rst.english.erst.completer import ErstCompleter
+            from isanlp_rst.english.erst.completer import CompleterConfig, ErstCompleter
 
-            completer = ErstCompleter()
-            scorer = getattr(self, "erst_scorer", None)
-            analysis = completer.complete_graph(document, analysis, neural_scorer=scorer)
+            if erst_checkpoint is None:
+                raise RuntimeError("validated eRST checkpoint disappeared during parsing")
+            completer = ErstCompleter(
+                config=CompleterConfig(
+                    min_confidence_threshold=erst_checkpoint.decoder_config.edge_threshold,
+                ),
+                signal_detector=erst_checkpoint.signal_detector,
+                decoder_config=erst_checkpoint.decoder_config,
+            )
+            analysis = completer.complete_graph(
+                document,
+                analysis,
+                neural_scorer=erst_checkpoint.scorer,
+            )
 
         return analysis
 

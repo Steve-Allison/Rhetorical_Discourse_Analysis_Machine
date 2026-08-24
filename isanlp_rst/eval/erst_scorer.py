@@ -1,14 +1,25 @@
-"""Evaluation scorers for eRST secondary edges and discourse signals."""
+"""Paper-defined eRST secondary Parseval and discourse-signal diagnostics."""
 
+from collections import Counter
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import TypeAlias
 
-from isanlp_rst.contracts.analysis import DiscourseSignal, RstAnalysis, SecondaryRelationEdge
+from isanlp_rst.contracts.analysis import DiscourseSignal, RstAnalysis
+
+ERST_SCORER_AUTHORITY = "https://aclanthology.org/2025.cl-1.3.pdf#page=30"
+EndpointYield: TypeAlias = tuple[int, int]
+UnorderedSpanKey: TypeAlias = tuple[EndpointYield, EndpointYield]
+DirectedSpanKey: TypeAlias = tuple[EndpointYield, EndpointYield]
 
 
 @dataclass(frozen=True, slots=True)
 class SecondaryEdgeMetrics:
-    """Evaluation metrics for directed secondary discourse relations."""
+    """Official secondary-edge Parseval precision, recall, F1, and counts."""
+
+    span_precision: float
+    span_recall: float
+    span_f1: float
 
     direction_precision: float
     direction_recall: float
@@ -24,6 +35,7 @@ class SecondaryEdgeMetrics:
 
     gold_count: int
     pred_count: int
+    matched_span: int
     matched_direction: int
     matched_relation: int
     matched_full: int
@@ -64,46 +76,79 @@ def _calc_prf(matched: int | float, pred_count: int | float, gold_count: int | f
 
 
 class ErstScorer:
-    """Scores eRST graphs including secondary edges and discourse signals."""
+    """Score eRST graphs using the paper's secondary-edge Parseval definition.
 
-    def score_secondary_edges(
-        self,
-        gold_edges: Sequence[SecondaryRelationEdge],
-        pred_edges: Sequence[SecondaryRelationEdge],
-        ignore_case: bool = True,
+    Node identifiers are serialization-local and therefore never participate in official
+    matching. Each secondary endpoint is represented by the one-based inclusive EDU yield
+    of its primary-tree node. Span compares the unordered endpoint pair, direction compares
+    the ordered pair, Relation compares unordered endpoints plus the raw relation, and Full
+    compares ordered endpoints plus the raw relation.
+    """
+
+    @staticmethod
+    def _secondary_counters(
+        analysis: RstAnalysis,
+        *,
+        ignore_case: bool,
+    ) -> tuple[
+        Counter[UnorderedSpanKey],
+        Counter[DirectedSpanKey],
+        Counter[tuple[UnorderedSpanKey, str]],
+        Counter[tuple[DirectedSpanKey, str]],
+    ]:
+        node_yields = {node.node_id: node.edu_span for node in analysis.nodes}
+        span: Counter[UnorderedSpanKey] = Counter()
+        direction: Counter[DirectedSpanKey] = Counter()
+        relation: Counter[tuple[UnorderedSpanKey, str]] = Counter()
+        full: Counter[tuple[DirectedSpanKey, str]] = Counter()
+
+        for edge in analysis.secondary_edges:
+            try:
+                source_yield = node_yields[edge.source_id]
+                target_yield = node_yields[edge.target_id]
+            except KeyError as error:
+                raise ValueError(
+                    f"secondary edge {edge.edge_id!r} references a node absent from the analysis"
+                ) from error
+            unordered: UnorderedSpanKey = (
+                (source_yield, target_yield)
+                if source_yield <= target_yield
+                else (target_yield, source_yield)
+            )
+            directed = (source_yield, target_yield)
+            raw_relation = edge.relation_raw.strip()
+            if not raw_relation:
+                raise ValueError(f"secondary edge {edge.edge_id!r} has an empty raw relation")
+            if ignore_case:
+                raw_relation = raw_relation.casefold()
+            span[unordered] += 1
+            direction[directed] += 1
+            relation[(unordered, raw_relation)] += 1
+            full[(directed, raw_relation)] += 1
+        return span, direction, relation, full
+
+    @staticmethod
+    def _intersection_count[K](gold: Counter[K], pred: Counter[K]) -> int:
+        return sum((gold & pred).values())
+
+    @staticmethod
+    def _secondary_metrics_from_counts(
+        *,
+        gold_count: int,
+        pred_count: int,
+        matched_span: int,
+        matched_direction: int,
+        matched_relation: int,
+        matched_full: int,
     ) -> SecondaryEdgeMetrics:
-        """Score predicted secondary edges against gold secondary edges."""
-        gold_count = len(gold_edges)
-        pred_count = len(pred_edges)
-
-        gold_map: dict[tuple[int, int], list[str]] = {}
-        for g in gold_edges:
-            rel = g.relation_concept or g.relation_raw
-            if ignore_case:
-                rel = rel.lower().strip()
-            gold_map.setdefault((g.source_id, g.target_id), []).append(rel)
-
-        matched_direction = 0
-        matched_relation = 0
-        matched_full = 0
-
-        for p in pred_edges:
-            p_rel = p.relation_concept or p.relation_raw
-            if ignore_case:
-                p_rel = p_rel.lower().strip()
-
-            candidates = gold_map.get((p.source_id, p.target_id), [])
-            if candidates:
-                matched_direction += 1
-                if any(c == p_rel for c in candidates):
-                    matched_relation += 1
-                    matched_full += 1
-
+        span_p, span_r, span_f1 = _calc_prf(matched_span, pred_count, gold_count)
         dir_p, dir_r, dir_f1 = _calc_prf(matched_direction, pred_count, gold_count)
         rel_p, rel_r, rel_f1 = _calc_prf(matched_relation, pred_count, gold_count)
         full_p, full_r, full_f1 = _calc_prf(matched_full, pred_count, gold_count)
-
         return SecondaryEdgeMetrics(
+            span_precision=span_p,
+            span_recall=span_r,
+            span_f1=span_f1,
             direction_precision=dir_p,
             direction_recall=dir_r,
             direction_f1=dir_f1,
@@ -115,9 +160,73 @@ class ErstScorer:
             full_f1=full_f1,
             gold_count=gold_count,
             pred_count=pred_count,
+            matched_span=matched_span,
             matched_direction=matched_direction,
             matched_relation=matched_relation,
             matched_full=matched_full,
+        )
+
+    def score_secondary_edges(
+        self,
+        gold: RstAnalysis,
+        pred: RstAnalysis,
+        ignore_case: bool = True,
+    ) -> SecondaryEdgeMetrics:
+        """Score secondary edges by terminal EDU yields, never local node IDs."""
+
+        if gold.document_id != pred.document_id:
+            raise ValueError(
+                "gold and predicted analyses must identify the same document: "
+                f"{gold.document_id!r} != {pred.document_id!r}"
+            )
+        gold_span, gold_direction, gold_relation, gold_full = self._secondary_counters(
+            gold,
+            ignore_case=ignore_case,
+        )
+        pred_span, pred_direction, pred_relation, pred_full = self._secondary_counters(
+            pred,
+            ignore_case=ignore_case,
+        )
+        gold_count = len(gold.secondary_edges)
+        pred_count = len(pred.secondary_edges)
+        matched_span = self._intersection_count(gold_span, pred_span)
+        matched_direction = self._intersection_count(gold_direction, pred_direction)
+        matched_relation = self._intersection_count(gold_relation, pred_relation)
+        matched_full = self._intersection_count(gold_full, pred_full)
+
+        return self._secondary_metrics_from_counts(
+            gold_count=gold_count,
+            pred_count=pred_count,
+            matched_span=matched_span,
+            matched_direction=matched_direction,
+            matched_relation=matched_relation,
+            matched_full=matched_full,
+        )
+
+    def score_secondary_corpus(
+        self,
+        gold_analyses: Sequence[RstAnalysis],
+        pred_analyses: Sequence[RstAnalysis],
+        *,
+        ignore_case: bool = True,
+    ) -> SecondaryEdgeMetrics:
+        """Micro-average paper-defined secondary Parseval over complete documents."""
+
+        if len(gold_analyses) != len(pred_analyses):
+            raise ValueError(
+                "gold and predicted eRST corpora must contain the same number of documents"
+            )
+        document_metrics = tuple(
+            self.score_secondary_edges(gold, pred, ignore_case=ignore_case)
+            for gold, pred in zip(gold_analyses, pred_analyses, strict=True)
+        )
+        return self._secondary_metrics_from_counts(
+            gold_count=sum(metric.gold_count for metric in document_metrics),
+            pred_count=sum(metric.pred_count for metric in document_metrics),
+            matched_span=sum(metric.matched_span for metric in document_metrics),
+            matched_direction=sum(metric.matched_direction for metric in document_metrics),
+            matched_relation=sum(metric.matched_relation for metric in document_metrics),
+            matched_full=sum(metric.matched_full for metric in document_metrics),
         )
 
     def score_signals(
@@ -130,7 +239,7 @@ class ErstScorer:
         pred_count = len(pred_signals)
 
         # Index gold signals by edge_id
-        gold_by_edge: dict[str, list[DiscourseSignal]] = {}
+        gold_by_edge: dict[str | None, list[DiscourseSignal]] = {}
         total_gold_tokens = 0
         for g in gold_signals:
             gold_by_edge.setdefault(g.edge_id, []).append(g)
@@ -196,6 +305,6 @@ class ErstScorer:
         pred: RstAnalysis,
     ) -> tuple[SecondaryEdgeMetrics, SignalMetrics]:
         """Score secondary edges and signals from complete RstAnalysis objects."""
-        sec_metrics = self.score_secondary_edges(gold.secondary_edges, pred.secondary_edges)
+        sec_metrics = self.score_secondary_edges(gold, pred)
         sig_metrics = self.score_signals(gold.signals, pred.signals)
         return sec_metrics, sig_metrics

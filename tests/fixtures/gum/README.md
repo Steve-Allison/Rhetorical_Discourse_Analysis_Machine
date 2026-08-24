@@ -20,5 +20,4 @@ Copied **verbatim** from [amir-zeldes/gum](https://github.com/amir-zeldes/gum/) 
 
 GUM annotations are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). All vendored underlying texts are CC BY / CC BY-SA / Public Domain.
 
-Credit: Zeldes, Amir (2017). The GUM Corpus: Creating Multilayer Resources in the Classroom. *Language Resources and Evaluation* 51(3), 581–612. Annotators: https://gucorpling.org/gum/
-
+Credit: Zeldes, Amir (2017). The GUM Corpus: Creating Multilayer Resources in the Classroom. *Language Resources and Evaluation* 51(3), 581–612. Annotators: [GUM project](https://gucorpling.org/gum/).

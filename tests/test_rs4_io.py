@@ -122,6 +122,24 @@ def test_synthetic_rs4_creation() -> None:
     assert len(reloaded.signals) == 1
 
 
+def test_converter_normalizes_overlapping_token_ranges_within_one_signal() -> None:
+    rs4 = RS4Document(
+        segments=(RS4Segment(id=1, text="One two", parent=None, relname="span"),),
+        signals=(
+            RS4Signal(
+                source="1",
+                type="syntactic",
+                subtype="indicative_phrase",
+                tokens=(1, 1, 2, 2),
+                status="gold",
+            ),
+        ),
+    )
+    _, analysis = rs4_to_document_and_analysis(rs4, document_id="overlapping-token-ranges")
+    assert analysis.signals[0].token_ids == (0, 1)
+    assert analysis.signals[0].char_spans == ((0, 3), (4, 7))
+
+
 def test_rs4_reader_malformed_xml_raises() -> None:
     with pytest.raises(ValueError, match="Expected root element <rst>"):
         RS4Reader.read_string("<notrst><header/></notrst>")
