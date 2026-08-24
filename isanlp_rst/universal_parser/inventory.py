@@ -108,7 +108,7 @@ def load_relation_inventory_json(path: Path) -> list[str]:
 def import_relation_table_from_legacy_pickle(path: Path) -> list[str]:
     """One-way import: published HF pickles → ``relation_table`` labels only."""
     # ParserInput must be importable before RestrictedUnpickler reconstructs it.
-    import isanlp_rst.universal_parser.data_manager as _data_manager  # noqa: F401
+    import_module("isanlp_rst.universal_parser.data_manager")
 
     ensure_unirst_module_aliases()
     with path.open("rb") as handle:

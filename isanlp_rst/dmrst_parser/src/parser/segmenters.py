@@ -28,7 +28,16 @@ class PointerSegmenter(nn.Module):
         self.encoder = nn.GRU(
             hidden_size, int(hidden_size / 2), num_layers=1, batch_first=True, dropout=0, bidirectional=True
         )
-        self.decoder = modules.DecoderRNN(decoder_input_size, hidden_size, rnn_layers, dropout_d, cuda_device)
+        resolved_decoder_input = hidden_size if decoder_input_size is None else decoder_input_size
+        resolved_rnn_layers = 1 if rnn_layers is None else rnn_layers
+        resolved_dropout = 0.0 if dropout_d is None else dropout_d
+        self.decoder = modules.DecoderRNN(
+            resolved_decoder_input,
+            hidden_size,
+            resolved_rnn_layers,
+            resolved_dropout,
+            cuda_device,
+        )
         self.loss_fn = nn.NLLLoss()
         self.if_edu_start_loss = if_edu_start_loss
         self._cuda_device = cuda_device
@@ -138,6 +147,8 @@ class LinearSegmenter(nn.Module):
     def test_segment_loss(self, word_embeddings: Tensor, sent_breaks: list[int] | None = None) -> list[int]:
         outputs = self.linear(self.dropout(word_embeddings))
         if self.use_sentence_boundaries:
+            if sent_breaks is None:
+                raise ValueError("sentence-boundary-aware segmentation requires sentence breaks")
             for i in sent_breaks:
                 outputs[i][0] = 0.0
                 outputs[i][1] = 1.0

@@ -5,6 +5,7 @@ from typing import Any
 import nltk
 import numpy as np
 from lxml import etree
+from lxml.etree import _Element, _ElementTree
 
 from . import data
 
@@ -21,10 +22,16 @@ class CustomTokenizer:
 TOKENIZER = CustomTokenizer()
 
 
+def _require_int_id(value: object, context: str) -> int:
+    if not isinstance(value, int):
+        raise ValueError(f"{context} requires an integer ID, got {value!r}")
+    return value
+
+
 # ----------------------------------------------------------------------------------
 # READ
 # ----------------------------------------------------------------------------------
-def parseXML(rs3file: str | Path) -> tuple[etree._Element | None, etree._ElementTree | None]:
+def parseXML(rs3file: str | Path) -> tuple[_Element, _ElementTree]:
     for enc in ["utf8", "windows-1252"]:
         # ,"iso-8859-3","windows-1250", "gb2312"]:
         # spanish RST DT:"iso-8859-3", basque:None, CST:"windows-1252" !!1250 modifies the accents
@@ -41,7 +48,7 @@ def parseXML(rs3file: str | Path) -> tuple[etree._Element | None, etree._Element
         doc_root = rs3_xml_tree.getroot()
         return doc_root, rs3_xml_tree
     except (etree.XMLSyntaxError, OSError, ValueError, UnicodeDecodeError) as exc:
-        raise SystemExit("Unable to read file: " + str(rs3file)) from exc
+        raise RuntimeError("Unable to read file: " + str(rs3file)) from exc
 
 
 def getRelationsType(rs3_xml_tree: etree._ElementTree) -> dict[str, list[str]]:
@@ -89,6 +96,8 @@ def readRS3Annotation(
         id_ = int(segment.attrib["id"])
         parent = int(segment.attrib["parent"])
         relname = segment.attrib["relname"].replace(" ", "-")
+        if segment.text is None:
+            raise ValueError(f"RS3 segment {id_} has no text")
         edu = {
             "id": id_,
             "parent": parent,
@@ -127,16 +136,19 @@ def readRS3Annotation(
             root_id = sorted(all_id)[-1] + 1
             root = {"id": root_id, "parent": None, "type": "span"}
 
+            if potential_root.text is None:
+                raise ValueError("RS3 potential-root segment has no text")
+            potential_root_id = int(potential_root.attrib["id"])
             edu = {
-                "id": potential_root.attrib["id"],
+                "id": potential_root_id,
                 "parent": root_id,
-                "text": segment.text.strip().replace("\n", " "),
+                "text": potential_root.text.strip().replace("\n", " "),
                 "position": 0,
                 "relname": "span",
             }
-            if potential_root.attrib["id"] not in eduIds:  # Avoid the repeted segments
+            if potential_root_id not in eduIds:  # Avoid the repeted segments
                 eduList.append(edu)
-                eduIds.append(potential_root.attrib["id"])
+                eduIds.append(potential_root_id)
     return eduList, groupList, root
 
 
@@ -257,10 +269,15 @@ def updateParentNodes(
     for e in units:
         # retrieve the node
         node = findNode(e["id"], allNodes)
+        if node is None:
+            raise ValueError(f"RS3 unit has no constructed node: {e['id']!r}")
         # find the children
         for f in units:
             if f["parent"] == e["id"]:
-                node.nodelist.append(findNode(f["id"], allNodes))
+                child = findNode(f["id"], allNodes)
+                if child is None:
+                    raise ValueError(f"RS3 child has no constructed node: {f['id']!r}")
+                node.nodelist.append(child)
     for n in allNodes:
         # Begin directly with the children to not add the node itself if it s an EDU
         n.eduCovered = getEduCoveredChildren(n, eduIds)
@@ -459,6 +476,8 @@ def cleanEmbedded(
                     i for i in range(min(id_linked), min(id_linked) + len(id_linked) + 1) if i not in id_linked
                 ]
                 parent = getParentTree(n, tree)
+                if parent is None:
+                    raise ValueError(f"embedded RS3 node has no parent: {n._id!r}")
                 # check if these nodes are neighbors of the current node
                 neighbors_id = [m._id for m in parent.nodelist if not m._id == n._id]
                 check = True
@@ -520,6 +539,8 @@ def cleanEDU(
             newnode._id = node._id + 200
             # Put this node in place of node
             parent = getParentTree(node, tree)
+            if parent is None:
+                raise ValueError(f"RS3 EDU with children has no parent: {node._id!r}")
             parent.nodelist.remove(node)
             parent.nodelist.append(newnode)
             # left attach
@@ -618,6 +639,8 @@ def cleanLonelyCDU(
                     # We have parent -> a cdu -> an edu
                     # We want parent -> an edu
                     parent = getParentTree(n, rootNode)
+                    if parent is None:
+                        raise ValueError(f"lonely RS3 CDU has no parent: {n._id!r}")
                     parent.nodelist.remove(n)
                     if len(child.nodelist) == 0:
                         # only if the EDU has no child?
@@ -654,8 +677,10 @@ def setEduCovered(n: data.SpanNode, eduIds: list[int], eduCovered: list[data.Spa
 def getEduCovered(
     tree: data.SpanNode,
     eduIds: list[int],
-    eduCovered: list[data.SpanNode],
+    eduCovered: list[data.SpanNode] | None = None,
 ) -> list[data.SpanNode]:
+    if eduCovered is None:
+        eduCovered = []
     queue = [tree]
     while queue:
         node = queue.pop(0)
@@ -747,6 +772,12 @@ def binarizeTreeGeneral(
         elif len(node.nodelist) > 2:
             childrenRelations = [m.relation for m in node.nodelist]
             childrenNuclearity = [m.prop for m in node.nodelist]
+            if not all(isinstance(relation, str) for relation in childrenRelations):
+                raise ValueError("RS3 child relation is undefined during binarization")
+            if not all(isinstance(nuclearity, str) for nuclearity in childrenNuclearity):
+                raise ValueError("RS3 child nuclearity is undefined during binarization")
+            defined_relations = [relation for relation in childrenRelations if isinstance(relation, str)]
+            defined_nuclearity = [nuclearity for nuclearity in childrenNuclearity if isinstance(nuclearity, str)]
             # Simple rules
             #             if childrenNuclearity[-1].lower() == 'satellite':
             #                 newnode = leftAttach( node )
@@ -754,9 +785,9 @@ def binarizeTreeGeneral(
             #                 newnode = rightAttach( node )
             # RST DT coherent rules
             if (
-                childrenNuclearity[-1].lower() == "nucleus"
-                or childrenRelations[-1].lower() == "span"
-                or snsPattern(childrenRelations, childrenNuclearity)
+                defined_nuclearity[-1].lower() == "nucleus"
+                or defined_relations[-1].lower() == "span"
+                or snsPattern(defined_relations, defined_nuclearity)
             ):  # last node = nucleus or span relation or specific pattern 'S N+ S'
                 rightAttach(node)
             else:

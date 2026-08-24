@@ -41,7 +41,7 @@ class HierarchicalSectionStitcher:
     3. Stitching Stage: Merges micro subtrees and macro relations into a single valid RstAnalysis.
     """
 
-    def __init__(self, parser: Parser) -> None:
+    def __init__(self, parser: Parser | None) -> None:
         self.parser = parser
 
     def detect_sections(
@@ -142,6 +142,9 @@ class HierarchicalSectionStitcher:
         output: str = "rst_tree",
     ) -> RstAnalysis:
         """Execute two-stage hierarchical parsing over section boundaries."""
+        if self.parser is None:
+            raise RuntimeError("Hierarchical parsing requires a configured Parser instance")
+
         t_start = perf_counter()
         sections = self.detect_sections(document, custom_boundaries=custom_boundaries)
 
@@ -234,6 +237,7 @@ class HierarchicalSectionStitcher:
             sec_edu_offset = global_edu_id - 1
 
             local_to_global_node_map: dict[int, int] = {}
+            local_to_global_edge_map: dict[str, str] = {}
             local_edu_count = 0
 
             # 1. Re-index nodes in this micro-tree
@@ -276,9 +280,11 @@ class HierarchicalSectionStitcher:
                 p_gid = local_to_global_node_map.get(edge.parent_id)
                 c_gid = local_to_global_node_map.get(edge.child_id)
                 if p_gid is not None and c_gid is not None:
+                    global_edge_id = f"e_{edge_counter}"
+                    local_to_global_edge_map[edge.edge_id] = global_edge_id
                     all_primary_edges.append(
                         PrimaryRelationEdge(
-                            edge_id=f"e_{edge_counter}",
+                            edge_id=global_edge_id,
                             parent_id=p_gid,
                             child_id=c_gid,
                             relation_raw=edge.relation_raw,
@@ -295,9 +301,11 @@ class HierarchicalSectionStitcher:
                 s_gid = local_to_global_node_map.get(sec_edge.source_id)
                 t_gid = local_to_global_node_map.get(sec_edge.target_id)
                 if s_gid is not None and t_gid is not None:
+                    global_edge_id = f"se_{len(all_secondary_edges) + 1}"
+                    local_to_global_edge_map[sec_edge.edge_id] = global_edge_id
                     all_secondary_edges.append(
                         SecondaryRelationEdge(
-                            edge_id=f"se_{len(all_secondary_edges) + 1}",
+                            edge_id=global_edge_id,
                             source_id=s_gid,
                             target_id=t_gid,
                             relation_raw=sec_edge.relation_raw,
@@ -312,10 +320,15 @@ class HierarchicalSectionStitcher:
                 all_signals.append(
                     DiscourseSignal(
                         signal_id=f"sig_{sig_counter}",
-                        edge_id=sig.edge_id,
+                        edge_id=local_to_global_edge_map.get(sig.edge_id) if sig.edge_id is not None else None,
                         signal_type=sig.signal_type,
                         signal_subtype=sig.signal_subtype,
                         token_ids=sig.token_ids,
+                        char_spans=tuple(
+                            (start + sec_char_offset, end + sec_char_offset) for start, end in sig.char_spans
+                        ),
+                        compatible_relations=sig.compatible_relations,
+                        detector=sig.detector,
                         status=sig.status,
                         confidence=sig.confidence,
                     )

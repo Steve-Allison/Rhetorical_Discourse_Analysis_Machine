@@ -73,7 +73,11 @@ class ParsingNetBottomUp(ParsingNet):
 
     def _postorder(self, node: ParsingNetBottomUp._Node) -> list[ParsingNetBottomUp._Node]:
         if node.left is None:
+            if node.right is not None:
+                raise ValueError("bottom-up parser tree contains a right-only node")
             return []
+        if node.right is None:
+            raise ValueError("bottom-up parser tree contains a left-only node")
         ops = []
         ops.extend(self._postorder(node.left))
         ops.extend(self._postorder(node.right))
@@ -83,7 +87,11 @@ class ParsingNetBottomUp(ParsingNet):
     def _actions(self, node: ParsingNetBottomUp._Node) -> list[tuple[str, int | None]]:
         """Return gold transition sequence in postorder."""
         if node.left is None:
+            if node.right is not None:
+                raise ValueError("bottom-up parser tree contains a right-only node")
             return [("SHIFT", None)]
+        if node.right is None:
+            raise ValueError("bottom-up parser tree contains a left-only node")
         actions = []
         actions.extend(self._actions(node.left))
         actions.extend(self._actions(node.right))
@@ -106,7 +114,7 @@ class ParsingNetBottomUp(ParsingNet):
         decoder_input_index: list[list[int]],
         dataset_index: list[int],
     ) -> tuple[Tensor, Tensor, Tensor]:
-        encoder_outputs, _, total_edu_loss, _ = self.encoder(
+        encoder_outputs, _, total_edu_loss, _, _ = self.encoder(
             input_texts,
             entity_ids,
             entity_position_ids,
@@ -115,11 +123,13 @@ class ParsingNetBottomUp(ParsingNet):
             dataset_index=dataset_index,
         )
 
+        if self.label_weights is None:
+            raise RuntimeError("bottom-up UniRST training requires classifier label weights")
         label_loss_functions = [nn.NLLLoss(weight=w) for w in self.label_weights]
         struct_loss_fn = nn.NLLLoss()
 
-        loss_label_batch = 0.0
-        loss_struct_batch = 0.0
+        loss_label_batch = torch.zeros(1, device=self._cuda_device)
+        loss_struct_batch = torch.zeros(1, device=self._cuda_device)
         count_label = 0
         count_struct = 0
 
@@ -154,8 +164,11 @@ class ParsingNetBottomUp(ParsingNet):
                     input_left = left[2]
                     input_right = right[2]
                     cls_idx = self.dataset2classifier[dataset_index[i]]
-                    mask = self.dataset_masks[cls_idx]
-                    _, log_rel_weights = self.label_classifier(input_left, input_right, mask=mask)
+                    if self.dataset_masks is not None:
+                        mask = self.dataset_masks[cls_idx]
+                        _, log_rel_weights = self.label_classifier(input_left, input_right, mask=mask)
+                    else:
+                        _, log_rel_weights = self.label_classifiers[cls_idx](input_left, input_right)
                     loss_label_batch += label_loss_functions[cls_idx](
                         log_rel_weights, torch.tensor([lbl], device=self._cuda_device)
                     )
@@ -183,13 +196,13 @@ class ParsingNetBottomUp(ParsingNet):
         use_pred_segmentation: bool,
         dataset_index: list[int],
     ) -> tuple[float, float, list[list[str]], tuple[list[int], list[int]], list[list[int]]]:
-        encoder_outputs, _, _, _ = self.encoder(
+        encoder_outputs, _, _, predicted_edu_breaks, _ = self.encoder(
             input_sentence,
             input_entity_ids,
             input_entity_position_ids,
             input_edu_breaks,
             sent_breaks=input_sent_breaks,
-            is_test=True,
+            is_test=use_pred_segmentation,
             dataset_index=dataset_index,
         )
 
@@ -197,10 +210,11 @@ class ParsingNetBottomUp(ParsingNet):
         label_batch = []
         tree_batch = []
 
-        batch_size = len(input_edu_breaks)
+        effective_edu_breaks = predicted_edu_breaks if use_pred_segmentation else input_edu_breaks
+        batch_size = len(effective_edu_breaks)
         zero = torch.zeros(1, self.hidden_size, device=self._cuda_device)
         for i in range(batch_size):
-            n_edus = len(input_edu_breaks[i])
+            n_edus = len(effective_edu_breaks[i])
             if n_edus == 1:
                 tree_batch.append([])
                 label_batch.append([])
@@ -238,14 +252,18 @@ class ParsingNetBottomUp(ParsingNet):
                     input_left = left[2]
                     input_right = right[2]
                     cls_idx = self.dataset2classifier[dataset_index[i]]
-                    mask = self.dataset_masks[cls_idx]
-                    relation_weights, _ = self.label_classifier(input_left, input_right, mask=mask)
+                    if self.dataset_masks is not None:
+                        mask = self.dataset_masks[cls_idx]
+                        relation_weights, _ = self.label_classifier(input_left, input_right, mask=mask)
+                    else:
+                        relation_weights, _ = self.label_classifiers[cls_idx](input_left, input_right)
                     label_idx = int(torch.argmax(relation_weights))
                     cur_labels.append(label_idx)
                     cur_tree.append(left[1])
 
                     if generate_tree:
-                        nuc_l, nuc_r, rel_l, rel_r = nucs_and_rels(label_idx, self.relation_tables[cls_idx])
+                        relation_inventory = self.relation_vocab if self.dataset_masks is not None else self.relation_tables[cls_idx]
+                        nuc_l, nuc_r, rel_l, rel_r = nucs_and_rels(label_idx, relation_inventory)
                         span_s = f"({left[0] + 1}:{nuc_l}={rel_l}:{left[1] + 1},{right[0] + 1}:{nuc_r}={rel_r}:{right[1] + 1})"
                         cur_span_str += " " + span_s
 
@@ -267,4 +285,4 @@ class ParsingNetBottomUp(ParsingNet):
         loss_tree = 0.0
         loss_label = 0.0
 
-        return loss_tree, loss_label, span_batch, (merged_label_gold, merged_label_pred), input_edu_breaks
+        return loss_tree, loss_label, span_batch, (merged_label_gold, merged_label_pred), effective_edu_breaks

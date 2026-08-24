@@ -1,4 +1,4 @@
-from . import main, rstweb_classes, rstweb_reader, rstweb_sql  # noqa: F401
+from . import main, rstweb_classes, rstweb_reader, rstweb_sql
 from .main import (
     RenderedRST,
     render,

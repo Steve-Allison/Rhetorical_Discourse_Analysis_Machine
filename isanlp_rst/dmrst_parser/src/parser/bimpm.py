@@ -9,6 +9,15 @@ from isanlp_rst.utils.mps_init import orthogonal_ as mps_safe_orthogonal_
 
 
 class BiMPM(nn.Module):
+    mp_w1: nn.Parameter
+    mp_w2: nn.Parameter
+    mp_w3: nn.Parameter
+    mp_w4: nn.Parameter
+    mp_w5: nn.Parameter
+    mp_w6: nn.Parameter
+    mp_w7: nn.Parameter
+    mp_w8: nn.Parameter
+
     def __init__(
         self,
         word_dim: int,
@@ -85,15 +94,15 @@ class BiMPM(nn.Module):
     def reset_parameters(self) -> None:
 
         # ----- Context Representation Layer -----
-        nn.init.kaiming_normal_(self.context_LSTM.weight_ih_l0)
-        nn.init.constant_(self.context_LSTM.bias_ih_l0, val=0)
-        mps_safe_orthogonal_(self.context_LSTM.weight_hh_l0)
-        nn.init.constant_(self.context_LSTM.bias_hh_l0, val=0)
+        nn.init.kaiming_normal_(self._lstm_tensor(self.context_LSTM, "weight_ih_l0"))
+        nn.init.constant_(self._lstm_tensor(self.context_LSTM, "bias_ih_l0"), val=0)
+        mps_safe_orthogonal_(self._lstm_tensor(self.context_LSTM, "weight_hh_l0"))
+        nn.init.constant_(self._lstm_tensor(self.context_LSTM, "bias_hh_l0"), val=0)
 
-        nn.init.kaiming_normal_(self.context_LSTM.weight_ih_l0_reverse)
-        nn.init.constant_(self.context_LSTM.bias_ih_l0_reverse, val=0)
-        mps_safe_orthogonal_(self.context_LSTM.weight_hh_l0_reverse)
-        nn.init.constant_(self.context_LSTM.bias_hh_l0_reverse, val=0)
+        nn.init.kaiming_normal_(self._lstm_tensor(self.context_LSTM, "weight_ih_l0_reverse"))
+        nn.init.constant_(self._lstm_tensor(self.context_LSTM, "bias_ih_l0_reverse"), val=0)
+        mps_safe_orthogonal_(self._lstm_tensor(self.context_LSTM, "weight_hh_l0_reverse"))
+        nn.init.constant_(self._lstm_tensor(self.context_LSTM, "bias_hh_l0_reverse"), val=0)
 
         # ----- Matching Layer -----
         for i in range(1, 9):
@@ -101,15 +110,15 @@ class BiMPM(nn.Module):
             nn.init.kaiming_normal_(w)
 
         # ----- Aggregation Layer -----
-        nn.init.kaiming_normal_(self.aggregation_LSTM.weight_ih_l0)
-        nn.init.constant_(self.aggregation_LSTM.bias_ih_l0, val=0)
-        mps_safe_orthogonal_(self.aggregation_LSTM.weight_hh_l0)
-        nn.init.constant_(self.aggregation_LSTM.bias_hh_l0, val=0)
+        nn.init.kaiming_normal_(self._lstm_tensor(self.aggregation_LSTM, "weight_ih_l0"))
+        nn.init.constant_(self._lstm_tensor(self.aggregation_LSTM, "bias_ih_l0"), val=0)
+        mps_safe_orthogonal_(self._lstm_tensor(self.aggregation_LSTM, "weight_hh_l0"))
+        nn.init.constant_(self._lstm_tensor(self.aggregation_LSTM, "bias_hh_l0"), val=0)
 
-        nn.init.kaiming_normal_(self.aggregation_LSTM.weight_ih_l0_reverse)
-        nn.init.constant_(self.aggregation_LSTM.bias_ih_l0_reverse, val=0)
-        mps_safe_orthogonal_(self.aggregation_LSTM.weight_hh_l0_reverse)
-        nn.init.constant_(self.aggregation_LSTM.bias_hh_l0_reverse, val=0)
+        nn.init.kaiming_normal_(self._lstm_tensor(self.aggregation_LSTM, "weight_ih_l0_reverse"))
+        nn.init.constant_(self._lstm_tensor(self.aggregation_LSTM, "bias_ih_l0_reverse"), val=0)
+        mps_safe_orthogonal_(self._lstm_tensor(self.aggregation_LSTM, "weight_hh_l0_reverse"))
+        nn.init.constant_(self._lstm_tensor(self.aggregation_LSTM, "bias_hh_l0_reverse"), val=0)
 
         # ----- Prediction Layer ----
         nn.init.uniform_(self.pred_fc1.weight, -0.005, 0.005)
@@ -117,6 +126,13 @@ class BiMPM(nn.Module):
 
         nn.init.uniform_(self.pred_fc2.weight, -0.005, 0.005)
         nn.init.constant_(self.pred_fc2.bias, val=0)
+
+    @staticmethod
+    def _lstm_tensor(module: nn.LSTM, name: str) -> Tensor:
+        value = getattr(module, name)
+        if not isinstance(value, Tensor):
+            raise TypeError(f"LSTM attribute {name!r} is not a tensor")
+        return value
 
     def mp_matching_func(self, v1: Tensor, v2: Tensor, w: Tensor) -> Tensor:
         """
@@ -312,17 +328,20 @@ class BiMPM(nn.Module):
         att_fw = self.attention(con_p_fw, con_h_fw)
         att_bw = self.attention(con_p_bw, con_h_bw)
 
+        # These tensors feed both attentive and max-attentive matching. Computing
+        # them outside either feature gate keeps max-attentive-only configurations valid.
+        att_h_fw = con_h_fw.unsqueeze(1) * att_fw.unsqueeze(3)
+        att_h_bw = con_h_bw.unsqueeze(1) * att_bw.unsqueeze(3)
+        att_p_fw = con_p_fw.unsqueeze(2) * att_fw.unsqueeze(3)
+        att_p_bw = con_p_bw.unsqueeze(2) * att_bw.unsqueeze(3)
+
         if self.with_attentive_match:
             # (batch, seq_len2, hidden_size) -> (batch, 1, seq_len2, hidden_size)
             # (batch, seq_len1, seq_len2) -> (batch, seq_len1, seq_len2, 1)
             # -> (batch, seq_len1, seq_len2, hidden_size)
-            att_h_fw = con_h_fw.unsqueeze(1) * att_fw.unsqueeze(3)
-            att_h_bw = con_h_bw.unsqueeze(1) * att_bw.unsqueeze(3)
             # (batch, seq_len1, hidden_size) -> (batch, seq_len1, 1, hidden_size)
             # (batch, seq_len1, seq_len2) -> (batch, seq_len1, seq_len2, 1)
             # -> (batch, seq_len1, seq_len2, hidden_size)
-            att_p_fw = con_p_fw.unsqueeze(2) * att_fw.unsqueeze(3)
-            att_p_bw = con_p_bw.unsqueeze(2) * att_bw.unsqueeze(3)
 
             # (batch, seq_len1, hidden_size) / (batch, seq_len1, 1) -> (batch, seq_len1, hidden_size)
             att_mean_h_fw = self.div_with_small_value(att_h_fw.sum(dim=2), att_fw.sum(dim=2, keepdim=True))

@@ -1,6 +1,11 @@
 from pathlib import Path
 
 import pytest
+from tokenizers import Tokenizer
+from tokenizers.models import WordLevel
+from tokenizers.pre_tokenizers import Whitespace
+from tokenizers.processors import TemplateProcessing
+from transformers import BertConfig, BertForTokenClassification, PreTrainedTokenizerFast
 
 from isanlp_rst.contracts import RstDocument
 from isanlp_rst.parser import Parser
@@ -9,9 +14,53 @@ from isanlp_rst.segmentation.dataset import (
     parse_rs4_to_sentences,
 )
 from isanlp_rst.segmentation.transformer_segmenter import (
+    InvalidSegmenterCheckpointError,
     TransformerEduSegmenter,
 )
 from scripts.train_segmenter import compute_metrics
+
+
+def _tiny_segmenter_checkpoint(path: Path) -> Path:
+    vocabulary = {
+        "[PAD]": 0,
+        "[UNK]": 1,
+        "[CLS]": 2,
+        "[SEP]": 3,
+        "the": 4,
+        "system": 5,
+        "initialized": 6,
+        "because": 7,
+        "cache": 8,
+        "loaded": 9,
+        ".": 10,
+    }
+    backend = Tokenizer(WordLevel(vocab=vocabulary, unk_token="[UNK]"))
+    backend.pre_tokenizer = Whitespace()
+    backend.post_processor = TemplateProcessing(
+        single="[CLS] $A [SEP]",
+        special_tokens=(("[CLS]", 2), ("[SEP]", 3)),
+    )
+    tokenizer = PreTrainedTokenizerFast(
+        tokenizer_object=backend,
+        unk_token="[UNK]",
+        pad_token="[PAD]",
+        cls_token="[CLS]",
+        sep_token="[SEP]",
+    )
+    config = BertConfig(
+        vocab_size=len(vocabulary),
+        hidden_size=16,
+        num_hidden_layers=1,
+        num_attention_heads=2,
+        intermediate_size=32,
+        max_position_embeddings=64,
+    )
+    config.num_labels = 2
+    config.id2label = {0: "I-EDU", 1: "B-EDU"}
+    config.label2id = {"I-EDU": 0, "B-EDU": 1}
+    BertForTokenClassification(config).save_pretrained(path, safe_serialization=True)
+    tokenizer.save_pretrained(path)
+    return path
 
 
 def test_compute_metrics_math() -> None:
@@ -59,9 +108,8 @@ def test_parse_disrpt_tok_mock(tmp_path: Path) -> None:
 
 
 @pytest.mark.slow
-def test_transformer_segmenter_character_invariance() -> None:
-    # Use lightweight base model for unit test
-    segmenter = TransformerEduSegmenter(model_name_or_path="microsoft/deberta-v3-base", device="cpu")
+def test_transformer_segmenter_character_invariance(tmp_path: Path) -> None:
+    segmenter = TransformerEduSegmenter(model_name_or_path=str(_tiny_segmenter_checkpoint(tmp_path)), device="cpu")
 
     text = (
         "Although the model is large, it executes with high speed.\n"
@@ -79,14 +127,21 @@ def test_transformer_segmenter_character_invariance() -> None:
 
 
 @pytest.mark.slow
-def test_parser_with_transformer_segmenter() -> None:
-    segmenter = TransformerEduSegmenter(model_name_or_path="microsoft/deberta-v3-base", device="cpu")
+def test_parser_with_transformer_segmenter(tmp_path: Path) -> None:
+    segmenter = TransformerEduSegmenter(model_name_or_path=str(_tiny_segmenter_checkpoint(tmp_path)), device="cpu")
     parser = Parser(hf_model_version="gumrrg", device="cpu", segmenter=segmenter)
 
-    raw_text = "The system initialized. Because cache was loaded, latency stayed minimal."
+    raw_text = "The system initialized.\nBecause cache was loaded, latency stayed minimal."
     doc = RstDocument.from_text(raw_text, document_id="doc_seg_test")
 
     analysis = parser.parse_document(doc)
     assert analysis.document_id == "doc_seg_test"
     assert len(analysis.nodes) >= 1
     assert analysis.root_node is not None
+
+
+def test_segmenter_rejects_untrained_base_model(tmp_path: Path) -> None:
+    BertConfig().save_pretrained(tmp_path)
+
+    with pytest.raises(InvalidSegmenterCheckpointError, match="base model"):
+        TransformerEduSegmenter(model_name_or_path=str(tmp_path), device="cpu")

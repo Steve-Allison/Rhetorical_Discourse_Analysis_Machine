@@ -37,7 +37,7 @@ def test_extract_root_tree_none_root():
 
 def test_extract_root_tree_not_mapping():
     with pytest.raises(ParseFailedError, match="must be a mapping"):
-        extract_root_tree([1, 2, 3])  # type: ignore[arg-type]
+        extract_root_tree([1, 2, 3])
 
 
 def test_parser_typed_boundary_returns_discourse_unit() -> None:

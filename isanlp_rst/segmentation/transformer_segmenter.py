@@ -1,15 +1,12 @@
 """Transformer-based neural Elementary Discourse Unit (EDU) segmenter."""
 
-import logging
 from dataclasses import dataclass
+from typing import Any, cast
 
 import torch
-from transformers import AutoModelForTokenClassification, AutoTokenizer
+from transformers import AutoConfig, AutoModelForTokenClassification, AutoTokenizer, PreTrainedModel
 
 from isanlp_rst.contracts.document import DocumentToken, Edu
-
-logger = logging.getLogger(__name__)
-
 
 @dataclass(frozen=True, slots=True)
 class SegmentationResult:
@@ -18,6 +15,10 @@ class SegmentationResult:
     text: str
     tokens: tuple[DocumentToken, ...]
     edus: tuple[Edu, ...]
+
+
+class InvalidSegmenterCheckpointError(ValueError):
+    """Raised when a path is not a complete, trained EDU-segmentation checkpoint."""
 
 
 class TransformerEduSegmenter:
@@ -29,12 +30,14 @@ class TransformerEduSegmenter:
 
     def __init__(
         self,
-        model_name_or_path: str = "microsoft/deberta-v3-large",
+        model_name_or_path: str,
+        model_revision: str | None = None,
         device: str | torch.device = "auto",
         torch_dtype: str | torch.dtype = "auto",
         max_length: int = 512,
     ) -> None:
         self.model_name_or_path = model_name_or_path
+        self.model_revision = model_revision
         self.max_length = max_length
 
         # 1. Resolve Device
@@ -64,34 +67,51 @@ class TransformerEduSegmenter:
         else:
             self.dtype = torch_dtype
 
-        # 3. Load Tokenizer
+        revision_kwargs = {"revision": model_revision} if model_revision is not None else {}
+
+        # 3. Validate and load a complete, trained token-classification checkpoint.
+        config = AutoConfig.from_pretrained(self.model_name_or_path, **revision_kwargs)
+        architectures = tuple(config.architectures or ())
+        if not any(name.endswith("ForTokenClassification") for name in architectures):
+            raise InvalidSegmenterCheckpointError(
+                f"{self.model_name_or_path!r} is a base model, not a trained token-classification checkpoint"
+            )
+        expected_labels = {0: "I-EDU", 1: "B-EDU"}
+        if config.num_labels != 2 or config.id2label != expected_labels:
+            raise InvalidSegmenterCheckpointError(
+                "EDU segmenter config must declare exactly {0: 'I-EDU', 1: 'B-EDU'}"
+            )
+
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name_or_path,
             use_fast=True,
+            **revision_kwargs,
         )
+        if not self.tokenizer.is_fast:
+            raise InvalidSegmenterCheckpointError("EDU segmentation requires a native fast tokenizer artifact")
 
-        # 4. Load Model
-        try:
-            self.model = AutoModelForTokenClassification.from_pretrained(
-                self.model_name_or_path,
-                num_labels=2,
-                torch_dtype=self.dtype,
-            ).to(self.device)
-            self.model.eval()
-        except (OSError, RuntimeError, ValueError) as err:
-            logger.warning(
-                "Could not load pre-trained token classification head from %s: %s. "
-                "Initializing base backbone with random classification head for fine-tuning.",
-                self.model_name_or_path,
-                err,
-            )
-            self.model = AutoModelForTokenClassification.from_pretrained(
-                self.model_name_or_path,
-                num_labels=2,
-                ignore_mismatched_sizes=True,
-                torch_dtype=self.dtype,
-            ).to(self.device)
-            self.model.eval()
+        loaded: Any = AutoModelForTokenClassification.from_pretrained(
+            self.model_name_or_path,
+            config=config,
+            dtype=self.dtype,
+            use_safetensors=True,
+            output_loading_info=True,
+            **revision_kwargs,
+        )
+        if not isinstance(loaded, tuple) or len(loaded) != 2:
+            raise InvalidSegmenterCheckpointError("Transformers did not return checkpoint loading evidence")
+        model, loading_info = loaded
+        if not isinstance(model, PreTrainedModel) or not isinstance(loading_info, dict):
+            raise InvalidSegmenterCheckpointError("Transformers returned malformed checkpoint loading evidence")
+        defects = {
+            key: tuple(value)
+            for key in ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")
+            if (value := loading_info.get(key))
+        }
+        if defects:
+            raise InvalidSegmenterCheckpointError(f"segmenter checkpoint is incomplete: {defects}")
+        self.model = cast(PreTrainedModel, torch.nn.Module.to(model, device=self.device))
+        self.model.eval()
 
     @torch.inference_mode()
     def segment(self, text: str) -> tuple[Edu, ...]:

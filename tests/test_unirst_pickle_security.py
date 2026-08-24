@@ -35,7 +35,7 @@ def _local_shell(model_dir: Path) -> PredictorUniRST:
 def _write_allowlisted_inventory_pickle(path: Path, labels: list[str]) -> None:
     """Pickle a ``ParserInput`` (isanlp_rst.*) carrying ``relation_table``."""
     obj = ParserInput()
-    obj.relation_table = labels  # type: ignore[attr-defined]
+    obj.relation_table = labels
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("wb") as handle:
         pickle.dump(obj, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -63,7 +63,7 @@ def test_restricted_unpickler_loads_isanlp_rst_parser_input(tmp_path: Path) -> N
     with path.open("rb") as handle:
         loaded = RestrictedUnpickler(handle).load()
     assert isinstance(loaded, ParserInput)
-    assert loaded.relation_table == ["elaboration", "contrast"]  # type: ignore[attr-defined]
+    assert loaded.relation_table == ["elaboration", "contrast"]
 
 
 def test_restricted_unpickler_refuses_isanlp_rst_collect_gadget(tmp_path: Path) -> None:

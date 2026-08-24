@@ -1,7 +1,7 @@
 import shutil
 import sys
 from pathlib import Path
-from typing import override
+from typing import Any, override
 
 import numpy as np
 from nltk import Tree
@@ -23,14 +23,16 @@ class Corpus:
         self.path = tbpath
         self.datatype = datatype
         self.draw = draw  # draw a ps file for each tree
-        self.files = []
-        self.edufiles = []
-        self.documents = []
-        self.validDocuments = []  # document for which a valid tree has been built
+        self.files: list[Path] = []
+        self.edufiles: list[Path] = []
+        self.documents: list[Document] = []
+        self.validDocuments: list[Document] = []  # document for which a valid tree has been built
         self.outputExt = ".dmrg"  # Extension of the output tree files
         self.mapping = mapping
         # Keep track of the original/final relation set
-        self.originLabels, self.finalLabels = set(), set()
+        self.originLabels: set[tuple[str, str]] = set()
+        self.finalLabels: set[tuple[str, str]] = set()
+        self.pb_files: list[str] = []
 
     def read(self) -> None:
         self.getDocuments()
@@ -43,7 +45,7 @@ class Corpus:
             common.addLabels(doc.tree, self.finalLabels)
         self.validDocuments = [d for d in self.documents if d.tree is not None]
         # self.validDocuments = self.documents
-        self.pb_files = [d.path for d in self.documents if d.tree is None]
+        self.pb_files = [str(d.path) for d in self.documents if d.tree is None]
         print("\t#Files read:", len(self.files), "#Tree built:", len(self.validDocuments), file=sys.stderr)
 
     def write(self, outpath: str | Path) -> None:
@@ -54,7 +56,8 @@ class Corpus:
             doc.writeTree(out, self.outputExt)
             doc.writeEdu(out)
             if self.draw:  # create a picture representing the tree
-                doc.drawTree(out, "." + doc.datatype, ".ps")
+                ext = f".{doc.datatype}" if doc.datatype else ""
+                doc.drawTree(out, ext, ".ps")
         # Write the list of documents for which we couldn't build a tree
         if len(self.pb_files) != 0:
             (out / "pb_files").write_text("\n".join(self.pb_files), encoding="utf-8")
@@ -66,7 +69,8 @@ class Corpus:
             # retrieve edu files
             self.edufiles = getFiles(self.path, ".edus")
             # Associate each tree with the corresponding edu file
-            self.documents = associate_tree_edus(self.files, self.edufiles)
+            self.documents = []
+            self.documents.extend(associate_tree_edus(self.files, self.edufiles))
         elif self.datatype == "rs3":
             self.files = getFiles(self.path, ".rs3")
             self.documents = [Rs3Document(f) for f in self.files]
@@ -96,13 +100,13 @@ class Corpus:
 class Document:
     def __init__(self, dpath: str | Path) -> None:  # ? parse=parse, raw=raw
         self.path = str(dpath)
-        self.datatype = None
-        self.tree = None
-        self.tokendict = None  # Token dict: id token in the document -> token form
-        self.eduIds = []
-        self.edudict = None  # EDU dict: id EDU -> list of id tokens
+        self.datatype: str | None = None
+        self.tree: Tree | None = None
+        self.tokendict: Any = None  # Token dict: id token in the document -> token form
+        self.eduIds: list[int] = []
+        self.edudict: Any = None  # EDU dict: id EDU -> list of id tokens
         self.outbasename = Path(self.path).name  # Name of the output file, can be modified for the RST DT
-        self.statistics = {}  # statistics for one document
+        self.statistics: dict[str, object] = {}  # statistics for one document
 
     def read(self) -> None:
         raise NotImplementedError
@@ -112,14 +116,18 @@ class Document:
         Write the bracketed tree into a file
         Remove the original extension, keep only .outExt as extension
         """
-        fileout = Path(outpath) / (
-            self.outbasename.replace(".out", "").replace(".txt.lisp", "").replace("." + self.datatype, "") + outExt
-        )
+        stem = self.outbasename.replace(".out", "").replace(".txt.lisp", "")
+        if self.datatype:
+            stem = stem.replace("." + self.datatype, "")
+        fileout = Path(outpath) / f"{stem}{outExt}"
         fileout.write_text(self.tree.__str__().strip(), encoding="utf-8")
 
     def drawTree(self, outpath: str | Path, ext: str, outExt: str, docno: int = -1) -> None:
         """Draw RST tree into a file"""
         pass
+
+    def writeEdu(self, outpath: str | Path) -> None:
+        raise NotImplementedError
 
     def mapRelation(self, mappingRel: str) -> None:
         if self.tree is None:
@@ -172,14 +180,23 @@ class Rs3Document(Document):
         Fill self.tokendict and self.edudict
         """
         doc_root, rs3_xml_tree = utils_rs3.parseXML(self.path)
+        if doc_root is None or rs3_xml_tree is None:
+            raise ValueError(f"RS3 document could not be parsed: {self.path}")
         # Retrieve the relations in the header (used to find multinuc rel)
         self.nuclearity_relations = utils_rs3.getRelationsType(rs3_xml_tree)
         # Get info for each node
         eduList, groupList, root = utils_rs3.readRS3Annotation(doc_root)
+        if root is None:
+            raise ValueError(f"RS3 document has no resolvable root: {self.path}")
         # Build nodes, rename DU, tree=SpanNode instance
         tree = utils_rs3.buildNodes(eduList, groupList, root, self.nuclearity_relations)
         # Can t be retrieved from the tree for now, some EDU have children
-        eduIds = [e["id"] for e in eduList]
+        eduIds: list[int] = []
+        for edu in eduList:
+            edu_id = edu.get("id")
+            if not isinstance(edu_id, int):
+                raise ValueError(f"RS3 EDU has a non-integer ID: {edu_id!r}")
+            eduIds.append(edu_id)
         # Order span list for each node
         utils_rs3.orderSpanList(tree, eduIds)
         # Clean the tree: deal with DU with only one child + same unit cases
@@ -191,6 +208,8 @@ class Rs3Document(Document):
         utils_rs3.binarizeTreeGeneral(tree, self, nucRelations=self.nuclearity_relations)
         tree = common.backprop(tree, self)  # Backprop info
         self.tree = Tree.fromstring(common.parse(tree))  # Build an nltk tree
+        if self.tree is None:
+            raise ValueError(f"RS3 parser produced no NLTK tree: {self.path}")
         validTree = common.checkTree(self.tree, self)
         if not validTree:
             self.tree = None
@@ -265,16 +284,21 @@ class SpanNode:
         :type text: string
         :param text: text of this span
         """
-        self.text, self.relation = None, None  # Text of this span / Discourse relation
-        self.eduspan, self.nucspan = None, None  # EDU span / Nucleus span (begin, end) index id EDU
-        self.nucedu = None  # Nucleus single EDU (itself id for an EDU)s
+        self.text: Any = None  # Text of this span / Discourse relation
+        self.relation: Any = None
+        self.eduspan: Any = None  # EDU span / Nucleus span (begin, end) index id EDU
+        self.nucspan: Any = None
+        self.nucedu: Any = None  # Nucleus single EDU (itself id for an EDU)s
         self.prop = prop  # Property: Nucleus/Satellite/Roots
-        self.lnode, self.rnode = None, None  # Children nodes (for binary RST tree only)
-        self.pnode = None  # Parent node
-        self.nodelist = []  # Node list (for general RST tree only)
-        self.form = None  # Relation form: NN, NS, SN
-        self.eduCovered = []  # Id of the EDUS covered by a CDU (CHLOE Added)
-        self._id = None  # Id (int) of a DU, only from rs3 files (CHLOE Added)
+        self.lnode: SpanNode | None = None  # Children nodes (for binary RST tree only)
+        self.rnode: SpanNode | None = None
+        self.pnode: SpanNode | None = None  # Parent node
+        self.nodelist: list[SpanNode] = []  # Node list (for general RST tree only)
+        self.form: str | None = None  # Relation form: NN, NS, SN
+        self.eduCovered: Any = []  # Ids or nodes, depending on processing stage
+        self._id: Any = None  # Id (int) of a DU, only from rs3 files (CHLOE Added)
+        self.eduSpan: Any = None
+        self.position: Any = None
 
     def __str__(self) -> str:
         return self._info() + "\n" + "\n".join("\t" + n._info() for n in self.nodelist)
@@ -284,7 +308,7 @@ class SpanNode:
 
 
 # ----------------------------------------------------------------------------------
-def associate_tree_edus(treeFiles: list[str | Path], eduFiles: list[str | Path]) -> list[DisDocument]:
+def associate_tree_edus(treeFiles: list[Path], eduFiles: list[Path]) -> list[DisDocument]:
     """Retrieve the EDU file associated to a tree for the dis format"""
     documents = []
     for treePath in treeFiles:

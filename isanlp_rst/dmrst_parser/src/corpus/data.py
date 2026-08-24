@@ -74,7 +74,8 @@ class Corpus:
             # retrieve edu files
             self.edufiles = getFiles(self.path, ".edus")
             # Associate each tree with the corresponding edu file
-            self.documents = associate_tree_edus(self.files, self.edufiles)
+            self.documents = []
+            self.documents.extend(associate_tree_edus(self.files, self.edufiles))
         elif self.datatype == "rs3":
             self.files = getFiles(self.path, ".rs3")
             self.documents = [Rs3Document(f) for f in self.files]
@@ -187,10 +188,17 @@ class Rs3Document(Document):
         self.nuclearity_relations = utils_rs3.getRelationsType(rs3_xml_tree)
         # Get info for each node
         eduList, groupList, root = utils_rs3.readRS3Annotation(doc_root)
+        if root is None:
+            raise ValueError(f"RS3 document has no resolvable root: {self.path}")
         # Build nodes, rename DU, tree=SpanNode instance
         tree = utils_rs3.buildNodes(eduList, groupList, root, self.nuclearity_relations)
         # Can t be retrieved from the tree for now, some EDU have children
-        eduIds = [e["id"] for e in eduList]
+        eduIds: list[int] = []
+        for edu in eduList:
+            edu_id = edu.get("id")
+            if not isinstance(edu_id, int):
+                raise ValueError(f"RS3 EDU has a non-integer ID: {edu_id!r}")
+            eduIds.append(edu_id)
         # Order span list for each node
         utils_rs3.orderSpanList(tree, eduIds)
         # Clean the tree: deal with DU with only one child + same unit cases
@@ -201,6 +209,8 @@ class Rs3Document(Document):
         utils_rs3.binarizeTreeGeneral(tree, self, nucRelations=self.nuclearity_relations)
         tree = common.backprop(tree, self)  # Backprop info
         self.tree = Tree.fromstring(common.parse(tree))  # Build an nltk tree
+        if self.tree is None:
+            raise ValueError(f"RS3 parser produced no NLTK tree: {self.path}")
         validTree = common.checkTree(self.tree, self)
         if not validTree:
             self.tree = None

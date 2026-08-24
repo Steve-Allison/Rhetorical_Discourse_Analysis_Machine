@@ -50,7 +50,7 @@ class TrainingManager:
 
     def __init__(
         self,
-        model: nn.Module,
+        model: Any,
         train_data: list[Data],
         dev_data: list[Data],
         test_data: list[Data],
@@ -140,11 +140,12 @@ class TrainingManager:
 
         # self.run = wandb.init(project=project, name=run_name, config=config)
         # run_name = self.run.name if self.run.name else 'tmp'
-        self.save_dir = Path(save_dir) / run_name
+        resolved_run_name = run_name if run_name else "tmp"
+        self.save_dir = Path(save_dir) / resolved_run_name
         if self.save_dir.exists():
             shutil.rmtree(self.save_dir)
         self.save_dir.mkdir(parents=True)
-        with open(self.save_dir.joinpath("config.json"), "w") as f:
+        with self.save_dir.joinpath("config.json").open("w", encoding="utf-8") as f:
             json.dump(config, f)
 
         if transformer_lr_multiplier:
@@ -176,7 +177,6 @@ class TrainingManager:
             min_lr=1e-8,
             factor=0.5,
             patience=2,
-            verbose=True,
         )
 
         self._cuda_cache_dump_frequency = 0.1
@@ -268,7 +268,7 @@ class TrainingManager:
                 break
 
         metric_path = self.save_dir / "best_metrics.json"
-        with open(metric_path, "w") as f:
+        with metric_path.open("w", encoding="utf-8") as f:
             m = {k: float(v) for k, v in best_metrics.items()}
             json.dump(m, f, sort_keys=True, indent=4)
 
@@ -302,8 +302,9 @@ class TrainingManager:
             print("Turning on the discriminator")
             self.model.turn_on_discriminator()
 
+        scaler: Any = None
         if self.use_amp:
-            scaler = torch.cuda.amp.GradScaler()
+            scaler = torch.amp.GradScaler("cuda")
 
         # self._adjust_lr(epoch)
         self.model.train()
@@ -428,7 +429,9 @@ class TrainingManager:
         def get_weight(list_losses, k):
             return torch.tensor(list_losses[-k:]).sum() / torch.tensor(list_losses[-2 * k : -k]).sum()
 
-        if self.model.segmenter_type == "tony" and self.model.segmenter.use_crf:
+        if self.model.segmenter_type == "tony" and any(
+            getattr(segmenter, "use_crf", False) for segmenter in self.model.segmenters
+        ):
             loss_segment_batch *= 0.01
 
         if self.use_dwa_loss:
@@ -599,6 +602,9 @@ class TrainingManager:
     def _merge_data(self, data: list[Data]) -> Data:
         all_data = {
             "input_sentences": [],
+            "sent_breaks": [],
+            "entity_ids": [],
+            "entity_position_ids": [],
             "edu_breaks": [],
             "decoder_input": [],
             "relation_label": [],
@@ -607,8 +613,17 @@ class TrainingManager:
             "dataset_index": [],
         }
 
+        optional_fields = ("sent_breaks", "entity_ids", "entity_position_ids")
+        for field_name in optional_fields:
+            present = [getattr(item, field_name) is not None for item in data]
+            if any(present) and not all(present):
+                raise ValueError(f"UniRST datasets disagree on optional field {field_name!r}")
+
         for i, d in enumerate(data):
             all_data["input_sentences"] += d.input_sentences
+            all_data["sent_breaks"] += d.sent_breaks or []
+            all_data["entity_ids"] += d.entity_ids or []
+            all_data["entity_position_ids"] += d.entity_position_ids or []
             all_data["edu_breaks"] += d.edu_breaks
             all_data["decoder_input"] += d.decoder_input
             all_data["relation_label"] += d.relation_label
@@ -631,12 +646,11 @@ class TrainingManager:
         """
 
         input_sentences = np.array(data.input_sentences, dtype=object)
-        if data.sent_breaks:
-            sent_breaks = np.array(data.sent_breaks, dtype=object)
-        if data.entity_ids:
-            entity_ids = np.array(data.entity_ids, dtype=object)
-        if data.entity_position_ids:
-            entity_position_ids = np.array(data.entity_position_ids, dtype=object)
+        sent_breaks: np.ndarray | None = np.array(data.sent_breaks, dtype=object) if data.sent_breaks else None
+        entity_ids: np.ndarray | None = np.array(data.entity_ids, dtype=object) if data.entity_ids else None
+        entity_position_ids: np.ndarray | None = (
+            np.array(data.entity_position_ids, dtype=object) if data.entity_position_ids else None
+        )
 
         edu_breaks = np.array(data.edu_breaks, dtype=object)
         decoder_inputs = np.array(data.decoder_input, dtype=object)
@@ -653,12 +667,11 @@ class TrainingManager:
             batch_indices = indices[i : i + batch_size]
 
             batch_input_sentences = input_sentences[batch_indices]
-            if data.sent_breaks:
-                batch_sent_breaks = sent_breaks[batch_indices]
-            if data.entity_ids:
-                batch_entity_ids = entity_ids[batch_indices]
-            if data.entity_position_ids:
-                batch_entity_position_ids = entity_position_ids[batch_indices]
+            batch_sent_breaks = sent_breaks[batch_indices] if sent_breaks is not None else None
+            batch_entity_ids = entity_ids[batch_indices] if entity_ids is not None else None
+            batch_entity_position_ids = (
+                entity_position_ids[batch_indices] if entity_position_ids is not None else None
+            )
             batch_edu_breaks = edu_breaks[batch_indices]
             batch_decoder_inputs = decoder_inputs[batch_indices]
             batch_relation_labels = relation_labels[batch_indices]
@@ -669,10 +682,10 @@ class TrainingManager:
             # sort batches by input sentence length
             sorted_idxs = np.argsort([len(x) for x in batch_input_sentences])[::-1]
             batch_input_sentences = batch_input_sentences[sorted_idxs].tolist()
-            batch_sent_breaks = batch_sent_breaks[sorted_idxs].tolist() if data.sent_breaks else None
-            batch_entity_ids = batch_entity_ids[sorted_idxs].tolist() if data.entity_ids else None
+            batch_sent_breaks = batch_sent_breaks[sorted_idxs].tolist() if batch_sent_breaks is not None else None
+            batch_entity_ids = batch_entity_ids[sorted_idxs].tolist() if batch_entity_ids is not None else None
             batch_entity_position_ids = (
-                batch_entity_position_ids[sorted_idxs].tolist() if data.entity_position_ids else None
+                batch_entity_position_ids[sorted_idxs].tolist() if batch_entity_position_ids is not None else None
             )
             batch_edu_breaks = batch_edu_breaks[sorted_idxs].tolist()
             batch_decoder_inputs = batch_decoder_inputs[sorted_idxs].tolist()
@@ -713,12 +726,19 @@ class TrainingManager:
             List of combined batches.
         """
 
-        def merge(sample, batch):
+        def merge(sample: tuple[Any, ...], batch: tuple[Any, ...]) -> tuple[Any, ...]:
             """Merges two batches by appending contents of the ``sample`` at the end of the ``batch``."""
-            return (batch[i] + sample[i] for i in range(len(batch)))
+            return tuple(
+                batch_item
+                if sample_item is None
+                else sample_item
+                if batch_item is None
+                else batch_item + sample_item
+                for batch_item, sample_item in zip(batch, sample, strict=True)
+            )
 
-        result = []
-        trivials_stack = []
+        result: list[tuple[Any, ...]] = []
+        trivials_stack: list[tuple[Any, ...]] = []
 
         # Separate elaborate trees from the trivial ones
         bs = batches[:]
@@ -729,17 +749,15 @@ class TrainingManager:
             else:
                 result.append(batch)
 
-        k = 0
+        if not result:
+            return trivials_stack
+
         # Put the trivial batches in the batches with elaborates
-        while len(trivials_stack):
-            last_i = 0
+        while trivials_stack:
             for idx in range(len(result)):
-                last_i = idx
                 if not trivials_stack:
                     break
-
-            k += 1
-            merge(sample=trivials_stack.pop(), batch=result[last_i])
+                result[idx] = merge(sample=trivials_stack.pop(), batch=result[idx])
 
         return result
 
@@ -760,6 +778,6 @@ class TrainingManager:
         torch.save(self.model.state_dict(), model_path)
 
         metric_path = self.save_dir / f"metrics_epoch_{epoch}.json"
-        with open(metric_path, "w") as f:
+        with metric_path.open("w", encoding="utf-8") as f:
             m = {k: float(v) for k, v in metrics.items()}
             json.dump(m, f, sort_keys=True, indent=4)

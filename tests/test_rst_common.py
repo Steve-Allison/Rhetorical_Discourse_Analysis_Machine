@@ -17,7 +17,7 @@ from isanlp_rst._rst_common import (
     model_identity_knobs,
     resolve_inventory,
     resolve_result_model_meta,
-    result_cache_key,
+    result_cache_key as _result_cache_key,
     store_cached,
 )
 
@@ -51,6 +51,10 @@ def _make_edu(**kw: object) -> dict:
     return dict(kw)
 
 
+def result_cache_key(source_bytes: bytes, parts: dict[str, object]) -> str:
+    return _result_cache_key(source_bytes, parts, source_basename="source.bin")
+
+
 # --- Iterative flatten: deep-tree guarantee ---------------------------------
 
 
@@ -68,6 +72,7 @@ def test_flatten_survives_tree_deeper_than_recursion_limit() -> None:
 
     relations, edus = flatten_tree(
         node,
+        " ".join("x" for _ in range(depth + 1)),
         SpanIndex(spans, ref_of=_ref_of),
         [],
         make_relation=_make_relation,
@@ -85,6 +90,7 @@ def test_flatten_preorder_ids_and_depths() -> None:
     spans = (_Span(0, 5, "a"), _Span(7, 12, "b"))
     relations, edus = flatten_tree(
         root,
+        "hello  world",
         SpanIndex(spans, ref_of=_ref_of),
         [("b-0", frozenset({"a"}))],
         make_relation=_make_relation,

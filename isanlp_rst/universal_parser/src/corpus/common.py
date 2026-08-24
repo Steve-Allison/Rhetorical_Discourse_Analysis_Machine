@@ -40,20 +40,16 @@ def backprop(tree: SpanNode, doc: Document) -> SpanNode:
     return treenodes[-1]
 
 
-def __getspaninfo(lnode: SpanNode, rnode: SpanNode) -> tuple[int, int] | None:
+def __getspaninfo(lnode: SpanNode, rnode: SpanNode) -> tuple[int, int]:
     """
     Get span size for parent node
 
     :type lnode,rnode: SpanNode instance
     :param lnode,rnode: Left/Right children nodes
     """
-    try:
-        eduspan = (lnode.eduspan[0], rnode.eduspan[1])
-        return eduspan
-    except TypeError:
-        print(lnode.prop, rnode.prop)
-        print(lnode.nucspan, rnode.nucspan)
-        return None
+    if lnode.eduspan is None or rnode.eduspan is None:
+        raise ValueError("RST child node is missing its EDU span")
+    return (lnode.eduspan[0], rnode.eduspan[1])
 
 
 def __getforminfo(lnode: SpanNode, rnode: SpanNode) -> tuple[str, tuple[int, int]]:
@@ -63,6 +59,8 @@ def __getforminfo(lnode: SpanNode, rnode: SpanNode) -> tuple[str, tuple[int, int
     :type lnode,rnode: SpanNode instance
     :param lnode,rnode: Left/Right children nodes
     """
+    if lnode.eduspan is None or rnode.eduspan is None:
+        raise ValueError("RST child node is missing its EDU span")
     if (lnode.prop == "Nucleus") and (rnode.prop == "Satellite"):
         nucspan = lnode.eduspan
         form = "NS"
@@ -74,7 +72,7 @@ def __getforminfo(lnode: SpanNode, rnode: SpanNode) -> tuple[str, tuple[int, int
         form = "NN"
     else:
         print(lnode.prop, lnode.eduspan, rnode.prop, rnode.eduspan)
-        raise ValueError("Form:" + lnode.prop)
+        raise ValueError(f"Unrecognized RST nuclearity form: {lnode.prop!r}/{rnode.prop!r}")
     return form, nucspan
 
 
@@ -96,6 +94,8 @@ def __getrelationinfo(lnode: SpanNode, rnode: SpanNode) -> str:
         print(f"lnode.prop = {lnode.prop}, lnode.eduspan = {lnode.eduspan}")
         print(f"rnode.prop = {rnode.prop}, rnode.eduspan = {rnode.eduspan}")
         raise ValueError("Error when find relation for new node")
+    if relation is None:
+        raise ValueError("RST relation is undefined for a binary node")
     return relation
 
 
@@ -147,23 +147,30 @@ def getParse(tree: SpanNode, parse: str) -> str:
         # Leaf node
         parse += " ( EDU " + str(tree.nucedu)
     else:
+        if tree.lnode is None or tree.rnode is None:
+            raise ValueError("non-leaf RST node requires both children")
+        if tree.form is None:
+            raise ValueError("non-leaf RST node is missing its nuclearity form")
         parse += " ( " + tree.form
         # get the relation from its satellite node
         if tree.form == "NN":
             if tree.rnode.relation == "span":
-                parse += "-" + tree.lnode.relation
+                relation = tree.lnode.relation
                 # parse += "-" + extractrelation(tree.lnode.relation)
             else:
-                parse += "-" + tree.rnode.relation
+                relation = tree.rnode.relation
                 # parse += "-" + extractrelation(tree.rnode.relation)
         elif tree.form == "NS":
-            parse += "-" + tree.rnode.relation
+            relation = tree.rnode.relation
             # parse += "-" + extractrelation(tree.rnode.relation)
         elif tree.form == "SN":
-            parse += "-" + tree.lnode.relation
+            relation = tree.lnode.relation
             # parse += "-" + extractrelation(tree.lnode.relation)
         else:
             raise ValueError("Unrecognized N-S form")
+        if relation is None:
+            raise ValueError("non-leaf RST node is missing its discourse relation")
+        parse += "-" + relation
     if tree.lnode is not None:
         parse = getParse(tree.lnode, parse)
     if tree.rnode is not None:
@@ -363,7 +370,7 @@ def printBinTree(tree: SpanNode) -> None:
     queue = [tree]
     while queue:
         n = queue.pop()
-        if n.lnode is not None:
+        if n.lnode is not None and n.rnode is not None:
             print("-->", n._id, n.relation, n.eduspan, n.prop, n.lnode._id, n.rnode._id)
             queue.append(n.lnode)
             queue.append(n.rnode)

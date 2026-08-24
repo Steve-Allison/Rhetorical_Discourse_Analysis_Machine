@@ -7,12 +7,14 @@ from isanlp_rst.segmentation.dataset import (
     parse_rs4_to_sentences,
 )
 from isanlp_rst.segmentation.transformer_segmenter import (
+    InvalidSegmenterCheckpointError,
     SegmentationResult,
     TransformerEduSegmenter,
 )
 
 __all__ = [
     "EduSegmentationDataset",
+    "InvalidSegmenterCheckpointError",
     "SegmentedSentence",
     "SegmentationResult",
     "TransformerEduSegmenter",

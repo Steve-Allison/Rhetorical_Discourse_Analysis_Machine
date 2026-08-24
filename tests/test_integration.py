@@ -28,6 +28,7 @@ import pytest
 import torch
 
 from isanlp_rst.contracts import InputFidelityEnum, OutputFormalismEnum, RstAnalysis, RstDocument
+from isanlp_rst.erst.checkpoint import ErstCapabilityError
 from isanlp_rst.parser import Parser
 
 
@@ -399,9 +400,8 @@ def test_parse_document_with_edus_e2e(dmrst_gumrrg_cpu: Parser):
     doc = RstDocument.from_edus(leaves, document_id="e2e-edus-1")
     assert doc.fidelity == InputFidelityEnum.RECONSTRUCTED
 
-    analysis = dmrst_gumrrg_cpu.parse_document(doc, output="erst_graph")
-    assert analysis.formalism == OutputFormalismEnum.ERST_GRAPH
-    assert len(analysis.nodes) >= len(leaves)
+    with pytest.raises(ErstCapabilityError, match="validated completion bundle"):
+        dmrst_gumrrg_cpu.parse_document(doc, output="erst_graph")
 
 
 def test_parse_document_unirst_e2e(unirst_eng_cpu: Parser):

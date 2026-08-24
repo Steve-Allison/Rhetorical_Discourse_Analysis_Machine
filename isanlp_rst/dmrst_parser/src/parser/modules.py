@@ -83,6 +83,8 @@ class EncoderRNN(nn.Module):
 
         self.segmenter = segmenter
         self.edu_encoding_kind = edu_encoding_kind
+        if self.edu_encoding_kind not in {"avg", "trainable", "gru", "bigru", "bilstm"}:
+            raise ValueError(f"unsupported EDU encoding kind: {self.edu_encoding_kind!r}")
         if self.edu_encoding_kind == "trainable":
             self._edu_attention = torch.nn.Linear(word_dim, 1, device=self._cuda_device)
             self._init_weights(self._edu_attention)
@@ -147,6 +149,7 @@ class EncoderRNN(nn.Module):
     ):
         all_outputs = []
         all_hidden = []
+        all_token_embeddings = []
 
         # for segmenter initialization
         total_edu_loss = torch.FloatTensor([0.0]).to(self._cuda_device)
@@ -165,6 +168,7 @@ class EncoderRNN(nn.Module):
                 embeddings = self.layer_norm(embeddings)
 
             cur_sent_break = sent_breaks[i] if sent_breaks else None
+            all_token_embeddings.append(embeddings.squeeze(dim=0))
             if is_test:
                 cur_edu_break = self.segmenter.test_segment_loss(embeddings.squeeze(), cur_sent_break)
             else:
@@ -189,7 +193,13 @@ class EncoderRNN(nn.Module):
         res_merged_output = torch.cat(all_outputs, dim=0)
         res_merged_hidden = torch.cat(all_hidden, dim=1)
 
-        return res_merged_output, res_merged_hidden, total_edu_loss, predict_edu_breaks_list  # , embeddings
+        return (
+            res_merged_output,
+            res_merged_hidden,
+            total_edu_loss,
+            predict_edu_breaks_list,
+            all_token_embeddings,
+        )
 
     def encode_edus(self, embeddings, cur_edu_break):
         tmp_edus_list = []
@@ -207,10 +217,11 @@ class EncoderRNN(nn.Module):
 
         outputs = torch.cat(tmp_edus_list, dim=0).unsqueeze(dim=0)
 
-        if self.document_enc_gru:
-            outputs, hidden = self.doc_gru_enc(outputs)
-            hidden = hidden.view(2, 2, 1, int(self.hidden_size / 2))[-1]
-            hidden = hidden.transpose(0, 1).view(1, 1, -1).contiguous()
+        if not self.document_enc_gru:
+            raise ValueError("DMRST decoding requires document-level GRU encoding")
+        outputs, hidden = self.doc_gru_enc(outputs)
+        hidden = hidden.view(2, 2, 1, int(self.hidden_size / 2))[-1]
+        hidden = hidden.transpose(0, 1).view(1, 1, -1).contiguous()
 
         if self.add_first_and_last:
             first_words = []
@@ -276,6 +287,8 @@ class EncoderRNN(nn.Module):
 
         use_entities = entity_ids is not None and entity_position_ids is not None
         if use_entities:
+            if entity_ids is None or entity_position_ids is None:
+                raise RuntimeError("entity tensors disappeared during sliding-window encoding")
             entity_ids = entity_ids.unsqueeze(0)
             entity_position_ids = entity_position_ids.unsqueeze(0)
 
@@ -297,6 +310,8 @@ class EncoderRNN(nn.Module):
                 cur_token_ids = token_ids[:, :end]
 
                 if use_entities:
+                    if entity_ids is None or entity_position_ids is None:
+                        raise RuntimeError("entity tensors are required for entity-aware encoding")
                     # print(f'{entity_position_ids = }') [[[ 27,  ...
                     cur_entities = [
                         i for i, entity_positions in enumerate(entity_position_ids[0]) if entity_positions[0] < end
@@ -311,28 +326,14 @@ class EncoderRNN(nn.Module):
 
             elif tmp_step == slide_steps - 1:
                 start = sequence_length - ((sequence_length - (self.window_size * tmp_step)) + 2 * self.window_padding)
-                if False:
-                    end = start + token_ids[:, start:].shape[1]
-                    cur_entities = [
-                        i
-                        for i, entity_positions in enumerate(entity_position_ids[0])
-                        if start <= entity_positions[0] and max(entity_positions) < end
-                    ]
-                    current_position_ids = entity_position_ids[:, cur_entities].clone()
-                    current_position_ids = torch.where(current_position_ids == -1, -1, current_position_ids - start)
-                    # print(f'212 ::: {current_position_ids = }, {token_ids[:, start:].shape}')
-                    one_win_res = self.transformer(
-                        token_ids[:, start:],
-                        entity_ids=entity_ids[:, cur_entities],
-                        entity_position_ids=current_position_ids,
-                    )[0][:, 2 * self.window_padding :, :]
-                else:
-                    one_win_res = self.transformer(token_ids[:, start:])[0][:, 2 * self.window_padding :, :]
+                one_win_res = self.transformer(token_ids[:, start:])[0][:, 2 * self.window_padding :, :]
             else:
                 start = self.window_size * tmp_step - self.window_padding
                 end = self.window_size * (tmp_step + 1) + self.window_padding
 
                 if use_entities:
+                    if entity_ids is None or entity_position_ids is None:
+                        raise RuntimeError("entity tensors are required for entity-aware encoding")
                     cur_entities = [
                         i
                         for i, entity_positions in enumerate(entity_position_ids[0])
@@ -366,7 +367,7 @@ class EncoderRNN(nn.Module):
         token_ids = torch.LongTensor(token_ids).to(self._cuda_device)
 
         # Shape: (1, n_subwords, emb_dim|bilstm_hidden_size)
-        embeddings = self._fixed_sliding_window(token_ids, use_bilstm=use_bilstm)
+        embeddings = self._fixed_sliding_window(token_ids, None, None, use_bilstm=use_bilstm)
         return embeddings[:, : breaking_point + 1, :], embeddings[:, breaking_point + 1 :, :]
 
 
@@ -418,6 +419,8 @@ class PointerAtten(nn.Module):
         """
 
         self.atten_model = atten_model
+        if self.atten_model not in {"Biaffine", "Dotproduct"}:
+            raise ValueError(f"unsupported pointer attention model: {self.atten_model!r}")
         self.weight1 = nn.Linear(hidden_size, hidden_size, bias=False)
         self.weight2 = nn.Linear(hidden_size, 1, bias=False)
 
@@ -426,7 +429,7 @@ class PointerAtten(nn.Module):
 
         if self.atten_model == "Biaffine":
             EW1_temp = self.weight1(encoder_outputs)
-            EW1 = torch.matmul(EW1_temp, cur_decoder_output).unsqueeze(1)
+            EW1 = torch.sum(EW1_temp * cur_decoder_output.unsqueeze(0), dim=-1).unsqueeze(1)
             EW2 = self.weight2(encoder_outputs)
             bi_affine = EW1 + EW2
             bi_affine = bi_affine.permute(1, 0)
@@ -436,10 +439,13 @@ class PointerAtten(nn.Module):
             log_atten_weights = F.log_softmax(bi_affine + 1e-6, 0)
 
         elif self.atten_model == "Dotproduct":
-            dot_prod = torch.matmul(encoder_outputs, cur_decoder_output).unsqueeze(0)
+            dot_prod = torch.sum(encoder_outputs * cur_decoder_output.unsqueeze(0), dim=-1).unsqueeze(0)
             # Obtain attention weights and logits (to compute loss)
             atten_weights = F.softmax(dot_prod, 1)
             log_atten_weights = F.log_softmax(dot_prod + 1e-6, 1)
+
+        else:
+            raise RuntimeError("pointer attention model changed after construction")
 
         # Return attention weights and log attention weights
         return atten_weights, log_atten_weights
@@ -462,18 +468,32 @@ class DefaultLabelClassifier(nn.Module):
 
         self.input_size = input_size
         self.hidden_size = hidden_size
-        self.labelspace_left = nn.Linear(input_size, hidden_size, bias=False)
-        self.labelspace_right = nn.Linear(input_size, hidden_size, bias=False)
+        self.labelspace_left = nn.Linear(input_size, hidden_size, bias=False).to(cuda_device)
+        self.labelspace_right = nn.Linear(input_size, hidden_size, bias=False).to(cuda_device)
         self.dropout = nn.Dropout(dropout)
-        self.weight_left = nn.Linear(hidden_size, classes_number, bias=False)
-        self.weight_right = nn.Linear(hidden_size, classes_number, bias=False)
+        self.weight_left = nn.Linear(hidden_size, classes_number, bias=False).to(cuda_device)
+        self.weight_right = nn.Linear(hidden_size, classes_number, bias=False).to(cuda_device)
 
         self.weight_bilateral = nn.Bilinear(hidden_size, hidden_size, classes_number, bias=bias, device=cuda_device)
 
+        self._init_weights()
         self._cuda_device = cuda_device
 
+    def _init_weights(self) -> None:
+        layers = (
+            self.labelspace_left,
+            self.labelspace_right,
+            self.weight_left,
+            self.weight_right,
+            self.weight_bilateral,
+        )
+        for layer in layers:
+            if not isinstance(layer.weight, Tensor):
+                raise TypeError("DMRST label-classifier weight must be a tensor")
+            nn.init.xavier_uniform_(layer.weight)
+
     @override
-    def forward(self, input_left, input_right, **kwargs):
+    def forward(self, input_left, input_right, mask=None):
         labelspace_left = self.dropout(F.elu(self.labelspace_left(input_left)))
         labelspace_right = self.dropout(F.elu(self.labelspace_right(input_right)))
 
@@ -482,6 +502,11 @@ class DefaultLabelClassifier(nn.Module):
             + self.weight_left(labelspace_left)
             + self.weight_right(labelspace_right)
         )
+
+        if mask is not None:
+            if mask.dim() == 1:
+                mask = mask.unsqueeze(0)
+            output = output.masked_fill(~mask, -1e9)
 
         # Obtain relation weights and log relation weights (for loss)
         relation_weights = F.softmax(output, 1)
@@ -524,7 +549,10 @@ class DefaultPlusBiMPMClassifier(nn.Module):
             dim=1,
         )
         x_right = torch.cat(
-            [bimpm_left.permute(1, 0, 2).contiguous().view(-1, self._bimpm_encoder.hidden_size * 2), lengths[:, :1]],
+            [
+                bimpm_right.permute(1, 0, 2).contiguous().view(-1, self._bimpm_encoder.hidden_size * 2),
+                lengths[:, 1:2],
+            ],
             dim=1,
         )
 

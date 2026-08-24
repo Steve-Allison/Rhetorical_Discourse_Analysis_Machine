@@ -26,7 +26,7 @@ Usage:
     pixi run rst-diag doc.md --model-version gumrrg --device auto
 
 Format dispatch by suffix: ``.md`` / ``.markdown`` → parse_markdown;
-``*.docling.json`` → parse_docling; ``*.dclg.xml`` → parse_doclang.
+``*.docling.json`` → parse_docling; ``*.dclg`` → parse_doclang.
 One ``Parser`` is constructed and injected across all documents.
 """
 
@@ -71,7 +71,7 @@ def _discover(paths: list[Path]) -> list[Path]:
             out.extend(sorted(p.rglob("*.md")))
             out.extend(sorted(p.rglob("*.markdown")))
             out.extend(sorted(p.rglob("*.docling.json")))
-            out.extend(sorted(p.rglob("*.dclg.xml")))
+            out.extend(sorted(p.rglob("*.dclg")))
         else:
             out.append(p)
     return out
@@ -81,11 +81,11 @@ def _format_of(path: Path) -> str:
     name = path.name
     if name.endswith(".docling.json"):
         return "docling"
-    if name.endswith(".dclg.xml"):
+    if name.endswith(".dclg"):
         return "doclang"
     if path.suffix in (".md", ".markdown"):
         return "markdown"
-    raise ValueError(f"Unsupported source {path} — expected .md/.markdown, *.docling.json, or *.dclg.xml")
+    raise ValueError(f"Unsupported source {path} — expected .md/.markdown, *.docling.json, or *.dclg")
 
 
 def _parse(path: Path, fmt: str, parser: Any) -> Any:

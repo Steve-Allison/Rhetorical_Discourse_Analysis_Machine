@@ -118,6 +118,9 @@ class ParsingNet(nn.Module):
             else None
         )
         self.classes_numbers = classes_numbers
+        if classes_numbers is None or not classes_numbers or any(value <= 0 for value in classes_numbers):
+            raise ValueError("classes_numbers must contain one positive class count per classifier")
+        resolved_classes_numbers = classes_numbers
         self.classifier_bias = classifier_bias
         self.label_weights = label_weights
         self.rnn_layers = rnn_layers
@@ -125,12 +128,14 @@ class ParsingNet(nn.Module):
         self._cuda_device = cuda_device
         self.use_amp = use_amp
         self.segmenter_type = segmenter_type
+        if segmenter_type not in {"linear", "tony"}:
+            raise ValueError(f"unsupported UniRST segmenter type: {segmenter_type!r}")
         if dataset2classifier is None:
-            dataset2classifier = list(range(len(classes_numbers)))
+            dataset2classifier = list(range(len(resolved_classes_numbers)))
         self.dataset2classifier = dataset2classifier
 
         if not corpora_weights:
-            corpora_weights = [1.0 for _ in range(len(classes_numbers))]
+            corpora_weights = [1.0 for _ in range(len(resolved_classes_numbers))]
         self.corpora_weights = corpora_weights
 
         if separated_segmentation:
@@ -159,9 +164,9 @@ class ParsingNet(nn.Module):
 
         else:
             if segmenter_type == "linear":
-                self.segmenters = [segmenters.LinearSegmenter(emb_dim, cuda_device=self._cuda_device)]
+                self.segmenters = nn.ModuleList([segmenters.LinearSegmenter(emb_dim, cuda_device=self._cuda_device)])
             elif segmenter_type == "tony":
-                self.segmenters = [
+                self.segmenters = nn.ModuleList([
                     segmenters.ToNySegmenter(
                         emb_dim,
                         use_sentence_boundaries=segmenter_use_sent_boundaries,
@@ -176,7 +181,7 @@ class ParsingNet(nn.Module):
                         if_edu_start_loss=segmenter_if_edu_start_loss,
                         cuda_device=self._cuda_device,
                     )
-                ]
+                ])
 
         self.edu_encoding_kind = edu_encoding_kind
         self.encoder_document_enc_gru = encoder_document_enc_gru
@@ -203,16 +208,16 @@ class ParsingNet(nn.Module):
         )
 
         self.du_encoding_kind = du_encoding_kind
+        if self.du_encoding_kind not in {"last", "none", "avg", "trainable", "bert"}:
+            raise ValueError(f"unsupported UniRST discourse-unit encoding: {self.du_encoding_kind!r}")
         if du_encoding_kind == "trainable":
             self._du_attention = torch.nn.Linear(emb_dim, 1, device=self._cuda_device)
 
         decoder_input_size = self.decoder_input_size
         decoder_hidden_size = self.decoder_input_size
         if self.encoder_add_first_and_last:
-            decoder_input_size *= 3 * self.edu_embedding_compression_rate
-            decoder_input_size = int(decoder_input_size)
-            decoder_hidden_size *= 3 * self.edu_embedding_compression_rate
-            decoder_hidden_size = int(decoder_hidden_size)
+            decoder_input_size = int(decoder_input_size * 3 * self.edu_embedding_compression_rate)
+            decoder_hidden_size = int(decoder_hidden_size * 3 * self.edu_embedding_compression_rate)
 
         self.decoder = modules.DecoderRNN(
             decoder_input_size, decoder_hidden_size, rnn_layers, dropout_d, cuda_device=self._cuda_device
@@ -220,15 +225,17 @@ class ParsingNet(nn.Module):
         self.pointer = modules.PointerAtten(atten_model, hidden_size).to(self._cuda_device)
 
         self.rel_classification_kind = rel_classification_kind
+        if rel_classification_kind != "default":
+            raise ValueError(f"unsupported UniRST relation classifier: {rel_classification_kind!r}")
         if rel_classification_kind == "default":
             if self.dataset_masks is None:
                 label_classifiers = []
-                for i in range(len(classes_numbers)):
+                for i in range(len(resolved_classes_numbers)):
                     label_classifiers.append(
                         modules.DefaultLabelClassifier(
                             classifier_input_size,
                             classifier_hidden_size,
-                            classes_numbers[i],
+                            resolved_classes_numbers[i],
                             bias=True,
                             dropout=dropout_c,
                             cuda_device=self._cuda_device,
@@ -257,8 +264,7 @@ class ParsingNet(nn.Module):
 
     @staticmethod
     def _init_weights(layer: nn.Module) -> None:
-        classname = layer.__class__.__name__
-        if (classname.find("Conv") != -1) or (classname.find("Linear") != -1):
+        if isinstance(layer, nn.Conv2d | nn.Linear):
             nn.init.normal_(layer.weight.data, 0.0, 0.02)
 
     def cnn_feat_ext(self, img: Tensor) -> Tensor:
@@ -283,29 +289,21 @@ class ParsingNet(nn.Module):
     ) -> tuple[Tensor, Tensor, Tensor]:
 
         # Obtain encoder outputs and last hidden states
-        if self.du_encoding_kind == "bert":
-            encoder_outputs, last_hidden_states, total_edu_loss, _, embeddings = self.encoder(
-                input_texts,
-                entity_ids,
-                entity_position_ids,
-                edu_breaks,
-                sent_breaks=sent_breaks,
-                dataset_index=dataset_index,
-            )
-        else:
-            encoder_outputs, last_hidden_states, total_edu_loss, _ = self.encoder(
-                input_texts,
-                entity_ids,
-                entity_position_ids,
-                edu_breaks,
-                sent_breaks=sent_breaks,
-                dataset_index=dataset_index,
-            )
+        encoder_outputs, last_hidden_states, total_edu_loss, _, embeddings = self.encoder(
+            input_texts,
+            entity_ids,
+            entity_position_ids,
+            edu_breaks,
+            sent_breaks=sent_breaks,
+            dataset_index=dataset_index,
+        )
 
+        if self.label_weights is None:
+            raise RuntimeError("UniRST training requires label weights for every classifier")
         label_loss_functions = [nn.NLLLoss(weight=label_weights) for label_weights in self.label_weights]
         span_loss_func = nn.NLLLoss()
 
-        loss_label_batch = 0
+        loss_label_batch = torch.zeros(1, device=self._cuda_device)
         loss_tree_batch = torch.FloatTensor([0.0]).to(self._cuda_device)
         loop_label_batch = 0
         loop_tree_batch = 0
@@ -475,7 +473,7 @@ class ParsingNet(nn.Module):
                             if len(stack_left) > 1:
                                 stacks.append(stack_left)
 
-        loss_label_batch /= loop_label_batch
+        loss_label_batch /= max(1, loop_label_batch)
         loss_tree_batch /= max(loop_tree_batch, 1)
 
         return loss_tree_batch, loss_label_batch, total_edu_loss
@@ -505,26 +503,15 @@ class ParsingNet(nn.Module):
         """
 
         # Obtain encoder outputs and last hidden states
-        if self.du_encoding_kind == "bert":
-            encoder_outputs, last_hidden_states, _, predict_edu_breaks, embeddings = self.encoder(
-                input_sentence,
-                input_entity_ids,
-                input_entity_position_ids,
-                input_edu_breaks,
-                sent_breaks=input_sent_breaks,
-                is_test=use_pred_segmentation,
-                dataset_index=dataset_index,
-            )
-        else:
-            encoder_outputs, last_hidden_states, _, predict_edu_breaks = self.encoder(
-                input_sentence,
-                input_entity_ids,
-                input_entity_position_ids,
-                input_edu_breaks,
-                sent_breaks=input_sent_breaks,
-                is_test=use_pred_segmentation,
-                dataset_index=dataset_index,
-            )
+        encoder_outputs, last_hidden_states, _, predict_edu_breaks, embeddings = self.encoder(
+            input_sentence,
+            input_entity_ids,
+            input_entity_position_ids,
+            input_edu_breaks,
+            sent_breaks=input_sent_breaks,
+            is_test=use_pred_segmentation,
+            dataset_index=dataset_index,
+        )
 
         if use_pred_segmentation:
             edu_breaks = predict_edu_breaks
@@ -547,12 +534,12 @@ class ParsingNet(nn.Module):
         label_batch = []
         tree_batch = []
 
-        if generate_tree:
-            span_batch = []
+        span_batch: list[list[str]] = []
 
         for i in range(len(edu_breaks)):
             cur_label = []
             cur_tree = []
+            span = ""
 
             cur_dataset_index = dataset_index[i]
 
@@ -626,9 +613,6 @@ class ParsingNet(nn.Module):
                 cur_decoder_hidden = cur_last_hidden_states.contiguous()
 
                 loop_index = 0
-
-                if generate_tree:
-                    span = ""
 
                 tmp_decode_step = -1
 
@@ -817,7 +801,7 @@ class ParsingNet(nn.Module):
                 if generate_tree:
                     span_batch.append([span.strip()])
 
-        loss_label_batch /= min(1, loop_label_batch)
+        loss_label_batch /= max(1, loop_label_batch)
 
         if loop_tree_batch == 0:
             loop_tree_batch = 1
@@ -866,39 +850,35 @@ class ParsingNet(nn.Module):
             # Just take last EDU as representation
             input_left = cur_encoder_outputs[du_break].unsqueeze(0)
             input_right = cur_encoder_outputs[right_boundary].unsqueeze(0)
+        elif self.du_encoding_kind == "none":
+            input_left = slice_tensor(cur_encoder_outputs, left_boundary, du_break).unsqueeze(0)
+            input_right = slice_tensor(cur_encoder_outputs, du_break + 1, right_boundary).unsqueeze(0)
+        elif self.du_encoding_kind == "avg":
+            input_left = torch.mean(slice_tensor(cur_encoder_outputs, left_boundary, du_break), keepdim=True, dim=0)
+            input_right = torch.mean(
+                slice_tensor(cur_encoder_outputs, du_break + 1, right_boundary), keepdim=True, dim=0
+            )
+        elif self.du_encoding_kind == "trainable":
+            attn_weights_left = nn.functional.softmax(
+                self._du_attention(slice_tensor(cur_encoder_outputs, left_boundary, du_break)), dim=0
+            )
+            attn_weights_right = nn.functional.softmax(
+                self._du_attention(slice_tensor(cur_encoder_outputs, du_break + 1, right_boundary)), dim=0
+            )
+            attn_weights_left = (attn_weights_left + 1e-4).clamp(max=1.0)
+            attn_weights_right = (attn_weights_right + 1e-4).clamp(max=1.0)
+            input_left = (
+                (slice_tensor(cur_encoder_outputs, left_boundary, du_break) * attn_weights_left)
+                .sum(dim=0)
+                .unsqueeze(0)
+            )
+            input_right = (
+                (slice_tensor(cur_encoder_outputs, du_break + 1, right_boundary) * attn_weights_right)
+                .sum(dim=0)
+                .unsqueeze(0)
+            )
         else:
-            if self.du_encoding_kind == "none":
-                input_left = slice_tensor(cur_encoder_outputs, left_boundary, du_break).unsqueeze(0)
-                input_right = slice_tensor(cur_encoder_outputs, du_break + 1, right_boundary).unsqueeze(0)
-            if self.du_encoding_kind == "avg":
-                # Merge EDU representations into discourse unit reps (DMRST default)
-                input_left = torch.mean(slice_tensor(cur_encoder_outputs, left_boundary, du_break), keepdim=True, dim=0)
-                input_right = torch.mean(
-                    slice_tensor(cur_encoder_outputs, du_break + 1, right_boundary), keepdim=True, dim=0
-                )
-
-            elif self.du_encoding_kind == "trainable":
-                # Weighted sum of EDU representations with trainable weights
-                attn_weights_left = nn.functional.softmax(
-                    self._du_attention(slice_tensor(cur_encoder_outputs, left_boundary, du_break)), dim=0
-                )
-                attn_weights_right = nn.functional.softmax(
-                    self._du_attention(slice_tensor(cur_encoder_outputs, du_break + 1, right_boundary)), dim=0
-                )
-
-                attn_weights_left = (attn_weights_left + 1e-4).clamp(max=1.0)  # To avoid zeros
-                attn_weights_right = (attn_weights_right + 1e-4).clamp(max=1.0)
-
-                input_left = (
-                    (slice_tensor(cur_encoder_outputs, left_boundary, du_break) * attn_weights_left)
-                    .sum(dim=0)
-                    .unsqueeze(0)
-                )
-                input_right = (
-                    (slice_tensor(cur_encoder_outputs, du_break + 1, right_boundary) * attn_weights_right)
-                    .sum(dim=0)
-                    .unsqueeze(0)
-                )
+            raise ValueError(f"DU tensor encoding is unavailable for kind {self.du_encoding_kind!r}")
 
         return input_left, input_right
 
@@ -995,6 +975,8 @@ class ParsingNet(nn.Module):
             dataset_index=dataset_index,
         )
 
+        if span_batch is None:
+            raise RuntimeError("UniRST testing did not produce parse spans")
         metrics = get_batch_metrics(
             span_batch, batch_golden_metrics, predict_edu_breaks, batch_edu_breaks, use_org_parseval
         )

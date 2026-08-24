@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import base64
 import html
+from importlib import import_module
 import json
 import os
 import re
@@ -829,7 +830,7 @@ def render(
         display_html = _wrap_for_notebook(html_str)
     if display_inline:
         try:
-            from IPython.display import HTML, display  # type: ignore[import-not-found]
+            ipython_display = import_module("IPython.display")
         except ImportError:
             warnings.warn(
                 "IPython is not available; returning HTML string without displaying it.",
@@ -837,7 +838,9 @@ def render(
                 stacklevel=2,
             )
         else:
-            display(HTML(display_html))
+            html_factory = ipython_display.HTML
+            display = ipython_display.display
+            display(html_factory(display_html))
             already_displayed = True
 
     return RenderedRST(
@@ -872,9 +875,8 @@ def cli(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     if args.debug:
-        import pudb  # type: ignore[import-not-found]
-
-        pudb.set_trace()
+        debugger = import_module("pudb")
+        debugger.set_trace()
 
     match args.output_format:
         case "png":
