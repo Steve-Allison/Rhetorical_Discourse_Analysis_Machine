@@ -1,0 +1,325 @@
+{
+  "devices": {
+    "cpu": {
+      "cases": {
+        "gumrrg": {
+          "actual_device": "cpu",
+          "analysis_roundtrip_sha256": "619dc61d8265f7e8822fa7bc833885efee442d3c4aeede3e94e65881b7f468d7",
+          "analysis_serialization_sha256": "619dc61d8265f7e8822fa7bc833885efee442d3c4aeede3e94e65881b7f468d7",
+          "family": "dmrst",
+          "model_identity": "gumrrg",
+          "prepared_edus_sha256": "cd8bd266d5436a0dc88d689f474f92597e6826d2bb60ebfe0c6a852ef09628e2",
+          "prepared_raw_sha256": "d9bdaa5e62271f14d4247b0e989470a9f972857ff8483d0534811ee454cb9d4d",
+          "presegmented_result_sha256": "33c365a23f42980162d507381545538814e20906cffe0726a1d0bcbaa83652e7",
+          "provenance": {
+            "model_digest": null,
+            "model_id": "gumrrg",
+            "ontology_digest": null,
+            "ontology_version": "4.1.0-discourse",
+            "producer": "isanlp_rst.parser",
+            "software_version": "4.0.0",
+            "source_revision": "<environment-normalized>",
+            "timestamp": "<normalized>"
+          },
+          "raw_result_sha256": "fcfebb3f01b523b8cf44b658c8a63a2327446cbcc9adb35deff83a213afa79b5",
+          "warnings": []
+        },
+        "unirst": {
+          "actual_device": "cpu",
+          "analysis_roundtrip_sha256": "e6b01c22456bf5c58b5aa99851f60d23609ebe709a60aef4b68853bbc8634f26",
+          "analysis_serialization_sha256": "e6b01c22456bf5c58b5aa99851f60d23609ebe709a60aef4b68853bbc8634f26",
+          "family": "unirst",
+          "model_identity": "unirst",
+          "prepared_edus_sha256": "cd8bd266d5436a0dc88d689f474f92597e6826d2bb60ebfe0c6a852ef09628e2",
+          "prepared_raw_sha256": "d9bdaa5e62271f14d4247b0e989470a9f972857ff8483d0534811ee454cb9d4d",
+          "presegmented_result_sha256": "33c365a23f42980162d507381545538814e20906cffe0726a1d0bcbaa83652e7",
+          "provenance": {
+            "model_digest": null,
+            "model_id": "unirst",
+            "ontology_digest": null,
+            "ontology_version": "4.1.0-discourse",
+            "producer": "isanlp_rst.parser",
+            "software_version": "4.0.0",
+            "source_revision": "<environment-normalized>",
+            "timestamp": "<normalized>"
+          },
+          "raw_result_sha256": "fcfebb3f01b523b8cf44b658c8a63a2327446cbcc9adb35deff83a213afa79b5",
+          "warnings": []
+        }
+      },
+      "deterministic_failure": {
+        "exception": "ValueError",
+        "message": "Unknown relinventory 'eng.rst.gum'. Available datasets: ['eng.rst.rstdt', 'eng.erst.gum', 'eng.rst.sts', 'eng.rst.oll', 'eng.rst.umuc', 'fra.sdrt.annodis', 'rus.rst.rrt', 'rus.rst.rrg', 'spa.rst.rststb', 'ces.rst.crdt', 'deu.rst.pcc', 'eus.rst.ert', 'fas.rst.prstc', 'por.rst.cstn', 'spa.rst.sctb', 'zho.rst.sctb', 'zho.rst.gcdt', 'nld.rst.nldt']."
+      },
+      "input": "Because it rained, the match stopped. The crowd left.",
+      "presegmented_edus": [
+        "Because it rained, the match stopped.",
+        "The crowd left."
+      ],
+      "representative_optional_format": {
+        "boundaries": [
+          {
+            "block_refs": [
+              "#/blocks/0",
+              "#/blocks/1",
+              "#/blocks/2",
+              "#/blocks/3"
+            ],
+            "id": "section-0",
+            "kind": "section",
+            "label": "Single section",
+            "level": 1,
+            "parent_block_ref": null
+          }
+        ],
+        "edus": [
+          {
+            "block_refs": [
+              "#/blocks/0",
+              "#/blocks/1",
+              "#/blocks/2"
+            ],
+            "char_span": [
+              0,
+              97
+            ],
+            "depth": 1,
+            "edu_span": [
+              1,
+              1
+            ],
+            "id": 1,
+            "text": "Single section\n\nThe first paragraph carries one short clause.\n\nThe second paragraph elaborates on"
+          },
+          {
+            "block_refs": [
+              "#/blocks/2",
+              "#/blocks/3"
+            ],
+            "char_span": [
+              97,
+              194
+            ],
+            "depth": 1,
+            "edu_span": [
+              2,
+              2
+            ],
+            "id": 2,
+            "text": " the first, drawing a contrast between two related ideas.\n\nThe closing paragraph wraps things up."
+          }
+        ],
+        "inventory": "gumrrg",
+        "model_version": "gumrrg",
+        "relations": [
+          {
+            "boundary_memberships": [
+              "section-0"
+            ],
+            "char_span": [
+              0,
+              194
+            ],
+            "depth": 0,
+            "edu_span": [
+              1,
+              2
+            ],
+            "id": 0,
+            "left_id": 1,
+            "note": null,
+            "nuclearity": "NS",
+            "nucleus_refs": [
+              "#/blocks/0",
+              "#/blocks/1",
+              "#/blocks/2"
+            ],
+            "relation": "elaboration",
+            "right_id": 2,
+            "satellite_refs": [
+              "#/blocks/2",
+              "#/blocks/3"
+            ],
+            "text": "Single section\n\nThe first paragraph carries one short clause.\n\nThe second paragraph elaborates on the first, drawing a contrast between two related ideas.\n\nThe closing paragraph wraps things up."
+          }
+        ],
+        "schema_name": "isanlp_rst_markdown",
+        "schema_version": "1.1",
+        "source": "minimal.md",
+        "source_origin": {
+          "format": "markdown",
+          "front_matter": null,
+          "front_matter_format": null,
+          "gfm": true
+        },
+        "source_revision": "<normalized>",
+        "table_analyses": [],
+        "tool": "isanlp_rst",
+        "tool_version": "<normalized>"
+      },
+      "requested_device": "cpu",
+      "schema_version": "isanlp_rst_production_parity/v2"
+    },
+    "mps": {
+      "cases": {
+        "gumrrg": {
+          "actual_device": "mps",
+          "analysis_roundtrip_sha256": "619dc61d8265f7e8822fa7bc833885efee442d3c4aeede3e94e65881b7f468d7",
+          "analysis_serialization_sha256": "619dc61d8265f7e8822fa7bc833885efee442d3c4aeede3e94e65881b7f468d7",
+          "family": "dmrst",
+          "model_identity": "gumrrg",
+          "prepared_edus_sha256": "cd8bd266d5436a0dc88d689f474f92597e6826d2bb60ebfe0c6a852ef09628e2",
+          "prepared_raw_sha256": "d9bdaa5e62271f14d4247b0e989470a9f972857ff8483d0534811ee454cb9d4d",
+          "presegmented_result_sha256": "33c365a23f42980162d507381545538814e20906cffe0726a1d0bcbaa83652e7",
+          "provenance": {
+            "model_digest": null,
+            "model_id": "gumrrg",
+            "ontology_digest": null,
+            "ontology_version": "4.1.0-discourse",
+            "producer": "isanlp_rst.parser",
+            "software_version": "4.0.0",
+            "source_revision": "<environment-normalized>",
+            "timestamp": "<normalized>"
+          },
+          "raw_result_sha256": "fcfebb3f01b523b8cf44b658c8a63a2327446cbcc9adb35deff83a213afa79b5",
+          "warnings": []
+        },
+        "unirst": {
+          "actual_device": "mps",
+          "analysis_roundtrip_sha256": "e6b01c22456bf5c58b5aa99851f60d23609ebe709a60aef4b68853bbc8634f26",
+          "analysis_serialization_sha256": "e6b01c22456bf5c58b5aa99851f60d23609ebe709a60aef4b68853bbc8634f26",
+          "family": "unirst",
+          "model_identity": "unirst",
+          "prepared_edus_sha256": "cd8bd266d5436a0dc88d689f474f92597e6826d2bb60ebfe0c6a852ef09628e2",
+          "prepared_raw_sha256": "d9bdaa5e62271f14d4247b0e989470a9f972857ff8483d0534811ee454cb9d4d",
+          "presegmented_result_sha256": "33c365a23f42980162d507381545538814e20906cffe0726a1d0bcbaa83652e7",
+          "provenance": {
+            "model_digest": null,
+            "model_id": "unirst",
+            "ontology_digest": null,
+            "ontology_version": "4.1.0-discourse",
+            "producer": "isanlp_rst.parser",
+            "software_version": "4.0.0",
+            "source_revision": "<environment-normalized>",
+            "timestamp": "<normalized>"
+          },
+          "raw_result_sha256": "fcfebb3f01b523b8cf44b658c8a63a2327446cbcc9adb35deff83a213afa79b5",
+          "warnings": []
+        }
+      },
+      "deterministic_failure": {
+        "exception": "ValueError",
+        "message": "Unknown relinventory 'eng.rst.gum'. Available datasets: ['eng.rst.rstdt', 'eng.erst.gum', 'eng.rst.sts', 'eng.rst.oll', 'eng.rst.umuc', 'fra.sdrt.annodis', 'rus.rst.rrt', 'rus.rst.rrg', 'spa.rst.rststb', 'ces.rst.crdt', 'deu.rst.pcc', 'eus.rst.ert', 'fas.rst.prstc', 'por.rst.cstn', 'spa.rst.sctb', 'zho.rst.sctb', 'zho.rst.gcdt', 'nld.rst.nldt']."
+      },
+      "input": "Because it rained, the match stopped. The crowd left.",
+      "presegmented_edus": [
+        "Because it rained, the match stopped.",
+        "The crowd left."
+      ],
+      "representative_optional_format": {
+        "boundaries": [
+          {
+            "block_refs": [
+              "#/blocks/0",
+              "#/blocks/1",
+              "#/blocks/2",
+              "#/blocks/3"
+            ],
+            "id": "section-0",
+            "kind": "section",
+            "label": "Single section",
+            "level": 1,
+            "parent_block_ref": null
+          }
+        ],
+        "edus": [
+          {
+            "block_refs": [
+              "#/blocks/0",
+              "#/blocks/1",
+              "#/blocks/2"
+            ],
+            "char_span": [
+              0,
+              97
+            ],
+            "depth": 1,
+            "edu_span": [
+              1,
+              1
+            ],
+            "id": 1,
+            "text": "Single section\n\nThe first paragraph carries one short clause.\n\nThe second paragraph elaborates on"
+          },
+          {
+            "block_refs": [
+              "#/blocks/2",
+              "#/blocks/3"
+            ],
+            "char_span": [
+              97,
+              194
+            ],
+            "depth": 1,
+            "edu_span": [
+              2,
+              2
+            ],
+            "id": 2,
+            "text": " the first, drawing a contrast between two related ideas.\n\nThe closing paragraph wraps things up."
+          }
+        ],
+        "inventory": "gumrrg",
+        "model_version": "gumrrg",
+        "relations": [
+          {
+            "boundary_memberships": [
+              "section-0"
+            ],
+            "char_span": [
+              0,
+              194
+            ],
+            "depth": 0,
+            "edu_span": [
+              1,
+              2
+            ],
+            "id": 0,
+            "left_id": 1,
+            "note": null,
+            "nuclearity": "NS",
+            "nucleus_refs": [
+              "#/blocks/0",
+              "#/blocks/1",
+              "#/blocks/2"
+            ],
+            "relation": "elaboration",
+            "right_id": 2,
+            "satellite_refs": [
+              "#/blocks/2",
+              "#/blocks/3"
+            ],
+            "text": "Single section\n\nThe first paragraph carries one short clause.\n\nThe second paragraph elaborates on the first, drawing a contrast between two related ideas.\n\nThe closing paragraph wraps things up."
+          }
+        ],
+        "schema_name": "isanlp_rst_markdown",
+        "schema_version": "1.1",
+        "source": "minimal.md",
+        "source_origin": {
+          "format": "markdown",
+          "front_matter": null,
+          "front_matter_format": null,
+          "gfm": true
+        },
+        "source_revision": "<normalized>",
+        "table_analyses": [],
+        "tool": "isanlp_rst",
+        "tool_version": "<normalized>"
+      },
+      "requested_device": "mps",
+      "schema_version": "isanlp_rst_production_parity/v2"
+    }
+  },
+  "schema_version": "isanlp_rst_production_parity_baseline/v2"
+}

@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-25
 
-**Status**: Draft
+**Status**: Complete
 
 **Input**: User request to split the production RST codeline cleanly from development, training, evaluation, and research machinery as a separate Spec Kit feature.
 

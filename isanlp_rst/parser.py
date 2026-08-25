@@ -35,7 +35,7 @@ class Parser:
     Examples:
         >>> Parser(hf_model_version='gumrrg', device='cpu')               # DMRST
         >>> Parser(hf_model_version='unirst', relinventory='eng.erst.gum') # UniRST
-        >>> Parser(model_dir='/path/to/checkpoint', family='dmrst')        # local
+        >>> Parser.from_model_release('/models', 'gumrrg-v3', family='dmrst')
     """
 
     DMRST_PARSERS = ("gumrrg", "rstdt", "rstreebank")
@@ -58,6 +58,7 @@ class Parser:
         segmenter: Any | None = None,
         segmenter_model: str | None = None,
         erst_scorer_checkpoint: str | Path | None = None,
+        _validated_model_release: Any | None = None,
     ):
         if model_dir is not None and hf_model_name is not None and hf_model_name != self._DEFAULT_HF_MODEL_NAME:
             raise ValueError(
@@ -66,6 +67,16 @@ class Parser:
             )
 
         resolved_family = self._resolve_family(model_dir, hf_model_version, family)
+        if model_dir is not None:
+            if _validated_model_release is None:
+                from isanlp_rst.model_loading import validate_model_release
+
+                _validated_model_release = validate_model_release(
+                    model_dir,
+                    expected_runtime_contract=f"isanlp_rst.parser/{resolved_family}-v1",
+                )
+            if Path(model_dir).resolve() != _validated_model_release.path:
+                raise ValueError("validated model release does not match model_dir")
 
         self.family = resolved_family
         self.hf_model_name = hf_model_name
@@ -121,6 +132,48 @@ class Parser:
             )
         else:
             self.erst_checkpoint = None
+
+    @classmethod
+    def from_model_release(
+        cls,
+        store: str | Path,
+        release_id: str,
+        *,
+        family: str,
+        relinventory: str | None = None,
+        relinventory_idx: int = 0,
+        device: str | torch.device | None = None,
+        cuda_device: int | None = None,
+        dtype: str | torch.dtype | None = None,
+        segmenter: Any | None = None,
+        segmenter_model: str | None = None,
+        erst_scorer_checkpoint: str | Path | None = None,
+    ) -> "Parser":
+        """Validate and load one immutable child of the production model store."""
+
+        if family not in cls.AVAILABLE_FAMILIES:
+            raise ValueError(f"Unknown family {family!r}. Available: {cls.AVAILABLE_FAMILIES}.")
+        from isanlp_rst.model_loading import load_model_release
+
+        release = load_model_release(
+            store,
+            release_id,
+            expected_runtime_contract=f"isanlp_rst.parser/{family}-v1",
+        )
+        return cls(
+            model_dir=str(release.path),
+            hf_model_name=None,
+            family=family,
+            relinventory=relinventory,
+            relinventory_idx=relinventory_idx,
+            device=device,
+            cuda_device=cuda_device,
+            dtype=dtype,
+            segmenter=segmenter,
+            segmenter_model=segmenter_model,
+            erst_scorer_checkpoint=erst_scorer_checkpoint,
+            _validated_model_release=release,
+        )
 
     @classmethod
     def _resolve_family(

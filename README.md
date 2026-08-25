@@ -8,6 +8,7 @@ End-to-end Rhetorical Structure Theory (RST) parser. Predicts discourse trees fr
 
 - [Performance](#performance)
 - [Installation & quick start](#installation--quick-start)
+- [Production package and offline workbench](#production-package-and-offline-workbench)
 - [Visualising the RST tree](#visualising-the-rst-tree)
 - [Advanced usage](#advanced-usage)
 - [Extended RST (eRST) graph decoding](#extended-rst-erst-graph-decoding)
@@ -62,12 +63,13 @@ Full per-corpus UniRST metrics: [`UniRST_Metrics.md`](UniRST_Metrics.md).
 
 ### 1. Install
 
-The recommended path is pixi (provisions Python + all dependencies + the `iinemo/isanlp` runtime into a locked env):
+For production analysis in this checkout, use the independently solved production environment:
 
 ```bash
 git clone https://github.com/Steve-Allison/isanlp_rst.git
 cd isanlp_rst
-pixi install
+pixi install -e production
+pixi run -e production production-smoke
 ```
 
 Alternative (raw venv / pip):
@@ -76,18 +78,20 @@ Alternative (raw venv / pip):
 pip install git+https://github.com/iinemo/isanlp.git    # required runtime dep
 pip install git+https://github.com/Steve-Allison/isanlp_rst.git
 
-# The format-native Docling / Markdown entry points need the optional
-# `formats` extra; the core RST Parser and parse_doclang do not:
+# DocLang, Docling, and Markdown source adapters are production capabilities
+# supplied by the optional `formats` extra:
 pip install "isanlp_rst[formats] @ git+https://github.com/Steve-Allison/isanlp_rst.git"
 ```
 
-The `pydantic` extra adds the typed `RstNode` tree model (`isanlp_rst.utils.serialization_pydantic`); the dependency-free `tree_to_dict` / `tree_from_dict` helpers need nothing:
+Corpus preparation, training, evaluation, benchmarking, and research are intentionally absent from both production installs. Repository development uses the separate offline environment:
 
 ```bash
-pip install "isanlp_rst[pydantic] @ git+https://github.com/Steve-Allison/isanlp_rst.git"
+pixi install -e offline
+pixi run -e offline offline-smoke
+pixi run -e offline test
 ```
 
-`pixi install` already includes both extras, so the pixi path needs nothing extra.
+See [Production package and offline workbench](#production-package-and-offline-workbench) for the ownership contract.
 
 ### 2. Basic usage
 
@@ -133,10 +137,21 @@ For offline / air-gapped use, point `Parser` at a directory containing the check
 #   data_manager_*.json / relation_table_<corpus>.txt / legacy data_manager_*.pickle
 #     or config.json with `data.corpora`  -> UniRST
 #   relation_table.txt                                        -> DMRST
-parser = Parser(model_dir="/path/to/checkpoint", device="auto")
+parser = Parser.from_model_release(
+    "/path/to/model-releases",
+    "gumrrg-eb1d5745f3a1",
+    family="dmrst",
+    device="auto",
+)
 
 # Override auto-detection:
-parser = Parser(model_dir="/path/to/checkpoint", family="dmrst", device="auto")
+parser = Parser.from_model_release(
+    "/path/to/model-releases",
+    "unirst-9407970f1d9d",
+    family="unirst",
+    relinventory="eng.erst.gum",
+    device="auto",
+)
 ```
 
 #### Device selection (`device=`)
@@ -162,7 +177,7 @@ import torch
 parser = Parser(hf_model_version="gumrrg", device="auto", dtype=torch.bfloat16)  # also accepts 'bf16', 'fp16', 'fp32'
 ```
 
-Default is `float32` on every device. On Apple Silicon (M-series, PyTorch 2.11) at ~1k-char inputs, `float32` beats `bfloat16` / `float16` for every published model — per-op autocast dispatch overhead dominates the matmul speedup at this scale. On large-batch CUDA workloads with native bf16 (Hopper / Ada Tensor Cores), `bfloat16` is likely faster — measure with `pixi run bench` before pinning a choice.
+Default is `float32` on every device. On Apple Silicon (M-series, PyTorch 2.11) at ~1k-char inputs, `float32` beats `bfloat16` / `float16` for every published model — per-op autocast dispatch overhead dominates the matmul speedup at this scale. On large-batch CUDA workloads with native bf16 (Hopper / Ada Tensor Cores), `bfloat16` is likely faster — measure with `pixi run -e offline bench` before pinning a choice.
 
 Tree topology and EDU segmentation are bit-equivalent across all three dtypes for every published model; relation labels are not — on a near-tied node, reduced precision (bf16/fp16) can flip the argmax without any structural change. See [`tests/test_integration.py`](tests/test_integration.py) for the equivalence suite.
 
@@ -176,14 +191,14 @@ Tree topology and EDU segmentation are bit-equivalent across all three dtypes fo
 | `rrtrrg` | 118 ms | **61 ms** | 104 ms | 95 ms |
 | `unirst` | **127 ms** | 153 ms | 218 ms | 221 ms |
 
-The 18-corpus `unirst` model is faster on CPU than on MPS — multi-corpus classifier dispatch costs more than MPS's matmul speedup recovers. Run `pixi run bench --version unirst` on your hardware to verify before pinning a device choice for that model.
+The 18-corpus `unirst` model is faster on CPU than on MPS — multi-corpus classifier dispatch costs more than MPS's matmul speedup recovers. Run `pixi run -e offline bench --version unirst` on your hardware to verify before pinning a device choice for that model.
 
 #### Verifying on NVIDIA CUDA hardware
 
 CI runs on macOS Apple Silicon with **Python 3.14** (pixi lock). Package metadata declares `requires-python >= 3.14`. The CUDA dispatch path isn't exercised in CI. To verify on an NVIDIA host:
 
 ```bash
-pixi run cuda-smoke
+pixi run -e offline cuda-smoke
 ```
 
 The script confirms `torch.cuda.is_available()`, loads DMRST and UniRST on `cuda:0`, parses a sample text, and round-trips a `parse_from_edus` call. Exits non-zero on any failure.
@@ -407,7 +422,7 @@ DocLang doesn't model slides or speaker turns — the boundary set reflects what
 
 ### Validation
 
-`parse_doclang(..., validate_xml=True)` (default) gates the file through the [`doclang`](https://pypi.org/project/doclang/) PyPI package's `validate(path)` before parsing ([spec + toolkit](https://github.com/doclang-project/doclang/)). The `doclang` package is validator-only (no DOM) — we parse with `lxml` ourselves. `doclang` is a **core** dependency so validation works on a plain `isanlp_rst` install. If it is somehow not importable, validation **fails closed** with `InvalidDoclangError` (pass `validate_xml=False` to skip).
+`parse_doclang(..., validate_xml=True)` (default) gates the file through the [`doclang`](https://pypi.org/project/doclang/) PyPI package's `validate(path)` before parsing ([spec + toolkit](https://github.com/doclang-project/doclang/)). The `doclang` package is validator-only (no DOM) — we parse with `lxml` ourselves. `doclang[schematron-saxon]` is included in the production `formats` extra. If it is not installed, validation **fails closed** with `InvalidDoclangError` (pass `validate_xml=False` only when intentionally accepting non-validated XML).
 
 ### Caveats
 
@@ -475,7 +490,7 @@ See the [walkthrough](docs/examples/markdown-native.md) for tree reconstruction,
 
 ## Quality diagnostics
 
-`pixi run rst-diag <paths>` parses any mix of `.md` / `*.docling.json` / `*.dclg` sources (files or directories; one shared model load) and emits per-document proxy metrics — no gold annotations required:
+`pixi run -e offline rst-diag <paths>` parses any mix of `.md` / `*.docling.json` / `*.dclg` sources (files or directories; one shared model load) and emits per-document proxy metrics — no gold annotations required:
 
 - **joint ratio** — share of relations labelled joint / same-unit / organization (high = rhetorically thin chaining)
 - **tree skew** — max depth ÷ log₂(EDUs) (≫ 1 = degenerate chain)
@@ -489,11 +504,27 @@ All three entry points also accept `cache_dir=` — an on-disk result cache keye
 
 ---
 
+## Production package and offline workbench
+
+`isanlp_rst` is the importable production product. It contains raw/pre-segmented RST inference, typed contracts, model validation/loading, eRST runtime completion, source-format adapters, and rendering. Its wheel and source distribution exclude corpus builders, trainers, evaluators, research harnesses, tests, scripts, experiment data, and model candidates.
+
+`offline_workbench` is the repository-only surface for corpus preparation, training, evaluation, and local model promotion. `research_harness` remains a repository-only research implementation but runs in the same root `offline` Pixi environment. Production never imports either namespace.
+
+The causal checks are:
+
+```bash
+pixi run -e production production-smoke
+pixi run -e offline production-boundary
+pixi run -e offline offline-smoke
+```
+
+The full ownership and migration map is in [`docs/production-offline-boundary.md`](docs/production-offline-boundary.md). This split is independent of feature 002: format-native ingest remains production functionality because it prepares real source material for analysis; training-corpus preparation remains offline.
+
+---
+
 ## Evaluation & metrics
 
-- **Standard Parseval** (`isanlp_rst.eval.parseval.ParsevalScorer`): Standard RST-Parseval metrics (Span, Nuclearity, Relation, Full) matching official evaluation scripts.
-- **Soft Parseval** (`isanlp_rst.eval.soft_parseval.SoftParsevalScorer`): Character-level overlap and soft boundary matching for continuous text spans.
-- **eRST Scorer** (`isanlp_rst.eval.erst_scorer.ErstScorer`): Precision, recall, and F1 evaluation for secondary edges and discourse signal detection.
+Evaluation is offline-only. Standard/soft Parseval and the eRST scorer live under `offline_workbench.evaluation.rst`; they are available in `pixi run -e offline ...` workflows and are not installed into consumer projects.
 
 ---
 

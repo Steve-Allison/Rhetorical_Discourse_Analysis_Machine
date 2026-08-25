@@ -10,8 +10,9 @@ from isanlp_rst.contracts.enums import OutputFormalismEnum
 from isanlp_rst.contracts.erst import RawRelationInventory
 from isanlp_rst.contracts.serialization import analysis_from_json, to_json
 from isanlp_rst.erst.candidates import SecondaryEdgeCandidate
-from isanlp_rst.erst.dataset import GUMSecondaryEdgeDataset
-from isanlp_rst.erst.relations import build_raw_relation_inventory, resolve_gum_relation_concept
+from offline_workbench.training.erst.dataset import GUMSecondaryEdgeDataset
+from isanlp_rst.erst.relations import resolve_gum_relation_concept
+from offline_workbench.corpus.erst.relations import build_raw_relation_inventory
 
 _TRACKED_INVENTORY = (
     Path(__file__).resolve().parents[1] / "config" / "erst" / "gum-v12.1.0-raw-relations.json"

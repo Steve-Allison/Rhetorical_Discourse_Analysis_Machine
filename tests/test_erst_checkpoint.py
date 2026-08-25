@@ -46,12 +46,12 @@ from isanlp_rst.english.erst.completer import CompleterConfig, ErstCompleter
 from isanlp_rst.erst.checkpoint import (
     ErstCheckpointError,
     load_erst_checkpoint_bundle,
-    save_erst_checkpoint_bundle,
     validate_erst_checkpoint_bundle,
 )
 from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from isanlp_rst.erst.signals import RuleBasedSignalDetector
 from isanlp_rst.parser import Parser
+from offline_workbench.promotion.erst import save_erst_checkpoint_bundle
 
 _GIT_REVISION = "a" * 40
 _SHA256 = "b" * 64

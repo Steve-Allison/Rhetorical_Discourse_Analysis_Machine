@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from isanlp_rst.universal_parser.data_manager import ParserInput
+from isanlp_rst.model_loading.parser_input import ParserInput
 from isanlp_rst.universal_parser.inventory import (
     RestrictedUnpickler,
     dump_relation_inventory,
@@ -71,7 +71,7 @@ def test_restricted_unpickler_refuses_isanlp_rst_collect_gadget(tmp_path: Path) 
 
     class _CollectGadget:
         def __reduce__(self):
-            from isanlp_rst.universal_parser import data_manager
+            from offline_workbench.corpus.unirst import data_manager
 
             return (data_manager.collect, ())
 
@@ -85,7 +85,7 @@ def test_restricted_unpickler_refuses_isanlp_rst_collect_gadget(tmp_path: Path) 
 
 def test_restricted_unpickler_refuses_data_manager_class(tmp_path: Path) -> None:
     """DataManager is excluded so ATTR from_pickle gadgets cannot be built."""
-    from isanlp_rst.universal_parser.data_manager import DataManager
+    from offline_workbench.corpus.unirst.data_manager import DataManager
 
     class _DmGadget:
         def __reduce__(self):

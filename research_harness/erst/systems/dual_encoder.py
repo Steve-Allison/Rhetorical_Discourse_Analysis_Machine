@@ -9,7 +9,7 @@ from safetensors.torch import save_model
 import torch
 from torch.utils.data import DataLoader
 
-from isanlp_rst.erst.dataset import GUMSecondaryEdgeDataset
+from offline_workbench.training.erst.dataset import GUMSecondaryEdgeDataset
 from isanlp_rst.erst.environment import load_repository_environment
 from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from research_harness.erst.contracts import AblationName, MandatoryExperimentSystem

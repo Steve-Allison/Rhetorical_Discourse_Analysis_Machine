@@ -71,7 +71,7 @@ class ErstCompleter:
         secondary_edges = list(primary_analysis.secondary_edges)
 
         if neural_scorer is not None and primary_analysis.nodes:
-            from isanlp_rst.erst.dataset import GUMSecondaryEdgeDataset
+            from isanlp_rst.erst.pair_encoding import SecondaryEdgeInferenceDataset
             from isanlp_rst.erst.decoder import ErstSecondaryEdgeDecoder
             from isanlp_rst.erst.relations import resolve_gum_relation_concept
 
@@ -95,10 +95,9 @@ class ErstCompleter:
                 ):
                     streamed_batch_count += 1
                     all_candidates.extend(candidate_batch)
-                    dataset = GUMSecondaryEdgeDataset(
+                    dataset = SecondaryEdgeInferenceDataset(
                         candidate_batch,
                         tokenizer=neural_scorer.tokenizer,
-                        raw_relation_inventory=neural_scorer.raw_relation_inventory,
                     )
                     loader = DataLoader(dataset, batch_size=len(candidate_batch), shuffle=False)
                     for batch in loader:

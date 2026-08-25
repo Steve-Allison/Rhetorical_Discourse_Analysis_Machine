@@ -21,24 +21,18 @@ maintainers = [
 dependencies = [
   "playwright",
   "razdel",
-  "fire",
   "lxml",
-  "jsonnet",
-  "nltk",
   "numpy>=1.26.4",
   "transformers>=5.15.1,<5.16",
-  "tiktoken>=0.7.0",
   "torch>=2.13,<2.14",
   "huggingface-hub>=0.16.4",
   "tqdm>=4.42",
   "pillow>=10",
   "networkx>=2.5.1",
+  "packaging>=24,<27",
   "pydantic>=2.12,<3",
   "python-dotenv>=1.2.1,<2",
   "safetensors>=0.8,<0.9",
-  # DocLang validator for parse_doclang(..., validate_xml=True) — first-class
-  # entry point; not optional. Spec/toolkit: https://github.com/doclang-project/doclang
-  "doclang[schematron-saxon]>=0.7.3,<0.8",
   "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
 ]
 
@@ -49,6 +43,7 @@ Issues = "https://github.com/Steve-Allison/isanlp_rst/issues"
 
 [project.optional-dependencies]
 dev = [
+  "build>=1.3,<2",
   "pytest>=8",
   "ruff>=0.6",
   "pyright>=1.1.380",
@@ -60,14 +55,31 @@ dev = [
 # XML) can install isanlp_rst without this extra and avoid the docling-core
 # dependency chain.
 formats = [
+  "doclang[schematron-saxon]>=0.7.3,<0.8",
   "docling-core>=2.92,<2.93",
   "markdown-it-py>=3",
   "mdit-py-plugins>=0.4",
 ]
 
+# Corpus preparation, training, evaluation, and research dependencies. These
+# are deliberately absent from the installable analysis runtime.
+offline = [
+  "fire>=0.7,<0.8",
+  "jsonnet>=0.21,<0.22",
+  "nltk>=3.9,<4",
+  "peft>=0.20,<0.21",
+  "tiktoken>=0.13,<0.14",
+]
+
 [tool.setuptools.packages.find]
 include = ["isanlp_rst*"]
-exclude = ["tests*", "scripts*"]
+exclude = [
+  "offline_workbench*",
+  "research_harness*",
+  "tests*",
+  "scripts*",
+  "tools*",
+]
 
 [tool.setuptools.package-data]
 "isanlp_rst.rstviewer" = ["data/**"]
@@ -86,13 +98,24 @@ channels = ["conda-forge"]
 # compatibility default.
 platforms = [{ platform = "osx-arm64", macos = "14.0" }]
 
-[tool.pixi.dependencies]
+[tool.pixi.feature.production.dependencies]
+python = "3.14.*"
+
+[tool.pixi.feature.production.pypi-dependencies]
+isanlp_rst = { path = ".", editable = true }
+
+[tool.pixi.feature.production.tasks]
+production-boundary = "python -m tools.production_boundary --root ."
+production-smoke = "python -m tools.production_boundary.production_smoke"
+production-artifacts = "python -m tools.production_boundary --root . --artifact dist/isanlp_rst-4.0.0-py3-none-any.whl --artifact dist/isanlp_rst-4.0.0.tar.gz"
+production-clean-install = "python tools/production_boundary/clean_install.py --wheel dist/isanlp_rst-4.0.0-py3-none-any.whl --root . --model-store /Users/steveallison/.cache/isanlp_rst/model-releases --full --parity-baseline specs/003-production-codeline-split/evidence/parity-baseline.json"
+
+[tool.pixi.feature.offline.dependencies]
 python = "3.14.*"
 markdownlint-cli2 = ">=0.14"
-tiktoken = ">=0.13.0,<0.14"
 
-[tool.pixi.pypi-dependencies]
-isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats"] }
+[tool.pixi.feature.offline.pypi-dependencies]
+isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats", "offline"] }
 
 [tool.ruff]
 line-length = 120
@@ -111,7 +134,9 @@ ignore = [
 [tool.pyright]
 include = [
   "isanlp_rst",
+  "offline_workbench",
   "research_harness",
+  "tools",
   "tests",
   "scripts",
 ]
@@ -122,14 +147,16 @@ exclude = [
 ]
 pythonVersion = "3.14"
 venvPath = "."
-venv = ".pixi/envs/default"
+venv = ".pixi/envs/offline"
 extraPaths = ["scripts"]
 reportMissingImports = "warning"     # pyright runs against the active env
 # torch's runtime API exposes many names not in __all__ (e.g. torch.device,
 # torch.tensor, torch.equal); flagging them as private noise dwarfs real issues.
 reportPrivateImportUsage = "none"
 
-[tool.pixi.tasks]
+[tool.pixi.feature.offline.tasks]
+build-production = "python -m build --wheel --sdist --outdir dist"
+validate-production-artifacts = "python -m tools.production_boundary --root . --artifact dist/isanlp_rst-4.0.0-py3-none-any.whl --artifact dist/isanlp_rst-4.0.0.tar.gz"
 test = "pytest -m 'not slow' -q"
 test-all = "pytest -q"
 smoke = "python scripts/smoke_test.py"
@@ -137,9 +164,19 @@ smoke-full = "python scripts/smoke_test.py --full"
 smoke-mps = "python scripts/smoke_test.py --device mps"
 smoke-full-mps = "python scripts/smoke_test.py --full --device mps"
 cuda-smoke = "python scripts/cuda_smoke.py"
-bench = "python scripts/bench.py"
+bench = "python -m scripts.bench"
 rst-diag = "python scripts/rst_diag.py"
 lint = "ruff check isanlp_rst research_harness tests scripts"
 typecheck = "pyright"
 mdlint = "python scripts/verify_markdown_manifest.py --lint"
 cleanup = "python scripts/cleanup.py"
+production-boundary = "python -m tools.production_boundary --root ."
+production-smoke = "python -m tools.production_boundary.production_smoke"
+offline-smoke = "python -m offline_workbench.smoke"
+promote-model = "python -m offline_workbench.promotion.promote"
+research-test = "pytest tests/research_harness -q"
+research-lint = "ruff check research_harness tests/research_harness"
+
+[tool.pixi.environments]
+production = { features = ["production"], no-default-feature = true }
+offline = { features = ["offline"], no-default-feature = true }

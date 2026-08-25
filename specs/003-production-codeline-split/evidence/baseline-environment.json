@@ -1,0 +1,27 @@
+{
+  "captured_at": "2026-08-25T12:03:44+01:00",
+  "branch": "master",
+  "python": "3.14.7",
+  "pixi": "0.76.2",
+  "torch": "2.13.0",
+  "platform": "macOS local",
+  "devices": {
+    "cpu": true,
+    "mps_available": true,
+    "mps_built": true,
+    "cuda_available": false
+  },
+  "pyproject_sha256": "0df7fbc0a6f78896a012559a1dfb01567419f087fd05771e776af8f05db24a85",
+  "pixi_lock_sha256": "104643467904fb7dc8047bbde9abf31a1f1b2961997560a3fde2de47f2fc18ec",
+  "preexisting_worktree_changes": [],
+  "feature_changes_at_capture": [
+    "specs/003-production-codeline-split/plan.md",
+    "specs/003-production-codeline-split/contracts/environment-and-artifact.md",
+    "specs/003-production-codeline-split/contracts/model-promotion.md",
+    "specs/003-production-codeline-split/contracts/ownership-and-boundary.md",
+    "specs/003-production-codeline-split/data-model.md",
+    "specs/003-production-codeline-split/quickstart.md",
+    "specs/003-production-codeline-split/research.md",
+    "specs/003-production-codeline-split/tasks.md"
+  ]
+}

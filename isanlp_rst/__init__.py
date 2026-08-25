@@ -44,7 +44,6 @@ from .contracts import (
     TimingRecord,
 )
 from .erst import ErstCapabilityError, RS4Document, RS4Reader, RS4Writer
-from .eval import ErstScorer, SoftParsevalScorer, StandardParsevalScorer
 from .ontology import OntologyAdapter
 from .parser import Parser
 from .rstviewer import RenderedRST
@@ -61,7 +60,6 @@ __all__ = [
     "EdgeKindEnum",
     "Edu",
     "ErstCapabilityError",
-    "ErstScorer",
     "FailureCodeEnum",
     "FormatRstAnalysis",
     "InputFidelityEnum",
@@ -85,8 +83,6 @@ __all__ = [
     "RstDocument",
     "RstNode",
     "SecondaryRelationEdge",
-    "SoftParsevalScorer",
-    "StandardParsevalScorer",
     "TextSpan",
     "TimingRecord",
     "find_cdu",

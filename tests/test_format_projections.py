@@ -26,8 +26,8 @@ from isanlp_rst.docling.schema import HarvestSpan as DoclingSpan
 from isanlp_rst.markdown.mapper import flatten_tree as flatten_markdown_tree
 from isanlp_rst.markdown.schema import HarvestSpan as MarkdownSpan
 from isanlp_rst.markdown.schema import MarkdownRstResult
-from isanlp_rst.erst.dataset import compute_structural_features
-from isanlp_rst.eval.parseval import StandardParsevalScorer
+from isanlp_rst.erst.candidates import compute_structural_features
+from offline_workbench.evaluation.rst.parseval import StandardParsevalScorer
 from isanlp_rst.hierarchical.stitcher import HierarchicalSectionStitcher, SectionSlice
 
 

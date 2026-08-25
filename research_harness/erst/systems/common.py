@@ -16,7 +16,7 @@ from isanlp_rst.contracts.analysis import RstAnalysis, SecondaryRelationEdge
 from isanlp_rst.contracts.erst import ErstDecoderConfig
 from isanlp_rst.erst.decoder import ErstSecondaryEdgeDecoder
 from isanlp_rst.erst.relations import resolve_gum_relation_concept
-from isanlp_rst.eval.erst_scorer import ErstScorer, SecondaryEdgeMetrics
+from offline_workbench.evaluation.rst.erst_scorer import ErstScorer, SecondaryEdgeMetrics
 from research_harness.erst.contracts import DocumentScore, ExperimentMetrics
 from research_harness.erst.calibration import (
     TemperatureCalibration,

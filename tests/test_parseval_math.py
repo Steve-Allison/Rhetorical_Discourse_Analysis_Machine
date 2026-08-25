@@ -15,7 +15,7 @@ from isanlp_rst.contracts import (
     SignalDetectionMethod,
     SignalDetectorProvenance,
 )
-from isanlp_rst.eval import (
+from offline_workbench.evaluation.rst import (
     CharBracketSpan,
     ErstScorer,
     SoftParsevalScorer,

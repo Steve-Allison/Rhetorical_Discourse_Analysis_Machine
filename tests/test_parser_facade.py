@@ -193,6 +193,11 @@ class TestParserInitValidation:
         with pytest.raises(ValueError, match="auto-detect"):
             Parser(model_dir=str(tmp_path), hf_model_name=None)
 
+    def test_loose_local_model_is_rejected_before_predictor_construction(self, tmp_path):
+        (tmp_path / "relation_table.txt").write_text("elaboration\n", encoding="utf-8")
+        with pytest.raises(RuntimeError, match="missing a regular release-manifest.json"):
+            Parser(model_dir=str(tmp_path), hf_model_name=None, family="dmrst")
+
     def test_model_dir_with_explicit_nondefault_hf_name_raises(self, tmp_path):
         (tmp_path / "relation_table.txt").write_text("elaboration\n", encoding="utf-8")
         with pytest.raises(ValueError, match="not both"):

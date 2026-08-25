@@ -1,0 +1,49 @@
+{
+  "schema_version": "isanlp_rst_released_model_migration/v1",
+  "created_at": "2026-08-25T11:38:47.505041+00:00",
+  "source": "tchewik/isanlp_rst_v3 cached immutable revisions",
+  "store": "/Users/steveallison/.cache/isanlp_rst/model-releases",
+  "copy_strategy": "APFS clone with full post-copy SHA-256 verification",
+  "releases": [
+    {
+      "release_id": "gumrrg-eb1d5745f3a1",
+      "source_revision": "eb1d5745f3a18b8894ce72abad3c2a76442d1107",
+      "weights_sha256": "1fd8dcfb1b72a0c448cf61e91b7b9142407a9c39f49ae665af69ad6b746db02b",
+      "manifest_sha256": "ea5ee95394050ee73856b1daf171ba4e30e95e270965fc9034c082b97b64cac0",
+      "verified_files": 3,
+      "clean_load": "dmrst/cpu/offline_modules=0"
+    },
+    {
+      "release_id": "rrtrrg-a4d19fc65bb1",
+      "source_revision": "a4d19fc65bb17f399ddcbc909c8650c2fad8e55b",
+      "weights_sha256": "0016c30a752c594fb7680443ef15f42de4c578cb06825ac8ac9d5ee6a17cc1a8",
+      "manifest_sha256": "93237d84367f29e470ff08f45c97687035998b6082777bc77052f012b33df1e7",
+      "verified_files": 5,
+      "clean_load": "unirst/cpu/offline_modules=0"
+    },
+    {
+      "release_id": "rstdt-cc01afde1232",
+      "source_revision": "cc01afde123253fec70787f6442642f5b7634587",
+      "weights_sha256": "c4008a42605d6fc2657be72ba1de50977b164f88bbc5f53b62a922f43fff3c32",
+      "manifest_sha256": "48702f3b2caee3a2d49ee8769a3dee677578e67556b93c312d565ad8ba0a35e2",
+      "verified_files": 3,
+      "clean_load": "dmrst/cpu/offline_modules=0"
+    },
+    {
+      "release_id": "rstreebank-a3df81661baa",
+      "source_revision": "a3df81661baa4ed41755155eec141f9bf83733b4",
+      "weights_sha256": "82ffa417ae4fc7e82267e889c73c52f6f4be6fcca847c4a283155356e5028176",
+      "manifest_sha256": "52d52c35f7e42fbcc74184908e41a21d0a6dce468e1cb4429b8d9cd29a71a956",
+      "verified_files": 3,
+      "clean_load": "dmrst/cpu/offline_modules=0"
+    },
+    {
+      "release_id": "unirst-9407970f1d9d",
+      "source_revision": "9407970f1d9d2435b5f875a0cd14293a16646304",
+      "weights_sha256": "1cb7f7df68db3fc996b3fa904dbf443f5bffa0ba403a6fb5f6acc2231b965b6e",
+      "manifest_sha256": "020fb84b24d39242ec97cf2a5b49b930305ada01f563487900ff489a9f4df112",
+      "verified_files": 20,
+      "clean_load": "unirst/cpu/offline_modules=0"
+    }
+  ]
+}

@@ -18,8 +18,8 @@ from isanlp_rst.contracts import (
 )
 from isanlp_rst.erst.converter import du_to_analysis, rs4_to_document_and_analysis
 from isanlp_rst.erst.rs4 import RS4Document, RS4Reader
-from isanlp_rst.eval.erst_scorer import ErstScorer, SecondaryEdgeMetrics, SignalMetrics
-from isanlp_rst.eval.parseval import ParsevalMetrics, SoftParsevalScorer, StandardParsevalScorer
+from offline_workbench.evaluation.rst.erst_scorer import ErstScorer, SecondaryEdgeMetrics, SignalMetrics
+from offline_workbench.evaluation.rst.parseval import ParsevalMetrics, SoftParsevalScorer, StandardParsevalScorer
 from isanlp_rst.ontology.adapter import OntologyAdapter
 from isanlp_rst.parser import Parser
 

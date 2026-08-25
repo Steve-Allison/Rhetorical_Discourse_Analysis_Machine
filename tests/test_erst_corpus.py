@@ -10,13 +10,13 @@ from isanlp_rst.contracts.erst import (
     CorpusPartition,
     HardNegativeSamplingConfig,
 )
-from isanlp_rst.erst.corpus import (
+from offline_workbench.corpus.erst.corpus import (
     CorpusLoadError,
     load_gum_erst_corpus,
     load_gum_erst_corpus_with_receipt,
     parse_gum_corpus_authority,
 )
-from isanlp_rst.erst.sampling import prepare_partition_candidates
+from offline_workbench.corpus.erst.sampling import prepare_partition_candidates
 
 _REVISION = "22fdf87f9c71c96bcc771461d06e689b1f90020d"
 _SPLITS = """# Splits

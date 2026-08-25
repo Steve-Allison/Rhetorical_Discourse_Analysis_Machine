@@ -9,7 +9,7 @@ from transformers import BertConfig, BertForTokenClassification, PreTrainedToken
 
 from isanlp_rst.contracts import RstDocument
 from isanlp_rst.parser import Parser
-from isanlp_rst.segmentation.dataset import (
+from offline_workbench.training.segmentation.dataset import (
     parse_disrpt_tok_file,
     parse_rs4_to_sentences,
 )

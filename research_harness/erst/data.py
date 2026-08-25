@@ -21,7 +21,7 @@ from isanlp_rst.contracts.erst import (
 )
 from isanlp_rst.erst.candidates import SecondaryEdgeCandidate, iter_secondary_edge_candidates
 from isanlp_rst.erst.converter import rs4_to_document_and_analysis
-from isanlp_rst.erst.corpus import GUM_SPLITS_SHA256
+from offline_workbench.corpus.erst.corpus import GUM_SPLITS_SHA256
 from isanlp_rst.erst.rs4 import RS4Reader
 from research_harness.erst.contracts import (
     AblationName,

@@ -1,0 +1,30 @@
+{
+  "module": "isanlp_rst",
+  "source_path": "isanlp_rst/__init__.py",
+  "production_exports": [
+    "AnnotationStatusEnum", "CapabilityStatusEnum", "ConfidenceKindEnum", "DeviceEnum",
+    "DiscourseSignal", "DocumentToken", "EdgeKindEnum", "Edu", "ErstCapabilityError",
+    "FailureCodeEnum", "FormatRstAnalysis", "InputFidelityEnum", "InputModeEnum",
+    "MappingKindEnum", "NodeKindEnum", "NuclearityPatternEnum", "NuclearityRoleEnum",
+    "OntologyAdapter", "OutputFormalismEnum", "Parser", "PrimaryRelationEdge",
+    "ProvenanceRecord", "RS4Document", "RS4Reader", "RS4Writer", "RelationSchemeEnum",
+    "RelationStructureEnum", "RenderedRST", "RstAnalysis", "RstDocument", "RstNode",
+    "SecondaryRelationEdge", "TextSpan", "TimingRecord", "__version__", "find_cdu",
+    "relation_category", "render", "to_html", "to_pdf", "to_png", "tree_stats"
+  ],
+  "offline_exports_in_current_production_surface": [
+    "ErstScorer", "SoftParsevalScorer", "StandardParsevalScorer"
+  ],
+  "offline_import_roots_to_migrate": [
+    "isanlp_rst.eval",
+    "isanlp_rst.segmentation.dataset",
+    "isanlp_rst.erst.corpus",
+    "isanlp_rst.erst.sampling",
+    "isanlp_rst.dmrst_parser.data_manager",
+    "isanlp_rst.universal_parser.data_manager",
+    "isanlp_rst.dmrst_parser.multiple_runs",
+    "isanlp_rst.universal_parser.multiple_runs",
+    "isanlp_rst.dmrst_parser.src.parser.training_manager",
+    "isanlp_rst.universal_parser.src.parser.training_manager"
+  ]
+}

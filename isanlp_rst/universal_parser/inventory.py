@@ -16,6 +16,8 @@ import types
 from importlib import import_module
 from pathlib import Path
 
+from isanlp_rst.model_loading.parser_input import ParserInput
+
 INVENTORY_FORMAT = "isanlp_rst_relation_inventory"
 INVENTORY_VERSION = 1
 
@@ -52,6 +54,7 @@ class RestrictedUnpickler(pickle.Unpickler):
     _ALLOWED_PATHLIB = frozenset({"Path", "PosixPath", "WindowsPath"})
     _ALLOWED_CLASSES = frozenset(
         {
+            ("isanlp_rst.model_loading.parser_input", "ParserInput"),
             ("isanlp_rst.universal_parser.data_manager", "ParserInput"),
             ("src.universal_parser.data_manager", "ParserInput"),
             ("isanlp_rst.dmrst_parser.data_manager", "ParserInput"),
@@ -70,7 +73,7 @@ class RestrictedUnpickler(pickle.Unpickler):
             return getattr(pathlib, name)
 
         if (module, name) in self._ALLOWED_CLASSES:
-            return super().find_class(module, name)
+            return ParserInput
 
         raise pickle.UnpicklingError(f"Refused to unpickle {module}.{name} (not on allow-list).")
 
@@ -107,9 +110,6 @@ def load_relation_inventory_json(path: Path) -> list[str]:
 
 def import_relation_table_from_legacy_pickle(path: Path) -> list[str]:
     """One-way import: published HF pickles → ``relation_table`` labels only."""
-    # ParserInput must be importable before RestrictedUnpickler reconstructs it.
-    import_module("isanlp_rst.universal_parser.data_manager")
-
     ensure_unirst_module_aliases()
     with path.open("rb") as handle:
         obj = RestrictedUnpickler(handle).load()
@@ -122,18 +122,13 @@ def import_relation_table_from_legacy_pickle(path: Path) -> list[str]:
 def ensure_unirst_module_aliases() -> None:
     """Register Elena-era module paths so legacy pickles can unpickle ParserInput."""
     aliases = {
-        "src.universal_parser.data_manager": "isanlp_rst.universal_parser.data_manager",
         "src.universal_parser.du_converter": "isanlp_rst.utils.du_converter",
-        "src.dmrst_parser.data_manager": "isanlp_rst.dmrst_parser.data_manager",
-        "src.universal_parser.src.corpus.binary_tree": "isanlp_rst.universal_parser.src.corpus.binary_tree",
-        "src.universal_parser.src.corpus.data": "isanlp_rst.universal_parser.src.corpus.data",
         "src.universal_parser.src.parser.data": "isanlp_rst.universal_parser.src.parser.data",
         "src.universal_parser.src.parser.modules": "isanlp_rst.universal_parser.src.parser.modules",
         "src.universal_parser.src.parser.segmenters": "isanlp_rst.universal_parser.src.parser.segmenters",
         "src.universal_parser.src.parser.parsing_net": "isanlp_rst.universal_parser.src.parser.parsing_net",
         "src.universal_parser.src.parser.parsing_net_bottom_up": "isanlp_rst.universal_parser.src.parser.parsing_net_bottom_up",
         "src.universal_parser.src.parser.metrics": "isanlp_rst.universal_parser.src.parser.metrics",
-        "src.universal_parser.src.parser.training_manager": "isanlp_rst.universal_parser.src.parser.training_manager",
     }
     for alias, target in aliases.items():
         if alias in sys.modules:

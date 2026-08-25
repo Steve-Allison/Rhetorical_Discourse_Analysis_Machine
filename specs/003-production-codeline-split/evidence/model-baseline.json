@@ -1,0 +1,12 @@
+{
+  "repository": "tchewik/isanlp_rst_v3",
+  "cache_root": "/Users/steveallison/.cache/huggingface/hub/models--tchewik--isanlp_rst_v3",
+  "released_models": [
+    {"name": "gumrrg", "revision": "eb1d5745f3a18b8894ce72abad3c2a76442d1107", "weights_sha256": "1fd8dcfb1b72a0c448cf61e91b7b9142407a9c39f49ae665af69ad6b746db02b"},
+    {"name": "rrtrrg", "revision": "a4d19fc65bb17f399ddcbc909c8650c2fad8e55b", "weights_sha256": "0016c30a752c594fb7680443ef15f42de4c578cb06825ac8ac9d5ee6a17cc1a8"},
+    {"name": "rstdt", "revision": "cc01afde123253fec70787f6442642f5b7634587", "weights_sha256": "c4008a42605d6fc2657be72ba1de50977b164f88bbc5f53b62a922f43fff3c32"},
+    {"name": "rstreebank", "revision": "a3df81661baa4ed41755155eec141f9bf83733b4", "weights_sha256": "82ffa417ae4fc7e82267e889c73c52f6f4be6fcca847c4a283155356e5028176"},
+    {"name": "unirst", "revision": "9407970f1d9d2435b5f875a0cd14293a16646304", "weights_sha256": "1cb7f7df68db3fc996b3fa904dbf443f5bffa0ba403a6fb5f6acc2231b965b6e"}
+  ],
+  "local_experiment_assets_are_released": false
+}

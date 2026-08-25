@@ -56,9 +56,9 @@ def test_parse_document_from_edus_requires_validated_erst_bundle(monkeypatch: py
 
 
 def test_du_to_analysis_nuclearity_and_relations() -> None:
-    from isanlp_rst import SoftParsevalScorer
     from isanlp_rst.contracts import NuclearityPatternEnum
     from isanlp_rst.erst.converter import du_to_analysis
+    from offline_workbench.evaluation.rst import SoftParsevalScorer
 
     # 1. NS relation: left is Nucleus (span), right is Satellite (elaboration)
     l1 = DiscourseUnit(id=1, text="Nucleus clause.", start=0, end=15, relation="span")
@@ -102,6 +102,6 @@ def test_du_to_analysis_nuclearity_and_relations() -> None:
     assert left_edge_nn.nuclearity == NuclearityPatternEnum.NN
     assert right_edge_nn.nuclearity == NuclearityPatternEnum.NN
 
-    # Verify top-level SoftParsevalScorer export works
+    # Evaluation remains available through the canonical offline workbench.
     scorer = SoftParsevalScorer()
     assert scorer is not None

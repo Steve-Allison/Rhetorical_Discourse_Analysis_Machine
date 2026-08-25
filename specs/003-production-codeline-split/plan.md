@@ -1,113 +1,104 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: Clean Production Codeline Separation
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
-
-**Note**: This template is filled in by the `$speckit-plan` command; its definition describes the execution workflow.
+**Branch**: `codex/spec-kit-adoption` | **Date**: 2026-08-25 | **Spec**: [spec.md](spec.md)
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Make the built `isanlp_rst` distribution the sole production authority and move corpus preparation, training, evaluation, experiments, and benchmarks behind an explicitly offline source and environment boundary. Keep runtime model definitions, safe released-checkpoint loading, public analysis contracts, adapters, and required resources in production. Enforce the one-way dependency with one ownership authority, a fast static/artifact gate, and a fresh wheel/sdist clean-install proof. Use one root Pixi workspace and lock with independently solvable `production` and `offline` environments; do not introduce another repository, service, registry, or shared package.
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
+**Language/Version**: Python 3.14
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]
+**Primary Dependencies**: PyTorch 2.13, Transformers 5.15, Pydantic 2, Hugging Face Hub, safetensors, isanlp; optional Markdown/Docling/DocLang adapters
 
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
+**Storage**: Local immutable model-release directories and JSON receipts; no database
 
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+**Testing**: pytest, Ruff, Pyright, Setuptools build, wheel/sdist member inspection, isolated Pixi/venv smoke execution
 
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
+**Target Platform**: One local macOS machine, CPU and available Apple MPS; artifact remains ordinary Python-compatible
 
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Project Type**: Installable Python library plus offline research/training workbench
 
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]
+**Performance Goals**: Routine boundary gate under 10 seconds; no production inference regression attributable to the split
 
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]
+**Constraints**: One repository; one production distribution; one offline workbench; one-way imports only; offline-capable installed runtime; identical released model bytes and inference mathematics; no enterprise infrastructure
 
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]
-
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Scale/Scope**: Solo local project, small-volume excellence; all current runtime variants and retained offline commands
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+*GATE: Passed before research and re-checked after design.*
 
-[Gates determined based on constitution file]
+- **World-class floor**: PASS. The design proves artifact membership, dependency closure, imports, clean installation, parity, and negative cases; it does not substitute directory naming for separation.
+- **Solo-local simplicity**: PASS. One repository, one distribution, one lock, two named environments, filesystem model promotion, and one boundary authority. No services, registries, roles, or deployment platform.
+- **Declared assumptions**: PASS. The spec fixes one repository, production-owned shared contracts, unchanged inference, and independent feature 002 semantics.
+- **Whole-file evidence**: PASS. Planning used the complete specification, constitution, packaging manifests, package initializers, runtime/checkpoint boundaries, and workbench manifests. Each implementation edit requires a fresh complete read of the target file.
+- **Full scope**: PASS. Runtime isolation, offline retention, model promotion, parity, wheel and sdist checks, dependency separation, migration documentation, and ingest independence are all represented.
+- **Evidence before done**: PASS. Completion requires actual built-artifact and installed-runtime output, not green repository tests alone.
+- **Current format contracts**: NOT TRIGGERED. This feature does not change Docling/DocLang harvesting, mapping, fixtures, or documented schema behavior; their existing runtime routes are exercised unchanged.
+
+Post-design re-check: PASS. No constitution exception or complexity waiver is required.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
-├── plan.md              # This file ($speckit-plan command output)
-├── research.md          # Phase 0 output ($speckit-plan command)
-├── data-model.md        # Phase 1 output ($speckit-plan command)
-├── quickstart.md        # Phase 1 output ($speckit-plan command)
-├── contracts/           # Phase 1 output ($speckit-plan command)
-└── tasks.md             # Phase 2 output ($speckit-tasks command - NOT created by $speckit-plan)
+specs/003-production-codeline-split/
+├── spec.md
+├── plan.md
+├── research.md
+├── data-model.md
+├── quickstart.md
+├── contracts/
+│   ├── environment-and-artifact.md
+│   ├── model-promotion.md
+│   └── ownership-and-boundary.md
+└── tasks.md
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+isanlp_rst/                         # production distribution authority
+├── contracts/                     # production request/result/model contracts
+├── dmrst_parser/                  # runtime predictor and minimal loadable architecture
+├── universal_parser/              # runtime predictor and minimal loadable architecture
+├── erst/                          # runtime eRST candidate/scorer/decoder/load path
+├── segmentation/                  # runtime segmentation only
+├── doclang/                       # production DocLang adapter
+├── docling/                       # optional production Docling adapter
+├── markdown/                      # optional production Markdown adapter
+└── ...                            # parser, hierarchy, ontology, visualization, utilities
 
-tests/
-├── contract/
-├── integration/
-└── unit/
+offline_workbench/                 # single offline ownership namespace
+├── corpus/                        # corpus acquisition/preparation and dataset records
+├── training/                      # trainers, fitting, optimization, checkpoint creation
+├── evaluation/                    # scoring, calibration, parity/evaluation harnesses
+├── experiments/                   # run matrices, ablations, benchmarks, research systems
+└── promotion/                     # validate and promote model-release candidates
 
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+research_harness/                  # retained experiment implementation; offline-owned
+scripts/                           # repository-only or offline commands, classified by authority
+tests/                             # repository-only validation
+tools/production_boundary/         # one fast boundary/artifact authority and validator
+pyproject.toml                     # production package/deps plus Pixi production/offline envs
+pixi.lock                          # one lock containing independently named environments
+MANIFEST.in                        # source-distribution pruning to the production surface
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: `isanlp_rst/` is the only publishable production namespace. Offline-only canonical modules move to `offline_workbench/`; the existing `research_harness/` remains an offline-owned implementation directory rather than being copied or repackaged. Runtime classes required by released checkpoints stay in production even when historically colocated with training; mixed modules are split at responsibility boundaries. A single machine-readable ownership authority classifies source and dependencies and also drives validation, so there is no duplicate production module allowlist.
+
+## Implementation Strategy
+
+1. Freeze the pre-split public-import, checkpoint-load, representative-result, warning/failure, and device evidence before moving code.
+2. Introduce the ownership authority and validator first, initially describing the intended boundary; seed negative tests for direct, transitive, dependency, and artifact violations.
+3. Extract minimal runtime records/model definitions from mixed modules. Move corpus builders, datasets used only for fitting, trainers, optimizers, evaluation scorers, multiple-run orchestration, and eRST research preparation into `offline_workbench/`; update the workbench and tests to their canonical paths.
+4. Make package discovery and `MANIFEST.in` publish only the production authority. Split dependencies into independently named Pixi `production` and `offline` environments in the single root manifest/lock; remove the obsolete nested workbench manifest after parity.
+5. Retain production validation/loading of immutable model bundles and place creation/promotion in the offline workbench. Wrap already released assets without changing learned bytes.
+6. Build wheel and sdist once for the completion candidate, inspect both, install the wheel with no repository path, execute every required production route, run offline command smokes, and compare the frozen parity evidence.
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
-
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+No constitution violations. The existing `research_harness/` directory is retained within the single offline workbench ownership class because moving it adds churn without strengthening the installation or dependency boundary; it is never packaged in production.

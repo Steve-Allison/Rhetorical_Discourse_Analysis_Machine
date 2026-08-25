@@ -21,7 +21,7 @@ from isanlp_rst.contracts import (
     SignalDetectorProvenance,
 )
 from isanlp_rst.english.erst.completer import ErstCompleter
-from isanlp_rst.erst.dataset import (
+from offline_workbench.training.erst.dataset import (
     extract_eRST_candidates_from_document,
 )
 from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer

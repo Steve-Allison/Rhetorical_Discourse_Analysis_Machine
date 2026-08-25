@@ -13,7 +13,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedModel
 
-from isanlp_rst.erst.dataset import GUMSecondaryEdgeDataset
+from offline_workbench.training.erst.dataset import GUMSecondaryEdgeDataset
 from isanlp_rst.erst.environment import load_repository_environment
 from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from research_harness.erst.calibration import TemperatureCalibration

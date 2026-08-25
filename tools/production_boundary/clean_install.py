@@ -1,0 +1,125 @@
+"""Create clean core/formats wheel installs and execute installed acceptance."""
+
+import argparse
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+
+def _run(command: list[str], *, cwd: Path) -> str:
+    completed = subprocess.run(command, cwd=cwd, capture_output=True, text=True)
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"command failed ({completed.returncode}): {command!r}\n"
+            f"stdout:\n{completed.stdout}\nstderr:\n{completed.stderr}"
+        )
+    return completed.stdout.strip()
+
+
+def _venv_python(root: Path) -> Path:
+    return root / "bin" / "python"
+
+
+def _install_and_run(
+    *,
+    name: str,
+    wheel: Path,
+    source_root: Path,
+    acceptance: Path,
+    model_store: Path,
+    fixtures: tuple[Path, Path, Path],
+    full: bool,
+    device: str,
+    parity_baseline: Path | None,
+) -> dict[str, object]:
+    with tempfile.TemporaryDirectory(prefix=f"isanlp-rst-{name}-") as directory:
+        root = Path(directory)
+        subprocess.run([sys.executable, "-m", "venv", "--system-site-packages", str(root)], check=True)
+        python = _venv_python(root)
+        requirement = f"{wheel}[formats]" if name == "formats" else str(wheel)
+        install = [str(python), "-m", "pip", "install"]
+        if name == "core":
+            install.append("--no-deps")
+        install.append(requirement)
+        _run(install, cwd=root)
+        command = [
+            str(python),
+            "-I",
+            str(acceptance),
+            "--source-root",
+            str(source_root),
+            "--model-store",
+            str(model_store),
+            "--device",
+            device,
+        ]
+        if name == "formats":
+            command.extend(
+                [
+                    "--formats",
+                    "--markdown",
+                    str(fixtures[0]),
+                    "--doclang",
+                    str(fixtures[1]),
+                    "--docling",
+                    str(fixtures[2]),
+                ]
+            )
+        if full:
+            command.append("--full")
+        payload = json.loads(_run(command, cwd=root))
+        receipt: dict[str, object] = {"environment": name, "python": str(python), "acceptance": payload}
+        if parity_baseline is not None and name == "formats":
+            parity_command = [
+                str(python),
+                "-I",
+                str(source_root / "tools/production_boundary/parity.py"),
+                "--device",
+                device,
+                "--markdown",
+                str(fixtures[0]),
+                "--compare",
+                str(parity_baseline),
+            ]
+            receipt["parity"] = json.loads(_run(parity_command, cwd=root))
+        return receipt
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--wheel", type=Path, required=True)
+    parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument("--model-store", type=Path, required=True)
+    parser.add_argument("--full", action="store_true")
+    parser.add_argument("--device", default="cpu")
+    parser.add_argument("--parity-baseline", type=Path)
+    args = parser.parse_args()
+    root = args.root.resolve()
+    fixtures = (
+        root / "tests/fixtures/markdown/minimal.md",
+        root / "tests/fixtures/doclang/ok_comprehensive.dclg",
+        root / "tests/fixtures/docling/markdown.docling.json",
+    )
+    acceptance = root / "tools/production_boundary/installed_acceptance.py"
+    receipts = tuple(
+        _install_and_run(
+            name=name,
+            wheel=args.wheel.resolve(),
+            source_root=root,
+            acceptance=acceptance,
+            model_store=args.model_store.resolve(),
+            fixtures=fixtures,
+            full=args.full and name == "formats",
+            device=args.device,
+            parity_baseline=args.parity_baseline.resolve() if args.parity_baseline is not None else None,
+        )
+        for name in ("core", "formats")
+    )
+    print(json.dumps({"install_receipts": receipts, "valid": True}, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
