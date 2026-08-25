@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_digest": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+  "authority_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "gate": "us5_complex_content_retention",
+  "passed": true,
+  "counts": {"focused_tests": 18, "doclang_archive_gold_sources": 2, "doclang_xml_gold_sources": 2, "docling_gold_sources": 3, "markdown_gold_sources": 4},
+  "metrics": {"minimum_inventory_coverage": 1.0, "minimum_disposition_coverage": 1.0, "unintended_primary_contamination": 0.0, "unresolved_complex_content_anomalies": 0.0},
+  "execution": {"command": "pixi run -e offline pytest tests/production_ingest/test_doclang_complex.py tests/production_ingest/test_markdown_complex.py tests/production_ingest/test_docling_complex.py -q", "candidate_commit": "277ac08318b7c06f8544e0f51c0710b878190506"}
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_digest": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+  "authority_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "source_id": "docling-eacl",
+  "source_form": "docling_json",
+  "gate": "us3_real_source_over_one_million_characters",
+  "passed": true,
+  "counts": {"source_characters": 1848302, "source_bytes": 1848302, "inventory_items": 2310, "dispositions": 2310, "prepared_characters": 34479, "analysis_units": 21, "analysis_nodes": 1685, "analysis_edges": 1684, "analysis_anchors": 3369},
+  "metrics": {"inventory_coverage": 1.0, "primary_source_coverage": 1.0, "prepared_text_coverage": 1.0, "analysis_anchor_coverage": 1.0, "preparation_ms": 685.3517499985173, "analysis_ms": 14076.538041001186, "peak_rss_bytes": 7141408768},
+  "execution": {"device": "cpu", "model_release_id": "gumrrg-eb1d5745f3a1", "prepared_digest": "0896a2b5758fbc2111cd14c24d7782f988014a2ad46cfa6183b1009f7d7fe8d1", "subdivision_digest": "098111a9b4d9c65c6a30fd53773d5d8b7e0d0d0b8b8bfcc17ab1040548361e6c", "result_digest": "14b7522d028934ce10a5f0a172a736bcd8f3a931c114836034a9705c554e6c88"}
+}

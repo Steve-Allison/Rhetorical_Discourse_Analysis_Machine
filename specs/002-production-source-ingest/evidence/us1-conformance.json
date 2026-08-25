@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_digest": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+  "authority_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "gate": "us1_mixed_content_conformance",
+  "passed": true,
+  "counts": {"focused_tests": 15, "gold_sources": 23, "source_forms": 6, "failed_gold_gates": 0},
+  "metrics": {"minimum_inventory_coverage": 1.0, "minimum_disposition_coverage": 1.0, "required_relevance_precision": 1.0, "required_relevance_recall": 1.0},
+  "execution": {"command": "pixi run -e offline pytest tests/production_ingest/test_policy.py tests/production_ingest/test_plain_ingest.py tests/production_ingest/test_markdown_ingest.py tests/production_ingest/test_docling_ingest.py tests/production_ingest/test_doclang_ingest.py -q", "candidate_commit": "277ac08318b7c06f8544e0f51c0710b878190506"}
+}

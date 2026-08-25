@@ -68,23 +68,23 @@ description: "Dependency-ordered implementation tasks for world-class production
 
 ### Tests for User Story 1
 
-- [ ] T022 [P] [US1] Write failing default/named-policy and duplicate tests in `tests/production_ingest/test_policy.py`, covering all included/excluded classes, intentional repetition retention, provenance-backed reversible deduplication, and prohibition of mutable per-document exceptions.
-- [ ] T023 [P] [US1] Write failing plain-text and presegmented-EDU inventory/preparation tests in `tests/production_ingest/test_plain_ingest.py`, covering exact characters, paragraph structure, indivisible supplied EDU boundaries, synthetic separators, empty inputs, and no fabricated discourse.
-- [ ] T024 [P] [US1] Write failing complete Markdown inventory/relevance tests in `tests/production_ingest/test_markdown_ingest.py` using `tests/fixtures/markdown/`, covering headings, prose, lists, code, tables, raw HTML, repeated content, and source spans.
-- [ ] T025 [P] [US1] Write failing complete Docling inventory/relevance tests in `tests/production_ingest/test_docling_ingest.py` using all fixtures under `tests/fixtures/docling/`, covering every layer, group, top-level collection, notes, picture descriptions, tables, captions, and unresolved references.
-- [ ] T026 [P] [US1] Write failing complete DocLang XML inventory/relevance tests in `tests/production_ingest/test_doclang_ingest.py` using the full normative fixture manifest, covering full validation, accepted empty namespace, head metadata, layers, semantic/structural items, and explicit unsupported status.
+- [X] T022 [P] [US1] Write failing default/named-policy and duplicate tests in `tests/production_ingest/test_policy.py`, covering all included/excluded classes, intentional repetition retention, provenance-backed reversible deduplication, and prohibition of mutable per-document exceptions.
+- [X] T023 [P] [US1] Write failing plain-text and presegmented-EDU inventory/preparation tests in `tests/production_ingest/test_plain_ingest.py`, covering exact characters, paragraph structure, indivisible supplied EDU boundaries, synthetic separators, empty inputs, and no fabricated discourse.
+- [X] T024 [P] [US1] Write failing complete Markdown inventory/relevance tests in `tests/production_ingest/test_markdown_ingest.py` using `tests/fixtures/markdown/`, covering headings, prose, lists, code, tables, raw HTML, repeated content, and source spans.
+- [X] T025 [P] [US1] Write failing complete Docling inventory/relevance tests in `tests/production_ingest/test_docling_ingest.py` using all fixtures under `tests/fixtures/docling/`, covering every layer, group, top-level collection, notes, picture descriptions, tables, captions, and unresolved references.
+- [X] T026 [P] [US1] Write failing complete DocLang XML inventory/relevance tests in `tests/production_ingest/test_doclang_ingest.py` using the full normative fixture manifest, covering full validation, accepted empty namespace, head metadata, layers, semantic/structural items, and explicit unsupported status.
 
 ### Implementation for User Story 1
 
-- [ ] T027 [US1] Implement immutable named policies, `AUTHORED_PROSE_V1`, complete content-class rules, and exact duplicate findings/actions in `isanlp_rst/ingest/policy.py` so T022 passes.
-- [ ] T028 [US1] Implement plain-text and presegmented-EDU complete inventory and canonical preparation dispatch in `isanlp_rst/ingest/prepare.py` so T023 passes without changing supplied EDU boundaries.
-- [ ] T029 [US1] Implement complete Markdown token/source-span inventory in `isanlp_rst/markdown/loader.py` and the private Markdown adapter in `isanlp_rst/ingest/prepare.py`, leaving relevance decisions to the canonical policy.
-- [ ] T030 [US1] Implement raw Docling declaration capture, current loader validation, all-layer/group/picture traversal, and top-level reconciliation directly in the private Docling adapter in `isanlp_rst/ingest/prepare.py`.
-- [ ] T031 [US1] Implement current full-validation and complete recursive DocLang XML/archive inventory in `isanlp_rst/doclang/loader.py`, `isanlp_rst/doclang/text_walker.py`, and the private DocLang adapter in `isanlp_rst/ingest/prepare.py`.
-- [ ] T032 [US1] Implement canonical inventory reconciliation, policy application, duplicate reporting, side-channel retention, disposition totals, and empty-primary handling in `isanlp_rst/ingest/prepare.py`, failing on every gap, duplicate identity, or contradictory disposition.
-- [ ] T033 [US1] Implement `ProductionIngestor.prepare()` orchestration in `isanlp_rst/ingest/service.py` and public exports in `isanlp_rst/ingest/__init__.py`, ensuring all five forms use the same validation-inventory-policy-preparation path.
-- [ ] T034 [US1] Delete the obsolete `parse_markdown`, `parse_docling`, and `parse_doclang` entry points, result envelopes, format-specific caches, and public package exports; retain only private helpers required by `ProductionIngestor`, with no independent preparation/cache path.
-- [ ] T035 [US1] Run and retain the US1 mixed-content evidence from `tests/production_ingest/test_policy.py`, `test_plain_ingest.py`, `test_markdown_ingest.py`, `test_docling_ingest.py`, and `test_doclang_ingest.py` in `specs/002-production-source-ingest/evidence/us1-conformance.json`.
+- [X] T027 [US1] Implement immutable named policies, `AUTHORED_PROSE_V1`, complete content-class rules, and exact duplicate findings/actions in `isanlp_rst/ingest/policy.py` so T022 passes.
+- [X] T028 [US1] Implement plain-text and presegmented-EDU complete inventory and canonical preparation dispatch in `isanlp_rst/ingest/prepare.py` so T023 passes without changing supplied EDU boundaries.
+- [X] T029 [US1] Implement complete Markdown token/source-span inventory in `isanlp_rst/markdown/loader.py` and the private Markdown adapter in `isanlp_rst/ingest/prepare.py`, leaving relevance decisions to the canonical policy.
+- [X] T030 [US1] Implement raw Docling declaration capture, current loader validation, all-layer/group/picture traversal, and top-level reconciliation directly in the private Docling adapter in `isanlp_rst/ingest/prepare.py`.
+- [X] T031 [US1] Implement current full-validation and complete recursive DocLang XML/archive inventory in `isanlp_rst/doclang/loader.py`, `isanlp_rst/doclang/text_walker.py`, and the private DocLang adapter in `isanlp_rst/ingest/prepare.py`.
+- [X] T032 [US1] Implement canonical inventory reconciliation, policy application, duplicate reporting, side-channel retention, disposition totals, and empty-primary handling in `isanlp_rst/ingest/prepare.py`, failing on every gap, duplicate identity, or contradictory disposition.
+- [X] T033 [US1] Implement `ProductionIngestor.prepare()` orchestration in `isanlp_rst/ingest/service.py` and public exports in `isanlp_rst/ingest/__init__.py`, ensuring all five forms use the same validation-inventory-policy-preparation path.
+- [X] T034 [US1] Delete the obsolete `parse_markdown`, `parse_docling`, and `parse_doclang` entry points, result envelopes, format-specific caches, and public package exports; retain only private helpers required by `ProductionIngestor`, with no independent preparation/cache path.
+- [X] T035 [US1] Run and retain the US1 mixed-content evidence from `tests/production_ingest/test_policy.py`, `test_plain_ingest.py`, `test_markdown_ingest.py`, `test_docling_ingest.py`, and `test_doclang_ingest.py` in `specs/002-production-source-ingest/evidence/us1-conformance.json`.
 
 **Checkpoint**: User Story 1 is independently usable for trustworthy primary-discourse selection and is the MVP.
 
@@ -98,19 +98,19 @@ description: "Dependency-ordered implementation tasks for world-class production
 
 ### Tests for User Story 2
 
-- [ ] T036 [P] [US2] Write failing property/invariant tests for source-derived and synthetic segment mappings, Unicode, line endings, quote selectors, ranges, and total reverse maps in `tests/production_ingest/test_prepared_mapping.py`.
-- [ ] T037 [P] [US2] Write failing format-native anchor tests in `tests/production_ingest/test_native_anchors.py` for Markdown line/range/DOM, Docling ref/page/bounding-box/table, DocLang XML/item/location/table, plain-text range, and EDU identity anchors.
-- [ ] T038 [P] [US2] Write failing persisted analysis-anchor and receipt reconciliation tests in `tests/production_ingest/test_provenance_roundtrip.py`, covering every EDU/relation/node, local versus macro origin, changed source identity, and schema reload.
+- [X] T036 [P] [US2] Write failing property/invariant tests for source-derived and synthetic segment mappings, Unicode, line endings, quote selectors, ranges, and total reverse maps in `tests/production_ingest/test_prepared_mapping.py`.
+- [X] T037 [P] [US2] Write failing format-native anchor tests in `tests/production_ingest/test_native_anchors.py` for Markdown line/range/DOM, Docling ref/page/bounding-box/table, DocLang XML/item/location/table, plain-text range, and EDU identity anchors.
+- [X] T038 [P] [US2] Write failing persisted analysis-anchor and receipt reconciliation tests in `tests/production_ingest/test_provenance_roundtrip.py`, covering every EDU/relation/node, local versus macro origin, changed source identity, and schema reload.
 
 ### Implementation for User Story 2
 
-- [ ] T039 [P] [US2] Project exact Markdown source spans, structural ancestry, quote selectors, and parsed HTML node addresses in the private Markdown adapter in `isanlp_rst/ingest/prepare.py`.
-- [ ] T040 [P] [US2] Project exact Docling refs, page/bounding-box/table coordinates, content layers, conversion provenance, and raw/accepted contract identity in the private Docling adapter in `isanlp_rst/ingest/prepare.py`.
-- [ ] T041 [P] [US2] Project exact DocLang XML paths, semantic IDs, locations, layers/threads, nested-table ancestry, and archive asset identity in the private DocLang adapter in `isanlp_rst/ingest/prepare.py`.
-- [ ] T042 [US2] Implement ordered prepared segments, explicit synthetic separators, reversible transformations, complete range maps, and all four fail-closed coverage proofs in `isanlp_rst/ingest/prepare.py` so T036 and T037 pass.
-- [ ] T043 [US2] Implement EDU/relation/tree-node source projection and local/macro provenance construction in `isanlp_rst/ingest/service.py`, using descendant unions rather than fabricated relation coordinates.
-- [ ] T044 [US2] Implement deterministic `PreparationReceipt`, truthful separate `ExecutionReceipt`, persistence integrity, and reload verification in `isanlp_rst/ingest/contracts.py`, `isanlp_rst/ingest/service.py`, and `isanlp_rst/contracts/serialization.py`.
-- [ ] T045 [US2] Run the every-format persistence/round-trip suite and directly inspect representative mappings, recording text-free results in `specs/002-production-source-ingest/evidence/us2-provenance.json`.
+- [X] T039 [P] [US2] Project exact Markdown source spans, structural ancestry, quote selectors, and parsed HTML node addresses in the private Markdown adapter in `isanlp_rst/ingest/prepare.py`.
+- [X] T040 [P] [US2] Project exact Docling refs, page/bounding-box/table coordinates, content layers, conversion provenance, and raw/accepted contract identity in the private Docling adapter in `isanlp_rst/ingest/prepare.py`.
+- [X] T041 [P] [US2] Project exact DocLang XML paths, semantic IDs, locations, layers/threads, nested-table ancestry, and archive asset identity in the private DocLang adapter in `isanlp_rst/ingest/prepare.py`.
+- [X] T042 [US2] Implement ordered prepared segments, explicit synthetic separators, reversible transformations, complete range maps, and all four fail-closed coverage proofs in `isanlp_rst/ingest/prepare.py` so T036 and T037 pass.
+- [X] T043 [US2] Implement EDU/relation/tree-node source projection and local/macro provenance construction in `isanlp_rst/ingest/service.py`, using descendant unions rather than fabricated relation coordinates.
+- [X] T044 [US2] Implement deterministic `PreparationReceipt`, truthful separate `ExecutionReceipt`, persistence integrity, and reload verification in `isanlp_rst/ingest/contracts.py`, `isanlp_rst/ingest/service.py`, and `isanlp_rst/contracts/serialization.py`.
+- [X] T045 [US2] Run the every-format persistence/round-trip suite and directly inspect representative mappings, recording text-free results in `specs/002-production-source-ingest/evidence/us2-provenance.json`.
 
 **Checkpoint**: User Story 2 independently proves exact, persistent source-to-analysis traceability.
 
@@ -124,20 +124,20 @@ description: "Dependency-ordered implementation tasks for world-class production
 
 ### Tests for User Story 3
 
-- [ ] T046 [P] [US3] Write failing deterministic subdivision-plan tests in `tests/production_ingest/test_subdivision.py` for structural precedence, actual parser capacity, oversized units, context-only overlap, deterministic fallbacks, and complete non-overlapping output ranges.
-- [ ] T047 [P] [US3] Write failing hierarchical tree/stitching tests in `tests/production_ingest/test_structural_analysis.py` for local analyses, anchored nuclear-spine macro representations, recursive parents, one coherent tree, and exact local/macro origin.
-- [ ] T048 [P] [US3] Write failing long-source and indivisible-EDU tests in `tests/production_ingest/test_long_source.py`, deterministically generating at least one one-million-character structured source without storing a huge fixture in Git.
+- [X] T046 [P] [US3] Write failing deterministic subdivision-plan tests in `tests/production_ingest/test_subdivision.py` for structural precedence, actual parser capacity, oversized units, context-only overlap, deterministic fallbacks, and complete non-overlapping output ranges.
+- [X] T047 [P] [US3] Write failing hierarchical tree/stitching tests in `tests/production_ingest/test_structural_analysis.py` for local analyses, anchored nuclear-spine macro representations, recursive parents, one coherent tree, and exact local/macro origin.
+- [X] T048 [P] [US3] Write failing long-source and indivisible-EDU tests in `tests/production_ingest/test_long_source.py`, deterministically generating at least one one-million-character structured source without storing a huge fixture in Git.
 
 ### Implementation for User Story 3
 
-- [ ] T049 [US3] Implement the deterministic structure-first `AnalysisUnit` tree, parser-capacity partitioning, context/output separation, and fully receipted fallback algorithm in `isanlp_rst/ingest/subdivision.py`.
-- [ ] T050 [P] [US3] Make Markdown inventory structure express operative heading/section/list/turn hierarchy before parsing in `isanlp_rst/ingest/prepare.py`.
-- [ ] T051 [P] [US3] Make Docling inventory structure express operative groups/headings/pages/slides/lists/turns/tables before parsing in `isanlp_rst/ingest/prepare.py`.
-- [ ] T052 [P] [US3] Make DocLang inventory structure express operative semantic/group/list/page/turn/table hierarchy before parsing in `isanlp_rst/ingest/prepare.py`.
-- [ ] T053 [US3] Replace fixed-prefix macro summaries with deterministic anchored nuclear-spine representations and complete recursive stitching in `isanlp_rst/hierarchical/stitcher.py`, preserving every output EDU exactly once.
-- [ ] T054 [US3] Integrate subdivision, unchanged local parser inference, recursive macro analysis, final tree validation, and native-anchor projection in `isanlp_rst/ingest/service.py` and `isanlp_rst/parser.py`.
-- [ ] T055 [US3] Run real released-model CPU and available Apple MPS structural-analysis tests and retain model/tree/coverage evidence in `specs/002-production-source-ingest/evidence/us3-structural-analysis.json`.
-- [ ] T056 [US3] Run the one-million-character preparation and end-to-end coherence scenario, recording complete coverage, unit counts, anchors, preparation time, peak RSS, and final tree identity in `specs/002-production-source-ingest/evidence/us3-million-character.json`.
+- [X] T049 [US3] Implement the deterministic structure-first `AnalysisUnit` tree, parser-capacity partitioning, context/output separation, and fully receipted fallback algorithm in `isanlp_rst/ingest/subdivision.py`.
+- [X] T050 [P] [US3] Make Markdown inventory structure express operative heading/section/list/turn hierarchy before parsing in `isanlp_rst/ingest/prepare.py`.
+- [X] T051 [P] [US3] Make Docling inventory structure express operative groups/headings/pages/slides/lists/turns/tables before parsing in `isanlp_rst/ingest/prepare.py`.
+- [X] T052 [P] [US3] Make DocLang inventory structure express operative semantic/group/list/page/turn/table hierarchy before parsing in `isanlp_rst/ingest/prepare.py`.
+- [X] T053 [US3] Replace fixed-prefix macro summaries with deterministic anchored nuclear-spine representations and complete recursive stitching in `isanlp_rst/hierarchical/stitcher.py`, preserving every output EDU exactly once.
+- [X] T054 [US3] Integrate subdivision, unchanged local parser inference, recursive macro analysis, final tree validation, and native-anchor projection in `isanlp_rst/ingest/service.py` and `isanlp_rst/parser.py`.
+- [X] T055 [US3] Run real released-model CPU and available Apple MPS structural-analysis tests and retain model/tree/coverage evidence in `specs/002-production-source-ingest/evidence/us3-structural-analysis.json`.
+- [X] T056 [US3] Run the one-million-character preparation and end-to-end coherence scenario, recording complete coverage, unit counts, anchors, preparation time, peak RSS, and final tree identity in `specs/002-production-source-ingest/evidence/us3-million-character.json`.
 
 **Checkpoint**: User Story 3 independently produces structure-aware, complete long-document analyses with unchanged model mathematics.
 
@@ -151,19 +151,19 @@ description: "Dependency-ordered implementation tasks for world-class production
 
 ### Tests for User Story 4
 
-- [ ] T057 [P] [US4] Write failing promotion-contract and freeze-integrity tests in `tests/production_ingest/test_promotion_contracts.py`, including changed Gold/source/model/scorer/machine identity, protected-text leakage, and post-freeze mutation.
-- [ ] T058 [P] [US4] Write failing isolated-wheel baseline/candidate runner tests in `tests/production_ingest/test_candidate_runner.py`, proving repository removal from `sys.path`, no network, identical released-model bytes, complete per-source outputs, and no evaluation dependency in the production environment.
-- [ ] T059 [P] [US4] Write failing per-source assessor/inspection tests in `tests/production_ingest/test_promotion_assessor.py`, covering gate order, 100% relevance/coverage/anchors, per-form EDU/Parseval non-regression, 50% structural improvement, zero hidden regression, and no waiver field.
+- [X] T057 [P] [US4] Write failing promotion-contract and freeze-integrity tests in `tests/production_ingest/test_promotion_contracts.py`, including changed Gold/source/model/scorer/machine identity, protected-text leakage, and post-freeze mutation.
+- [X] T058 [P] [US4] Write failing isolated-wheel baseline/candidate runner tests in `tests/production_ingest/test_candidate_runner.py`, proving repository removal from `sys.path`, no network, identical released-model bytes, complete per-source outputs, and no evaluation dependency in the production environment.
+- [X] T059 [P] [US4] Write failing per-source assessor/inspection tests in `tests/production_ingest/test_promotion_assessor.py`, covering gate order, 100% relevance/coverage/anchors, per-form EDU/Parseval non-regression, 50% structural improvement, zero hidden regression, and no waiver field.
 
 ### Implementation for User Story 4
 
-- [ ] T060 [US4] Complete immutable freeze verification and candidate identity checks in `tools/production_ingest/freeze.py` and `tools/production_ingest/contracts.py` so T057 passes.
-- [ ] T061 [US4] Implement clean temporary-environment baseline/candidate wheel execution and serialized-output collection in `tools/production_ingest/runner.py` and `tools/production_ingest/__main__.py` so T058 passes.
-- [ ] T062 [US4] Implement repository-only content-selection, coverage, anchor, structural-boundary, EDU, and canonical offline Parseval assessment in `tools/production_ingest/assessor.py`, importing `offline_workbench.evaluation.rst` only from the assessor side.
-- [ ] T063 [US4] Implement mandatory per-source prepared-document/receipt/result inspection records and fail-closed anomaly reconciliation in `tools/production_ingest/inspection.py` and `tools/production_ingest/contracts.py`.
-- [ ] T064 [US4] Implement ordered gate evaluation, per-source/per-form reporting, protected-metric enforcement, and a no-waiver promotion decision in `tools/production_ingest/report.py` and `tools/production_ingest/__main__.py`.
-- [ ] T065 [US4] Update the dated primary-source comparison with implementation-measurable evidence slots and bounded claim language in `specs/002-production-source-ingest/evidence/current-practice-comparison.md`.
-- [ ] T066 [US4] Run the promotion framework against frozen pilot outputs, prove all assessor failure paths causally, and store text-free framework evidence in `specs/002-production-source-ingest/evidence/us4-promotion-framework.json`; do not issue the final candidate decision yet.
+- [X] T060 [US4] Complete immutable freeze verification and candidate identity checks in `tools/production_ingest/freeze.py` and `tools/production_ingest/contracts.py` so T057 passes.
+- [X] T061 [US4] Implement clean temporary-environment baseline/candidate wheel execution and serialized-output collection in `tools/production_ingest/runner.py` and `tools/production_ingest/__main__.py` so T058 passes.
+- [X] T062 [US4] Implement repository-only content-selection, coverage, anchor, structural-boundary, EDU, and canonical offline Parseval assessment in `tools/production_ingest/assessor.py`, importing `offline_workbench.evaluation.rst` only from the assessor side.
+- [X] T063 [US4] Implement mandatory per-source prepared-document/receipt/result inspection records and fail-closed anomaly reconciliation in `tools/production_ingest/inspection.py` and `tools/production_ingest/contracts.py`.
+- [X] T064 [US4] Implement ordered gate evaluation, per-source/per-form reporting, protected-metric enforcement, and a no-waiver promotion decision in `tools/production_ingest/report.py` and `tools/production_ingest/__main__.py`.
+- [X] T065 [US4] Update the dated primary-source comparison with implementation-measurable evidence slots and bounded claim language in `specs/002-production-source-ingest/evidence/current-practice-comparison.md`.
+- [X] T066 [US4] Run the promotion framework against frozen pilot outputs, prove all assessor failure paths causally, and store text-free framework evidence in `specs/002-production-source-ingest/evidence/us4-promotion-framework.json`; do not issue the final candidate decision yet.
 
 **Checkpoint**: User Story 4's promotion machinery is independently proven; its final decision remains blocked on the complete US1–US6 candidate.
 
@@ -177,17 +177,17 @@ description: "Dependency-ordered implementation tasks for world-class production
 
 ### Tests for User Story 5
 
-- [ ] T067 [P] [US5] Add failing current-valid recursive/nested-table and `.dclx` conformance/security tests in `tests/production_ingest/test_doclang_complex.py`, including empty namespace, archive traversal/symlink/duplicate/encrypted/ratio/size/relationship cases.
-- [ ] T068 [P] [US5] Add failing structural raw-HTML and complex Markdown tests in `tests/production_ingest/test_markdown_complex.py`, proving script/style/template/navigation/markup never become prose and authored DOM text retains exact anchors.
-- [ ] T069 [P] [US5] Add failing complex Docling side-channel tests in `tests/production_ingest/test_docling_complex.py` for recursive tables, captions, pictures/descriptions, notes, OCR provenance/confidence, all content layers, and unknown current-valid items.
+- [X] T067 [P] [US5] Add failing current-valid recursive/nested-table and `.dclx` conformance/security tests in `tests/production_ingest/test_doclang_complex.py`, including empty namespace, archive traversal/symlink/duplicate/encrypted/ratio/size/relationship cases.
+- [X] T068 [P] [US5] Add failing structural raw-HTML and complex Markdown tests in `tests/production_ingest/test_markdown_complex.py`, proving script/style/template/navigation/markup never become prose and authored DOM text retains exact anchors.
+- [X] T069 [P] [US5] Add failing complex Docling side-channel tests in `tests/production_ingest/test_docling_complex.py` for recursive tables, captions, pictures/descriptions, notes, OCR provenance/confidence, all content layers, and unknown current-valid items.
 
 ### Implementation for User Story 5
 
-- [ ] T070 [US5] Implement secure bounded stdlib-ZIP `.dclx` loading, `document.xml` relationship/asset identity, and full current validation in `isanlp_rst/doclang/loader.py` and `isanlp_rst/doclang/errors.py` without extraction to an uncontrolled path.
-- [ ] T071 [US5] Preserve recursive DocLang table/list/group/field/asset hierarchy and explicit unsupported analysis status in `isanlp_rst/doclang/text_walker.py` and the private DocLang adapter in `isanlp_rst/ingest/prepare.py`.
-- [ ] T072 [US5] Replace regex HTML removal with hardened structural lxml inventory and authored-node selection in `isanlp_rst/markdown/loader.py` and the private Markdown adapter in `isanlp_rst/ingest/prepare.py`, with no execution or resource fetching.
-- [ ] T073 [US5] Preserve complete complex Docling structure, machine/OCR authorship/confidence, and side-channel anchors in the private Docling adapter in `isanlp_rst/ingest/prepare.py` without flattening table cells into default prose.
-- [ ] T074 [US5] Run the complete complex-content suite and directly inspect all retained side channels, recording zero-contamination and structural-retention evidence in `specs/002-production-source-ingest/evidence/us5-complex-content.json`.
+- [X] T070 [US5] Implement secure bounded stdlib-ZIP `.dclx` loading, `document.xml` relationship/asset identity, and full current validation in `isanlp_rst/doclang/loader.py` and `isanlp_rst/doclang/errors.py` without extraction to an uncontrolled path.
+- [X] T071 [US5] Preserve recursive DocLang table/list/group/field/asset hierarchy and explicit unsupported analysis status in `isanlp_rst/doclang/text_walker.py` and the private DocLang adapter in `isanlp_rst/ingest/prepare.py`.
+- [X] T072 [US5] Replace regex HTML removal with hardened structural lxml inventory and authored-node selection in `isanlp_rst/markdown/loader.py` and the private Markdown adapter in `isanlp_rst/ingest/prepare.py`, with no execution or resource fetching.
+- [X] T073 [US5] Preserve complete complex Docling structure, machine/OCR authorship/confidence, and side-channel anchors in the private Docling adapter in `isanlp_rst/ingest/prepare.py` without flattening table cells into default prose.
+- [X] T074 [US5] Run the complete complex-content suite and directly inspect all retained side channels, recording zero-contamination and structural-retention evidence in `specs/002-production-source-ingest/evidence/us5-complex-content.json`.
 
 **Checkpoint**: User Story 5 independently preserves valid complex content without implying RST prose semantics.
 
@@ -201,18 +201,18 @@ description: "Dependency-ordered implementation tasks for world-class production
 
 ### Tests for User Story 6
 
-- [ ] T075 [P] [US6] Write failing cache identity/integrity/atomicity tests in `tests/production_ingest/test_cache.py` for every fingerprint dimension, verified hits, normal changed-identity misses, corruption/contradiction failures, interrupted writes, and parser-without-release-identity disablement.
-- [ ] T076 [P] [US6] Write failing ten-run cached/uncached semantic determinism tests in `tests/production_ingest/test_determinism.py`, allowing truthful execution timestamp/timing/RSS/cache differences only.
-- [ ] T077 [P] [US6] Expand failing malformed/unsafe/contradictory/incomplete/no-primary tests in `tests/production_ingest/test_fail_closed.py`, requiring exact artifact/item/stage/code evidence and zero apparently successful partial results.
-- [ ] T078 [P] [US6] Write preparation/cache/one-million-character benchmark tests with fixed reference-machine metadata and correctness-first assertions in `tests/production_ingest/test_performance.py`.
+- [X] T075 [P] [US6] Write failing cache identity/integrity/atomicity tests in `tests/production_ingest/test_cache.py` for every fingerprint dimension, verified hits, normal changed-identity misses, corruption/contradiction failures, interrupted writes, and parser-without-release-identity disablement.
+- [X] T076 [P] [US6] Write failing ten-run cached/uncached semantic determinism tests in `tests/production_ingest/test_determinism.py`, allowing truthful execution timestamp/timing/RSS/cache differences only.
+- [X] T077 [P] [US6] Expand failing malformed/unsafe/contradictory/incomplete/no-primary tests in `tests/production_ingest/test_fail_closed.py`, requiring exact artifact/item/stage/code evidence and zero apparently successful partial results.
+- [X] T078 [P] [US6] Write preparation/cache/one-million-character benchmark tests with fixed reference-machine metadata and correctness-first assertions in `tests/production_ingest/test_performance.py`.
 
 ### Implementation for User Story 6
 
-- [ ] T079 [US6] Implement post-validation/prepared-identity cache lookup, canonical keys, verified payloads, corruption distinction, and same-filesystem atomic writes in `isanlp_rst/ingest/cache.py`.
-- [ ] T080 [US6] Integrate cache sequencing, durable-cache disablement, truthful stage timings/peak RSS, and semantic-versus-execution receipts in `isanlp_rst/ingest/service.py`.
-- [ ] T081 [US6] Complete fail-closed error projection across the private format adapters, `isanlp_rst/doclang/errors.py`, and `isanlp_rst/ingest/contracts.py`, preserving all completed-stage evidence without private-text leakage.
-- [ ] T082 [US6] Make every persisted semantic collection and traversal order deterministic in `isanlp_rst/ingest/prepare.py`, `isanlp_rst/ingest/subdivision.py`, and `isanlp_rst/contracts/serialization.py` so T076 passes across cache state.
-- [ ] T083 [US6] Run ten-run determinism, complete invalidation, cache corruption, fail-closed, and local performance suites; retain actual timings/RSS/cache evidence in `specs/002-production-source-ingest/evidence/us6-production-evidence.json`.
+- [X] T079 [US6] Implement post-validation/prepared-identity cache lookup, canonical keys, verified payloads, corruption distinction, and same-filesystem atomic writes in `isanlp_rst/ingest/cache.py`.
+- [X] T080 [US6] Integrate cache sequencing, durable-cache disablement, truthful stage timings/peak RSS, and semantic-versus-execution receipts in `isanlp_rst/ingest/service.py`.
+- [X] T081 [US6] Complete fail-closed error projection across the private format adapters, `isanlp_rst/doclang/errors.py`, and `isanlp_rst/ingest/contracts.py`, preserving all completed-stage evidence without private-text leakage.
+- [X] T082 [US6] Make every persisted semantic collection and traversal order deterministic in `isanlp_rst/ingest/prepare.py`, `isanlp_rst/ingest/subdivision.py`, and `isanlp_rst/contracts/serialization.py` so T076 passes across cache state.
+- [X] T083 [US6] Run ten-run determinism, complete invalidation, cache corruption, fail-closed, and local performance suites; retain actual timings/RSS/cache evidence in `specs/002-production-source-ingest/evidence/us6-production-evidence.json`.
 
 **Checkpoint**: User Story 6 independently proves dependable local production operation without stale, partial, or unexplained results.
 
@@ -222,17 +222,17 @@ description: "Dependency-ordered implementation tasks for world-class production
 
 **Purpose**: Prove the exact complete candidate from its built wheel, execute the frozen Gold Set, directly inspect every result, and reconcile every requirement before claiming completion.
 
-- [ ] T084 [P] Add exact production wheel payload/import/dependency and clean-install ingest scenarios to `tests/test_production_boundary.py` and `tools/production_boundary/installed_acceptance.py`, covering every source form with the repository absent and training/evaluation/Gold modules unavailable.
-- [ ] T085 [P] Add canonical public-surface tests in `tests/production_ingest/test_public_api.py`, proving `isanlp_rst.ingest` is the only source-ingest API and obsolete format entry points, envelopes, and caches are absent from both source and built wheel.
-- [ ] T086 [P] Add current normative Docling/DocLang unmodified-specimen, fixture-inventory parity, and `.dclx` archive conformance to `tests/production_ingest/test_upstream_conformance.py` and `scripts/verify_doclang_fixtures.py`.
-- [ ] T087 Update the public production-ingest API, default policy, provenance, empty-discourse, single-public-surface, and offline-boundary documentation in `README.md`, `docs/production-source-ingest.md`, and `docs/raw-material-ingest-forensic-analysis.md` without describing target commands as already proven.
-- [ ] T088 Run focused Feature 002 tests, the applicable complete production/offline suites, Ruff, Pyright, Markdown lint, packaging checks, and `pixi run -e production production-boundary`; record the exact commands/results and resolve every failure in `specs/002-production-source-ingest/evidence/verification-record.json`.
-- [ ] T089 Build the immutable candidate wheel/sdist once, verify artifact contents/digests, install outside the repository, and run all source-form, persistence, cache, CPU, and available MPS acceptance paths; record proof in `specs/002-production-source-ingest/evidence/candidate-artifact.json`.
-- [ ] T090 Re-verify current upstream Docling/DocLang releases, specifications, source APIs, normative specimen inventories, and local pin/lock currency immediately before promotion; update `specs/002-production-source-ingest/evidence/docling-contract-final.json` and `specs/002-production-source-ingest/evidence/doclang-contract-final.json`, and rebuild/retest if the accepted contract changed.
-- [ ] T091 Execute the frozen Gold Set baseline/candidate comparison with identical model/source/scorer/machine identities and store every text-free per-source/per-form gate result in `specs/002-production-source-ingest/evidence/promotion-report.json`.
-- [ ] T092 Directly inspect every Gold Set prepared document, receipt, persisted RST result, source anchor, and anomaly; record all source-level decisions in `specs/002-production-source-ingest/evidence/inspection-record.json`, with any unresolved anomaly failing promotion.
-- [ ] T093 Complete the dated current-practice matrix with measured candidate evidence and issue the bounded no-waiver decision in `specs/002-production-source-ingest/evidence/current-practice-comparison.md` and `specs/002-production-source-ingest/evidence/promotion-decision.json` only if every ordered gate passes.
-- [ ] T094 Run `$speckit-analyze` and `$speckit-converge`, implement any appended work, re-run the affected and final gates, and leave `specs/002-production-source-ingest/tasks.md` with every genuinely completed task checked and no unresolved traceability finding.
+- [X] T084 [P] Add exact production wheel payload/import/dependency and clean-install ingest scenarios to `tests/test_production_boundary.py` and `tools/production_boundary/installed_acceptance.py`, covering every source form with the repository absent and training/evaluation/Gold modules unavailable.
+- [X] T085 [P] Add canonical public-surface tests in `tests/production_ingest/test_public_api.py`, proving `isanlp_rst.ingest` is the only source-ingest API and obsolete format entry points, envelopes, and caches are absent from both source and built wheel.
+- [X] T086 [P] Add current normative Docling/DocLang unmodified-specimen, fixture-inventory parity, and `.dclx` archive conformance to `tests/production_ingest/test_upstream_conformance.py` and `scripts/verify_doclang_fixtures.py`.
+- [X] T087 Update the public production-ingest API, default policy, provenance, empty-discourse, single-public-surface, and offline-boundary documentation in `README.md`, `docs/production-source-ingest.md`, and `docs/raw-material-ingest-forensic-analysis.md` without describing target commands as already proven.
+- [X] T088 Run focused Feature 002 tests, the applicable complete production/offline suites, Ruff, Pyright, Markdown lint, packaging checks, and `pixi run -e production production-boundary`; record the exact commands/results and resolve every failure in `specs/002-production-source-ingest/evidence/verification-record.json`.
+- [X] T089 Build the immutable candidate wheel/sdist once, verify artifact contents/digests, install outside the repository, and run all source-form, persistence, cache, CPU, and available MPS acceptance paths; record proof in `specs/002-production-source-ingest/evidence/candidate-artifact.json`.
+- [X] T090 Re-verify current upstream Docling/DocLang releases, specifications, source APIs, normative specimen inventories, and local pin/lock currency immediately before promotion; update `specs/002-production-source-ingest/evidence/docling-contract-final.json` and `specs/002-production-source-ingest/evidence/doclang-contract-final.json`, and rebuild/retest if the accepted contract changed.
+- [X] T091 Execute the frozen Gold Set baseline/candidate comparison with identical model/source/scorer/machine identities and store every text-free per-source/per-form gate result in `specs/002-production-source-ingest/evidence/promotion-report.json`.
+- [X] T092 Directly inspect every Gold Set prepared document, receipt, persisted RST result, source anchor, and anomaly; record all source-level decisions in `specs/002-production-source-ingest/evidence/inspection-record.json`, with any unresolved anomaly failing promotion.
+- [X] T093 Complete the dated current-practice matrix with measured candidate evidence and issue the bounded no-waiver decision in `specs/002-production-source-ingest/evidence/current-practice-comparison.md` and `specs/002-production-source-ingest/evidence/promotion-decision.json` only if every ordered gate passes.
+- [X] T094 Run `$speckit-analyze` and `$speckit-converge`, implement any appended work, re-run the affected and final gates, and leave `specs/002-production-source-ingest/tasks.md` with every genuinely completed task checked and no unresolved traceability finding.
 - [ ] T095 Record the immutable delivery commit, clean working-tree status, built artifact digests, branch/publication state, and exact final verification evidence in `specs/002-production-source-ingest/evidence/release-record.json`, then publish through the repository's approved Git workflow.
 
 **Checkpoint**: Feature 002 is complete only if every task, per-source gate, direct inspection, current-spec check, clean-wheel boundary check, and bounded promotion decision is actually green.
@@ -374,8 +374,8 @@ T078 performance tests
 
 ## Phase 10: Convergence
 
-- [ ] T096 Implement and causally test policy-controlled reversible deduplication of non-authored conversion artifacts in `isanlp_rst/ingest/policy.py`, `isanlp_rst/ingest/prepare.py`, and `tests/production_ingest/test_policy.py`, while retaining intentional authored repetition, per FR-010 and plan step 4 (contradicts).
-- [ ] T097 Prove that a caller-supplied named policy can explicitly admit a normally excluded content class and that the resulting disposition and preparation evidence remain truthful in `tests/production_ingest/test_policy.py` and `tests/production_ingest/test_plain_ingest.py`, per FR-008 and US1/AC3 (partial).
-- [ ] T098 Execute ten exact-wheel cached/uncached semantic runs for every real Gold Set source and record zero stale or nondeterministic results in `specs/002-production-source-ingest/evidence/us6-production-evidence.json`, per SC-004 and SC-005 (partial).
-- [ ] T099 Record real-model end-to-end coherence, coverage, subdivision, timing, memory, and final-tree identity for the 1,848,302-character Gold source in `specs/002-production-source-ingest/evidence/us3-million-character.json`, per SC-007 and SC-008 (partial).
-- [ ] T100 Reconcile the implemented feature's active branch and status metadata in `specs/002-production-source-ingest/spec.md` and `specs/002-production-source-ingest/plan.md` before release, without changing scope or intent (partial).
+- [X] T096 Implement and causally test policy-controlled reversible deduplication of non-authored conversion artifacts in `isanlp_rst/ingest/policy.py`, `isanlp_rst/ingest/prepare.py`, and `tests/production_ingest/test_policy.py`, while retaining intentional authored repetition, per FR-010 and plan step 4 (contradicts).
+- [X] T097 Prove that a caller-supplied named policy can explicitly admit a normally excluded content class and that the resulting disposition and preparation evidence remain truthful in `tests/production_ingest/test_policy.py` and `tests/production_ingest/test_plain_ingest.py`, per FR-008 and US1/AC3 (partial).
+- [X] T098 Execute ten exact-wheel cached/uncached semantic runs for every real Gold Set source and record zero stale or nondeterministic results in `specs/002-production-source-ingest/evidence/us6-production-evidence.json`, per SC-004 and SC-005 (partial).
+- [X] T099 Record real-model end-to-end coherence, coverage, subdivision, timing, memory, and final-tree identity for the 1,848,302-character Gold source in `specs/002-production-source-ingest/evidence/us3-million-character.json`, per SC-007 and SC-008 (partial).
+- [X] T100 Reconcile the implemented feature's active branch and status metadata in `specs/002-production-source-ingest/spec.md` and `specs/002-production-source-ingest/plan.md` before release, without changing scope or intent (partial).

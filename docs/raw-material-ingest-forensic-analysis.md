@@ -32,13 +32,18 @@ remain repository-only and are unavailable in the clean production install.
 A released model enters production only through its immutable model-release
 manifest; production ingest does not execute or reproduce training.
 
-At the implementation-candidate cut, the source tree passed the complete
-non-slow suite, focused Feature 002 suite, Ruff, Pyright and the production
-import/dependency boundary. Final Feature 002 promotion still requires the
-built-wheel clean-install run, frozen Gold comparison, direct inspection and
-no-waiver decision described in
-`specs/002-production-source-ingest/evidence/`. Those later records, rather
-than this historical report, are the authority for the delivered status.
+Feature 002 is now implemented and its bounded promotion passed. The immutable
+candidate wheel was installed outside the repository and exercised on CPU and
+Apple MPS with all released models and source forms while offline/training and
+evaluation distributions were absent. The 23-source Gold run passed all 368
+ordered gate observations, all sources were directly inspected, the 12
+RST-Gold sources had no protected-metric regression, and all six measured
+structural-boundary cases improved to zero violations. The complete repository
+suite passed 672 tests; Ruff, Pyright, Markdown lint, source/artifact boundary
+checks and CPU/MPS parity were also green. The authoritative delivered records
+are in `specs/002-production-source-ingest/evidence/`; the findings below remain
+the pre-remediation historical baseline rather than a description of the
+current production implementation.
 
 ## Executive verdict
 

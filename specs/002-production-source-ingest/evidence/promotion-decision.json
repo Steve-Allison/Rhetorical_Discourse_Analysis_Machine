@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_digest": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+  "authority_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "gate": "bounded_world_class_sota_promotion",
+  "passed": true,
+  "counts": {
+    "gold_sources": 23,
+    "rst_gold_sources": 12,
+    "source_forms": 6,
+    "inspected_sources": 23,
+    "unique_gate_names": 16,
+    "gate_observations": 368,
+    "failed_gate_observations": 0,
+    "cpu_mps_result_digest_mismatches": 0,
+    "waivers": 0
+  },
+  "metrics": {
+    "minimum_inventory_coverage": 1.0,
+    "minimum_primary_source_coverage": 1.0,
+    "minimum_prepared_text_coverage": 1.0,
+    "minimum_analysis_anchor_coverage": 1.0,
+    "minimum_edu_delta": 0.0,
+    "minimum_parseval_span_delta": 0.0,
+    "minimum_parseval_nuclearity_delta": 0.0,
+    "minimum_parseval_relation_delta": 0.0,
+    "minimum_parseval_full_delta": 0.0,
+    "measured_structural_sources": 6,
+    "candidate_structural_boundary_violations": 0.0
+  },
+  "inspection": {
+    "all_sources_inspected": true,
+    "unresolved_anomalies": 0,
+    "protected_source_text_present": false
+  },
+  "execution": {
+    "decided_at": "2026-08-25T19:46:51Z",
+    "candidate_commit": "277ac08318b7c06f8544e0f51c0710b878190506",
+    "model_release_id": "gumrrg-eb1d5745f3a1",
+    "model_digest": "fb83842f536616ce4c705b496e00c06e8eec77dc88758610c279915fa54e1064",
+    "policy_digest": "75816b4cb54736e537631a834ca1305776eb8d833f0627fa5dfefdcbedc9be65",
+    "claim_scope": "production source ingest for small-volume local RST/eRST analysis",
+    "model_sota_claimed": false,
+    "universal_architecture_sota_claimed": false
+  }
+}

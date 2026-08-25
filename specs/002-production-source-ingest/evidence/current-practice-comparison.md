@@ -42,6 +42,36 @@ Authorities:
 [DocLang on PyPI](https://pypi.org/project/doclang/), and
 [the current DocLang specification](https://github.com/doclang-project/doclang/blob/6d3b3d3c195d1f63333c5c5fcba8da17937a33bd/spec.md).
 
+## Measured candidate outcome
+
+The immutable candidate is commit
+`277ac08318b7c06f8544e0f51c0710b878190506`, built as wheel
+`73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154`.
+Its 23-source Gold run passed all 368 ordered gate observations across six
+source forms, including 12 sources with EDU and primary-RST Gold. All 23
+prepared documents, receipts, persisted analyses, and source anchors were
+directly inspected; no anomaly or waiver remains.
+
+Every Gold source achieved 100% inventory, primary-source, prepared-text, and
+analysis-anchor coverage. EDU and Parseval Span, Nuclearity, Relation, and Full
+scores had a minimum per-source delta of zero against the frozen identical-model
+baseline. All six sources with measured pre-feature structural-boundary errors
+improved to zero candidate violations.
+
+The exact wheel produced identical semantic results on CPU and Apple MPS for
+all 23 Gold sources: 9,913 nodes on each device and zero digest mismatch. A
+separate 230-observation gate ran every source five times cold and five times
+through the verified cache; each source produced exactly one semantic digest.
+The 1,848,302-character real Docling source prepared in 685.35 ms, used 21
+structural analysis units, and returned one coherent 1,685-node result with
+complete anchors.
+
+Clean installs outside the repository exercised text, pre-segmented EDUs,
+Markdown, Docling, and DocLang; all five released models on both CPU and MPS;
+hierarchical parsing; and eRST conversion. Offline/training/evaluation
+distributions were absent and Feature 003 parity differences were empty. The
+built wheel and sdist contain zero forbidden members.
+
 ## Claim boundary
 
 The intended result is world-class source preparation for this project’s
@@ -51,6 +81,8 @@ sense of current upstream contract compliance plus measured improvement over
 the frozen production path. It is not a claim that one ingest architecture is
 universally best, nor a claim about retraining or model architecture.
 
-Candidate measurements and the final decision are populated only by the
-immutable-wheel promotion run. Until `promotion-decision.json` passes, this
-document describes the candidate and its gates, not a promoted result.
+The bounded promotion decision passes. Within the stated small-volume,
+solo-local production-ingest scope, the implementation meets the feature's
+world-class floor and its dated engineering definition of SOTA. This does not
+claim model-level SOTA or universal superiority over every possible ingest
+architecture.

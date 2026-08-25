@@ -1,0 +1,1065 @@
+{
+  "all_inspected": true,
+  "schema_version": "1.0.0",
+  "source_count": 23,
+  "sources": [
+    {
+      "anchor_count": 293,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 74,
+      "node_count": 147,
+      "output_sha256": "ad221cbf0c5fad8c1826bf9555757643fe6e4925f3f326c145193e9540752c0a",
+      "prepared_digest": "c14cf18dc6ac10b5ee0bed9d7f20c6606c7b1cba71fdb3138d67663a8a277b80",
+      "result_digest": "8e687d0b20654e646c7e9b873caf7dda151717a28721afd12e09be6513d28e6d",
+      "source_form": "edus",
+      "source_id": "gum-edus-01"
+    },
+    {
+      "anchor_count": 437,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 110,
+      "node_count": 219,
+      "output_sha256": "7937bf5f0af9952b380e4612fc0cb14d73cd577c1423f90d617790b23b86bd9d",
+      "prepared_digest": "c0650fce75995dbb908611a870d4ed73fad0a106bc0b67eb490c35425155c951",
+      "result_digest": "dd1b2918223384ed1320c8932ede329e29997a4c7e07b4c47d4f80ab6ee3b254",
+      "source_form": "edus",
+      "source_id": "gum-edus-02"
+    },
+    {
+      "anchor_count": 361,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 91,
+      "node_count": 181,
+      "output_sha256": "c97a666a6fea96e9d8133644e1fb09e0a2aa0499740a2ea7eee66bb198b0efbe",
+      "prepared_digest": "7abce1ec10cc9125f0da9b30e36ac25a6afd99fcb9a9fa3f1f160482573a85c3",
+      "result_digest": "e782860cf1424e29361f5dfd7783e17bf34f2f81737e725db26bea300ea6018e",
+      "source_form": "edus",
+      "source_id": "gum-edus-03"
+    },
+    {
+      "anchor_count": 281,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 71,
+      "node_count": 141,
+      "output_sha256": "6b6676ffe4dfb62b81d6bdb8d5d18081c82d01e220b2636e8c507ee42eb1d390",
+      "prepared_digest": "1c1d4432c5aa35037d5d228e6c59e3b87c3aa39425c53efb177998decadc9482",
+      "result_digest": "fe8ab401044b84937cb6c828e5316058f7e96091038b27fda9a639c9998cf0ad",
+      "source_form": "edus",
+      "source_id": "gum-edus-04"
+    },
+    {
+      "anchor_count": 337,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 85,
+      "node_count": 169,
+      "output_sha256": "7875dc84f0ce97793a94fb0351e675605dc6e605dc9beb6b38c6173be5c6bdfb",
+      "prepared_digest": "e58491116f8acffd3ef141d9f77edc763665c0ad47d8105799a3a151645e4886",
+      "result_digest": "3f49ded3918b854949088391d014176b26f24ab9caaf4687aebd6db9f0f8e10d",
+      "source_form": "edus",
+      "source_id": "gum-edus-05"
+    },
+    {
+      "anchor_count": 337,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 85,
+      "node_count": 169,
+      "output_sha256": "7c19d932e0760e37013cc131d09c8c34c1eb6030079242d1e36c5a17e90f3049",
+      "prepared_digest": "452418d3f60f70110a6f8afe079e9d46d60be0a2a8284e07a4777685e0d74d11",
+      "result_digest": "5100b9e1c026a350269682e09cdf31230793de043db6bb04d1f4b4efa9311bc9",
+      "source_form": "edus",
+      "source_id": "gum-edus-06"
+    },
+    {
+      "anchor_count": 493,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 124,
+      "node_count": 247,
+      "output_sha256": "a80d4103ffc5586f5605e815150585fad190a82534afe393b9f20db80374d406",
+      "prepared_digest": "a85c261ff14df7f3bcd5a948c047b5ce42843c7f8c67e127d9766238eeedcf7b",
+      "result_digest": "a5f0eac907af1c9f844e1001c8722d2bd4fce3fe3b59e733a94d0c83a480e11e",
+      "source_form": "edus",
+      "source_id": "gum-edus-07"
+    },
+    {
+      "anchor_count": 301,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 76,
+      "node_count": 151,
+      "output_sha256": "92814e1b09dc275fcf8d6eb8fa51a3258716ef9700266df9ef1303259893365b",
+      "prepared_digest": "411609375110e032a5778f084d14f6c30a19c70646a4dd84552163b41c53ae9f",
+      "result_digest": "fef2ac65cce0ff6fed3b3371b663f6d0bf6ee351ca6b9379e974d090dc0ad3f7",
+      "source_form": "edus",
+      "source_id": "gum-edus-08"
+    },
+    {
+      "anchor_count": 505,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 127,
+      "node_count": 253,
+      "output_sha256": "eba9fa8df6c97b3aa110c53a187cb391bf998ea4bd3c1dc5f4bf93f25832b6e5",
+      "prepared_digest": "8649ec5b787475ac30953286f10be093616207c266eaf877f6210f9b3ce20b2f",
+      "result_digest": "e4405b97cb695539570a81d343a5a738d6de502c671b6e0a4bf65e3ea558d078",
+      "source_form": "edus",
+      "source_id": "gum-edus-09"
+    },
+    {
+      "anchor_count": 337,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 85,
+      "node_count": 169,
+      "output_sha256": "b2e332c4f864d6a6d9db77273b9955622da70eccf32621e5485765680f0252b4",
+      "prepared_digest": "96441ee30f52966bd817c2ac92283eedbfa07c335c032d8013f3d785309873a2",
+      "result_digest": "887697dd21532a769f957f4f139d3d73e1a4623b3cd178e20c05c56accb49e7c",
+      "source_form": "edus",
+      "source_id": "gum-edus-10"
+    },
+    {
+      "anchor_count": 293,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 1,
+      "node_count": 147,
+      "output_sha256": "936a415a65d01579b912ead9f5a1492c0bbbad534ae8d41044df1a342ab9f91c",
+      "prepared_digest": "a29b19adf71579bdeb0c1521b73ecd09ffdad274a4ac5382138fd85bd7ec8491",
+      "result_digest": "a83d3e7965b50289945b31d153e4a1914265e6d554368c2b2f2aaee1104cb0b9",
+      "source_form": "text",
+      "source_id": "gum-text-01"
+    },
+    {
+      "anchor_count": 437,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 1,
+      "node_count": 219,
+      "output_sha256": "9176a96e629959dd42f469086b4cd68429c2b2dd4fd4aef4681e58a0c3782116",
+      "prepared_digest": "56e580dd0cb0545d3ee2630702b1c4a3c025ca762374bb56721eac1e460e0d0e",
+      "result_digest": "92dfd4f9ff6293d8388eda2c878efeeba3b01fdf15848d436f093751df3e9c82",
+      "source_form": "text",
+      "source_id": "gum-text-02"
+    },
+    {
+      "anchor_count": 77,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 38,
+      "node_count": 39,
+      "output_sha256": "ebab2746604365d78e7c59724768e238865739ed3f42ba9f947f15dd82510fa3",
+      "prepared_digest": "f82d44e96a989b9a317688aeac6b68b883ffbddcff130f592e8a333cbb999c19",
+      "result_digest": "364378f15adeaedb48bf29b5871708a881db30e7059ebd53ce194ae80d472896",
+      "source_form": "markdown",
+      "source_id": "markdown-gfm"
+    },
+    {
+      "anchor_count": 1,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 6,
+      "node_count": 1,
+      "output_sha256": "69d347e5099704b6b4cd5d7f6cf241156de592d2131822a67ab9fdf8f01f7e9a",
+      "prepared_digest": "c645b464f3783278658472883ffe5301883a2f42b92de051ad3f6d30027bde11",
+      "result_digest": "4c58246bf8c0486f2c429c3b24618ea5ffcc7c9d61c79132ed7c9487f4fd2ccb",
+      "source_form": "markdown",
+      "source_id": "markdown-html"
+    },
+    {
+      "anchor_count": 4545,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 2428,
+      "node_count": 2273,
+      "output_sha256": "8eef003697095bbcdf812b7c2250944b2013995921c62634bae4852a98cba8c4",
+      "prepared_digest": "ea8e7866f13946450464a5eb5092483a12c8e4ab80bfd4ad997f513ab9c9c2c5",
+      "result_digest": "b1f1290369867787bf16c9562ee55930483330b63a414fe201bca293bc357eb8",
+      "source_form": "markdown",
+      "source_id": "markdown-eacl"
+    },
+    {
+      "anchor_count": 2989,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 264,
+      "node_count": 1495,
+      "output_sha256": "38c315da2dd0ca4cc6faf16c6c36c0619a45be877d7921ce9e43f773220899ba",
+      "prepared_digest": "cb4bdb497389082bf5402032c36e10defb00fd9f0b6277f33b30f0ebf8d923b0",
+      "result_digest": "6f7d7607c0ed4563f3e9d27e716dd967f634a9ebc8f423071ac1363b55d495ff",
+      "source_form": "markdown",
+      "source_id": "markdown-cxo"
+    },
+    {
+      "anchor_count": 3369,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 2310,
+      "node_count": 1685,
+      "output_sha256": "83340210d27283fcf2e814c374b39565fe843e2d494e7e9b56fc3f3b848c310d",
+      "prepared_digest": "0896a2b5758fbc2111cd14c24d7782f988014a2ad46cfa6183b1009f7d7fe8d1",
+      "result_digest": "14b7522d028934ce10a5f0a172a736bcd8f3a931c114836034a9705c554e6c88",
+      "source_form": "docling_json",
+      "source_id": "docling-eacl"
+    },
+    {
+      "anchor_count": 417,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 173,
+      "node_count": 209,
+      "output_sha256": "9200e848a9e355fe4722329e581e8083e7a92d1d9e1e248f3152d66febc2327e",
+      "prepared_digest": "4c39870ee5dbd4fc2373a4c254fd59e31674ade1e4c0dd79b354c40f3a34b245",
+      "result_digest": "7c1dbc9dbff9b9ce85b01e04e1d9f8dc7968d97c9d45ef50289d4416645d8ddd",
+      "source_form": "docling_json",
+      "source_id": "docling-cxo"
+    },
+    {
+      "anchor_count": 365,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 222,
+      "node_count": 183,
+      "output_sha256": "63cecfef89bd1e932506ee4db5542352f839e5e5febf2be070b757b69393cb26",
+      "prepared_digest": "c0553319d374f00fe42910d2f9cbb8d9e0ad71aae9be00d51a9033c0f227ab1f",
+      "result_digest": "4df840b6782213344b096ea7488a52607043f880076e26f13f0bf79f74f27587",
+      "source_form": "docling_json",
+      "source_id": "docling-sebl"
+    },
+    {
+      "anchor_count": 45,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 400,
+      "node_count": 23,
+      "output_sha256": "7290a93efd9caea78c7ca6982e8440f2548481d39fa3df65e347e673b2c7ba3a",
+      "prepared_digest": "a0622c3a9ab64d53d64830e318b8e019ccff16667db557fea4ae908c3b44501b",
+      "result_digest": "54fcc149b2bdf03285c9a46635488a3361e0d0a99878e2050544662997206759",
+      "source_form": "doclang_xml",
+      "source_id": "doclang-sebl"
+    },
+    {
+      "anchor_count": 3585,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 36,
+      "node_count": 1793,
+      "output_sha256": "a3729c65d9e63abdfebcc52bcfd6f66dd4927f4c85b84dddebc10326ff9cac1e",
+      "prepared_digest": "3793e0e8720f5a5cc76e356be8fe772a50e81ff0c98cdcacb86dbf25e377ebf5",
+      "result_digest": "74ed8f4b300682b620307a63374b0db69738572f583fffb601f253cb1020d19e",
+      "source_form": "doclang_xml",
+      "source_id": "doclang-speakers"
+    },
+    {
+      "anchor_count": 0,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 9,
+      "node_count": 0,
+      "output_sha256": "eaf4dbe2dc5e0335d3670bf2b67bf9cc4ceedb24fc7c7d0ff40cdce851a03135",
+      "prepared_digest": "3ff1034d4eec2995dfaaf47e7dca90c0dbe6c290c4474392c93ffbb063765462",
+      "result_digest": "71f14f330aaa815118f91df73ff783eb59a1a8c9cdddba77df419a6c0dd8825b",
+      "source_form": "doclang_archive",
+      "source_id": "doclang-archive-table"
+    },
+    {
+      "anchor_count": 0,
+      "anomaly": null,
+      "checks": [
+        [
+          "analysis_targets_anchored",
+          true
+        ],
+        [
+          "inventory_dispositions_reconcile",
+          true
+        ],
+        [
+          "persisted_digest_valid",
+          true
+        ],
+        [
+          "prepared_present",
+          true
+        ],
+        [
+          "prepared_ranges_reconstruct",
+          true
+        ],
+        [
+          "receipt_reconciles",
+          true
+        ],
+        [
+          "result_present",
+          true
+        ],
+        [
+          "source_record_matches",
+          true
+        ]
+      ],
+      "inspected": true,
+      "inventory_count": 9,
+      "node_count": 0,
+      "output_sha256": "9975cc5e6b80f8efa6f11f234b72c8211e881816d3212566ac6f0b3e467cbaf3",
+      "prepared_digest": "3ff1034d4eec2995dfaaf47e7dca90c0dbe6c290c4474392c93ffbb063765462",
+      "result_digest": "a7f0506ba4a09d4ad98606f438f8bd831f9211ae0e17ce1a893eed14f6e2608a",
+      "source_form": "doclang_archive",
+      "source_id": "doclang-archive-namespace"
+    }
+  ]
+}
