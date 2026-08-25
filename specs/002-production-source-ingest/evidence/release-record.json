@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_digest": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+  "authority_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "gate": "feature_002_release_publication",
+  "passed": true,
+  "counts": {
+    "completed_tasks": 100,
+    "full_pytest_passed": 672,
+    "promotion_sources": 23,
+    "promotion_gate_observations": 368,
+    "failed_promotion_gates": 0,
+    "production_boundary_violations": 0,
+    "artifact_forbidden_members": 0
+  },
+  "execution": {
+    "released_at": "2026-08-25T19:46:51Z",
+    "runtime_candidate_commit": "277ac08318b7c06f8544e0f51c0710b878190506",
+    "evidence_commit": "f9cbee26070afefe8acedff1f2ad37fce15f3410",
+    "merge_commit": "a4d9a2f4926d161441e0c67b486c80cedb0619ee",
+    "delivery_branch": "master",
+    "origin_master_at_merge_commit": true,
+    "feature_branch_published_before_merge": true,
+    "feature_branch_deleted_locally": true,
+    "feature_branch_deleted_from_origin": true,
+    "working_tree_clean_before_release_record": true,
+    "wheel": "dist/isanlp_rst-4.0.0-py3-none-any.whl",
+    "wheel_sha256": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+    "sdist": "dist/isanlp_rst-4.0.0.tar.gz",
+    "sdist_sha256": "1f27e65d1134329a1eb1cfcf7475ae218d73a76a6155b1ad2b8c3f3f40d2b6d2",
+    "verification_record": "verification-record.json",
+    "promotion_decision": "promotion-decision.json"
+  }
+}

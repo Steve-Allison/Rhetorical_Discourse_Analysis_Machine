@@ -233,7 +233,7 @@ description: "Dependency-ordered implementation tasks for world-class production
 - [X] T092 Directly inspect every Gold Set prepared document, receipt, persisted RST result, source anchor, and anomaly; record all source-level decisions in `specs/002-production-source-ingest/evidence/inspection-record.json`, with any unresolved anomaly failing promotion.
 - [X] T093 Complete the dated current-practice matrix with measured candidate evidence and issue the bounded no-waiver decision in `specs/002-production-source-ingest/evidence/current-practice-comparison.md` and `specs/002-production-source-ingest/evidence/promotion-decision.json` only if every ordered gate passes.
 - [X] T094 Run `$speckit-analyze` and `$speckit-converge`, implement any appended work, re-run the affected and final gates, and leave `specs/002-production-source-ingest/tasks.md` with every genuinely completed task checked and no unresolved traceability finding.
-- [ ] T095 Record the immutable delivery commit, clean working-tree status, built artifact digests, branch/publication state, and exact final verification evidence in `specs/002-production-source-ingest/evidence/release-record.json`, then publish through the repository's approved Git workflow.
+- [X] T095 Record the immutable delivery commit, clean working-tree status, built artifact digests, branch/publication state, and exact final verification evidence in `specs/002-production-source-ingest/evidence/release-record.json`, then publish through the repository's approved Git workflow.
 
 **Checkpoint**: Feature 002 is complete only if every task, per-source gate, direct inspection, current-spec check, clean-wheel boundary check, and bounded promotion decision is actually green.
 
