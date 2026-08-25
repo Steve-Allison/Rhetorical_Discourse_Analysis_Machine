@@ -1,0 +1,416 @@
+{
+  "schema_version": "1.0.0",
+  "frozen_at": "2026-08-25T18:58:21.920851Z",
+  "sources": [
+    {
+      "source_id": "gum-edus-01",
+      "relative_path": "sources/gum-edus-01.json",
+      "source_form": "edus",
+      "sha256": "dda84ca5c7ca1de53f39052ff2dcb4d03177d84187ae0979bfd7834966fc2698",
+      "size_bytes": 4705,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "unicode_coordinates",
+        "long_structured_prose",
+        "repeated_content"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-01.json",
+      "rst_gold_ref": "rst/gum-edus-01.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-edus-02",
+      "relative_path": "sources/gum-edus-02.json",
+      "source_form": "edus",
+      "sha256": "f04668c1065330c4d4a323918a55aaa53a421bf7ea07282d93887e607607b365",
+      "size_bytes": 6525,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "unicode_coordinates",
+        "repeated_content"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-02.json",
+      "rst_gold_ref": "rst/gum-edus-02.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-edus-03",
+      "relative_path": "sources/gum-edus-03.json",
+      "source_form": "edus",
+      "sha256": "e4edd0e7e9f448cbe4eb655264d657a10fe590cba2887e670e88837e363d24bd",
+      "size_bytes": 4113,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-03.json",
+      "rst_gold_ref": "rst/gum-edus-03.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-edus-04",
+      "relative_path": "sources/gum-edus-04.json",
+      "source_form": "edus",
+      "sha256": "73a5b68c7f6f01db5051941cd8728e50694a4958c937760172c6550d51da3453",
+      "size_bytes": 3972,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-04.json",
+      "rst_gold_ref": "rst/gum-edus-04.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-edus-05",
+      "relative_path": "sources/gum-edus-05.json",
+      "source_form": "edus",
+      "sha256": "c8ee7b027cd4ed82310ea58f0fa19aa9ae842d2cfc4a1f62fed6d7deb8701f4d",
+      "size_bytes": 5368,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-05.json",
+      "rst_gold_ref": "rst/gum-edus-05.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-edus-06",
+      "relative_path": "sources/gum-edus-06.json",
+      "source_form": "edus",
+      "sha256": "706bcdbecd105bd8944fdafbe3cebfb3489c6520fd88d6203c574b2d2dd0008f",
+      "size_bytes": 3524,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "multi_speaker",
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-06.json",
+      "rst_gold_ref": "rst/gum-edus-06.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-edus-07",
+      "relative_path": "sources/gum-edus-07.json",
+      "source_form": "edus",
+      "sha256": "92ef0c4ec13ab6599f82f59b955e55f60a05b1d1e90795fb8e4f351a42a47434",
+      "size_bytes": 7421,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-07.json",
+      "rst_gold_ref": "rst/gum-edus-07.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-edus-08",
+      "relative_path": "sources/gum-edus-08.json",
+      "source_form": "edus",
+      "sha256": "79609a4c590c7f998d494fb4054e10cb9fd93f30e03bd8f091f5d040f46f05f4",
+      "size_bytes": 3783,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-08.json",
+      "rst_gold_ref": "rst/gum-edus-08.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-edus-09",
+      "relative_path": "sources/gum-edus-09.json",
+      "source_form": "edus",
+      "sha256": "47780edd03cf38d0ec43c7a7a48fd50f0aa14bb02535ec1b3d929b8f7b024990",
+      "size_bytes": 5732,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-09.json",
+      "rst_gold_ref": "rst/gum-edus-09.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-edus-10",
+      "relative_path": "sources/gum-edus-10.json",
+      "source_form": "edus",
+      "sha256": "e88f6e6473aa2d88d8014bb30fdcbcc10c79bfee10247b018f16ccdb0e8fd19a",
+      "size_bytes": 6242,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-edus-10.json",
+      "rst_gold_ref": "rst/gum-edus-10.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-text-01",
+      "relative_path": "sources/gum-text-01.txt",
+      "source_form": "text",
+      "sha256": "cec0a4d5848eee4faec81346d7859d843d82f07cd99f4d4a22aaf43e883f326f",
+      "size_bytes": 4471,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "long_structured_prose",
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-text-01.json",
+      "rst_gold_ref": "rst/gum-text-01.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "gum-text-02",
+      "relative_path": "sources/gum-text-02.txt",
+      "source_form": "text",
+      "sha256": "c6f1183b2023428814b9f5e3ba4c0fea864a26f160d6da003f31890ecb9150c6",
+      "size_bytes": 6183,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "long_structured_prose",
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/gum-text-02.json",
+      "rst_gold_ref": "rst/gum-text-02.rs4",
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "markdown-gfm",
+      "relative_path": "sources/markdown-gfm.md",
+      "source_form": "markdown",
+      "sha256": "cb8ddd6b2e18e94d9d0a9b7a6207a5b349f1c03f893bbe20bfa49984b902411a",
+      "size_bytes": 1123,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "code_raw_markup_markdown",
+        "repeated_content"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/markdown-gfm.json",
+      "rst_gold_ref": null,
+      "redistributable": true,
+      "original_source_identity": "file:///Users/steveallison/AI_Projects%2BCode/isanlp_rst/tests/fixtures/markdown/gfm-rich.md",
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "markdown-html",
+      "relative_path": "sources/markdown-html.md",
+      "source_form": "markdown",
+      "sha256": "069a049ee1ac76203c5c019a4a001436f814e0a5df28cafc6039aacd233b6ee5",
+      "size_bytes": 144,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "code_raw_markup_markdown",
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/markdown-html.json",
+      "rst_gold_ref": null,
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "markdown-eacl",
+      "relative_path": "sources/markdown-eacl.md",
+      "source_form": "markdown",
+      "sha256": "c33956644f44511eb2a77fdae911a6a942f1d4b6f5fa832755f7ddf702013339",
+      "size_bytes": 134895,
+      "provenance_class": "real",
+      "risk_classes": [
+        "long_structured_prose",
+        "repeated_content"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/markdown-eacl.json",
+      "rst_gold_ref": null,
+      "redistributable": false,
+      "original_source_identity": "file:///Users/steveallison/Downloads/Docling_test/_docling/2024_eacl_long_171.md",
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "markdown-cxo",
+      "relative_path": "sources/markdown-cxo.md",
+      "source_form": "markdown",
+      "sha256": "14a884fb921596fef9bba66a68fa0e5dda8e089c42b288d5c142a6763dc924ba",
+      "size_bytes": 63727,
+      "provenance_class": "real",
+      "risk_classes": [
+        "presentation_notes",
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/markdown-cxo.json",
+      "rst_gold_ref": null,
+      "redistributable": false,
+      "original_source_identity": "file:///Users/steveallison/Downloads/Docling_test/_docling/2026_cxo_pov_short_draft.md",
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "docling-eacl",
+      "relative_path": "sources/docling-eacl.json",
+      "source_form": "docling_json",
+      "sha256": "b35407fa303bfc2c158f40da7b1f7aa463d687f14b2114c4387bf00a5b5f654f",
+      "size_bytes": 1848302,
+      "provenance_class": "real",
+      "risk_classes": [
+        "long_structured_prose",
+        "repeated_content"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/docling-eacl.json",
+      "rst_gold_ref": null,
+      "redistributable": false,
+      "original_source_identity": "file:///Users/steveallison/Downloads/Docling_test/_docling/2024_eacl_long_171.docling.json",
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "docling-cxo",
+      "relative_path": "sources/docling-cxo.json",
+      "source_form": "docling_json",
+      "sha256": "3d86ec7cf0056e6f5c5c9329a3c195a703863abfd70f1633b02e2dc120ecc35b",
+      "size_bytes": 194293,
+      "provenance_class": "real",
+      "risk_classes": [
+        "presentation_notes",
+        "repeated_content"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/docling-cxo.json",
+      "rst_gold_ref": null,
+      "redistributable": false,
+      "original_source_identity": "file:///Users/steveallison/Downloads/Docling_test/_docling/2026_cxo_pov_short_draft.docling.json",
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "docling-sebl",
+      "relative_path": "sources/docling-sebl.json",
+      "source_form": "docling_json",
+      "sha256": "9000b084487491143d42a0b400cb8efd9a4d3f141727b05de46a85089d3d3afb",
+      "size_bytes": 250108,
+      "provenance_class": "real",
+      "risk_classes": [
+        "ocr_heavy",
+        "rich_nested_tables"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/docling-sebl.json",
+      "rst_gold_ref": null,
+      "redistributable": false,
+      "original_source_identity": "file:///Users/steveallison/Downloads/Docling_test/_docling/sebl_-_moving_premises_form_2024_8.docling.json",
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "doclang-sebl",
+      "relative_path": "sources/doclang-sebl.dclg",
+      "source_form": "doclang_xml",
+      "sha256": "b9dc57e5156f3d718c98905a3862635c0577dfc729d33a9100ddac645fd09efc",
+      "size_bytes": 15470,
+      "provenance_class": "real",
+      "risk_classes": [
+        "ocr_heavy",
+        "rich_nested_tables"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/doclang-sebl.json",
+      "rst_gold_ref": null,
+      "redistributable": false,
+      "original_source_identity": "file:///Users/steveallison/Downloads/Docling_test/_docling/sebl_-_moving_premises_form_2024_8.dclg",
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "doclang-speakers",
+      "relative_path": "sources/doclang-speakers.dclg",
+      "source_form": "doclang_xml",
+      "sha256": "58c0e5f8f8d70b429d35825e10d360be4043ecdf5096e052583c99d44ac18f82",
+      "size_bytes": 28695,
+      "provenance_class": "real",
+      "risk_classes": [
+        "multi_speaker",
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/doclang-speakers.json",
+      "rst_gold_ref": null,
+      "redistributable": false,
+      "original_source_identity": "file:///Users/steveallison/Downloads/Docling_test/_docling/thoughts_on_enablement_with_eyeful.dclg",
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "doclang-archive-table",
+      "relative_path": "sources/doclang-archive-table.dclx",
+      "source_form": "doclang_archive",
+      "sha256": "519c54f83a5d3d0e52a26e24df2d170b9565c334c09128e406e89958fb5b5bb0",
+      "size_bytes": 954,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "rich_nested_tables",
+        "repeated_content"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/doclang-archive-table.json",
+      "rst_gold_ref": null,
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    },
+    {
+      "source_id": "doclang-archive-namespace",
+      "relative_path": "sources/doclang-archive-namespace.dclx",
+      "source_form": "doclang_archive",
+      "sha256": "53c2bd7b66bce85a6b53d9b7ef524bee7972e8c92d752ecd9fb251c5cd96574f",
+      "size_bytes": 922,
+      "provenance_class": "normative",
+      "risk_classes": [
+        "rich_nested_tables",
+        "unicode_coordinates"
+      ],
+      "expected_outcome": "success",
+      "expectation_ref": "expectations/doclang-archive-namespace.json",
+      "rst_gold_ref": null,
+      "redistributable": true,
+      "original_source_identity": null,
+      "conversion_provenance_digest": null
+    }
+  ],
+  "expectation_digest": "ff8828f3e92f72cbc70f9e8e9c3b6a1094e2e19685b9b53c5c66641f59ec57e1",
+  "manifest_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5"
+}

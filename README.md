@@ -13,9 +13,7 @@ End-to-end Rhetorical Structure Theory (RST) parser. Predicts discourse trees fr
 - [Advanced usage](#advanced-usage)
 - [Extended RST (eRST) graph decoding](#extended-rst-erst-graph-decoding)
 - [Hierarchical long document parsing](#hierarchical-long-document-parsing)
-- [Docling-native output](#docling-native-output)
-- [DocLang-native output](#doclang-native-output)
-- [Markdown-native output](#markdown-native-output)
+- [Production source ingest](#production-source-ingest)
 - [Quality diagnostics](#quality-diagnostics)
 - [Evaluation & metrics](#evaluation--metrics)
 - [Project status & licence](#project-status--licence)
@@ -328,185 +326,94 @@ For long documents exceeding single-window transformer limits, `isanlp_rst.hiera
 
 ---
 
-## Docling-native output
+## Production source ingest
 
-For structured documents — PDFs, PPTX decks, VTT transcripts, Markdown, HTML — converted via [Docling](https://github.com/docling-project/docling), `isanlp_rst` exposes `parse_docling()`: a single entry point that walks the canonical Docling structure, harvests the text in source-format-appropriate order, runs RST once over the full harvest, and returns the relations indexed by Docling `self_ref` with per-relation boundary annotations.
-
-```python
-from pathlib import Path
-from isanlp_rst.docling import parse_docling
-
-result = parse_docling(Path("deck.docling.json"), device="auto")
-
-# result.relations: tuple of RstRelation — flat list with left_id / right_id for tree shape
-# result.edus:      tuple of RstEdu     — leaves indexed by Docling self_ref
-# result.boundaries: tuple of Boundary  — slides, sections, speaker turns, tables
-# result.source_origin: dict            — mirror of doc.origin (mimetype, binary_hash, filename)
-```
-
-### Batch use — inject one Parser
-
-The underlying weights are ~2 GB. Constructing a fresh `Parser` per call would reload them every time. Build one parser, inject it:
-
-```python
-from isanlp_rst.parser import Parser
-from isanlp_rst.docling import parse_docling
-
-parser = Parser(hf_model_version="gumrrg", device="auto")
-
-for path in document_paths:
-    result = parse_docling(path, parser=parser)
-    ...
-```
-
-### What enters the harvest
-
-| Source format | Harvested by default | Boundary detection |
-| :--- | :--- | :--- |
-| PPTX | slide texts (titles, paragraphs, list items); speaker notes (`ContentLayer.NOTES`); picture VLM descriptions from `meta.description.text` where present | one `slide-N` page per slide group: on-slide text + notes + picture refs together |
-| PDF | body texts, section headers, list items, picture-children (OCR / chart labels) | `section-N` opened at each `section_header`; any pre-header content lives in a leading `document` boundary |
-| HTML / Markdown | same as PDF | same as PDF |
-| VTT | every transcript line | one `turn-N` per contiguous-same-voice run (`coalesce_speaker_turns=True` default) |
-| Tables (any format) | analysed **two-level**: cells are excluded from the main harvest; each `TableItem` gets its own RST mini-parse in `result.table_analyses`. Cell self_refs are real JSON pointers (`#/tables/N/data/table_cells/M`) that resolve against the source. Knob off via `include_table_cells=False`. | one `table-N` boundary per `TableItem`; `self_refs` is `(#/tables/N, <cell pointers>)`. The synthetic `#/tables/N` marker carries no harvest span so it cannot land in relation refs. |
-
-Toggle the harvest with keyword arguments: `include_picture_descriptions=False`, `include_slide_notes=False`, `include_furniture=True`, `include_table_cells=False`. See the [walkthrough](docs/examples/docling-native.md) for the full set of knobs and a tree-reconstruction example.
-
-### Caveats — read before relying on it
-
-- **RST was trained on prose.** Quality is highest on continuous narrative (VTT transcripts, decks with VLM descriptions, prose-heavy PDFs). On bullet-only slide decks without VLM enrichment, or on highly procedural / list-heavy PDFs, relations are dominated by `joint` / `organization` chains — structurally valid but rhetorically thin. Use the result with appropriate scepticism on non-prose input.
-- **Long inputs:** `parse_docling` raises `InputTooLargeError` above `max_harvest_chars=200_000` (configurable). The largest fixture exercised end-to-end is ~18 KB; the parser handles 40 KB+ cleanly in smoke tests but degradation at extreme sizes is empirical.
-- **Cross-boundary relations are preserved.** A relation may touch two slides or sections; `boundary_memberships` lists all touched boundaries. Filter on `len(boundary_memberships) == 1` for within-boundary relations only. A PPTX `slide-N` page already includes that slide's notes and picture refs — they are not a second boundary.
-
----
-
-## DocLang-native output
-
-For documents authored in the [DocLang 0.7 XML format](https://github.com/doclang-project/doclang) — the AI-native document standard from IBM, ABBYY, RedHat, HumanSignal, NVIDIA, and Forgis — `isanlp_rst` exposes `parse_doclang()` alongside `parse_docling`. Both are **first-class entry points** with honestly different schemas; neither coerces into the other.
+`isanlp_rst.ingest` is the single production boundary for analysing real-world
+source material. It accepts plain text, exact pre-segmented EDUs, Markdown,
+DoclingDocument JSON, and DocLang XML or `.dclx` archives. There are no separate
+format parse functions, result envelopes, policies, or caches.
 
 ```python
 from pathlib import Path
-from isanlp_rst.doclang import parse_doclang
 
-result = parse_doclang(Path("document.dclg"), device="auto")
+from isanlp_rst import Parser
+from isanlp_rst.ingest import AUTHORED_PROSE_V1, ProductionIngestor, SourceArtifact
 
-# result.relations:   tuple of RstRelation, indexed by local-name XPath
-# result.edus:        tuple of RstEdu      with the same xpath addressing
-# result.boundaries:  tuple of Boundary    — headings, pages, groups, tables, field_regions
-# result.source_origin: {"format": "doclang", "namespace": ..., "version": "<root @version or empty>", "head_children": [...]}
+parser = Parser.from_model_release(
+    Path("/absolute/path/to/model-releases"),
+    "gumrrg-eb1d5745f3a1",
+    family="dmrst",
+    device="auto",
+)
+ingestor = ProductionIngestor(parser=parser)
+
+artifact = SourceArtifact.from_path(Path("report.md"))
+result = ingestor.analyse(
+    artifact,
+    policy=AUTHORED_PROSE_V1,
+    cache_dir=Path("/absolute/path/to/cache"),
+)
 ```
 
-### How addresses work
+The default policy inventories the complete valid source first, then admits
+authored headings, prose, meaningful list items, and authored turns to primary
+RST analysis. Tables, code, formulas, raw markup, pictures, metadata, fields,
+and assets remain retained side channels. Machine-generated picture
+descriptions, notes, navigation, furniture, backgrounds, and invisible content
+are excluded from primary RST but remain receipted. No caller-supplied format
+switch can silently widen that policy.
 
-Every element is addressed by a **local-name canonical XPath** of the form `/doclang[1]/heading[2]/text[1]` — 1-based position predicates per local name, namespaces stripped. The same document with or without `xmlns="https://www.doclang.ai/ns/v0"` produces identical paths. (`lxml.etree.ElementTree.getpath()` is **not** used; it emits `/*/*[N]` wildcards on default-namespaced documents.) Paths round-trip against the pinned upstream valid-fixture manifest.
-
-### What enters the DocLang harvest
-
-| Element | Default | Notes |
-| :--- | :--- | :--- |
-| `<text>`, `<heading>`, `<footnote>` | harvested | one span per element; `<heading>` also opens a `heading-N` boundary |
-| `<list>` items | harvested per `<ldiv/>` marker | item text aggregates `marker.tail` + intervening sibling tails |
-| `<picture><caption>` | harvested | `include_picture_captions=False` to skip |
-| `<code>` | skipped | source code is not prose — `include_code_blocks=True` to opt in |
-| `<formula>` | skipped | raw LaTeX is not prose — `include_formulas=True` to opt in |
-| `<table>` cells | analysed **two-level**: excluded from the main harvest; each table gets its own RST mini-parse in `result.table_analyses`, cells addressed by marker xpath with row/col grid positions | one `table-N` boundary per table; `xpaths` is `(table_xpath, <cell marker xpaths>)`. `include_table_cells=False` skips the analyses. `<index>` and `<tabular>` remain boundary-only. |
-| `<field_region>` body | skipped | `include_field_regions=True` to opt in |
-| `<page_header>` / `<page_footer>` | skipped | `include_furniture=True` to include |
-| `<layer value="background">` items | skipped | `include_background=True` to include |
-| `<layer value="furniture">` items | skipped | covered by `include_furniture=True` |
-
-Toggle each via the corresponding keyword. See the [walkthrough](docs/examples/doclang-native.md) for the full set, a tree-reconstruction example, and `<thread>` handling for cross-fragment continuation.
-
-### Boundary kinds
-
-DocLang doesn't model slides or speaker turns — the boundary set reflects what the spec **does** model: `heading-N`, `page-N` (between `<page_break/>` markers), `group-N` (with `group-N-M` for one level of nesting), `table-N`, `field_region-N`, and a `document` fallback. If your input is PPTX or VTT, use `parse_docling` on the Docling JSON form — those formats give you `slide-N` (one page per slide: body + notes + pictures) / `turn-N` instead.
-
-### Validation
-
-`parse_doclang(..., validate_xml=True)` (default) gates the file through the [`doclang`](https://pypi.org/project/doclang/) PyPI package's `validate(path)` before parsing ([spec + toolkit](https://github.com/doclang-project/doclang/)). The `doclang` package is validator-only (no DOM) — we parse with `lxml` ourselves. `doclang[schematron-saxon]` is included in the production `formats` extra. If it is not installed, validation **fails closed** with `InvalidDoclangError` (pass `validate_xml=False` only when intentionally accepting non-validated XML).
-
-### Caveats
-
-- **RST was trained on prose.** Same caveat as `parse_docling`: bullet-only documents and form-shaped content yield rhetorically thin relations dominated by `joint` / `organization` chains.
-- **Stable addressing across producers.** The local-name XPath is reproducible from the parsed XML alone, but it depends on document order. A producer that reorders elements between runs will produce different addresses for the same logical content. DocLang 0.7 has no stable per-element identifier in the spec.
-- **`<thread>` is continuation, not identity.** Two spans sharing `thread_id` are fragments of one logical paragraph (typically across a `<page_break/>`). The RST mapper aggregates dedup'd thread ids on each relation as `nucleus_thread_ids` / `satellite_thread_ids`.
-
----
-
-## Markdown-native output
-
-For plain CommonMark / GFM markdown — READMEs, design notes, MkDocs / MyST corpora — `isanlp_rst` exposes `parse_markdown()` as a first-class entry point that reads `.md` directly, with no Docling round-trip. CommonMark parsing is handled in pure Python via [`markdown-it-py`](https://markdown-it-py.readthedocs.io/) plus the [`mdit-py-plugins`](https://mdit-py-plugins.readthedocs.io/) front-matter and GFM table plugins.
+`result` is a strict `ProductionAnalysisResult` containing the prepared
+document, complete dispositions and receipts, the coherent `RstAnalysis`, and
+native source anchors. Before consuming the tree, require all four coverage
+measures to be complete:
 
 ```python
-from pathlib import Path
-from isanlp_rst.markdown import parse_markdown
-
-result = parse_markdown(Path("design-notes.md"), device="auto")
-
-# result.relations:      tuple of RstRelation, indexed by #/blocks/N — the document tree
-# result.edus:           tuple of RstEdu      with the same block_ref addressing
-# result.table_analyses: tuple of TableAnalysis — one RST mini-parse per table (two-level)
-# result.boundaries:     tuple of Boundary    — sections, tables, code blocks, document fallback
-# result.source_origin:  {"format": "markdown", "gfm": True, "front_matter": "<raw text>", "front_matter_format": "yaml"}
+assert result.preparation_receipt.inventory_coverage == 1.0
+assert result.preparation_receipt.primary_source_coverage == 1.0
+assert result.preparation_receipt.prepared_text_coverage == 1.0
+assert result.preparation_receipt.analysis_anchor_coverage == 1.0
 ```
 
-### How block_refs work
+An input with no eligible authored discourse returns
+`analysis_status == "empty_primary_discourse"`, a complete inventory and
+disposition receipt, and no fabricated RST tree. Long sources are partitioned
+at document structure and parser-capacity boundaries, analysed recursively, and
+stitched into one anchored result; they are not truncated or rejected by a
+format-specific character ceiling.
 
-Every main-harvest unit gets a sequential `#/blocks/N` reference in document order — parallel to Docling's `#/texts/N`. Table cells live in their own namespace, `#/tables/T/cells/K` (K = grid position, row-major, stable past empty cells). The synthetic `#/tables/T` marker appears only on the table boundary; it carries no harvest span so it cannot leak into relation refs.
+Ambiguous JSON, XML, text, extensionless, or byte inputs require an explicit
+`SourceForm`. DocLang always runs current XSD and Schematron validation;
+Docling JSON always runs current `docling-core` model validation. Cache identity
+includes the raw source contract, preparation policy and implementation,
+released model bytes, and result schema. Corrupt or contradictory cache entries
+fail closed.
 
-### What enters the markdown harvest
-
-The cross-format directive is **analyse everything by default** — but two-level: prose enters the document tree; each table gets its own RST mini-parse in `table_analyses`, so table discourse never distorts prose discourse.
-
-| Construct | Default | Notes |
-| :--- | :--- | :--- |
-| Headings (ATX + Setext) | harvested | `level` ∈ {1..6}; opens `section-N` boundary |
-| Paragraphs | harvested | one span per paragraph |
-| List items | harvested | one span per item; nested items collapse into outer |
-| Blockquote content | harvested | `include_blockquotes=False` gates the whole quoted region (paragraphs, headings, lists, code, HTML, tables). A quoted heading never opens a section. |
-| Fenced + indented code blocks | harvested | `include_code_blocks=False` for prose-only; `code_block-N` boundary still emitted |
-| Raw HTML blocks | tags stripped, text harvested | `include_html=False` to skip |
-| GFM tables | per-table mini-parse in `table_analyses` | `include_table_cells=False` to skip; cells carry row/col grid positions |
-| GFM strikethrough | wrappers dropped, text kept | enabled under `gfm=True` — no literal `~~` in the harvest |
-| Image alt text | flattened into parent paragraph | inline content; not its own span |
-| Front-matter (YAML only) | stripped from harvest | raw text preserved in `source_origin.front_matter` |
-| Thematic break (`---`) | skipped | divider, not prose |
-
-### Markdown boundary kinds
-
-- `section-N` — opened at each heading; `level` carries 1–6. Quoted headings excluded.
-- `table-T` — one per table; `block_refs` is `(#/tables/T, <cell refs…>)`; matches `table_analyses[].id`.
-- `code_block-N` — one per code block; one-cell `block_refs`.
-- `document` — pre-heading bucket, or fallback when no headings exist.
-
-### Markdown caveats
-
-- **RST was trained on prose.** Tables of textual content (definitions, comparisons, feature lists) parse reasonably; tables of pure numbers produce noisy, low-value mini-trees. The two-level split keeps that noise out of the document tree either way.
-- **No `docling` runtime dep.** The markdown entry path is pure Python — `markdown-it-py` + `mdit-py-plugins` only. If you need full Docling fidelity on markdown (heavy layout / OCR pipeline), convert to Docling JSON first and use `parse_docling`.
-- **Front-matter is raw YAML text.** No PyYAML / `tomllib` dependency — the consumer parses `source_origin.front_matter` if structured access is needed. TOML/JSON front-matter is not supported.
-
-See the [walkthrough](docs/examples/markdown-native.md) for tree reconstruction, per-section grouping, table-analysis usage, and the full knob set, and the [design plan](docs/plans/2026-06-12-markdown-native-rst.md) for the cross-format consistency directive.
+The full contract and examples are in
+[`docs/production-source-ingest.md`](docs/production-source-ingest.md).
 
 ---
 
 ## Quality diagnostics
 
-`pixi run -e offline rst-diag <paths>` parses any mix of `.md` / `*.docling.json` / `*.dclg` sources (files or directories; one shared model load) and emits per-document proxy metrics — no gold annotations required:
+`pixi run -e offline rst-diag <paths>` analyses any mix of `.md`,
+`*.docling.json`, `*.dclg`, `*.dclg.xml`, and `*.dclx` sources through one
+canonical ingestor and one shared model load. It emits:
 
 - **joint ratio** — share of relations labelled joint / same-unit / organization (high = rhetorically thin chaining)
 - **tree skew** — max depth ÷ log₂(EDUs) (≫ 1 = degenerate chain)
-- **cross-boundary ratio** — relations spanning more than one section / slide / turn
-- **note ratio** — lopsided EDU/span alignment
-- **table analyses** — per-table mini-parse count
+- **prepared characters and segments** — the exact primary RST material
+- **all four coverage ratios** — inventory, primary source, prepared text, and analysis anchors
 
-Use it to A/B any harvest-policy change before trusting it. `--json` for machine-readable output; `--model-version`, `--device`, `--dtype` as in the entry points.
-
-All three entry points also accept `cache_dir=` — an on-disk result cache keyed by source bytes + model identity + knobs, so batch re-runs skip unchanged documents entirely — and `dtype=` for mixed-precision overrides.
+Use it to inspect result quality and source-accounting integrity. `--json` gives
+machine-readable output; `--model-version`, `--device`, and `--dtype` select the
+shared parser.
 
 ---
 
 ## Production package and offline workbench
 
-`isanlp_rst` is the importable production product. It contains raw/pre-segmented RST inference, typed contracts, model validation/loading, eRST runtime completion, source-format adapters, and rendering. Its wheel and source distribution exclude corpus builders, trainers, evaluators, research harnesses, tests, scripts, experiment data, and model candidates.
+`isanlp_rst` is the importable production product. It contains raw/pre-segmented RST inference, typed contracts, model validation/loading, eRST runtime completion, canonical source ingest, and rendering. Its wheel and source distribution exclude corpus builders, trainers, evaluators, research harnesses, tests, scripts, experiment data, Gold Set content, and model candidates.
 
 `offline_workbench` is the repository-only surface for corpus preparation, training, evaluation, and local model promotion. `research_harness` remains a repository-only research implementation but runs in the same root `offline` Pixi environment. Production never imports either namespace.
 
@@ -518,7 +425,7 @@ pixi run -e offline production-boundary
 pixi run -e offline offline-smoke
 ```
 
-The full ownership and migration map is in [`docs/production-offline-boundary.md`](docs/production-offline-boundary.md). This split is independent of feature 002: format-native ingest remains production functionality because it prepares real source material for analysis; training-corpus preparation remains offline.
+The full ownership and migration map is in [`docs/production-offline-boundary.md`](docs/production-offline-boundary.md). Production source ingest remains production functionality because it prepares real source material for analysis; training-corpus preparation, evaluation, and Gold Set assessment remain offline.
 
 ---
 

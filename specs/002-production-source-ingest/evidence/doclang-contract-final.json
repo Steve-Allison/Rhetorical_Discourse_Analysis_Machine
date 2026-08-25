@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "retrieved_at": "2026-08-25T18:32:10Z",
+  "authority": {
+    "distribution": "doclang",
+    "latest_version": "0.7.3",
+    "release_date": "2026-07-15",
+    "main_commit": "6d3b3d3c195d1f63333c5c5fcba8da17937a33bd",
+    "pypi_url": "https://pypi.org/project/doclang/",
+    "spec_url": "https://github.com/doclang-project/doclang/blob/6d3b3d3c195d1f63333c5c5fcba8da17937a33bd/spec.md",
+    "valid_fixtures_url": "https://github.com/doclang-project/doclang/tree/6d3b3d3c195d1f63333c5c5fcba8da17937a33bd/tests/data/valid"
+  },
+  "local_contract": {
+    "pyproject_specifier": ">=0.7.3,<0.8",
+    "locked_version": "0.7.3",
+    "schematron_extra_installed": true,
+    "current": true,
+    "valid_fixture_count": 42,
+    "fixture_names_match": true,
+    "fixture_hashes_match": true,
+    "empty_namespace_validated_explicitly": true
+  },
+  "archive_contract": {
+    "extension": ".dclx",
+    "container": "ZIP using Open Packaging Conventions",
+    "required_parts": [
+      "[Content_Types].xml",
+      "_rels/.rels",
+      "document.xml"
+    ],
+    "document_content_type": "application/vnd.doclang.document+xml",
+    "document_relationship_type": "http://doclang.ai/ns/package/2026/relationships/document",
+    "document_relationship_target": "document.xml",
+    "relative_assets_must_resolve": true,
+    "page_images_must_not_exceed_markup_page_count": true,
+    "legacy_bare_zip_accepted": false
+  },
+  "verification": {
+    "fixture_command": "pixi run -e offline python scripts/verify_doclang_fixtures.py",
+    "fixture_status": "42 local and 42 upstream; names and hashes match",
+    "tests": [
+      "tests/production_ingest/test_upstream_conformance.py",
+      "tests/production_ingest/test_doclang_complex.py"
+    ],
+    "status": "passed",
+    "protected_text_present": false
+  }
+}

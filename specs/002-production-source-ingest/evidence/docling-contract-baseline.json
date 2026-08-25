@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "checked_at": "2026-08-25T13:30:03Z",
+  "distribution": "docling-core",
+  "installed_version": "2.92.0",
+  "latest_pypi_version": "2.92.0",
+  "local_constraint": ">=2.92,<2.93",
+  "upstream_main_commit": "dedc35da4c99e3ae597423358e5648eb29ee3cad",
+  "document_schema_version": "1.10.0",
+  "content_layers": [
+    "body",
+    "furniture",
+    "background",
+    "invisible",
+    "notes"
+  ],
+  "iterate_items_parameters": [
+    "root",
+    "with_groups",
+    "traverse_pictures",
+    "page_no",
+    "included_content_layers",
+    "_level"
+  ],
+  "fixtures": {
+    "count": 4,
+    "raw_schema_name": "DoclingDocument",
+    "raw_versions": ["1.10.0"],
+    "accepted_versions": ["1.10.0"],
+    "all_loaded": true
+  },
+  "sources": [
+    "https://pypi.org/project/docling-core/",
+    "https://github.com/docling-project/docling-core",
+    "https://github.com/docling-project/docling"
+  ]
+}

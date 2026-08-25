@@ -8,6 +8,38 @@
 
 > **Working-tree caveat:** the repository already contained material uncommitted changes before this review. Findings describe the code and artifacts actually present on disk on 25 August 2026, not necessarily the checked-in HEAD alone.
 
+## Feature 002 production-ingest remediation status
+
+This report is the dated, pre-remediation forensic snapshot. Its production
+findings created Feature 002, but its model-development and research findings
+did not become production-ingest requirements.
+
+Feature 002 replaces the three format-specific production entry points with
+one canonical `isanlp_rst.ingest` service for real-world analysis sources:
+plain text, supplied EDUs, Markdown, Docling JSON, DocLang XML and current
+DocLang `.dclx` OPC packages. It inventories the complete source, applies one
+named authored-prose policy, preserves complex non-prose as anchored side
+channels, prepares reversibly, subdivides from source structure and parser
+capacity, produces one coherent analysis, and persists complete source
+anchors and receipts. The former `parse_markdown`, `parse_docling` and
+`parse_doclang` APIs, result envelopes and independent caches are removed;
+there is no compatibility codeline.
+
+The installable production wheel contains the canonical ingest runtime and
+private decoding helpers only. Corpus acquisition, preparation for training,
+trainers, evaluators, Gold sources, promotion tooling and research harnesses
+remain repository-only and are unavailable in the clean production install.
+A released model enters production only through its immutable model-release
+manifest; production ingest does not execute or reproduce training.
+
+At the implementation-candidate cut, the source tree passed the complete
+non-slow suite, focused Feature 002 suite, Ruff, Pyright and the production
+import/dependency boundary. Final Feature 002 promotion still requires the
+built-wheel clean-install run, frozen Gold comparison, direct inspection and
+no-waiver decision described in
+`specs/002-production-source-ingest/evidence/`. Those later records, rather
+than this historical report, are the authority for the delivered status.
+
 ## Executive verdict
 
 There is **not one ingest process** in this repository. There are three systems with different users, failure modes and quality verdicts. Combining them into one score would be architecturally misleading.

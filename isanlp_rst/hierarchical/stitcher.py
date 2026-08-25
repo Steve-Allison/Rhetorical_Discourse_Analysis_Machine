@@ -166,7 +166,6 @@ class HierarchicalSectionStitcher:
 
         # 1. Micro-Stage: Parse each section
         micro_analyses: list[RstAnalysis] = []
-        micro_docs: list[RstDocument] = []
         for sec in sections:
             sec_doc = RstDocument(
                 document_id=f"{document.document_id}_sec_{sec.section_id}",
@@ -177,17 +176,11 @@ class HierarchicalSectionStitcher:
             )
             sec_analysis = self.parser.parse_document(sec_doc, output="rst_tree")
             micro_analyses.append(sec_analysis)
-            micro_docs.append(sec_doc)
 
         # 2. Macro-Stage: Parse macro relationships across section roots
         section_summary_texts: list[str] = []
         for sec, ana in zip(sections, micro_analyses, strict=True):
-            root = ana.root_node
-            summary_text = root.text.strip() if root is not None else sec.text.strip()
-            # Truncate summary if excessively long for macro model
-            if len(summary_text) > 300:
-                summary_text = summary_text[:300] + "..."
-            section_summary_texts.append(summary_text)
+            section_summary_texts.append(nuclear_spine_text(ana, fallback=sec.text))
 
         macro_doc = RstDocument.from_edus(
             edus=section_summary_texts,
@@ -409,3 +402,52 @@ class HierarchicalSectionStitcher:
             provenance=parent_document.provenance,
             timing=TimingRecord(total_ms=total_timing_ms),
         )
+
+
+def nuclear_spine_text(analysis: RstAnalysis, *, fallback: str) -> str:
+    """Return exact source EDU text along the analysis root's nuclear spine."""
+
+    root = analysis.root_node
+    if root is None:
+        text = fallback.strip()
+        if not text:
+            raise ValueError("macro representation requires non-empty source text")
+        return text
+    node_by_id = {node.node_id: node for node in analysis.nodes}
+    edges_by_parent: dict[int, list[PrimaryRelationEdge]] = {}
+    for edge in analysis.primary_edges:
+        edges_by_parent.setdefault(edge.parent_id, []).append(edge)
+
+    def visit(node_id: int, ancestors: frozenset[int]) -> tuple[str, ...]:
+        if node_id in ancestors:
+            raise ValueError("RST analysis contains a primary-edge cycle")
+        node = node_by_id[node_id]
+        children = sorted(
+            edges_by_parent.get(node_id, ()),
+            key=lambda edge: node_by_id[edge.child_id].edu_span,
+        )
+        if not children:
+            text = node.text.strip()
+            return (text,) if text else ()
+        pattern = children[0].nuclearity.value
+        selected = children
+        if pattern == "NS":
+            selected = children[:1]
+        elif pattern == "SN":
+            selected = children[-1:]
+        return tuple(
+            text
+            for edge in selected
+            for text in visit(edge.child_id, ancestors | {node_id})
+        )
+
+    pieces = visit(root.node_id, frozenset())
+    representation = " ".join(piece for piece in pieces if piece)
+    if not representation:
+        representation = fallback.strip()
+    if not representation:
+        raise ValueError("macro representation requires non-empty nuclear source text")
+    return representation
+
+
+__all__ = ["HierarchicalSectionStitcher", "SectionSlice", "nuclear_spine_text"]

@@ -14,9 +14,13 @@ from pathlib import Path
 import pytest
 from lxml import etree
 
-from isanlp_rst.doclang.loader import local_name, local_path, parse_doclang_xml
+from isanlp_rst.doclang.loader import local_name, local_path
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "doclang"
+
+
+def _parse_fixture(name: str) -> etree._ElementTree:
+    return etree.parse(FIXTURES / name)
 
 
 def _resolve_local_path(tree: etree._ElementTree, path: str) -> etree._Element | None:
@@ -43,8 +47,8 @@ def _resolve_local_path(tree: etree._ElementTree, path: str) -> etree._Element |
 def test_paths_are_namespace_agnostic_between_two_fixtures() -> None:
     """Two semantically-identical fixtures with and without ``xmlns`` must
     produce identical path roots."""
-    ns_tree = parse_doclang_xml(FIXTURES / "ok_comprehensive.dclg")
-    no_ns_tree = parse_doclang_xml(FIXTURES / "ok_no_namespace.dclg")
+    ns_tree = _parse_fixture("ok_comprehensive.dclg")
+    no_ns_tree = _parse_fixture("ok_no_namespace.dclg")
     assert local_path(ns_tree.getroot()) == "/doclang[1]"
     assert local_path(no_ns_tree.getroot()) == "/doclang[1]"
 
@@ -52,7 +56,7 @@ def test_paths_are_namespace_agnostic_between_two_fixtures() -> None:
 def test_namespaced_doc_path_never_contains_wildcard() -> None:
     """Regression: lxml's ``getpath()`` emits ``/*/*[N]`` on namespaced
     docs. Our walker must not."""
-    tree = parse_doclang_xml(FIXTURES / "ok_comprehensive.dclg")
+    tree = _parse_fixture("ok_comprehensive.dclg")
     for el in tree.iter():
         if not isinstance(el.tag, str):
             continue
@@ -74,7 +78,7 @@ def test_namespaced_doc_path_never_contains_wildcard() -> None:
     ],
 )
 def test_local_path_is_unique_within_document(fixture_name: str) -> None:
-    tree = parse_doclang_xml(FIXTURES / fixture_name)
+    tree = _parse_fixture(fixture_name)
     paths = [local_path(el) for el in tree.iter() if isinstance(el.tag, str)]
     assert len(paths) == len(set(paths)), f"duplicate paths in {fixture_name}"
 
@@ -89,7 +93,7 @@ def test_local_path_is_unique_within_document(fixture_name: str) -> None:
 )
 def test_local_path_round_trips_via_index(fixture_name: str) -> None:
     """Every emitted path resolves back to its own element."""
-    tree = parse_doclang_xml(FIXTURES / fixture_name)
+    tree = _parse_fixture(fixture_name)
     for el in tree.iter():
         if not isinstance(el.tag, str):
             continue
@@ -135,43 +139,3 @@ def test_local_name_no_namespace_unchanged() -> None:
     xml = b"<doclang><text>hi</text></doclang>"
     tree = etree.ElementTree(etree.fromstring(xml))
     assert local_name(tree.getroot()[0]) == "text"
-
-
-# --- parse_doclang_xml on missing file --------------------------------------
-
-
-def test_parse_doclang_xml_missing_file_raises_oserror(tmp_path: Path) -> None:
-    """The loader does not silently swallow a missing file."""
-    missing = tmp_path / "does_not_exist.dclg"
-    with pytest.raises(OSError):
-        parse_doclang_xml(missing)
-
-
-# --- XXE hardening ----------------------------------------------------------
-
-
-def test_parse_doclang_xml_refuses_external_entity_xxe(tmp_path: Path) -> None:
-    """External entity SYSTEM paths must not leak file contents into
-    ``itertext()``. Raising ``XMLSyntaxError`` is acceptable; the secret
-    must never appear in harvested text."""
-    secret = tmp_path / "secret.txt"
-    secret.write_text("TOP_SECRET_PAYLOAD_XYZ", encoding="utf-8")
-    xml_path = tmp_path / "xxe.dclg"
-    xml_path.write_text(
-        (
-            '<?xml version="1.0" encoding="UTF-8"?>\n'
-            "<!DOCTYPE doclang [\n"
-            f'  <!ENTITY xxe SYSTEM "{secret.resolve()}">\n'
-            "]>\n"
-            '<doclang xmlns="https://www.doclang.ai/ns/v0">'
-            "<text>&xxe;</text>"
-            "</doclang>\n"
-        ),
-        encoding="utf-8",
-    )
-    try:
-        tree = parse_doclang_xml(xml_path)
-    except etree.XMLSyntaxError:
-        return
-    blob = "".join(tree.getroot().itertext())
-    assert "TOP_SECRET_PAYLOAD_XYZ" not in blob

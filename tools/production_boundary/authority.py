@@ -29,7 +29,7 @@ class OwnershipAuthority:
         )
         self.rules = rules or default_rules
         self.production_dependencies = frozenset({
-            "python", "playwright", "razdel", "lxml", "numpy", "transformers", "torch", "huggingface-hub", "tqdm", "pillow", "networkx", "packaging", "pydantic", "python-dotenv", "safetensors", "doclang", "isanlp", "docling-core", "markdown-it-py", "mdit-py-plugins",
+            "python", "playwright", "razdel", "lxml", "numpy", "transformers", "torch", "huggingface-hub", "tqdm", "pillow", "networkx", "packaging", "pydantic", "python-dotenv", "rfc8785", "safetensors", "doclang", "isanlp", "docling-core", "markdown-it-py", "mdit-py-plugins",
         })
         self.offline_dependencies = frozenset({"fire", "jsonnet", "nltk", "peft", "pytest", "pytest-cov", "ruff", "pyright", "tiktoken", "types-lxml", "build"})
 

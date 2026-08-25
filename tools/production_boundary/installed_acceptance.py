@@ -1,7 +1,6 @@
 """Exercise the installed wheel's complete production surface outside the repository."""
 
 import argparse
-from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError, distribution
 import json
 from pathlib import Path
@@ -20,36 +19,6 @@ _TEXT = "Because it rained, the match stopped. The crowd left."
 _EDUS = ("Because it rained, the match stopped.", "The crowd left.")
 
 
-@dataclass
-class _Node:
-    start: int
-    end: int
-    left: "_Node | None" = None
-    right: "_Node | None" = None
-    relation: str = ""
-    nuclearity: str = ""
-
-
-class _FormatParser:
-    """Deterministic parser injection that isolates adapter behavior from weights."""
-
-    hf_model_name = "acceptance/stub"
-    hf_model_version = "gumrrg"
-    relinventory = None
-
-    def __call__(self, text: str) -> dict[str, list[_Node]]:
-        midpoint = max(1, len(text) // 2)
-        root = _Node(
-            start=0,
-            end=len(text),
-            left=_Node(0, midpoint),
-            right=_Node(midpoint, len(text)),
-            relation="elaboration",
-            nuclearity="NS",
-        )
-        return {"rst": [root]}
-
-
 def _assert_offline_distributions_absent() -> None:
     present: list[str] = []
     for name in _OFFLINE_DISTRIBUTIONS:
@@ -62,21 +31,53 @@ def _assert_offline_distributions_absent() -> None:
         raise AssertionError(f"offline distributions are available in production: {present}")
 
 
-def _run_formats(markdown: Path, doclang: Path, docling: Path) -> dict[str, int]:
-    from isanlp_rst.doclang import parse_doclang
-    from isanlp_rst.docling import parse_docling
-    from isanlp_rst.markdown import parse_markdown
+def _run_formats(markdown: Path, doclang: Path, docling: Path) -> dict[str, object]:
+    from isanlp_rst.contracts import OutputFormalismEnum, RstAnalysis, RstDocument
+    from isanlp_rst.ingest import ProductionAnalysisResult, ProductionIngestor, SourceArtifact, SourceForm
+    from isanlp_rst.model_loading import ParserCapacity
 
-    parser = _FormatParser()
-    results = (
-        parse_markdown(markdown, parser=parser),
-        parse_doclang(doclang, parser=parser, validate_xml=False),
-        parse_docling(docling, parser=parser),
+    class _AcceptanceParser:
+        analysis_capacity = ParserCapacity(unit="edu_count", maximum=512, source="installed-acceptance")
+        model_release_identity = None
+
+        def parse_document(self, document: RstDocument, output: str = "rst_tree") -> RstAnalysis:
+            return RstAnalysis(
+                document_id=document.document_id,
+                formalism=OutputFormalismEnum(output),
+                nodes=(),
+                primary_edges=(),
+            )
+
+        def parse_hierarchical(
+            self,
+            document: RstDocument,
+            custom_boundaries: object | None = None,
+            output: str = "rst_tree",
+        ) -> RstAnalysis:
+            if custom_boundaries is None:
+                raise AssertionError("structured acceptance requires explicit subdivision boundaries")
+            return self.parse_document(document, output)
+
+    artifacts = (
+        SourceArtifact.from_text(_TEXT, source_name="acceptance.txt"),
+        SourceArtifact.from_edus(_EDUS, source_name="acceptance.edus"),
+        SourceArtifact.from_path(markdown),
+        SourceArtifact.from_path(doclang),
+        SourceArtifact.from_path(docling, source_form=SourceForm.DOCLING_JSON),
     )
-    for result in results:
-        if json.loads(result.to_json()) != result.to_dict():
-            raise AssertionError(f"optional-format serialization failed for {type(result).__name__}")
-    return {type(result).__name__: len(result.edus) for result in results}
+    ingestor = ProductionIngestor(parser=_AcceptanceParser())
+    result: dict[str, object] = {}
+    for artifact in artifacts:
+        analysis = ingestor.analyse(artifact)
+        payload = json.loads(analysis.model_dump_json())
+        reloaded = ProductionAnalysisResult.model_validate(payload)
+        if reloaded != analysis:
+            raise AssertionError(f"canonical serialization changed for {artifact.source_form.value}")
+        result[artifact.source_form.value] = {
+            "analysis_status": analysis.analysis_status.value,
+            "prepared_segments": len(analysis.prepared_document.segments) if analysis.prepared_document else 0,
+        }
+    return result
 
 
 def _run_full(model_store: Path, device: str) -> dict[str, object]:

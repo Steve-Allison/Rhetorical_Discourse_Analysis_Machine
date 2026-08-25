@@ -314,6 +314,64 @@ class BasePredictor:
 
         unit.text = original_text[unit.start : unit.end]
 
+    def remap_tree_to_edu_spans(
+        self,
+        unit: Any,
+        spans: Sequence[tuple[int, int]],
+        original_text: str,
+    ) -> None:
+        """Map an inferred tree onto authoritative predefined-EDU spans.
+
+        Transformer tokenizers may normalize combining Unicode marks, so their
+        offset mappings are not a safe authority for caller-supplied EDU
+        boundaries. The model still determines the tree; this method verifies
+        that it produced exactly one ordered leaf per EDU and restores the
+        caller's exact character coordinates.
+        """
+
+        leaves: list[Any] = []
+
+        def collect(node: Any) -> None:
+            left = getattr(node, "left", None)
+            right = getattr(node, "right", None)
+            if left is None and right is None:
+                leaves.append(node)
+                return
+            if left is None or right is None:
+                raise ValueError("predefined-EDU tree contains a unary node")
+            collect(left)
+            collect(right)
+
+        collect(unit)
+        if len(leaves) != len(spans):
+            raise ValueError(
+                "The produced tree does not contain exactly one leaf per provided EDU "
+                f"(leaves={len(leaves)}, edus={len(spans)})."
+            )
+        for index, (leaf, (start, end)) in enumerate(zip(leaves, spans, strict=True)):
+            if not (0 <= start < end <= len(original_text)):
+                raise ValueError(f"EDU span {index} is outside the joined source text")
+            if index and spans[index - 1][1] >= start:
+                raise ValueError(f"EDU span {index} is not ordered after the preceding EDU")
+            leaf.start = start
+            leaf.end = end
+            leaf.text = original_text[start:end]
+
+        def update_internal(node: Any) -> None:
+            left = getattr(node, "left", None)
+            right = getattr(node, "right", None)
+            if left is None and right is None:
+                return
+            if left is None or right is None:
+                raise ValueError("predefined-EDU tree contains a unary node")
+            update_internal(left)
+            update_internal(right)
+            node.start = left.start
+            node.end = right.end
+            node.text = original_text[node.start : node.end]
+
+        update_internal(unit)
+
     @staticmethod
     def _guess_token_offsets(text: str, tokens: Sequence[str]) -> list[tuple[int, int]]:
         """Best-effort alignment of already-tokenized `tokens` to raw `text`.

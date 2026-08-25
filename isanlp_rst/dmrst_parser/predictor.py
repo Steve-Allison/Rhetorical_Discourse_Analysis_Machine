@@ -381,7 +381,7 @@ class PredictorDMRST(BasePredictor):
 
         tree = DUConverter(predictions, tokenization_type="default").collect()[0]
 
-        self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
+        self.remap_tree_to_edu_spans(tree, spans, text)
 
         leaves: list[str] = []
         self._collect_leaf_texts(tree, leaves)

@@ -23,6 +23,12 @@ class ParserInput:
     LabelforMetric: list[str] = field(default_factory=list)
     relation_table: list[str] = field(default_factory=list)
 
+    @property
+    def edu_count(self) -> int:
+        """Return the parser's exact limiting-unit count for this materialized input."""
+
+        return len(self.edu_breaks)
+
     def to_dict(self) -> dict[str, Any]:
         return {field_.name: getattr(self, field_.name) for field_ in fields(self)}
 

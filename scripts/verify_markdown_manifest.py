@@ -13,6 +13,7 @@ GENERATED_SPEC_KIT_PREFIXES = (
     ".cursor/skills/",
     ".specify/templates/",
 )
+GENERATED_PROJECTION_PREFIXES = ("graphify-out/",)
 INTENTIONAL_SYNTAX_FIXTURES = frozenset({"tests/fixtures/markdown/gfm-rich.md"})
 
 
@@ -34,7 +35,11 @@ def _repository_markdown() -> tuple[str, ...]:
 
 
 def _is_approved_exclusion(path: str) -> bool:
-    return path in INTENTIONAL_SYNTAX_FIXTURES or path.startswith(GENERATED_SPEC_KIT_PREFIXES)
+    return (
+        path in INTENTIONAL_SYNTAX_FIXTURES
+        or path.startswith(GENERATED_SPEC_KIT_PREFIXES)
+        or path.startswith(GENERATED_PROJECTION_PREFIXES)
+    )
 
 
 def _manifest_paths() -> tuple[str, ...]:
@@ -66,6 +71,9 @@ def verify_manifest() -> tuple[str, ...]:
                 "excluded_classes": {
                     "generated_spec_kit_projection": sum(
                         path.startswith(GENERATED_SPEC_KIT_PREFIXES) for path in excluded
+                    ),
+                    "generated_repository_projection": sum(
+                        path.startswith(GENERATED_PROJECTION_PREFIXES) for path in excluded
                     ),
                     "intentional_markdown_syntax_fixture": sum(
                         path in INTENTIONAL_SYNTAX_FIXTURES for path in excluded

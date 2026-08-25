@@ -1,6 +1,7 @@
 """Causal tests for the production/offline boundary authority."""
 
 from pathlib import Path, PurePosixPath
+import subprocess
 import tarfile
 import zipfile
 
@@ -8,6 +9,7 @@ import pytest
 
 from tools.production_boundary.artifacts import inspect_artifact
 from tools.production_boundary.authority import OwnershipAuthority, OwnershipClassificationError, validate_ownership
+from tools.production_boundary.build import build_production_artifacts
 from tools.production_boundary.contracts import OwnershipClass, OwnershipRule, ViolationKind
 from tools.production_boundary.dependencies import validate_declared_dependencies
 from tools.production_boundary.imports import validate_import_boundary
@@ -126,3 +128,43 @@ def test_artifact_dependencies_are_read_from_metadata(tmp_path: Path) -> None:
             "Metadata-Version: 2.4\nName: isanlp-rst\nVersion: 1\nRequires-Dist: torch>=2\n",
         )
     assert inspect_artifact(wheel).declared_dependencies == ("torch",)
+
+
+def test_commit_export_build_cannot_package_stale_build_tree(tmp_path: Path) -> None:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    _write(
+        repository / "pyproject.toml",
+        """[build-system]
+requires = ["setuptools>=84,<85"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clean-build-fixture"
+version = "1.0.0"
+""",
+    )
+    _write(repository / "clean_build_fixture/__init__.py", 'VALUE = "committed"\n')
+    subprocess.run(("git", "init", "-q"), cwd=repository, check=True)
+    subprocess.run(("git", "add", "."), cwd=repository, check=True)
+    subprocess.run(
+        (
+            "git",
+            "-c",
+            "user.name=Production Build Test",
+            "-c",
+            "user.email=production-build@example.invalid",
+            "commit",
+            "-qm",
+            "fixture",
+        ),
+        cwd=repository,
+        check=True,
+    )
+    _write(repository / "build/lib/clean_build_fixture/stale.py", 'VALUE = "stale"\n')
+
+    wheel, _sdist = build_production_artifacts(repository, tmp_path / "dist")
+
+    with zipfile.ZipFile(wheel) as archive:
+        assert "clean_build_fixture/__init__.py" in archive.namelist()
+        assert "clean_build_fixture/stale.py" not in archive.namelist()

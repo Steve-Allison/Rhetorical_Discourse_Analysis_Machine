@@ -1,6 +1,6 @@
 # Docling JSON fixtures
 
-Real-world Docling JSON files used for testing `isanlp_rst.docling.parse_docling()` (when that entry point exists). All four files are publicly-available content. All claims below verified via `jq` on the actual fixtures on 2026-05-15.
+Real-world Docling JSON files used to test the Docling JSON source form through the sole public production API, `isanlp_rst.ingest`. Docling deserialization is a private implementation detail. All four files are publicly available. All claims below were verified via `jq` on the actual fixtures on 2026-05-15.
 
 ## File-by-file verified facts
 

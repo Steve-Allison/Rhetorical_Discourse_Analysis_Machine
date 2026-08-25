@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://isanlp-rst.local/schemas/production-ingest-evidence-v1.json",
+  "title": "Production Ingest Evidence Record",
+  "type": "object",
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "candidate_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "authority_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_id": {"type": "string"},
+    "source_form": {"type": "string"},
+    "gate": {"type": "string"},
+    "passed": {"type": "boolean"},
+    "metrics": {"type": "object"},
+    "counts": {"type": "object"},
+    "execution": {"type": "object"},
+    "inspection": {"type": "object"}
+  },
+  "additionalProperties": true
+}

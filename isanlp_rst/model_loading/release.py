@@ -106,12 +106,47 @@ class PromotionReceipt(_StrictModel):
         return self
 
 
+class ParserCapacity(_StrictModel):
+    """Stable safe unit capacity for recursive production analysis."""
+
+    unit: str = Field(pattern=r"^(edu_count|token_count)$")
+    maximum: int = Field(gt=1)
+    source: str = Field(min_length=1)
+
+
+class ModelReleaseIdentity(_StrictModel):
+    """Complete released-model identity used by analytical caches."""
+
+    release_id: str = Field(min_length=1)
+    manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    runtime_contract: str = Field(min_length=1)
+    architecture: str = Field(min_length=1)
+    files: tuple[ModelFile, ...] = Field(min_length=1)
+    capacity: ParserCapacity
+
+    @property
+    def semantic_digest(self) -> str:
+        return hashlib.sha256(canonical_json_bytes(self)).hexdigest()
+
+
 @dataclass(frozen=True, slots=True)
 class ValidatedModelRelease:
     """A release directory whose complete byte inventory has been checked."""
 
     path: Path
     manifest: ModelReleaseManifest
+
+    def analysis_identity(self, capacity: ParserCapacity) -> ModelReleaseIdentity:
+        """Return the immutable identity consumed by production analysis."""
+
+        return ModelReleaseIdentity(
+            release_id=self.manifest.release_id,
+            manifest_sha256=self.manifest.manifest_sha256,
+            runtime_contract=self.manifest.runtime_contract,
+            architecture=self.manifest.architecture,
+            files=self.manifest.files,
+            capacity=capacity,
+        )
 
 
 def canonical_json_bytes(value: BaseModel | dict[str, object]) -> bytes:
@@ -211,9 +246,11 @@ def load_model_release(
 __all__ = [
     "MODEL_RELEASE_MANIFEST",
     "ModelFile",
+    "ModelReleaseIdentity",
     "ModelReleaseError",
     "ModelReleaseManifest",
     "PromotionReceipt",
+    "ParserCapacity",
     "ValidatedModelRelease",
     "canonical_json_bytes",
     "load_model_release",

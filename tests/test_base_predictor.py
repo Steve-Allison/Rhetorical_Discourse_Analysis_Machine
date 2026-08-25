@@ -223,6 +223,28 @@ def test_remap_tree_offsets_unary_raises():
         p.remap_tree_offsets(bad, positions, originals, text)
 
 
+def test_remap_tree_to_predefined_edu_spans_uses_exact_unicode_coordinates():
+    p = _Predictor()
+    edus = ("z̝aːk ] ;", "8 September", "Result.")
+    text, spans = p._compute_edu_char_spans(edus)
+    leaves = [_FakeNode(0, 1), _FakeNode(2, 3), _FakeNode(4, 5)]
+    right = _FakeNode(2, 5, left=leaves[1], right=leaves[2])
+    root = _FakeNode(0, 5, left=leaves[0], right=right)
+
+    p.remap_tree_to_edu_spans(root, spans, text)
+
+    assert [(leaf.start, leaf.end, leaf.text) for leaf in leaves] == [
+        (start, end, edu) for (start, end), edu in zip(spans, edus, strict=True)
+    ]
+    assert (root.start, root.end, root.text) == (0, len(text), text)
+
+
+def test_remap_tree_to_predefined_edu_spans_rejects_leaf_count_mismatch():
+    p = _Predictor()
+    with pytest.raises(ValueError, match="one leaf per provided EDU"):
+        p.remap_tree_to_edu_spans(_FakeNode(0, 1), ((0, 1), (2, 3)), "a b")
+
+
 # ---------- divide_chunks ----------
 
 

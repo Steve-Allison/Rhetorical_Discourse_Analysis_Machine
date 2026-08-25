@@ -6,7 +6,7 @@
 
 The distinction is purpose, not provenance: old research code that is required for inference remains production and must meet the production standard. Conversely, high-quality evaluation or training code remains offline because a consuming project does not need it to analyse a document.
 
-Feature 002 source ingest is independent of this split. DocLang, Docling, and Markdown adapters process real-world user source material into production RST analysis and therefore remain production. Corpus conversion for training/evaluation is offline.
+Feature 002 source ingest is independent of this split. The canonical `isanlp_rst.ingest` service processes real-world text, Markdown, Docling JSON, DocLang XML, and DocLang archives into production RST analysis and therefore remains production. Corpus conversion for training/evaluation is offline.
 
 ## Install and run
 
@@ -54,7 +54,8 @@ pixi run -e offline test
 |---|---|---:|
 | Raw text and predefined-EDU inference | `isanlp_rst.parser` and runtime predictors | yes |
 | Typed request/result contracts and serialization | `isanlp_rst.contracts` | yes |
-| DocLang, Docling, and Markdown real-source ingest | `isanlp_rst.doclang`, `.docling`, `.markdown` via `formats` | optional production extra |
+| Real-source inventory, preparation, analysis, receipts, and cache identity | `isanlp_rst.ingest` via `formats` | optional production extra |
+| DocLang/Markdown source decoding helpers | private `isanlp_rst.doclang` / `.markdown` modules called only by `isanlp_rst.ingest` | optional implementation detail |
 | RS4/eRST reading, conversion, decoding, validation, and loading | `isanlp_rst.erst` | yes |
 | Released-model manifest validation/loading | `isanlp_rst.model_loading` | yes |
 | Corpus conversion and relation-inventory derivation | `offline_workbench.corpus` | no |
@@ -85,6 +86,6 @@ These are deliberate offline migrations, not production compatibility aliases:
 
 `pixi run -e production production-boundary` performs the sub-second exhaustive ownership, AST import-closure, and declared-dependency check. `production-artifacts` adds exact wheel/sdist membership and metadata receipts. Negative tests prove unmatched, ambiguous, direct, transitive, dependency, wheel-member, and source-distribution-member failures. All relevant paths must match exactly one ownership rule; there is no fallback classification or second module allowlist.
 
-Completion acceptance builds the wheel and source distribution, inspects their exact members and metadata dependencies, and independently installs the exact wheel into core-only and formats-enabled temporary environments outside this repository. It proves all five promoted parser variants, raw and predefined-EDU analysis, typed serialization/reload, hierarchy, eRST runtime behavior, all three source adapters, CPU/MPS parity, and the absence of offline packages. This catches packaging or environment leakage that a source-tree inspection cannot detect.
+Completion acceptance builds the wheel and source distribution, inspects their exact members and metadata dependencies, and independently installs the exact wheel into core-only and formats-enabled temporary environments outside this repository. It proves all five promoted parser variants, raw and predefined-EDU analysis, typed serialization/reload, hierarchy, eRST runtime behavior, all five canonical source forms, CPU/MPS parity, and the absence of offline packages. This catches packaging or environment leakage that a source-tree inspection cannot detect.
 
 Model creation never runs in production. Offline promotion validates a complete strict manifest, copies to a temporary sibling, verifies every copied byte, and atomically renames to an immutable release ID. Production loading rejects loose, partial, changed, incompatible, symlinked, or unpromoted inputs before inference.

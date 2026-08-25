@@ -14,6 +14,7 @@ __all__ = ["ParseFailedError", "Parser", "extract_root_tree"]
 if TYPE_CHECKING:
     import torch
     from isanlp_rst.contracts import RstAnalysis, RstDocument, TextSpan
+    from isanlp_rst.model_loading import ModelReleaseIdentity, ParserCapacity
 
 
 class Parser:
@@ -82,6 +83,7 @@ class Parser:
         self.hf_model_name = hf_model_name
         self.hf_model_version = hf_model_version
         self.relinventory = relinventory
+        self._validated_model_release = _validated_model_release
 
         # When loading from disk, suppress the default HF repo name so the
         # predictor unambiguously selects local mode.
@@ -132,6 +134,23 @@ class Parser:
             )
         else:
             self.erst_checkpoint = None
+
+    @property
+    def analysis_capacity(self) -> ParserCapacity:
+        """Return the safe recursive-analysis capacity in the parser's limiting unit."""
+
+        from isanlp_rst.model_loading import ParserCapacity
+
+        return ParserCapacity(unit="edu_count", maximum=512, source="isanlp_rst.parser/recursive-v1")
+
+    @property
+    def model_release_identity(self) -> ModelReleaseIdentity | None:
+        """Return immutable released-model identity, or ``None`` for mutable/HF construction."""
+
+        release = self._validated_model_release
+        if release is None:
+            return None
+        return release.analysis_identity(self.analysis_capacity)
 
     @classmethod
     def from_model_release(
@@ -296,7 +315,7 @@ class Parser:
     ) -> RstAnalysis:
         """Parse an RstDocument into a typed, ontology-aligned RstAnalysis."""
         import time
-        from isanlp_rst._rst_common import resolve_package_version, resolve_source_revision
+        from isanlp_rst._provenance import resolve_package_version, resolve_source_revision
         from isanlp_rst.contracts import OutputFormalismEnum, ProvenanceRecord, RstAnalysis, TimingRecord
         from isanlp_rst.english.relations.primer import DiscourseMarkerPrimer
         from isanlp_rst.erst.converter import du_to_analysis
