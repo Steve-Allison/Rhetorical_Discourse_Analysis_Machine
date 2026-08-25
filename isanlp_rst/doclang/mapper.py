@@ -67,6 +67,7 @@ def flatten_tree(
     harvest_spans: tuple[HarvestSpan, ...],
     boundaries: tuple[Boundary, ...],
     *,
+    source_text: str,
     note_threshold: float = NOTE_THRESHOLD,
 ) -> tuple[tuple[RstRelation, ...], tuple[RstEdu, ...]]:
     """Flatten a DiscourseUnit tree into ``(relations, edus)`` tuples.
@@ -89,9 +90,15 @@ def flatten_tree(
         right_id: int,
         boundary_memberships: tuple[str, ...],
         note: str | None,
+        text: str,
+        char_span: tuple[int, int],
+        edu_span: tuple[int, int],
     ) -> RstRelation:
         return RstRelation(
             id=id,
+            text=text,
+            char_span=char_span,
+            edu_span=edu_span,
             relation=relation,
             nuclearity=nuclearity,
             nucleus_xpaths=nucleus_refs,
@@ -105,9 +112,20 @@ def flatten_tree(
             note=note,
         )
 
-    def make_edu(*, id: int, refs: tuple[str, ...], depth: int) -> RstEdu:
+    def make_edu(
+        *,
+        id: int,
+        refs: tuple[str, ...],
+        depth: int,
+        text: str,
+        char_span: tuple[int, int],
+        edu_span: tuple[int, int],
+    ) -> RstEdu:
         return RstEdu(
             id=id,
+            text=text,
+            char_span=char_span,
+            edu_span=edu_span,
             xpaths=refs,
             thread_ids=_thread_ids_for_xpaths(refs, span_lookup),
             depth=depth,
@@ -115,6 +133,7 @@ def flatten_tree(
 
     return _generic_flatten_tree(
         tree,
+        source_text,
         SpanIndex(harvest_spans, ref_of=_xpath),
         [(b.id, frozenset(b.xpaths)) for b in boundaries],
         make_relation=make_relation,

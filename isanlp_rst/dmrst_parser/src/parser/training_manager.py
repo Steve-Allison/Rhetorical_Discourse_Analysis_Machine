@@ -5,6 +5,7 @@ import random
 import shutil
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from collections.abc import Mapping
 from typing import Any
 
 # from dmrst_parser import keys
@@ -44,7 +45,7 @@ class NpEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-def _metrics_as_floats(metrics: dict[str, object]) -> dict[str, float]:
+def _metrics_as_floats(metrics: Mapping[str, object]) -> dict[str, float]:
     converted: dict[str, float] = {}
     for key, value in metrics.items():
         if isinstance(value, (bool, np.bool_)):
@@ -158,7 +159,7 @@ class TrainingManager:
     def train(self) -> dict[str, object]:
 
         self.best_epoch = 0
-        best_metrics = {
+        best_metrics: dict[str, object] = {
             "epoch": 0,
             "e2e_val_f1_span": 0,
         }

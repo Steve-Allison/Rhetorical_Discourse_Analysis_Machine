@@ -39,6 +39,7 @@ Spans are concatenated with ``harvest_separator`` (default ``"\\n\\n"``).
 """
 
 import re
+from typing import Protocol
 
 from markdown_it.token import Token
 
@@ -47,7 +48,17 @@ from .schema import HarvestResult, HarvestSpan, TableHarvest
 _HTML_TAG_RE = re.compile(r"<[^>]+>")
 
 
-def _inline_text(inline: Token) -> str:
+class _InlineToken(Protocol):
+    """Structural boundary for the inline-token fields used by harvesting."""
+
+    @property
+    def children(self) -> list[Token] | None: ...
+
+    @property
+    def content(self) -> str: ...
+
+
+def _inline_text(inline: _InlineToken) -> str:
     """Flatten an ``inline`` token's children to plain text.
 
     Concatenates text-bearing children (``text``, ``code_inline``,

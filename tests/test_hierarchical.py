@@ -21,7 +21,7 @@ def test_detect_sections_double_newline() -> None:
     doc = RstDocument.from_text(text, document_id="doc_multi")
 
     # We can pass dummy parser since we only test detect_sections
-    stitcher = HierarchicalSectionStitcher(parser=None)  # type: ignore[arg-type]
+    stitcher = HierarchicalSectionStitcher(parser=None)
     sections = stitcher.detect_sections(doc)
 
     assert len(sections) == 3
@@ -34,7 +34,7 @@ def test_detect_sections_double_newline() -> None:
 def test_detect_sections_with_leading_whitespace() -> None:
     text = "   \n\n  Indented paragraph one.\n\n   Paragraph two with trailing space.  \n\n"
     doc = RstDocument.from_text(text, document_id="doc_ws")
-    stitcher = HierarchicalSectionStitcher(parser=None)  # type: ignore[arg-type]
+    stitcher = HierarchicalSectionStitcher(parser=None)
     sections = stitcher.detect_sections(doc)
 
     assert len(sections) == 2
@@ -55,7 +55,7 @@ def test_detect_sections_custom_boundaries() -> None:
         TextSpan(start=22, end=len(text), text="# Section 2\nContent B"),
     ]
 
-    stitcher = HierarchicalSectionStitcher(parser=None)  # type: ignore[arg-type]
+    stitcher = HierarchicalSectionStitcher(parser=None)
     sections = stitcher.detect_sections(doc, custom_boundaries=custom_bounds)
 
     assert len(sections) == 2
@@ -67,7 +67,7 @@ def test_stitch_trees_synthetic() -> None:
     text = "Sentence one. Sentence two. Sentence three. Sentence four."
     doc = RstDocument.from_text(text, document_id="doc_synth")
 
-    stitcher = HierarchicalSectionStitcher(parser=None)  # type: ignore[arg-type]
+    stitcher = HierarchicalSectionStitcher(parser=None)
     sections = [
         stitcher.detect_sections(RstDocument.from_text("Sentence one. Sentence two.", document_id="s1"))[0],
         stitcher.detect_sections(RstDocument.from_text("Sentence three. Sentence four.", document_id="s2"))[0],

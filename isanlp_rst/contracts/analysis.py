@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass, field
 
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
 from isanlp_rst.contracts.document import ProvenanceRecord
 from isanlp_rst.contracts.enums import (
     AnnotationStatusEnum,
@@ -9,6 +11,7 @@ from isanlp_rst.contracts.enums import (
     NodeKindEnum,
     NuclearityPatternEnum,
     OutputFormalismEnum,
+    SignalDetectionMethod,
 )
 
 
@@ -59,17 +62,67 @@ class SecondaryRelationEdge:
     calibrated: bool = False
 
 
-@dataclass(frozen=True, slots=True)
-class DiscourseSignal:
-    """An anchored or unanchored discourse signal."""
+class SignalDetectorProvenance(BaseModel):
+    """Immutable identity of the detector or source that produced a signal."""
 
-    signal_id: str
-    edge_id: str
-    signal_type: str
-    signal_subtype: str
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    detector_id: str = Field(min_length=1)
+    detector_version: str = Field(min_length=1)
+    method: SignalDetectionMethod
+    source_revision: str | None = None
+    model_revision: str | None = None
+    ruleset_digest: str | None = None
+
+
+class DiscourseSignal(BaseModel):
+    """Typed, anchored discourse signal; overlaps are explicitly permitted."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    signal_id: str = Field(min_length=1)
+    edge_id: str | None
+    signal_type: str = Field(min_length=1)
+    signal_subtype: str = Field(min_length=1)
     token_ids: tuple[int, ...] = ()
+    char_spans: tuple[tuple[int, int], ...] = ()
+    compatible_relations: tuple[str, ...] = ()
+    detector: SignalDetectorProvenance
+    sufficient: bool = True
     status: AnnotationStatusEnum = AnnotationStatusEnum.PREDICTED
-    confidence: float | None = None
+    confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+
+    @field_validator("token_ids")
+    @classmethod
+    def validate_token_ids(cls, value: tuple[int, ...]) -> tuple[int, ...]:
+        """Require unique non-negative token identifiers without reordering."""
+
+        if any(token_id < 0 for token_id in value):
+            raise ValueError("signal token IDs must be non-negative")
+        if len(value) != len(set(value)):
+            raise ValueError("signal token IDs must be unique")
+        return value
+
+    @field_validator("char_spans")
+    @classmethod
+    def validate_char_spans(cls, value: tuple[tuple[int, int], ...]) -> tuple[tuple[int, int], ...]:
+        """Require valid half-open anchors while retaining overlap and order."""
+
+        for start, end in value:
+            if start < 0 or end <= start:
+                raise ValueError(f"invalid signal character span {(start, end)}")
+        return value
+
+    @field_validator("compatible_relations")
+    @classmethod
+    def validate_relations(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        """Require non-empty, unique raw relation labels."""
+
+        if any(not relation.strip() for relation in value):
+            raise ValueError("compatible signal relations must be non-empty")
+        if len(value) != len(set(value)):
+            raise ValueError("compatible signal relations must be unique")
+        return value
 
 
 @dataclass(frozen=True, slots=True)

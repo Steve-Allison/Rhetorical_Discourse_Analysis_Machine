@@ -26,6 +26,14 @@ class OntologyAdapter:
 
     def __init__(self, lock_data: OntologyLockData | None = None) -> None:
         self.lock_data = lock_data or load_ontology_lock()
+        gum_category_to_concept: dict[str, str] = {}
+        for mapping in self.lock_data.dmrst_gum_model_27.values():
+            category = mapping.label.casefold()
+            existing = gum_category_to_concept.get(category)
+            if existing is not None and existing != mapping.concept:
+                raise ValueError(f"GUM ontology category {category!r} maps to conflicting concepts")
+            gum_category_to_concept[category] = mapping.concept
+        self.gum_category_to_concept = gum_category_to_concept
 
     @staticmethod
     def normalize_rst_dt_alias(raw_label: str) -> str:
@@ -85,7 +93,15 @@ class OntologyAdapter:
 
             case RelationSchemeEnum.GUM_ERST_FINE | RelationSchemeEnum.GUM_ERST_COARSE:
                 if normalized in self.lock_data.gum_fine_to_coarse:
-                    concept = self.lock_data.gum_fine_to_coarse[normalized]
+                    category = self.lock_data.gum_fine_to_coarse[normalized]
+                    concept = self.gum_category_to_concept.get(category)
+                    if concept is None:
+                        if not raise_on_unmapped:
+                            return None
+                        raise KeyError(
+                            f"GUM ontology category {category!r} has no canonical concept "
+                            f"(code: {FailureCodeEnum.ONTOLOGY_MISMATCH.value})"
+                        )
                     return normalized, concept
 
             case _:

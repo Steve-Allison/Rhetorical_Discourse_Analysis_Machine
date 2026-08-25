@@ -1,0 +1,16 @@
+[workspace]
+name = "isanlp-rst-research-harness"
+channels = ["conda-forge"]
+platforms = [{ platform = "osx-arm64", macos = "14.0" }]
+
+[dependencies]
+python = "3.14.*"
+
+[pypi-dependencies]
+isanlp_rst = { path = "..", editable = true, extras = ["dev", "formats"] }
+peft = "==0.20.0"
+
+[tasks]
+test = "pytest ../tests/research_harness -q"
+lint = "ruff check . ../tests/research_harness"
+typecheck = "pyright --project ../pyproject.toml"

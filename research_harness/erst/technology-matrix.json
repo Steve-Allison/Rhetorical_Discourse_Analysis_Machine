@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0",
+  "package_version": "4.0.0",
+  "python_version": "3.14.7",
+  "torch_version": "2.13.0",
+  "transformers_version": "5.15.1",
+  "tokenizer_receipt_sha256": "230be4cfbe960b67eb9d4d7a76d2d34ffc5b945bad75721287b2588dc1e48f70",
+  "peak_rss_limit_bytes": 25769803776,
+  "systems": [
+    {
+      "system": "existing_dual_encoder_bilinear_structural",
+      "role": "repository_reference",
+      "implementation_module": "research_harness.erst.systems.dual_encoder",
+      "model_id": "microsoft/deberta-v3-base",
+      "model_revision": "8ccc9b6f36199bec6961081d44eb72fb3f7353f3",
+      "model_license": "MIT",
+      "tokenizer_probe_succeeded": false,
+      "tokenizer_encoding_sha256": null,
+      "mps_tokenizer_probe_succeeded": false,
+      "weight_file_bytes": 371146213,
+      "constraints": [
+        "tokenizer_conversion_required"
+      ],
+      "product_role": "Current repository neural scorer reference"
+    },
+    {
+      "system": "structural_only_calibrated",
+      "role": "control",
+      "implementation_module": "research_harness.erst.systems.structural",
+      "model_id": null,
+      "model_revision": null,
+      "model_license": "MIT",
+      "tokenizer_probe_succeeded": null,
+      "tokenizer_encoding_sha256": null,
+      "mps_tokenizer_probe_succeeded": null,
+      "weight_file_bytes": null,
+      "constraints": [],
+      "product_role": "Calibrated structural-feature control"
+    },
+    {
+      "system": "text_only_cross_encoder",
+      "role": "control",
+      "implementation_module": "research_harness.erst.systems.cross_encoder",
+      "model_id": "google/electra-base-discriminator",
+      "model_revision": "1ae76a97c7e84a4e640876a07453fccd636f0667",
+      "model_license": "Apache-2.0",
+      "tokenizer_probe_succeeded": true,
+      "tokenizer_encoding_sha256": "1fe5ee6610eae95e57b0db7f3f8aaa8d53eee25ae342d44d8087342e503b18cb",
+      "mps_tokenizer_probe_succeeded": true,
+      "weight_file_bytes": 440343552,
+      "constraints": [],
+      "product_role": "Text-only cross-encoder control"
+    },
+    {
+      "system": "electra_signal_aware_cross_encoder",
+      "role": "repository_reference",
+      "implementation_module": "research_harness.erst.systems.cross_encoder",
+      "model_id": "google/electra-base-discriminator",
+      "model_revision": "1ae76a97c7e84a4e640876a07453fccd636f0667",
+      "model_license": "Apache-2.0",
+      "tokenizer_probe_succeeded": true,
+      "tokenizer_encoding_sha256": "1fe5ee6610eae95e57b0db7f3f8aaa8d53eee25ae342d44d8087342e503b18cb",
+      "mps_tokenizer_probe_succeeded": true,
+      "weight_file_bytes": 440343552,
+      "constraints": [],
+      "product_role": "Signal-aware cross-encoder reference"
+    },
+    {
+      "system": "signal_plus_rule",
+      "role": "control",
+      "implementation_module": "research_harness.erst.systems.signal_rule",
+      "model_id": null,
+      "model_revision": null,
+      "model_license": "MIT",
+      "tokenizer_probe_succeeded": null,
+      "tokenizer_encoding_sha256": null,
+      "mps_tokenizer_probe_succeeded": null,
+      "weight_file_bytes": null,
+      "constraints": [],
+      "product_role": "Deterministic signal-plus-rule control"
+    },
+    {
+      "system": "modernbert_base_signal_aware",
+      "role": "candidate",
+      "implementation_module": "research_harness.erst.systems.cross_encoder",
+      "model_id": "answerdotai/ModernBERT-base",
+      "model_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+      "model_license": "Apache-2.0",
+      "tokenizer_probe_succeeded": true,
+      "tokenizer_encoding_sha256": "4e26fd13beb885c058a4dd94466813602f541414e0568d3fc6afe0f71d677bc9",
+      "mps_tokenizer_probe_succeeded": true,
+      "weight_file_bytes": 598635032,
+      "constraints": [],
+      "product_role": "Compact signal-aware production candidate"
+    },
+    {
+      "system": "modernbert_large_signal_aware",
+      "role": "candidate",
+      "implementation_module": "research_harness.erst.systems.cross_encoder",
+      "model_id": "answerdotai/ModernBERT-large",
+      "model_revision": "45bb4654a4d5aaff24dd11d4781fa46d39bf8c13",
+      "model_license": "Apache-2.0",
+      "tokenizer_probe_succeeded": true,
+      "tokenizer_encoding_sha256": "4e26fd13beb885c058a4dd94466813602f541414e0568d3fc6afe0f71d677bc9",
+      "mps_tokenizer_probe_succeeded": true,
+      "weight_file_bytes": 1583544840,
+      "constraints": [
+        "memory_measurement_required"
+      ],
+      "product_role": "High-capacity signal-aware candidate"
+    },
+    {
+      "system": "xlm_roberta_large_hidac",
+      "role": "candidate",
+      "implementation_module": "research_harness.erst.systems.hierarchical_adapter",
+      "model_id": "FacebookAI/xlm-roberta-large",
+      "model_revision": "c23d21b0620b635a76227c604d44e43a9f0ee389",
+      "model_license": "MIT",
+      "tokenizer_probe_succeeded": true,
+      "tokenizer_encoding_sha256": "95a2072d5e5027cbcb22438e45b8659f7b91e8f13b4b1dedfad1e39ae0b2821c",
+      "mps_tokenizer_probe_succeeded": true,
+      "weight_file_bytes": 2244817354,
+      "constraints": [
+        "memory_measurement_required"
+      ],
+      "product_role": "Hierarchical contrastive adapter candidate"
+    },
+    {
+      "system": "qwen3_4b_dedisco_peft",
+      "role": "candidate",
+      "implementation_module": "research_harness.erst.systems.generative_decoder",
+      "model_id": "Qwen/Qwen3-4B",
+      "model_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+      "model_license": "Apache-2.0",
+      "tokenizer_probe_succeeded": true,
+      "tokenizer_encoding_sha256": "437b4b0c430b016417a53e0554792dedc66ad1d3296ec141f758ed06d1841391",
+      "mps_tokenizer_probe_succeeded": true,
+      "weight_file_bytes": 8044982000,
+      "constraints": [
+        "memory_measurement_required"
+      ],
+      "product_role": "PEFT generative edge/no-edge candidate"
+    },
+    {
+      "system": "edge_featured_graph_attention",
+      "role": "fusion_candidate",
+      "implementation_module": "research_harness.erst.systems.graph_attention",
+      "model_id": null,
+      "model_revision": null,
+      "model_license": "inherits selected text model",
+      "tokenizer_probe_succeeded": null,
+      "tokenizer_encoding_sha256": null,
+      "mps_tokenizer_probe_succeeded": null,
+      "weight_file_bytes": null,
+      "constraints": [
+        "text_champion_required"
+      ],
+      "product_role": "Primary-tree graph fusion candidate"
+    }
+  ],
+  "matrix_sha256": "1f32cf733eed44993f07afb623a798db687c4d866d091057c2a9e7c4f2b3f26c"
+}

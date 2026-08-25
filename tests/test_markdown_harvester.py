@@ -13,17 +13,31 @@ from isanlp_rst.markdown.harvester import (
 from isanlp_rst.markdown.loader import load_markdown
 
 
-def _harvest(src: str, **knobs: bool) -> tuple:
+def _harvest(
+    src: str,
+    *,
+    include_blockquotes: bool = True,
+    include_code_blocks: bool = True,
+    include_html: bool = True,
+) -> tuple:
     """Convenience: parse src + harvest with optional knob overrides.
 
     Knobs are bool-only here (no harvest_separator overrides) — the
     signature reflects that.
     """
-    return harvest_markdown_text(load_markdown(src).tokens, **knobs).spans  # type: ignore[arg-type]
+    return harvest_markdown_text(
+        load_markdown(src).tokens,
+        include_blockquotes=include_blockquotes,
+        include_code_blocks=include_code_blocks,
+        include_html=include_html,
+    ).spans
 
 
-def _tables(src: str, **knobs: bool) -> tuple:
-    return harvest_markdown_tables(load_markdown(src).tokens, **knobs)  # type: ignore[arg-type]
+def _tables(src: str, *, include_blockquotes: bool = True) -> tuple:
+    return harvest_markdown_tables(
+        load_markdown(src).tokens,
+        include_blockquotes=include_blockquotes,
+    )
 
 
 # --- Inline text flattening contract --------------------------------------
@@ -84,7 +98,7 @@ def test_inline_text_falls_back_to_content_when_children_none() -> None:
         children = None
         content = "fallback"
 
-    assert _inline_text(_Stub()) == "fallback"  # type: ignore[arg-type]
+    assert _inline_text(_Stub()) == "fallback"
 
 
 # --- Per-construct routing -------------------------------------------------

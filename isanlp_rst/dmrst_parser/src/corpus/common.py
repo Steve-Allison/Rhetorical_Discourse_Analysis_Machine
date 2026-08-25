@@ -143,6 +143,8 @@ def getParse(tree: Any, parse: str) -> str:
         # Leaf node
         parse += " ( EDU " + str(tree.nucedu)
     else:
+        if tree.lnode is None or tree.rnode is None:
+            raise ValueError("non-leaf RST node requires both children")
         parse += " ( " + tree.form
         # get the relation from its satellite node
         if tree.form == "NN":

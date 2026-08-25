@@ -1,16 +1,16 @@
-![Python](https://img.shields.io/badge/python-3.14%2B-blue) ![License](https://img.shields.io/badge/license-MIT_(code)_/_CC_BY--NC_4.0_(weights)-orange) ![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-MPS-blueviolet)
-
 # IsaNLP RST Parser
+
+![Python](https://img.shields.io/badge/python-3.14%2B-blue) ![License](https://img.shields.io/badge/license-MIT_(code)_/_CC_BY--NC_4.0_(weights)-orange) ![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-MPS-blueviolet)
 
 End-to-end Rhetorical Structure Theory (RST) parser. Predicts discourse trees from raw text or pre-segmented EDUs across 11 languages via the `unirst` multilingual model, plus three monolingual / bilingual models (`rstdt`, `gumrrg`, `rstreebank`). Pixi-managed, MPS-aware, with real tests and CI.
 
-### Table of contents
+## Table of contents
 
 - [Performance](#performance)
 - [Installation & quick start](#installation--quick-start)
 - [Visualising the RST tree](#visualising-the-rst-tree)
 - [Advanced usage](#advanced-usage)
-- [Extended RST (eRST) & DAG decoding](#extended-rst-erst--dag-decoding)
+- [Extended RST (eRST) graph decoding](#extended-rst-erst-graph-decoding)
 - [Hierarchical long document parsing](#hierarchical-long-document-parsing)
 - [Docling-native output](#docling-native-output)
 - [DocLang-native output](#doclang-native-output)
@@ -280,18 +280,22 @@ res["rst"][0].fill_textfields(full_text)  # repopulate later
 
 ---
 
-## Extended RST (eRST) & DAG decoding
+## Extended RST (eRST) graph decoding
 
 Beyond standard hierarchical trees, `isanlp_rst` supports **Extended RST (eRST)** graph structures with non-projective secondary discourse relations and discourse signals (as in GUM eRST / RS4 XML):
 
 - **Faithful RS4 XML Reader & Writer** (`isanlp_rst.erst.rs4`): Native serialization for segments, multinuclear groups, secondary edges (`<secedge>`), and signaling tokens (`<signal>`).
 - **Neural Secondary Edge Scorer** (`isanlp_rst.erst.neural_scorer.NeuralSecondaryEdgeScorer`): Learned bilinear / MLP scorer for candidate secondary discourse relations.
-- **Acyclic DAG Decoder** (`isanlp_rst.erst.dag_decoder.AcyclicDagDecoder`): Greedy decoder with cycle prevention and degree constraints, strictly guaranteeing 100% DAG acyclicity.
+- **Formally constrained secondary-edge decoder**
+  (`isanlp_rst.erst.decoder.ErstSecondaryEdgeDecoder`): applies sufficient-signal, no-self-loop,
+  no-invented-node, and no-duplicate-directed-pair constraints. Cycles, crossing edges, reverse
+  directions, unrestricted degree, and overlap with primary edges remain valid eRST structures.
 
 ```python
-from isanlp_rst.erst import rs4_to_document_and_analysis, parse_rs4_file
+from isanlp_rst.erst import RS4Reader, rs4_to_document_and_analysis
 
-doc, analysis = parse_rs4_file("document.rs4")
+rs4 = RS4Reader.read_file("document.rs4")
+doc, analysis = rs4_to_document_and_analysis(rs4, document_id="document")
 # analysis.formalism: OutputFormalismEnum.ERST_GRAPH
 # analysis.secondary_edges: tuple of SecondaryRelationEdge
 # analysis.signals: tuple of DiscourseSignal
@@ -368,7 +372,7 @@ For documents authored in the [DocLang 0.7 XML format](https://github.com/doclan
 from pathlib import Path
 from isanlp_rst.doclang import parse_doclang
 
-result = parse_doclang(Path("document.dclg.xml"), device="auto")
+result = parse_doclang(Path("document.dclg"), device="auto")
 
 # result.relations:   tuple of RstRelation, indexed by local-name XPath
 # result.edus:        tuple of RstEdu      with the same xpath addressing
@@ -378,7 +382,7 @@ result = parse_doclang(Path("document.dclg.xml"), device="auto")
 
 ### How addresses work
 
-Every element is addressed by a **local-name canonical XPath** of the form `/doclang[1]/heading[2]/text[1]` — 1-based position predicates per local name, namespaces stripped. The same document with or without `xmlns="https://www.doclang.ai/ns/v0"` produces identical paths. (`lxml.etree.ElementTree.getpath()` is **not** used; it emits `/*/*[N]` wildcards on default-namespaced documents.) Paths round-trip 100% against the upstream 42-fixture valid corpus (mirrored 2026-08-16).
+Every element is addressed by a **local-name canonical XPath** of the form `/doclang[1]/heading[2]/text[1]` — 1-based position predicates per local name, namespaces stripped. The same document with or without `xmlns="https://www.doclang.ai/ns/v0"` produces identical paths. (`lxml.etree.ElementTree.getpath()` is **not** used; it emits `/*/*[N]` wildcards on default-namespaced documents.) Paths round-trip against the pinned upstream valid-fixture manifest.
 
 ### What enters the DocLang harvest
 
@@ -471,7 +475,7 @@ See the [walkthrough](docs/examples/markdown-native.md) for tree reconstruction,
 
 ## Quality diagnostics
 
-`pixi run rst-diag <paths>` parses any mix of `.md` / `*.docling.json` / `*.dclg.xml` sources (files or directories; one shared model load) and emits per-document proxy metrics — no gold annotations required:
+`pixi run rst-diag <paths>` parses any mix of `.md` / `*.docling.json` / `*.dclg` sources (files or directories; one shared model load) and emits per-document proxy metrics — no gold annotations required:
 
 - **joint ratio** — share of relations labelled joint / same-unit / organization (high = rhetorically thin chaining)
 - **tree skew** — max depth ÷ log₂(EDUs) (≫ 1 = degenerate chain)

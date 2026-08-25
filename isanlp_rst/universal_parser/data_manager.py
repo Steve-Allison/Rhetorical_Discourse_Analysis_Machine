@@ -40,6 +40,7 @@ class ParserInput:
     siblings: list = field(default_factory=list)
     sentence_span: list = field(default_factory=list)
     LabelforMetric: list[str] = field(default_factory=list)
+    relation_table: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -53,6 +54,7 @@ class ParserInput:
             "parents": self.parents,
             "siblings": self.siblings,
             "sentence_span": self.sentence_span,
+            "relation_table": self.relation_table,
         }
 
     @classmethod

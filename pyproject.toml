@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=64", "wheel"]
+requires = ["setuptools>=84,<85", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "isanlp_rst"
-version = "3.2.0"
+version = "4.0.0"
 description = "End-to-end RST parser across 11 languages (Steve Allison's evolution of the IsaNLP RST Parser by Elena Chistova)."
 readme = "README.md"
 requires-python = ">=3.14"
@@ -26,17 +26,19 @@ dependencies = [
   "jsonnet",
   "nltk",
   "numpy>=1.26.4",
-  "transformers",
-  "sentencepiece>=0.2.1",
+  "transformers>=5.15.1,<5.16",
   "tiktoken>=0.7.0",
-  "torch>=2.0",
+  "torch>=2.13,<2.14",
   "huggingface-hub>=0.16.4",
   "tqdm>=4.42",
   "pillow>=10",
   "networkx>=2.5.1",
+  "pydantic>=2.12,<3",
+  "python-dotenv>=1.2.1,<2",
+  "safetensors>=0.8,<0.9",
   # DocLang validator for parse_doclang(..., validate_xml=True) — first-class
   # entry point; not optional. Spec/toolkit: https://github.com/doclang-project/doclang
-  "doclang[schematron-saxon]>=0.7,<0.8",
+  "doclang[schematron-saxon]>=0.7.3,<0.8",
   "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
 ]
 
@@ -58,20 +60,14 @@ dev = [
 # XML) can install isanlp_rst without this extra and avoid the docling-core
 # dependency chain.
 formats = [
-  "docling-core>=2.75.0",
+  "docling-core>=2.92,<2.93",
   "markdown-it-py>=3",
   "mdit-py-plugins>=0.4",
 ]
 
-# Typed RST-tree model (isanlp_rst.utils.serialization_pydantic.RstNode). The
-# dependency-free dict helpers in utils.serialization need none of this; this
-# extra is only for consumers who want a validated pydantic model.
-pydantic = [
-  "pydantic>=2",
-]
-
 [tool.setuptools.packages.find]
-exclude = ["tests"]
+include = ["isanlp_rst*"]
+exclude = ["tests*", "scripts*"]
 
 [tool.setuptools.package-data]
 "isanlp_rst.rstviewer" = ["data/**"]
@@ -85,16 +81,18 @@ markers = [
 
 [tool.pixi.workspace]
 channels = ["conda-forge"]
-platforms = ["osx-arm64"]
+# PyTorch 2.13's arm64 wheel is tagged macOS 14+. Declare the actual runtime
+# floor so Pixi validates the wheel rather than resolving against its macOS 13
+# compatibility default.
+platforms = [{ platform = "osx-arm64", macos = "14.0" }]
 
 [tool.pixi.dependencies]
 python = "3.14.*"
 markdownlint-cli2 = ">=0.14"
-sentencepiece = ">=0.2.1,<0.3"
 tiktoken = ">=0.13.0,<0.14"
 
 [tool.pixi.pypi-dependencies]
-isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats", "pydantic"] }
+isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats"] }
 
 [tool.ruff]
 line-length = 120
@@ -113,19 +111,19 @@ ignore = [
 [tool.pyright]
 include = [
   "isanlp_rst",
+  "research_harness",
   "tests",
   "scripts",
 ]
 exclude = [
   "**/__pycache__",
-  ".pixi",
+  "**/.pixi",
   "build",
-  "isanlp_rst/dmrst_parser/src",
-  "isanlp_rst/universal_parser/src",
 ]
 pythonVersion = "3.14"
 venvPath = "."
 venv = ".pixi/envs/default"
+extraPaths = ["scripts"]
 reportMissingImports = "warning"     # pyright runs against the active env
 # torch's runtime API exposes many names not in __all__ (e.g. torch.device,
 # torch.tensor, torch.equal); flagging them as private noise dwarfs real issues.
@@ -141,7 +139,7 @@ smoke-full-mps = "python scripts/smoke_test.py --full --device mps"
 cuda-smoke = "python scripts/cuda_smoke.py"
 bench = "python scripts/bench.py"
 rst-diag = "python scripts/rst_diag.py"
-lint = "ruff check isanlp_rst tests scripts"
+lint = "ruff check isanlp_rst research_harness tests scripts"
 typecheck = "pyright"
-mdlint = "markdownlint-cli2 README.md UniRST_Metrics.md CLAUDE.md"
+mdlint = "python scripts/verify_markdown_manifest.py --lint"
 cleanup = "python scripts/cleanup.py"

@@ -9,6 +9,7 @@ from isanlp_rst.contracts.analysis import (
     RstAnalysis,
     RstNode,
     SecondaryRelationEdge,
+    SignalDetectorProvenance,
     TimingRecord,
 )
 from isanlp_rst.contracts.document import DocumentToken, Edu, ProvenanceRecord, RstDocument
@@ -18,6 +19,7 @@ from isanlp_rst.contracts.enums import (
     NodeKindEnum,
     NuclearityPatternEnum,
     OutputFormalismEnum,
+    SignalDetectionMethod,
 )
 from isanlp_rst.erst.rs4 import RS4Document, RS4Group, RS4SecEdge, RS4Segment, RS4Signal
 
@@ -189,19 +191,35 @@ def rs4_to_document_and_analysis(
     ]
 
     # 4. Signals (convert 1-based token strings from RS4 to internal 0-based token index tuples)
-    signals = [
-        DiscourseSignal(
-            signal_id=f"sig_{idx + 1}",
-            edge_id=sig.source,
-            signal_type=sig.type,
-            signal_subtype=sig.subtype,
-            token_ids=tuple(t - 1 for t in sig.tokens if t > 0),
-            status=AnnotationStatusEnum(sig.status)
-            if sig.status in AnnotationStatusEnum
-            else AnnotationStatusEnum.PREDICTED,
+    detector = SignalDetectorProvenance(
+        detector_id="rs4-signal-import",
+        detector_version="1.0.0",
+        method=SignalDetectionMethod.IMPORTED,
+    )
+    raw_relation_by_source = {edge.edge_id: edge.relation_raw for edge in secondary_edges}
+    raw_relation_by_source.update({str(node_id): relation for node_id, relation in node_relnames.items()})
+    signals: list[DiscourseSignal] = []
+    for idx, sig in enumerate(rs4.signals):
+        token_ids = tuple(
+            dict.fromkeys(token_id - 1 for token_id in sig.tokens if 0 < token_id <= len(tokens))
         )
-        for idx, sig in enumerate(rs4.signals)
-    ]
+        char_spans = tuple((tokens[token_id].start, tokens[token_id].end) for token_id in token_ids)
+        relation = raw_relation_by_source.get(sig.source)
+        signals.append(
+            DiscourseSignal(
+                signal_id=f"sig_{idx + 1}",
+                edge_id=sig.source or None,
+                signal_type=sig.type,
+                signal_subtype=sig.subtype,
+                token_ids=token_ids,
+                char_spans=char_spans,
+                compatible_relations=(relation,) if relation else (),
+                detector=detector,
+                status=AnnotationStatusEnum(sig.status)
+                if sig.status in AnnotationStatusEnum
+                else AnnotationStatusEnum.PREDICTED,
+            )
+        )
 
     formalism = OutputFormalismEnum.ERST_GRAPH if (secondary_edges or signals) else OutputFormalismEnum.RST_TREE
 
@@ -269,10 +287,15 @@ def analysis_to_rs4(
         for sec in analysis.secondary_edges
     ]
 
-    # Convert 0-based token index tuples back to 1-based RS4 token integers
+    def rs4_signal_source(signal: DiscourseSignal) -> str:
+        if signal.edge_id is None:
+            raise ValueError(f"Cannot serialize orphan signal {signal.signal_id!r} to RS4 without an edge source")
+        return signal.edge_id.split("_")[-1] if signal.edge_id.startswith("e_") else signal.edge_id
+
+    # Convert 0-based token index tuples back to 1-based RS4 token integers.
     signals = [
         RS4Signal(
-            source=sig.edge_id.split("_")[-1] if sig.edge_id.startswith("e_") else sig.edge_id,
+            source=rs4_signal_source(sig),
             type=sig.signal_type,
             subtype=sig.signal_subtype,
             tokens=tuple(t + 1 for t in sig.token_ids),
@@ -412,4 +435,3 @@ def du_to_analysis(unit: Any, document_id: str = "doc") -> RstAnalysis:
         primary_edges=tuple(primary_edges),
         provenance=ProvenanceRecord(producer="du_converter"),
     )
-

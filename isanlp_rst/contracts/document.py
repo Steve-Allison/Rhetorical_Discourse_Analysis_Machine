@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from uuid import uuid4
 
+from isanlp_rst._version import resolve_installed_package_version
 from isanlp_rst.contracts.enums import InputFidelityEnum
 
 
@@ -67,7 +68,8 @@ class ProvenanceRecord:
     """Provenance and derivation record."""
 
     producer: str = "isanlp_rst"
-    software_version: str = "1.0.0"
+    software_version: str = field(default_factory=resolve_installed_package_version)
+    source_revision: str | None = None
     timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     model_id: str | None = None
     model_digest: str | None = None

@@ -220,7 +220,7 @@ def test_resolve_inventory_falls_back_to_model_version() -> None:
 
 def test_schema_constants() -> None:
     assert SCHEMA_NAME == "isanlp_rst_docling"
-    assert SCHEMA_VERSION == "1.1"
+    assert SCHEMA_VERSION == "1.2"
     assert TOOL_NAME == "isanlp_rst"
     assert DEFAULT_MAX_HARVEST_CHARS == 200_000
 
@@ -231,23 +231,23 @@ def test_schema_constants() -> None:
 def test_input_too_large_error_raised_with_path(tmp_path: Path) -> None:
     path = _write_one_paragraph_docling(tmp_path / "big.docling.json", "x" * 100)
     with pytest.raises(InputTooLargeError) as excinfo:
-        parse_docling(path, max_harvest_chars=10, parser=StubParser())  # type: ignore[arg-type]
+        parse_docling(path, max_harvest_chars=10, parser=StubParser())
     assert "exceeds max_harvest_chars=10" in str(excinfo.value)
 
 
 def test_input_too_large_error_raised_with_str(tmp_path: Path) -> None:
     path = _write_one_paragraph_docling(tmp_path / "big.docling.json", "x" * 100)
     with pytest.raises(InputTooLargeError):
-        parse_docling(str(path), max_harvest_chars=10, parser=StubParser())  # type: ignore[arg-type]
+        parse_docling(str(path), max_harvest_chars=10, parser=StubParser())
 
 
 def test_input_too_large_error_path_and_str_equivalent(tmp_path: Path) -> None:
     """Path and str inputs reach the same guard."""
     path = _write_one_paragraph_docling(tmp_path / "big.docling.json", "x" * 100)
     with pytest.raises(InputTooLargeError):
-        parse_docling(path, max_harvest_chars=10, parser=StubParser())  # type: ignore[arg-type]
+        parse_docling(path, max_harvest_chars=10, parser=StubParser())
     with pytest.raises(InputTooLargeError):
-        parse_docling(str(path), max_harvest_chars=10, parser=StubParser())  # type: ignore[arg-type]
+        parse_docling(str(path), max_harvest_chars=10, parser=StubParser())
 
 
 # --- Stub-parser orchestration + cache -------------------------------------
@@ -257,7 +257,7 @@ def test_stub_parse_shape_and_no_table_refs_in_main(tmp_path: Path) -> None:
     """Hand-written prose-only Docling: empty ``table_analyses``, and main
     relations never reference ``#/tables/``."""
     path = _write_two_para_docling(tmp_path / "two.docling.json")
-    result = parse_docling(path, parser=StubParser())  # type: ignore[arg-type]
+    result = parse_docling(path, parser=StubParser())
     assert result.schema_name == SCHEMA_NAME
     assert result.edus or result.relations or result.boundaries
     assert result.table_analyses == ()
@@ -270,9 +270,9 @@ def test_cache_round_trip_skips_reparse(tmp_path: Path) -> None:
     path = _write_two_para_docling(tmp_path / "doc.docling.json")
     cache = tmp_path / "cache"
     stub = StubParser()
-    first = parse_docling(path, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    first = parse_docling(path, parser=stub, cache_dir=cache)
     calls_after_first = len(stub.calls)
-    second = parse_docling(path, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    second = parse_docling(path, parser=stub, cache_dir=cache)
     assert len(stub.calls) == calls_after_first
     assert first == second
 
@@ -283,14 +283,14 @@ def test_cache_misses_when_hf_model_name_changes(tmp_path: Path) -> None:
     stub = StubParser()
     parse_docling(
         path,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         cache_dir=cache,
         hf_model_name="repo/model-a",
     )
     calls_after_first = len(stub.calls)
     parse_docling(
         path,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         cache_dir=cache,
         hf_model_name="repo/model-b",
     )
@@ -301,12 +301,12 @@ def test_cache_misses_when_source_changes(tmp_path: Path) -> None:
     path = _write_two_para_docling(tmp_path / "doc.docling.json")
     cache = tmp_path / "cache"
     stub = StubParser()
-    parse_docling(path, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    parse_docling(path, parser=stub, cache_dir=cache)
     # Change bytes in place.
     payload = json.loads(path.read_text(encoding="utf-8"))
     payload["name"] = "mutated-doc"
     path.write_text(json.dumps(payload), encoding="utf-8")
-    parse_docling(path, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    parse_docling(path, parser=stub, cache_dir=cache)
     assert len(stub.calls) == 2
 
 
@@ -314,11 +314,11 @@ def test_cache_misses_when_knobs_change(tmp_path: Path) -> None:
     path = _write_two_para_docling(tmp_path / "doc.docling.json")
     cache = tmp_path / "cache"
     stub = StubParser()
-    parse_docling(path, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    parse_docling(path, parser=stub, cache_dir=cache)
     calls_after_first = len(stub.calls)
     parse_docling(
         path,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         cache_dir=cache,
         include_table_cells=False,
     )
@@ -329,9 +329,9 @@ def test_cache_misses_when_injected_parser_identity_differs(tmp_path: Path) -> N
     path = _write_two_para_docling(tmp_path / "doc.docling.json")
     cache = tmp_path / "cache"
     stub_a = StubParser()
-    parse_docling(path, parser=stub_a, cache_dir=cache)  # type: ignore[arg-type]
+    parse_docling(path, parser=stub_a, cache_dir=cache)
     stub_b = StubParser(hf_model_version="rstdt")
-    parse_docling(path, parser=stub_b, cache_dir=cache)  # type: ignore[arg-type]
+    parse_docling(path, parser=stub_b, cache_dir=cache)
     assert len(stub_b.calls) > 0
 
 
@@ -341,14 +341,14 @@ def test_cache_misses_when_device_changes(tmp_path: Path) -> None:
     stub = StubParser()
     parse_docling(
         path,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         cache_dir=cache,
         device="cpu",
     )
     calls_after_first = len(stub.calls)
     parse_docling(
         path,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         cache_dir=cache,
         device="mps",
     )
@@ -359,13 +359,13 @@ def test_empty_docling_error(tmp_path: Path) -> None:
     path = tmp_path / "empty.docling.json"
     path.write_text(json.dumps(_minimal_docling_json(body_children=[])))
     with pytest.raises(EmptyDoclingError):
-        parse_docling(path, parser=StubParser())  # type: ignore[arg-type]
+        parse_docling(path, parser=StubParser())
 
 
 def test_one_paragraph_docling_parses(tmp_path: Path) -> None:
     """Tiny hand-written Docling JSON with one text paragraph."""
     path = _write_one_paragraph_docling(tmp_path / "one.docling.json")
-    result = parse_docling(path, parser=StubParser())  # type: ignore[arg-type]
+    result = parse_docling(path, parser=StubParser())
     assert result.edus
     assert result.table_analyses == ()
 
@@ -377,7 +377,7 @@ def test_result_metadata_follows_injected_parser_not_kwargs(
     stub = StubParser(hf_model_version="rstdt")
     result = parse_docling(
         path,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         hf_model_version="gumrrg",
     )
     assert result.model_version == "rstdt"
@@ -388,7 +388,7 @@ def test_malformed_docling_json_raises(tmp_path: Path) -> None:
     path = tmp_path / "broken.docling.json"
     path.write_text("{not-json")
     with pytest.raises(ValidationError):
-        parse_docling(path, parser=StubParser())  # type: ignore[arg-type]
+        parse_docling(path, parser=StubParser())
 
 
 def _write_table_only_docling(path: Path) -> Path:
@@ -457,7 +457,7 @@ def test_empty_harvest_error_when_tables_disabled_on_table_only_doc(
     with pytest.raises(EmptyHarvestError):
         parse_docling(
             path,
-            parser=StubParser(),  # type: ignore[arg-type]
+            parser=StubParser(),
             include_table_cells=False,
         )
 

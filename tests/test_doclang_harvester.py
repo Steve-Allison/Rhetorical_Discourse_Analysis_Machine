@@ -22,12 +22,12 @@ def _tree(name: str) -> etree._ElementTree:
 @pytest.mark.parametrize(
     "fixture_name",
     [
-        "doclang_example.dclg.xml",
-        "ok_comprehensive.dclg.xml",
-        "ok_no_namespace.dclg.xml",
-        "ok_thread.dclg.xml",
-        "ok_list_with_unwrapped_text.dclg.xml",
-        "ok_page_break_top_level.dclg.xml",
+        "doclang_example.dclg",
+        "ok_comprehensive.dclg",
+        "ok_no_namespace.dclg",
+        "ok_thread.dclg",
+        "ok_list_with_unwrapped_text.dclg",
+        "ok_page_break_top_level.dclg",
     ],
 )
 def test_offsets_reconstruct_each_span_text(fixture_name: str) -> None:
@@ -41,9 +41,9 @@ def test_offsets_reconstruct_each_span_text(fixture_name: str) -> None:
 @pytest.mark.parametrize(
     "fixture_name",
     [
-        "doclang_example.dclg.xml",
-        "ok_comprehensive.dclg.xml",
-        "ok_list_with_unwrapped_text.dclg.xml",
+        "doclang_example.dclg",
+        "ok_comprehensive.dclg",
+        "ok_list_with_unwrapped_text.dclg",
     ],
 )
 def test_spans_in_strictly_ascending_order(fixture_name: str) -> None:
@@ -57,7 +57,7 @@ def test_spans_in_strictly_ascending_order(fixture_name: str) -> None:
 
 def test_determinism_full_text() -> None:
     """Two calls on the same tree return identical harvests."""
-    tree = _tree("ok_comprehensive.dclg.xml")
+    tree = _tree("ok_comprehensive.dclg")
     r1 = harvest_doclang_text(tree)
     r2 = harvest_doclang_text(tree)
     assert r1.full_text == r2.full_text
@@ -68,12 +68,12 @@ def test_determinism_full_text() -> None:
 
 
 def test_separator_reconstructs_full_text() -> None:
-    result = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_comprehensive.dclg"))
     assert "\n\n".join(s.text for s in result.spans) == result.full_text
 
 
 def test_custom_separator_round_trips() -> None:
-    result = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"), harvest_separator=" | ")
+    result = harvest_doclang_text(_tree("ok_comprehensive.dclg"), harvest_separator=" | ")
     assert " | ".join(s.text for s in result.spans) == result.full_text
 
 
@@ -81,9 +81,9 @@ def test_custom_separator_round_trips() -> None:
 
 
 def test_background_layer_excluded_by_default() -> None:
-    """``ok_layer.dclg.xml`` contains background-, furniture-, and
+    """``ok_layer.dclg`` contains background-, furniture-, and
     body-layer text. Only body must appear by default."""
-    result = harvest_doclang_text(_tree("ok_layer.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_layer.dclg"))
     layers = {s.layer for s in result.spans}
     assert "background" not in layers
     assert "furniture" not in layers
@@ -108,8 +108,8 @@ def test_background_layer_included_when_toggled() -> None:
 
 
 def test_furniture_layer_included_when_toggled() -> None:
-    without = harvest_doclang_text(_tree("ok_layer.dclg.xml"))
-    with_ = harvest_doclang_text(_tree("ok_layer.dclg.xml"), include_furniture=True)
+    without = harvest_doclang_text(_tree("ok_layer.dclg"))
+    with_ = harvest_doclang_text(_tree("ok_layer.dclg"), include_furniture=True)
     assert len(with_.spans) > len(without.spans)
     assert "furniture" in {s.layer for s in with_.spans}
 
@@ -120,7 +120,7 @@ def test_furniture_layer_included_when_toggled() -> None:
 def test_main_harvest_empty_for_table_only_doc() -> None:
     """``ok_table_rectangular`` is table-only — the main harvest must be
     empty; the content lives in the per-table harvests."""
-    result = harvest_doclang_text(_tree("ok_table_rectangular.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_table_rectangular.dclg"))
     assert result.spans == ()
     assert result.full_text == ""
 
@@ -128,7 +128,7 @@ def test_main_harvest_empty_for_table_only_doc() -> None:
 def test_table_harvests_carry_cells_in_doc_order() -> None:
     """The fixture has 3 tables; harvests must match boundary numbering
     (document order) and carry the cell text."""
-    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg.xml"))
+    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg"))
     assert [th.table_idx for th in harvests] == [0, 1, 2]
     first = harvests[0]
     assert [s.text for s in first.spans] == [
@@ -145,7 +145,7 @@ def test_table_harvests_carry_cells_in_doc_order() -> None:
 def test_table_cells_carry_grid_positions() -> None:
     """Table 3 starts with ``<corn/>`` — a position-only marker. The
     first text cell (Q1) must land at column 1, not 0."""
-    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg.xml"))
+    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg"))
     third = harvests[2]
     q1 = next(s for s in third.spans if s.text == "Q1")
     assert (q1.row_idx, q1.col_idx) == (0, 1)
@@ -157,7 +157,7 @@ def test_table_cells_carry_grid_positions() -> None:
 def test_ecel_and_nl_markers_never_yield_spans() -> None:
     """``<ecel/>`` (empty) and ``<nl/>`` (row break) must not appear in
     any harvest xpath."""
-    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg.xml"))
+    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg"))
     for th in harvests:
         for span in th.spans:
             last = span.xpath.rsplit("/", 1)[-1]
@@ -184,7 +184,7 @@ def test_span_continuation_markers_terminate_previous_cell() -> None:
 
 
 def test_table_harvest_offsets_tile_full_text() -> None:
-    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg.xml"))
+    harvests = harvest_doclang_tables(_tree("ok_table_rectangular.dclg"))
     for th in harvests:
         for s in th.spans:
             assert th.full_text[s.start : s.end] == s.text
@@ -193,8 +193,8 @@ def test_table_harvest_offsets_tile_full_text() -> None:
 @pytest.mark.parametrize(
     "fixture_name",
     [
-        "doclang_example.dclg.xml",
-        "ok_comprehensive.dclg.xml",
+        "doclang_example.dclg",
+        "ok_comprehensive.dclg",
     ],
 )
 def test_main_harvest_has_no_grid_markers(fixture_name: str) -> None:
@@ -211,10 +211,10 @@ def test_main_harvest_has_no_grid_markers(fixture_name: str) -> None:
 
 
 def test_thread_continuation_joins_with_single_space() -> None:
-    """``ok_thread.dclg.xml``'s two spans share ``thread_id=1`` — they
+    """``ok_thread.dclg``'s two spans share ``thread_id=1`` — they
     are one logical paragraph split by a page break, so they must join
     with a space, not the paragraph separator."""
-    result = harvest_doclang_text(_tree("ok_thread.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_thread.dclg"))
     assert len(result.spans) == 2
     a, b = result.spans
     assert result.full_text[a.end : b.start] == " "
@@ -236,7 +236,7 @@ def test_unthreaded_spans_join_with_separator() -> None:
 def test_list_item_per_ldiv_marker() -> None:
     """``ok_list_with_unwrapped_text`` has 18 ``<ldiv/>`` markers — every
     item must materialise as its own span."""
-    result = harvest_doclang_text(_tree("ok_list_with_unwrapped_text.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_list_with_unwrapped_text.dclg"))
     ldiv_spans = [s for s in result.spans if "/ldiv[" in s.xpath]
     # The fixture has 7 lists; some markers have empty text and are dropped.
     # Verify each present ldiv span's xpath actually points at an ldiv marker.
@@ -244,7 +244,7 @@ def test_list_item_per_ldiv_marker() -> None:
 
 
 def test_list_item_xpath_points_at_marker() -> None:
-    result = harvest_doclang_text(_tree("ok_list_with_unwrapped_text.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_list_with_unwrapped_text.dclg"))
     for span in result.spans:
         if "/ldiv[" not in span.xpath:
             continue
@@ -257,15 +257,15 @@ def test_list_item_xpath_points_at_marker() -> None:
 
 
 def test_thread_id_captured_on_text_host() -> None:
-    """``ok_thread.dclg.xml`` has two ``<text>`` elements sharing
+    """``ok_thread.dclg`` has two ``<text>`` elements sharing
     ``<thread thread_id="1"/>``. Both spans must carry ``thread_id=1``."""
-    result = harvest_doclang_text(_tree("ok_thread.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_thread.dclg"))
     assert all(s.thread_id == 1 for s in result.spans)
     assert len(result.spans) == 2
 
 
 def test_thread_id_none_when_host_has_no_thread() -> None:
-    result = harvest_doclang_text(_tree("ok_no_namespace.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_no_namespace.dclg"))
     assert all(s.thread_id is None for s in result.spans)
 
 
@@ -273,10 +273,10 @@ def test_thread_id_none_when_host_has_no_thread() -> None:
 
 
 def test_picture_caption_excluded_when_disabled() -> None:
-    """``doclang_example.dclg.xml`` has a picture with caption; toggling
+    """``doclang_example.dclg`` has a picture with caption; toggling
     ``include_picture_captions=False`` must drop it."""
-    with_ = harvest_doclang_text(_tree("doclang_example.dclg.xml"))
-    without = harvest_doclang_text(_tree("doclang_example.dclg.xml"), include_picture_captions=False)
+    with_ = harvest_doclang_text(_tree("doclang_example.dclg"))
+    without = harvest_doclang_text(_tree("doclang_example.dclg"), include_picture_captions=False)
     caption_xpaths_with = {s.xpath for s in with_.spans if "/caption[" in s.xpath}
     caption_xpaths_without = {s.xpath for s in without.spans if "/caption[" in s.xpath}
     assert caption_xpaths_with != caption_xpaths_without
@@ -289,26 +289,26 @@ def test_picture_caption_excluded_when_disabled() -> None:
 def test_code_blocks_excluded_by_default() -> None:
     """``ok_comprehensive`` has 12 ``<code>`` blocks — default-off must
     drop all of them from spans."""
-    result = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_comprehensive.dclg"))
     code_xpaths = [s.xpath for s in result.spans if "/code[" in s.xpath]
     assert code_xpaths == []
 
 
 def test_code_blocks_included_when_toggled() -> None:
-    without = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"))
-    with_ = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"), include_code_blocks=True)
+    without = harvest_doclang_text(_tree("ok_comprehensive.dclg"))
+    with_ = harvest_doclang_text(_tree("ok_comprehensive.dclg"), include_code_blocks=True)
     assert len(with_.spans) > len(without.spans)
 
 
 def test_formulas_excluded_by_default() -> None:
-    result = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_comprehensive.dclg"))
     formula_xpaths = [s.xpath for s in result.spans if "/formula[" in s.xpath]
     assert formula_xpaths == []
 
 
 def test_formulas_included_when_toggled() -> None:
-    without = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"))
-    with_ = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"), include_formulas=True)
+    without = harvest_doclang_text(_tree("ok_comprehensive.dclg"))
+    with_ = harvest_doclang_text(_tree("ok_comprehensive.dclg"), include_formulas=True)
     assert len(with_.spans) > len(without.spans)
 
 
@@ -318,7 +318,7 @@ def test_formulas_included_when_toggled() -> None:
 def test_layer_element_head_text_not_in_harvest() -> None:
     """``<layer value="..."/>`` is metadata; its attribute value must not
     appear in prose text."""
-    result = harvest_doclang_text(_tree("ok_layer.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_layer.dclg"))
     for span in result.spans:
         assert "value=" not in span.text
 
@@ -326,7 +326,7 @@ def test_layer_element_head_text_not_in_harvest() -> None:
 def test_location_element_head_skipped() -> None:
     """``<location value="N"/>`` carries metadata; the value must not
     surface in harvest text."""
-    result = harvest_doclang_text(_tree("ok_list_raw_before.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_list_raw_before.dclg"))
     for span in result.spans:
         # No location value attribute should leak as text.
         assert "value=" not in span.text
@@ -338,7 +338,7 @@ def test_location_element_head_skipped() -> None:
 def test_field_regions_excluded_by_default() -> None:
     """``ok_field_item_nested_descendant_key_scope`` has a field_region
     with text — must not be in default harvest."""
-    result = harvest_doclang_text(_tree("ok_field_item_nested_descendant_key_scope.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_field_item_nested_descendant_key_scope.dclg"))
     for span in result.spans:
         assert "/field_region[" not in span.xpath
 
@@ -347,7 +347,7 @@ def test_field_regions_included_when_opted_in() -> None:
     """``include_field_regions=True`` surfaces key/value text from the
     nested field_item fixture."""
     result = harvest_doclang_text(
-        _tree("ok_field_item_nested_descendant_key_scope.dclg.xml"),
+        _tree("ok_field_item_nested_descendant_key_scope.dclg"),
         include_field_regions=True,
     )
     joined = " ".join(s.text for s in result.spans)
@@ -363,9 +363,9 @@ def test_field_regions_included_when_opted_in() -> None:
 
 
 def test_head_element_text_not_in_harvest() -> None:
-    """``ok_comprehensive.dclg.xml`` has ``<head><title>...</title></head>`` —
+    """``ok_comprehensive.dclg`` has ``<head><title>...</title></head>`` —
     the title must not leak into prose harvest."""
-    result = harvest_doclang_text(_tree("ok_comprehensive.dclg.xml"))
+    result = harvest_doclang_text(_tree("ok_comprehensive.dclg"))
     for span in result.spans:
         assert "/head[" not in span.xpath
 
@@ -374,7 +374,7 @@ def test_head_element_text_not_in_harvest() -> None:
 
 
 def test_nested_table_raises_unsupported(tmp_path: Path) -> None:
-    path = tmp_path / "nested.dclg.xml"
+    path = tmp_path / "nested.dclg"
     path.write_text(
         """\
 <?xml version="1.0" encoding="UTF-8"?>

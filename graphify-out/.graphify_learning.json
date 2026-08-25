@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-08-25T10:46:08.920057+00:00",
+  "nodes": {
+    "isanlp_rst_contracts_research_modelrevisionauthority": {
+      "code_fingerprint": "",
+      "label": "ModelRevisionAuthority",
+      "last": "2026-08-25T10:43:57.897984+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-25T10:43:57.897984+00:00",
+          "outcome": "useful",
+          "q": "are we using the very latest version of xlm-roberta-large?"
+        }
+      ],
+      "score": 0.999964963,
+      "source_file": "isanlp_rst/contracts/research.py",
+      "status": "tentative",
+      "uses": 1
+    }
+  },
+  "version": 1
+}

@@ -12,6 +12,8 @@ from isanlp_rst.contracts import (
     RstAnalysis,
     RstNode,
     SecondaryRelationEdge,
+    SignalDetectionMethod,
+    SignalDetectorProvenance,
 )
 from isanlp_rst.eval import (
     CharBracketSpan,
@@ -20,6 +22,12 @@ from isanlp_rst.eval import (
     StandardParsevalScorer,
     compute_calibration_error,
     compute_span_iou,
+)
+
+SIGNAL_TEST_DETECTOR = SignalDetectorProvenance(
+    detector_id="scorer-test",
+    detector_version="1.0.0",
+    method=SignalDetectionMethod.GOLD,
 )
 
 
@@ -166,6 +174,16 @@ def test_standard_parseval_hand_computed_math() -> None:
 
 
 def test_erst_secondary_and_signals_scoring() -> None:
+    nodes = tuple(
+        RstNode(
+            node_id=index,
+            kind=NodeKindEnum.EDU,
+            edu_span=(index, index),
+            char_span=(index - 1, index),
+            text=str(index),
+        )
+        for index in range(1, 5)
+    )
     gold_sec = (
         SecondaryRelationEdge(
             edge_id="s1", source_id=1, target_id=3, relation_raw="Antithesis", relation_concept="Contrast"
@@ -190,6 +208,7 @@ def test_erst_secondary_and_signals_scoring() -> None:
             signal_type="dm",
             signal_subtype="dm",
             token_ids=(1, 2),
+            detector=SIGNAL_TEST_DETECTOR,
             status=AnnotationStatusEnum.GOLD,
         ),
     )
@@ -200,6 +219,7 @@ def test_erst_secondary_and_signals_scoring() -> None:
             signal_type="dm",
             signal_subtype="dm",
             token_ids=(1, 2),
+            detector=SIGNAL_TEST_DETECTOR,
             status=AnnotationStatusEnum.PREDICTED,
         ),
         DiscourseSignal(
@@ -208,14 +228,30 @@ def test_erst_secondary_and_signals_scoring() -> None:
             signal_type="lexical",
             signal_subtype="indicative_word",
             token_ids=(5,),
+            detector=SIGNAL_TEST_DETECTOR,
             status=AnnotationStatusEnum.PREDICTED,
         ),
     )
 
     scorer = ErstScorer()
-    sec_metrics = scorer.score_secondary_edges(gold_sec, pred_sec)
+    gold_analysis = RstAnalysis(
+        document_id="secondary-math",
+        formalism=OutputFormalismEnum.ERST_GRAPH,
+        nodes=nodes,
+        primary_edges=(),
+        secondary_edges=gold_sec,
+    )
+    pred_analysis = RstAnalysis(
+        document_id="secondary-math",
+        formalism=OutputFormalismEnum.ERST_GRAPH,
+        nodes=nodes,
+        primary_edges=(),
+        secondary_edges=pred_sec,
+    )
+    sec_metrics = scorer.score_secondary_edges(gold_analysis, pred_analysis)
     assert sec_metrics.gold_count == 2
     assert sec_metrics.pred_count == 2
+    assert sec_metrics.matched_span == 1
     assert sec_metrics.matched_direction == 1
     assert sec_metrics.matched_relation == 1
     assert sec_metrics.full_f1 == 0.5
@@ -233,8 +269,14 @@ def test_erst_secondary_and_signals_scoring() -> None:
 
 def test_erst_empty_and_asymmetric_edges() -> None:
     scorer = ErstScorer()
+    empty = RstAnalysis(
+        document_id="empty-secondary",
+        formalism=OutputFormalismEnum.ERST_GRAPH,
+        nodes=(),
+        primary_edges=(),
+    )
     # Both empty -> 1.0 F1
-    sec_empty = scorer.score_secondary_edges((), ())
+    sec_empty = scorer.score_secondary_edges(empty, empty)
     assert sec_empty.full_f1 == 1.0
     assert sec_empty.gold_count == 0
 
@@ -244,9 +286,109 @@ def test_erst_empty_and_asymmetric_edges() -> None:
 
     # Gold empty, pred non-empty -> 0.0 F1
     sec_edge = SecondaryRelationEdge(edge_id="s1", source_id=1, target_id=2, relation_raw="Rel", relation_concept="Rel")
-    sec_gold_empty = scorer.score_secondary_edges((), (sec_edge,))
+    pred = RstAnalysis(
+        document_id="empty-secondary",
+        formalism=OutputFormalismEnum.ERST_GRAPH,
+        nodes=(
+            RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 1), text="1"),
+            RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(1, 2), text="2"),
+        ),
+        primary_edges=(),
+        secondary_edges=(sec_edge,),
+    )
+    sec_gold_empty = scorer.score_secondary_edges(empty, pred)
     assert sec_gold_empty.full_f1 == 0.0
     assert sec_gold_empty.direction_precision == 0.0
+
+
+def test_erst_secondary_parseval_uses_endpoint_yields_and_separates_all_four_metrics() -> None:
+    gold = RstAnalysis(
+        document_id="yield-identity",
+        formalism=OutputFormalismEnum.ERST_GRAPH,
+        nodes=(
+            RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 1), text="a"),
+            RstNode(node_id=2, kind=NodeKindEnum.SPAN, edu_span=(2, 3), char_span=(2, 5), text="b c"),
+        ),
+        primary_edges=(),
+        secondary_edges=(
+            SecondaryRelationEdge(
+                edge_id="gold",
+                source_id=1,
+                target_id=2,
+                relation_raw="adversative-contrast",
+                relation_concept="Contrast",
+            ),
+        ),
+    )
+    reversed_prediction = RstAnalysis(
+        document_id="yield-identity",
+        formalism=OutputFormalismEnum.ERST_GRAPH,
+        nodes=(
+            RstNode(node_id=10, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 1), text="a"),
+            RstNode(node_id=20, kind=NodeKindEnum.SPAN, edu_span=(2, 3), char_span=(2, 5), text="b c"),
+        ),
+        primary_edges=(),
+        secondary_edges=(
+            SecondaryRelationEdge(
+                edge_id="prediction",
+                source_id=20,
+                target_id=10,
+                relation_raw="adversative-contrast",
+                relation_concept="Contrast",
+            ),
+        ),
+    )
+
+    metrics = ErstScorer().score_secondary_edges(gold, reversed_prediction)
+
+    assert metrics.span_f1 == 1.0
+    assert metrics.direction_f1 == 0.0
+    assert metrics.relation_f1 == 1.0
+    assert metrics.full_f1 == 0.0
+
+    wrong_relation_prediction = RstAnalysis(
+        document_id="yield-identity",
+        formalism=OutputFormalismEnum.ERST_GRAPH,
+        nodes=reversed_prediction.nodes,
+        primary_edges=(),
+        secondary_edges=(
+            SecondaryRelationEdge(
+                edge_id="wrong-relation",
+                source_id=10,
+                target_id=20,
+                relation_raw="causal-result",
+                relation_concept="Contrast",
+            ),
+        ),
+    )
+    wrong_relation = ErstScorer().score_secondary_edges(gold, wrong_relation_prediction)
+    assert wrong_relation.span_f1 == 1.0
+    assert wrong_relation.direction_f1 == 1.0
+    assert wrong_relation.relation_f1 == 0.0
+    assert wrong_relation.full_f1 == 0.0
+
+
+def test_erst_secondary_parseval_rejects_missing_nodes_and_mismatched_corpora() -> None:
+    invalid = RstAnalysis(
+        document_id="invalid-secondary",
+        formalism=OutputFormalismEnum.ERST_GRAPH,
+        nodes=(),
+        primary_edges=(),
+        secondary_edges=(
+            SecondaryRelationEdge(
+                edge_id="missing",
+                source_id=1,
+                target_id=2,
+                relation_raw="joint-list",
+                relation_concept="Joint",
+            ),
+        ),
+    )
+    scorer = ErstScorer()
+    with pytest.raises(ValueError, match="references a node absent"):
+        scorer.score_secondary_edges(invalid, invalid)
+    with pytest.raises(ValueError, match="same number of documents"):
+        scorer.score_secondary_corpus((invalid,), ())
 
 
 def test_calibration_ece_hand_computed() -> None:

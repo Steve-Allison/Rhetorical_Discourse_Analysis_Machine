@@ -8,124 +8,57 @@ from isanlp_rst.contracts.analysis import (
     RstAnalysis,
 )
 from isanlp_rst.contracts.document import RstDocument
-from isanlp_rst.contracts.enums import (
-    AnnotationStatusEnum,
-    NodeKindEnum,
-    OutputFormalismEnum,
+from isanlp_rst.contracts.enums import OutputFormalismEnum
+from isanlp_rst.contracts.erst import ErstDecoderConfig
+from isanlp_rst.erst.candidates import (
+    SecondaryEdgeCandidate,
+    generate_secondary_edge_candidates,
+    iter_candidate_batches,
+    iter_secondary_edge_candidates,
 )
+from isanlp_rst.erst.signals import RuleBasedSignalDetector
 
 
 @dataclass(frozen=True, slots=True)
 class CompleterConfig:
     """Configuration for eRST graph completion and candidate filtering."""
 
-    max_edu_distance: int = 8
-    max_candidates_per_document: int = 50
     min_confidence_threshold: float = 0.50
+    candidate_batch_size: int = 32
 
 
 class ErstCompleter:
     """Completes classical RST trees into eRST graphs."""
 
-    def __init__(self, config: CompleterConfig | None = None) -> None:
+    def __init__(
+        self,
+        config: CompleterConfig | None = None,
+        signal_detector: RuleBasedSignalDetector | None = None,
+        decoder_config: ErstDecoderConfig | None = None,
+    ) -> None:
         self.config = config or CompleterConfig()
+        self.signal_detector = signal_detector or RuleBasedSignalDetector()
+        self.decoder_config = decoder_config
 
     def generate_secondary_candidates(
         self,
+        document: RstDocument,
         analysis: RstAnalysis,
-    ) -> list[tuple[int, int]]:
-        """Generate bounded candidate pairs (source_node_id, target_node_id) for secondary relations.
+        signals: tuple[DiscourseSignal, ...] | None = None,
+    ) -> tuple[SecondaryEdgeCandidate, ...]:
+        """Delegate every runtime mode to the canonical complete generator."""
 
-        Applies locality constraints:
-        - Must be distinct nodes.
-        - Distance in EDU span <= max_edu_distance.
-        - Excludes pairs that already have a primary relation edge.
-        """
-        edu_nodes = [n for n in analysis.nodes if n.kind == NodeKindEnum.EDU]
-        if len(edu_nodes) < 2:
-            return []
-
-        # Find existing primary connected pairs
-        existing_primary_pairs = {(edge.parent_id, edge.child_id) for edge in analysis.primary_edges} | {
-            (edge.child_id, edge.parent_id) for edge in analysis.primary_edges
-        }
-
-        candidates: list[tuple[int, int]] = []
-        for i, src in enumerate(edu_nodes):
-            src_edu = src.edu_span[0]
-            for j, tgt in enumerate(edu_nodes):
-                if i == j:
-                    continue
-                tgt_edu = tgt.edu_span[0]
-                if abs(src_edu - tgt_edu) > self.config.max_edu_distance:
-                    continue
-                if (src.node_id, tgt.node_id) in existing_primary_pairs:
-                    continue
-
-                candidates.append((src.node_id, tgt.node_id))
-                if len(candidates) >= self.config.max_candidates_per_document:
-                    return candidates
-
-        return candidates
+        return generate_secondary_edge_candidates(document, analysis, signals=signals)
 
     def detect_lexical_signals(
         self,
         document: RstDocument,
         analysis: RstAnalysis,
     ) -> list[DiscourseSignal]:
-        """Detect and anchor lexical/discourse marker signals using document tokens."""
-        signals: list[DiscourseSignal] = []
-        if not document.tokens or not analysis.primary_edges:
-            return signals
+        """Detect all anchored lexical and morphosyntactic signals as orphans."""
 
-        # Common discourse marker cues
-        dm_cues = {
-            "however": ("dm", "dm"),
-            "but": ("dm", "dm"),
-            "although": ("dm", "dm"),
-            "because": ("dm", "dm"),
-            "since": ("dm", "dm"),
-            "therefore": ("dm", "dm"),
-            "furthermore": ("dm", "dm"),
-            "in addition": ("dm", "dm"),
-            "for example": ("lexical", "indicative_phrase"),
-            "for instance": ("lexical", "indicative_phrase"),
-        }
-
-        token_text_lower = [t.text.lower() for t in document.tokens]
-
-        sig_counter = 1
-        for edge in analysis.primary_edges:
-            child_node = analysis.get_node(edge.child_id)
-            if child_node is None:
-                continue
-
-            child_char_start, child_char_end = child_node.char_span
-
-            # Find tokens within child node span
-            node_token_indices = [
-                t.token_id for t in document.tokens if child_char_start <= t.start and t.end <= child_char_end
-            ]
-
-            for tok_id in node_token_indices:
-                if tok_id < len(token_text_lower):
-                    word = token_text_lower[tok_id]
-                    if word in dm_cues:
-                        sig_type, sig_subtype = dm_cues[word]
-                        signals.append(
-                            DiscourseSignal(
-                                signal_id=f"sig_{sig_counter}",
-                                edge_id=edge.edge_id,
-                                signal_type=sig_type,
-                                signal_subtype=sig_subtype,
-                                token_ids=(tok_id,),
-                                status=AnnotationStatusEnum.PREDICTED,
-                                confidence=0.85,
-                            )
-                        )
-                        sig_counter += 1
-
-        return signals
+        del analysis
+        return list(self.signal_detector.detect(document).signals)
 
     def complete_graph(
         self,
@@ -138,42 +71,81 @@ class ErstCompleter:
         secondary_edges = list(primary_analysis.secondary_edges)
 
         if neural_scorer is not None and primary_analysis.nodes:
-            from isanlp_rst.erst.dag_decoder import AcyclicDagDecoder
-            from isanlp_rst.erst.dataset import GUMSecondaryEdgeDataset, extract_eRST_candidates_from_document
+            from isanlp_rst.erst.dataset import GUMSecondaryEdgeDataset
+            from isanlp_rst.erst.decoder import ErstSecondaryEdgeDecoder
+            from isanlp_rst.erst.relations import resolve_gum_relation_concept
 
-            candidates = extract_eRST_candidates_from_document(document, primary_analysis)
-            if candidates:
-                import torch
-                from torch.utils.data import DataLoader
+            import torch
+            from torch.utils.data import DataLoader
 
-                dataset = GUMSecondaryEdgeDataset(candidates, tokenizer=neural_scorer.tokenizer)
-                loader = DataLoader(dataset, batch_size=32, shuffle=False)
+            all_candidates: list[SecondaryEdgeCandidate] = []
+            all_edge_probs: list[float] = []
+            all_rel_logits: list[list[float]] = []
+            streamed_batch_count = 0
 
-                all_edge_probs: list[float] = []
-                all_rel_logits: list[list[float]] = []
-
-                neural_scorer.eval()
-                with torch.inference_mode():
+            neural_scorer.eval()
+            with torch.inference_mode():
+                for candidate_batch in iter_candidate_batches(
+                    iter_secondary_edge_candidates(
+                        document,
+                        primary_analysis,
+                        signals=tuple(signals),
+                    ),
+                    batch_size=self.config.candidate_batch_size,
+                ):
+                    streamed_batch_count += 1
+                    all_candidates.extend(candidate_batch)
+                    dataset = GUMSecondaryEdgeDataset(
+                        candidate_batch,
+                        tokenizer=neural_scorer.tokenizer,
+                        raw_relation_inventory=neural_scorer.raw_relation_inventory,
+                    )
+                    loader = DataLoader(dataset, batch_size=len(candidate_batch), shuffle=False)
                     for batch in loader:
                         src_input_ids = batch["src_input_ids"].to(neural_scorer.dev)
                         src_attention_mask = batch["src_attention_mask"].to(neural_scorer.dev)
+                        src_special_tokens_mask = batch["src_special_tokens_mask"].to(neural_scorer.dev)
+                        src_offset_mapping = batch["src_offset_mapping"].to(neural_scorer.dev)
                         tgt_input_ids = batch["tgt_input_ids"].to(neural_scorer.dev)
                         tgt_attention_mask = batch["tgt_attention_mask"].to(neural_scorer.dev)
+                        tgt_special_tokens_mask = batch["tgt_special_tokens_mask"].to(neural_scorer.dev)
+                        tgt_offset_mapping = batch["tgt_offset_mapping"].to(neural_scorer.dev)
                         struct_features = batch["struct_features"].to(neural_scorer.dev)
 
                         out = neural_scorer(
                             src_input_ids=src_input_ids,
                             src_attention_mask=src_attention_mask,
+                            src_special_tokens_mask=src_special_tokens_mask,
+                            src_offset_mapping=src_offset_mapping,
                             tgt_input_ids=tgt_input_ids,
                             tgt_attention_mask=tgt_attention_mask,
+                            tgt_special_tokens_mask=tgt_special_tokens_mask,
+                            tgt_offset_mapping=tgt_offset_mapping,
                             struct_features=struct_features,
                         )
 
                         all_edge_probs.extend(out["edge_probs"].cpu().tolist())
                         all_rel_logits.extend(out["rel_logits"].cpu().tolist())
 
-                decoder = AcyclicDagDecoder(min_confidence_threshold=self.config.min_confidence_threshold)
-                decoded_sec_edges = decoder.decode(primary_analysis, candidates, all_edge_probs, all_rel_logits)
+            if all_candidates:
+                decoder_config = self.decoder_config or ErstDecoderConfig(
+                        edge_threshold=self.config.min_confidence_threshold,
+                        raw_relation_inventory=neural_scorer.raw_relation_inventory,
+                    )
+                if decoder_config.raw_relation_inventory != neural_scorer.raw_relation_inventory:
+                    raise ValueError("eRST decoder and scorer raw relation inventories differ")
+                decoder = ErstSecondaryEdgeDecoder(
+                    decoder_config,
+                    ontology_adapter=resolve_gum_relation_concept,
+                )
+                decoded_sec_edges = decoder.decode(
+                    primary_analysis,
+                    all_candidates,
+                    all_edge_probs,
+                    all_rel_logits,
+                    sufficient_signal_ids={signal.signal_id for signal in signals if signal.sufficient},
+                    streamed_batch_count=streamed_batch_count,
+                )
                 secondary_edges.extend(decoded_sec_edges)
 
         formalism = OutputFormalismEnum.ERST_GRAPH if signals or secondary_edges else primary_analysis.formalism

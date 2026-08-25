@@ -12,18 +12,23 @@ call reloads the ~2 GB model from disk). An optional on-disk cache
 """
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from docling_core.types.doc.document import DoclingDocument
 
+from .._version import DOCLING_SCHEMA_NAME as SCHEMA_NAME
+from .._version import DOCLING_SCHEMA_VERSION as SCHEMA_VERSION
+from .._version import TOOL_NAME
 from .._rst_common import (
     dataclass_from_dict,
     load_cached,
     model_identity_knobs,
     resolve_inventory,
     resolve_result_model_meta,
+    resolve_source_revision,
     resolve_tool_version,
     result_cache_key,
+    RstParser,
     store_cached,
 )
 from ..utils.parse_result import extract_root_tree
@@ -34,12 +39,6 @@ from .mapper import flatten_tree
 from ._mimetypes import ensure_docling_mimetypes
 from .schema import DoclingRstResult, TableAnalysis
 
-if TYPE_CHECKING:
-    from isanlp_rst.parser import Parser
-
-SCHEMA_NAME = "isanlp_rst_docling"
-SCHEMA_VERSION = "1.1"
-TOOL_NAME = "isanlp_rst"
 DEFAULT_MAX_HARVEST_CHARS = 200_000
 
 # Backwards-compatible aliases — tests and external callers import these
@@ -63,7 +62,7 @@ def _serialise_source_origin(origin: Any) -> dict[str, Any]:
 def parse_docling(
     path: str | Path,
     *,
-    parser: Parser | None = None,
+    parser: RstParser | None = None,
     hf_model_name: str = "tchewik/isanlp_rst_v3",
     hf_model_version: str = "gumrrg",
     relinventory: str | None = None,
@@ -142,7 +141,7 @@ def parse_docling(
         ),
     }
     cache_path = Path(cache_dir) if cache_dir is not None else None
-    cache_key = result_cache_key(source_bytes, knobs)
+    cache_key = result_cache_key(source_bytes, knobs, source_basename=src_path.name)
     if cache_path is not None:
         cached = load_cached(
             cache_path,
@@ -205,7 +204,13 @@ def parse_docling(
 
     if harvest.full_text:
         tree = extract_root_tree(parser(harvest.full_text))
-        relations, edus = flatten_tree(tree, harvest.spans, boundaries, note_threshold=note_threshold)
+        relations, edus = flatten_tree(
+            tree,
+            harvest.spans,
+            boundaries,
+            source_text=harvest.full_text,
+            note_threshold=note_threshold,
+        )
     else:
         relations, edus = (), ()
 
@@ -219,6 +224,7 @@ def parse_docling(
             table_tree,
             th.spans,
             (table_boundaries[boundary_id],),
+            source_text=th.full_text,
             note_threshold=note_threshold,
         )
         table_analyses.append(TableAnalysis(id=boundary_id, relations=t_relations, edus=t_edus))
@@ -228,6 +234,7 @@ def parse_docling(
         schema_version=SCHEMA_VERSION,
         tool=TOOL_NAME,
         tool_version=resolve_tool_version(),
+        source_revision=resolve_source_revision(),
         model_version=model_version,
         inventory=inventory,
         source=src_path.name,

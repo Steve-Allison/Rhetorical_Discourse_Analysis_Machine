@@ -34,9 +34,11 @@ from collections.abc import Iterable
 
 from lxml import etree
 
+from .eligibility import DoclangEligibility
 from .errors import UnsupportedDoclangError
 from .loader import local_name, local_path
 from .schema import HarvestResult, HarvestSpan, TableHarvest
+from .text_walker import body_text, iter_sibling_body_text
 
 
 def reject_nested_tables(root: etree._Element) -> None:
@@ -59,21 +61,6 @@ def reject_nested_tables(root: etree._Element) -> None:
                     "Flatten tables upstream."
                 )
 
-
-# Element-head children whose own text must NOT enter the harvest — they
-# are metadata, not prose.
-_HEAD_LOCALS: frozenset[str] = frozenset(
-    {
-        "label",
-        "thread",
-        "xref",
-        "href",
-        "layer",
-        "location",
-        "caption",
-        "custom",
-    }
-)
 
 # Top-level semantic elements that we treat as discrete harvest units.
 _HARVEST_AS_BLOCK: frozenset[str] = frozenset(
@@ -117,34 +104,11 @@ def _thread_id(element: etree._Element) -> int | None:
     return None
 
 
-def _prose_itertext(element: etree._Element) -> Iterable[str]:
-    """Yield prose text under ``element``, excluding head-property children.
-
-    Walks ``element``'s body. For each non-head child, yields its
-    ``itertext()``. The element's own ``.text`` (before any children) and
-    every child's ``.tail`` are included as prose.
-    """
-    if element.text:
-        yield element.text
-    for child in element:
-        if not isinstance(child.tag, str):
-            continue
-        if local_name(child) in _HEAD_LOCALS:
-            # head property — its tail is still prose (text after the head),
-            # but its own subtree is not.
-            if child.tail:
-                yield child.tail
-            continue
-        yield from child.itertext()
-        if child.tail:
-            yield child.tail
-
-
 def _list_items(list_el: etree._Element) -> Iterable[tuple[etree._Element, str]]:
     """Yield ``(marker, item_text)`` for each ``<ldiv/>`` in a ``<list>`` body.
 
-    Item text accumulates from the marker's ``.tail`` plus the full
-    ``itertext()`` and ``.tail`` of all following siblings up to (but not
+    Item text accumulates from the marker's ``.tail`` plus the shared
+    metadata-aware body walker over following siblings up to (but not
     including) the next ``<ldiv/>`` marker.
     """
     children = list(list_el)
@@ -162,14 +126,7 @@ def _list_items(list_el: etree._Element) -> Iterable[tuple[etree._Element, str]]
                 sib = children[j]
                 if isinstance(sib.tag, str) and local_name(sib) == "ldiv":
                     break
-                if isinstance(sib.tag, str):
-                    if local_name(sib) in _HEAD_LOCALS:
-                        if sib.tail:
-                            pieces.append(sib.tail)
-                    else:
-                        pieces.extend(sib.itertext())
-                        if sib.tail:
-                            pieces.append(sib.tail)
+                pieces.extend(iter_sibling_body_text(sib, excluded_subtrees=frozenset({"list"})))
                 j += 1
             text = "".join(pieces).strip()
             yield marker, text
@@ -227,13 +184,7 @@ def _table_cells(
             sib_local = local_name(sib)
             if sib_local in _GRID_MARKERS or sib_local == _ROW_BREAK:
                 break
-            if sib_local in _HEAD_LOCALS:
-                if sib.tail:
-                    pieces.append(sib.tail)
-            else:
-                pieces.extend(sib.itertext())
-                if sib.tail:
-                    pieces.append(sib.tail)
+            pieces.extend(iter_sibling_body_text(sib))
             j += 1
         text = "".join(pieces).strip()
         if text:
@@ -253,6 +204,7 @@ def harvest_doclang_text(
     include_code_blocks: bool = False,
     include_formulas: bool = False,
     harvest_separator: str = "\n\n",
+    eligibility: DoclangEligibility | None = None,
 ) -> HarvestResult:
     """Produce the main document harvest with per-span xpath mapping.
 
@@ -278,11 +230,14 @@ def harvest_doclang_text(
         included — see ``harvest_doclang_tables``.
     """
     root = tree.getroot()
-    allowed_layers: set[str] = {"body"}
-    if include_background:
-        allowed_layers.add("background")
-    if include_furniture:
-        allowed_layers.add("furniture")
+    policy = eligibility or DoclangEligibility(
+        include_picture_captions=include_picture_captions,
+        include_background=include_background,
+        include_furniture=include_furniture,
+        include_field_regions=include_field_regions,
+        include_code_blocks=include_code_blocks,
+        include_formulas=include_formulas,
+    )
 
     parts: list[str] = []
     spans: list[HarvestSpan] = []
@@ -321,7 +276,7 @@ def harvest_doclang_text(
 
         if tag == "list":
             layer = _element_layer(element)
-            if layer in allowed_layers:
+            if policy.include_lists and policy.allows_layer(layer):
                 for marker, item_text in _list_items(element):
                     _emit(local_path(marker), "list_item", _thread_id(element), layer, item_text)
             # nested lists / structural children are handled within _list_items;
@@ -337,29 +292,29 @@ def harvest_doclang_text(
             return
 
         if tag == "field_region":
-            if not include_field_regions:
+            if not policy.include_field_regions:
                 return
             for child in element:
                 _walk(child)
             return
 
         if tag == "field_item":
-            if not include_field_regions:
+            if not policy.include_field_regions:
                 return
             for child in element:
                 _walk(child)
             return
 
         if tag == "key":
-            if not include_field_regions:
+            if not policy.include_field_regions or not policy.include_prose:
                 return
             layer = _element_layer(element)
-            text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), "key", _thread_id(element), layer, text)
+            if policy.allows_layer(layer):
+                _emit(local_path(element), "key", _thread_id(element), layer, body_text(element))
             return
 
         if tag == "value":
-            if not include_field_regions:
+            if not policy.include_field_regions:
                 return
             # Nested field_items under <value> are harvested recursively;
             # a leaf value is one span.
@@ -371,56 +326,54 @@ def harvest_doclang_text(
                     _walk(child)
                 return
             layer = _element_layer(element)
-            text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), "value", _thread_id(element), layer, text)
+            if policy.include_prose and policy.allows_layer(layer):
+                _emit(local_path(element), "value", _thread_id(element), layer, body_text(element))
             return
 
         if tag in {"page_header", "page_footer"}:
-            if not include_furniture:
+            if not policy.include_furniture:
                 return
             layer = _element_layer(element)
-            text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), tag, _thread_id(element), layer, text)
+            _emit(local_path(element), tag, _thread_id(element), layer, body_text(element))
             return
 
         if tag == "formula":
-            if not include_formulas:
+            if not policy.include_formulas:
                 return
             layer = _element_layer(element)
-            if layer not in allowed_layers:
+            if not policy.allows_layer(layer):
                 return
-            text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), "formula", _thread_id(element), layer, text)
+            _emit(local_path(element), "formula", _thread_id(element), layer, body_text(element))
             return
 
         if tag == "code":
-            if not include_code_blocks:
+            if not policy.include_code_blocks:
                 return
             layer = _element_layer(element)
-            if layer not in allowed_layers:
+            if not policy.allows_layer(layer):
                 return
-            text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), "code", _thread_id(element), layer, text)
+            _emit(local_path(element), "code", _thread_id(element), layer, body_text(element))
             return
 
         if tag == "picture":
-            if not include_picture_captions:
+            if not policy.include_picture_captions:
                 return
             layer = _element_layer(element)
-            if layer not in allowed_layers:
+            if not policy.allows_layer(layer):
                 return
             for child in element:
                 if isinstance(child.tag, str) and local_name(child) == "caption":
-                    caption_text = "".join(child.itertext()).strip()
+                    caption_text = body_text(child)
                     _emit(local_path(child), "caption", _thread_id(element), layer, caption_text)
             return
 
         if tag in _HARVEST_AS_BLOCK:
-            layer = _element_layer(element)
-            if layer not in allowed_layers:
+            if not policy.allows_main_kind(tag):
                 return
-            text = "".join(_prose_itertext(element)).strip()
-            _emit(local_path(element), tag, _thread_id(element), layer, text)
+            layer = _element_layer(element)
+            if not policy.allows_layer(layer):
+                return
+            _emit(local_path(element), tag, _thread_id(element), layer, body_text(element))
             return
 
         if tag == "group":
@@ -457,6 +410,7 @@ def harvest_doclang_tables(
     include_background: bool = False,
     include_furniture: bool = False,
     harvest_separator: str = "\n\n",
+    eligibility: DoclangEligibility | None = None,
 ) -> tuple[TableHarvest, ...]:
     """Produce one ``TableHarvest`` per ``<table>``, in document order.
 
@@ -467,11 +421,10 @@ def harvest_doclang_tables(
     """
     root = tree.getroot()
     reject_nested_tables(root)
-    allowed_layers: set[str] = {"body"}
-    if include_background:
-        allowed_layers.add("background")
-    if include_furniture:
-        allowed_layers.add("furniture")
+    policy = eligibility or DoclangEligibility(
+        include_background=include_background,
+        include_furniture=include_furniture,
+    )
 
     harvests: list[TableHarvest] = []
     sep_len = len(harvest_separator)
@@ -480,7 +433,7 @@ def harvest_doclang_tables(
         pieces: list[str] = []
         spans: list[HarvestSpan] = []
         cursor = 0
-        if _element_layer(table_el) in allowed_layers:
+        if policy.include_table_cells and policy.allows_layer(_element_layer(table_el)):
             thread = _thread_id(table_el)
             layer = _element_layer(table_el)
             for marker, kind, text, row, col in _table_cells(table_el):

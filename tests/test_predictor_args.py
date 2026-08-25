@@ -5,6 +5,7 @@ error type before any HF download or torch.load is reached.
 """
 
 import json
+from typing import Any
 
 import pytest
 
@@ -24,12 +25,14 @@ class TestDMRSTArgValidation:
 
     def test_parse_rst_rejects_empty_and_non_str(self):
         dummy = object.__new__(PredictorDMRST)
+        missing_text: Any = None
+        integer_text: Any = 123
         with pytest.raises(ValueError, match="non-empty"):
             PredictorDMRST.parse_rst(dummy, "   ")
         with pytest.raises(ValueError, match="must be provided"):
-            PredictorDMRST.parse_rst(dummy, None)  # type: ignore[arg-type]
+            PredictorDMRST.parse_rst(dummy, missing_text)
         with pytest.raises(TypeError, match="must be a str"):
-            PredictorDMRST.parse_rst(dummy, 123)  # type: ignore[arg-type]
+            PredictorDMRST.parse_rst(dummy, integer_text)
 
 
 class TestUniRSTArgValidation:
@@ -43,12 +46,14 @@ class TestUniRSTArgValidation:
 
     def test_parse_rst_rejects_empty_and_non_str(self):
         dummy = object.__new__(PredictorUniRST)
+        missing_text: Any = None
+        bytes_text: Any = b"bytes"
         with pytest.raises(ValueError, match="non-empty"):
             PredictorUniRST.parse_rst(dummy, "\n\t")
         with pytest.raises(ValueError, match="must be provided"):
-            PredictorUniRST.parse_rst(dummy, None)  # type: ignore[arg-type]
+            PredictorUniRST.parse_rst(dummy, missing_text)
         with pytest.raises(TypeError, match="must be a str"):
-            PredictorUniRST.parse_rst(dummy, b"bytes")  # type: ignore[arg-type]
+            PredictorUniRST.parse_rst(dummy, bytes_text)
 
     def test_relinventory_idx_out_of_bounds_raises_before_weight_load(self, tmp_path):
         """OOB idx must fail on config alone — never reach torch.load."""
@@ -106,4 +111,4 @@ class TestCudaDeviceValidation:
     def test_cuda_device_bool_raises(self):
         """``True`` is a subclass of ``int`` — must still be rejected."""
         with pytest.raises(ValueError, match="cuda_device must be an int"):
-            resolve_device(cuda_device=True)  # type: ignore[arg-type]
+            resolve_device(cuda_device=True)

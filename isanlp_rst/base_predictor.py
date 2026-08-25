@@ -8,15 +8,7 @@ from itertools import batched
 from pathlib import Path
 from typing import Any, Protocol
 
-# Apple Silicon: enable CPU fallback for MPS-unsupported ops BEFORE torch is
-# imported. PyTorch 2.x lacks an MPS kernel for `torch.linalg.qr`, which is
-# used inside `torch.nn.init.orthogonal_` during model construction. Without
-# this flag, MPS users hit `NotImplementedError` at first use. Setting it here
-# (idempotent via setdefault) keeps user environments untouched if they've
-# already opted in or out.
-os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
-
-import torch  # noqa: E402  (intentionally after env var setup above)
+from ._torch_runtime import torch
 
 
 class _OffsetToken(Protocol):
@@ -159,6 +151,7 @@ def resolve_device(
     if cuda_device is not None:
         if device is not None:
             raise ValueError("Pass either `device` (preferred) or `cuda_device` (deprecated), not both.")
+        resolved_device = _device_from_legacy_int(cuda_device, resolved_probe)
         warnings.warn(
             "`cuda_device` is deprecated and will be removed in a future release; "
             "use `device=` instead (e.g. device='auto'|'cpu'|'mps'|'cuda:0'). "
@@ -167,7 +160,7 @@ def resolve_device(
             DeprecationWarning,
             stacklevel=2,
         )
-        return _device_from_legacy_int(cuda_device, resolved_probe)
+        return resolved_device
 
     if device is None:
         return _device_from_spec("auto", resolved_probe)

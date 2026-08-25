@@ -9,11 +9,13 @@ from isanlp_rst.contracts.analysis import (
     PrimaryRelationEdge,
     RstAnalysis,
     RstNode,
+    SignalDetectorProvenance,
 )
 from isanlp_rst.contracts.document import RstDocument
 from isanlp_rst.contracts.enums import (
     AnnotationStatusEnum,
     NuclearityPatternEnum,
+    SignalDetectionMethod,
 )
 
 
@@ -207,6 +209,13 @@ class DiscourseMarkerPrimer:
                             signal_type="dm",
                             signal_subtype="dm",
                             token_ids=cue_token_ids,
+                            char_spans=((cue_abs_start, cue_abs_end),),
+                            compatible_relations=(rule.fine_label,),
+                            detector=SignalDetectorProvenance(
+                                detector_id="english-discourse-marker-primer",
+                                detector_version="1.0.0",
+                                method=SignalDetectionMethod.RULE,
+                            ),
                             status=AnnotationStatusEnum.PREDICTED,
                             confidence=0.92,
                         )

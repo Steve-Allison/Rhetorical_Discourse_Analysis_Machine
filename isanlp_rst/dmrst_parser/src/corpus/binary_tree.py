@@ -66,10 +66,14 @@ class BinaryTree:
         node.relation = value
         sub_string = string[space_index + 1 : -1]
         span_index = self.find_span_index(sub_string)
+        if span_index is None:
+            raise ValueError("RST tree node does not contain two balanced child expressions")
         node.left = self.build_tree(sub_string[: span_index + 1])
         node.left.parent = node
         node.right = self.build_tree(sub_string[span_index + 1 :])
         node.right.parent = node
+        if node.left.span is None or node.right.span is None:
+            raise ValueError("RST child node is missing its EDU span")
         node.span = [node.left.span[0], node.right.span[1]]
         if str(node.span) in self.paragraph_span:
             node.is_paragragh_span = True

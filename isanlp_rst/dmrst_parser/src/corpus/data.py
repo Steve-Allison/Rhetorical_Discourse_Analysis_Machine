@@ -10,6 +10,7 @@ from . import common
 from . import relation_set
 from . import utils_dis_thiago
 from . import utils_rs3
+from .span_node import SpanNode as SpanNode
 
 """
 TODO:
@@ -74,7 +75,8 @@ class Corpus:
             # retrieve edu files
             self.edufiles = getFiles(self.path, ".edus")
             # Associate each tree with the corresponding edu file
-            self.documents = associate_tree_edus(self.files, self.edufiles)
+            self.documents = []
+            self.documents.extend(associate_tree_edus(self.files, self.edufiles))
         elif self.datatype == "rs3":
             self.files = getFiles(self.path, ".rs3")
             self.documents = [Rs3Document(f) for f in self.files]
@@ -187,10 +189,17 @@ class Rs3Document(Document):
         self.nuclearity_relations = utils_rs3.getRelationsType(rs3_xml_tree)
         # Get info for each node
         eduList, groupList, root = utils_rs3.readRS3Annotation(doc_root)
+        if root is None:
+            raise ValueError(f"RS3 document has no resolvable root: {self.path}")
         # Build nodes, rename DU, tree=SpanNode instance
         tree = utils_rs3.buildNodes(eduList, groupList, root, self.nuclearity_relations)
         # Can t be retrieved from the tree for now, some EDU have children
-        eduIds = [e["id"] for e in eduList]
+        eduIds: list[int] = []
+        for edu in eduList:
+            edu_id = edu.get("id")
+            if not isinstance(edu_id, int):
+                raise ValueError(f"RS3 EDU has a non-integer ID: {edu_id!r}")
+            eduIds.append(edu_id)
         # Order span list for each node
         utils_rs3.orderSpanList(tree, eduIds)
         # Clean the tree: deal with DU with only one child + same unit cases
@@ -201,6 +210,8 @@ class Rs3Document(Document):
         utils_rs3.binarizeTreeGeneral(tree, self, nucRelations=self.nuclearity_relations)
         tree = common.backprop(tree, self)  # Backprop info
         self.tree = Tree.fromstring(common.parse(tree))  # Build an nltk tree
+        if self.tree is None:
+            raise ValueError(f"RS3 parser produced no NLTK tree: {self.path}")
         validTree = common.checkTree(self.tree, self)
         if not validTree:
             self.tree = None
@@ -256,42 +267,6 @@ class ThiagoDocument(Document):
 
     def writeEdu(self, outpath: str | Path) -> None:
         common.writeEdusFile(self, ".txt.lisp.thiago", outpath)
-
-
-# ----------------------------------------------------------------------------------
-# ----------------------------------------------------------------------------------
-class SpanNode:
-    """
-    RST tree node (from DPLP, by Yangfeng Ji)
-    """
-
-    def __init__(self, prop: str | None) -> None:
-        """
-        Initialization of SpanNode
-        :type text: string
-        :param text: text of this span
-        """
-        self.text: Any = None  # Text of this span / token ids
-        self.relation: Any = None  # Discourse relation
-        self.eduspan: Any = None  # EDU span (begin, end)
-        self.nucspan: Any = None  # Nucleus span (begin, end)
-        self.nucedu: Any = None  # Nucleus single EDU
-        self.prop = prop  # Property: Nucleus/Satellite/Roots
-        self.lnode: SpanNode | None = None  # Children nodes (for binary RST tree only)
-        self.rnode: SpanNode | None = None
-        self.pnode: SpanNode | None = None  # Parent node
-        self.nodelist: list[SpanNode] = []  # Node list (for general RST tree only)
-        self.form: str | None = None  # Relation form: NN, NS, SN
-        self.eduCovered: Any = []  # EDUs covered by a CDU (nodes or ids, depending on caller)
-        self._id: Any = None  # Id of a DU, only from rs3 files (CHLOE Added)
-        self.eduSpan: Any = None  # rs3 builder alias for the EDU span
-        self.position: Any = None  # EDU position in the source document
-
-    def __str__(self) -> str:
-        return self._info() + "\n" + "\n".join("\t" + n._info() for n in self.nodelist)
-
-    def _info(self) -> str:
-        return "eduspan: " + str(self.eduspan)
 
 
 # ----------------------------------------------------------------------------------

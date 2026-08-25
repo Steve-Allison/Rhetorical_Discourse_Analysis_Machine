@@ -1,11 +1,15 @@
 # English RST Capability Platform — 2026 world-class plan
 
-**Status:** Capability architecture and delivery proposal (not started)
+**Status:** Superseded historical proposal; not implementation authority
 **Date:** 2026-08-16
 **Driver:** Steve Allison
 **Purpose:** Give Steve's projects one dependable, semantically governed English RST capability: classical RST trees, eRST graphs, lossless label mappings, confidence, provenance, document-format integration, and practical local inference.
 **Scope:** English. Raw text, provided EDUs, and document-native inputs. RST-DT trees and GUM eRST are quality and interoperability reference points, not the product itself.
-**Out of scope:** Multilingual SOTA as a release gate; a mandatory 70B runtime; a second local ontology authority; redistribution of licensed corpora or incompatible code.
+**Out of scope:** Multilingual benchmark leadership as a release gate; a mandatory 70B runtime; a second local ontology authority; redistribution of licensed corpora or incompatible code.
+
+This proposal is retained for historical context only. The authoritative implementation scope,
+technology comparison, and task status are in `specs/001-forensic-remediation/`. External benchmark
+artifacts do not control permission to implement or evaluate repository technologies.
 
 ---
 
@@ -42,7 +46,7 @@ evaluation script.
 | Operational | Encoder-scale default; CPU, MPS, and CUDA paths; bounded long-document behaviour; batch and cache support; optional enhanced models |
 | Proven | Reproducible scorer parity, corpus/version manifests, genre and long-document evaluation, benchmark quality, and regression evidence |
 
-The ambition remains 2026 SOTA. Model results do not compensate for an
+The ambition remains world-class measured quality. Model results do not compensate for an
 incomplete capability contract, and a polished API does not compensate for weak
 discourse analysis.
 
@@ -377,6 +381,7 @@ Anchored-signal evaluation and lossless RS4 export require original text plus
 token and EDU alignment.
 
 Coordinate and indexing conventions:
+
 - Character offsets use standard Python 0-based half-open intervals `[start, end)`.
 - Internal token IDs (`DocumentToken.token_id`, `Edu.token_ids`, `DiscourseSignal.token_ids`)
   are 0-based integer tuples. The RS4 serializer/deserializer translates between
@@ -489,13 +494,13 @@ No downstream code treats proposed keys as canonical before this release exists.
 - Load/dump RS4 against the pinned GUM release and all header labels.
 - Convert primary trees without inventing secondary edges/signals.
 - Use synthetic redistributable fixtures and licence-safe local corpus tests.
-- Wrap a compatible official scorer or independently implement and prove parity.
+- Validate the repository-owned scorer against explicit mathematical and adversarial fixtures.
 
 ### Phase 4 — Predict complete eRST graphs
 
-- Implement secondary-edge candidate generation with locality constraints
-  (bounded token/EDU distance window, structural tree LCA height constraints,
-  and cross-paragraph gating) to prevent $O(N^2)$ candidate explosion on long documents.
+- Implement complete ordered-pair secondary-edge candidate generation with no distance, degree,
+  ancestry, projectivity, or primary-overlap exclusions. Stream batches to bound memory without
+  changing candidate membership.
 - Implement direction/relation classification, signal detection and typing,
   anchoring, graph constraints, and reported repairs.
 - Train on the pinned GUM release with manifests.
@@ -524,7 +529,7 @@ No downstream code treats proposed keys as canonical before this release exists.
 
 ---
 
-## Quality evidence and 2026 SOTA targets
+## Quality evidence and technology targets
 
 These are acceptance evidence, not the platform's purpose.
 
@@ -547,9 +552,9 @@ primary tree plus secondary/tree-breaking edges and token-anchored signals; its
 GUM V9 numbers are not a current-release target. GUM V12.1.0 was inspected for
 this plan, but Phase 0 must pin/digest the actual artifact.
 
-No “SOTA” claim ships without a dated literature refresh, comparable conditions,
-reproducible evidence, and named capability scope. Useful capability tiers may
-release earlier if status and limits are explicit.
+External benchmark claims are outside the implementation acceptance boundary. Technology selection
+uses the repository-owned protocol, comparable conditions, reproducible evidence, and named
+capability scope.
 
 ---
 
@@ -608,12 +613,12 @@ release earlier if status and limits are explicit.
 ## Non-goals
 
 - Rewriting Central_Configs or duplicating its ontology here.
-- Treating benchmark chasing, a paper, or a leaderboard as the product.
+- Treating benchmark chasing or a leaderboard as the product.
 - Vendoring licensed corpora, NTT code, or an incompatible scorer.
 - Making a huge decoder the default runtime.
 - Flattening RST-DT and GUM/eRST into one misleading label list.
 - Changing Docling/DocLang contracts without current upstream-spec evidence.
-- Claiming multilingual SOTA as part of this English release.
+- Claiming multilingual benchmark leadership as part of this English release.
 
 ## Intended outcome
 
@@ -623,5 +628,5 @@ canonical concept and every prediction to its model, ontology, and source span;
 move between corpus/model encodings without silent semantic loss; and run the
 capability locally at practical scale.
 
-That is the product. 2026 SOTA evidence is how the project proves the product is
-excellent.
+That is the product. Complete repository-owned comparison evidence is how the project proves the
+product is excellent.

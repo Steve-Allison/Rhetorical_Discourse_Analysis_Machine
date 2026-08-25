@@ -10,11 +10,13 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from transformers import (
+    AutoConfig,
     AutoModelForTokenClassification,
     AutoTokenizer,
     get_cosine_schedule_with_warmup,
 )
 
+from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
 from isanlp_rst.segmentation.dataset import (
     EduSegmentationDataset,
     SegmentedSentence,
@@ -48,9 +50,10 @@ def compute_metrics(preds: list[int], targets: list[int]) -> dict[str, float]:
 
 
 def train_segmenter(
-    model_name: str = "microsoft/deberta-v3-large",
+    model_name: str = MODERNBERT_BASE_MODEL_ID,
+    model_revision: str | None = MODERNBERT_BASE_REVISION,
     data_dir: Path | str = "data/disrpt",
-    output_dir: Path | str = "models/segmenter_deberta_large",
+    output_dir: Path | str = "models/segmenter_modernbert_base",
     batch_size: int = 16,
     learning_rate: float = 2e-5,
     epochs: int = 4,
@@ -101,11 +104,20 @@ def train_segmenter(
         raise RuntimeError("No training sentences available. Please verify dataset paths.")
 
     # 3. Setup Tokenizer and Model
-    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+    revision_kwargs = {"revision": model_revision} if model_revision is not None else {}
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True, **revision_kwargs)
+    if not tokenizer.is_fast:
+        raise ValueError("EDU segmenter training requires a native fast tokenizer artifact")
+    config = AutoConfig.from_pretrained(model_name, **revision_kwargs)
+    config.num_labels = 2
+    config.id2label = {0: "I-EDU", 1: "B-EDU"}
+    config.label2id = {"I-EDU": 0, "B-EDU": 1}
     model = AutoModelForTokenClassification.from_pretrained(
         model_name,
-        num_labels=2,
+        config=config,
         ignore_mismatched_sizes=True,
+        use_safetensors=True,
+        **revision_kwargs,
     ).to(dev)
 
     train_dataset = EduSegmentationDataset(train_sentences, tokenizer=tokenizer)
@@ -209,7 +221,8 @@ def train_segmenter(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fine-tune Transformer EDU Segmenter")
-    parser.add_argument("--model_name", default="microsoft/deberta-v3-large", type=str)
+    parser.add_argument("--model_name", default=MODERNBERT_BASE_MODEL_ID, type=str)
+    parser.add_argument("--model_revision", default=MODERNBERT_BASE_REVISION, type=str)
     parser.add_argument("--data_dir", default="data/disrpt", type=str)
     parser.add_argument("--output_dir", default="models/segmenter_deberta_large", type=str)
     parser.add_argument("--batch_size", default=16, type=int)
@@ -220,6 +233,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     train_segmenter(
         model_name=args.model_name,
+        model_revision=args.model_revision,
         data_dir=args.data_dir,
         output_dir=args.output_dir,
         batch_size=args.batch_size,

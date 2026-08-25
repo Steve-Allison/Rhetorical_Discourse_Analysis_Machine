@@ -5,6 +5,9 @@ from enum import Enum
 import json
 from typing import Any
 
+from pydantic import BaseModel
+
+from isanlp_rst._version import resolve_installed_package_version
 from isanlp_rst.contracts.analysis import (
     DiscourseSignal,
     FormatRstAnalysis,
@@ -23,7 +26,6 @@ from isanlp_rst.contracts.document import (
     TextSpan,
 )
 from isanlp_rst.contracts.enums import (
-    AnnotationStatusEnum,
     FailureCodeEnum,
     InputFidelityEnum,
     NodeKindEnum,
@@ -33,6 +35,8 @@ from isanlp_rst.contracts.enums import (
 
 
 def _custom_asdict(obj: Any) -> Any:
+    if isinstance(obj, BaseModel):
+        return obj.model_dump(mode="json")
     if is_dataclass(obj) and not isinstance(obj, type):
         result = {}
         for key, val in asdict(obj).items():
@@ -45,6 +49,17 @@ def _custom_asdict(obj: Any) -> Any:
     if isinstance(obj, dict):
         return {str(k): _custom_asdict(v) for k, v in obj.items()}
     return obj
+
+
+def _int_pair(value: Any, field_name: str) -> tuple[int, int]:
+    """Validate and normalize a serialized two-integer coordinate pair."""
+
+    if not isinstance(value, (list, tuple)) or len(value) != 2:
+        raise ValueError(f"{field_name} must contain exactly two integers")
+    first, second = value
+    if isinstance(first, bool) or isinstance(second, bool) or not isinstance(first, int) or not isinstance(second, int):
+        raise ValueError(f"{field_name} must contain exactly two integers")
+    return first, second
 
 
 def to_dict(obj: Any) -> dict[str, Any]:
@@ -112,7 +127,8 @@ def document_from_dict(payload: dict[str, Any]) -> RstDocument:
     prov_data = payload.get("provenance", {})
     provenance = ProvenanceRecord(
         producer=prov_data.get("producer", "isanlp_rst"),
-        software_version=prov_data.get("software_version", "1.0.0"),
+        software_version=prov_data.get("software_version", resolve_installed_package_version()),
+        source_revision=prov_data.get("source_revision"),
         timestamp=prov_data.get("timestamp", ""),
         model_id=prov_data.get("model_id"),
         model_digest=prov_data.get("model_digest"),
@@ -150,8 +166,8 @@ def analysis_from_dict(payload: dict[str, Any]) -> RstAnalysis:
         RstNode(
             node_id=n["node_id"],
             kind=NodeKindEnum(n["kind"]),
-            edu_span=tuple(n["edu_span"]),  # type: ignore[arg-type]
-            char_span=tuple(n["char_span"]),  # type: ignore[arg-type]
+            edu_span=_int_pair(n["edu_span"], "edu_span"),
+            char_span=_int_pair(n["char_span"], "char_span"),
             text=n["text"],
             confidence=n.get("confidence"),
         )
@@ -185,23 +201,13 @@ def analysis_from_dict(payload: dict[str, Any]) -> RstAnalysis:
         for e in payload.get("secondary_edges", [])
     )
 
-    signals = tuple(
-        DiscourseSignal(
-            signal_id=s["signal_id"],
-            edge_id=s["edge_id"],
-            signal_type=s["signal_type"],
-            signal_subtype=s["signal_subtype"],
-            token_ids=tuple(s.get("token_ids", ())),
-            status=AnnotationStatusEnum(s.get("status", AnnotationStatusEnum.PREDICTED.value)),
-            confidence=s.get("confidence"),
-        )
-        for s in payload.get("signals", [])
-    )
+    signals = tuple(DiscourseSignal.model_validate(signal) for signal in payload.get("signals", []))
 
     prov_data = payload.get("provenance", {})
     provenance = ProvenanceRecord(
         producer=prov_data.get("producer", "isanlp_rst"),
-        software_version=prov_data.get("software_version", "1.0.0"),
+        software_version=prov_data.get("software_version", resolve_installed_package_version()),
+        source_revision=prov_data.get("source_revision"),
         timestamp=prov_data.get("timestamp", ""),
         model_id=prov_data.get("model_id"),
         model_digest=prov_data.get("model_digest"),

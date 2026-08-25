@@ -12,9 +12,10 @@
     "governing_schema": "ResourceSpecification"
   },
   "schema_name": "isanlp_rst_markdown",
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "tool": "isanlp_rst",
   "tool_version": "<normalised>",
+  "source_revision": "<normalised>",
   "model_version": "gumrrg",
   "inventory": "gumrrg",
   "source": "golden_src.md",
@@ -41,6 +42,15 @@
   "relations": [
     {
       "id": 0,
+      "text": "Title\n\nFirst para.\n\nSecond para.",
+      "char_span": [
+        0,
+        32
+      ],
+      "edu_span": [
+        1,
+        2
+      ],
       "relation": "elaboration",
       "nuclearity": "NS",
       "nucleus_refs": [
@@ -62,6 +72,15 @@
   "edus": [
     {
       "id": 1,
+      "text": "Title",
+      "char_span": [
+        0,
+        5
+      ],
+      "edu_span": [
+        1,
+        1
+      ],
       "block_refs": [
         "#/blocks/0"
       ],
@@ -69,6 +88,15 @@
     },
     {
       "id": 2,
+      "text": "First para.\n\nSecond para.",
+      "char_span": [
+        7,
+        32
+      ],
+      "edu_span": [
+        2,
+        2
+      ],
       "block_refs": [
         "#/blocks/1",
         "#/blocks/2"

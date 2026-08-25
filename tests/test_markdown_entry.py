@@ -139,7 +139,7 @@ def test_source_origin_null_front_matter_when_absent() -> None:
 def test_schema_constants_pinned() -> None:
     """Pin the wire-format identifier — downstream consumers branch on it."""
     assert SCHEMA_NAME == "isanlp_rst_markdown"
-    assert SCHEMA_VERSION == "1.0"
+    assert SCHEMA_VERSION == "1.1"
     assert TOOL_NAME == "isanlp_rst"
     assert DEFAULT_MAX_HARVEST_CHARS == 200_000
 
@@ -194,7 +194,7 @@ def test_table_only_doc_parses_with_empty_main_tree(tmp_path: Path) -> None:
     p = tmp_path / "table_only.md"
     p.write_text("| h |\n|---|\n| a |\n| b |\n")
     stub = StubParser()
-    result = parse_markdown(p, parser=stub)  # type: ignore[arg-type]
+    result = parse_markdown(p, parser=stub)
     assert result.relations == ()
     assert result.edus == ()
     assert len(result.table_analyses) == 1
@@ -205,7 +205,7 @@ def test_table_analysis_refs_resolve_against_table_boundary(tmp_path: Path) -> N
     p = tmp_path / "doc.md"
     p.write_text(TABLE_DOC)
     stub = StubParser()
-    result = parse_markdown(p, parser=stub)  # type: ignore[arg-type]
+    result = parse_markdown(p, parser=stub)
     (analysis,) = result.table_analyses
     table_boundary = next(b for b in result.boundaries if b.id == analysis.id)
     for edu in analysis.edus:
@@ -217,7 +217,7 @@ def test_main_relations_never_reference_cells(tmp_path: Path) -> None:
     """Two-level invariant: the document tree knows nothing of cells."""
     p = tmp_path / "doc.md"
     p.write_text(TABLE_DOC)
-    result = parse_markdown(p, parser=StubParser())  # type: ignore[arg-type]
+    result = parse_markdown(p, parser=StubParser())
     for r in result.relations:
         for ref in (*r.nucleus_refs, *r.satellite_refs):
             assert not ref.startswith("#/tables/")
@@ -228,7 +228,7 @@ def test_include_table_cells_false_drops_analyses_and_table_boundaries(
 ) -> None:
     p = tmp_path / "doc.md"
     p.write_text(TABLE_DOC)
-    result = parse_markdown(p, parser=StubParser(), include_table_cells=False)  # type: ignore[arg-type]
+    result = parse_markdown(p, parser=StubParser(), include_table_cells=False)
     assert result.table_analyses == ()
     assert not any(b.kind == "table" for b in result.boundaries)
 
@@ -237,7 +237,7 @@ def test_one_parser_call_per_table_plus_main(tmp_path: Path) -> None:
     p = tmp_path / "doc.md"
     p.write_text(TABLE_DOC + "\n| x |\n|---|\n| y |\n")
     stub = StubParser()
-    parse_markdown(p, parser=stub)  # type: ignore[arg-type]
+    parse_markdown(p, parser=stub)
     assert len(stub.calls) == 3  # main + 2 tables
 
 
@@ -249,9 +249,9 @@ def test_cache_round_trip_skips_reparse(tmp_path: Path) -> None:
     p.write_text(TABLE_DOC)
     cache = tmp_path / "cache"
     stub = StubParser()
-    first = parse_markdown(p, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    first = parse_markdown(p, parser=stub, cache_dir=cache)
     calls_after_first = len(stub.calls)
-    second = parse_markdown(p, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    second = parse_markdown(p, parser=stub, cache_dir=cache)
     assert len(stub.calls) == calls_after_first  # no new parses
     assert first == second
 
@@ -262,9 +262,9 @@ def test_cache_misses_when_knobs_change(tmp_path: Path) -> None:
     p.write_text(TABLE_DOC)
     cache = tmp_path / "cache"
     stub = StubParser()
-    parse_markdown(p, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    parse_markdown(p, parser=stub, cache_dir=cache)
     calls_after_first = len(stub.calls)
-    parse_markdown(p, parser=stub, cache_dir=cache, include_code_blocks=False)  # type: ignore[arg-type]
+    parse_markdown(p, parser=stub, cache_dir=cache, include_code_blocks=False)
     assert len(stub.calls) > calls_after_first
 
 
@@ -273,9 +273,9 @@ def test_cache_misses_when_source_changes(tmp_path: Path) -> None:
     p.write_text("para one\n")
     cache = tmp_path / "cache"
     stub = StubParser()
-    parse_markdown(p, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    parse_markdown(p, parser=stub, cache_dir=cache)
     p.write_text("para two\n")
-    parse_markdown(p, parser=stub, cache_dir=cache)  # type: ignore[arg-type]
+    parse_markdown(p, parser=stub, cache_dir=cache)
     assert len(stub.calls) == 2
 
 
@@ -288,14 +288,14 @@ def test_cache_misses_when_hf_model_name_changes(tmp_path: Path) -> None:
     stub = StubParser()
     parse_markdown(
         p,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         cache_dir=cache,
         hf_model_name="repo/model-a",
     )
     calls_after_first = len(stub.calls)
     parse_markdown(
         p,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         cache_dir=cache,
         hf_model_name="repo/model-b",
     )
@@ -309,9 +309,9 @@ def test_cache_misses_when_injected_parser_identity_differs(tmp_path: Path) -> N
     p.write_text(TABLE_DOC)
     cache = tmp_path / "cache"
     stub_a = StubParser()
-    parse_markdown(p, parser=stub_a, cache_dir=cache)  # type: ignore[arg-type]
+    parse_markdown(p, parser=stub_a, cache_dir=cache)
     stub_b = StubParser(hf_model_version="rstdt")
-    parse_markdown(p, parser=stub_b, cache_dir=cache)  # type: ignore[arg-type]
+    parse_markdown(p, parser=stub_b, cache_dir=cache)
     assert len(stub_b.calls) > 0
 
 
@@ -321,9 +321,9 @@ def test_cache_misses_when_device_changes(tmp_path: Path) -> None:
     p.write_text(TABLE_DOC)
     cache = tmp_path / "cache"
     stub = StubParser()
-    parse_markdown(p, parser=stub, cache_dir=cache, device="cpu")  # type: ignore[arg-type]
+    parse_markdown(p, parser=stub, cache_dir=cache, device="cpu")
     calls_after_first = len(stub.calls)
-    parse_markdown(p, parser=stub, cache_dir=cache, device="mps")  # type: ignore[arg-type]
+    parse_markdown(p, parser=stub, cache_dir=cache, device="mps")
     assert len(stub.calls) > calls_after_first
 
 
@@ -336,7 +336,7 @@ def test_result_metadata_follows_injected_parser_not_kwargs(
     stub = StubParser(hf_model_version="rstdt", relinventory=None)
     result = parse_markdown(
         p,
-        parser=stub,  # type: ignore[arg-type]
+        parser=stub,
         hf_model_version="gumrrg",
     )
     assert result.model_version == "rstdt"
@@ -348,7 +348,7 @@ def test_non_utf8_markdown_raises_value_error(tmp_path: Path) -> None:
     p = tmp_path / "latin1.md"
     p.write_bytes("caf\xe9\n".encode("latin-1"))
     with pytest.raises(ValueError, match="not valid UTF-8"):
-        parse_markdown(p, parser=StubParser())  # type: ignore[arg-type]
+        parse_markdown(p, parser=StubParser())
 
 
 # --- Serialisation -----------------------------------------------------------
@@ -358,7 +358,7 @@ def test_to_dict_round_trips_through_json(tmp_path: Path) -> None:
     """to_json must be valid JSON whose payload equals to_dict."""
     p = tmp_path / "doc.md"
     p.write_text(TABLE_DOC)
-    result = parse_markdown(p, parser=StubParser())  # type: ignore[arg-type]
+    result = parse_markdown(p, parser=StubParser())
     payload = result.to_dict()
     assert json.loads(result.to_json()) == json.loads(json.dumps(payload))
     assert payload["schema_name"] == SCHEMA_NAME
@@ -371,9 +371,10 @@ def test_golden_output_shape(tmp_path: Path) -> None:
     (tool_version normalised — it varies per checkout state)."""
     p = tmp_path / "golden_src.md"
     p.write_text("# Title\n\nFirst para.\n\nSecond para.\n")
-    result = parse_markdown(p, parser=StubParser())  # type: ignore[arg-type]
+    result = parse_markdown(p, parser=StubParser())
     got = result.to_dict()
     got["tool_version"] = "<normalised>"
+    got["source_revision"] = "<normalised>"
     golden = json.loads((FIXTURES / "golden_two_para.rst.json").read_text())
     golden.pop("_meta", None)
     assert got == golden

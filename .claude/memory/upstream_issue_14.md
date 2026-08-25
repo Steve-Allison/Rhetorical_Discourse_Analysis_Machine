@@ -40,7 +40,7 @@ unsolicited PRs.
 | 5 (UniRST blanket exceptions) | 2930387 | Robustness |
 | 6 (UniRST `relinventory` error) | 2930387 | UX |
 | 7 (DMRST file handles) | b37bb61 | Small cleanup |
-| 8 (`rrtrrg` data assets) | NO PR — issue only. If she opts for the loader fix instead, extract from 2930387 (`_classifier_count_from_state_dict`). |
+| 8 (`rrtrrg` data assets) | NO PR — issue only | If she opts for the loader fix instead, extract from 2930387 (`_classifier_count_from_state_dict`). |
 | 9 (`isanlp` runtime missing from `pyproject.toml`) | 290345e | One-line addition to upstream's pyproject |
 | 10 (MPS support) | 8d15f3a (helpers) + 8ff9759 (9 source edits) + b37bb61 + 2930387 (original device wiring) | Larger; only if she signals interest. NB: the device selection was since refactored from `_select_device` to `resolve_device` in `base_predictor.py` (e6f24e8); offer the current `resolve_device` form, and **not** the fork-local `device=` API extension (per note 3 above). |
 

@@ -43,8 +43,8 @@ def _resolve_local_path(tree: etree._ElementTree, path: str) -> etree._Element |
 def test_paths_are_namespace_agnostic_between_two_fixtures() -> None:
     """Two semantically-identical fixtures with and without ``xmlns`` must
     produce identical path roots."""
-    ns_tree = parse_doclang_xml(FIXTURES / "ok_comprehensive.dclg.xml")
-    no_ns_tree = parse_doclang_xml(FIXTURES / "ok_no_namespace.dclg.xml")
+    ns_tree = parse_doclang_xml(FIXTURES / "ok_comprehensive.dclg")
+    no_ns_tree = parse_doclang_xml(FIXTURES / "ok_no_namespace.dclg")
     assert local_path(ns_tree.getroot()) == "/doclang[1]"
     assert local_path(no_ns_tree.getroot()) == "/doclang[1]"
 
@@ -52,7 +52,7 @@ def test_paths_are_namespace_agnostic_between_two_fixtures() -> None:
 def test_namespaced_doc_path_never_contains_wildcard() -> None:
     """Regression: lxml's ``getpath()`` emits ``/*/*[N]`` on namespaced
     docs. Our walker must not."""
-    tree = parse_doclang_xml(FIXTURES / "ok_comprehensive.dclg.xml")
+    tree = parse_doclang_xml(FIXTURES / "ok_comprehensive.dclg")
     for el in tree.iter():
         if not isinstance(el.tag, str):
             continue
@@ -66,11 +66,11 @@ def test_namespaced_doc_path_never_contains_wildcard() -> None:
 @pytest.mark.parametrize(
     "fixture_name",
     [
-        "ok_comprehensive.dclg.xml",
-        "ok_no_namespace.dclg.xml",
-        "doclang_example.dclg.xml",
-        "ok_list_with_unwrapped_text.dclg.xml",
-        "ok_thread.dclg.xml",
+        "ok_comprehensive.dclg",
+        "ok_no_namespace.dclg",
+        "doclang_example.dclg",
+        "ok_list_with_unwrapped_text.dclg",
+        "ok_thread.dclg",
     ],
 )
 def test_local_path_is_unique_within_document(fixture_name: str) -> None:
@@ -82,9 +82,9 @@ def test_local_path_is_unique_within_document(fixture_name: str) -> None:
 @pytest.mark.parametrize(
     "fixture_name",
     [
-        "ok_comprehensive.dclg.xml",
-        "ok_no_namespace.dclg.xml",
-        "ok_list_with_unwrapped_text.dclg.xml",
+        "ok_comprehensive.dclg",
+        "ok_no_namespace.dclg",
+        "ok_list_with_unwrapped_text.dclg",
     ],
 )
 def test_local_path_round_trips_via_index(fixture_name: str) -> None:
@@ -142,7 +142,7 @@ def test_local_name_no_namespace_unchanged() -> None:
 
 def test_parse_doclang_xml_missing_file_raises_oserror(tmp_path: Path) -> None:
     """The loader does not silently swallow a missing file."""
-    missing = tmp_path / "does_not_exist.dclg.xml"
+    missing = tmp_path / "does_not_exist.dclg"
     with pytest.raises(OSError):
         parse_doclang_xml(missing)
 
@@ -156,7 +156,7 @@ def test_parse_doclang_xml_refuses_external_entity_xxe(tmp_path: Path) -> None:
     must never appear in harvested text."""
     secret = tmp_path / "secret.txt"
     secret.write_text("TOP_SECRET_PAYLOAD_XYZ", encoding="utf-8")
-    xml_path = tmp_path / "xxe.dclg.xml"
+    xml_path = tmp_path / "xxe.dclg"
     xml_path.write_text(
         (
             '<?xml version="1.0" encoding="UTF-8"?>\n'

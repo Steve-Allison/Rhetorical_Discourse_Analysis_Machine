@@ -16,7 +16,7 @@ from typing import Any
 
 # Reuse harvest logic from the quality-check script.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from docling_rst_quality_check import (  # type: ignore[import-not-found]
+from docling_rst_quality_check import (
     harvest_body_text,
     walk_tree,
     collect_relations,

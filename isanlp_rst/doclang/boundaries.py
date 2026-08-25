@@ -1,323 +1,278 @@
-"""Detect structural boundaries in a parsed DocLang document.
-
-Boundaries are emitted from the DocLang structure independently of RST
-parsing. The mapper later intersects each boundary's ``xpaths`` with
-each RST relation's xpaths to produce ``boundary_memberships``.
-
-Boundary kinds (verified Phase 1 against the 40-fixture corpus):
-
-- ``heading-N`` — each ``<heading>`` owns itself plus following
-  harvest-eligible xpaths until the next heading (markdown-style
-  section bucketing). Pre-heading content lands in a leading
-  ``document`` boundary when non-empty.
-- ``page-N``    — content between successive ``<page_break/>`` markers
-- ``group-N``   — each top-level ``<group>``; nested groups get
-  hierarchical ids (``group-N-M-…`` at arbitrary nesting depth).
-- ``table-N``   — each ``<table>``
-- ``field_region-N`` — each ``<field_region>``
-- ``document``  — fallback boundary covering all harvest-eligible
-  elements when none of the above apply; also used for pre-heading
-  content when headings are present.
-
-DocLang has no slide / speaker-turn concepts (Phase 0 verified) — those
-kinds are absent by design.
-"""
+"""Detect DocLang boundaries from the exact shared harvest eligibility policy."""
 
 from collections.abc import Iterable
 
 from lxml import etree
 
-from .harvester import reject_nested_tables
+from .eligibility import DoclangEligibility
+from .harvester import harvest_doclang_tables, harvest_doclang_text, reject_nested_tables
 from .loader import local_name, local_path
-from .schema import Boundary
+from .schema import Boundary, HarvestResult, TableHarvest
+from .text_walker import body_text
 
 
 def _walk_descendants(element: etree._Element) -> Iterable[etree._Element]:
-    """Yield ``element`` and every descendant in document order."""
+    """Yield ``element`` and descendants in document order."""
+
     yield element
     for child in element:
         if isinstance(child.tag, str):
             yield from _walk_descendants(child)
 
 
+def _resolve_policy(
+    eligibility: DoclangEligibility | None,
+    *,
+    include_picture_captions: bool = True,
+    include_background: bool = False,
+    include_furniture: bool = False,
+    include_field_regions: bool = False,
+    include_code_blocks: bool = False,
+    include_formulas: bool = False,
+    include_table_cells: bool = True,
+) -> DoclangEligibility:
+    """Resolve legacy keyword switches into the shared immutable policy."""
+
+    if eligibility is not None:
+        return eligibility
+    return DoclangEligibility(
+        include_picture_captions=include_picture_captions,
+        include_background=include_background,
+        include_furniture=include_furniture,
+        include_field_regions=include_field_regions,
+        include_code_blocks=include_code_blocks,
+        include_formulas=include_formulas,
+        include_table_cells=include_table_cells,
+    )
+
+
 def _harvest_eligible_xpaths(
     root: etree._Element,
     *,
+    include_picture_captions: bool = True,
+    include_background: bool = False,
+    include_furniture: bool = False,
     include_code_blocks: bool = False,
     include_formulas: bool = False,
     include_field_regions: bool = False,
+    eligibility: DoclangEligibility | None = None,
 ) -> tuple[str, ...]:
-    """Yield xpaths of every harvest-eligible element under ``root``.
+    """Return the exact main-harvest paths admitted by the shared policy."""
 
-    Mirrors the harvester's coverage for the default / opt-in knobs used by
-    ``detect_boundaries``. Default tags: ``text``, ``heading``, ``footnote``,
-    ``ldiv``, picture ``caption``. Opt-in: ``code``, ``formula``, ``key`` /
-    ``value`` under ``field_region``.
-    """
-    xpaths: list[str] = []
-    for el in _walk_descendants(root):
-        if not isinstance(el.tag, str):
-            continue
-        tag = local_name(el)
-        if tag in {"text", "heading", "footnote"}:
-            xpaths.append(local_path(el))
-        elif tag == "ldiv":
-            xpaths.append(local_path(el))
-        elif tag == "caption":
-            parent = el.getparent()
-            if parent is not None and local_name(parent) == "picture":
-                xpaths.append(local_path(el))
-        elif tag == "code" and include_code_blocks:
-            xpaths.append(local_path(el))
-        elif tag == "formula" and include_formulas:
-            xpaths.append(local_path(el))
-        elif tag in {"key", "value"} and include_field_regions:
-            xpaths.append(local_path(el))
-    return tuple(xpaths)
-
-
-def _detect_heading_boundaries(
-    root: etree._Element,
-    *,
-    include_code_blocks: bool = False,
-    include_formulas: bool = False,
-    include_field_regions: bool = False,
-) -> list[Boundary]:
-    """Emit ``heading-N`` boundaries with markdown-style section bucketing.
-
-    Document-order harvest-eligible xpaths are partitioned so each
-    heading owns itself plus every following eligible xpath until the
-    next heading. Content before the first heading lands in a leading
-    ``document`` boundary when non-empty. The ``label`` carries the
-    heading's text; the ``level`` carries its ``level`` attribute
-    (default 1 per spec).
-    """
-    heading_meta: dict[str, tuple[str | None, int]] = {}
-    for el in _walk_descendants(root):
-        if not isinstance(el.tag, str) or local_name(el) != "heading":
-            continue
-        level_str = el.get("level", "1")
-        try:
-            level = int(level_str)
-        except ValueError as exc:
-            raise ValueError(f"<heading> at {local_path(el)} has non-integer level={level_str!r}") from exc
-        label = "".join(el.itertext()).strip() or None
-        heading_meta[local_path(el)] = (label, level)
-
-    if not heading_meta:
-        return []
-
-    eligible = _harvest_eligible_xpaths(
-        root,
+    policy = _resolve_policy(
+        eligibility,
+        include_picture_captions=include_picture_captions,
+        include_background=include_background,
+        include_furniture=include_furniture,
         include_code_blocks=include_code_blocks,
         include_formulas=include_formulas,
         include_field_regions=include_field_regions,
     )
+    harvest = harvest_doclang_text(root.getroottree(), eligibility=policy)
+    return tuple(span.xpath for span in harvest.spans)
 
-    # Buckets: [(None, pre-heading refs), (heading_xpath, section refs), ...]
+
+def _is_within(xpath: str, ancestor_xpath: str) -> bool:
+    """Return whether ``xpath`` addresses ``ancestor_xpath`` or its descendant."""
+
+    return xpath == ancestor_xpath or xpath.startswith(f"{ancestor_xpath}/")
+
+
+def _detect_heading_boundaries(
+    root: etree._Element,
+    eligible: tuple[str, ...],
+    policy: DoclangEligibility,
+) -> list[Boundary]:
+    """Partition exact harvested paths into metadata-aware heading sections."""
+
+    if not policy.include_heading_boundaries:
+        return []
+    heading_meta: dict[str, tuple[str | None, int]] = {}
+    eligible_set = set(eligible)
+    for element in _walk_descendants(root):
+        if not isinstance(element.tag, str) or local_name(element) != "heading":
+            continue
+        xpath = local_path(element)
+        if xpath not in eligible_set:
+            continue
+        level_text = element.get("level", "1")
+        try:
+            level = int(level_text)
+        except ValueError as exc:
+            raise ValueError(f"<heading> at {xpath} has non-integer level={level_text!r}") from exc
+        heading_meta[xpath] = (body_text(element) or None, level)
+    if not heading_meta:
+        return []
+
     buckets: list[tuple[str | None, list[str]]] = [(None, [])]
-    for xp in eligible:
-        if xp in heading_meta:
-            buckets.append((xp, [xp]))
+    for xpath in eligible:
+        if xpath in heading_meta:
+            buckets.append((xpath, [xpath]))
         else:
-            buckets[-1][1].append(xp)
+            buckets[-1][1].append(xpath)
 
     boundaries: list[Boundary] = []
-    pre_refs = buckets[0][1]
-    if pre_refs:
+    if buckets[0][1]:
         boundaries.append(
             Boundary(
                 id="document",
                 kind="document",
                 label=None,
                 parent_xpath=local_path(root),
-                xpaths=tuple(pre_refs),
+                xpaths=tuple(buckets[0][1]),
             )
         )
-
-    heading_idx = 0
-    for heading_xp, refs in buckets[1:]:
-        assert heading_xp is not None
-        label, level = heading_meta[heading_xp]
+    for heading_idx, (heading_xpath, paths) in enumerate(buckets[1:]):
+        if heading_xpath is None:
+            raise RuntimeError("heading bucket is missing its heading path")
+        label, level = heading_meta[heading_xpath]
         boundaries.append(
             Boundary(
                 id=f"heading-{heading_idx}",
                 kind="heading",
                 label=label,
                 parent_xpath=None,
-                xpaths=tuple(refs),
+                xpaths=tuple(paths),
                 level=level,
             )
         )
-        heading_idx += 1
     return boundaries
 
 
-def _detect_page_boundaries(root: etree._Element) -> list[Boundary]:
-    """Emit one ``page-N`` boundary per ``<page_break/>``-delimited region.
+def _detect_page_boundaries(
+    root: etree._Element,
+    eligible: tuple[str, ...],
+    policy: DoclangEligibility,
+) -> list[Boundary]:
+    """Emit exact-harvest page partitions around top-level page breaks."""
 
-    Spec restricts ``<page_break/>`` to children of ``<doclang>``. Returns
-    ``[]`` when no breaks are present.
-    """
+    if not policy.include_page_boundaries:
+        return []
     body = list(root)
-    break_positions: list[int] = [
-        i for i, child in enumerate(body) if isinstance(child.tag, str) and local_name(child) == "page_break"
+    break_positions = [
+        index
+        for index, child in enumerate(body)
+        if isinstance(child.tag, str) and local_name(child) == "page_break"
     ]
     if not break_positions:
         return []
-
     pages: list[list[etree._Element]] = []
     start = 0
-    for pos in break_positions:
-        pages.append(body[start:pos])
-        start = pos + 1
+    for position in break_positions:
+        pages.append(body[start:position])
+        start = position + 1
     pages.append(body[start:])
 
     boundaries: list[Boundary] = []
-    for page_idx, page_children in enumerate(pages):
-        xpaths: list[str] = []
-        for child in page_children:
-            for el in _walk_descendants(child):
-                if not isinstance(el.tag, str):
-                    continue
-                tag = local_name(el)
-                if tag in {"text", "heading", "footnote"}:
-                    xpaths.append(local_path(el))
-                elif tag == "ldiv":
-                    xpaths.append(local_path(el))
-                elif tag == "caption":
-                    parent = el.getparent()
-                    if parent is not None and local_name(parent) == "picture":
-                        xpaths.append(local_path(el))
+    for page_idx, children in enumerate(pages):
+        roots = tuple(local_path(child) for child in children if isinstance(child.tag, str))
+        paths = tuple(xpath for xpath in eligible if any(_is_within(xpath, root_path) for root_path in roots))
         boundaries.append(
             Boundary(
                 id=f"page-{page_idx}",
                 kind="page",
                 label=None,
                 parent_xpath=None,
-                xpaths=tuple(xpaths),
+                xpaths=paths,
                 page_no=page_idx,
             )
         )
     return boundaries
 
 
-def _detect_group_boundaries(root: etree._Element) -> list[Boundary]:
-    """Emit ``group-N`` / ``group-N-M-…`` boundaries at any nesting depth.
+def _detect_group_boundaries(
+    root: etree._Element,
+    eligible: tuple[str, ...],
+    policy: DoclangEligibility,
+) -> list[Boundary]:
+    """Emit arbitrary-depth group boundaries over exact harvested paths."""
 
-    Top-level here means a direct child of ``<doclang>``. Nested groups
-    receive hierarchical ids appended with ``-M`` for each nesting level.
-    """
+    if not policy.include_group_boundaries:
+        return []
     boundaries: list[Boundary] = []
 
-    def _walk_groups(parent: etree._Element, id_parts: list[int]) -> None:
-        idx = 0
+    def walk_groups(parent: etree._Element, id_parts: tuple[int, ...]) -> None:
+        group_index = 0
         for child in parent:
             if not isinstance(child.tag, str) or local_name(child) != "group":
                 continue
-            parts = [*id_parts, idx]
-            group_id = "group-" + "-".join(str(p) for p in parts)
+            parts = (*id_parts, group_index)
+            group_xpath = local_path(child)
             boundaries.append(
                 Boundary(
-                    id=group_id,
+                    id="group-" + "-".join(str(part) for part in parts),
                     kind="group",
                     label=None,
                     parent_xpath=local_path(parent),
-                    xpaths=_harvest_eligible_xpaths(child),
+                    xpaths=tuple(xpath for xpath in eligible if _is_within(xpath, group_xpath)),
                 )
             )
-            _walk_groups(child, parts)
-            idx += 1
+            walk_groups(child, parts)
+            group_index += 1
 
-    _walk_groups(root, [])
+    walk_groups(root, ())
     return boundaries
 
 
-def _detect_table_boundaries(root: etree._Element) -> list[Boundary]:
-    """Emit one ``table-N`` boundary per ``<table>``, in document order.
+def _detect_table_boundaries(
+    root: etree._Element,
+    table_harvests: tuple[TableHarvest, ...],
+) -> list[Boundary]:
+    """Emit table markers plus exactly the harvested cell paths."""
 
-    ``xpaths`` is ``(table_xpath, cell_marker_xpath_0, …)`` — the table
-    element's own xpath is the synthetic boundary marker (no harvest span
-    carries it, so it cannot land in relation refs), followed by each
-    cell marker's xpath. Empty-by-grammar ``<ecel/>`` cells are skipped
-    here too — the harvester would emit no span for them, so their
-    xpaths in the boundary would never match.
-    """
+    tables = [
+        element
+        for element in _walk_descendants(root)
+        if isinstance(element.tag, str) and local_name(element) == "table"
+    ]
+    if len(tables) != len(table_harvests):
+        raise RuntimeError("table boundary and harvest counts disagree")
     boundaries: list[Boundary] = []
-    idx = 0
-    cell_markers = {"ched", "fcel", "rhed", "corn"}
-    for el in _walk_descendants(root):
-        if not isinstance(el.tag, str) or local_name(el) != "table":
-            continue
-        parent = el.getparent()
-        parent_xpath = local_path(parent) if parent is not None else None
-        cell_xpaths: list[str] = []
-        for child in el:
-            if not isinstance(child.tag, str):
-                continue
-            if local_name(child) in cell_markers:
-                cell_xpaths.append(local_path(child))
+    for table_idx, (element, table_harvest) in enumerate(zip(tables, table_harvests, strict=True)):
+        parent = element.getparent()
         boundaries.append(
             Boundary(
-                id=f"table-{idx}",
+                id=f"table-{table_idx}",
                 kind="table",
                 label=None,
-                parent_xpath=parent_xpath,
-                xpaths=(local_path(el), *cell_xpaths),
+                parent_xpath=local_path(parent) if parent is not None else None,
+                xpaths=(local_path(element), *(span.xpath for span in table_harvest.spans)),
             )
         )
-        idx += 1
     return boundaries
 
 
-def _detect_field_region_boundaries(root: etree._Element) -> list[Boundary]:
-    """Emit one ``field_region-N`` boundary per ``<field_region>``.
+def _detect_field_region_boundaries(
+    root: etree._Element,
+    eligible: tuple[str, ...],
+) -> list[Boundary]:
+    """Emit field-region markers plus exactly harvested descendant paths."""
 
-    ``xpaths`` include the region itself plus every descendant ``key`` /
-    ``value`` path the harvester emits when ``include_field_regions=True``,
-    so mapper set-intersection can attach ``field_region-*`` memberships.
-    """
     boundaries: list[Boundary] = []
-    idx = 0
-    for el in _walk_descendants(root):
-        if not isinstance(el.tag, str) or local_name(el) != "field_region":
-            continue
-        parent = el.getparent()
-        parent_xpath = local_path(parent) if parent is not None else None
-        member_xpaths = [local_path(el)]
-        for desc in _walk_descendants(el):
-            if desc is el or not isinstance(desc.tag, str):
-                continue
-            if local_name(desc) in {"key", "value"}:
-                member_xpaths.append(local_path(desc))
+    regions = [
+        element
+        for element in _walk_descendants(root)
+        if isinstance(element.tag, str) and local_name(element) == "field_region"
+    ]
+    for region_idx, element in enumerate(regions):
+        xpath = local_path(element)
+        parent = element.getparent()
         boundaries.append(
             Boundary(
-                id=f"field_region-{idx}",
+                id=f"field_region-{region_idx}",
                 kind="field_region",
                 label=None,
-                parent_xpath=parent_xpath,
-                xpaths=tuple(member_xpaths),
+                parent_xpath=local_path(parent) if parent is not None else None,
+                xpaths=(xpath, *(path for path in eligible if _is_within(path, xpath))),
             )
         )
-        idx += 1
     return boundaries
 
 
-def _detect_document_fallback(
-    root: etree._Element,
-    *,
-    include_code_blocks: bool = False,
-    include_formulas: bool = False,
-    include_field_regions: bool = False,
-) -> list[Boundary]:
-    """Emit a single ``document`` boundary covering every harvest-eligible xpath."""
-    xpaths = _harvest_eligible_xpaths(
-        root,
-        include_code_blocks=include_code_blocks,
-        include_formulas=include_formulas,
-        include_field_regions=include_field_regions,
-    )
-    if not xpaths:
+def _detect_document_fallback(root: etree._Element, eligible: tuple[str, ...]) -> list[Boundary]:
+    """Emit a single exact-harvest document boundary when non-empty."""
+
+    if not eligible:
         return []
     return [
         Boundary(
@@ -325,7 +280,7 @@ def _detect_document_fallback(
             kind="document",
             label=None,
             parent_xpath=local_path(root),
-            xpaths=xpaths,
+            xpaths=eligible,
         )
     ]
 
@@ -333,47 +288,47 @@ def _detect_document_fallback(
 def detect_boundaries(
     tree: etree._ElementTree,
     *,
+    include_picture_captions: bool = True,
+    include_background: bool = False,
+    include_furniture: bool = False,
     include_code_blocks: bool = False,
     include_formulas: bool = False,
     include_field_regions: bool = False,
+    include_table_cells: bool = True,
+    eligibility: DoclangEligibility | None = None,
+    harvest: HarvestResult | None = None,
+    table_harvests: tuple[TableHarvest, ...] | None = None,
 ) -> tuple[Boundary, ...]:
-    """Detect every structural boundary in ``tree``.
+    """Detect all structures using the exact policy and harvested membership."""
 
-    Always emits ``table-N`` and ``field_region-N`` boundaries when those
-    elements exist. Emits all applicable of the ``heading-N``, ``page-N``,
-    and ``group-N`` sets (they are not mutually exclusive). If none of
-    those three apply, falls back to a single ``document`` boundary
-    covering the harvest-eligible elements.
-
-    Opt-in harvest knobs (``include_code_blocks`` / ``include_formulas`` /
-    ``include_field_regions``) widen heading / document eligibility so
-    boundary memberships stay aligned with the harvester.
-    """
     root = tree.getroot()
     reject_nested_tables(root)
+    policy = _resolve_policy(
+        eligibility,
+        include_picture_captions=include_picture_captions,
+        include_background=include_background,
+        include_furniture=include_furniture,
+        include_code_blocks=include_code_blocks,
+        include_formulas=include_formulas,
+        include_field_regions=include_field_regions,
+        include_table_cells=include_table_cells,
+    )
+    actual_harvest = harvest or harvest_doclang_text(tree, eligibility=policy)
+    actual_tables = table_harvests or harvest_doclang_tables(tree, eligibility=policy)
+    eligible = tuple(span.xpath for span in actual_harvest.spans)
 
     primary: list[Boundary] = []
-    primary.extend(
-        _detect_heading_boundaries(
-            root,
-            include_code_blocks=include_code_blocks,
-            include_formulas=include_formulas,
-            include_field_regions=include_field_regions,
-        )
-    )
-    primary.extend(_detect_page_boundaries(root))
-    primary.extend(_detect_group_boundaries(root))
+    primary.extend(_detect_heading_boundaries(root, eligible, policy))
+    primary.extend(_detect_page_boundaries(root, eligible, policy))
+    primary.extend(_detect_group_boundaries(root, eligible, policy))
     if not primary:
-        primary.extend(
-            _detect_document_fallback(
-                root,
-                include_code_blocks=include_code_blocks,
-                include_formulas=include_formulas,
-                include_field_regions=include_field_regions,
-            )
-        )
+        primary.extend(_detect_document_fallback(root, eligible))
 
-    tables = _detect_table_boundaries(root)
-    fields = _detect_field_region_boundaries(root)
+    return (
+        *primary,
+        *_detect_table_boundaries(root, actual_tables),
+        *_detect_field_region_boundaries(root, eligible),
+    )
 
-    return tuple(primary) + tuple(tables) + tuple(fields)
+
+__all__ = ["detect_boundaries"]

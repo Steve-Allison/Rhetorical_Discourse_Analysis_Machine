@@ -7,39 +7,45 @@ inventory selection that the ``docling`` / ``doclang`` / ``markdown``
 
 import subprocess
 from functools import cache
-from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
+
+from isanlp_rst._version import resolve_installed_package_version
+
+
+resolve_package_version = resolve_installed_package_version
+
+
+def resolve_tool_version() -> str:
+    """Backward-compatible name for installed semantic package version."""
+
+    return resolve_package_version()
 
 
 @cache
-def resolve_tool_version() -> str:
-    """Resolve a stable tool-version string.
+def resolve_source_revision() -> str:
+    """Return the checkout commit, with dirty state, independently of SemVer."""
 
-    Tries, in order: ``git describe --always --dirty`` (when run inside a
-    git checkout); ``importlib.metadata.version("isanlp_rst")`` (when
-    installed); ``"unknown"`` (fallback). Never raises.
-    """
-    package_dir = Path(__file__).resolve().parent.parent.parent
+    repository_root = Path(__file__).resolve().parents[2]
     try:
-        result = subprocess.run(
-            ["git", "describe", "--always", "--dirty"],
-            cwd=package_dir,
+        revision = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repository_root,
             capture_output=True,
             text=True,
             timeout=5,
-            check=False,
-        )
-        if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.strip()
-    except OSError, subprocess.SubprocessError:
-        pass
-
-    try:
-        return version("isanlp_rst")
-    except PackageNotFoundError:
-        pass
-
-    return "unknown"
+            check=True,
+        ).stdout.strip()
+        dirty = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            cwd=repository_root,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=True,
+        ).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+    return f"{revision}-dirty" if dirty else revision
 
 
 def resolve_inventory(hf_model_version: str, relinventory: str | None) -> str:
@@ -51,4 +57,4 @@ def resolve_inventory(hf_model_version: str, relinventory: str | None) -> str:
     return relinventory or hf_model_version
 
 
-__all__ = ["resolve_inventory", "resolve_tool_version"]
+__all__ = ["resolve_inventory", "resolve_package_version", "resolve_source_revision", "resolve_tool_version"]

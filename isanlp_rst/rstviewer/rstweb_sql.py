@@ -9,7 +9,7 @@ import os
 import sqlite3
 import tempfile
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from contextvars import ContextVar
 from pathlib import Path
 from typing import Any
@@ -93,7 +93,7 @@ def temporary_db() -> Iterator[str]:
 
 def setup_db(dbpath: str | None = None) -> None:
     dbpath = _resolve_dbpath(dbpath)
-    with sqlite3.connect(dbpath) as conn:
+    with closing(sqlite3.connect(dbpath)) as conn, conn:
         cur = conn.cursor()
         cur.execute("DROP TABLE IF EXISTS rst_nodes")
         cur.execute("DROP TABLE IF EXISTS rst_relations")
@@ -149,7 +149,7 @@ def import_document(
 
     delete_document(doc, project)
 
-    with sqlite3.connect(dbpath) as conn:
+    with closing(sqlite3.connect(dbpath)) as conn, conn:
         cur = conn.cursor()
         for key in rst_nodes:
             node = rst_nodes[key]
@@ -198,7 +198,7 @@ def import_document(
 def get_rst_doc(doc: str, project: str, user: str, dbpath: str | None = None) -> list[SqlRow]:
     """Return database representation of the given RS3 file."""
     dbpath = _resolve_dbpath(dbpath)
-    with sqlite3.connect(dbpath) as conn:
+    with closing(sqlite3.connect(dbpath)) as conn, conn:
         cur = conn.cursor()
         cur.execute(
             "SELECT id, left, right, parent, depth, kind, contents, relname, doc, project, user FROM rst_nodes WHERE doc=? and project=? and user=? ORDER BY CAST(id AS int)",
@@ -219,7 +219,7 @@ def get_def_rel(relkind: str, doc: str, project: str) -> str:
 def get_rst_rels(doc: str, project: str, dbpath: str | None = None) -> list[SqlRow]:
     """Return RST relations defined for the given document."""
     dbpath = _resolve_dbpath(dbpath)
-    with sqlite3.connect(dbpath) as conn:
+    with closing(sqlite3.connect(dbpath)) as conn, conn:
         cur = conn.cursor()
         cur.execute(
             "SELECT relname, reltype FROM rst_relations WHERE doc=? and project=? ORDER BY relname",
@@ -476,7 +476,7 @@ def get_max_right(doc: str, project: str, user: str) -> Any:
 
 def generic_query(sql: str, params: SqlParams, dbpath: str | None = None) -> list[SqlRow]:
     dbpath = _resolve_dbpath(dbpath)
-    with sqlite3.connect(dbpath) as conn:
+    with closing(sqlite3.connect(dbpath)) as conn, conn:
         cur = conn.cursor()
         cur.execute(sql, params)
         return cur.fetchall()

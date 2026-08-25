@@ -41,8 +41,16 @@ def compute_overlap_refs(
     return _generic_compute_overlap_refs(start, end, spans, ref_of=_self_ref, note_threshold=note_threshold)
 
 
-def _make_edu(*, id: int, refs: tuple[str, ...], depth: int) -> RstEdu:
-    return RstEdu(id=id, self_refs=refs, depth=depth)
+def _make_edu(
+    *,
+    id: int,
+    refs: tuple[str, ...],
+    depth: int,
+    text: str,
+    char_span: tuple[int, int],
+    edu_span: tuple[int, int],
+) -> RstEdu:
+    return RstEdu(id=id, text=text, char_span=char_span, edu_span=edu_span, self_refs=refs, depth=depth)
 
 
 def flatten_tree(
@@ -50,6 +58,7 @@ def flatten_tree(
     harvest_spans: tuple[HarvestSpan, ...],
     boundaries: tuple[Boundary, ...],
     *,
+    source_text: str,
     note_threshold: float = NOTE_THRESHOLD,
 ) -> tuple[tuple[RstRelation, ...], tuple[RstEdu, ...]]:
     """Flatten a DiscourseUnit tree into ``(relations, edus)`` tuples.
@@ -60,6 +69,7 @@ def flatten_tree(
     """
     return _generic_flatten_tree(
         tree,
+        source_text,
         SpanIndex(harvest_spans, ref_of=_self_ref),
         [(b.id, frozenset(b.self_refs)) for b in boundaries],
         make_relation=RstRelation,

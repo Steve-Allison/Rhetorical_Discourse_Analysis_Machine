@@ -7,7 +7,7 @@ import numpy as np
 from lxml import etree
 from lxml.etree import _Element, _ElementTree
 
-from . import data
+from .span_node import SpanNode
 
 
 class CustomTokenizer:
@@ -20,6 +20,12 @@ class CustomTokenizer:
 
 
 TOKENIZER = CustomTokenizer()
+
+
+def _require_int_id(value: object, context: str) -> int:
+    if not isinstance(value, int):
+        raise ValueError(f"{context} requires an integer ID, got {value!r}")
+    return value
 
 
 # ----------------------------------------------------------------------------------
@@ -85,6 +91,8 @@ def readRS3Annotation(
         id_ = int(segment.attrib["id"])
         parent = int(segment.attrib["parent"])
         relname = segment.attrib["relname"].replace(" ", "-")
+        if segment.text is None:
+            raise ValueError(f"RS3 segment {id_} has no text")
         edu = {
             "id": id_,
             "parent": parent,
@@ -123,16 +131,19 @@ def readRS3Annotation(
             root_id = sorted(all_id)[-1] + 1
             root = {"id": root_id, "parent": None, "type": "span"}
 
+            if potential_root.text is None:
+                raise ValueError("RS3 potential-root segment has no text")
+            potential_root_id = int(potential_root.attrib["id"])
             edu = {
-                "id": potential_root.attrib["id"],
+                "id": potential_root_id,
                 "parent": root_id,
                 "text": potential_root.text.strip().replace("\n", " "),
                 "position": 0,
                 "relname": "span",
             }
-            if potential_root.attrib["id"] not in eduIds:  # Avoid the repeted segments
+            if potential_root_id not in eduIds:  # Avoid the repeted segments
                 eduList.append(edu)
-                eduIds.append(potential_root.attrib["id"])
+                eduIds.append(potential_root_id)
     return eduList, groupList, root
 
 
@@ -182,11 +193,11 @@ def buildNodes(
     """
     # Rename EDUs and CDUs to get continuous indexing for EDUs
     renameDus(eduList, groupList, rootDict)
-    eduIds = [e["id"] for e in eduList]  # Ordered EDUs
+    eduIds = [_require_int_id(e["id"], "RS3 EDU") for e in eduList]  # Ordered EDUs
     [e["id"] for e in groupList]  # CDUs
     units = [e for e in eduList]
     units.extend(groupList)  # All DU
-    root = data.SpanNode("Root")  # Root node
+    root = SpanNode("Root")  # Root node
     root._id, root.eduSpan = rootDict["id"], tuple([eduIds[0], eduIds[-1]])  # Set the span for the root
     # Build the other nodes
     allNodes = [root]
@@ -195,7 +206,7 @@ def buildNodes(
         # (even an EDU can be a parent for now)
         node = findNode(e["id"], allNodes)
         if node is None:
-            newNode = data.SpanNode(None)  # Prop is unknown for now
+            newNode = SpanNode(None)  # Prop is unknown for now
             newNode._id, newNode.relation = e["id"], e["relname"]
             if e["id"] in eduIds:  # EDU ie isLeave
                 newNode.text = e["text"]
@@ -254,10 +265,15 @@ def updateParentNodes(
     for e in units:
         # retrieve the node
         node = findNode(e["id"], allNodes)
+        if node is None:
+            raise ValueError(f"RS3 unit has no constructed node: {e['id']!r}")
         # find the children
         for f in units:
             if f["parent"] == e["id"]:
-                node.nodelist.append(findNode(f["id"], allNodes))
+                child = findNode(f["id"], allNodes)
+                if child is None:
+                    raise ValueError(f"RS3 child has no constructed node: {f['id']!r}")
+                node.nodelist.append(child)
     for n in allNodes:
         # Begin directly with the children to not add the node itself if it s an EDU
         n.eduCovered = getEduCoveredChildren(n, eduIds)
@@ -283,9 +299,9 @@ def renameDus(
     """
     Change the ID of the EDUs in order to have a continuous list of ID
     """
-    eduIds = [e["id"] for e in eduList]  # Ordered EDUs wr text
-    cduIds = [e["id"] for e in groupList]  # CDU ids
-    cduIds.append(rootDict["id"])
+    eduIds = [_require_int_id(e["id"], "RS3 EDU") for e in eduList]  # Ordered EDUs wr text
+    cduIds = [_require_int_id(e["id"], "RS3 CDU") for e in groupList]  # CDU ids
+    cduIds.append(_require_int_id(rootDict["id"], "RS3 root"))
     newEdusIds = range(1, len(eduIds) + 1)  # New list of EDU ids
     if len(newEdusIds) != len(eduIds):
         sys.exit("Do not have the same number of old and new ids")
@@ -432,7 +448,7 @@ def cleanEmbedded(
     tree: Any,
     eduIds: list[int],
     relationSet: dict[str, list[str]],
-    allId: list[object],
+    allId: list[int],
     doc: Any,
 ) -> None:
     """
@@ -457,6 +473,8 @@ def cleanEmbedded(
                     i for i in range(min(id_linked), min(id_linked) + len(id_linked) + 1) if i not in id_linked
                 ]
                 parent = getParentTree(n, tree)
+                if parent is None:
+                    raise ValueError(f"embedded RS3 node has no parent: {n._id!r}")
                 # check if these nodes are neighbors of the current node
                 neighbors_id = [m._id for m in parent.nodelist if not m._id == n._id]
                 check = True
@@ -489,7 +507,7 @@ def cleanEDU(
     tree: Any,
     eduIds: list[int],
     relationSet: dict[str, list[str]],
-    allId: list[object],
+    allId: list[int],
 ) -> None:
     """
     EDU with more than one child, happen often in Brazilian and German corpora
@@ -506,7 +524,7 @@ def cleanEDU(
     while queue:
         node = queue.pop(0)
         if node._id in eduIds and len(node.nodelist) > 1:
-            newnode = data.SpanNode(node.prop)  # Keep the nuclearity of the group
+            newnode = SpanNode(node.prop)  # Keep the nuclearity of the group
             newnode.nodelist = [node]
             newnode.nodelist.extend([m for m in node.nodelist])
             node.nodelist = []  # an EDU has no children
@@ -518,10 +536,12 @@ def cleanEDU(
             newnode._id = node._id + 200
             # Put this node in place of node
             parent = getParentTree(node, tree)
+            if parent is None:
+                raise ValueError(f"RS3 EDU with children has no parent: {node._id!r}")
             parent.nodelist.remove(node)
             parent.nodelist.append(newnode)
             # left attach
-            left_node = data.SpanNode("Nucleus")  # Has to be a nucleus to give the correct interpretation
+            left_node = SpanNode("Nucleus")  # Has to be a nucleus to give the correct interpretation
             left_node.relation = "span"
             left_node.nodelist = newnode.nodelist[:-1]
             newnode.nodelist = [left_node, newnode.nodelist[-1]]
@@ -544,7 +564,7 @@ def cleanLonelyEDU(
     rootNode: Any,
     eduIds: list[int],
     relationSet: dict[str, list[str]],
-    allId: list[object],
+    allId: list[int],
 ) -> None:
     """
     (1) EDU with no neighbor: the parent CDU receives this EDU as lnode and its children
@@ -563,7 +583,7 @@ def cleanLonelyEDU(
             # - EDU: 2 cas, soit l EDU a un voisin soit elle n en n a pas
             if len(parent.nodelist) > 1:  # (2) EDU with neighbor
                 # New CDU with the same parent as n and n and its children as children
-                newnode = data.SpanNode(n.prop)
+                newnode = SpanNode(n.prop)
                 newnode.relation = n.relation
                 n.relation = "span"
                 newnode.nodelist = [n]
@@ -616,6 +636,8 @@ def cleanLonelyCDU(
                     # We have parent -> a cdu -> an edu
                     # We want parent -> an edu
                     parent = getParentTree(n, rootNode)
+                    if parent is None:
+                        raise ValueError(f"lonely RS3 CDU has no parent: {n._id!r}")
                     parent.nodelist.remove(n)
                     if len(child.nodelist) == 0:
                         # only if the EDU has no child?
@@ -693,12 +715,12 @@ def orderNodeList(node: Any) -> None:
     node.nodelist = sorted(node.nodelist, key=lambda x: x.eduspan[0])
 
 
-def getIdDu(tree: Any) -> set[object]:
-    idDu = set()
+def getIdDu(tree: Any) -> set[int]:
+    idDu: set[int] = set()
     queue = [tree]
     while queue:
         n = queue.pop(0)
-        idDu.add(n._id)
+        idDu.add(_require_int_id(n._id, "RS3 discourse unit"))
         if n.nodelist:
             for m in n.nodelist:
                 queue.append(m)
@@ -747,6 +769,12 @@ def binarizeTreeGeneral(
         elif len(node.nodelist) > 2:
             childrenRelations = [m.relation for m in node.nodelist]
             childrenNuclearity = [m.prop for m in node.nodelist]
+            if not all(isinstance(relation, str) for relation in childrenRelations):
+                raise ValueError("RS3 child relation is undefined during binarization")
+            if not all(isinstance(nuclearity, str) for nuclearity in childrenNuclearity):
+                raise ValueError("RS3 child nuclearity is undefined during binarization")
+            defined_relations = [relation for relation in childrenRelations if isinstance(relation, str)]
+            defined_nuclearity = [nuclearity for nuclearity in childrenNuclearity if isinstance(nuclearity, str)]
             # Simple rules
             #             if childrenNuclearity[-1].lower() == 'satellite':
             #                 newnode = leftAttach( node )
@@ -754,9 +782,9 @@ def binarizeTreeGeneral(
             #                 newnode = rightAttach( node )
             # RST DT coherent rules
             if (
-                childrenNuclearity[-1].lower() == "nucleus"
-                or childrenRelations[-1].lower() == "span"
-                or snsPattern(childrenRelations, childrenNuclearity)
+                defined_nuclearity[-1].lower() == "nucleus"
+                or defined_relations[-1].lower() == "span"
+                or snsPattern(defined_relations, defined_nuclearity)
             ):  # last node = nucleus or span relation or specific pattern 'S N+ S'
                 rightAttach(node)
             else:
@@ -784,7 +812,7 @@ def snsPattern(relations: list[str], nuclearity: list[str]) -> bool:
 
 def leftAttach(node: Any) -> Any:
     node.rnode = node.nodelist.pop(-1)
-    newnode = data.SpanNode("Nucleus")
+    newnode = SpanNode("Nucleus")
     newnode.nodelist += node.nodelist
     # ADDED
     newnode.eduspan = tuple([newnode.nodelist[0].eduspan[0], newnode.nodelist[-1].eduspan[1]])
@@ -800,7 +828,7 @@ def leftAttach(node: Any) -> Any:
 
 def rightAttach(node: Any) -> Any:
     node.lnode = node.nodelist.pop(0)
-    newnode = data.SpanNode("Nucleus")
+    newnode = SpanNode("Nucleus")
     newnode.nodelist += node.nodelist
     # ADDED
     newnode.eduspan = tuple([newnode.nodelist[0].eduspan[0], newnode.nodelist[-1].eduspan[1]])
