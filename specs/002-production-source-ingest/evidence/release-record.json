@@ -14,7 +14,7 @@
     "artifact_forbidden_members": 0
   },
   "execution": {
-    "released_at": "2026-08-25T19:46:51Z",
+    "released_at": "2026-08-25T19:59:39Z",
     "runtime_candidate_commit": "277ac08318b7c06f8544e0f51c0710b878190506",
     "evidence_commit": "f9cbee26070afefe8acedff1f2ad37fce15f3410",
     "merge_commit": "a4d9a2f4926d161441e0c67b486c80cedb0619ee",
