@@ -491,10 +491,11 @@ was changed.
 
 The original report above remains the before-state. Its exact original form and
 the original Graphify evidence are preserved by commit `f47507d`. This section
-records the authorised remediation outcome. The release decision is fail-closed:
-the corrected 4.0.0 interfaces and reproduced current baseline capability may
-ship, but no new canonical eRST checkpoint, benchmark result, public weight,
-private Hugging Face upload, or SOTA claim exists.
+originally overstated the authorised remediation outcome by treating an
+external-evidence stop as acceptable closure for unimplemented technology work.
+The format, corpus, decoder, checkpoint, quality, and packaging repairs below
+remain supported by their recorded evidence. The technology comparison does
+not: it is incomplete and the full remediation programme is not closed.
 
 ### Finding closure matrix
 
@@ -520,13 +521,40 @@ private Hugging Face upload, or SOTA claim exists.
 | N-06 | Closed | Typed signals retain type, subtype, overlapping token anchors, confidence, and detector provenance; validated discourse-marker and morphosyntactic trigger coverage replaces the phrase heuristic. |
 | N-07 | Closed | Raw GUM eRST relations are preserved and projected separately through the ontology adapter; reversible raw/coarse tests pass. |
 | N-08 | Closed | Missing corpus, malformed documents, zero candidates, zero steps, and absent checkpoints are typed errors with regression coverage. |
-| N-09 | Closed | Complete safetensors bundles carry strict component/config/tokenizer/calibration/inventory/decoder state plus a hashed Pydantic manifest; save/reload parity passes. No promoted bundle exists. |
+| N-09 | Closed | Complete safetensors bundles carry strict component/config/tokenizer/calibration/inventory/decoder state plus a hashed Pydantic manifest; save/reload parity passes. No selected bundle exists. |
 | N-10 | Closed | Parser argument is `erst_scorer_checkpoint`; an `erst_graph` request without a validated completion bundle raises an explicit capability error. |
-| N-11 | Blocked, fail-closed | Exact GUM V9.2 authority is pinned, but the paper's claimed public official scorer cannot be resolved and released baseline code carries no stated code licence. Baseline-authority receipt SHA-256: `d97961ef5f9c7f524e5beaeb634d033476c866dcb4b442f966da6d6bf03dec0e`; reproduction-diagnosis SHA-256: `a9f5fc7ce5aadc0c094e0358c12d40b9ecd5b9e071e9213c8faaada5b3acf0b4`. No baseline run was started. |
-| N-12 | Blocked, fail-closed | Because N-11 is a hard prerequisite, no mandatory architecture saw corpus/test data and no champion was selected. Research-diagnosis SHA-256: `2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9`; no-promotion decision SHA-256: `34270305f49e52a2d5155ecf4025f1f83d76ac13bb914cc6131a8fcd10872651`. |
+| N-11 | Reopened — planning defect | The remediation incorrectly made external benchmark evidence a permission gate for local implementation. That gate is unrelated to product correctness and must not block the experiment protocol, runner, or architecture implementations. Existing blocker receipts are historical evidence of the rejected decision, not completion evidence. |
+| N-12 | Open — not implemented | No shared experiment runner or executable protocol/run/statistics/champion/final-evaluation boundary exists. No mandatory architecture has a complete comparison receipt; most requested systems have no implementation. Technology selection and checkpoint selection have not occurred. |
 | N-13 | Closed | Repository-root `.env` loading is explicit and non-logging. `HF_TOKEN` has precedence and `HUGGINGFACEHUB_API_TOKEN` is fallback; only operation-relevant values are loaded and secret values are never serialized. |
 | N-14 | Closed | Runtime tokenizers use verified fast artifacts; compatibility/parity receipts and warning-as-error CPU/MPS paths pass. |
-| N-15 | Closed | Fresh build, member inspection, isolated install, representative three-format/cache/import execution, five-parser CPU/MPS smokes, audit, and secret scans provide package and clean-machine proof. |
+| N-15 | Reopened — final candidate pending | Fresh build and clean-machine evidence exists for the previous core candidate, but T054-T064 will change the release candidate. T065-T071 must rerun every package, archive, install, runtime, audit, publication, and Git gate against the final corrected implementation. |
+| N-16 | Open — Graphify evidence defect | Regeneration used Graphify package 0.9.44 with skill 0.9.45. Its raw directed extraction reported 843 dangling endpoint edges, one self-loop, and 665 same-endpoint collapsed relation variants before the persisted `DiGraph` filtered them. T070 must align versions and close both raw and persisted integrity diagnostics; a clean post-build graph alone is insufficient. |
+
+### Technology comparison status correction — 2026-08-25
+
+The previous no-run receipts proved only that no evaluation data was accessed. They did not build,
+exercise, or compare the required technologies and therefore cannot close N-11 or N-12.
+
+| System or boundary | Actual implementation status |
+|---|---|
+| Repository secondary-edge scorer | Implemented with endpoint-yield mathematical tests; usable as the internal comparison authority |
+| Existing dual-encoder/bilinear/structural scorer | Implemented as a standalone training path; no governed comparison receipt |
+| Structural-only classifier | Not implemented |
+| Text-only cross-encoder | Not implemented |
+| ELECTRA reference cross-encoder | Serialization helper only; no governed model runner or run receipt |
+| ModernBERT-base signal-aware cross-encoder | Generic backbone compatibility exists; the specified cross-encoder system and comparison receipt do not |
+| ModernBERT-large signal-aware cross-encoder | Tokenizer compatibility only; system and comparison receipt do not exist |
+| XLM-R hierarchical adapter/contrastive system | Not implemented |
+| Qwen3-4B parameter-efficient generative edge decoder | Tokenizer compatibility only; system and comparison receipt do not exist |
+| Edge-featured graph-attention fusion | Not implemented |
+| Signal-plus-rule comparison baseline | Signal detector exists; governed baseline runner and receipt do not |
+| Experiment protocol/run/statistics/champion/final-evaluation models | Documented but not implemented |
+| Shared experiment and final-evaluation runners | Not implemented |
+| Screening, ablations, calibration, bootstrap, latency, memory, CPU/MPS comparison | Not run |
+
+The previous core release-candidate validation remains evidence for the code at that candidate. It is
+not final acceptance for the corrected full plan: implementing the technology matrix will change the
+candidate and requires a new complete release validation.
 
 ### Exact release-candidate evidence
 

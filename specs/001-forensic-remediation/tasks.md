@@ -128,9 +128,9 @@ target defect before the fix unless the test is a new capability with no prior e
   viable SentencePiece artifact or emit incompatibility receipt — no warning suppression is used.
 - [x] T039 [US2] Derive and persist the complete raw GUM eRST relation inventory from train; separate
   raw prediction from ontology adapter concept — both values survive serialization/scoring.
-- [x] T040 [US2] Implement the paper-defined eRST scorer adapter in `eval/erst_scorer.py`; report
-  secondary Span/direction/Relation/Full and defer exact released-scorer parity to T053 — generic
-  classification F1 cannot satisfy gates.
+- [x] T040 [US2] Implement the repository-governed eRST scorer in `eval/erst_scorer.py`; report
+  secondary Span/direction/Relation/Full with endpoint-yield mathematical tests — generic
+  classification F1 cannot satisfy comparison gates.
 
 ### Secure completion bundle and parser capability
 
@@ -171,32 +171,34 @@ target defect before the fix unless the test is a new capability with no prior e
 
 **Checkpoint**: G-STATIC, G-RUNTIME, and G-DOCS pass without false-green exclusions.
 
-## Phase 5: Reproduce baseline and select architecture
+## Phase 5: Implement and execute the technology comparison
 
-### Baseline gate
+### Internal evaluation foundations
 
-- [x] T053 [US3] Resolve the paper's released scorer/baseline code and exact GUM V9 comparison inputs;
-  read complete relevant sources, record commit/licence/hashes, and parity-test the scorer or emit a
-  complete hashed unavailability diagnosis — the exact code/V9.2.0 inputs are pinned, the claimed
-  public scorer is unavailable, and architecture work is blocked by the validated receipt.
-- [x] T054 [US3] Implement `scripts/reproduce_erst_baseline.py` and published serialization with
-  Pydantic evidence boundaries — the exact serialization tests pass and a clean checkout emits a
-  non-zero, zero-data-access diagnosis while scorer authority remains unavailable.
-- [x] T055 [US3] Run ELECTRA seeds 17/29/42/73/101 for gold/gold and predicted/predicted only when the
-  baseline authority gate permits them; otherwise persist a complete diagnosis receipt and stop — all
-  ten runs remained unstarted, with no corpus/test access or fabricated metric evidence.
+- [x] T053 [US3] Validate `ErstScorer` endpoint-yield Span, direction, Relation, and Full behavior,
+  corpus document/hash disjointness, and complete dev candidates — frozen mathematical and corpus
+  contract tests pass without any external-artifact dependency; executable test-path isolation
+  remains part of T054-T055.
+- [x] T054 [US3] Implement frozen Pydantic `ExperimentProtocol`, `ExperimentRunReceipt`,
+  `StatisticalComparison`, `ChampionManifest`, `FinalEvaluationReceipt`, and `SelectionDecision`
+  boundaries; remove the obsolete authority/blocker contracts, scripts, tests, and tracked no-run
+  decisions — forbidden extras, hashes, positive-run invariants, and test isolation are executable.
+- [x] T055 [US3] Implement the shared experiment runner and index — every run uses identical governed
+  candidates/splits/scorer inputs, records checkpoint/prediction/resource evidence, and retains
+  failures without granting or denying permission to implement another system.
 
-### Mandatory research systems
+### Mandatory technology systems
 
-- [ ] T056 [US4] Complete final 2026 primary-source/open-weight/licence/Python-3.14/MPS scan and freeze
-  any additions in protocol JSON before experiments — no mandatory system is replaced or dropped.
-- [ ] T057 [US4] Implement shared experiment runner and structural-only, text-only, existing dual-
-  encoder, and signal-rule baselines — identical candidates/splits/scorer/hardware receipts verified.
+- [x] T056 [US4] Freeze the practical technology matrix from immutable model revisions, licences,
+  Python-3.14/MPS/tokenizer compatibility, memory feasibility, and intended product role — no
+  mandatory system is replaced or dropped and no external publication controls execution.
+- [ ] T057 [US4] Implement structural-only, text-only, existing dual-encoder, ELECTRA cross-encoder,
+  and signal-rule reference systems — identical candidates/splits/scorer/hardware receipts verified.
 - [ ] T058 [US4] Implement ModernBERT-base/large signal-aware cross-encoders and screening runs for
   seeds 17/42/73 — both have complete receipts.
-- [ ] T059 [US4] Implement XLM-R-large HiDAC-style adapter/contrastive system and screening runs — fast
-  tokenizer/parity/licence/resource gates recorded.
-- [ ] T060 [US4] Implement Qwen3-4B DeDisCo-style PEFT decoder with explicit no-edge outcome and
+- [ ] T059 [US4] Implement XLM-R-large hierarchical adapter/contrastive system and screening runs —
+  fast tokenizer/parity/licence/resource gates recorded.
+- [ ] T060 [US4] Implement Qwen3-4B PEFT generative edge decoder with explicit no-edge outcome and
   screening runs — <=24 GB feasibility and MPS evidence recorded or explicit incompatibility receipt.
 - [ ] T061 [US4] Implement edge-featured graph-attention fusion over strongest text representation and
   complete predicted primary tree; run screening — no candidate/tree truncation.
@@ -205,33 +207,35 @@ target defect before the fix unless the test is a new capability with no prior e
 - [ ] T063 [US4] Compute calibration, p50/p95 latency, OS RSS/MPS memory, longest-doc completion,
   CPU/MPS parity, and 10,000 paired document bootstrap with Holm correction — reproducible comparison
   artifacts hash to the protocol.
-- [x] T064 [US4] Freeze a dev-selected `ChampionManifest` and execute one-time untouched test/test2
-  only after successful screening; otherwise emit a complete `PromotionDecision` without evaluation
-  access — all gates are false, champion/checkpoint are null, upload is forbidden, and benchmark/SOTA
-  claims remain absent.
+- [ ] T064 [US4] Freeze a dev-selected `ChampionManifest`, execute one-time untouched test/test2 only
+  after successful screening, and emit the evidence-backed `SelectionDecision` — no missing
+  implementation or no-run receipt may satisfy this task.
 
-**Checkpoint**: G-BASELINE and G-RESEARCH pass, or truthful no-promotion/blocked evidence exists.
+**Checkpoint**: G-COMPARISON passes with every mandatory implementation and run disposition complete;
+a `no_selection` result is valid only after the comparison itself is complete.
 
 ## Phase 6: Exact release candidate and publication
 
-- [x] T065 [US6] Freeze the exact publication candidate commit and run one fresh locked install plus
+- [ ] T065 [US6] Freeze the exact publication candidate commit and run one fresh locked install plus
   full dependency-aware validation ledger from `quickstart.md`; persist exact outputs and durations.
-- [x] T066 [US6] Build wheel/sdist in a fresh temporary directory and inspect every member/hash — no
+- [ ] T066 [US6] Build wheel/sdist in a fresh temporary directory and inspect every member/hash — no
   `.env`, credentials, corpus, model binaries, caches, or local experiment data is present.
-- [x] T067 [US6] Run `pip-audit` and secret scans over tracked files, build artifacts, and intended
+- [ ] T067 [US6] Run `pip-audit` and secret scans over tracked files, build artifacts, and intended
   commits; name unauditable VCS dependencies — zero actionable vulnerability or secret disclosure.
-- [x] T068 [US6] Clean-install the wheel and exercise representative Docling/DocLang/Markdown/API/
+- [ ] T068 [US6] Clean-install the wheel and exercise representative Docling/DocLang/Markdown/API/
   cache/five-parser/signal/candidate/eRST/bundle CPU/MPS paths; inspect persisted outputs.
-- [x] T069 [US5] If T064 promoted, privately upload verified bundle to
+- [ ] T069 [US5] If T064 selected a checkpoint, privately upload the verified bundle to
   `steve-allison-sensei/isanlp-rst-erst-v4`, pin returned immutable commit, clean-download/reverify;
-  otherwise set canonical checkpoint null and perform no upload/SOTA claim.
-- [x] T070 [US6] Update `forensic_code_review_report.md` with closure rows for every F/N defect, exact
-  commands/results/hashes and CUDA unverified; regenerate Graphify and verify no missing/dangling/
-  duplicate/self-loop structural defect.
+  otherwise set canonical checkpoint null and perform no upload.
+- [ ] T070 [US6] Align the installed Graphify package with the active skill version; update
+  `forensic_code_review_report.md` with closure rows for every F/N defect, exact commands/results/
+  hashes and CUDA unverified; regenerate a directed graph and require both raw-extraction and
+  persisted-graph diagnostics to show no missing/dangling/self-loop or lossy collapsed relation — no
+  version drift or filtered false green remains.
 - [ ] T071 [US6] Create logical contract/eRST/quality/release commits, stage all intended artifacts,
   push `origin codex/spec-kit-adoption`, and verify final clean status plus pushed commit IDs.
 
-**Final acceptance**: All applicable gates pass, every non-passing research/promotion outcome is
+**Final acceptance**: All applicable gates pass, every non-passing comparison/selection outcome is
 explicit, Git is clean and pushed, and there is no undisclosed failed or skipped check.
 
 ## Dependencies and execution order
@@ -242,8 +246,8 @@ T001-T004
   -> format stream T008-T023
   -> eRST stream T024-T044
   -> quality stream T045-T052
-  -> exact scorer/baseline T053-T055
-  -> research systems T056-T064
+  -> internal scorer/protocol/runner T053-T055
+  -> technology systems and comparison T056-T064
   -> release T065-T071
 ```
 
@@ -251,8 +255,10 @@ T001-T004
 - T024-T026 block corpus candidate counts and all model work.
 - T027-T033 and T034-T040 both block checkpoint/training/research.
 - T041-T044 block production eRST and any publication.
-- T053-T055 are a hard gate before T056-T064.
-- T064 determines whether T069 uploads or records no-promotion; it never blocks corrected 4.0.0.
+- T053 validates internal metrics; T054-T055 establish shared execution evidence. No result in these
+  tasks blocks implementing T056-T061.
+- T064 determines whether T069 uploads or records no selection; it never excuses missing comparison
+  work.
 - T065-T070 must target the same candidate; any source change invalidates the run and requires one new
   fresh complete validation.
 
@@ -260,5 +266,5 @@ T001-T004
 
 Work sequentially on the single local machine. Use focused dependency-aware checks inside phases and
 one full release-candidate run. Mark a task `[x]` only after its concrete success criterion has been
-observed; a failed mandatory experiment remains `[ ]` until it has a complete incompatibility or
-diagnosis receipt satisfying the task.
+observed. A failed mandatory experiment may close only with a local incompatibility receipt after its
+implementation and attempted execution; a no-run or external-authority diagnosis never counts.

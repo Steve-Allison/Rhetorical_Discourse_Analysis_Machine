@@ -27,11 +27,12 @@ solo repository. Task IDs refer to `tasks.md`.
 | N-08 | No candidates/zero steps/missing checkpoint can succeed | corpus/train receipt; T031-T032, T042 | Explicit failure tests for each empty/missing state | G-TRAIN |
 | N-09 | `model.pt` is incomplete/unloadable/unsafe | `erst/checkpoint.py`; T041-T044 | Complete safetensors member/hash/strict reload parity tests | G-BUNDLE |
 | N-10 | Parser can create random eRST heads | `parser.py`, completer; T043-T044 | Invalid/raw/missing checkpoint capability-error tests | G-BUNDLE |
-| N-11 | No official scorer parity | scorer adapter; T053-T055 | Exact released scorer hash + parity corpus | G-BASELINE |
-| N-12 | No validated benchmark or model selection | experiment pipeline; T054-T064 | Five-seed reproduction, all mandatory receipts, stats, one-time final | G-RESEARCH |
+| N-11 | External evidence gate incorrectly blocks local implementation | research contracts/docs; T054-T057 | Internal scorer/protocol tests and executable runner with no external permission field | G-COMPARISON |
+| N-12 | No completed technology comparison or model selection | experiment pipeline; T054-T064 | All mandatory implementations/receipts, statistics, and one-time final evaluation | G-COMPARISON |
 | N-13 | Implicit `.env` discovery fails on Python 3.14 | `erst/environment.py`; T006 | Explicit-root canonical/fallback/no-log tests | G-SECRETS |
 | N-14 | Slow/tokenizer warning paths | tokenizer bundle/import boundaries; T037, T041, T049 | Fast-token parity and full warnings-as-errors matrix | G-RUNTIME |
 | N-15 | No package/archive/clean-machine proof | release verifier; T065-T071 | Archive manifest, clean install, representative persisted outputs | G-RELEASE |
+| N-16 | Graphify package/skill drift and lossy raw extraction | Graphify release evidence; T070 | Exact package/skill version parity plus raw-extraction and persisted-graph integrity diagnostics | G-RELEASE |
 
 ## Gate definitions
 
@@ -40,9 +41,12 @@ solo repository. Task IDs refer to `tasks.md`.
 - **G-PROVENANCE**: installed 4.0.0 and source revision are distinct and correct.
 - **G-CACHE**: basename/schema/options identity and stale-cache miss tests pass.
 - **G-SIGNAL / G-ERST / G-CORPUS / G-SCORER / G-TRAIN**: formal conformance, complete candidates,
-  official splits/raw labels/scorer, and fail-closed receipts pass.
+  governed document splits/raw labels/repository scorer, and fail-closed receipts pass.
 - **G-BUNDLE**: safetensors completeness, hashes, strict reload, capability boundary, and parity pass.
 - **G-STATIC / G-RUNTIME / G-DOCS**: zero type/lint/suppression/warning debt and complete doc scope.
-- **G-BASELINE / G-RESEARCH**: baseline parity precedes complete mandatory comparisons and promotion.
+- **G-COMPARISON**: internal scorer/protocol validation, complete mandatory implementations,
+  reference/candidate runs, calibration, statistics, and one-time final evaluation all pass; no
+  external artifact controls implementation permission.
 - **G-AUDIT / G-BUILD / G-SECRETS / G-RELEASE**: no actionable audited vulnerability, forbidden
-  archive member, secret disclosure, or undisclosed failed/skipped exact-candidate check.
+  archive member, secret disclosure, Graphify version/integrity defect, or undisclosed failed/skipped
+  exact-candidate check.

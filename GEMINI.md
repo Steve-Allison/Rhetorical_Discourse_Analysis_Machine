@@ -4,7 +4,7 @@
 
 - Inherits from: `/Users/steveallison/.gemini/gemini.md`
 
-## 🎯 SOTA Mandate
+## 🎯 World-Class Quality Mandate
 
 - **NO ASSUMPTIONS**: Verify all paths, names, and states before acting.
 - **PRODUCTION-READY CODE**: No stubs, no placeholders, complete implementations only.

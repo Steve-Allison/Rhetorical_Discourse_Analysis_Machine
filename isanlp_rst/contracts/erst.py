@@ -640,7 +640,7 @@ class ErstFeatureSchema(BaseModel):
 
 
 class ErstCheckpointResearchEvidence(BaseModel):
-    """Immutable research authorities used to construct a checkpoint."""
+    """Immutable experiment evidence used to construct a checkpoint."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -651,7 +651,7 @@ class ErstCheckpointResearchEvidence(BaseModel):
     champion_manifest_sha256: str | None = Field(default=None, pattern=_SHA256_PATTERN)
     run_receipt_sha256: str = Field(pattern=_SHA256_PATTERN)
     final_evaluation_sha256: str | None = Field(default=None, pattern=_SHA256_PATTERN)
-    promotion_decision_sha256: str | None = Field(default=None, pattern=_SHA256_PATTERN)
+    selection_decision_sha256: str | None = Field(default=None, pattern=_SHA256_PATTERN)
 
 
 class ErstCheckpointMetrics(BaseModel):
@@ -829,13 +829,13 @@ class ErstCheckpointBuildSpec(BaseModel):
             required = (
                 self.research.champion_manifest_sha256,
                 self.research.final_evaluation_sha256,
-                self.research.promotion_decision_sha256,
+                self.research.selection_decision_sha256,
                 self.metrics.mps_p95_latency_ms,
                 self.metrics.peak_rss_bytes,
                 self.metrics.cpu_mps_graphs_equivalent,
             )
             if any(item is None for item in required) or self.metrics.cpu_mps_graphs_equivalent is not True:
-                raise ValueError("release-eligible checkpoints require complete promotion and runtime evidence")
+                raise ValueError("release-eligible checkpoints require complete selection and runtime evidence")
         return self
 
 

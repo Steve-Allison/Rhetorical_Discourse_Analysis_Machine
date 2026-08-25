@@ -29,30 +29,29 @@ PYTHONWARNINGS=error /Users/steveallison/.pixi/bin/pixi run --locked pytest \
   tests/test_erst_checkpoint.py -q
 ```
 
-## Corpus and baseline
+## Corpus and scorer contract
 
-The published comparison authority is GUM V9.2.0, not the current production-corpus pin. Private
-corpus and experiment roots are arguments, not tracked configuration. The current authority receipt
-is deliberately blocked because the paper's claimed official scorer is not publicly locatable.
+Private corpus and experiment roots are arguments, not tracked configuration. GUM V12.1.0 document
+partitions and the repository-owned scorer are the comparison authorities. Validate their current
+implemented boundaries with:
 
 ```bash
-/Users/steveallison/.pixi/bin/pixi run --locked python scripts/reproduce_erst_baseline.py \
-  --authority config/erst/baseline-authority-gum-v9.2.0.json \
-  --experiment-root '/private/path/to/isanlp-rst-v4-runs'
+/Users/steveallison/.pixi/bin/pixi run --locked pytest \
+  tests/test_erst_corpus.py \
+  tests/test_erst_corpus_contracts.py \
+  tests/test_parseval_math.py -q
 ```
 
-Expected current result: exit status 2 after writing `baseline-reproduction-diagnosis.json`; no corpus,
-training, test, or test2 data is accessed. That non-zero status is the verified fail-closed outcome,
-not a passing baseline reproduction.
+These checks establish corpus, candidate, and metric behavior. They do not establish that any model
+comparison has run.
 
 ## Architecture screening and final evaluation
 
-Architecture screening and champion evaluation are not executable in this release candidate: the
-validated research-program diagnosis retains every mandatory system as blocked, and the promotion
-decision forbids upload. Do not create or invoke screening/final-evaluation commands until a new
-authority receipt identifies the official scorer and records parity. If that authority is later
-resolved, final evaluation remains one-time for a champion/protocol pair and must not be rerun after
-seeing test results.
+Architecture screening and champion evaluation are not executable in the current checkout because
+the shared experiment runner, executable protocol/receipt boundaries, and most required architecture
+implementations do not exist. This is open implementation work, not an externally blocked or
+successful outcome. T054-T064 define the required build and evaluation sequence. Final evaluation
+remains one-time for a champion/protocol pair and must not be rerun after seeing test results.
 
 ## Exact release candidate
 
@@ -71,15 +70,16 @@ PYTHONWARNINGS=error /Users/steveallison/.pixi/bin/pixi run --locked smoke-full-
 
 The release verifier must build wheel/sdist in a fresh temporary directory, inspect every member,
 install the wheel in a clean temporary Pixi environment, run representative format/API/cache/eRST
-paths, audit dependencies, scan secrets, validate a private promoted bundle if one exists, and persist
+paths, audit dependencies, scan secrets, validate a private selected bundle if one exists, and persist
 hashes/results.
 
-Regenerate Graphify only after source and documents are final, then inspect graph health and diff from
-the preserved before-state.
+Regenerate Graphify only after source and documents are final. First align the installed package with
+the active skill version, then build a directed graph and require clean raw-extraction and persisted-
+graph integrity diagnostics before diffing against the preserved before-state.
 
 ## Publication close
 
-If and only if promotion passed, validate and privately upload the bundle, then pin the returned
+If and only if selection passed, validate and privately upload the bundle, then pin the returned
 immutable Hugging Face commit. Otherwise release metadata must contain no canonical eRST checkpoint.
 
 After all gates and report closure:

@@ -111,12 +111,13 @@ ignore = [
 [tool.pyright]
 include = [
   "isanlp_rst",
+  "research_harness",
   "tests",
   "scripts",
 ]
 exclude = [
   "**/__pycache__",
-  ".pixi",
+  "**/.pixi",
   "build",
 ]
 pythonVersion = "3.14"
@@ -138,7 +139,7 @@ smoke-full-mps = "python scripts/smoke_test.py --full --device mps"
 cuda-smoke = "python scripts/cuda_smoke.py"
 bench = "python scripts/bench.py"
 rst-diag = "python scripts/rst_diag.py"
-lint = "ruff check isanlp_rst tests scripts"
+lint = "ruff check isanlp_rst research_harness tests scripts"
 typecheck = "pyright"
 mdlint = "python scripts/verify_markdown_manifest.py --lint"
 cleanup = "python scripts/cleanup.py"

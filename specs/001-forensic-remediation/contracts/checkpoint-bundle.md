@@ -12,5 +12,5 @@ inference. No random completion head is permitted.
 
 Publication is private to `steve-allison-sensei/isanlp-rst-erst-v4`. Release metadata may name only an
 immutable repository commit that has passed clean-download, hash verification, strict reload, and
-CPU/MPS graph parity. Without a promoted bundle the release records `canonical_erst_checkpoint: null`
-and makes no SOTA claim.
+CPU/MPS graph parity. Without a selected bundle the release records
+`canonical_erst_checkpoint: null`; this does not satisfy unfinished comparison work.

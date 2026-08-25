@@ -14,7 +14,6 @@ from isanlp_rst.erst.candidates import (
     iter_candidate_batches,
     iter_secondary_edge_candidates,
 )
-from isanlp_rst.erst.baseline import serialize_published_baseline
 from isanlp_rst.erst.corpus import (
     CorpusLoadError,
     LoadedCorpusDocument,
@@ -118,7 +117,6 @@ __all__ = [
     "rs4_to_document_and_analysis",
     "resolve_gum_relation_concept",
     "save_erst_checkpoint_bundle",
-    "serialize_published_baseline",
     "validate_erst_checkpoint_bundle",
     "verify_erst_checkpoint_test_vector",
 ]

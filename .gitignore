@@ -11,6 +11,12 @@ venv/
 .mypy_cache/
 .coverage
 htmlcov/
+# private research data and model artifacts
+experiments/
+corpora/
+*.safetensors
+*.pt
+*.pth
 # pixi environments
 .pixi/*
 !.pixi/config.toml

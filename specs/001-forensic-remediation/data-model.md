@@ -105,7 +105,7 @@ Frozen schema containing:
 - gold/gold and predicted/predicted evaluation settings;
 - bootstrap resamples (10,000), pairing unit (document), Holm correction;
 - resource and device measurement definitions;
-- promotion thresholds;
+- selection thresholds;
 - test-access policy and one-time evaluation rule.
 
 The model validates that test/test2 paths are absent from training/tuning inputs.
@@ -113,7 +113,7 @@ The model validates that test/test2 paths are absent from training/tuning inputs
 ### ExperimentRunReceipt
 
 Run ID, protocol hash, architecture/config hash, seed, permitted partitions, hardware/software identity,
-start/end time, step counts, checkpoint/prediction/scorer hashes, official metrics, calibration,
+start/end time, step counts, checkpoint/prediction/scorer hashes, governed metrics, calibration,
 latency/RSS/MPS memory, completion state, failures, and reproducibility command. A successful training
 receipt requires positive candidates, positive steps, a present validated checkpoint, and scorer
 output.
@@ -130,14 +130,14 @@ and champion-manifest SHA-256. Creation is the capability token required by fina
 
 ### FinalEvaluationReceipt
 
-Champion hash, one-time nonce persisted locally, untouched test/test2 input hashes, official outputs,
+Champion hash, one-time nonce persisted locally, untouched test/test2 input hashes, governed outputs,
 metrics, resource evidence, comparison, and completion timestamp. Validation prevents a second final
 evaluation for the same protocol/champion workspace.
 
-### PromotionDecision
+### SelectionDecision
 
-One boolean/result per promotion threshold, evidence hash per result, overall `promote` or
-`no_promotion`, and an allowed-claims list. `promote` is valid only when all booleans are true.
+One boolean/result per selection threshold, evidence hash per result, overall `selected` or
+`no_selection`, and an allowed-actions list. `selected` is valid only when all booleans are true.
 
 ## Checkpoint boundary
 
@@ -150,7 +150,7 @@ One boolean/result per promotion threshold, evidence hash per result, overall `p
 | Construction | bundled model/tokenizer/config and strict state-dictionary targets |
 | Features | signal/candidate/raw-relation/ontology/decoder schema and hashes |
 | Research | corpus/split/protocol/champion/run/final-evaluation hashes |
-| Metrics | official secondary metrics, calibration, latency, RSS, CPU/MPS parity |
+| Metrics | governed secondary metrics, calibration, latency, RSS, CPU/MPS parity |
 | Licences | code, model base, annotations, underlying-text policy, private-only flag |
 | Provenance | producer/version/source commit/created time/private HF revision |
 
@@ -165,14 +165,15 @@ that has no learned state has a config and explicit `state_file: null`; it canno
 corpus_source
   -> CorpusLoadReceipt(valid)
   -> SplitManifest(disjoint)
+  -> repository scorer contract(valid)
   -> ExperimentProtocol(frozen)
-  -> baseline receipts(reproduced)
+  -> reference receipts(complete)
   -> architecture receipts(complete)
   -> ChampionManifest(dev only)
   -> FinalEvaluationReceipt(one time)
-  -> PromotionDecision
-      -> no_promotion -> corrected 4.0.0 without canonical checkpoint
-      -> promote -> ErstCheckpointManifest -> strict reload parity -> private immutable HF revision
+  -> SelectionDecision
+      -> no_selection -> corrected 4.0.0 without canonical checkpoint
+      -> selected -> ErstCheckpointManifest -> strict reload parity -> private immutable HF revision
 ```
 
 Any invalid or absent boundary object stops the transition; callers cannot substitute a path, raw

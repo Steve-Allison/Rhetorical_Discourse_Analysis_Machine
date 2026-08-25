@@ -16,9 +16,10 @@ This specification replaces every earlier remediation plan. The immutable before
 findings and every additional defect listed in FR-001. No item may be narrowed, deferred, or
 declared out of scope without a new user decision.
 
-Promotion is fail-closed. Release 4.0.0 may ship corrected interfaces and reproduced baseline
-capability without a new canonical eRST checkpoint. It MUST NOT publish a checkpoint or SOTA claim
-unless every promotion gate in FR-024 passes.
+Model selection is fail-closed but implementation is not. Every required architecture MUST be
+implemented and evaluated under the repository-owned protocol. A canonical eRST checkpoint may be
+selected only when its recorded correctness, calibration, runtime, memory, and reproducibility gates
+pass; failure of a selection gate never converts unfinished implementation work into completion.
 
 ## User Scenarios & Testing
 
@@ -48,8 +49,8 @@ parity, correct provenance, and filename-sensitive cache behavior.
 
 ### User Story 2 - Formally correct eRST completion (Priority: P1)
 
-As a discourse researcher, I need eRST candidate generation and decoding to implement the published
-formalism so that valid cyclic, non-projective, concurrent, reverse-direction, and primary-overlap
+As a discourse researcher, I need eRST candidate generation and decoding to implement the governed
+graph contract so that valid cyclic, non-projective, concurrent, reverse-direction, and primary-overlap
 secondary edges are not silently forbidden.
 
 **Why this priority**: The current decoder and candidate filters contradict the formal task.
@@ -71,17 +72,18 @@ to the formal constraints.
 
 ---
 
-### User Story 3 - Reproducible corpus and benchmark evidence (Priority: P1)
+### User Story 3 - Reproducible corpus and evaluation evidence (Priority: P1)
 
-As a solo model developer, I need document-level corpus receipts and a reproduced published baseline
-before architecture comparisons so that performance evidence has no split leakage or silent loss.
+As a solo model developer, I need document-level corpus receipts, repository-owned scoring, and
+reproducible reference baselines so that architecture comparisons have no split leakage or silent
+loss.
 
-**Why this priority**: A model comparison is invalid until corpus, scorer, and baseline parity are
-established.
+**Why this priority**: A model comparison is invalid until corpus identity, candidate identity,
+scorer behavior, and test isolation are established inside this repository.
 
-**Independent Test**: From a clean checkout and private corpus location, reconstruct hashed official
-splits, run five baseline seeds, and reproduce the published gold/gold metrics within the declared
-tolerance using the official scorer.
+**Independent Test**: From a clean checkout and private corpus location, reconstruct hashed document
+splits, validate the repository scorer against its contract fixtures, and run every reference baseline
+with identical candidates and seeds.
 
 **Acceptance Scenarios**:
 
@@ -89,12 +91,13 @@ tolerance using the official scorer.
    the official document partition and source hashes are disjoint across partitions.
 2. **Given** a malformed, missing, or empty corpus input, **When** loading or training runs, **Then**
    the process fails with a Pydantic receipt and named failures rather than continuing.
-3. **Given** the reproduced ELECTRA system, **When** five gold/gold seeds are scored, **Then** mean
-   Span, Relation, and Full are each within 0.02 absolute of 0.389, 0.205, and 0.184.
+3. **Given** the frozen internal evaluation protocol, **When** reference baselines are run, **Then**
+   every run uses identical dev candidates, scorer configuration, seeds, hardware accounting, and
+   durable receipts.
 
 ---
 
-### User Story 4 - Evidence-based architecture promotion (Priority: P2)
+### User Story 4 - Evidence-based architecture selection (Priority: P2)
 
 As the package owner, I need all mandatory systems evaluated under one frozen protocol so that a
 canonical checkpoint is selected only for a statistically and operationally superior system.
@@ -107,13 +110,13 @@ memory, and latency evidence.
 
 **Acceptance Scenarios**:
 
-1. **Given** the frozen dev protocol, **When** screening completes, **Then** all nine mandatory systems
+1. **Given** the frozen dev protocol, **When** screening completes, **Then** all ten mandatory configurations
    have success or explicit incompatibility receipts and none is silently dropped.
-2. **Given** a candidate champion, **When** promotion gates are evaluated, **Then** publication occurs
+2. **Given** a candidate champion, **When** selection gates are evaluated, **Then** publication occurs
    only if every correctness, significance, test, calibration, memory, latency, and parity threshold
    passes.
-3. **Given** no qualifying champion, **When** 4.0.0 is released, **Then** no canonical checkpoint or
-   SOTA claim is emitted.
+3. **Given** no qualifying system, **When** selection closes, **Then** the complete comparison is
+   retained, no canonical checkpoint is named, and every failed selection gate remains visible.
 
 ---
 
@@ -223,17 +226,17 @@ publication state.
   prove document/source-hash disjointness. Hard negatives are training-only; evaluation uses the
   complete licensed candidate space.
 - **FR-015**: Training and output MUST preserve raw GUM eRST relations and separately derive the
-  canonical ontology concept. Evaluation MUST use the official eRST secondary Span, direction/
-  Nuclearity, Relation, and Full metrics.
-- **FR-016**: The signal-marked ELECTRA published baseline MUST be reproduced for five seeds on the
-  pinned corpus/scorer. Comparisons MUST stop if mean gold/gold Span 0.389, Relation 0.205, and Full
-  0.184 are not each reproduced within 0.02 absolute.
+  canonical ontology concept. Evaluation MUST use the repository-owned, contract-tested secondary
+  Span, direction, Relation, and Full metrics.
+- **FR-016**: The existing dual-encoder, structural-only, text-only, signal-rule, and ELECTRA
+  cross-encoder reference systems MUST run under the same repository-owned protocol before finalist
+  selection. An unavailable external artifact MUST NOT block implementation or internal comparison.
 - **FR-017**: A frozen Pydantic `ExperimentProtocol` MUST control candidate sets, splits, scorer,
   seeds, inputs, hardware evidence, threshold/calibration tuning, ablations, test isolation, and
   champion hash. Training code MUST be unable to load test/test2.
-- **FR-018**: All nine mandatory systems in the approved plan MUST be evaluated or carry a verified
-  incompatibility receipt. Screening seeds are 17/42/73; finalists within 0.02 dev Full receive seeds
-  17/29/42/73/101 and full tuning.
+- **FR-018**: Every mandatory system configuration in the approved plan MUST be implemented and then
+  evaluated or carry a verified local incompatibility receipt. Screening seeds are 17/42/73;
+  finalists within 0.02 dev Full receive seeds 17/29/42/73/101 and full tuning.
 - **FR-019**: Comparisons MUST use 10,000 document-level paired bootstrap resamples with Holm
   correction, report gold/gold and predicted/predicted settings, and include all specified ablations.
 - **FR-020**: An eRST bundle MUST use safetensors and a Pydantic `ErstCheckpointManifest` covering
@@ -242,22 +245,24 @@ publication state.
   `load_state_dict(..., strict=True)`.
 - **FR-021**: The parser argument MUST be `erst_scorer_checkpoint`; raw backbone directories MUST be
   invalid, and `erst_graph` without a validated completion bundle MUST raise an explicit error.
-- **FR-022**: A promoted bundle MUST pass save/reload parity and clean-machine private download from
+- **FR-022**: A selected bundle MUST pass save/reload parity and clean-machine private download from
   `steve-allison-sensei/isanlp-rst-erst-v4` at an immutable commit before release metadata is pinned.
 - **FR-023**: Full-tree Pyright MUST report zero errors with no production exclusions, suppressions,
   blanket `noqa`, warning filters, or Transformers logger mutation. Optional imports MUST be typed and
   lazy; runtime tokenizers MUST be fast and parity tested. `PYTHONWARNINGS=error` MUST pass unit,
   integration, import, CPU, and MPS paths. Markdown lint MUST cover all tracked Markdown except
   generated Spec Kit projections and the intentional syntax fixture.
-- **FR-024**: A canonical checkpoint may be promoted only if it beats the strongest reproduced
-  baseline by at least 0.02 mean dev Full; has Holm-corrected paired-bootstrap lower CI above zero;
+- **FR-024**: A canonical checkpoint may be selected only if it beats the strongest completed
+  repository baseline by at least 0.02 mean dev Full; has Holm-corrected paired-bootstrap lower CI above zero;
   beats untouched test Full by at least 0.01; regresses no test Span/direction/Relation metric by more
   than 0.005; achieves ECE <=0.05 and non-worse Brier; processes the longest test document without
   truncation/OOM; stays at or below 24 GB peak RSS on the 48 GB Apple M5 Max; has MPS p95 latency at
-  most 2x ELECTRA; selects faster/smaller within a 0.005 tie; and produces equivalent CPU/MPS graphs.
+  most 2x the reference cross-encoder; selects faster/smaller within a 0.005 tie; and produces
+  equivalent CPU/MPS graphs.
 - **FR-025**: Release verification MUST include all tests and representative paths, Docling/DocLang
   conformance, full Pyright, Ruff, all tracked Markdown, build, dependency audit, secret scan,
-  Graphify regeneration, persisted-output inspection, clean archive inspection, clean install, CPU,
+  Graphify package/skill version parity, directed regeneration, raw-extraction and persisted-graph
+  integrity diagnostics, persisted-output inspection, clean archive inspection, clean install, CPU,
   and MPS. CUDA MUST be named unverified.
 - **FR-026**: The forensic report MUST gain a closure row for every original and new defect with exact
   commands, outputs, hashes, and unverified platforms. Logical contract, eRST, quality, and release
@@ -274,7 +279,7 @@ publication state.
 - **ExperimentProtocol**: Frozen comparison inputs, seeds, gates, and isolation rules.
 - **ExperimentRunReceipt**: Hashed configuration, runtime, predictions, scores, and failure evidence.
 - **ErstCheckpointManifest**: Complete reloadable bundle authority and integrity record.
-- **PromotionDecision**: Fail-closed evaluation of every release/promotion threshold.
+- **SelectionDecision**: Fail-closed evaluation of every canonical-checkpoint selection threshold.
 
 ## Success Criteria
 
@@ -287,11 +292,11 @@ publication state.
 - **SC-003**: Synthetic eRST conformance accepts all and only the formally licensed edge cases; train,
   dev, test, test2, and inference candidate identity tests pass.
 - **SC-004**: Corpus receipts report zero silent losses and zero cross-partition document/hash overlap.
-- **SC-005**: The five-seed ELECTRA baseline meets all three ±0.02 reproduction bounds before any
-  architecture comparison is accepted.
-- **SC-006**: All mandatory systems have reproducible run receipts; promotion either passes every
-  FR-024 gate or produces an explicit no-promotion decision with no SOTA claim.
-- **SC-007**: A promoted checkpoint, if any, downloads privately at a pinned immutable revision,
+- **SC-005**: Repository scorer fixtures, split/candidate hashes, reference baselines, and test
+  isolation validate before finalist selection, without any external-artifact prerequisite.
+- **SC-006**: All mandatory systems have reproducible run receipts; selection either passes every
+  FR-024 gate or produces an explicit no-selection decision without misrepresenting unfinished work.
+- **SC-007**: A selected checkpoint, if any, downloads privately at a pinned immutable revision,
   verifies every hash, and reproduces its recorded graph on CPU and MPS without training data.
 - **SC-008**: Full-tree Pyright, Ruff, tracked-Markdown lint, warnings-as-errors, unit/integration tests,
   package build, audit, secret scan, clean install, all five parser smokes, format/API/cache/eRST paths,

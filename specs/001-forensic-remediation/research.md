@@ -3,8 +3,7 @@
 **Verified**: 2026-08-24 on `codex/spec-kit-adoption` before production-source edits.
 
 This ledger records the authorities used to freeze the remediation. Secret values were neither read
-into output nor recorded. URLs are primary project/package sources unless explicitly identified as a
-paper.
+into output nor recorded. URLs are primary project, package, specification, or model sources.
 
 ## Release dependency decisions
 
@@ -81,89 +80,38 @@ eligibility value object.
 Toolkit decision: retain `doclang[schematron-saxon]`; conformance tests MUST prove `validate()` under
 the locked install instead of assuming the extra remains sufficient.
 
-## eRST formal and benchmark authority
+## eRST formal and product-evaluation decisions
 
-Primary authority: Zeldes et al., 2025, [eRST: A Signaled Graph Theory of Discourse Relations and
-Organization](https://aclanthology.org/2025.cl-1.3.pdf), DOI `10.1162/coli_a_00538`, plus the current
-[eRST project site](https://gucorpling.org/erst/).
+The governed eRST graph contract requires a sufficient signal, forbids self-loops, invented nodes,
+and duplicate secondary edges for the same directed node pair, and permits cycles,
+non-projectivity, concurrent relations, reverse-direction relations, and primary-overlapping
+secondary edges. The current eRST project specification remains a semantic reference for these graph
+rules; it is not an implementation, evaluation, or release authority for this repository.
 
-Verified formal constraints from the paper's secondary-edge definition:
+The product scorer is `isanlp_rst.eval.erst_scorer.ErstScorer`. Its contract compares endpoint EDU
+yields rather than serialization-local node IDs: Span uses the unordered endpoint pair, direction
+uses the ordered pair, Relation adds the raw relation to the unordered pair, and Full uses the ordered
+pair plus raw relation. Multiset matching preserves concurrent and reverse-direction edges. These
+equations and their adversarial fixtures are the repository-owned evaluation authority.
 
-1. a secondary edge requires a sufficient signal;
-2. the same directed secondary path cannot be duplicated;
-3. self-loops are forbidden;
-4. no new node may be invented.
+The previous remediation documents incorrectly made an unavailable external evaluation artifact a
+prerequisite for implementing the technology matrix. That was a category error. External benchmark
+comparability can constrain external claims, but it cannot block local implementation, training,
+evaluation, or selection. The blocker receipts under `config/erst/` record the abandoned decision and
+must not authorize current work or represent the technology comparison as complete.
 
-The paper explicitly permits secondary cycles, non-projectivity, concurrent relations, and edges
-between nodes already connected in the primary tree. Therefore DAG, degree, distance, ancestry,
-primary-overlap, and single-relation caps are incompatible with the canonical decoder.
+Corrected decision:
 
-The current eRST project site enumerates more than 40 signal types/subtypes across discourse-marker,
-graphical, lexical, morphological, numerical, reference, semantic, and syntactic evidence. The ten-
-phrase heuristic cannot represent that authority. The implementation will support typed overlapping
-signals and initially cover all triggers deterministically derivable from the pinned GUM RS4 plus the
-approved morphosyntactic pipeline; detector coverage MUST be measured by type/subtype in receipts.
+1. validate the repository scorer, corpus/split identity, candidate identity, and test isolation;
+2. implement every reference and candidate architecture;
+3. compare them on identical train/dev inputs and seeds;
+4. select a canonical checkpoint only from complete internal evidence;
+5. retain every failed or incompatible run without converting it into completed implementation.
 
-The paper's baseline serialization contains marked signal text, proposed relation, direction,
-head-EDU distance, and an existing primary relation where present. It reports
-`google/electra-base-discriminator`, not ELECTRA-large, as the selected baseline. Gold/gold secondary
-metrics are Span 0.389, direction/Nuclearity 0.270, Relation 0.205, Full 0.184. The approved
-reproduction gate uses Span/Relation/Full within 0.02.
-
-The paper defines secondary Parseval exactly: edge endpoints are equal when their terminal EDU
-yields are equal; Span compares the unordered endpoint pair, direction (the paper's secondary
-"Nuclearity" column) compares the ordered pair, Relation adds the raw label without requiring
-direction, and Full requires endpoint span, direction, and raw relation. The T040 adapter implements
-those equations over multisets so opposite-direction concurrent edges cannot collapse, and rejects
-node-ID comparison because node IDs are serialization-local. It reports precision, recall, and F1 for
-all four metrics at document and corpus level. Paper PDF SHA-256:
-`f04807264324631d1ad79aade3529215afc7729cf874ef311edf5094ab52a6da`.
-
-The paper also states that its scorer and baseline code were released. T053 traced the first public
-baseline commit rather than treating the current branch as publication authority: GUM commit
-`c56e9f68cd1e2f0a9a9e3e524692b60e17830183` added the complete 758-line
-`_build/utils/conn2edge.py` on 2024-02-15. Its Git blob is
-`2efecdf64fdd48749e496c3d224fcc91248cdbae` and its byte SHA-256 is
-`d1f1f3be391c17f1bc2aa59cc339fcfba26e68ed7500c6d44c0b84e6257a1a1e`. The script implements the
-paper's marked-signal serialization and ELECTRA/alternative training path, but its evaluation block
-computes set equality rather than secondary Span, direction, Relation, and Full.
-
-The exact comparison corpus is GUM V9.2.0: the article was submitted twelve days after that final V9
-tag, and the tag contains the paper's stated 213 documents and exact official 165/24/24 train/dev/test
-counts. Immutable authorities are commit `3b0ab7d11911be1695e4dacadb28a7a1df230bdb`, tree
-`a97dcf9cbed8cefdd260e4226145a6f9cf0ecc4f`, `splits.md` SHA-256
-`2b313597843f6404e9c5b00b923b90ebcdee0bf6b4d56f7031d761dedf826545`, and `LICENSE.txt` SHA-256
-`b9a10bc5d365e0216a2b36325e8bff10ba6a3513ee8adb8a32da47cd54b47b83`. Every RS4 comparison source
-and partition is recorded by hash without corpus text.
-
-The complete paper/OJS galleys/eRST site, all GUM branches/releases/history, complete relevant GUM,
-rst2dep, rstWeb, and RSTParser trees, and the public GUM forks of Tatsuya Aoyama and Luke Gessler were
-inspected. No official scorer artifact or URL was found. The release also contains neither the
-referenced association checkpoint nor generated train/dev/test tables, and its environment omits
-Flair and immutable PyTorch/Transformers/Flair revisions. GUM's licence inventory grants corpus-text
-and annotation rights but states no licence for the baseline code. The arXiv v2 source archive
-(SHA-256 `b9b18db8e4a8897b0b95576a52cc6567a402077eafcd78c1b831e0910e6a0e76`) likewise contains the
-equations and release claim but no artifact URL.
-
-Decision: exact scorer parity is impossible from the public artifacts available on 2026-08-24.
-`config/erst/baseline-authority-gum-v9.2.0.json` is the complete Pydantic diagnosis receipt; its
-canonical receipt SHA-256 is `d97961ef5f9c7f524e5beaeb634d033476c866dcb4b442f966da6d6bf03dec0e` and
-`ready_for_reproduction=false`. Baseline training and every architecture/promotion experiment remain
-blocked. The paper-defined T040 adapter may support corrected v4 inference, but it cannot be called
-the exact released scorer or authorize benchmark/SOTA claims until an official scorer artifact is
-obtained and parity-tested.
-
-The executable gate persisted `config/erst/baseline-reproduction-diagnosis.json` with canonical
-receipt SHA-256 `a9f5fc7ce5aadc0c094e0358c12d40b9ecd5b9e071e9213c8faaada5b3acf0b4`: all five required seeds and
-both required settings remain planned, runs started is zero, and training/test access is false. The
-ten concrete mandatory systems, including both ModernBERT sizes, are retained individually in
-`config/erst/research-program-diagnosis.json` (canonical receipt SHA-256
-`2e9fa1bde74599b415f18aa464509905b57e72a696f9e205ae2fb46181ed75b9`) with no implementation,
-screening, ablation, calibration, bootstrap, test, or test2 work started. The resulting
-`config/erst/promotion-decision.json` has canonical receipt SHA-256
-`34270305f49e52a2d5155ecf4025f1f83d76ac13bb914cc6131a8fcd10872651`, evaluates every promotion
-threshold false, names no champion/checkpoint, and forbids upload. This is the protocol-mandated stop,
-not a silent reduction of the mandatory research scope.
+The technology comparison is currently incomplete. No shared experiment runner, executable
+`ExperimentProtocol`, `ExperimentRunReceipt`, `StatisticalComparison`, `ChampionManifest`, or
+`FinalEvaluationReceipt` implementation exists. The generic dual-encoder scorer and tokenizer probes
+are useful foundations, not a completed comparison.
 
 ## GUM corpus and licence decision
 
@@ -191,32 +139,23 @@ Primary sources:
 - [GUM licence inventory](https://github.com/amir-zeldes/gum/blob/22fdf87f9c71c96bcc771461d06e689b1f90020d/LICENSE.md)
 - [GENTLE licence authority](https://github.com/UniversalDependencies/UD_English-GENTLE/tree/fd7a1bfc82896e362c66f59492b5525940f52fa7)
 
-## Model and literature scan
+## Technology compatibility inventory
 
 The mandatory model checkpoints were queried through the Hugging Face model API on 2026-08-24.
 
 | Model | Immutable revision | Declared licence | Decision |
 |---|---|---|---|
-| `google/electra-base-discriminator` | `1ae76a97c7e84a4e640876a07453fccd636f0667` | Apache-2.0 | Published baseline |
+| `google/electra-base-discriminator` | `1ae76a97c7e84a4e640876a07453fccd636f0667` | Apache-2.0 | Reference cross-encoder |
 | `microsoft/deberta-v3-base` | `8ccc9b6f36199bec6961081d44eb72fb3f7353f3` | MIT | Existing dual-encoder scorer baseline |
 | `answerdotai/ModernBERT-base` | `8949b909ec900327062f0ebf497f51aef5e6f0c8` | Apache-2.0 | Mandatory signal-aware cross-encoder |
 | `answerdotai/ModernBERT-large` | `45bb4654a4d5aaff24dd11d4781fa46d39bf8c13` | Apache-2.0 | Mandatory signal-aware cross-encoder |
-| `FacebookAI/xlm-roberta-large` | `c23d21b0620b635a76227c604d44e43a9f0ee389` | MIT | Mandatory HiDAC-style adapter/contrastive system; tokenizer fast-parity gate applies |
-| `Qwen/Qwen3-4B` | `1cfa9a7208912126459214e8b04321603b3df60c` | Apache-2.0 | Mandatory DeDisCo-style decoder with PEFT and no-edge outcome |
+| `FacebookAI/xlm-roberta-large` | `c23d21b0620b635a76227c604d44e43a9f0ee389` | MIT | Hierarchical adapter/contrastive candidate; tokenizer fast-parity gate applies |
+| `Qwen/Qwen3-4B` | `1cfa9a7208912126459214e8b04321603b3df60c` | Apache-2.0 | PEFT generative edge decoder with explicit no-edge outcome |
 
-Primary task evidence and reproducible source anchors:
-
-- [DISRPT 2025 shared task overview](https://aclanthology.org/2025.disrpt-1.1/)
-- [DeDisCo paper](https://aclanthology.org/2025.disrpt-1.4.pdf) and source repository
-  [`gucorpling/disrpt25-task`](https://github.com/gucorpling/disrpt25-task) at
-  `b0ab9feee14cd5ce19b1449d5cf6b22f1bd45b6f`
-- [HiDAC paper](https://aclanthology.org/2025.disrpt-1.3/)
-- [Edge-featured GAT discourse evidence](https://aclanthology.org/2023.findings-emnlp.951/)
-- [ModernBERT paper/model](https://huggingface.co/answerdotai/ModernBERT-large)
-
-Decision: no extra 2026 candidate is admitted by name in the frozen protocol. T056 performs the final
-primary-source scan before experiments and may add only an open-weight, licence-compatible,
-Python-3.14/MPS-verified candidate without dropping or replacing any mandatory system.
+Decision: T056 freezes the practical comparison matrix from immutable model revisions, licences,
+Python 3.14 compatibility, MPS feasibility, memory bounds, and intended product role. It may add a
+candidate without dropping or replacing any mandatory system. External publications may inform an
+implementation choice but never become execution permission.
 
 Tokenizer execution evidence: five of six mandatory tokenizer families loaded as native fast
 tokenizers, emitted offset mappings and special-token masks, round-tripped identical encodings after
@@ -247,8 +186,8 @@ receipts record only provider, resolved identity, required capability, and boole
 - Candidate sampling/caps at canonical inference: rejected because it changes the formal candidate
   space. Streaming batches controls memory without changing membership.
 - DAG or degree constraints: rejected because they contradict eRST.
-- Coarse-only relations: rejected because they destroy official raw-label evidence.
+- Coarse-only relations: rejected because they destroy governed raw-label evidence.
 - Unsafe `torch.save`/`model.pt`: rejected because it is incomplete and pickle-based.
-- Picking the newest/largest model without experiments: rejected because promotion is a measured,
+- Picking the newest/largest model without experiments: rejected because selection is a measured,
   statistically gated decision.
 - Public checkpoint publication: rejected by mixed underlying-text licences.
