@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_digest": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+  "authority_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "gate": "final_repository_verification",
+  "passed": true,
+  "counts": {
+    "full_pytest_passed": 672,
+    "full_pytest_failed": 0,
+    "ruff_issues": 0,
+    "pyright_errors": 0,
+    "pyright_warnings": 0,
+    "markdown_files_linted": 86,
+    "markdown_issues": 0,
+    "production_modules": 87,
+    "production_boundary_violations": 0,
+    "artifact_forbidden_members": 0
+  },
+  "execution": {
+    "verified_at": "2026-08-25T19:46:51Z",
+    "candidate_commit": "277ac08318b7c06f8544e0f51c0710b878190506",
+    "commands": [
+      {"command": "pixi run -e offline pytest -q", "result": "672 passed in 330.60s"},
+      {"command": "pixi run -e offline lint", "result": "All checks passed"},
+      {"command": "pixi run -e offline typecheck", "result": "0 errors, 0 warnings, 0 informations"},
+      {"command": "pixi run -e offline production-boundary", "result": "valid; 0 violations"},
+      {"command": "pixi run -e offline mdlint", "result": "86 files; 0 issues"},
+      {"command": "pixi run -e offline validate-production-artifacts", "result": "wheel and sdist valid; 0 forbidden members"},
+      {"command": "pixi run -e production production-artifacts", "result": "wheel and sdist valid; 0 forbidden members"},
+      {"command": "pixi run -e production production-clean-install", "result": "CPU valid; all forms and five models; parity differences empty"},
+      {"command": "clean_install.py --device mps --full", "result": "MPS valid; all forms and five models; parity differences empty"}
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-"""Parse a DocLang ``.dclg`` file into a usable element tree.
+"""Private DocLang addressing and bounded archive loading for ingest.
 
 The ``doclang`` PyPI package (``doclang-project/doclang``) is
 validator-only — it exposes ``validate(path)`` and ``ValidationError``
@@ -11,22 +11,52 @@ documents it emits ``/*/*[N]`` wildcards (`spec.md:219-241` recommends a
 default namespace, so this is the common case). The local-name path
 ``/doclang[1]/heading[2]`` is namespace-agnostic and human-readable.
 
-XML parsing is hardened against XXE: external entities, network DTD
-fetches, and DTD loading are disabled.
 """
 
-from pathlib import Path
+from dataclasses import dataclass
+import hashlib
+from io import BytesIO
+from pathlib import PurePosixPath
+import re
+import stat
+from urllib.parse import unquote, urlsplit
+from zipfile import BadZipFile, ZipFile, ZipInfo
 
 from lxml import etree
 
-# Deny external entity expansion / network DTD fetches (XXE).
-_SECURE_PARSER = etree.XMLParser(
-    resolve_entities=False,
-    no_network=True,
-    dtd_validation=False,
-    load_dtd=False,
-    huge_tree=False,
-)
+from .errors import InvalidDoclangError, UnsafeDoclangArchiveError
+
+_MAX_ARCHIVE_MEMBERS = 10_000
+_MAX_MEMBER_BYTES = 128 * 1024 * 1024
+_MAX_TOTAL_BYTES = 512 * 1024 * 1024
+_MAX_COMPRESSION_RATIO = 200
+_CONTENT_TYPES_PART = "[Content_Types].xml"
+_RELATIONSHIPS_PART = "_rels/.rels"
+_DOCUMENT_PART = "document.xml"
+_CONTENT_TYPES_NAMESPACE = "http://schemas.openxmlformats.org/package/2006/content-types"
+_RELATIONSHIPS_NAMESPACE = "http://schemas.openxmlformats.org/package/2006/relationships"
+_DOCUMENT_CONTENT_TYPE = "application/vnd.doclang.document+xml"
+_RELATIONSHIPS_CONTENT_TYPE = "application/vnd.openxmlformats-package.relationships+xml"
+_DOCUMENT_RELATIONSHIP_TYPE = "http://doclang.ai/ns/package/2026/relationships/document"
+_PAGE_IMAGE = re.compile(r"pages/([1-9][0-9]*)\.(png|jpg|jpeg|webp)", re.IGNORECASE)
+
+
+@dataclass(frozen=True, slots=True)
+class DoclangArchiveMember:
+    """Identity of one bounded archive member, without extracted content."""
+
+    name: str
+    sha256: str
+    size_bytes: int
+    compressed_size_bytes: int
+
+
+@dataclass(frozen=True, slots=True)
+class DoclangArchive:
+    """Validated archive container material required by production inventory."""
+
+    document_bytes: bytes
+    members: tuple[DoclangArchiveMember, ...]
 
 
 def local_name(element: etree._Element) -> str:
@@ -62,12 +92,187 @@ def local_path(element: etree._Element) -> str:
     return "".join(reversed(parts))
 
 
-def parse_doclang_xml(path: Path) -> etree._ElementTree:
-    """Parse the ``.dclg`` file at ``path`` and return the ElementTree.
+def load_doclang_archive(data: bytes) -> DoclangArchive:
+    """Validate and read a bounded current-contract DocLang OPC package."""
 
-    Uses a hardened ``XMLParser`` that refuses external entities and
-    network DTD loads. Schema validation is delegated to
-    ``isanlp_rst.doclang._entry`` (``doclang`` package when
-    ``validate_xml=True``).
-    """
-    return etree.parse(path, parser=_SECURE_PARSER)
+    try:
+        archive = ZipFile(BytesIO(data))
+    except BadZipFile as exc:
+        raise InvalidDoclangError("DocLang archive is not a valid ZIP container") from exc
+    with archive:
+        entries = archive.infolist()
+        if len(entries) > _MAX_ARCHIVE_MEMBERS:
+            raise UnsafeDoclangArchiveError("DocLang archive exceeds the member-count limit")
+        seen: set[str] = set()
+        total_bytes = 0
+        identities: list[DoclangArchiveMember] = []
+        package_parts: dict[str, bytes] = {}
+        for entry in entries:
+            _validate_archive_member(entry, seen)
+            total_bytes += entry.file_size
+            if total_bytes > _MAX_TOTAL_BYTES:
+                raise UnsafeDoclangArchiveError("DocLang archive exceeds the total uncompressed-size limit")
+            with archive.open(entry, "r") as stream:
+                member_data = stream.read(_MAX_MEMBER_BYTES + 1)
+            if len(member_data) != entry.file_size or len(member_data) > _MAX_MEMBER_BYTES:
+                raise UnsafeDoclangArchiveError(f"DocLang archive member {entry.filename!r} exceeds its declared limit")
+            identities.append(
+                DoclangArchiveMember(
+                    name=entry.filename,
+                    sha256=hashlib.sha256(member_data).hexdigest(),
+                    size_bytes=len(member_data),
+                    compressed_size_bytes=entry.compress_size,
+                )
+            )
+            if entry.filename in {_CONTENT_TYPES_PART, _RELATIONSHIPS_PART, _DOCUMENT_PART}:
+                package_parts[entry.filename] = member_data
+        missing = {_CONTENT_TYPES_PART, _RELATIONSHIPS_PART, _DOCUMENT_PART} - package_parts.keys()
+        if missing:
+            raise InvalidDoclangError(
+                f"DocLang OPC package is missing required part(s): {', '.join(sorted(missing))}"
+            )
+        document_root = _parse_control_xml(package_parts[_DOCUMENT_PART], part_name=_DOCUMENT_PART)
+        member_names = frozenset(entry.filename for entry in entries if not entry.is_dir())
+        _validate_content_types(package_parts[_CONTENT_TYPES_PART], member_names)
+        _validate_root_relationships(package_parts[_RELATIONSHIPS_PART])
+        _validate_document_references(document_root, member_names)
+        _validate_page_images(document_root, member_names)
+        return DoclangArchive(document_bytes=package_parts[_DOCUMENT_PART], members=tuple(identities))
+
+
+def _parse_control_xml(data: bytes, *, part_name: str) -> etree._Element:
+    parser = etree.XMLParser(
+        resolve_entities=False,
+        no_network=True,
+        load_dtd=False,
+        recover=False,
+        huge_tree=False,
+    )
+    try:
+        return etree.fromstring(data, parser=parser)
+    except etree.XMLSyntaxError as exc:
+        raise InvalidDoclangError(f"DocLang OPC part {part_name!r} is not well-formed XML") from exc
+
+
+def _validate_content_types(data: bytes, member_names: frozenset[str]) -> None:
+    root = _parse_control_xml(data, part_name=_CONTENT_TYPES_PART)
+    if root.tag != f"{{{_CONTENT_TYPES_NAMESPACE}}}Types":
+        raise InvalidDoclangError("DocLang OPC content-types part has the wrong root element")
+    defaults: dict[str, str] = {}
+    overrides: dict[str, str] = {}
+    for child in root:
+        if child.tag == f"{{{_CONTENT_TYPES_NAMESPACE}}}Default":
+            extension = (child.get("Extension") or "").lower()
+            content_type = child.get("ContentType") or ""
+            if not extension or not content_type or extension in defaults:
+                raise InvalidDoclangError("DocLang OPC content-types part has an invalid or duplicate Default")
+            defaults[extension] = content_type
+        elif child.tag == f"{{{_CONTENT_TYPES_NAMESPACE}}}Override":
+            part_name = child.get("PartName") or ""
+            content_type = child.get("ContentType") or ""
+            if not part_name.startswith("/") or not content_type or part_name in overrides:
+                raise InvalidDoclangError("DocLang OPC content-types part has an invalid or duplicate Override")
+            overrides[part_name] = content_type
+        else:
+            raise InvalidDoclangError("DocLang OPC content-types part contains an unsupported element")
+    if overrides.get(f"/{_DOCUMENT_PART}") != _DOCUMENT_CONTENT_TYPE:
+        raise InvalidDoclangError(
+            "DocLang OPC content-types part must declare /document.xml as "
+            f"{_DOCUMENT_CONTENT_TYPE}"
+        )
+    if defaults.get("rels") != _RELATIONSHIPS_CONTENT_TYPE:
+        raise InvalidDoclangError("DocLang OPC content-types part must declare the .rels content type")
+    for member_name in member_names - {_CONTENT_TYPES_PART}:
+        extension = "rels" if member_name.endswith(".rels") else PurePosixPath(member_name).suffix.removeprefix(".").lower()
+        if f"/{member_name}" not in overrides and (not extension or extension not in defaults):
+            raise InvalidDoclangError(f"DocLang OPC part has no declared content type: {member_name!r}")
+
+
+def _validate_root_relationships(data: bytes) -> None:
+    root = _parse_control_xml(data, part_name=_RELATIONSHIPS_PART)
+    if root.tag != f"{{{_RELATIONSHIPS_NAMESPACE}}}Relationships":
+        raise InvalidDoclangError("DocLang OPC root relationships part has the wrong root element")
+    document_relationships: list[etree._Element] = []
+    relationship_ids: set[str] = set()
+    for child in root:
+        if child.tag != f"{{{_RELATIONSHIPS_NAMESPACE}}}Relationship":
+            raise InvalidDoclangError("DocLang OPC root relationships part contains an unsupported element")
+        relationship_id = child.get("Id") or ""
+        if not relationship_id or relationship_id in relationship_ids:
+            raise InvalidDoclangError("DocLang OPC root relationships have a missing or duplicate Id")
+        relationship_ids.add(relationship_id)
+        if child.get("Type") == _DOCUMENT_RELATIONSHIP_TYPE:
+            document_relationships.append(child)
+    if len(document_relationships) != 1:
+        raise InvalidDoclangError("DocLang OPC package must have exactly one main-document relationship")
+    relationship = document_relationships[0]
+    if relationship.get("Target") != _DOCUMENT_PART or relationship.get("TargetMode") not in {None, "Internal"}:
+        raise InvalidDoclangError("DocLang OPC main-document relationship must target internal document.xml")
+
+
+def _validate_document_references(root: etree._Element, member_names: frozenset[str]) -> None:
+    for element in root.iter():
+        if not isinstance(element.tag, str) or local_name(element) != "src":
+            continue
+        uri = element.get("uri")
+        if not uri:
+            continue
+        parsed = urlsplit(uri)
+        if parsed.scheme or parsed.netloc or not parsed.path:
+            continue
+        decoded_path = unquote(parsed.path)
+        path = PurePosixPath(decoded_path)
+        if decoded_path.startswith("/") or "\\" in decoded_path or ".." in path.parts:
+            raise UnsafeDoclangArchiveError(f"unsafe DocLang archive asset URI: {uri!r}")
+        if decoded_path not in member_names:
+            raise InvalidDoclangError(f"DocLang archive references a missing asset part: {decoded_path!r}")
+
+
+def _validate_page_images(root: etree._Element, member_names: frozenset[str]) -> None:
+    page_count = 1 + sum(
+        1
+        for child in root
+        if isinstance(child.tag, str) and local_name(child) == "page_break"
+    )
+    for member_name in member_names:
+        if not member_name.startswith("pages/"):
+            continue
+        match = _PAGE_IMAGE.fullmatch(member_name)
+        if match is None:
+            raise InvalidDoclangError(f"DocLang page image has a non-conforming part name: {member_name!r}")
+        if int(match.group(1)) > page_count:
+            raise InvalidDoclangError(
+                f"DocLang page image {member_name!r} exceeds the document page count {page_count}"
+            )
+
+
+def _validate_archive_member(entry: ZipInfo, seen: set[str]) -> None:
+    name = entry.filename
+    path = PurePosixPath(name)
+    if not name or name.startswith("/") or "\\" in name or ".." in path.parts or path.is_absolute():
+        raise UnsafeDoclangArchiveError(f"unsafe DocLang archive member path: {name!r}")
+    if name in seen:
+        raise UnsafeDoclangArchiveError(f"duplicate DocLang archive member path: {name!r}")
+    seen.add(name)
+    unix_mode = entry.external_attr >> 16
+    if stat.S_ISLNK(unix_mode):
+        raise UnsafeDoclangArchiveError(f"DocLang archive member is a symbolic link: {name!r}")
+    if entry.flag_bits & 0x1:
+        raise UnsafeDoclangArchiveError(f"encrypted DocLang archive member is unsupported: {name!r}")
+    if entry.is_dir():
+        return
+    if entry.file_size > _MAX_MEMBER_BYTES:
+        raise UnsafeDoclangArchiveError(f"DocLang archive member exceeds the size limit: {name!r}")
+    if entry.compress_size == 0 and entry.file_size > 0:
+        raise UnsafeDoclangArchiveError(f"DocLang archive member has contradictory compressed size: {name!r}")
+    if entry.compress_size and entry.file_size / entry.compress_size > _MAX_COMPRESSION_RATIO:
+        raise UnsafeDoclangArchiveError(f"DocLang archive member exceeds the compression-ratio limit: {name!r}")
+
+
+__all__ = [
+    "DoclangArchive",
+    "DoclangArchiveMember",
+    "load_doclang_archive",
+    "local_name",
+    "local_path",
+]

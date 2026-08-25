@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=84,<85", "wheel"]
+requires = ["setuptools>=84,<85"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -31,6 +31,7 @@ dependencies = [
   "networkx>=2.5.1",
   "packaging>=24,<27",
   "pydantic>=2.12,<3",
+  "rfc8785>=0.1.4,<0.2",
   "python-dotenv>=1.2.1,<2",
   "safetensors>=0.8,<0.9",
   "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
@@ -50,10 +51,9 @@ dev = [
   "types-lxml>=2026.2.16",
 ]
 
-# Docling / Markdown format-native entry points only. The core `Parser` and
-# `parse_doclang` do not need these — consumers that only use RST (+ DocLang
-# XML) can install isanlp_rst without this extra and avoid the docling-core
-# dependency chain.
+# Canonical production-source ingest dependencies. Consumers that use only the
+# core `Parser` can install without this extra and avoid the format dependency
+# chain.
 formats = [
   "doclang[schematron-saxon]>=0.7.3,<0.8",
   "docling-core>=2.92,<2.93",
@@ -155,7 +155,7 @@ reportMissingImports = "warning"     # pyright runs against the active env
 reportPrivateImportUsage = "none"
 
 [tool.pixi.feature.offline.tasks]
-build-production = "python -m build --wheel --sdist --outdir dist"
+build-production = "python -m tools.production_boundary.build"
 validate-production-artifacts = "python -m tools.production_boundary --root . --artifact dist/isanlp_rst-4.0.0-py3-none-any.whl --artifact dist/isanlp_rst-4.0.0.tar.gz"
 test = "pytest -m 'not slow' -q"
 test-all = "pytest -q"
@@ -176,6 +176,15 @@ offline-smoke = "python -m offline_workbench.smoke"
 promote-model = "python -m offline_workbench.promotion.promote"
 research-test = "pytest tests/research_harness -q"
 research-lint = "ruff check research_harness tests/research_harness"
+production-ingest-test = "pytest tests/production_ingest -q"
+production-ingest-conformance = "pytest tests/production_ingest -q -k 'conformance or ingest'"
+production-ingest-determinism = "pytest tests/production_ingest/test_determinism.py tests/production_ingest/test_cache.py -q"
+production-ingest-performance = "pytest tests/production_ingest/test_performance.py -q"
+production-ingest-public-api = "pytest tests/production_ingest/test_public_api.py -q"
+production-ingest-clean-install = "python -m tools.production_ingest clean-install"
+production-ingest-freeze = "python -m tools.production_ingest freeze"
+production-ingest-candidate = "python -m tools.production_ingest candidate"
+production-ingest-assess = "python -m tools.production_ingest assess"
 
 [tool.pixi.environments]
 production = { features = ["production"], no-default-feature = true }

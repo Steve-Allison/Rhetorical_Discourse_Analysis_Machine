@@ -1,0 +1,511 @@
+{
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 74,
+      "inventory_count": 74,
+      "node_count": 147,
+      "output_file": "gum-edus-01.json",
+      "prepared_digest": "c14cf18dc6ac10b5ee0bed9d7f20c6606c7b1cba71fdb3138d67663a8a277b80",
+      "result_digest": "8e687d0b20654e646c7e9b873caf7dda151717a28721afd12e09be6513d28e6d",
+      "source_form": "edus",
+      "source_id": "gum-edus-01"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 110,
+      "inventory_count": 110,
+      "node_count": 219,
+      "output_file": "gum-edus-02.json",
+      "prepared_digest": "c0650fce75995dbb908611a870d4ed73fad0a106bc0b67eb490c35425155c951",
+      "result_digest": "dd1b2918223384ed1320c8932ede329e29997a4c7e07b4c47d4f80ab6ee3b254",
+      "source_form": "edus",
+      "source_id": "gum-edus-02"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 91,
+      "inventory_count": 91,
+      "node_count": 181,
+      "output_file": "gum-edus-03.json",
+      "prepared_digest": "7abce1ec10cc9125f0da9b30e36ac25a6afd99fcb9a9fa3f1f160482573a85c3",
+      "result_digest": "e782860cf1424e29361f5dfd7783e17bf34f2f81737e725db26bea300ea6018e",
+      "source_form": "edus",
+      "source_id": "gum-edus-03"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 71,
+      "inventory_count": 71,
+      "node_count": 141,
+      "output_file": "gum-edus-04.json",
+      "prepared_digest": "1c1d4432c5aa35037d5d228e6c59e3b87c3aa39425c53efb177998decadc9482",
+      "result_digest": "fe8ab401044b84937cb6c828e5316058f7e96091038b27fda9a639c9998cf0ad",
+      "source_form": "edus",
+      "source_id": "gum-edus-04"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 85,
+      "inventory_count": 85,
+      "node_count": 169,
+      "output_file": "gum-edus-05.json",
+      "prepared_digest": "e58491116f8acffd3ef141d9f77edc763665c0ad47d8105799a3a151645e4886",
+      "result_digest": "3f49ded3918b854949088391d014176b26f24ab9caaf4687aebd6db9f0f8e10d",
+      "source_form": "edus",
+      "source_id": "gum-edus-05"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 85,
+      "inventory_count": 85,
+      "node_count": 169,
+      "output_file": "gum-edus-06.json",
+      "prepared_digest": "452418d3f60f70110a6f8afe079e9d46d60be0a2a8284e07a4777685e0d74d11",
+      "result_digest": "5100b9e1c026a350269682e09cdf31230793de043db6bb04d1f4b4efa9311bc9",
+      "source_form": "edus",
+      "source_id": "gum-edus-06"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 124,
+      "inventory_count": 124,
+      "node_count": 247,
+      "output_file": "gum-edus-07.json",
+      "prepared_digest": "a85c261ff14df7f3bcd5a948c047b5ce42843c7f8c67e127d9766238eeedcf7b",
+      "result_digest": "a5f0eac907af1c9f844e1001c8722d2bd4fce3fe3b59e733a94d0c83a480e11e",
+      "source_form": "edus",
+      "source_id": "gum-edus-07"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 76,
+      "inventory_count": 76,
+      "node_count": 151,
+      "output_file": "gum-edus-08.json",
+      "prepared_digest": "411609375110e032a5778f084d14f6c30a19c70646a4dd84552163b41c53ae9f",
+      "result_digest": "fef2ac65cce0ff6fed3b3371b663f6d0bf6ee351ca6b9379e974d090dc0ad3f7",
+      "source_form": "edus",
+      "source_id": "gum-edus-08"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 127,
+      "inventory_count": 127,
+      "node_count": 253,
+      "output_file": "gum-edus-09.json",
+      "prepared_digest": "8649ec5b787475ac30953286f10be093616207c266eaf877f6210f9b3ce20b2f",
+      "result_digest": "e4405b97cb695539570a81d343a5a738d6de502c671b6e0a4bf65e3ea558d078",
+      "source_form": "edus",
+      "source_id": "gum-edus-09"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "cfb5390fdf94319c086b3e2afb459172b36dbc86a30b297b60b1eb3546da2359",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 85,
+      "inventory_count": 85,
+      "node_count": 169,
+      "output_file": "gum-edus-10.json",
+      "prepared_digest": "96441ee30f52966bd817c2ac92283eedbfa07c335c032d8013f3d785309873a2",
+      "result_digest": "887697dd21532a769f957f4f139d3d73e1a4623b3cd178e20c05c56accb49e7c",
+      "source_form": "edus",
+      "source_id": "gum-edus-10"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "970c42896b7bb403709a732be1a474fe2d28fef05995d84eb4c8195c5170f114",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 1,
+      "inventory_count": 1,
+      "node_count": 147,
+      "output_file": "gum-text-01.json",
+      "prepared_digest": "a29b19adf71579bdeb0c1521b73ecd09ffdad274a4ac5382138fd85bd7ec8491",
+      "result_digest": "a83d3e7965b50289945b31d153e4a1914265e6d554368c2b2f2aaee1104cb0b9",
+      "source_form": "text",
+      "source_id": "gum-text-01"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "970c42896b7bb403709a732be1a474fe2d28fef05995d84eb4c8195c5170f114",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 1,
+      "inventory_count": 1,
+      "node_count": 219,
+      "output_file": "gum-text-02.json",
+      "prepared_digest": "56e580dd0cb0545d3ee2630702b1c4a3c025ca762374bb56721eac1e460e0d0e",
+      "result_digest": "92dfd4f9ff6293d8388eda2c878efeeba3b01fdf15848d436f093751df3e9c82",
+      "source_form": "text",
+      "source_id": "gum-text-02"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "3750d3b71102ef41c1ce8d1c6fa63b8e99c8b7cbbda7f6adb256101a38e91695",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 38,
+      "inventory_count": 38,
+      "node_count": 39,
+      "output_file": "markdown-gfm.json",
+      "prepared_digest": "f82d44e96a989b9a317688aeac6b68b883ffbddcff130f592e8a333cbb999c19",
+      "result_digest": "364378f15adeaedb48bf29b5871708a881db30e7059ebd53ce194ae80d472896",
+      "source_form": "markdown",
+      "source_id": "markdown-gfm"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "3750d3b71102ef41c1ce8d1c6fa63b8e99c8b7cbbda7f6adb256101a38e91695",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 6,
+      "inventory_count": 6,
+      "node_count": 1,
+      "output_file": "markdown-html.json",
+      "prepared_digest": "c645b464f3783278658472883ffe5301883a2f42b92de051ad3f6d30027bde11",
+      "result_digest": "4c58246bf8c0486f2c429c3b24618ea5ffcc7c9d61c79132ed7c9487f4fd2ccb",
+      "source_form": "markdown",
+      "source_id": "markdown-html"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "3750d3b71102ef41c1ce8d1c6fa63b8e99c8b7cbbda7f6adb256101a38e91695",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 2428,
+      "inventory_count": 2428,
+      "node_count": 2273,
+      "output_file": "markdown-eacl.json",
+      "prepared_digest": "ea8e7866f13946450464a5eb5092483a12c8e4ab80bfd4ad997f513ab9c9c2c5",
+      "result_digest": "b1f1290369867787bf16c9562ee55930483330b63a414fe201bca293bc357eb8",
+      "source_form": "markdown",
+      "source_id": "markdown-eacl"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "3750d3b71102ef41c1ce8d1c6fa63b8e99c8b7cbbda7f6adb256101a38e91695",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 264,
+      "inventory_count": 264,
+      "node_count": 1495,
+      "output_file": "markdown-cxo.json",
+      "prepared_digest": "cb4bdb497389082bf5402032c36e10defb00fd9f0b6277f33b30f0ebf8d923b0",
+      "result_digest": "6f7d7607c0ed4563f3e9d27e716dd967f634a9ebc8f423071ac1363b55d495ff",
+      "source_form": "markdown",
+      "source_id": "markdown-cxo"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "88d70c1aceb12419287b92d6a7092da80ab79b9f28e4c1e17a3e399ef64c0c3f",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 2310,
+      "inventory_count": 2310,
+      "node_count": 1685,
+      "output_file": "docling-eacl.json",
+      "prepared_digest": "0896a2b5758fbc2111cd14c24d7782f988014a2ad46cfa6183b1009f7d7fe8d1",
+      "result_digest": "14b7522d028934ce10a5f0a172a736bcd8f3a931c114836034a9705c554e6c88",
+      "source_form": "docling_json",
+      "source_id": "docling-eacl"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "88d70c1aceb12419287b92d6a7092da80ab79b9f28e4c1e17a3e399ef64c0c3f",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 173,
+      "inventory_count": 173,
+      "node_count": 209,
+      "output_file": "docling-cxo.json",
+      "prepared_digest": "4c39870ee5dbd4fc2373a4c254fd59e31674ade1e4c0dd79b354c40f3a34b245",
+      "result_digest": "7c1dbc9dbff9b9ce85b01e04e1d9f8dc7968d97c9d45ef50289d4416645d8ddd",
+      "source_form": "docling_json",
+      "source_id": "docling-cxo"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "88d70c1aceb12419287b92d6a7092da80ab79b9f28e4c1e17a3e399ef64c0c3f",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 222,
+      "inventory_count": 222,
+      "node_count": 183,
+      "output_file": "docling-sebl.json",
+      "prepared_digest": "c0553319d374f00fe42910d2f9cbb8d9e0ad71aae9be00d51a9033c0f227ab1f",
+      "result_digest": "4df840b6782213344b096ea7488a52607043f880076e26f13f0bf79f74f27587",
+      "source_form": "docling_json",
+      "source_id": "docling-sebl"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "f28cefd3066e83a9e7af1e33f6fea191d90085dd59255b4c625c7d9704603a9a",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 400,
+      "inventory_count": 400,
+      "node_count": 23,
+      "output_file": "doclang-sebl.json",
+      "prepared_digest": "a0622c3a9ab64d53d64830e318b8e019ccff16667db557fea4ae908c3b44501b",
+      "result_digest": "54fcc149b2bdf03285c9a46635488a3361e0d0a99878e2050544662997206759",
+      "source_form": "doclang_xml",
+      "source_id": "doclang-sebl"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "analysed",
+      "contract_digest": "f28cefd3066e83a9e7af1e33f6fea191d90085dd59255b4c625c7d9704603a9a",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 36,
+      "inventory_count": 36,
+      "node_count": 1793,
+      "output_file": "doclang-speakers.json",
+      "prepared_digest": "3793e0e8720f5a5cc76e356be8fe772a50e81ff0c98cdcacb86dbf25e377ebf5",
+      "result_digest": "74ed8f4b300682b620307a63374b0db69738572f583fffb601f253cb1020d19e",
+      "source_form": "doclang_xml",
+      "source_id": "doclang-speakers"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "empty_primary_discourse",
+      "contract_digest": "b5f366212ed8aa9dd5b6067bbd2b19c421684c91f70e57ad3a085fb685818581",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 9,
+      "inventory_count": 9,
+      "node_count": 0,
+      "output_file": "doclang-archive-table.json",
+      "prepared_digest": "3ff1034d4eec2995dfaaf47e7dca90c0dbe6c290c4474392c93ffbb063765462",
+      "result_digest": "71f14f330aaa815118f91df73ff783eb59a1a8c9cdddba77df419a6c0dd8825b",
+      "source_form": "doclang_archive",
+      "source_id": "doclang-archive-table"
+    },
+    {
+      "analysis_anchor_coverage": 1.0,
+      "analysis_status": "empty_primary_discourse",
+      "contract_digest": "204b0520f9eb640c21505b39387dd9c81f48979755489349e0ba63bc41da55e9",
+      "determinism": {
+        "cache_statuses": [
+          "miss"
+        ],
+        "cached_runs": 0,
+        "runs": 1,
+        "uncached_runs": 1,
+        "unique_semantic_digests": 1
+      },
+      "disposition_count": 9,
+      "inventory_count": 9,
+      "node_count": 0,
+      "output_file": "doclang-archive-namespace.json",
+      "prepared_digest": "3ff1034d4eec2995dfaaf47e7dca90c0dbe6c290c4474392c93ffbb063765462",
+      "result_digest": "a7f0506ba4a09d4ad98606f438f8bd831f9211ae0e17ce1a893eed14f6e2608a",
+      "source_form": "doclang_archive",
+      "source_id": "doclang-archive-namespace"
+    }
+  ]
+}

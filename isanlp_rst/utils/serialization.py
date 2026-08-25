@@ -1,7 +1,7 @@
 """JSON-serialisation helpers for the RST trees produced by ``isanlp_rst``.
 
-``Parser`` and the format-native entry points return
-``isanlp.annotation_rst.DiscourseUnit`` trees. Consumers often need a
+The low-level ``Parser`` call interface returns
+``isanlp.annotation_rst.DiscourseUnit`` trees. Consumers sometimes need a
 JSON-compatible representation to cache, transmit, or visualise without holding
 the live object graph. These helpers are pure and depend only on the
 already-core ``isanlp`` runtime — no extra dependencies.

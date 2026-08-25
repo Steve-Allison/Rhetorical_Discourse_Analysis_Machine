@@ -1,55 +1,7 @@
-"""DocLang-native RST parsing for isanlp_rst.
+"""Private DocLang validation helpers for :mod:`isanlp_rst.ingest`.
 
-Public API:
-
-- ``parse_doclang(path, *, parser=None, ...)`` — entry point.
-- ``DoclangRstResult``, ``Boundary``, ``RstRelation``, ``RstEdu``,
-  ``TableAnalysis`` — result types.
-- ``HarvestResult``, ``HarvestSpan``, ``TableHarvest`` — harvest
-  intermediates.
-- ``DoclangRstError`` and subclasses — error hierarchy.
-- ``local_path`` — the canonical local-name XPath generator used as the
-  addressing scheme, verified against the pinned upstream fixture manifest.
+Source analysis is exposed only through the canonical ``isanlp_rst.ingest``
+API. This package is not an alternative ingest surface.
 """
 
-from ._entry import parse_doclang
-from .errors import (
-    DoclangRstError,
-    EmptyDoclangError,
-    EmptyHarvestError,
-    InputTooLargeError,
-    InvalidDoclangError,
-    UnsupportedDoclangError,
-)
-from .eligibility import DoclangEligibility
-from .loader import local_path
-from .schema import (
-    Boundary,
-    DoclangRstResult,
-    HarvestResult,
-    HarvestSpan,
-    RstEdu,
-    RstRelation,
-    TableAnalysis,
-    TableHarvest,
-)
-
-__all__ = [
-    "Boundary",
-    "DoclangRstError",
-    "DoclangRstResult",
-    "DoclangEligibility",
-    "EmptyDoclangError",
-    "EmptyHarvestError",
-    "HarvestResult",
-    "HarvestSpan",
-    "InputTooLargeError",
-    "InvalidDoclangError",
-    "RstEdu",
-    "RstRelation",
-    "TableAnalysis",
-    "TableHarvest",
-    "UnsupportedDoclangError",
-    "local_path",
-    "parse_doclang",
-]
+__all__: list[str] = []

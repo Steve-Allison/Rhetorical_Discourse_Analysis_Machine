@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0.0",
+  "retrieved_at": "2026-08-25T18:32:10Z",
+  "authority": {
+    "distribution": "docling-core",
+    "latest_version": "2.92.0",
+    "release_date": "2026-08-19",
+    "release_commit": "bfbeb795e81b7de9be9d1908389dd9b93d770d31",
+    "pypi_url": "https://pypi.org/project/docling-core/",
+    "source_url": "https://github.com/docling-project/docling-core/tree/bfbeb795e81b7de9be9d1908389dd9b93d770d31"
+  },
+  "local_contract": {
+    "pyproject_specifier": ">=2.92,<2.93",
+    "locked_version": "2.92.0",
+    "current": true,
+    "fixture_count": 4,
+    "fixture_schema_version": "1.10.0",
+    "all_fixtures_load": true,
+    "all_fixtures_traverse": true
+  },
+  "verified_api": {
+    "load_from_json": "(filename: str | pathlib.Path) -> DoclingDocument",
+    "iterate_items": "root, with_groups, traverse_pictures, page_no, included_content_layers, _level",
+    "content_layers": [
+      "body",
+      "furniture",
+      "background",
+      "invisible",
+      "notes"
+    ],
+    "production_profile": {
+      "with_groups": true,
+      "traverse_pictures": true,
+      "included_content_layers": "all current ContentLayer members"
+    }
+  },
+  "verification": {
+    "test": "tests/production_ingest/test_upstream_conformance.py::test_every_docling_specimen_loads_and_traverses_the_current_complete_api",
+    "status": "passed",
+    "protected_text_present": false
+  }
+}

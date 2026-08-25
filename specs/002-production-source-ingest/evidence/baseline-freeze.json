@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0.0",
+  "frozen_at": "2026-08-25T18:58:43.354240Z",
+  "gold_manifest_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "expectation_digest": "ff8828f3e92f72cbc70f9e8e9c3b6a1094e2e19685b9b53c5c66641f59ec57e1",
+  "baseline_commit": "b20a1d41c395b17fab3e9303d66ff9585820311b",
+  "baseline_wheel_sha256": "0f1fe3454b327fea6beb4a3fbbcc7976db2fd7f6cbbcb29119dbc945af6706ce",
+  "model_release_id": "gumrrg-eb1d5745f3a1",
+  "model_digest": "fb83842f536616ce4c705b496e00c06e8eec77dc88758610c279915fa54e1064",
+  "scorer_digest": "f4b2475560030b34647680608b32d419ebbcfe861e9089ad6c16305e11d03d6f",
+  "pixi_lock_sha256": "9cbaf3c187ccddd7ec6481fc0a2874fa601b891cbe9b46ed178ee1ac6042973a",
+  "machine": [
+    [
+      "mac_ver",
+      "26.6.2"
+    ],
+    [
+      "machine",
+      "arm64"
+    ],
+    [
+      "platform",
+      "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+    ],
+    [
+      "processor",
+      "arm"
+    ],
+    [
+      "python",
+      "3.14.7"
+    ]
+  ],
+  "source_results": [
+    [
+      "doclang-archive-namespace",
+      "unsupported:doclang_archive"
+    ],
+    [
+      "doclang-archive-table",
+      "unsupported:doclang_archive"
+    ],
+    [
+      "doclang-sebl",
+      "prepared_sha256:44827d9f7c50c93cf232947039465f14366a4f2786ccab2fd6e9c490b31eebed"
+    ],
+    [
+      "doclang-speakers",
+      "prepared_sha256:80e7986930a18e7ba2e4b679b1a76270c38459d875f2d14f0c4b26d2b10c194f"
+    ],
+    [
+      "docling-cxo",
+      "prepared_sha256:34df7ae86c9a9188be5a195d796119b113f65add528cb5bdbf6dc4510f4fed13"
+    ],
+    [
+      "docling-eacl",
+      "prepared_sha256:d05dabfff0445daf67c6c40e62944a6010b52ec1aacd5c4181f2e04e4698b63a"
+    ],
+    [
+      "docling-sebl",
+      "prepared_sha256:b07890b3c53019c311913dda421bc7663ff218e91f32a8f316f0e7ed4e9c862c"
+    ],
+    [
+      "gum-edus-01",
+      "prepared_sha256:cec0a4d5848eee4faec81346d7859d843d82f07cd99f4d4a22aaf43e883f326f"
+    ],
+    [
+      "gum-edus-02",
+      "prepared_sha256:c6f1183b2023428814b9f5e3ba4c0fea864a26f160d6da003f31890ecb9150c6"
+    ],
+    [
+      "gum-edus-03",
+      "prepared_sha256:220ea539c337db70f6747e8fe3eb001e9a54454dd70fc9a9e4375c5b77728523"
+    ],
+    [
+      "gum-edus-04",
+      "prepared_sha256:d70449ee22bc20fc574bca507e627915a2a8e0d647bd896a9c932aabba232b94"
+    ],
+    [
+      "gum-edus-05",
+      "prepared_sha256:deb95e99ee2e343462b157d9558c83c9860a15eb1b72964d5148849cfabe3e8a"
+    ],
+    [
+      "gum-edus-06",
+      "prepared_sha256:17baa31d19e4065d75ee81075ed6023260324dc7980da2ee5103ccd4047e104d"
+    ],
+    [
+      "gum-edus-07",
+      "prepared_sha256:335a360e2452ef9006c74b9a1dcdf40b493755fabe1a5cd5cf057e3870de848c"
+    ],
+    [
+      "gum-edus-08",
+      "prepared_sha256:5ae8ece912ec8b7e4ff0ec2f8b3f369263bc34ebe54660e937ab3c20e30aba0d"
+    ],
+    [
+      "gum-edus-09",
+      "prepared_sha256:5f2e0afcb72d907afd41c2bf1fa737bdc89a681fbc06c12856115269a5bf2731"
+    ],
+    [
+      "gum-edus-10",
+      "prepared_sha256:42bffc9683f56bc173ba08b78ceae046bd97ea8ec74e485ccb0e0878f98f59ec"
+    ],
+    [
+      "gum-text-01",
+      "prepared_sha256:cec0a4d5848eee4faec81346d7859d843d82f07cd99f4d4a22aaf43e883f326f"
+    ],
+    [
+      "gum-text-02",
+      "prepared_sha256:c6f1183b2023428814b9f5e3ba4c0fea864a26f160d6da003f31890ecb9150c6"
+    ],
+    [
+      "markdown-cxo",
+      "prepared_sha256:1f563845a3533b1069eb60c4d0c60a77526ad9a611caa3f68eb58abdc7a5a57b"
+    ],
+    [
+      "markdown-eacl",
+      "prepared_sha256:ded0eabcf33a359debe285e1d9dd15037d04edf9fd35899fa35f6ac540705661"
+    ],
+    [
+      "markdown-gfm",
+      "prepared_sha256:3f05ba7aeb8dce77d8693fce37fd9b23620757474fa0e87a36ea8c0081aa91ea"
+    ],
+    [
+      "markdown-html",
+      "prepared_sha256:72f77675d8ec08baab36409f8544e49c9a18317f6d54c31e9df554c19bf04b7d"
+    ]
+  ]
+}

@@ -4,8 +4,22 @@ from collections.abc import Iterable
 
 from lxml import etree
 
-from .eligibility import METADATA_HEAD_ELEMENTS
 from .loader import local_name
+
+_METADATA_HEAD_ELEMENTS = frozenset(
+    {
+        "caption",
+        "custom",
+        "description",
+        "href",
+        "label",
+        "layer",
+        "location",
+        "summary",
+        "thread",
+        "xref",
+    }
+)
 
 
 def iter_body_text(
@@ -29,7 +43,7 @@ def iter_body_text(
                 yield child.tail
             continue
         child_name = local_name(child)
-        if child_name not in METADATA_HEAD_ELEMENTS and child_name not in excluded_subtrees:
+        if child_name not in _METADATA_HEAD_ELEMENTS and child_name not in excluded_subtrees:
             yield from iter_body_text(child, excluded_subtrees=excluded_subtrees)
         if child.tail:
             yield child.tail
@@ -44,7 +58,7 @@ def iter_sibling_body_text(
 
     if (
         isinstance(element.tag, str)
-        and local_name(element) not in METADATA_HEAD_ELEMENTS
+        and local_name(element) not in _METADATA_HEAD_ELEMENTS
         and local_name(element) not in excluded_subtrees
     ):
         yield from iter_body_text(element, excluded_subtrees=excluded_subtrees)

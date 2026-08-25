@@ -8,46 +8,12 @@ import sys
 from typing import Any
 import warnings
 
-from dataclasses import dataclass
-
-
 _TEXT = "Because it rained, the match stopped. The crowd left."
 _EDUS = ("Because it rained, the match stopped.", "The crowd left.")
 _MODELS = (
     ("gumrrg", {}),
     ("unirst", {"relinventory": "eng.erst.gum"}),
 )
-
-
-@dataclass
-class _FormatNode:
-    start: int
-    end: int
-    left: "_FormatNode | None" = None
-    right: "_FormatNode | None" = None
-    relation: str = ""
-    nuclearity: str = ""
-
-
-class _FormatParser:
-    hf_model_name = "parity/stub"
-    hf_model_version = "gumrrg"
-    relinventory = None
-
-    def __call__(self, text: str) -> dict[str, list[_FormatNode]]:
-        midpoint = max(1, len(text) // 2)
-        return {
-            "rst": [
-                _FormatNode(
-                    0,
-                    len(text),
-                    _FormatNode(0, midpoint),
-                    _FormatNode(midpoint, len(text)),
-                    "elaboration",
-                    "NS",
-                )
-            ]
-        }
 
 
 def _sha256_json(value: object) -> str:
@@ -97,16 +63,7 @@ def _analysis_payload(parser: Any, model: str) -> tuple[str, str, dict[str, obje
     return hashlib.sha256(normalized.encode()).hexdigest(), _sha256_json(roundtrip), provenance
 
 
-def _format_payload(markdown: Path) -> dict[str, object]:
-    from isanlp_rst.markdown import parse_markdown
-
-    result = parse_markdown(markdown, parser=_FormatParser()).to_dict()
-    result["tool_version"] = "<normalized>"
-    result["source_revision"] = "<normalized>"
-    return result
-
-
-def run(device: str, markdown: Path | None = None) -> dict[str, object]:
+def run(device: str) -> dict[str, object]:
     from isanlp_rst import Parser
 
     cases: dict[str, object] = {}
@@ -147,13 +104,12 @@ def run(device: str, markdown: Path | None = None) -> dict[str, object]:
         "requested_device": device,
         "cases": cases,
         "deterministic_failure": deterministic_failure,
-        "representative_optional_format": _format_payload(markdown) if markdown is not None else None,
     }
 
 
 def _compare(expected: dict[str, object], actual: dict[str, object]) -> tuple[str, ...]:
     differences: list[str] = []
-    for field in ("schema_version", "input", "presegmented_edus", "requested_device", "deterministic_failure", "representative_optional_format"):
+    for field in ("schema_version", "input", "presegmented_edus", "requested_device", "deterministic_failure"):
         if expected.get(field) != actual.get(field):
             differences.append(field)
     expected_cases = expected.get("cases")
@@ -171,12 +127,11 @@ def main() -> int:
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--source-root", type=Path)
     parser.add_argument("--compare", type=Path)
-    parser.add_argument("--markdown", type=Path)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     if args.source_root is not None:
         sys.path.insert(0, str(args.source_root.resolve()))
-    result = run(args.device, args.markdown)
+    result = run(args.device)
     if args.output is not None:
         envelope: dict[str, object] = {"schema_version": "isanlp_rst_production_parity_baseline/v2", "devices": {}}
         if args.output.is_file():

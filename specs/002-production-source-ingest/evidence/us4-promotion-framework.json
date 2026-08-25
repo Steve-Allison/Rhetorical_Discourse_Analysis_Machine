@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_digest": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+  "authority_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "gate": "us4_fail_closed_promotion_framework",
+  "passed": true,
+  "counts": {"focused_tests": 15, "gold_sources": 23, "rst_gold_sources": 12, "inspected_sources": 23, "failed_final_gates": 0},
+  "inspection": {"all_sources_inspected": true, "unresolved_anomalies": 0, "waiver_surface_present": false, "protected_text_present": false},
+  "execution": {"candidate_commit": "277ac08318b7c06f8544e0f51c0710b878190506", "model_release_id": "gumrrg-eb1d5745f3a1", "model_digest": "fb83842f536616ce4c705b496e00c06e8eec77dc88758610c279915fa54e1064", "promotion_report": "promotion-report.json"}
+}

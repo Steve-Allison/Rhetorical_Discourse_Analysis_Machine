@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "edge_count": 146,
+      "input_mode": "exact_presegmented_edus",
+      "node_count": 147,
+      "output_file": "gum-edus-01.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-01"
+    },
+    {
+      "edge_count": 218,
+      "input_mode": "exact_presegmented_edus",
+      "node_count": 219,
+      "output_file": "gum-edus-02.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-02"
+    },
+    {
+      "edge_count": 180,
+      "input_mode": "exact_presegmented_edus",
+      "node_count": 181,
+      "output_file": "gum-edus-03.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-03"
+    },
+    {
+      "edge_count": 146,
+      "input_mode": "raw_text_after_historical_presegmented_alignment_failure",
+      "node_count": 147,
+      "output_file": "gum-edus-04.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-04"
+    },
+    {
+      "edge_count": 168,
+      "input_mode": "exact_presegmented_edus",
+      "node_count": 169,
+      "output_file": "gum-edus-05.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-05"
+    },
+    {
+      "edge_count": 168,
+      "input_mode": "exact_presegmented_edus",
+      "node_count": 169,
+      "output_file": "gum-edus-06.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-06"
+    },
+    {
+      "edge_count": 246,
+      "input_mode": "exact_presegmented_edus",
+      "node_count": 247,
+      "output_file": "gum-edus-07.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-07"
+    },
+    {
+      "edge_count": 150,
+      "input_mode": "exact_presegmented_edus",
+      "node_count": 151,
+      "output_file": "gum-edus-08.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-08"
+    },
+    {
+      "edge_count": 252,
+      "input_mode": "exact_presegmented_edus",
+      "node_count": 253,
+      "output_file": "gum-edus-09.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-09"
+    },
+    {
+      "edge_count": 168,
+      "input_mode": "exact_presegmented_edus",
+      "node_count": 169,
+      "output_file": "gum-edus-10.json",
+      "source_form": "edus",
+      "source_id": "gum-edus-10"
+    },
+    {
+      "edge_count": 146,
+      "input_mode": "raw_text",
+      "node_count": 147,
+      "output_file": "gum-text-01.json",
+      "source_form": "text",
+      "source_id": "gum-text-01"
+    },
+    {
+      "edge_count": 218,
+      "input_mode": "raw_text",
+      "node_count": 219,
+      "output_file": "gum-text-02.json",
+      "source_form": "text",
+      "source_id": "gum-text-02"
+    }
+  ]
+}

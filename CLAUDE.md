@@ -52,25 +52,22 @@ CI (`.github/workflows/ci.yml`) runs on macOS arm64 with the pixi lock (**Python
 
 ## Active roadmap
 
-**Shipped:** three first-class format-native entry points sit alongside the raw `Parser` API:
+Production source ingest has one public surface: `isanlp_rst.ingest`. `ProductionIngestor.prepare()` and `.analyse()`, plus the convenience `analyse_source()`, accept five real-world source forms: plain text, Markdown, Docling JSON, DocLang XML, and DocLang archives. The old format-specific parsing functions and result envelopes were removed rather than deprecated; no compatibility route remains.
 
-- `isanlp_rst.docling.parse_docling(path)` — Docling JSON in → RST relations indexed by `self_ref`. Plans: [proposal](docs/plans/2026-05-15-docling-native-rst.md), [build](docs/plans/2026-05-15-docling-native-rst-build.md). Walkthrough: [`docs/examples/docling-native.md`](docs/examples/docling-native.md).
-- `isanlp_rst.doclang.parse_doclang(path)` — DocLang XML (namespace `https://www.doclang.ai/ns/v0`) in → RST relations indexed by local-name XPath, with `<thread>` aggregation. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](docs/plans/2026-05-15-doclang-native-rst.md). Walkthrough: [`docs/examples/doclang-native.md`](docs/examples/doclang-native.md).
-- `isanlp_rst.markdown.parse_markdown(path)` — CommonMark / GFM markdown in → RST relations indexed by `#/blocks/N`. Plan: [`docs/plans/2026-06-12-markdown-native-rst.md`](docs/plans/2026-06-12-markdown-native-rst.md). Walkthrough: [`docs/examples/markdown-native.md`](docs/examples/markdown-native.md).
+The optional **`formats` extra** supplies `docling-core`, `doclang`, `markdown-it-py`, and `mdit-py-plugins`: `pip install isanlp_rst[formats]`. Core parser consumers avoid that dependency chain. `pixi install` includes `formats`; keep these dependencies outside `[project.dependencies]`.
 
-These three entry points require the optional **`formats` extra** (`docling-core`, `markdown-it-py`, `mdit-py-plugins`; `doclang` rides in transitively) — `pip install isanlp_rst[formats]`. The core `Parser` does **not** import them, so library consumers that only need RST parsing install without the extra and avoid the docling-core dependency chain. `pixi install` includes `formats`. Do not move these back into `[project.dependencies]`.
+Canonical ingest inventories source content before applying the explicit `AUTHORED_PROSE_V1` relevance policy. Authored prose reaches the RST parser; tables, code, machine descriptions, furniture, and other non-prose remain traceable side channels unless a future named policy explicitly changes their role. Every decision is represented in the preparation receipt, source anchors survive into the analysis, long or structured material uses the governed subdivision/stitching path, and persistent cache identity includes the complete analytical pipeline fingerprint.
 
-All three honour the cross-format "analyse everything" directive **two-level** (2026-06-12, Option 2): prose enters the document tree; each table gets its own RST mini-parse in `result.table_analyses`, so table discourse never distorts the document tree. All three expose `dtype=`, `device="auto"` (CPU fallback), and an optional `cache_dir=` on-disk result cache.
+Format code beneath `isanlp_rst.doclang` and `isanlp_rst.markdown` is private decoding support for the canonical service. Docling JSON is loaded directly with current `docling-core`. There is no independent format mapper, result schema, cache, or public entry point.
 
-Shared machinery lives in `isanlp_rst/_rst_common/`: `SpanIndex` (bisect overlap), iterative `flatten_tree` (no RecursionError on degenerate joint-chains), `resolve_tool_version` / `resolve_inventory`, and the result-cache helpers. Format mappers and `_entry` modules are thin bindings over it. (Device resolution moved to `resolve_device` in [`base_predictor.py`](isanlp_rst/base_predictor.py) — `_rst_common` no longer carries a device helper.)
-
-Quality measurement: `pixi run rst-diag <paths>` ([`scripts/rst_diag.py`](scripts/rst_diag.py)) — per-document proxy metrics (joint ratio, tree skew, cross-boundary ratio, note ratio) across all three formats. Use it to A/B any harvest-policy change. Hierarchical long-input parsing remains a spike gated on rst-diag evidence of degradation at length.
+Quality measurement: `pixi run rst-diag <paths>` ([`scripts/rst_diag.py`](scripts/rst_diag.py)) — preparation coverage, content-class decisions, anchor integrity, tree structure, relation distribution, subdivision, and timing across the canonical source forms.
 
 Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks verified facts (spec citations, fixture evidence) and open design questions.
 
 ## Files worth knowing
 
 - [`isanlp_rst/parser.py`](isanlp_rst/parser.py) — public entry point, dispatches to predictor families.
+- [`isanlp_rst/ingest/`](isanlp_rst/ingest/) — sole production source inventory, preparation, analysis, receipt, subdivision, and cache API.
 - [`isanlp_rst/base_predictor.py`](isanlp_rst/base_predictor.py) — shared tokenisation, batching, offset remapping, MPS-safe init.
 - [`isanlp_rst/contracts/`](isanlp_rst/contracts/) — typed contracts: `RstAnalysis`, `RstDocument`, `SecondaryRelationEdge`, `DiscourseSignal`, envelope serializations.
 - [`isanlp_rst/erst/`](isanlp_rst/erst/) — Extended RST (eRST): RS4 reader/writer, typed signals,
@@ -82,10 +79,8 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 - [`isanlp_rst/dmrst_parser/predictor.py`](isanlp_rst/dmrst_parser/predictor.py) — DMRST inference path.
 - [`isanlp_rst/universal_parser/predictor.py`](isanlp_rst/universal_parser/predictor.py) — UniRST inference path.
 - [`isanlp_rst/__init__.py`](isanlp_rst/__init__.py) — viewer convenience helpers (`render`, `to_html`, `to_png`, `to_pdf`).
-- [`isanlp_rst/docling/`](isanlp_rst/docling/) — `parse_docling` entry point; `harvester`, `boundaries`, `mapper` flow.
-- [`isanlp_rst/doclang/`](isanlp_rst/doclang/) — `parse_doclang` entry point; `loader` (XPath generator), `harvester`, `boundaries`, `mapper` flow.
-- [`isanlp_rst/markdown/`](isanlp_rst/markdown/) — `parse_markdown` entry point; `loader` (markdown-it-py + front-matter), `harvester`, `boundaries`, `mapper` flow.
-- [`isanlp_rst/_rst_common/`](isanlp_rst/_rst_common/) — shared overlap-rule maths + nuclearity split, format-agnostic.
+- [`isanlp_rst/doclang/`](isanlp_rst/doclang/) — private DocLang XML/archive decoding helpers used by canonical ingest.
+- [`isanlp_rst/markdown/`](isanlp_rst/markdown/) — private Markdown decoding helper used by canonical ingest.
 - [`isanlp_rst/utils/serialization.py`](isanlp_rst/utils/serialization.py) — `tree_to_dict` / `tree_from_dict`: a `DiscourseUnit` tree ↔ nested JSON dict (core, zero-dep). For a validated typed model (`RstNode`), [`serialization_pydantic.py`](isanlp_rst/utils/serialization_pydantic.py) — requires the `pydantic` extra (`pip install isanlp_rst[pydantic]`), kept off the core import path so dependency-light consumers don't inherit pydantic.
 - [`tests/test_integration.py`](tests/test_integration.py) — end-to-end model parses; dtype-equivalence suite.
 - [`docs/plans/`](docs/plans/) — design plans (proposals + build plans).

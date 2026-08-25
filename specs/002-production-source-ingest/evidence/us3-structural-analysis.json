@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_digest": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+  "authority_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "gate": "us3_structure_aware_analysis",
+  "passed": true,
+  "counts": {"focused_tests": 6, "cpu_gold_sources": 23, "mps_gold_sources": 23, "cpu_nodes": 9913, "mps_nodes": 9913, "cpu_mps_result_digest_mismatches": 0, "released_models_exercised_on_each_device": 5},
+  "metrics": {"minimum_analysis_anchor_coverage": 1.0, "measured_structural_sources": 6, "candidate_cross_boundary_violations": 0.0},
+  "execution": {"cpu_device": "cpu", "mps_device": "mps", "candidate_commit": "277ac08318b7c06f8544e0f51c0710b878190506"}
+}

@@ -16,8 +16,8 @@ _PUBLIC_MODULES = (
     "isanlp_rst.model_loading.parser_input",
 )
 _FORMAT_MODULES = (
+    "isanlp_rst.ingest",
     "isanlp_rst.doclang",
-    "isanlp_rst.docling",
     "isanlp_rst.markdown",
 )
 _FORBIDDEN_PREFIXES = ("offline_workbench", "research_harness")
@@ -33,7 +33,7 @@ def _distribution_members() -> tuple[str, ...]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--formats", action="store_true", help="also import optional production format adapters")
+    parser.add_argument("--formats", action="store_true", help="also import canonical ingest and its private format helpers")
     parser.add_argument("--outside", type=Path, help="fail if isanlp_rst resolves beneath this source directory")
     args = parser.parse_args()
 
@@ -70,7 +70,7 @@ def main() -> int:
         json.dumps(
             {
                 "distribution_members": len(members),
-                "format_adapters": args.formats,
+                "canonical_ingest": args.formats,
                 "package_file": str(package_file),
                 "valid": True,
             },

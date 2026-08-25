@@ -1,10 +1,10 @@
 # Feature Specification: World-Class Production Source Ingest
 
-**Feature Branch**: `codex/spec-kit-adoption`
+**Feature Branch**: `codex/002-production-source-ingest`
 
 **Created**: 2026-08-25
 
-**Status**: Draft
+**Status**: Implemented; bounded promotion passed
 
 **Input**: User request to make ingest of real-world source materials used for RST analysis world-class and state of the art, explicitly excluding training content and training/evaluation preparation.
 

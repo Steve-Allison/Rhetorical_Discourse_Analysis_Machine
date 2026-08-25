@@ -1,200 +1,172 @@
-"""RST quality diagnostics over a corpus — no gold annotations required.
+"""RST quality diagnostics over production sources without gold labels.
 
-Parses each source with the matching format-native entry point and emits
-per-document proxy metrics plus a corpus summary:
-
-  - edus / relations        — raw tree size
-  - joint_ratio             — share of relations whose label starts with
-                              joint / same-unit / organization (heuristic
-                              for rhetorically thin output: high = the
-                              parser mostly chained instead of structuring)
-  - tree_skew               — max relation depth / ceil(log2(edus));
-                              ~1 is balanced, >> 1 is a degenerate chain
-  - cross_boundary_ratio    — share of relations spanning > 1 primary
-                              boundary (section / slide / turn / heading /
-                              page / group / document — tables and code
-                              blocks excluded); a spike suggests invented
-                              arcs across unrelated content
-  - note_ratio              — share of relations carrying an overlap
-                              note (lopsided EDU/span alignment)
-  - table_analyses          — count of per-table mini-parses emitted
-
-Usage:
-
-    pixi run rst-diag <paths...>                 # files and/or directories
-    pixi run rst-diag corpus/ --json             # machine-readable
-    pixi run rst-diag doc.md --model-version gumrrg --device auto
-
-Format dispatch by suffix: ``.md`` / ``.markdown`` → parse_markdown;
-``*.docling.json`` → parse_docling; ``*.dclg`` → parse_doclang.
-One ``Parser`` is constructed and injected across all documents.
+Every supported source is routed through :mod:`isanlp_rst.ingest`; this tool
+does not own format-specific preparation policy or result envelopes.
 """
 
 import argparse
+from collections import defaultdict, deque
+from dataclasses import asdict, dataclass
 import json
 import math
-import sys
-from dataclasses import asdict, dataclass
 from pathlib import Path
 from statistics import mean, median
-from typing import Any
+import sys
 
-from isanlp_rst.doclang import parse_doclang
-from isanlp_rst.docling import parse_docling
-from isanlp_rst.markdown import parse_markdown
+from isanlp_rst.contracts import NodeKindEnum
+from isanlp_rst.ingest import (
+    ProductionAnalysisResult,
+    ProductionIngestor,
+    SourceArtifact,
+    SourceForm,
+)
 from isanlp_rst.parser import Parser
 
 _THIN_PREFIXES = ("joint", "same-unit", "same_unit", "organization")
-_SECONDARY_BOUNDARY_KINDS = frozenset({"table", "code_block", "field_region"})
 
 
 @dataclass(frozen=True, slots=True)
 class DocMetrics:
-    """Per-document diagnostic metrics."""
+    """Per-document canonical-ingest diagnostics."""
 
     source: str
-    format: str
+    source_form: str
+    status: str
+    prepared_chars: int
+    prepared_segments: int
     edus: int
     relations: int
     joint_ratio: float
     tree_skew: float
-    cross_boundary_ratio: float
-    note_ratio: float
-    table_analyses: int
+    inventory_coverage: float
+    source_coverage: float
+    prepared_coverage: float
+    anchor_coverage: float
 
 
 def _discover(paths: list[Path]) -> list[Path]:
-    """Expand directories into supported source files, keep files as-is."""
     out: list[Path] = []
-    for p in paths:
-        if p.is_dir():
-            out.extend(sorted(p.rglob("*.md")))
-            out.extend(sorted(p.rglob("*.markdown")))
-            out.extend(sorted(p.rglob("*.docling.json")))
-            out.extend(sorted(p.rglob("*.dclg")))
+    for path in paths:
+        if path.is_dir():
+            for pattern in ("*.md", "*.markdown", "*.docling.json", "*.dclg", "*.dclg.xml", "*.dclx"):
+                out.extend(sorted(path.rglob(pattern)))
         else:
-            out.append(p)
-    return out
+            out.append(path)
+    return list(dict.fromkeys(out))
 
 
-def _format_of(path: Path) -> str:
-    name = path.name
-    if name.endswith(".docling.json"):
-        return "docling"
-    if name.endswith(".dclg"):
-        return "doclang"
-    if path.suffix in (".md", ".markdown"):
-        return "markdown"
-    raise ValueError(f"Unsupported source {path} — expected .md/.markdown, *.docling.json, or *.dclg")
+def _artifact(path: Path) -> SourceArtifact:
+    if path.name.endswith(".docling.json"):
+        return SourceArtifact.from_path(path, source_form=SourceForm.DOCLING_JSON)
+    return SourceArtifact.from_path(path)
 
 
-def _parse(path: Path, fmt: str, parser: Any) -> Any:
-    match fmt:
-        case "markdown":
-            return parse_markdown(path, parser=parser)
-        case "docling":
-            return parse_docling(path, parser=parser)
-        case "doclang":
-            return parse_doclang(path, parser=parser)
-        case _:
-            raise ValueError(f"Unsupported format {fmt!r} for {path}")
+def _tree_depth(result: ProductionAnalysisResult) -> int:
+    analysis = result.analysis
+    if analysis is None or not analysis.nodes:
+        return 0
+    children: dict[int, list[int]] = defaultdict(list)
+    child_ids: set[int] = set()
+    for edge in analysis.primary_edges:
+        children[edge.parent_id].append(edge.child_id)
+        child_ids.add(edge.child_id)
+    roots = sorted(node.node_id for node in analysis.nodes if node.node_id not in child_ids)
+    queue = deque((root, 0) for root in roots)
+    maximum = 0
+    while queue:
+        node_id, depth = queue.popleft()
+        maximum = max(maximum, depth)
+        queue.extend((child_id, depth + 1) for child_id in children[node_id])
+    return maximum
 
 
-def _metrics(path: Path, fmt: str, result: Any) -> DocMetrics:
-    relations = result.relations
-    edus = result.edus
-    n_rel = len(relations)
-    n_edu = len(edus)
-
-    thin = sum(1 for r in relations if r.relation.lower().startswith(_THIN_PREFIXES))
-    joint_ratio = thin / n_rel if n_rel else 0.0
-
-    max_depth = max((r.depth for r in relations), default=0)
-    skew_base = math.ceil(math.log2(n_edu)) if n_edu > 1 else 1
-    tree_skew = max_depth / skew_base if skew_base else 0.0
-
-    primary_ids = {b.id for b in result.boundaries if b.kind not in _SECONDARY_BOUNDARY_KINDS}
-    cross = sum(1 for r in relations if len(primary_ids.intersection(r.boundary_memberships)) > 1)
-    cross_ratio = cross / n_rel if n_rel else 0.0
-
-    noted = sum(1 for r in relations if r.note is not None)
-    note_ratio = noted / n_rel if n_rel else 0.0
-
+def _metrics(result: ProductionAnalysisResult) -> DocMetrics:
+    analysis = result.analysis
+    nodes = analysis.nodes if analysis is not None else ()
+    edus = sum(node.kind is NodeKindEnum.EDU for node in nodes)
+    relation_by_parent: dict[int, str] = {}
+    if analysis is not None:
+        for edge in analysis.primary_edges:
+            label = edge.relation_concept or edge.relation_raw
+            if label.lower() != "span":
+                relation_by_parent.setdefault(edge.parent_id, label)
+    relations = len(relation_by_parent)
+    thin = sum(label.lower().startswith(_THIN_PREFIXES) for label in relation_by_parent.values())
+    joint_ratio = thin / relations if relations else 0.0
+    skew_base = math.ceil(math.log2(edus)) if edus > 1 else 1
+    prepared = result.prepared_document
+    receipt = result.preparation_receipt
     return DocMetrics(
-        source=path.name,
-        format=fmt,
-        edus=n_edu,
-        relations=n_rel,
+        source=result.source.source_name,
+        source_form=result.source.source_form.value,
+        status=result.analysis_status.value,
+        prepared_chars=len(prepared.text) if prepared is not None else 0,
+        prepared_segments=len(prepared.segments) if prepared is not None else 0,
+        edus=edus,
+        relations=relations,
         joint_ratio=round(joint_ratio, 3),
-        tree_skew=round(tree_skew, 2),
-        cross_boundary_ratio=round(cross_ratio, 3),
-        note_ratio=round(note_ratio, 3),
-        table_analyses=len(result.table_analyses),
+        tree_skew=round(_tree_depth(result) / skew_base, 2),
+        inventory_coverage=receipt.inventory_coverage,
+        source_coverage=receipt.primary_source_coverage,
+        prepared_coverage=receipt.prepared_text_coverage,
+        anchor_coverage=receipt.analysis_anchor_coverage,
     )
 
 
 def _print_table(rows: list[DocMetrics]) -> None:
-    headers = ("source", "fmt", "edus", "rels", "joint", "skew", "cross", "note", "tables")
+    headers = ("source", "form", "status", "chars", "segs", "edus", "rels", "joint", "skew", "coverage")
     cells = [
         (
-            m.source,
-            m.format,
-            str(m.edus),
-            str(m.relations),
-            f"{m.joint_ratio:.3f}",
-            f"{m.tree_skew:.2f}",
-            f"{m.cross_boundary_ratio:.3f}",
-            f"{m.note_ratio:.3f}",
-            str(m.table_analyses),
+            row.source,
+            row.source_form,
+            row.status,
+            str(row.prepared_chars),
+            str(row.prepared_segments),
+            str(row.edus),
+            str(row.relations),
+            f"{row.joint_ratio:.3f}",
+            f"{row.tree_skew:.2f}",
+            f"{min(row.inventory_coverage, row.source_coverage, row.prepared_coverage, row.anchor_coverage):.3f}",
         )
-        for m in rows
+        for row in rows
     ]
-    widths = [max(len(h), *(len(c[i]) for c in cells)) if cells else len(h) for i, h in enumerate(headers)]
-    print("  ".join(h.ljust(w) for h, w in zip(headers, widths, strict=True)))
-    for c in cells:
-        print("  ".join(v.ljust(w) for v, w in zip(c, widths, strict=True)))
-
+    widths = [max(len(header), *(len(cell[index]) for cell in cells)) for index, header in enumerate(headers)]
+    print("  ".join(header.ljust(width) for header, width in zip(headers, widths, strict=True)))
+    for cell in cells:
+        print("  ".join(value.ljust(width) for value, width in zip(cell, widths, strict=True)))
     if len(rows) > 1:
         print()
         for label, values in (
-            ("joint_ratio", [m.joint_ratio for m in rows]),
-            ("tree_skew", [m.tree_skew for m in rows]),
-            ("cross_boundary_ratio", [m.cross_boundary_ratio for m in rows]),
-            ("note_ratio", [m.note_ratio for m in rows]),
+            ("joint_ratio", [row.joint_ratio for row in rows]),
+            ("tree_skew", [row.tree_skew for row in rows]),
+            ("anchor_coverage", [row.anchor_coverage for row in rows]),
         ):
-            print(f"{label}: mean={mean(values):.3f} median={median(values):.3f} max={max(values):.3f}")
+            print(f"{label}: mean={mean(values):.3f} median={median(values):.3f} min={min(values):.3f}")
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="RST quality diagnostics over a corpus — no gold annotations required.")
-    ap.add_argument("paths", nargs="+", type=Path, help="source files or directories")
-    ap.add_argument("--model-version", default="gumrrg", dest="model_version")
-    ap.add_argument("--relinventory", default=None)
-    ap.add_argument("--device", default="auto")
-    ap.add_argument("--dtype", default=None)
-    ap.add_argument("--json", action="store_true", help="emit JSON instead of a table")
-    args = ap.parse_args(argv)
-
+    argument_parser = argparse.ArgumentParser(description=__doc__)
+    argument_parser.add_argument("paths", nargs="+", type=Path, help="source files or directories")
+    argument_parser.add_argument("--model-version", default="gumrrg", dest="model_version")
+    argument_parser.add_argument("--relinventory")
+    argument_parser.add_argument("--device", default="auto")
+    argument_parser.add_argument("--dtype")
+    argument_parser.add_argument("--json", action="store_true", help="emit JSON instead of a table")
+    args = argument_parser.parse_args(argv)
     sources = _discover(args.paths)
     if not sources:
         print("No supported sources found.", file=sys.stderr)
         return 1
-
     parser = Parser(
         hf_model_version=args.model_version,
         relinventory=args.relinventory,
         device=args.device,
         dtype=args.dtype,
     )
-
-    rows: list[DocMetrics] = []
-    for path in sources:
-        fmt = _format_of(path)
-        result = _parse(path, fmt, parser)
-        rows.append(_metrics(path, fmt, result))
-
+    ingestor = ProductionIngestor(parser=parser)
+    rows = [_metrics(ingestor.analyse(_artifact(path))) for path in sources]
     if args.json:
-        print(json.dumps([asdict(m) for m in rows], ensure_ascii=False, indent=2))
+        print(json.dumps([asdict(row) for row in rows], ensure_ascii=False, indent=2))
     else:
         _print_table(rows)
     return 0

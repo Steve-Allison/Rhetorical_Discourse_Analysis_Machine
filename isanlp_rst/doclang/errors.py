@@ -1,25 +1,16 @@
-"""Custom exceptions for DocLang-native RST parsing."""
+"""Failures raised by the private DocLang source loader."""
 
 
-class DoclangRstError(Exception):
-    """Base class for parse_doclang errors."""
+class DoclangIngestError(ValueError):
+    """Base class for DocLang validation and archive-loading failures."""
 
 
-class EmptyDoclangError(DoclangRstError):
-    """The loaded DocLang document has no harvestable body content."""
-
-
-class EmptyHarvestError(DoclangRstError):
-    """The harvest produced no text (e.g. a tables-only document)."""
-
-
-class InputTooLargeError(DoclangRstError):
-    """Harvested text exceeds the configured length threshold."""
-
-
-class InvalidDoclangError(DoclangRstError):
+class InvalidDoclangError(DoclangIngestError):
     """The XML file is not a valid DocLang document."""
 
 
-class UnsupportedDoclangError(DoclangRstError):
-    """The document uses a DocLang construct this parser does not support yet."""
+class UnsafeDoclangArchiveError(InvalidDoclangError):
+    """A DocLang archive violates bounded local ZIP safety invariants."""
+
+
+__all__ = ["DoclangIngestError", "InvalidDoclangError", "UnsafeDoclangArchiveError"]

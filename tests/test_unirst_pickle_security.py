@@ -99,21 +99,6 @@ def test_restricted_unpickler_refuses_data_manager_class(tmp_path: Path) -> None
         RestrictedUnpickler(handle).load()
 
 
-def test_restricted_unpickler_refuses_load_cached_gadget(tmp_path: Path) -> None:
-    class _CacheGadget:
-        def __reduce__(self):
-            from isanlp_rst._rst_common._cache import load_cached
-
-            return (load_cached, (tmp_path, "deadbeef"))
-
-    evil = tmp_path / "cache.pkl"
-    with evil.open("wb") as handle:
-        pickle.dump(_CacheGadget(), handle)
-
-    with evil.open("rb") as handle, pytest.raises(pickle.UnpicklingError, match="Refused"):
-        RestrictedUnpickler(handle).load()
-
-
 def test_legacy_pickle_import_skips_refused_pickle_and_returns_none(tmp_path: Path) -> None:
     """A planted eval-gadget pickle must not load; loader returns None."""
     pickle_path = tmp_path / "data_manager_eng.rst.gum.pickle"

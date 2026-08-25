@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_digest": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154",
+  "authority_digest": "d7e5bef94f1c3b79cf49b7d3ae67fdf4c458529ada4296cc3e78d7d8f5dcfbc5",
+  "gate": "immutable_built_artifact_acceptance",
+  "passed": true,
+  "counts": {"wheel_members": 100, "sdist_members": 106, "production_modules": 87, "scanned_files": 165, "forbidden_members": 0, "boundary_violations": 0, "released_models_per_device": 5, "source_forms": 5},
+  "execution": {"candidate_commit": "277ac08318b7c06f8544e0f51c0710b878190506", "source_mode": "git_archive", "network_dependency_installation": false, "wheel": "dist/isanlp_rst-4.0.0-py3-none-any.whl", "wheel_sha256": "73edc3dd4dc19f4f3f290291b7da5a37c6cc23b1780102910c548faf57f7e154", "sdist": "dist/isanlp_rst-4.0.0.tar.gz", "sdist_sha256": "1f27e65d1134329a1eb1cfcf7475ae218d73a76a6155b1ad2b8c3f3f40d2b6d2", "cpu_clean_install": true, "mps_clean_install": true, "offline_distributions_absent": true, "feature_003_parity_differences": []}
+}

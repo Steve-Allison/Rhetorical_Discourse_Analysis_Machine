@@ -33,10 +33,11 @@ def _install_and_run(
     full: bool,
     device: str,
     parity_baseline: Path | None,
+    base_python: Path,
 ) -> dict[str, object]:
     with tempfile.TemporaryDirectory(prefix=f"isanlp-rst-{name}-") as directory:
         root = Path(directory)
-        subprocess.run([sys.executable, "-m", "venv", "--system-site-packages", str(root)], check=True)
+        subprocess.run([str(base_python), "-m", "venv", "--system-site-packages", str(root)], check=True)
         python = _venv_python(root)
         requirement = f"{wheel}[formats]" if name == "formats" else str(wheel)
         install = [str(python), "-m", "pip", "install"]
@@ -78,8 +79,6 @@ def _install_and_run(
                 str(source_root / "tools/production_boundary/parity.py"),
                 "--device",
                 device,
-                "--markdown",
-                str(fixtures[0]),
                 "--compare",
                 str(parity_baseline),
             ]
@@ -95,6 +94,7 @@ def main() -> int:
     parser.add_argument("--full", action="store_true")
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--parity-baseline", type=Path)
+    parser.add_argument("--base-python", type=Path, default=Path(sys.executable))
     args = parser.parse_args()
     root = args.root.resolve()
     fixtures = (
@@ -114,6 +114,7 @@ def main() -> int:
             full=args.full and name == "formats",
             device=args.device,
             parity_baseline=args.parity_baseline.resolve() if args.parity_baseline is not None else None,
+            base_python=args.base_python.resolve(),
         )
         for name in ("core", "formats")
     )
