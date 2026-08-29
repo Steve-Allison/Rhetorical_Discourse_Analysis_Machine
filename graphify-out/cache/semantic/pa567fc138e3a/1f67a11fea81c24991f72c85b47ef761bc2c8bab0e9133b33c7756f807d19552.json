@@ -1,0 +1,1 @@
+{"nodes": [{"id": "claude_memory_verified_docling_schema", "label": "Verified Docling Schema", "file_type": "document", "source_file": ".claude/memory/verified_docling_schema.md", "rationale": "Sample-scoped findings about DoclingDocument v1.10.0 shape."}], "edges": [], "hyperedges": []}

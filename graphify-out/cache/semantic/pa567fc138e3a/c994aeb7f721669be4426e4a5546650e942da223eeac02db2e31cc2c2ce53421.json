@@ -1,0 +1,1 @@
+{"nodes": [{"id": "claude_memory_verified_docling_core_api", "label": "Verified Docling Core API", "file_type": "document", "source_file": ".claude/memory/verified_docling_core_api.md", "rationale": "docling-core provides load_from_json and iterate_items walker."}], "edges": [], "hyperedges": []}

@@ -1,0 +1,1 @@
+{"nodes": [{"id": "speckit_checklist_skill", "label": "speckit-checklist", "file_type": "code", "source_file": ".cursor/skills/speckit-checklist/SKILL.md", "rationale": "Generates custom checklists to validate requirements quality ('Unit Tests for English')."}], "edges": [], "hyperedges": []}

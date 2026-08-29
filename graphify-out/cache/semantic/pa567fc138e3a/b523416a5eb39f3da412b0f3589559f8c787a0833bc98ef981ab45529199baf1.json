@@ -1,0 +1,1 @@
+{"nodes": [{"id": "speckit_constitution_skill", "label": "speckit-constitution", "file_type": "code", "source_file": ".cursor/skills/speckit-constitution/SKILL.md", "rationale": "Creates or updates the project constitution from interactive or provided principle inputs."}], "edges": [], "hyperedges": []}

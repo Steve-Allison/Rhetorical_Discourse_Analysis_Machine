@@ -1,0 +1,1 @@
+{"nodes": [{"id": "docs_plans_2026_05_15_docling_native_rst", "label": "Docling-native RST output Plan", "file_type": "document", "source_file": "docs/plans/2026-05-15-docling-native-rst.md", "rationale": "Defines the architecture for emitting RST trees indexed by Docling self_ref identifiers."}], "edges": [], "hyperedges": []}
