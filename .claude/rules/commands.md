@@ -4,16 +4,19 @@ Every Python invocation goes through pixi. Never `pip`, `pip3`, `conda`, `poetry
 
 ## Daily-use commands
 
+The `default` environment is active by default:
+
 ```bash
-pixi install            # provision env from pixi.lock
-pixi run test           # fast unit tests only (excludes `slow` marker)
-pixi run test-all       # all tests, including HF-downloading integration suite
-pixi run lint           # ruff check on isanlp_rst, tests, scripts
-pixi run typecheck      # pyright (strict scope per pyproject.toml)
-pixi run smoke          # parser smoke test on CPU
-pixi run smoke-mps      # parser smoke test on MPS (Apple Silicon)
-pixi run mdlint         # markdownlint-cli2 for README, CLAUDE.md, UniRST_Metrics.md
-pixi run cleanup        # remove bytecode, tool caches, temp files (not .pixi)
+pixi install                            # provision default dev environment from pixi.lock
+pixi run test                           # unit and offline test battery (excludes slow/stress)
+pixi run test-deep                      # full integration test suite
+pixi run test-stress                    # multithreaded and megadoc stress tests
+pixi run lint                           # ruff check on isanlp_rst, tests, scripts, tools
+pixi run typecheck                      # pyright Strict Mode A
+pixi run mdlint                         # markdownlint-cli2 across all tracked markdown
+pixi run cleanup                        # remove bytecode, tool caches, temp files (not .pixi)
+pixi run -e production production-smoke # verify clean-room production wheel boundary
+pixi run build-production               # build reproducible production wheel and sdist
 ```
 
 `./cleanup.sh` is the same cleaner without going through the pixi task table; it still prefers `pixi run python` when `.pixi` exists.

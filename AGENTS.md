@@ -11,6 +11,15 @@ Treat **every** module in this repo as Steve Allison's production Python. Elena 
 - Never refuse a fix on “upstream wouldn't accept it” or “surgical touch only.” Those rules are retired.
 - Do not change trained architecture or inference maths in the name of style. Constructor no-ops and dead warnings are in scope; swapping a 1-layer LSTM for a 2-layer one is not.
 
+## HARD RULE — Pixi environment topology
+
+The repository defines two Pixi environments:
+
+- **`default` (mapped to `offline` feature)**: The primary development environment containing all dependencies (`dev`, `formats`, `offline`). All everyday tasks (`pixi run test`, `pixi run lint`, `pixi run typecheck`, `pixi run bench`, `pixi shell`) execute here by default without `-e` flags.
+- **`production`**: The isolated clean-room consumer environment containing only what `pip install isanlp_rst` provides. Used for release boundary certification (`pixi run -e production production-smoke`, `pixi run build-production`).
+
+Do not break this boundary: production code (`isanlp_rst/`) must never import offline/dev packages (`pytest`, `nltk`, `peft`, `fire`, `jsonnet`, `blake3`).
+
 ## HARD RULE — Docling / DocLang spec currency
 
 Before changing `parse_docling`, `parse_doclang`, format harvest / boundaries / mappers, fixtures, or docs that describe those contracts, **verify we are compliant with the current Docling and DocLang specs**. Do this even when the task looks unrelated to a version bump.
