@@ -142,6 +142,13 @@ def main() -> None:
         device=args.device,
     )
 
+    from workbench.experiments.central_ledger import CentralExperimentLedger
+    from workbench.hashing import blake3_digest
+
+    ledger = CentralExperimentLedger()
+    run_id, run_dir = ledger.create_run_session(experiment_type="training", model_id=model_id)
+    logger.info(f"Initialized unique immutable run session: {run_id} in {run_dir}")
+
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     logger.info(f"Starting training for {args.epochs} epochs...")
@@ -160,27 +167,38 @@ def main() -> None:
             f"Rel F1: {receipt.relation_f1:.1%} | Full F1: {receipt.full_f1:.1%}"
         )
 
-    # Save checkpoint receipt
+    # Save checkpoint and record in central immutable ledger
     if receipt is not None:
-        receipt_data = {
-            "model_id": model_id,
-            "model_revision": revision,
-            "epochs": args.epochs,
+        eval_metrics = {
+            "span_f1": receipt.span_f1,
+            "nuclearity_f1": receipt.nuclearity_f1,
+            "relation_f1": receipt.relation_f1,
+            "full_f1": receipt.full_f1,
+            "eval_loss": receipt.eval_loss,
             "train_loss": train_loss,
-            "eval_metrics": {
-                "span_f1": receipt.span_f1,
-                "nuclearity_f1": receipt.nuclearity_f1,
-                "relation_f1": receipt.relation_f1,
-                "full_f1": receipt.full_f1,
-            },
-            "inventory": inventory,
-            "trained_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "checkpoint_digest": receipt.model_digest,
         }
 
+        # 1. Save to central immutable ledger
+        dataset_digest = blake3_digest(str(corpus_dir).encode("utf-8"))
+        record = ledger.record_run(
+            run_id=run_id,
+            run_dir=run_dir,
+            model_id=model_id,
+            model_revision=revision,
+            experiment_type="training",
+            dataset_name="GUM-12.1.0",
+            dataset_digest=dataset_digest,
+            hyperparameters={"epochs": args.epochs, "lr": args.lr, "max_docs": args.max_docs},
+            eval_metrics=eval_metrics,
+            checkpoint_digest=receipt.model_digest,
+            tags=["modernbert", "gum", "discourse_tree_parser"],
+            notes=f"Trained {args.model_size} model for {args.epochs} epochs on GUM 12.1.0.",
+        )
+
+        # 2. Also mirror latest run into output_dir
         receipt_file = args.output_dir / "training_receipt.json"
-        receipt_file.write_text(json.dumps(receipt_data, indent=2), encoding="utf-8")
-        logger.info(f"Training completed successfully! Receipt saved to {receipt_file}")
+        receipt_file.write_text(json.dumps(record.to_dict(), indent=2), encoding="utf-8")
+        logger.info(f"Training completed successfully! Saved to central ledger run {run_id} and {receipt_file}")
 
 
 if __name__ == "__main__":

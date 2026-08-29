@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "protocol_sha256": "d7a3fefd3c947b1a81e0820b06ea8c3f72458da48f6ff39430fd21cff75ebeda",
+  "entries": [
+    {
+      "run_id": "screening-structural_only_calibrated-seed-17",
+      "system": "structural_only_calibrated",
+      "stage": "screening",
+      "status": "succeeded",
+      "seed": 17,
+      "receipt_path": "receipts/screening-structural_only_calibrated-seed-17.json",
+      "receipt_sha256": "5d103c4f03f395231501391dc9684db668f4363cc38dc4f989dc7b63d4fc886a"
+    },
+    {
+      "run_id": "screening-signal_plus_rule-seed-17",
+      "system": "signal_plus_rule",
+      "stage": "screening",
+      "status": "succeeded",
+      "seed": 17,
+      "receipt_path": "receipts/screening-signal_plus_rule-seed-17.json",
+      "receipt_sha256": "670d7e7c060091c9a3f768efb245b8148ef2d6a71ad9b85752520b712f9905cc"
+    },
+    {
+      "run_id": "screening-modernbert_base_signal_aware-seed-17",
+      "system": "modernbert_base_signal_aware",
+      "stage": "screening",
+      "status": "succeeded",
+      "seed": 17,
+      "receipt_path": "receipts/screening-modernbert_base_signal_aware-seed-17.json",
+      "receipt_sha256": "271122b8e05aafc892f8f6126d9cbeceb122aee19a13d0986ee9309658bcd118"
+    }
+  ],
+  "index_sha256": "00b502f34d0e013456664e5f252eb04f6c9e7873f64dfc0c204b8b4c96210fc9"
+}

@@ -211,6 +211,10 @@ class TestParserInitValidation:
         """Public class constants documenting valid versions."""
         assert "gumrrg" in Parser.DMRST_PARSERS
         assert "unirst" in Parser.UNIVERSAL_PARSERS
+        assert "modernbert" in Parser.MODERNBERT_PARSERS
         assert "dmrst" in Parser.AVAILABLE_FAMILIES
         assert "unirst" in Parser.AVAILABLE_FAMILIES
-        assert set(Parser.AVAILABLE_VERSIONS) == (set(Parser.DMRST_PARSERS) | set(Parser.UNIVERSAL_PARSERS))
+        assert "modernbert" in Parser.AVAILABLE_FAMILIES
+        assert set(Parser.AVAILABLE_VERSIONS) == (
+            set(Parser.DMRST_PARSERS) | set(Parser.UNIVERSAL_PARSERS) | set(Parser.MODERNBERT_PARSERS)
+        )

@@ -77,6 +77,16 @@ specs/003-production-codeline-split/quickstart.md
 specs/003-production-codeline-split/research.md
 specs/003-production-codeline-split/spec.md
 specs/003-production-codeline-split/tasks.md
+specs/004-production-api-contract/checklists/requirements.md
+specs/004-production-api-contract/contracts/distribution-and-public-surface.md
+specs/004-production-api-contract/contracts/production-api-v2.md
+specs/004-production-api-contract/contracts/serialization-and-compatibility.md
+specs/004-production-api-contract/data-model.md
+specs/004-production-api-contract/plan.md
+specs/004-production-api-contract/quickstart.md
+specs/004-production-api-contract/research.md
+specs/004-production-api-contract/spec.md
+specs/004-production-api-contract/tasks.md
 tests/fixtures/doclang/README.md
 tests/fixtures/docling/README.md
 tests/fixtures/gum/README.md

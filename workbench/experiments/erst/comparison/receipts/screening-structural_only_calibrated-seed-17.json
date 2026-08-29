@@ -1,0 +1,215 @@
+{
+  "schema_version": "1.0",
+  "package_version": "4.0.0",
+  "run_id": "screening-structural_only_calibrated-seed-17",
+  "protocol_sha256": "d7a3fefd3c947b1a81e0820b06ea8c3f72458da48f6ff39430fd21cff75ebeda",
+  "system": "structural_only_calibrated",
+  "stage": "screening",
+  "ablation": null,
+  "status": "succeeded",
+  "seed": 17,
+  "setting": "gold_primary_gold_signal",
+  "partitions": [
+    "train",
+    "dev"
+  ],
+  "architecture_config_sha256": "b6f16a8ea86f48773105f72c634f0532d1ae05cc7036c8a0718275f796bb28b6",
+  "candidate_selection_sha256": "bcf3ac249e8abb47d1ae2df3fe5344a294020ef91dbf4461e83e8f7b7ee6195f",
+  "split_manifest_sha256": "7a1b51ab332ae84d9693824ef067ec1dbfad4275111608231eb5e409437ea6d7",
+  "started_at": "2026-08-29T09:01:46.906294Z",
+  "completed_at": "2026-08-29T09:04:13.425507Z",
+  "document_count": 243,
+  "scored_document_count": 32,
+  "candidate_count": 1903498,
+  "execution_steps": 220,
+  "checkpoint_sha256": "13695f8241ac53b35f39f768c5a0b69e2c765c084d077f7e78d07c0a9d2a6c3e",
+  "predictions_sha256": "b3a4be97f413fcd048df43acb4053cbcfd329d982b7eaeb5d3a73c0928d4a98f",
+  "scorer_output_sha256": "eb25c68f7ab35b1978cb191a25970814d1f1621e6a9bb7f43336a8bbfdcd2b07",
+  "metrics": {
+    "span_f": 0.00018227209008666353,
+    "direction_f": 0.00018227209008666353,
+    "relation_f": 0.00006426934968373685,
+    "full_f": 0.00005584058251209923,
+    "ece": 0.569228692615316,
+    "brier": 0.32426460666863244,
+    "loss": 2.280830144882202
+  },
+  "document_scores": [
+    {
+      "document_id": "GUM_academic_exposure",
+      "source_sha256": "964ea533d59c1919b2b1e5c3d14b726d78db4eac6cbab6039e07666b8f3e8d4d",
+      "full_f": 0.0001291794949081749
+    },
+    {
+      "document_id": "GUM_academic_librarians",
+      "source_sha256": "77b9fd7f3cafe33209a3f508ac73dc2455ac8bd6dfede2de789910dc97bc1706",
+      "full_f": 0.0
+    },
+    {
+      "document_id": "GUM_bio_byron",
+      "source_sha256": "c6b2732af894b473312a13a9d32f6f7168336b432af5f2c80756332aca745299",
+      "full_f": 0.00026879010852400633
+    },
+    {
+      "document_id": "GUM_bio_emperor",
+      "source_sha256": "95021f148e4623c0df3a18a2f169cc33b097fc74db6e78bab5802d2a232b35c8",
+      "full_f": 0.00007762167197081426
+    },
+    {
+      "document_id": "GUM_conversation_grounded",
+      "source_sha256": "881b7c2e28b098c25321a8a80934110557fbdf5216495e44ff5c2c1133683ed1",
+      "full_f": 0.0
+    },
+    {
+      "document_id": "GUM_conversation_risk",
+      "source_sha256": "87ce56ce47b2c696e704b0af7ff583537b3297ff4df9d1bc9bd1b2dfdb25e5e6",
+      "full_f": 0.000015718574639651676
+    },
+    {
+      "document_id": "GUM_court_loan",
+      "source_sha256": "e8f290db6643ae50632e5e9d337bc011519aaa5c80e2865f6036d17ea74d14ab",
+      "full_f": 0.00018235973497051852
+    },
+    {
+      "document_id": "GUM_court_negligence",
+      "source_sha256": "75eb8c23aef83c125e3ca30d86f40602f9bac58ddc1dc3c18a91884224f633cf",
+      "full_f": 0.0001224308648210214
+    },
+    {
+      "document_id": "GUM_essay_evolved",
+      "source_sha256": "1ff9d10ea1c5e30b54bfc156ee4d8906c1e3ea8c66d043d4895f8423af154084",
+      "full_f": 0.000019469646820606675
+    },
+    {
+      "document_id": "GUM_essay_tools",
+      "source_sha256": "1c7ea726e0347cbf2d370a35bbbb08b3416751351c1b911307e2c683ce6f18a9",
+      "full_f": 0.000022902686485124705
+    },
+    {
+      "document_id": "GUM_fiction_beast",
+      "source_sha256": "3d27e6a09a00c5202a072d56e202559029bacf15c4053893b88e0c5e7227f59f",
+      "full_f": 0.0
+    },
+    {
+      "document_id": "GUM_fiction_lunre",
+      "source_sha256": "60447128443d1cbb58ca3d3a2551869eb9e7c13582f99ab9fd251f1584044978",
+      "full_f": 0.0001925669170036588
+    },
+    {
+      "document_id": "GUM_interview_cyclone",
+      "source_sha256": "f047ba7658157780dba6d0c2b828109d7f8b2fb7f83cae9f60d0a4f0b172f609",
+      "full_f": 0.00010682619378271551
+    },
+    {
+      "document_id": "GUM_interview_gaming",
+      "source_sha256": "ba21648d3dde5d2bbc6c2d5ae0814e8613a58b926e1e84d307f7366059bf19cb",
+      "full_f": 0.00007479711283144472
+    },
+    {
+      "document_id": "GUM_letter_arendt",
+      "source_sha256": "7e7c21dc47004ac4d07f323c1f8e39f25ce99a84d7d3721cbb5d2d6376480b9b",
+      "full_f": 0.00010023806540533769
+    },
+    {
+      "document_id": "GUM_letter_wiki",
+      "source_sha256": "b36a2df3f20e3303c190582f04a3d05706c7a0f5f2d04bb4e143a046ad32c6c9",
+      "full_f": 0.0
+    },
+    {
+      "document_id": "GUM_news_homeopathic",
+      "source_sha256": "07ddd4cf1c1081e53a34f6906e1fb2082f492e855b1b84e9b5c976d1328f6068",
+      "full_f": 0.00008947344875408224
+    },
+    {
+      "document_id": "GUM_news_iodine",
+      "source_sha256": "6f702e487e6511e4c74a62e1c3bd2e721116d106dfe6b7a9face412eb325be94",
+      "full_f": 0.00006915270646404924
+    },
+    {
+      "document_id": "GUM_podcast_bangladesh",
+      "source_sha256": "e2280f0a93c946f4017c825b76f1bc5153a55a9e53aeaa66ab06a8d93bd7db0d",
+      "full_f": 0.00020688941760628942
+    },
+    {
+      "document_id": "GUM_podcast_wrestling",
+      "source_sha256": "9920db0c917ad43e793f90399614a04f7f3b78581eb6a26d3d9001c2d79d4783",
+      "full_f": 0.00004477779021605283
+    },
+    {
+      "document_id": "GUM_reddit_macroeconomics",
+      "source_sha256": "bad2fb14c86c519765f7ec9e80f8fa78ef1e7da67e81835fa90102de5450314a",
+      "full_f": 0.0
+    },
+    {
+      "document_id": "GUM_reddit_pandas",
+      "source_sha256": "5b7b9646e9469db660a2fb4b6bceb60cb5b93d01fec30a01f96062c8a75598e8",
+      "full_f": 0.000058981391371022446
+    },
+    {
+      "document_id": "GUM_speech_impeachment",
+      "source_sha256": "55ee8333357f862a51f64b423eb0187ed5629a18543cc1d9514e167df391b122",
+      "full_f": 0.000046685340802987865
+    },
+    {
+      "document_id": "GUM_speech_inauguration",
+      "source_sha256": "f43267d867a6464fa4d8622157cd7d140cb097641cba28a568b8521dd789282f",
+      "full_f": 0.00010365111036251977
+    },
+    {
+      "document_id": "GUM_textbook_governments",
+      "source_sha256": "22db7b4151897109082c0bb990e211a5c5e032e246aaf22434b3bbec562acc14",
+      "full_f": 0.0000415084158313098
+    },
+    {
+      "document_id": "GUM_textbook_labor",
+      "source_sha256": "8321a4c412892ecb1ca203845109fd7b2102f1cc5c6799dbb52a4649fa17007b",
+      "full_f": 0.0
+    },
+    {
+      "document_id": "GUM_vlog_portland",
+      "source_sha256": "4e18409e855bf855de78fc77ac41d69d74e50cedd91abdbf2e6c4d54350a6ef6",
+      "full_f": 0.000049401622843310405
+    },
+    {
+      "document_id": "GUM_vlog_radiology",
+      "source_sha256": "2539e6302a13c68f87282b657dccc364b5acc37b15bbf3c0b11886d5f5a90670",
+      "full_f": 0.00009396435618755287
+    },
+    {
+      "document_id": "GUM_voyage_athens",
+      "source_sha256": "8693cb78bb38871f731b7177c7a28b5b101b113cb999963c83878da2335fbc7b",
+      "full_f": 0.00005688282138794085
+    },
+    {
+      "document_id": "GUM_voyage_coron",
+      "source_sha256": "fa55430c366a2091e3c9e3f8c35eb75c219fada93af15885532edc2573bc5486",
+      "full_f": 0.0
+    },
+    {
+      "document_id": "GUM_whow_joke",
+      "source_sha256": "14a9d065874ad5eecc4d8b3690db70eb56c710d1735320e6772a52f5c230e359",
+      "full_f": 0.000031368120579055504
+    },
+    {
+      "document_id": "GUM_whow_overalls",
+      "source_sha256": "31983bae4ff56f81fe4762b60e82e38cdd641baac1ba33823fab8d28e93e46f6",
+      "full_f": 0.00008164598301763554
+    }
+  ],
+  "resources": {
+    "machine": "Steves-MacBook-Pro.local",
+    "operating_system": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "processor": "arm",
+    "physical_memory_bytes": 51539607552,
+    "device": "mps",
+    "torch_version": "2.13.0",
+    "transformers_version": "5.15.1",
+    "thread_count": 18,
+    "p50_latency_ms": 0.5536249955184758,
+    "p95_latency_ms": 2.703099700738676,
+    "peak_rss_bytes": 4956618752,
+    "mps_peak_allocated_bytes": 20987904
+  },
+  "failure": null,
+  "receipt_sha256": "5d103c4f03f395231501391dc9684db668f4363cc38dc4f989dc7b63d4fc886a"
+}

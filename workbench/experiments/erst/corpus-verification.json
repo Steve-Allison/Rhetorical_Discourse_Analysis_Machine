@@ -1,0 +1,2149 @@
+{
+  "schema_version": "1.0",
+  "corpus_revision": "22fdf87f9c71c96bcc771461d06e689b1f90020d",
+  "authority_sha256": "f1fb587b7532a91c20eeb3ba29bb07471c8828599daabf041e7fbb9d8eb2d8e3",
+  "corpus_root_fingerprint": "3e21fe989d80587a94c01a4ee3dff6862429ee6bba98b2315513a7e52f1402d1",
+  "sources": [
+    {
+      "document_id": "GENTLE_dictionary_next",
+      "source_path": "rst/rstweb/GENTLE_dictionary_next.rs4",
+      "source_sha256": "c8a7759389f3a6393c5f77e2b3bd65f63e01f78102717d2c49b023eea8375759",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_dictionary_school",
+      "source_path": "rst/rstweb/GENTLE_dictionary_school.rs4",
+      "source_sha256": "94e43fb296eb3b4812615303795f25a43c6e4d29e41d3003abe77e712f33cb51",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_dictionary_trust",
+      "source_path": "rst/rstweb/GENTLE_dictionary_trust.rs4",
+      "source_sha256": "b732468400d50fa0fae0dc90cebe14f94b2df618fd76526c375e9feafa3d2e47",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_esports_fifa",
+      "source_path": "rst/rstweb/GENTLE_esports_fifa.rs4",
+      "source_sha256": "237e0cd6cf7eedbaf4f5b21075d47274f91edb14d92de73759c5702bc19dbc92",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_esports_fortnite",
+      "source_path": "rst/rstweb/GENTLE_esports_fortnite.rs4",
+      "source_sha256": "28b15b0a26f779f4b94377fc8684d90b362d62cd0eb61701fa668a45df2f7ff0",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_legal_abortion",
+      "source_path": "rst/rstweb/GENTLE_legal_abortion.rs4",
+      "source_sha256": "390983fa0da3f26cda3b3596099e8ea646019e86073943c2932d5fbed07f9786",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_legal_service",
+      "source_path": "rst/rstweb/GENTLE_legal_service.rs4",
+      "source_sha256": "92f657e2100946add5676a3f03a883270efc5e950a0d8db11cca49fe9967f5ea",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_medical_anemia",
+      "source_path": "rst/rstweb/GENTLE_medical_anemia.rs4",
+      "source_sha256": "2d8baa25469257ab9bc3065c3007b24b2967db2f4934211baf43cddf73d52afc",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_medical_hiv",
+      "source_path": "rst/rstweb/GENTLE_medical_hiv.rs4",
+      "source_sha256": "5078c6ab9d8aca3eb8e5872e89ec0dfaf281202bc12ce6a2499f7679c685933e",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_medical_screw",
+      "source_path": "rst/rstweb/GENTLE_medical_screw.rs4",
+      "source_sha256": "85ad8f3bdbe78dc90589653ad712e8aa3b0d544659ac31424b58ed41eb8a8b93",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_medical_transplant",
+      "source_path": "rst/rstweb/GENTLE_medical_transplant.rs4",
+      "source_sha256": "13425d5586b2d0c6a5c0aade58222cb1f0ba6c23b2eb12b2a913b9a4c21bc161",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_poetry_annabel",
+      "source_path": "rst/rstweb/GENTLE_poetry_annabel.rs4",
+      "source_sha256": "1321a5d7d3c068e1136cd44cfb980ae880d8dd2ed52e450f86d9a05427730f04",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_poetry_death",
+      "source_path": "rst/rstweb/GENTLE_poetry_death.rs4",
+      "source_sha256": "30c51a98af2f78b61f882ef757adc291760ebd0ccd6c271786ba412c07e7a565",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_poetry_flower",
+      "source_path": "rst/rstweb/GENTLE_poetry_flower.rs4",
+      "source_sha256": "9027f942c4684dfb74ae55b5179f5d7db0c12dbce5a4afcd08c2cfe37b81b6a6",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_poetry_raven",
+      "source_path": "rst/rstweb/GENTLE_poetry_raven.rs4",
+      "source_sha256": "b95309c7983111505ac7253e167db348ff30907782ff45890100047a0d347eb8",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_poetry_road",
+      "source_path": "rst/rstweb/GENTLE_poetry_road.rs4",
+      "source_sha256": "7a562677de6c85e9c25365ba72e9647b74e4222d7edc334b8dc3c8ffa5f9bc02",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_proof_five",
+      "source_path": "rst/rstweb/GENTLE_proof_five.rs4",
+      "source_sha256": "f1a6e1d084db58bb004eb6e685fd605b006f017db11c3500101e9c3ef894b5b0",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_proof_square",
+      "source_path": "rst/rstweb/GENTLE_proof_square.rs4",
+      "source_sha256": "32360da0b68e48eabbe9595e0398250ce576e2666d537cd3244bb7fd87820706",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_proof_wosets",
+      "source_path": "rst/rstweb/GENTLE_proof_wosets.rs4",
+      "source_sha256": "34d359888ae849cc7d63534153d3aa2fc4990f8735fa45a605bb6f5be0d6fa6d",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_syllabus_opensource",
+      "source_path": "rst/rstweb/GENTLE_syllabus_opensource.rs4",
+      "source_sha256": "afff302122066288bb1a078ed6431295090697d3e22d4f51634239216ce374eb",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_syllabus_techtonica",
+      "source_path": "rst/rstweb/GENTLE_syllabus_techtonica.rs4",
+      "source_sha256": "254d9335a39fa875213c204dfa778fb023e1bcb650243316201c39737d899ee6",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_threat_bolin",
+      "source_path": "rst/rstweb/GENTLE_threat_bolin.rs4",
+      "source_sha256": "a21755d279811b1edcb7a9601f135127a49d55934138329056d7125b620cf729",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_threat_dillard",
+      "source_path": "rst/rstweb/GENTLE_threat_dillard.rs4",
+      "source_sha256": "5fc2f9064f143cb59c8babd7f3d11e70771c77f70f63b88bfd3a3726998ff0f1",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_threat_kelly",
+      "source_path": "rst/rstweb/GENTLE_threat_kelly.rs4",
+      "source_sha256": "75d3062360c363036d59c1dd531895ca510dac0f8ac8a32c7515a84f9af8673e",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_threat_malik",
+      "source_path": "rst/rstweb/GENTLE_threat_malik.rs4",
+      "source_sha256": "40c7a43bcfe02f28463e41ebeabb4329bf9b4ea92b615dca3a32d14dfefed8bc",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GENTLE_threat_white",
+      "source_path": "rst/rstweb/GENTLE_threat_white.rs4",
+      "source_sha256": "f8c06ca0e3a75535cdd854863d6353116f847fa0d627375251be9da39849b295",
+      "partition": "test2",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_academic_art",
+      "source_path": "rst/rstweb/GUM_academic_art.rs4",
+      "source_sha256": "605a13dcaf691609780025d77f1d33cc5c9d78f5c82e0a56a97e686fd1bdd599",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_census",
+      "source_path": "rst/rstweb/GUM_academic_census.rs4",
+      "source_sha256": "4070a2d9af7d58c81f199ca37e1097d449d3294b601951d30635a5fbd4935104",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_discrimination",
+      "source_path": "rst/rstweb/GUM_academic_discrimination.rs4",
+      "source_sha256": "b38dbe24dade61f1f9bab578cfc1fbb74b293c650e1f9c8fe371f581b95811fa",
+      "partition": "test",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_economics",
+      "source_path": "rst/rstweb/GUM_academic_economics.rs4",
+      "source_sha256": "6c015caa8aa0764efe4abd35c2e3ee80abbb5667f8bfe53293fda75e6753bdf7",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_eegimaa",
+      "source_path": "rst/rstweb/GUM_academic_eegimaa.rs4",
+      "source_sha256": "cf665f4e031c84cf4e1e38382193bc630f6d191a001fcd9d989298e8ac2798ec",
+      "partition": "test",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_enjambment",
+      "source_path": "rst/rstweb/GUM_academic_enjambment.rs4",
+      "source_sha256": "72c8b9b86d8687f698d5bc2c5a516ab525bb644131762df8fc83d2d95e2e95a6",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_epistemic",
+      "source_path": "rst/rstweb/GUM_academic_epistemic.rs4",
+      "source_sha256": "aa944c6f4a131da0b1f1b9324a617b35aa7c7330fcaa63b3a1708471640684ee",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_exposure",
+      "source_path": "rst/rstweb/GUM_academic_exposure.rs4",
+      "source_sha256": "964ea533d59c1919b2b1e5c3d14b726d78db4eac6cbab6039e07666b8f3e8d4d",
+      "partition": "dev",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_games",
+      "source_path": "rst/rstweb/GUM_academic_games.rs4",
+      "source_sha256": "16a0b755c781370708b13777b1416e480064cad0fbd285333eeac4c28cad3f01",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_huh",
+      "source_path": "rst/rstweb/GUM_academic_huh.rs4",
+      "source_sha256": "aaaa5dc491f3dc1e1f634503b6edf3ed13aa2caa3514ca2baae8872e9f8597c2",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_implicature",
+      "source_path": "rst/rstweb/GUM_academic_implicature.rs4",
+      "source_sha256": "6ba49b51e6304223d32d0ff4b3fe2488c7a6b7370549f2c62df24dda16bc6821",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_librarians",
+      "source_path": "rst/rstweb/GUM_academic_librarians.rs4",
+      "source_sha256": "77b9fd7f3cafe33209a3f508ac73dc2455ac8bd6dfede2de789910dc97bc1706",
+      "partition": "dev",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_lighting",
+      "source_path": "rst/rstweb/GUM_academic_lighting.rs4",
+      "source_sha256": "3ad48b53ce3dc06b372e1f5cb6e0d237c97b79cb9dd2edff7b52f182c2a4b692",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_mutation",
+      "source_path": "rst/rstweb/GUM_academic_mutation.rs4",
+      "source_sha256": "51c79286feca548bef38d1e98b0974fd8556ca744726a003c52d864c1a00c309",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_replication",
+      "source_path": "rst/rstweb/GUM_academic_replication.rs4",
+      "source_sha256": "49aea8d9163f7b1389e4e67c1350dffb4c2cdcc3a6d2267db774e1e32ed94fa3",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_salinity",
+      "source_path": "rst/rstweb/GUM_academic_salinity.rs4",
+      "source_sha256": "c5299fd7b87d988dec7e7c6e5fb22be625c6c4b65a8242276b167c737427e753",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_theropod",
+      "source_path": "rst/rstweb/GUM_academic_theropod.rs4",
+      "source_sha256": "65a7d304040445b8a6ed54f05a81b9ce38b46de936a25c5f17f155c54a114a7e",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_academic_thrones",
+      "source_path": "rst/rstweb/GUM_academic_thrones.rs4",
+      "source_sha256": "e5e22d5c00cc37ceedf1114230957428b2c6746ed26ae7ceec6db38efc3ffbd1",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_bio_bernoulli",
+      "source_path": "rst/rstweb/GUM_bio_bernoulli.rs4",
+      "source_sha256": "bc53fd91600f5602693a6eaf473605187005f8ed8cc20f4f4499f374fca5c396",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_byron",
+      "source_path": "rst/rstweb/GUM_bio_byron.rs4",
+      "source_sha256": "c6b2732af894b473312a13a9d32f6f7168336b432af5f2c80756332aca745299",
+      "partition": "dev",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_chao",
+      "source_path": "rst/rstweb/GUM_bio_chao.rs4",
+      "source_sha256": "72cc3fa8e504ce342499907516bea661f6fa8a4aa43c3c03f4abf011ff9fb259",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_dvorak",
+      "source_path": "rst/rstweb/GUM_bio_dvorak.rs4",
+      "source_sha256": "63cf4ea77eff2914cbccfda07c23e0f61166881943e9bdd891d09426c1c48a55",
+      "partition": "test",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_emperor",
+      "source_path": "rst/rstweb/GUM_bio_emperor.rs4",
+      "source_sha256": "95021f148e4623c0df3a18a2f169cc33b097fc74db6e78bab5802d2a232b35c8",
+      "partition": "dev",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_enfant",
+      "source_path": "rst/rstweb/GUM_bio_enfant.rs4",
+      "source_sha256": "db4d7dbc8e30b01683f2389ebd7dcce1501bbf25bce5777c6448449294f1f010",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_fillmore",
+      "source_path": "rst/rstweb/GUM_bio_fillmore.rs4",
+      "source_sha256": "598f04c63e04ecdbb765703273edbfd2e346a52aa8ef62f6bbb19b3c56ca6265",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_galois",
+      "source_path": "rst/rstweb/GUM_bio_galois.rs4",
+      "source_sha256": "b650cc6d35904b49ffa320b5ee19cb279f5d0a4e0b4d968e48984ad05928fa36",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_goode",
+      "source_path": "rst/rstweb/GUM_bio_goode.rs4",
+      "source_sha256": "a8286cd9c39d1d43a95725fe294dff4b392698454413a84667c622980c3cf7e1",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_gordon",
+      "source_path": "rst/rstweb/GUM_bio_gordon.rs4",
+      "source_sha256": "02c9e9a99cbc7e996f66fec9072874d3eba9cc29898aee664f4dbf1b36c190df",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_hadid",
+      "source_path": "rst/rstweb/GUM_bio_hadid.rs4",
+      "source_sha256": "bc83d6b12a53f7312c47f8faddb9573901a27d3710696da865da6cce908a4647",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_higuchi",
+      "source_path": "rst/rstweb/GUM_bio_higuchi.rs4",
+      "source_sha256": "72f74cd5fcf53c708a00c3522375378b460689d87e1f49a02f2b731abc32aaf4",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_holt",
+      "source_path": "rst/rstweb/GUM_bio_holt.rs4",
+      "source_sha256": "b0320249dad2c1603f43281556a56b60da56c5d0d023b92c12e55ce0843d30d0",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_jerome",
+      "source_path": "rst/rstweb/GUM_bio_jerome.rs4",
+      "source_sha256": "718047d8666803ca051f04c7c12e4f6accad5494eb1c3ef6debfb76bd8fcb464",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_jespersen",
+      "source_path": "rst/rstweb/GUM_bio_jespersen.rs4",
+      "source_sha256": "61fc9d971f3e1938d0103edc36f4ce1cbcbbf39fca03ecfa7ab2a8b6f93f8410",
+      "partition": "test",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_marbles",
+      "source_path": "rst/rstweb/GUM_bio_marbles.rs4",
+      "source_sha256": "eed34da167af715f98aa99de1e88f4fc4fabceb53fb0bb81274acacb7f9b961a",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_moreau",
+      "source_path": "rst/rstweb/GUM_bio_moreau.rs4",
+      "source_sha256": "f9f70043dc3987ca7073b004cec36d01b9b7686ac52fca8a7fc0d3c1e1364328",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_nida",
+      "source_path": "rst/rstweb/GUM_bio_nida.rs4",
+      "source_sha256": "47ab3d80238fbe029b137a08a7353ae99f041ee6f6f064f4ecb53547dc162732",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_padalecki",
+      "source_path": "rst/rstweb/GUM_bio_padalecki.rs4",
+      "source_sha256": "565b47d35a7c5201f075fb3e8bdd941187677c87884e218b1aa44c32b1898b3c",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_bio_theodorus",
+      "source_path": "rst/rstweb/GUM_bio_theodorus.rs4",
+      "source_sha256": "81932ad91e179d88ce6417f1740d695687d20cce85c1838a9de344b558e4854d",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_conversation_artist",
+      "source_path": "rst/rstweb/GUM_conversation_artist.rs4",
+      "source_sha256": "fc5f48e78b0409f83c811b6fb473b45bc726b9688e15bb641e0c6fae24c773bf",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_atoms",
+      "source_path": "rst/rstweb/GUM_conversation_atoms.rs4",
+      "source_sha256": "50afa61baf654a054e522f294ea06256b1ca646bf528db50dbf8054d9366269b",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_blacksmithing",
+      "source_path": "rst/rstweb/GUM_conversation_blacksmithing.rs4",
+      "source_sha256": "9ffaf8cda4cea613ac7b6da8fdd97310755208bd7e717aead7b426052c043dd1",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_christmas",
+      "source_path": "rst/rstweb/GUM_conversation_christmas.rs4",
+      "source_sha256": "245738d4695da4b7da721d485f6798c517f5571c06a54f463530726c7f82c73a",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_erasmus",
+      "source_path": "rst/rstweb/GUM_conversation_erasmus.rs4",
+      "source_sha256": "bc3782f6cf884fdaa6f4fde3713abacb9f29893ecbd9959d505907d4d22609db",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_family",
+      "source_path": "rst/rstweb/GUM_conversation_family.rs4",
+      "source_sha256": "9057b7880603922baaf2875fd231af8dc866fa1d9a3c78f95515f7583237776f",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_gossip",
+      "source_path": "rst/rstweb/GUM_conversation_gossip.rs4",
+      "source_sha256": "b9f868497fe5d05bf910105bf54a46cde7654d837e83ca7e464cd83fb58bcc0e",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_grounded",
+      "source_path": "rst/rstweb/GUM_conversation_grounded.rs4",
+      "source_sha256": "881b7c2e28b098c25321a8a80934110557fbdf5216495e44ff5c2c1133683ed1",
+      "partition": "dev",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_lambada",
+      "source_path": "rst/rstweb/GUM_conversation_lambada.rs4",
+      "source_sha256": "91851039abb3ac24393c29c7568ea8aa512d3a21d2e15379d248a20448b1b94f",
+      "partition": "test",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_retirement",
+      "source_path": "rst/rstweb/GUM_conversation_retirement.rs4",
+      "source_sha256": "eda5e654cbd4e902f5acbc1819d683c6550823614f605fd36efd3447280f2c57",
+      "partition": "test",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_risk",
+      "source_path": "rst/rstweb/GUM_conversation_risk.rs4",
+      "source_sha256": "87ce56ce47b2c696e704b0af7ff583537b3297ff4df9d1bc9bd1b2dfdb25e5e6",
+      "partition": "dev",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_scientist",
+      "source_path": "rst/rstweb/GUM_conversation_scientist.rs4",
+      "source_sha256": "3b8159d6bc1e2984d3c5d4e362b7ea0f5f1945ba79e473f4d3846ceaae2daf22",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_toys",
+      "source_path": "rst/rstweb/GUM_conversation_toys.rs4",
+      "source_sha256": "a8b4caf15aec7278adcfe6a830eaaf9d01939619b4d89f9610a873dcb34bd002",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_vet",
+      "source_path": "rst/rstweb/GUM_conversation_vet.rs4",
+      "source_sha256": "5a5774a0cc66c62f3bb04cfd77419a7a81e82154f54460bf5f6bf5880d6badd5",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_conversation_zero",
+      "source_path": "rst/rstweb/GUM_conversation_zero.rs4",
+      "source_sha256": "ffef1c4686c0472f657757720e6845dc68773795bee8066e496d9b79ac0afaf6",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_court_carpet",
+      "source_path": "rst/rstweb/GUM_court_carpet.rs4",
+      "source_sha256": "bc6f552e2e0bf17d8f3d3c891822deeba89af8bad9598a6192c197e45db05b6d",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_crash",
+      "source_path": "rst/rstweb/GUM_court_crash.rs4",
+      "source_sha256": "f8457875444034e5ba08eff3c74187044550b041f17f6bb286f957272236febc",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_equality",
+      "source_path": "rst/rstweb/GUM_court_equality.rs4",
+      "source_sha256": "acf02c22e500e6651b84270c496c935c8f353083b4569f9c3d9dcbfd651b23c5",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_fire",
+      "source_path": "rst/rstweb/GUM_court_fire.rs4",
+      "source_sha256": "4c6dc7f9abdba01ff548ce791514d66b7c55d25b1f5965e7df23496ab49a7ce9",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_insanity",
+      "source_path": "rst/rstweb/GUM_court_insanity.rs4",
+      "source_sha256": "df3ee202596e2aa434baa9c33d33a713e47859725eb39b985ff0bc8bfd1870bf",
+      "partition": "test",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_loan",
+      "source_path": "rst/rstweb/GUM_court_loan.rs4",
+      "source_sha256": "e8f290db6643ae50632e5e9d337bc011519aaa5c80e2865f6036d17ea74d14ab",
+      "partition": "dev",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_mental",
+      "source_path": "rst/rstweb/GUM_court_mental.rs4",
+      "source_sha256": "3f0ad0d39b606fa360e3b0e7f3098f875ed52b739e94eea64af0e62dc1d189b4",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_mitigation",
+      "source_path": "rst/rstweb/GUM_court_mitigation.rs4",
+      "source_sha256": "2daa1f9e4c131f3b499ba7fb852050aae43e23a68d25b07c7c459c28078dc6de",
+      "partition": "test",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_mountain",
+      "source_path": "rst/rstweb/GUM_court_mountain.rs4",
+      "source_sha256": "55c3b5a345835b1916c3afc6698f0d552635210e6c24d42c97b7e89697382c73",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_negligence",
+      "source_path": "rst/rstweb/GUM_court_negligence.rs4",
+      "source_sha256": "75eb8c23aef83c125e3ca30d86f40602f9bac58ddc1dc3c18a91884224f633cf",
+      "partition": "dev",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_nullification",
+      "source_path": "rst/rstweb/GUM_court_nullification.rs4",
+      "source_sha256": "056a6e92cc9907b14c45207a4952ceb3f25cc455d85b3ca5be2817b2d436963d",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_prince",
+      "source_path": "rst/rstweb/GUM_court_prince.rs4",
+      "source_sha256": "85ba6b12d3d6ba4c8ee7af59e961114687ee0c901572201b82a0a6be074341b7",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_property",
+      "source_path": "rst/rstweb/GUM_court_property.rs4",
+      "source_sha256": "43454ae1cc249b0c3170d3d94fac37deee07ecf05df3e7bb0d26fe054269f565",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_court_way",
+      "source_path": "rst/rstweb/GUM_court_way.rs4",
+      "source_sha256": "c1ba99f940f0fce98a7889f85b5a3b4742a9bf73e85831faf80eabe50cb5e38a",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_essay_distraction",
+      "source_path": "rst/rstweb/GUM_essay_distraction.rs4",
+      "source_sha256": "9f72b0b2e6823f1b15539d5c37b6f0736994eb2b8e72de5a1d1e7e065ca6d38f",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_dividends",
+      "source_path": "rst/rstweb/GUM_essay_dividends.rs4",
+      "source_sha256": "8f1ba3d5297010b75c8a5e2c4581eb4466403b3e091f7609f0fc531f818bfaaf",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_evolved",
+      "source_path": "rst/rstweb/GUM_essay_evolved.rs4",
+      "source_sha256": "1ff9d10ea1c5e30b54bfc156ee4d8906c1e3ea8c66d043d4895f8423af154084",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_fear",
+      "source_path": "rst/rstweb/GUM_essay_fear.rs4",
+      "source_sha256": "97b9d6ec069cb0de665072aef3b1b77aef200b251bb90c01701046e6db1cd3d1",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_food",
+      "source_path": "rst/rstweb/GUM_essay_food.rs4",
+      "source_sha256": "bea7e31182401b1565b61b0184a94abff72109f7041894de332d75c36c0aa82b",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_fracking",
+      "source_path": "rst/rstweb/GUM_essay_fracking.rs4",
+      "source_sha256": "2181db901d7920be4176bba6836b2a59802225ebdb1ad5661b7e58b469fa27c9",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_ghost",
+      "source_path": "rst/rstweb/GUM_essay_ghost.rs4",
+      "source_sha256": "e6008fe2eec9a394da45a11c17634df48a1fc02a48e456c1bb2f943a79725317",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_merit",
+      "source_path": "rst/rstweb/GUM_essay_merit.rs4",
+      "source_sha256": "3958a87cfd159f93e45b6f7f7746515d55dc266b4ef7a75f7c6d360c3ce08f47",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_privatization",
+      "source_path": "rst/rstweb/GUM_essay_privatization.rs4",
+      "source_sha256": "f3d3fc57d4e3d6a2785071653dd6849d69189094738c7ac60109a7b9c1f145ad",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_public",
+      "source_path": "rst/rstweb/GUM_essay_public.rs4",
+      "source_sha256": "3539eb377582c91548d882a89d022d4b3db8e7eb4c05b3eee652311560e268c4",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_sexlife",
+      "source_path": "rst/rstweb/GUM_essay_sexlife.rs4",
+      "source_sha256": "3ef44cf4bf56e45dbe965da10e16a33748d63eaaefeb740a94c2558e54cffc41",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_system",
+      "source_path": "rst/rstweb/GUM_essay_system.rs4",
+      "source_sha256": "98478b09dccd001979cf0c15ddb22edfeb66e32caa9d56897c28c4a665816468",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_tools",
+      "source_path": "rst/rstweb/GUM_essay_tools.rs4",
+      "source_sha256": "1c7ea726e0347cbf2d370a35bbbb08b3416751351c1b911307e2c683ce6f18a9",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_essay_walking",
+      "source_path": "rst/rstweb/GUM_essay_walking.rs4",
+      "source_sha256": "ed25c73801705989eacee3fdb0549221ab17b449e50dc609c56b38f57c2b3635",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_beast",
+      "source_path": "rst/rstweb/GUM_fiction_beast.rs4",
+      "source_sha256": "3d27e6a09a00c5202a072d56e202559029bacf15c4053893b88e0c5e7227f59f",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_claus",
+      "source_path": "rst/rstweb/GUM_fiction_claus.rs4",
+      "source_sha256": "d2fc9d96f0ad29617a9bd8dc04c3830cba682e72bff1fe9570a29ce196f55b03",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_error",
+      "source_path": "rst/rstweb/GUM_fiction_error.rs4",
+      "source_sha256": "d82d566f9f6be8e17cf7771e1a4fad170889a791c25a477c31afad7cf1451546",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_falling",
+      "source_path": "rst/rstweb/GUM_fiction_falling.rs4",
+      "source_sha256": "9607028a8086600e151a977b6b7e5f0722e1e28f681f1fb88e9c036726c52aab",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_frankenstein",
+      "source_path": "rst/rstweb/GUM_fiction_frankenstein.rs4",
+      "source_sha256": "d781968586d41f36b2722109749691c9e1428cc9d35cc96ea7f6d2bc5a0a171d",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_garden",
+      "source_path": "rst/rstweb/GUM_fiction_garden.rs4",
+      "source_sha256": "d2d3105fe089de7908ff576fde1011828f5c630fb9dc9d8a7e843bc8089d80df",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_giants",
+      "source_path": "rst/rstweb/GUM_fiction_giants.rs4",
+      "source_sha256": "65e85f0eb52d9fc0f3c60141d6c2423b3de1f9d82c4ee3453e77b584f8c3ffa9",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_honour",
+      "source_path": "rst/rstweb/GUM_fiction_honour.rs4",
+      "source_sha256": "735fcc5802f96677f98e9a8a28991545ceed14200ea60615e5f559a577cca662",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_lunre",
+      "source_path": "rst/rstweb/GUM_fiction_lunre.rs4",
+      "source_sha256": "60447128443d1cbb58ca3d3a2551869eb9e7c13582f99ab9fd251f1584044978",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_moon",
+      "source_path": "rst/rstweb/GUM_fiction_moon.rs4",
+      "source_sha256": "7a8194e319c5c24bb1fe7a43df48c75bdc8d064335cc5cdec2f0b51faf10262f",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_oversite",
+      "source_path": "rst/rstweb/GUM_fiction_oversite.rs4",
+      "source_sha256": "a1d060f95e9ddf706cfdccdd6bea028b268155a559ec3e0a381c58984f8ea782",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_pag",
+      "source_path": "rst/rstweb/GUM_fiction_pag.rs4",
+      "source_sha256": "52abe964cc2ccc0b1217bafdf50374a6b8feb70476e793506046ae67a6c41be5",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_pixies",
+      "source_path": "rst/rstweb/GUM_fiction_pixies.rs4",
+      "source_sha256": "dc34127c4278408f4402899ff0af3d628e1b4d3f5a4c87eef3b6917ff05d4278",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_rose",
+      "source_path": "rst/rstweb/GUM_fiction_rose.rs4",
+      "source_sha256": "856a4601c40cbf461f0a8b1ac871c6fa6352b31c789a663c34c209fb142de55d",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_sneeze",
+      "source_path": "rst/rstweb/GUM_fiction_sneeze.rs4",
+      "source_sha256": "75f75a3f256aee162659e6ecd69ffcfebf2346286e52a6a190ebc88e0da0099a",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_teeth",
+      "source_path": "rst/rstweb/GUM_fiction_teeth.rs4",
+      "source_sha256": "6a9b93ba165c85d1f87622f9288c070872a1192b6c390bd0129ebc81775bc641",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_time",
+      "source_path": "rst/rstweb/GUM_fiction_time.rs4",
+      "source_sha256": "88ce35a2d52d5175aec128e81e57326bd9de8c694cda6a493e1736dc9ede81d0",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_veronique",
+      "source_path": "rst/rstweb/GUM_fiction_veronique.rs4",
+      "source_sha256": "200a035299858011803fa3602c7c97e1ec55cbd0770d5edbf3fa1cca28470a3c",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_fiction_wedding",
+      "source_path": "rst/rstweb/GUM_fiction_wedding.rs4",
+      "source_sha256": "b093b34f0ce0a9d82e15a6c31ff284f98863a45156778f9d01da78b35a820a45",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_interview_ants",
+      "source_path": "rst/rstweb/GUM_interview_ants.rs4",
+      "source_sha256": "42fa91876f3528a2aa827adaa0af54889578bd372b3f0e47c738477db23d89dc",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_brotherhood",
+      "source_path": "rst/rstweb/GUM_interview_brotherhood.rs4",
+      "source_sha256": "cc0ea0ea0cd9a7bd661ebbc2da5956201e983d2c4c00310a961b7f260dda0cfc",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_chomsky",
+      "source_path": "rst/rstweb/GUM_interview_chomsky.rs4",
+      "source_sha256": "43134a9c41a12b9477fb55528891249f4b3ec922f0198c2ebe2b71084f979531",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_cocktail",
+      "source_path": "rst/rstweb/GUM_interview_cocktail.rs4",
+      "source_sha256": "12f7a11c6e8643252774a14004eadc0675381d8b2507fe482fbf36b7e05e5aed",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_cyclone",
+      "source_path": "rst/rstweb/GUM_interview_cyclone.rs4",
+      "source_sha256": "f047ba7658157780dba6d0c2b828109d7f8b2fb7f83cae9f60d0a4f0b172f609",
+      "partition": "dev",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_daly",
+      "source_path": "rst/rstweb/GUM_interview_daly.rs4",
+      "source_sha256": "d7586a5885f084b052cb9218306a9e95cbc4f47427b27d38c665cd93e1cbead5",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_dungeon",
+      "source_path": "rst/rstweb/GUM_interview_dungeon.rs4",
+      "source_sha256": "7da21996dad24d76521bfbd5730848f1329a9936e192892ad1c65e06c7a606eb",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_gaming",
+      "source_path": "rst/rstweb/GUM_interview_gaming.rs4",
+      "source_sha256": "ba21648d3dde5d2bbc6c2d5ae0814e8613a58b926e1e84d307f7366059bf19cb",
+      "partition": "dev",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_herrick",
+      "source_path": "rst/rstweb/GUM_interview_herrick.rs4",
+      "source_sha256": "5e7ee175726ff868bcf4e4715988500477a37b9c6978e977491907fc7cfb264c",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_hill",
+      "source_path": "rst/rstweb/GUM_interview_hill.rs4",
+      "source_sha256": "deac9aa17a561599ed1d44f020ae7d313059ef7bfd8ac543652f7459e190fd67",
+      "partition": "test",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_libertarian",
+      "source_path": "rst/rstweb/GUM_interview_libertarian.rs4",
+      "source_sha256": "e8cef33b15608e0a3f3ae44344f3fd9b9aedb12278a6d77faa920f7280188b0e",
+      "partition": "test",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_licen",
+      "source_path": "rst/rstweb/GUM_interview_licen.rs4",
+      "source_sha256": "89a6061db72979db2178ef8af9c6624be17386e910aa08ed7104e6594cd31774",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_mcguire",
+      "source_path": "rst/rstweb/GUM_interview_mcguire.rs4",
+      "source_sha256": "3f0cd5bc415c947d4a6374a6571aa024805a855f689295ecedc002875313eaaa",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_mckenzie",
+      "source_path": "rst/rstweb/GUM_interview_mckenzie.rs4",
+      "source_sha256": "2d17666ec523338350a9ec3d28d03f23c4de20179013e63e73b443521c060282",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_messina",
+      "source_path": "rst/rstweb/GUM_interview_messina.rs4",
+      "source_sha256": "933b8b6d44605ae889107da3d00b81c5e6d4b97529fefcd269f22c7730fef2a0",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_onion",
+      "source_path": "rst/rstweb/GUM_interview_onion.rs4",
+      "source_sha256": "9621bda28147d7b8f2de29d5893cab69dedd8b6fafee7189f6294e62617c7fb1",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_peres",
+      "source_path": "rst/rstweb/GUM_interview_peres.rs4",
+      "source_sha256": "f95a8fead2f990d4aa5d20e169aa19cb3d8cd44fa522d6aee9a6e98ea46f9ddf",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_shalev",
+      "source_path": "rst/rstweb/GUM_interview_shalev.rs4",
+      "source_sha256": "770072aad795858dc03d8b432d978c0b37f029a03aa1233f9a8bfad58cc9a993",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_interview_stardust",
+      "source_path": "rst/rstweb/GUM_interview_stardust.rs4",
+      "source_sha256": "785f0a0f0f51e04b0446347bacc4516ad4996cc552c9cd0d78f6aaf4f1e70811",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_letter_arendt",
+      "source_path": "rst/rstweb/GUM_letter_arendt.rs4",
+      "source_sha256": "7e7c21dc47004ac4d07f323c1f8e39f25ce99a84d7d3721cbb5d2d6376480b9b",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_attorney",
+      "source_path": "rst/rstweb/GUM_letter_attorney.rs4",
+      "source_sha256": "52cadcfc3177fa1fa2889f0e0020ff8dcde407a01b694a22301e0dbe3ce299f9",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_conference",
+      "source_path": "rst/rstweb/GUM_letter_conference.rs4",
+      "source_sha256": "fb90f6a541959759f01e920f910cc84a8bde40add7c9a590362b798b330f1eee",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_cricket",
+      "source_path": "rst/rstweb/GUM_letter_cricket.rs4",
+      "source_sha256": "1cfd914714f97fc9405d55d8d2095116e6f525955f65d80b1d1c58aae8df72ca",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_critique",
+      "source_path": "rst/rstweb/GUM_letter_critique.rs4",
+      "source_sha256": "a80d5e05d84e8bd612e654c4777cf7fd73f405f4338d7c9a6025a2bd51da1e52",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_flood",
+      "source_path": "rst/rstweb/GUM_letter_flood.rs4",
+      "source_sha256": "9af39cbc015040e136e8d4b35ce979ba08d3a08f5cc093263494185e0312a554",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_gorbachev",
+      "source_path": "rst/rstweb/GUM_letter_gorbachev.rs4",
+      "source_sha256": "f0d9393a5325dbe4c296814322af25dd7a59e97d3f9ed39fa1982f8d5cdece4f",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_mandela",
+      "source_path": "rst/rstweb/GUM_letter_mandela.rs4",
+      "source_sha256": "d8515c5f0f05188cd76974eff9b2f5532203641be4e1643f3ea627d5b80fd27c",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_marcie",
+      "source_path": "rst/rstweb/GUM_letter_marcie.rs4",
+      "source_sha256": "022253d5a69a18564d0330817ec6a48f1e52fb0261618259cb0f02c012e2f0ec",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_marcie2",
+      "source_path": "rst/rstweb/GUM_letter_marcie2.rs4",
+      "source_sha256": "27201e271c3c4c397497b8c13ce40302a2265daae1975f3b30ad80bf7d6d40d9",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_marcie3",
+      "source_path": "rst/rstweb/GUM_letter_marcie3.rs4",
+      "source_sha256": "3b43733f652cf99f41758991197c88078c34b074849267a913a834083603544c",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_roomers",
+      "source_path": "rst/rstweb/GUM_letter_roomers.rs4",
+      "source_sha256": "9b1fe041ad43f2e175c82af098bbe1d2357f9235c34252ee92a8043604b46d85",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_sacco",
+      "source_path": "rst/rstweb/GUM_letter_sacco.rs4",
+      "source_sha256": "e51b12a0d9220cd4e52280ebd8712dde210db2d69f8ac271463dcb1c5d1d31cf",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_srilanka",
+      "source_path": "rst/rstweb/GUM_letter_srilanka.rs4",
+      "source_sha256": "7e88916c666e0e8a227b6057f273201babd9fba09f4189228dfb33e18fd88f8a",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_trade",
+      "source_path": "rst/rstweb/GUM_letter_trade.rs4",
+      "source_sha256": "4e04e13c8ca0168052aa9e409978494d14a0d6f980e8b4f051f5efb8014ac45e",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_travel",
+      "source_path": "rst/rstweb/GUM_letter_travel.rs4",
+      "source_sha256": "6e43beacba1288b3a07419650aa70e36fcaf9371ce8fc0428b0bc99c0ebb804f",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_wiki",
+      "source_path": "rst/rstweb/GUM_letter_wiki.rs4",
+      "source_sha256": "b36a2df3f20e3303c190582f04a3d05706c7a0f5f2d04bb4e143a046ad32c6c9",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_letter_zora",
+      "source_path": "rst/rstweb/GUM_letter_zora.rs4",
+      "source_sha256": "84e80806e3ba26c2c204d83fa4a93f30b0396acc7b118efcb895fc51e09c84a9",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_news_afghan",
+      "source_path": "rst/rstweb/GUM_news_afghan.rs4",
+      "source_sha256": "c051cb7b4efb5b04f47258f4f25ae10d89fd796179a79a18742536704ec3781c",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_asylum",
+      "source_path": "rst/rstweb/GUM_news_asylum.rs4",
+      "source_sha256": "df5c8274c4f2f41d4e525b16363afe15afd214ad3383decaa32e2a8623f64fb5",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_clock",
+      "source_path": "rst/rstweb/GUM_news_clock.rs4",
+      "source_sha256": "d0271c3af54f5f14221bc445eaec8e0d3e8146ad9157b33579ca853cefbc1a43",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_crane",
+      "source_path": "rst/rstweb/GUM_news_crane.rs4",
+      "source_sha256": "d03b23248449c4ff947e8d47c0abe0a1fabe27a417b244237f6758e66d330299",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_defector",
+      "source_path": "rst/rstweb/GUM_news_defector.rs4",
+      "source_sha256": "f61d3c85430feac1d2cd80df9de0edf714285191284885fceb23f5b2d66eeb29",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_election",
+      "source_path": "rst/rstweb/GUM_news_election.rs4",
+      "source_sha256": "74b8fc536821c919d32dffe768345978bca2ff2daf7fbfa09de51a15266214fb",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_expo",
+      "source_path": "rst/rstweb/GUM_news_expo.rs4",
+      "source_sha256": "777e1c13cf23511f608fa84ad47737dbebce67ec120e0fc4095f84d39823d9a7",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_flag",
+      "source_path": "rst/rstweb/GUM_news_flag.rs4",
+      "source_sha256": "2551a09becfc1ce110d9ca4a04952b0bfb8c6daf17d7bb2be3e8860cf54977ae",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_hackers",
+      "source_path": "rst/rstweb/GUM_news_hackers.rs4",
+      "source_sha256": "9723c744e83470e706e34cdada9b1e97baa92d65e45ddcdd60252dba58f2cc4c",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_homeopathic",
+      "source_path": "rst/rstweb/GUM_news_homeopathic.rs4",
+      "source_sha256": "07ddd4cf1c1081e53a34f6906e1fb2082f492e855b1b84e9b5c976d1328f6068",
+      "partition": "dev",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_ie9",
+      "source_path": "rst/rstweb/GUM_news_ie9.rs4",
+      "source_sha256": "ce9f2885ad2ac3fe7c8bae07b13319fc9e2cec852c38c4795d778412ca17b2fe",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_imprisoned",
+      "source_path": "rst/rstweb/GUM_news_imprisoned.rs4",
+      "source_sha256": "57870cc9f9baab3712848a35711adc45b13d9fd0b1a0f30127913020d6960dd7",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_iodine",
+      "source_path": "rst/rstweb/GUM_news_iodine.rs4",
+      "source_sha256": "6f702e487e6511e4c74a62e1c3bd2e721116d106dfe6b7a9face412eb325be94",
+      "partition": "dev",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_korea",
+      "source_path": "rst/rstweb/GUM_news_korea.rs4",
+      "source_sha256": "fafaf62007da3829c8f259aaa27c4bde63057fd38e36cd62edbc59c7245b14b1",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_lanterns",
+      "source_path": "rst/rstweb/GUM_news_lanterns.rs4",
+      "source_sha256": "f29fd5be780a4e2e72427de608e55ad97e7db6428415be5402bb7908907b5b94",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_nasa",
+      "source_path": "rst/rstweb/GUM_news_nasa.rs4",
+      "source_sha256": "c14c483f8ccae9f03a64288e0c69c4940545e7b28c6ef5dc1ccb8d53b76a95a1",
+      "partition": "test",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_questionnaire",
+      "source_path": "rst/rstweb/GUM_news_questionnaire.rs4",
+      "source_sha256": "e76e9cef27867f3bc6bd9a02d4cf26405dd965bf13068b3b62d2f63d2a006df7",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_sensitive",
+      "source_path": "rst/rstweb/GUM_news_sensitive.rs4",
+      "source_sha256": "bfb3c3d51442957921a9ac205786b39d657552b417c68d5c572fe42b2f18d1d4",
+      "partition": "test",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_soccer",
+      "source_path": "rst/rstweb/GUM_news_soccer.rs4",
+      "source_sha256": "637a5a658380798bee1f3089de38b76f8e2cfea005491073c75ce1732a4b24e3",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_stampede",
+      "source_path": "rst/rstweb/GUM_news_stampede.rs4",
+      "source_sha256": "8db22577a7cc32af2d151e729edff2c7bb602bbc1bebdf21a1503f4756f3462c",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_taxes",
+      "source_path": "rst/rstweb/GUM_news_taxes.rs4",
+      "source_sha256": "8674aba3a353100b4fec91ecff5e601fa8fe2a11cf5481d2999e62cd168d67c8",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_warhol",
+      "source_path": "rst/rstweb/GUM_news_warhol.rs4",
+      "source_sha256": "0d1673da79d8eba2b9fa76db80ecf467451cd5929c8bae08d9e7b065b5ae2692",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_warming",
+      "source_path": "rst/rstweb/GUM_news_warming.rs4",
+      "source_sha256": "96d14f2cc0c23c5be57f642bfc47cd646baa080f2f4f579f80a7848922abc182",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_news_worship",
+      "source_path": "rst/rstweb/GUM_news_worship.rs4",
+      "source_sha256": "08c01952e8d861140e7dd172922f42184dbaf302adfd1aa78b5468ac88790ddd",
+      "partition": "train",
+      "license_class": "cc_by"
+    },
+    {
+      "document_id": "GUM_podcast_addiction",
+      "source_path": "rst/rstweb/GUM_podcast_addiction.rs4",
+      "source_sha256": "5c4e43ac6b51bd55fa7878a6b68f1b04e09cadc8b19c8d1198638bfd5beba138",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_bangladesh",
+      "source_path": "rst/rstweb/GUM_podcast_bangladesh.rs4",
+      "source_sha256": "e2280f0a93c946f4017c825b76f1bc5153a55a9e53aeaa66ab06a8d93bd7db0d",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_bezos",
+      "source_path": "rst/rstweb/GUM_podcast_bezos.rs4",
+      "source_sha256": "ed11ff9c3c579e7440681bca5fd0b3e38d40daabe927ca1e8cb134635f5a1aa0",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_blackholes",
+      "source_path": "rst/rstweb/GUM_podcast_blackholes.rs4",
+      "source_sha256": "69a2c989822691088f970492920175f60941f4a79e5d91facdc238b839de1294",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_brave",
+      "source_path": "rst/rstweb/GUM_podcast_brave.rs4",
+      "source_sha256": "10a0f93f0af7532e2d9367634b0e3753316e78a5b5e3e7e8bc2010521097ce81",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_collaboration",
+      "source_path": "rst/rstweb/GUM_podcast_collaboration.rs4",
+      "source_sha256": "17d06edc7318db72a207437ef6608365c84088470fdbd7e716df0725e7ebd7e8",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_library",
+      "source_path": "rst/rstweb/GUM_podcast_library.rs4",
+      "source_sha256": "cd588969e79c48681ca0c44f7387c80a7b308c8722d5a8d119fc433b6588a159",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_llms",
+      "source_path": "rst/rstweb/GUM_podcast_llms.rs4",
+      "source_sha256": "c5951387235f220c6c020981d4b3e67c2d4665222b34569e27151fa1531518ef",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_mealprep",
+      "source_path": "rst/rstweb/GUM_podcast_mealprep.rs4",
+      "source_sha256": "4baad3d3b61f2f936ca4b723b964d4457b7237c84f3197fa89455cfb4e0eda74",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_movie",
+      "source_path": "rst/rstweb/GUM_podcast_movie.rs4",
+      "source_sha256": "3c3bc9fa9dd642a3b11906ffcfecc719dc26614e28265baa62ac3d2949e07ae2",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_multitasking",
+      "source_path": "rst/rstweb/GUM_podcast_multitasking.rs4",
+      "source_sha256": "246dd0e38075479fce3a47ab01430f04c4909b570917c4e468e76b471d1f2d1c",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_muskoka",
+      "source_path": "rst/rstweb/GUM_podcast_muskoka.rs4",
+      "source_sha256": "da3ec9045cd3ac583be5310fe853fc13f97a804927b54a7c0ec66322dcdecb1b",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_pandemic",
+      "source_path": "rst/rstweb/GUM_podcast_pandemic.rs4",
+      "source_sha256": "cf1ab98e2242d271f76c18b56a187af198e77cbbc1b2695c9363b0a8b6936a31",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_podcast_wrestling",
+      "source_path": "rst/rstweb/GUM_podcast_wrestling.rs4",
+      "source_sha256": "9920db0c917ad43e793f90399614a04f7f3b78581eb6a26d3d9001c2d79d4783",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_bobby",
+      "source_path": "rst/rstweb/GUM_reddit_bobby.rs4",
+      "source_sha256": "db46db436da1951306620298572d886c3cbd614718e381515ff38b5853352751",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_callout",
+      "source_path": "rst/rstweb/GUM_reddit_callout.rs4",
+      "source_sha256": "e62ea4194b4b7f63a8cc7753c84799552efe1532b7a2c29f6e2124501c813ad6",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_card",
+      "source_path": "rst/rstweb/GUM_reddit_card.rs4",
+      "source_sha256": "e33bbf2b9bb1e6cec21e59129fc6acc0ab233cdb7374283294e142da958c04bf",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_conspiracy",
+      "source_path": "rst/rstweb/GUM_reddit_conspiracy.rs4",
+      "source_sha256": "a6aeb76335def9bccfc2707f9b3ba71521fd01da6da45d721cce843be3fb46a6",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_escape",
+      "source_path": "rst/rstweb/GUM_reddit_escape.rs4",
+      "source_sha256": "1cee83f9ded43e8107da0d856ea2da8cec20afa45ea498998b19aca10661e7c7",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_gender",
+      "source_path": "rst/rstweb/GUM_reddit_gender.rs4",
+      "source_sha256": "60b05970ff601ce5863246e8f07da17ed6493aad7107fd55a6b74e35258279b1",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_introverts",
+      "source_path": "rst/rstweb/GUM_reddit_introverts.rs4",
+      "source_sha256": "064c09f9c02878747cb3f499586b25dade8c9a2943a7a98e9061396af42a44d2",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_macroeconomics",
+      "source_path": "rst/rstweb/GUM_reddit_macroeconomics.rs4",
+      "source_sha256": "bad2fb14c86c519765f7ec9e80f8fa78ef1e7da67e81835fa90102de5450314a",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_monsters",
+      "source_path": "rst/rstweb/GUM_reddit_monsters.rs4",
+      "source_sha256": "36d2ef41bc3407e2f4d23f44144c5f94f89c78717c9a64abe8acf16699be2db6",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_pandas",
+      "source_path": "rst/rstweb/GUM_reddit_pandas.rs4",
+      "source_sha256": "5b7b9646e9469db660a2fb4b6bceb60cb5b93d01fec30a01f96062c8a75598e8",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_polygraph",
+      "source_path": "rst/rstweb/GUM_reddit_polygraph.rs4",
+      "source_sha256": "7772d8d424facfb8670ece2061ac0fb98592e8fe6f4a78c45ccd7e81227db1d7",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_racial",
+      "source_path": "rst/rstweb/GUM_reddit_racial.rs4",
+      "source_sha256": "2fe458da15709b02587183f2c4746d014cef4085b7465097c3c659d233d4fd03",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_ring",
+      "source_path": "rst/rstweb/GUM_reddit_ring.rs4",
+      "source_sha256": "2bbcd35e4d5d41b888b555d8863da25d55404c536da12442f3bfc52459023545",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_social",
+      "source_path": "rst/rstweb/GUM_reddit_social.rs4",
+      "source_sha256": "6bbf38b0e7a75a2134390704cac8c9d1c426b4f98a80ce2c32a3e5a1103294fa",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_space",
+      "source_path": "rst/rstweb/GUM_reddit_space.rs4",
+      "source_sha256": "ef00ef7d482e6c6b452391c713f365eaa7d31155785cf04f6d0a2d2cfed438da",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_steak",
+      "source_path": "rst/rstweb/GUM_reddit_steak.rs4",
+      "source_sha256": "9b9464af4880c13cc5bd261b14c57345083aa887932cc485456372737d9b88f3",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_stroke",
+      "source_path": "rst/rstweb/GUM_reddit_stroke.rs4",
+      "source_sha256": "45af8c037e345e99aec2764011d8da800dd661497d76aff770bae18d4571e3d8",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_reddit_superman",
+      "source_path": "rst/rstweb/GUM_reddit_superman.rs4",
+      "source_sha256": "182b732b0e60c6a83648fe68782af44fd3b30b8a25ed918dc5b2cfc596115959",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_speech_albania",
+      "source_path": "rst/rstweb/GUM_speech_albania.rs4",
+      "source_sha256": "149dc30cc7e7bf93caa9fff449c04524ba49582122426590c5cf381c8858d81b",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_austria",
+      "source_path": "rst/rstweb/GUM_speech_austria.rs4",
+      "source_sha256": "b7d269a325edbc651746e594968d424270e756948976de29c6dee6c117bf4b5c",
+      "partition": "test",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_data",
+      "source_path": "rst/rstweb/GUM_speech_data.rs4",
+      "source_sha256": "9be7f7005f1a9f0d79506ce0354f592e0e6c9633f4792538657ff8245ec58bd2",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_destiny",
+      "source_path": "rst/rstweb/GUM_speech_destiny.rs4",
+      "source_sha256": "ec857101ffd6b12a30a90e2e60228f26d2d9707ce84480cea7575b0e9e71e32a",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_floyd",
+      "source_path": "rst/rstweb/GUM_speech_floyd.rs4",
+      "source_sha256": "2d170680db04a77c10e6a7a12bae6c99a8c2b36c672238c805bf3426ad0160d6",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_humanitarian",
+      "source_path": "rst/rstweb/GUM_speech_humanitarian.rs4",
+      "source_sha256": "4be91009fe93350e0501da9926ded12a6f6601412aa831b2cc4e74e57170462c",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_impeachment",
+      "source_path": "rst/rstweb/GUM_speech_impeachment.rs4",
+      "source_sha256": "55ee8333357f862a51f64b423eb0187ed5629a18543cc1d9514e167df391b122",
+      "partition": "dev",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_inauguration",
+      "source_path": "rst/rstweb/GUM_speech_inauguration.rs4",
+      "source_sha256": "f43267d867a6464fa4d8622157cd7d140cb097641cba28a568b8521dd789282f",
+      "partition": "dev",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_maiden",
+      "source_path": "rst/rstweb/GUM_speech_maiden.rs4",
+      "source_sha256": "1930df95205706451dc28aa53cdb7ec8d641599dfa7d1af14e3e573a51e898ab",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_newzealand",
+      "source_path": "rst/rstweb/GUM_speech_newzealand.rs4",
+      "source_sha256": "ecda67b019a1e15f7760f2f39b3b9c49d02322fb50d57d267a84836c2c5e4009",
+      "partition": "test",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_nixon",
+      "source_path": "rst/rstweb/GUM_speech_nixon.rs4",
+      "source_sha256": "1d9277a1b9fbf0736d4a021f8987feab4c068f3d61fe1a752493b0f1bdab1c41",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_open",
+      "source_path": "rst/rstweb/GUM_speech_open.rs4",
+      "source_sha256": "f9bbd3360e8b95fec43b42d7a8138bb0ff3bbccd25c5122d9233f64bcb2b402d",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_remarks",
+      "source_path": "rst/rstweb/GUM_speech_remarks.rs4",
+      "source_sha256": "a65c2304344e57b22960a221648c57148075713dc2137f83e66670209898a2bd",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_telescope",
+      "source_path": "rst/rstweb/GUM_speech_telescope.rs4",
+      "source_sha256": "a707bc82d8fb03c6b22ec9d93810e5763cbaa3f607fa9b075a810f9ba8c08781",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_speech_trump",
+      "source_path": "rst/rstweb/GUM_speech_trump.rs4",
+      "source_sha256": "34889906971974b11977b14d71c8f4b5971cb8cf8062a28ed17c188476f6f7b7",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_alamo",
+      "source_path": "rst/rstweb/GUM_textbook_alamo.rs4",
+      "source_sha256": "ca99780d9cb0627c2395e582a450edea66b9844c053d933ca18c606595eddfff",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_anthropology",
+      "source_path": "rst/rstweb/GUM_textbook_anthropology.rs4",
+      "source_sha256": "27f89826a4d840e1a018966eed4ec3e49935b515c8fcbee613da00c1b8bc42a8",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_artwork",
+      "source_path": "rst/rstweb/GUM_textbook_artwork.rs4",
+      "source_sha256": "d1e7759a59085dd27d3c6e852c997e892f8390835f04add78d1a59a6482e30e6",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_chemistry",
+      "source_path": "rst/rstweb/GUM_textbook_chemistry.rs4",
+      "source_sha256": "95b7bd73ab1cac41fecf838f1bd294a891e9fd90104d9aecd9b1c5554a7568fc",
+      "partition": "test",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_cognition",
+      "source_path": "rst/rstweb/GUM_textbook_cognition.rs4",
+      "source_sha256": "1cb9a55c470702e53b07f17e1596a4976603d3cef2cadd899da30c91ae6230d5",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_entrepreneurship",
+      "source_path": "rst/rstweb/GUM_textbook_entrepreneurship.rs4",
+      "source_sha256": "a8ee845199b1927a7c955233cf1782c95d9bf7c8734a1ddbf927d80f1a7a8f45",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_evoethics",
+      "source_path": "rst/rstweb/GUM_textbook_evoethics.rs4",
+      "source_sha256": "415a3adbf6e542b45d507d63da0890252b78f4750ff5e3bb969a6593dedaecae",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_governments",
+      "source_path": "rst/rstweb/GUM_textbook_governments.rs4",
+      "source_sha256": "22db7b4151897109082c0bb990e211a5c5e032e246aaf22434b3bbec562acc14",
+      "partition": "dev",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_grit",
+      "source_path": "rst/rstweb/GUM_textbook_grit.rs4",
+      "source_sha256": "03134235761133ce711e0ac41a6b68a649b49ae40f67eb92fcab0e35648ca2c5",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_history",
+      "source_path": "rst/rstweb/GUM_textbook_history.rs4",
+      "source_sha256": "683f19f66abe91616bbdf39635c6567a8a189211a69271abaa3a3c42cffa8e34",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_labor",
+      "source_path": "rst/rstweb/GUM_textbook_labor.rs4",
+      "source_sha256": "8321a4c412892ecb1ca203845109fd7b2102f1cc5c6799dbb52a4649fa17007b",
+      "partition": "dev",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_sociology",
+      "source_path": "rst/rstweb/GUM_textbook_sociology.rs4",
+      "source_sha256": "136ab85fb3213e522997d5520aca805129dea46e73e9cfea3451f8543b65c7eb",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_spacetime",
+      "source_path": "rst/rstweb/GUM_textbook_spacetime.rs4",
+      "source_sha256": "74c22ccb9bb5045fa9a39f792de3bce9b0e1afb2c5c9f02dfbdf5781b8e201ab",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_stats",
+      "source_path": "rst/rstweb/GUM_textbook_stats.rs4",
+      "source_sha256": "c5be8be1b705ecfa0703c16d7b9b3deeb1956b3035b4ae74bd26485965c6a15a",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_textbook_union",
+      "source_path": "rst/rstweb/GUM_textbook_union.rs4",
+      "source_sha256": "3832bd9c417a43a920527e6467cde690ed29455b68b97685235ed0dc014996f8",
+      "partition": "test",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_appearance",
+      "source_path": "rst/rstweb/GUM_vlog_appearance.rs4",
+      "source_sha256": "9ea8d338b614bfd000f385bb127899e7d9799e00b0a289c4a2ce65250b3ffa81",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_college",
+      "source_path": "rst/rstweb/GUM_vlog_college.rs4",
+      "source_sha256": "66267af067269f1cde4fc333b72cbb4943202d4f12beb5b34b718031b249faaf",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_covid",
+      "source_path": "rst/rstweb/GUM_vlog_covid.rs4",
+      "source_sha256": "efa8bdea5a6de7ad0a35b085730d4690ea30d56ebb9c84060f8bf8d6649aa6cc",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_exams",
+      "source_path": "rst/rstweb/GUM_vlog_exams.rs4",
+      "source_sha256": "439529d6588fed1fbb54d75c94da1b471c0c9361adf6d7723a19b08120edb92d",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_hair",
+      "source_path": "rst/rstweb/GUM_vlog_hair.rs4",
+      "source_sha256": "45b15505bf66c169787462adf98d96f7502f778ead35ea098c32affa1f3a09ce",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_hiking",
+      "source_path": "rst/rstweb/GUM_vlog_hiking.rs4",
+      "source_sha256": "787f33b1437589a398765f03a65305d575e15d565eaa682534e24588365cc6ca",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_lipstick",
+      "source_path": "rst/rstweb/GUM_vlog_lipstick.rs4",
+      "source_sha256": "dac3a9888de681605a172f12ad1971dba5f2ede05fe582a76b5ac3b0358d516b",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_london",
+      "source_path": "rst/rstweb/GUM_vlog_london.rs4",
+      "source_sha256": "7cfa32ad4372da42c42b876755d55d24954063e406bbed019fa8089255889011",
+      "partition": "test",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_mermaid",
+      "source_path": "rst/rstweb/GUM_vlog_mermaid.rs4",
+      "source_sha256": "fcdfd7de9cd940d5f6e81e14b6d1ad27a8301f60f5a4cb007ad9c48489f6ad1a",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_pizzeria",
+      "source_path": "rst/rstweb/GUM_vlog_pizzeria.rs4",
+      "source_sha256": "6a48a3df4abb8f72737ec9572c315253f6ccd5b38bb31b3a0c9bdd002849b51a",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_portland",
+      "source_path": "rst/rstweb/GUM_vlog_portland.rs4",
+      "source_sha256": "4e18409e855bf855de78fc77ac41d69d74e50cedd91abdbf2e6c4d54350a6ef6",
+      "partition": "dev",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_pregnant",
+      "source_path": "rst/rstweb/GUM_vlog_pregnant.rs4",
+      "source_sha256": "b1cdf5693627bdc40641d2315a9afc1bf91e90f13a3f9e2684850ab9d90d5913",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_radiology",
+      "source_path": "rst/rstweb/GUM_vlog_radiology.rs4",
+      "source_sha256": "2539e6302a13c68f87282b657dccc364b5acc37b15bbf3c0b11886d5f5a90670",
+      "partition": "dev",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_studying",
+      "source_path": "rst/rstweb/GUM_vlog_studying.rs4",
+      "source_sha256": "3840cde8fe79a6b0316857051b4932f5f536c9300a9c3af99765953c61736b4a",
+      "partition": "test",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_vlog_wine",
+      "source_path": "rst/rstweb/GUM_vlog_wine.rs4",
+      "source_sha256": "48e107e7e0598426528353a7d834bdf12fe9be198ad3ec3ca57dc8ea7abd8308",
+      "partition": "train",
+      "license_class": "restricted"
+    },
+    {
+      "document_id": "GUM_voyage_athens",
+      "source_path": "rst/rstweb/GUM_voyage_athens.rs4",
+      "source_sha256": "8693cb78bb38871f731b7177c7a28b5b101b113cb999963c83878da2335fbc7b",
+      "partition": "dev",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_chatham",
+      "source_path": "rst/rstweb/GUM_voyage_chatham.rs4",
+      "source_sha256": "5495428c5be62693395df51d9c4bf45c8b7ccef228ad1258dae2b4af201b30a4",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_cleveland",
+      "source_path": "rst/rstweb/GUM_voyage_cleveland.rs4",
+      "source_sha256": "853de4498fc9ce9c6b9aa3530af231ffd3f85b88fd484b09c1647ae7e2055d44",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_coron",
+      "source_path": "rst/rstweb/GUM_voyage_coron.rs4",
+      "source_sha256": "fa55430c366a2091e3c9e3f8c35eb75c219fada93af15885532edc2573bc5486",
+      "partition": "dev",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_cuba",
+      "source_path": "rst/rstweb/GUM_voyage_cuba.rs4",
+      "source_sha256": "1373c26a86aeba25dbfb3d846cf59812c9870c8d596cb0fc21284f9ed9fa6327",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_fortlee",
+      "source_path": "rst/rstweb/GUM_voyage_fortlee.rs4",
+      "source_sha256": "47af9de00a37e4e653aefb3121d87f9b3bbb86564f2b87469cbc8f2fa8ec9af7",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_guadeloupe",
+      "source_path": "rst/rstweb/GUM_voyage_guadeloupe.rs4",
+      "source_sha256": "ad47f21d96df501281e83464820fb78c42361ecf27113316500284d261df8743",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_isfahan",
+      "source_path": "rst/rstweb/GUM_voyage_isfahan.rs4",
+      "source_sha256": "b4079f0db149add84925f9963fd1c751fbd02bea2d1f60600cceb41fe29a0291",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_lodz",
+      "source_path": "rst/rstweb/GUM_voyage_lodz.rs4",
+      "source_sha256": "b492422fd6b6403933a54f9424efd12af734e9bedbd5f98ddfaf698b5100ffd6",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_merida",
+      "source_path": "rst/rstweb/GUM_voyage_merida.rs4",
+      "source_sha256": "31b80e31ca3cb9a5b8a614d71cf0dea50656e5bf29cc38e54164e7dac94c504f",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_oakland",
+      "source_path": "rst/rstweb/GUM_voyage_oakland.rs4",
+      "source_sha256": "72f258d3fbafdfeb6c912c79649d912c1dfa69a4c5929cd0a379f6d2016066df",
+      "partition": "test",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_phoenix",
+      "source_path": "rst/rstweb/GUM_voyage_phoenix.rs4",
+      "source_sha256": "f2a85fb460c6255fe87a086f66d6074a1d85a74e80781ba51dff77eb50f8142b",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_socotra",
+      "source_path": "rst/rstweb/GUM_voyage_socotra.rs4",
+      "source_sha256": "a4c85ecea18c90819d8a8e5eb5c2bdc89b565239b639f4a6a866af84a748a2e7",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_sydfynske",
+      "source_path": "rst/rstweb/GUM_voyage_sydfynske.rs4",
+      "source_sha256": "d65dae649cf0e848109b3906682bdf640d7dbb37f3419a3d6b504012e73e6d6c",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_thailand",
+      "source_path": "rst/rstweb/GUM_voyage_thailand.rs4",
+      "source_sha256": "34541903d55e8271b0766ffe061a33595723f7e378fa5213c5f86760cf57a4bc",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_tulsa",
+      "source_path": "rst/rstweb/GUM_voyage_tulsa.rs4",
+      "source_sha256": "3205b3cf0deedfcaf26bba8ccec8d31ea24878d839ffffce83489a692820d298",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_vavau",
+      "source_path": "rst/rstweb/GUM_voyage_vavau.rs4",
+      "source_sha256": "c1792e561813ec2c5df8e68b86444d4d9733f10a17eca496ed3c4028e5d2da06",
+      "partition": "test",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_voyage_york",
+      "source_path": "rst/rstweb/GUM_voyage_york.rs4",
+      "source_sha256": "88f6c8b9e4316600a7698529e8496b465da32f4b8fd6004952d4104268951fbf",
+      "partition": "train",
+      "license_class": "cc_by_sa"
+    },
+    {
+      "document_id": "GUM_whow_arrogant",
+      "source_path": "rst/rstweb/GUM_whow_arrogant.rs4",
+      "source_sha256": "78b5fd91392b16cf4a9ed5bf08f84eef52a88bc543be62fc6f08af6f98a7dc85",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_ballet",
+      "source_path": "rst/rstweb/GUM_whow_ballet.rs4",
+      "source_sha256": "243382d5f0e6c5666bfba40cfe84b147ec749053d752f1763ad0bbcd98b30d72",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_basil",
+      "source_path": "rst/rstweb/GUM_whow_basil.rs4",
+      "source_sha256": "57546db75bf22ab3ba7b5b555d33ff8c45838ab83f4f05e607a8e61c03800ab2",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_cactus",
+      "source_path": "rst/rstweb/GUM_whow_cactus.rs4",
+      "source_sha256": "80455e3dcbdb357d656a09abfa0f074b3613e42bef39a12156b952ae2af963de",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_chicken",
+      "source_path": "rst/rstweb/GUM_whow_chicken.rs4",
+      "source_sha256": "31c8dc9cad8e0b5c79c389fd132ac41d44bcc3cce27148c5e160b0e125421ebf",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_cupcakes",
+      "source_path": "rst/rstweb/GUM_whow_cupcakes.rs4",
+      "source_sha256": "492568f8e3a4c45d539ff40b1cd2c42928d222ff7fe85511edd60253543a1c69",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_elevator",
+      "source_path": "rst/rstweb/GUM_whow_elevator.rs4",
+      "source_sha256": "d6cf6bdaa78f45445a8689cb20e82d6192578c340b5bc07b289525d61e018cff",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_flirt",
+      "source_path": "rst/rstweb/GUM_whow_flirt.rs4",
+      "source_sha256": "2852ab36b5ae1a4e57d2a93d777d5ccb7d4b1cb8f980e376d8cb432fc6d6d1ab",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_glowstick",
+      "source_path": "rst/rstweb/GUM_whow_glowstick.rs4",
+      "source_sha256": "0b1c660db589caaab36ea3505a8f66b127c7528bb681bd2d99b01c58ebe70c56",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_joke",
+      "source_path": "rst/rstweb/GUM_whow_joke.rs4",
+      "source_sha256": "14a9d065874ad5eecc4d8b3690db70eb56c710d1735320e6772a52f5c230e359",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_languages",
+      "source_path": "rst/rstweb/GUM_whow_languages.rs4",
+      "source_sha256": "930a497ca139896e07dcaaa40f831e402427ea3c6822d2c5c68690e78f225c83",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_mice",
+      "source_path": "rst/rstweb/GUM_whow_mice.rs4",
+      "source_sha256": "ae28a6dc78b248792b776759cb3d77bf81d7e4c4a371839f678f5c09a4bcad5a",
+      "partition": "test",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_overalls",
+      "source_path": "rst/rstweb/GUM_whow_overalls.rs4",
+      "source_sha256": "31983bae4ff56f81fe4762b60e82e38cdd641baac1ba33823fab8d28e93e46f6",
+      "partition": "dev",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_packing",
+      "source_path": "rst/rstweb/GUM_whow_packing.rs4",
+      "source_sha256": "7cf561465fd99456a1a9f0a038a5c5431555c29b7c8844100cb9d53be51c71a7",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_parachute",
+      "source_path": "rst/rstweb/GUM_whow_parachute.rs4",
+      "source_sha256": "c57c01cf73b0b51a640679d55cdc95fbca76d61acd3adfdda2c010ed3a66c486",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_procrastinating",
+      "source_path": "rst/rstweb/GUM_whow_procrastinating.rs4",
+      "source_sha256": "ab1a36b5a8f33396c5990b21932b31322687d762267608b9e9e97a15e3cec616",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_quidditch",
+      "source_path": "rst/rstweb/GUM_whow_quidditch.rs4",
+      "source_sha256": "8a7ca394be395c771e2e8ef923cb0a5358298f5534bb3c0ae7312c6a241a0cf5",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_quinoa",
+      "source_path": "rst/rstweb/GUM_whow_quinoa.rs4",
+      "source_sha256": "822644214e428a0918b41d421c7ccea7d24af67c6162d448b1f8a1235c559a17",
+      "partition": "train",
+      "license_class": "non_commercial"
+    },
+    {
+      "document_id": "GUM_whow_skittles",
+      "source_path": "rst/rstweb/GUM_whow_skittles.rs4",
+      "source_sha256": "094ca66ac0542bfd0c753d36da309073d75bcdbcbaa0843f5983e677d8d6bb73",
+      "partition": "train",
+      "license_class": "non_commercial"
+    }
+  ],
+  "partition_counts": {
+    "train": 211,
+    "dev": 32,
+    "test": 32,
+    "test2": 26
+  },
+  "candidate_probes": [
+    {
+      "document_id": "GUM_academic_art",
+      "partition": "train",
+      "candidate_count": 20022,
+      "candidate_identity_sha256": "7bd92ed9e7415235ccb76af5c09f37223e66bd4018d113def4a4fce35d9a8d83"
+    },
+    {
+      "document_id": "GUM_academic_exposure",
+      "partition": "dev",
+      "candidate_count": 46440,
+      "candidate_identity_sha256": "2d4ab4fd52061b8d91164a91cb395eca40cbd5772ea47ae3b8f6814875823142"
+    },
+    {
+      "document_id": "GUM_academic_discrimination",
+      "partition": "test",
+      "candidate_count": 69960,
+      "candidate_identity_sha256": "d038a7844f0ab58e5e2e67ef4efa10afeaf37cc6f5c463362c0b019342844b00"
+    },
+    {
+      "document_id": "GENTLE_dictionary_next",
+      "partition": "test2",
+      "candidate_count": 58806,
+      "candidate_identity_sha256": "fbf524825238e4cf28e4c74ef61ca4145bfb02c36c488c357e1bbeb71cb34fcb"
+    }
+  ],
+  "succeeded": true,
+  "receipt_sha256": "79e119e02028462b900ddb811a96d85ba0582c1f7207d7c836ba4967ac6172b6"
+}

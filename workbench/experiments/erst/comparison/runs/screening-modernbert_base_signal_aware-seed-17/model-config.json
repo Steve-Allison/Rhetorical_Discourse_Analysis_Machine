@@ -1,0 +1,13 @@
+{
+  "batch_size": 16,
+  "edge_threshold": 0.5,
+  "epochs": 2,
+  "include_structure_tokens": true,
+  "inference_batch_size": 512,
+  "learning_rate": 2e-05,
+  "max_length": 256,
+  "model_id": "answerdotai/ModernBERT-base",
+  "model_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "signal_aware": true,
+  "weight_decay": 0.01
+}

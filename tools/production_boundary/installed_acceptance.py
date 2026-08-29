@@ -104,8 +104,8 @@ def _run_full(model_store: Path, device: str) -> dict[str, object]:
             raise AssertionError(f"analysis serialization changed for {model}")
         model_results[model] = {
             "actual_device": str(parser.predictor._device),
-            "raw_end": int(raw.end),
-            "presegmented_end": int(presegmented.end),
+            "raw_end": int(raw.end or 0),
+            "presegmented_end": int(presegmented.end or 0),
             "nodes": len(analysis.nodes),
         }
         if model == "gumrrg":

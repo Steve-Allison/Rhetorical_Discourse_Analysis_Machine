@@ -1,0 +1,10 @@
+{
+  "config": {
+    "edge_threshold": 0.5,
+    "fallback_probability": 0.1,
+    "licensed_probability": 0.75,
+    "maximum_local_edu_distance": 2
+  },
+  "default_relation": "elaboration-additional",
+  "relation_inventory_sha256": "574e4aa2c1739adca7a4b90aa62158f99783c4946000c5ef1be57c7e923fa3ce"
+}

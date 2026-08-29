@@ -40,8 +40,9 @@ class Parser:
 
     DMRST_PARSERS = ("gumrrg", "rstdt", "rstreebank")
     UNIVERSAL_PARSERS = ("rrtrrg", "unirst")
-    AVAILABLE_VERSIONS = DMRST_PARSERS + UNIVERSAL_PARSERS
-    AVAILABLE_FAMILIES = ("dmrst", "unirst")
+    MODERNBERT_PARSERS = ("modernbert", "modernbert-base", "modernbert-large")
+    AVAILABLE_VERSIONS = DMRST_PARSERS + UNIVERSAL_PARSERS + MODERNBERT_PARSERS
+    AVAILABLE_FAMILIES = ("dmrst", "unirst", "modernbert")
     _DEFAULT_HF_MODEL_NAME = "tchewik/isanlp_rst_v3"
 
     def __init__(
@@ -89,6 +90,16 @@ class Parser:
         effective_hf_name = None if model_dir is not None else hf_model_name
 
         match resolved_family:
+            case "modernbert":
+                from isanlp_rst.transformer_parser import PredictorModernBERT
+
+                model_size = "large" if (hf_model_version == "modernbert-large" or (model_dir and "large" in str(model_dir))) else "base"
+                self.predictor = PredictorModernBERT(
+                    model_size=model_size,
+                    model_dir=model_dir,
+                    device=device or "auto",
+                    torch_dtype=dtype or "auto",
+                )
             case "dmrst":
                 self.predictor = PredictorDMRST(
                     model_dir=model_dir,
@@ -204,6 +215,8 @@ class Parser:
         if family is not None:
             if family not in cls.AVAILABLE_FAMILIES:
                 raise ValueError(f"Unknown family {family!r}. Available: {cls.AVAILABLE_FAMILIES}.")
+            if family == "modernbert":
+                return "modernbert"
             if hf_model_version is None and model_dir is None:
                 raise ValueError(f"family={family!r} requires hf_model_version or model_dir.")
             if hf_model_version is not None:
@@ -224,6 +237,8 @@ class Parser:
             return family
 
         if hf_model_version is not None:
+            if hf_model_version in cls.MODERNBERT_PARSERS:
+                return "modernbert"
             if hf_model_version in cls.DMRST_PARSERS:
                 return "dmrst"
             if hf_model_version in cls.UNIVERSAL_PARSERS:
@@ -235,7 +250,7 @@ class Parser:
             if detected is None:
                 raise ValueError(
                     f"Cannot auto-detect parser family from model_dir={model_dir!r}. "
-                    f"Pass family='dmrst' or family='unirst' explicitly."
+                    f"Pass family='dmrst', 'unirst', or 'modernbert' explicitly."
                 )
             return detected
 

@@ -1,0 +1,7 @@
+{
+  "temperature": 0.5317359496671071,
+  "nll_before": 0.14938014730681287,
+  "nll_after": 0.09047605561164372,
+  "example_count": 1898088,
+  "calibration_sha256": "b52988e169d2904b71ae1ab4094affe5f68a368217494f7a192df2fe14bb85e5"
+}

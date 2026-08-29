@@ -1,0 +1,9 @@
+{
+  "batch_size": 512,
+  "edge_threshold": 0.5,
+  "epochs": 20,
+  "feature_count": 9,
+  "hidden_size": 64,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001
+}

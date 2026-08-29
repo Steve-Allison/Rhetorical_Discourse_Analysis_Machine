@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0",
+  "package_version": "4.0.0",
+  "corpus_revision": "22fdf87f9c71c96bcc771461d06e689b1f90020d",
+  "environment_lock_sha256": "5a6c3351def29b0837ec47683e55c85789a80fbf06b3e2de7ed03d239817d9d1",
+  "harness_source_sha256": "eed5e967e49738433e8f566a46fc9187dd1c173855440b94c737c324f335464c",
+  "production_source_sha256": "eebfbba51b97e8368afb139161e9e5dde2955122fb6fb5baf8c5d2babbaa43e3",
+  "corpus_receipt_sha256": "79e119e02028462b900ddb811a96d85ba0582c1f7207d7c836ba4967ac6172b6",
+  "split_manifest_sha256": "7a1b51ab332ae84d9693824ef067ec1dbfad4275111608231eb5e409437ea6d7",
+  "candidate_schema_sha256": "2db5aba089e2fd5288d674a9c4d233b5e0b494bcbba0e6fe6f76c48848fa5ea9",
+  "signal_detector_sha256": "61efed94d4d1923b944046d44cc9190bce536940ddaf3053f4e27edc2920eecd",
+  "raw_relation_inventory_sha256": "574e4aa2c1739adca7a4b90aa62158f99783c4946000c5ef1be57c7e923fa3ce",
+  "ontology_mapping_sha256": "4282bfa04c8e2bf758c39918369bf5d1d0380f8686f739140ea8536aaf0c3bcf",
+  "decoder_config_sha256": "2a330589f1a30e5ba0cf858ab5640582eb080c4a22d55aa0606fa32ebe68b40b",
+  "systems": [
+    {
+      "system": "existing_dual_encoder_bilinear_structural",
+      "implementation": "workbench.research.erst.systems.dual_encoder",
+      "model_id": "microsoft/deberta-v3-base",
+      "model_revision": "8ccc9b6f36199bec6961081d44eb72fb3f7353f3",
+      "model_license": "MIT",
+      "config_sha256": "b36ae384b56cea4d8a53d8091d0e8ef2085257613d81e24e4a55337abcd45b74"
+    },
+    {
+      "system": "structural_only_calibrated",
+      "implementation": "workbench.research.erst.systems.structural",
+      "model_id": null,
+      "model_revision": null,
+      "model_license": "MIT",
+      "config_sha256": "b6f16a8ea86f48773105f72c634f0532d1ae05cc7036c8a0718275f796bb28b6"
+    },
+    {
+      "system": "text_only_cross_encoder",
+      "implementation": "workbench.research.erst.systems.cross_encoder",
+      "model_id": "google/electra-base-discriminator",
+      "model_revision": "1ae76a97c7e84a4e640876a07453fccd636f0667",
+      "model_license": "Apache-2.0",
+      "config_sha256": "760ecb0274aef3b26ec8dde613e39a6ca95d5e08a7159b691c1e26e4628bf238"
+    },
+    {
+      "system": "electra_signal_aware_cross_encoder",
+      "implementation": "workbench.research.erst.systems.cross_encoder",
+      "model_id": "google/electra-base-discriminator",
+      "model_revision": "1ae76a97c7e84a4e640876a07453fccd636f0667",
+      "model_license": "Apache-2.0",
+      "config_sha256": "d54de32b07c4096d71cbb28d8555def281e418a3b0fb5f7f049c88779e24fa1f"
+    },
+    {
+      "system": "signal_plus_rule",
+      "implementation": "workbench.research.erst.systems.signal_rule",
+      "model_id": null,
+      "model_revision": null,
+      "model_license": "MIT",
+      "config_sha256": "89a0dea7cef45a035ac78eca499f9d642a2ce78adce62096537d4b97a3d53e17"
+    },
+    {
+      "system": "modernbert_base_signal_aware",
+      "implementation": "workbench.research.erst.systems.cross_encoder",
+      "model_id": "answerdotai/ModernBERT-base",
+      "model_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+      "model_license": "Apache-2.0",
+      "config_sha256": "b2d202a474c2edfd69ef1aeeb543e26bd30a63823ba4823505d41b2f6e6e42c2"
+    },
+    {
+      "system": "modernbert_large_signal_aware",
+      "implementation": "workbench.research.erst.systems.cross_encoder",
+      "model_id": "answerdotai/ModernBERT-large",
+      "model_revision": "45bb4654a4d5aaff24dd11d4781fa46d39bf8c13",
+      "model_license": "Apache-2.0",
+      "config_sha256": "378313f8d19109eb86f79e7402aba4655b2a198a7b0ed03dc1f5783b2d13cf29"
+    },
+    {
+      "system": "xlm_roberta_large_hidac",
+      "implementation": "workbench.research.erst.systems.hierarchical_adapter",
+      "model_id": "FacebookAI/xlm-roberta-large",
+      "model_revision": "c23d21b0620b635a76227c604d44e43a9f0ee389",
+      "model_license": "MIT",
+      "config_sha256": "f113c1186aa6b2ee527a0240baf018ccea1da4c6b8b204cfee4113e85a60068a"
+    },
+    {
+      "system": "qwen3_4b_dedisco_peft",
+      "implementation": "workbench.research.erst.systems.generative_decoder",
+      "model_id": "Qwen/Qwen3-4B",
+      "model_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+      "model_license": "Apache-2.0",
+      "config_sha256": "8688fa85dec7820679d5ec4175d7b6f8371f43eec6454053ae312738cb7e6148"
+    },
+    {
+      "system": "edge_featured_graph_attention",
+      "implementation": "workbench.research.erst.systems.graph_attention",
+      "model_id": null,
+      "model_revision": null,
+      "model_license": "inherits selected text model",
+      "config_sha256": "678cbaf7e0858c115d301df2cc40fe87fd79df986f1df2257711fd9111d8adef"
+    }
+  ],
+  "screening_seeds": [
+    17,
+    42,
+    73
+  ],
+  "finalist_seeds": [
+    17,
+    29,
+    42,
+    73,
+    101
+  ],
+  "ablations": [
+    "signal_marking",
+    "structural_features",
+    "primary_path_encoding",
+    "context",
+    "graph_fusion",
+    "hard_negatives",
+    "calibration",
+    "raw_vs_coarse_labels"
+  ],
+  "finalist_delta": 0.02,
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 20260825,
+  "calibration_bins": 10,
+  "thresholds": {
+    "dev_full_improvement": 0.02,
+    "test_full_improvement": 0.01,
+    "max_component_regression": 0.005,
+    "max_ece": 0.05,
+    "max_peak_rss_bytes": 25769803776,
+    "max_mps_latency_ratio": 2.0,
+    "efficiency_tie_full_delta": 0.005,
+    "cpu_mps_probability_tolerance": 0.00001
+  },
+  "training_partitions": [
+    "train",
+    "dev"
+  ],
+  "final_evaluation_partitions": [
+    "test",
+    "test2"
+  ],
+  "protocol_sha256": "d7a3fefd3c947b1a81e0820b06ea8c3f72458da48f6ff39430fd21cff75ebeda"
+}

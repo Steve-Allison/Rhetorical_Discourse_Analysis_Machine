@@ -1,0 +1,131 @@
+{
+  "existing_dual_encoder": {
+    "model_id": "microsoft/deberta-v3-base",
+    "model_revision": "8ccc9b6f36199bec6961081d44eb72fb3f7353f3",
+    "epochs": 4,
+    "batch_size": 16,
+    "inference_batch_size": 64,
+    "learning_rate": 0.00003,
+    "weight_decay": 0.01,
+    "max_length": 128,
+    "edge_threshold": 0.5
+  },
+  "structural_only": {
+    "feature_count": 9,
+    "hidden_size": 64,
+    "epochs": 20,
+    "batch_size": 512,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "edge_threshold": 0.5
+  },
+  "text_only": {
+    "model_id": "google/electra-base-discriminator",
+    "model_revision": "1ae76a97c7e84a4e640876a07453fccd636f0667",
+    "signal_aware": false,
+    "include_structure_tokens": false,
+    "max_length": 256,
+    "epochs": 2,
+    "batch_size": 32,
+    "inference_batch_size": 1024,
+    "learning_rate": 0.00002,
+    "weight_decay": 0.01,
+    "edge_threshold": 0.5
+  },
+  "electra": {
+    "model_id": "google/electra-base-discriminator",
+    "model_revision": "1ae76a97c7e84a4e640876a07453fccd636f0667",
+    "signal_aware": true,
+    "include_structure_tokens": true,
+    "max_length": 256,
+    "epochs": 2,
+    "batch_size": 32,
+    "inference_batch_size": 1024,
+    "learning_rate": 0.00002,
+    "weight_decay": 0.01,
+    "edge_threshold": 0.5
+  },
+  "signal_rule": {
+    "edge_threshold": 0.5,
+    "licensed_probability": 0.75,
+    "fallback_probability": 0.1,
+    "maximum_local_edu_distance": 2
+  },
+  "modernbert_base": {
+    "model_id": "answerdotai/ModernBERT-base",
+    "model_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+    "signal_aware": true,
+    "include_structure_tokens": true,
+    "max_length": 256,
+    "epochs": 2,
+    "batch_size": 16,
+    "inference_batch_size": 512,
+    "learning_rate": 0.00002,
+    "weight_decay": 0.01,
+    "edge_threshold": 0.5
+  },
+  "modernbert_large": {
+    "model_id": "answerdotai/ModernBERT-large",
+    "model_revision": "45bb4654a4d5aaff24dd11d4781fa46d39bf8c13",
+    "signal_aware": true,
+    "include_structure_tokens": true,
+    "max_length": 256,
+    "epochs": 2,
+    "batch_size": 8,
+    "inference_batch_size": 256,
+    "learning_rate": 0.00002,
+    "weight_decay": 0.01,
+    "edge_threshold": 0.5
+  },
+  "xlm_r_hidac": {
+    "model_id": "FacebookAI/xlm-roberta-large",
+    "model_revision": "c23d21b0620b635a76227c604d44e43a9f0ee389",
+    "adapter_size": 256,
+    "contrastive_temperature": 0.07,
+    "contrastive_weight": 0.2,
+    "epochs": 3,
+    "batch_size": 8,
+    "inference_batch_size": 128,
+    "max_length": 256,
+    "learning_rate": 0.0001,
+    "edge_threshold": 0.5
+  },
+  "qwen3_dedisco": {
+    "model_id": "Qwen/Qwen3-4B",
+    "model_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "lora_rank": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "no_edge_label": "NO_EDGE",
+    "epochs": 2,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 16,
+    "max_length": 512,
+    "learning_rate": 0.0002,
+    "edge_threshold": 0.5
+  },
+  "edge_featured_gat": {
+    "text_model_id": "answerdotai/ModernBERT-large",
+    "text_model_revision": "45bb4654a4d5aaff24dd11d4781fa46d39bf8c13",
+    "text_batch_size": 32,
+    "max_length": 256,
+    "hidden_size": 256,
+    "attention_heads": 8,
+    "layers": 3,
+    "dropout": 0.1,
+    "epochs": 20,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "edge_threshold": 0.5,
+    "require_complete_primary_tree": true
+  }
+}

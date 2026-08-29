@@ -13,6 +13,13 @@ venv/
 htmlcov/
 # private research data and model artifacts
 experiments/
+!workbench/experiments/
+workbench/experiments/**/predictions.json
+workbench/experiments/**/scorer-output.json
+workbench/experiments/**/candidate-cache-v1/
+workbench/experiments/runs/*/weights*
+workbench/experiments/runs/*/*.pt
+workbench/experiments/runs/*/*.safetensors
 corpora/
 *.safetensors
 *.pt
