@@ -63,6 +63,7 @@ formats = [
 # Corpus preparation, training, evaluation, and research dependencies. These
 # are deliberately absent from the installable analysis runtime.
 offline = [
+  "blake3>=1.0,<2",
   "fire>=0.7,<0.8",
   "jsonnet>=0.21,<0.22",
   "nltk>=3.9,<4",

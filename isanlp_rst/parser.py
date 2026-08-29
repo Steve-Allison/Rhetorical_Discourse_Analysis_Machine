@@ -124,11 +124,12 @@ class Parser:
         else:
             self.segmenter = None
 
-        if erst_scorer_checkpoint is not None:
-            from isanlp_rst.erst.checkpoint import load_erst_checkpoint_bundle
+        from isanlp_rst.erst.checkpoint import load_erst_checkpoint_bundle, resolve_default_erst_checkpoint
 
+        resolved_erst = resolve_default_erst_checkpoint(erst_scorer_checkpoint)
+        if resolved_erst is not None:
             self.erst_checkpoint = load_erst_checkpoint_bundle(
-                erst_scorer_checkpoint,
+                resolved_erst,
                 device=self.predictor._device,
             )
         else:

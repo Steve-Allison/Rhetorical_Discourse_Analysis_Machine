@@ -47,3 +47,25 @@ def test_absent_or_empty_checkpoint_is_an_error(tmp_path: Path) -> None:
     invalid.write_bytes(b"not-safetensors")
     with pytest.raises(ValueError, match="valid safetensors"):
         require_checkpoint(invalid)
+
+
+def test_resolve_default_erst_checkpoint(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from isanlp_rst.erst.checkpoint import ErstCheckpointError, resolve_default_erst_checkpoint
+
+    bundle_dir = tmp_path / "valid_bundle"
+    bundle_dir.mkdir()
+    (bundle_dir / "manifest.json").write_text("{}", encoding="utf-8")
+
+    # 1. Explicit path resolution
+    assert resolve_default_erst_checkpoint(bundle_dir) == bundle_dir.resolve()
+
+    # 2. Non-existent manifest error
+    invalid_dir = tmp_path / "no_manifest"
+    invalid_dir.mkdir()
+    with pytest.raises(ErstCheckpointError, match="missing manifest.json"):
+        resolve_default_erst_checkpoint(invalid_dir)
+
+    # 3. Environment override resolution
+    monkeypatch.setenv("ISANLP_RST_ERST_CHECKPOINT", str(bundle_dir))
+    assert resolve_default_erst_checkpoint(None) == bundle_dir.resolve()
+

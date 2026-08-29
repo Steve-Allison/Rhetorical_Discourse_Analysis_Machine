@@ -362,11 +362,46 @@ def verify_erst_checkpoint_test_vector(checkpoint: LoadedErstCheckpoint) -> None
         raise ErstCheckpointError("checkpoint test-vector edges lack calibrated raw and ontology labels")
 
 
+def resolve_default_erst_checkpoint(checkpoint_path: str | Path | None = None) -> Path | None:
+    """Resolve an explicit, environment, or default local eRST completion bundle.
+
+    Order of precedence:
+    1. Explicit checkpoint_path argument.
+    2. ISANLP_RST_ERST_CHECKPOINT environment variable.
+    3. ~/.cache/isanlp_rst/model-releases/erst-scorer-gum-v12/ (if present with manifest.json).
+    4. models/erst_scorer_bundle/ (if local build bundle exists with manifest.json).
+    """
+    import os
+
+    if checkpoint_path is not None:
+        candidate = Path(checkpoint_path).expanduser().resolve()
+        if (candidate / _MANIFEST_NAME).is_file():
+            return candidate
+        raise ErstCheckpointError(f"specified eRST bundle directory missing {_MANIFEST_NAME}: {candidate}")
+
+    env_path = os.environ.get("ISANLP_RST_ERST_CHECKPOINT")
+    if env_path:
+        candidate = Path(env_path).expanduser().resolve()
+        if (candidate / _MANIFEST_NAME).is_file():
+            return candidate
+
+    user_cache = Path.home() / ".cache/isanlp_rst/model-releases/erst-scorer-gum-v12"
+    if (user_cache / _MANIFEST_NAME).is_file():
+        return user_cache
+
+    local_dev = Path("models/erst_scorer_bundle").resolve()
+    if (local_dev / _MANIFEST_NAME).is_file():
+        return local_dev
+
+    return None
+
+
 __all__ = [
     "ErstCapabilityError",
     "ErstCheckpointError",
     "LoadedErstCheckpoint",
     "load_erst_checkpoint_bundle",
+    "resolve_default_erst_checkpoint",
     "validate_erst_checkpoint_bundle",
     "verify_erst_checkpoint_test_vector",
 ]
