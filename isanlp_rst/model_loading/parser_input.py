@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 
-@dataclass
+@dataclass(slots=True)
 class ParserInput:
     """Mutable historical parser record with no corpus or training behavior."""
 
@@ -22,6 +22,7 @@ class ParserInput:
     sentence_span: list[list[int]] = field(default_factory=list)
     LabelforMetric: list[str] = field(default_factory=list)
     relation_table: list[str] = field(default_factory=list)
+    extra: dict[str, Any] = field(default_factory=dict)
 
     @property
     def edu_count(self) -> int:
@@ -30,15 +31,16 @@ class ParserInput:
         return len(self.edu_breaks)
 
     def to_dict(self) -> dict[str, Any]:
-        return {field_.name: getattr(self, field_.name) for field_ in fields(self)}
+        base = {field_.name: getattr(self, field_.name) for field_ in fields(self) if field_.name != "extra"}
+        return base | self.extra
 
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> "ParserInput":
-        known = {field_.name for field_ in fields(cls)}
+        known = {field_.name for field_ in fields(cls) if field_.name != "extra"}
         record = cls(**{key: payload[key] for key in known if key in payload})
         for key, value in payload.items():
             if key not in known:
-                setattr(record, key, value)
+                record.extra[key] = value
         return record
 
     def write_json(self, path: Path) -> None:

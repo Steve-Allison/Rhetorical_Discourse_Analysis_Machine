@@ -128,23 +128,38 @@ for unit in planned.semantic.analysis_plan.units:
 
 ```python
 from isanlp_rst import Parser
-from isanlp_rst.ingest import ProductionIngestor
+from isanlp_rst.ingest import (
+    AnalysisPolicy,
+    EvidenceDetailPolicy,
+    OutputFormalism,
+    ProductionIngestor,
+)
 
 parser = Parser.from_model_release("rstdt-cc01afde1232")
 ingestor = ProductionIngestor(parser=parser)
-result = ingestor.analyse(source)
+analysis_policy = AnalysisPolicy(
+    output_formalism=OutputFormalism.RST_TREE,
+    evidence_detail=EvidenceDetailPolicy.DECISION_COMPLETE,
+)
+result = ingestor.analyse(source, analysis_policy=analysis_policy)
 
 print(result.status)
-print(result.semantic.model_identity.state)
+print(result.semantic.analysis_request.analysis_policy)
+print(result.semantic.composite_analysis_identity.primary_parser.state)
 print(result.semantic.preparation.semantic.source_contract)
 print(result.semantic.semantic_request_identity)
 print(result.semantic_digest)
 
 if result.status == "analysed":
+    analysed_document = result.semantic.analysed_document
+    print(len(analysed_document.tokens), len(analysed_document.edus))
     print(len(result.semantic.analysis.nodes))
     print(len(result.semantic.analysis.primary_edges))
     print(len(result.semantic.analysis.secondary_edges))
+    print(len(result.semantic.primary_inference.structure_decisions))
+    print(result.semantic.validation_receipt.overall_disposition)
     assert result.semantic.analysis_anchors
+    assert result.semantic.validation_receipt.overall_disposition == "passed"
 else:
     assert result.status == "empty_primary_discourse"
 ```
@@ -152,6 +167,42 @@ else:
 The result embeds the complete preparation outcome. A consumer does not rerun
 preparation, import an adapter, or reconstruct a source contract or model
 identity.
+
+The default is decision-complete evidence. To request provider-computed
+normalized split, relation, nuclearity, or segmentation distributions, select
+`EvidenceDetailPolicy.NORMALIZED_DISTRIBUTIONS`. That choice is semantic and
+therefore changes request/cache identity whenever the returned evidence differs.
+
+For `OutputFormalism.ERST_GRAPH`, inspect accepted secondary-edge evidence
+without reconstructing decoder state:
+
+```python
+erst_result = ingestor.analyse(
+    source,
+    analysis_policy=AnalysisPolicy(
+        output_formalism=OutputFormalism.ERST_GRAPH,
+        evidence_detail=EvidenceDetailPolicy.DECISION_COMPLETE,
+    ),
+)
+
+for decision in erst_result.semantic.erst_completion.candidate_decisions:
+    if decision.decision == "accepted":
+        print(
+            decision.source_node_id,
+            decision.target_node_id,
+            decision.supporting_signal_ids,
+            decision.edge_probability,
+            decision.relation_probability,
+            decision.joint_selection_score,
+        )
+
+print(erst_result.semantic.erst_completion.decode_receipt)
+```
+
+Every relation declares its scheme, confidence kind, calibration state, and
+ontology-mapping provenance. Every marker refinement preserves the before and
+after decision. Subdivided results additionally expose a complete compact
+`recombination_receipt`.
 
 ## 7. Persist and reload canonically
 
@@ -201,6 +252,9 @@ from isanlp_rst import Parser
 from isanlp_rst.ingest import (
     ProductionIngestError,
     ProductionIngestor,
+    AnalysisPolicy,
+    EvidenceDetailPolicy,
+    OutputFormalism,
     SourceArtifact,
     describe_capabilities,
     load_contract,
@@ -217,6 +271,10 @@ failure:
 - what was inventoried and retained;
 - what was transformed, analysed, excluded, or duplicated and why;
 - what model and policy determined the result;
+- what exact tokens and EDUs were analysed;
+- which primary/eRST decisions, scores, signals, refinements, and component
+  identities produced the graph;
+- how local units were recombined and which validation checks passed;
 - whether the result is semantically cacheable;
 - what failed and which earlier stages completed.
 

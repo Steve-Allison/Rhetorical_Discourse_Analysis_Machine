@@ -10,7 +10,8 @@ description: "Dependency-ordered implementation tasks for the isanlp_rst 5.0.0 p
 **Prerequisites**: `spec.md`, `plan.md`, `research.md`, `data-model.md`,
 `contracts/`, and `quickstart.md`
 
-**Tests**: Required by FR-036-FR-041 and every user story's independent test.
+**Tests**: Required by FR-036-FR-041, FR-047-FR-067, and every user story's
+independent test.
 Test tasks precede the implementation they specify and must fail for the
 intended reason before implementation begins.
 
@@ -59,7 +60,7 @@ focused tests.
 
 ### Foundational implementation
 
-- [ ] T009 Convert `isanlp_rst/ingest/contracts.py` into the cohesive `isanlp_rst/ingest/contracts/__init__.py`, `base.py`, `source.py`, `preparation.py`, `analysis.py`, `failure.py`, and `capabilities.py` package while preserving existing internal imports until their owning migration task (FR-001, FR-003)
+- [ ] T009 Convert `isanlp_rst/ingest/contracts.py` into the cohesive `isanlp_rst/ingest/contracts/__init__.py`, `base.py`, `source.py`, `preparation.py`, `analysis.py`, `inference.py`, `failure.py`, and `capabilities.py` package while preserving existing internal imports until their owning migration task (FR-001, FR-003)
 - [ ] T010 Implement the shared strict base model, `SemanticVersion`, `Sha256Identity`, exact quantity types, contract-family constants, and 2.0.0 write/read registry types in `isanlp_rst/ingest/contracts/base.py` (FR-011, FR-019-FR-022)
 - [ ] T011 Implement the migrated `SourceArtifact`, `SourceSummary`, `SourceContractIdentity`, source anchors, origins, relationships, and closed representation/disposition type foundations in `isanlp_rst/ingest/contracts/source.py` (FR-003-FR-006)
 - [ ] T012 Implement preparation policy, planning policy, prepared segment/document, analysis unit/plan, transformation, coverage, semantic/execution evidence, and `PreparationOutcome` foundations in `isanlp_rst/ingest/contracts/preparation.py` (FR-007-FR-008, FR-020, FR-026)
@@ -145,7 +146,9 @@ the explicit intentional-non-analysis path.
 ## Phase 5: User Story 1 - Consume a Complete Analysis Result (Priority: P1, MVP)
 
 **Goal**: Return one validated self-contained analysis outcome containing the
-complete preparation account, discourse graph, anchors, model identity,
+complete preparation account, exact analysed substrate, discourse graph,
+decision-complete primary/eRST evidence, refinement provenance, both-endpoint
+anchors, composite component identity, recombination and validation receipts,
 execution evidence, cache provenance, and recomputable semantic identity.
 
 **Independent Test**: Analyse one representative fixture per source form,
@@ -160,20 +163,41 @@ outcome using only installed public imports.
 - [ ] T048 [P] [US1] Add failing multi-unit completeness, deterministic recombination, no-partial-success, and no-partial-cache tests in `tests/ingest/production_ingest/test_multi_unit_atomicity.py` (FR-008, FR-018, FR-040)
 - [ ] T049 [P] [US1] Add failing request/result/cache identity mutation and execution-only negative-control tests in `tests/ingest/production_ingest/test_semantic_mutations.py` (FR-011, FR-040-FR-041, SC-008-SC-009)
 - [ ] T050 [P] [US1] Add a representative zero-private-import consumer adapter test in `tests/ingest/production_ingest/test_public_consumer_adapter.py` (FR-010, FR-035, SC-004, SC-011)
+- [ ] T051 [P] [US1] Add failing closed output-formalism, resolved analysis-policy, evidence-detail, loss-policy, and semantic identity mutation tests in `tests/ingest/production_ingest/test_analysis_policy.py` (FR-047-FR-051, SC-023)
+- [ ] T052 [P] [US1] Add failing exact token/EDU/sentence/paragraph mapping, source-anchor, fidelity, truncation, EDU-cap, and approximate-allocation tests in `tests/ingest/production_ingest/test_analysed_document.py` (FR-052-FR-053, SC-017)
+- [ ] T053 [P] [US1] Add failing segmentation, split, relation, nuclearity, confidence-kind, entropy, distribution, and decision-to-graph link tests in `tests/ingest/production_ingest/test_primary_inference_evidence.py` (FR-049-FR-055, SC-017-SC-018)
+- [ ] T054 [P] [US1] Add failing relation/nuclearity/concept/confidence before-and-after marker refinement tests in `tests/ingest/production_ingest/test_refinement_provenance.py` (FR-056, FR-063, SC-020)
+- [ ] T055 [P] [US1] Add failing eRST signal/candidate/edge/relation/joint-score/calibration/decoder-receipt and orphan-signal tests in `tests/ingest/production_ingest/test_erst_completion_evidence.py` (FR-057-FR-058, SC-019)
+- [ ] T056 [P] [US1] Add failing primary/segmenter/refiner/eRST/decoder/calibration/relation-inventory/ontology composite identity tests in `tests/ingest/production_ingest/test_composite_analysis_identity.py` (FR-059, FR-063)
+- [ ] T057 [P] [US1] Add failing local-result identity, complete local-to-global mapping, boundary/nuclear-spine input, warning, timing, and receipt-digest tests in `tests/ingest/production_ingest/test_recombination_receipt.py` (FR-061, SC-021)
+- [ ] T058 [P] [US1] Add failing validation policy/check/count/disposition/digest and required-check consistency tests in `tests/ingest/production_ingest/test_validation_receipt.py` (FR-060, SC-022)
+- [ ] T059 [P] [US1] Add deliberate decoded-span, score, boundary, refinement, signal-link, decoder-receipt, mapping, and validation-check removal tests for every active backend/handoff in `tests/ingest/production_ingest/test_backend_evidence_loss.py` (FR-064, FR-067, SC-018)
 
 ### Implementation for User Story 1
 
-- [ ] T051 [US1] Complete immutable, mutable, unidentified, and absent model identity mapping from the existing parser facade in `isanlp_rst/ingest/contracts/analysis.py` and `isanlp_rst/model_loading/release.py` without changing parser mathematics (FR-009, FR-024, FR-029)
-- [ ] T052 [US1] Assemble analysed and empty-primary semantic/execution evidence with the complete nested `PreparationOutcome` in `isanlp_rst/ingest/service.py` (FR-009-FR-010, FR-013-FR-014, FR-020)
-- [ ] T053 [US1] Implement RST tree, eRST DAG, status, model/result identity, and multi-unit completeness validators in `isanlp_rst/ingest/validation.py` (FR-012-FR-013, FR-018, SC-002)
-- [ ] T054 [US1] Implement complete analysis-anchor construction and reconstructability validation in `isanlp_rst/ingest/service.py` and `isanlp_rst/ingest/validation.py` (FR-009, FR-012, SC-002)
-- [ ] T055 [US1] Implement analysis request/result semantic projections and identity relationships in `isanlp_rst/ingest/identity.py` (FR-011, FR-040-FR-041)
-- [ ] T056 [US1] Update `isanlp_rst/ingest/cache.py` to persist only fully validated canonical v2 outcomes and to bind request, result, and cache-entry identities atomically (FR-018-FR-021, FR-040)
-- [ ] T057 [US1] Rework multi-unit orchestration in `isanlp_rst/ingest/service.py` so internal partial unit outputs cannot escape or enter the success cache (FR-018, SC-008)
-- [ ] T058 [US1] Export the exact `AnalysisParser`, outcome variants, identities, anchors, load/serialize functions, and `analyse()` signature from `isanlp_rst/ingest/__init__.py` and reconcile `isanlp_rst/ingest/public-surface.json` (FR-002, FR-032, FR-035)
-- [ ] T059 [US1] Make all six source-form analysed/empty-primary and canonical round-trip fixtures pass in `tests/ingest/production_ingest/test_conformance_matrix.py` (FR-003, FR-013, FR-037-FR-038, SC-007)
-- [ ] T060 [US1] Make cached and uncached immutable requests produce byte-identical semantic payloads and digests in `tests/ingest/production_ingest/test_determinism.py` and `test_cache.py` (FR-040-FR-041, SC-008-SC-009)
-- [ ] T061 [US1] Make the installed-public-import consumer answer received/retained/transformed/analysed/excluded/model/cache questions solely from one result in `tests/ingest/production_ingest/test_public_consumer_adapter.py` (FR-010, FR-035, SC-004, SC-011)
+- [ ] T060 [US1] Implement `OutputFormalism`, `EvidenceDetailPolicy`, `AnalysisPolicy`, `AnalysisRequest`, `AnalysedDocument`, score/distribution, primary/eRST evidence, refinement, composite identity, recombination, and validation receipt contracts in `isanlp_rst/ingest/contracts/inference.py` (FR-047-FR-063)
+- [ ] T061 [US1] Build the exact analysed token/EDU/boundary/mapping substrate and fail closed on unauthorized truncation, capping, dropping, or approximation in `isanlp_rst/parser.py`, `isanlp_rst/transformer_parser/predictor.py`, and `isanlp_rst/ingest/service.py` (FR-052-FR-053, FR-066)
+- [ ] T062 [US1] Preserve complete decoded span depth, segmentation boundary scores, selected splits, relation/nuclearity scores, entropy, and requested normalized distributions across active primary backends in `isanlp_rst/transformer_parser/` and their `isanlp_rst/parser.py` adapter paths without changing inference mathematics (FR-049-FR-055, FR-064)
+- [ ] T063 [US1] Preserve original and revised relation/nuclearity/concept/confidence plus marker/rule triggers in `isanlp_rst/relations/primer.py` and `isanlp_rst/english/relations/primer.py` as typed refinement records (FR-056, FR-063)
+- [ ] T064 [US1] Preserve detector signals, candidate identities, edge/relation probabilities, joint scores, calibration, accepted/rejected decisions, signal back-links, and the complete decoder receipt in `isanlp_rst/english/erst/completer.py`, `isanlp_rst/erst/candidates.py`, `isanlp_rst/erst/neural_scorer.py`, and `isanlp_rst/erst/decoder.py` (FR-057-FR-058)
+- [ ] T065 [US1] Assemble participating primary, segmenter, refiner, eRST, decoder, calibration, relation-inventory, and ontology identities in `isanlp_rst/ingest/service.py`, `isanlp_rst/model_loading/release.py`, and `isanlp_rst/ontology/adapter.py` (FR-059, FR-063)
+- [ ] T066 [US1] Emit complete compact local-result identities, local-to-global maps, boundary/nuclear-spine inputs, decisions, warnings, and timings from `isanlp_rst/hierarchical/stitcher.py` and `isanlp_rst/ingest/service.py` as `RecombinationReceipt` (FR-061, SC-021)
+- [ ] T067 [US1] Implement stable check-by-check graph, anchor, evidence-link, component-identity, recombination, and cache validation receipts in `isanlp_rst/ingest/validation.py` (FR-060, SC-022)
+- [ ] T068 [US1] Construct both-endpoint primary/secondary relation anchors, supporting-signal anchors, and declared relation/confidence/calibration/ontology provenance in `isanlp_rst/ingest/service.py` and `isanlp_rst/ingest/validation.py` (FR-058, FR-062-FR-063)
+- [ ] T069 [US1] Resolve `AnalysisPolicy`, assemble `AnalysisRequest`, enforce output-formalism/evidence-level invariants, and include all semantic evidence in request/result/cache identity in `isanlp_rst/ingest/service.py`, `isanlp_rst/ingest/identity.py`, and `isanlp_rst/ingest/cache.py` (FR-047-FR-051, FR-066)
+- [ ] T070 [US1] Export the complete inference-evidence contract from `isanlp_rst/ingest/__init__.py`, reconcile `isanlp_rst/ingest/public-surface.json`, and generate byte-identical schemas under `isanlp_rst/ingest/schemas/` (FR-002, FR-032, FR-039, FR-065)
+- [ ] T071 [US1] Make T051-T059 pass and add negative public-surface assertions for tensors, embeddings, activations, unrestricted charts, training-only labels, and workbench types in `tests/ingest/production_ingest/test_backend_evidence_loss.py` and `test_public_surface.py` (FR-064-FR-067, SC-017-SC-024)
+- [ ] T072 [US1] Complete immutable, mutable, unidentified, and absent model identity mapping from the existing parser facade in `isanlp_rst/ingest/contracts/analysis.py` and `isanlp_rst/model_loading/release.py` without changing parser mathematics (FR-009, FR-024, FR-029)
+- [ ] T073 [US1] Assemble analysed and empty-primary semantic/execution evidence with the complete nested `PreparationOutcome` in `isanlp_rst/ingest/service.py` (FR-009-FR-010, FR-013-FR-014, FR-020)
+- [ ] T074 [US1] Implement RST tree, eRST DAG, status, model/result identity, and multi-unit completeness validators in `isanlp_rst/ingest/validation.py` (FR-012-FR-013, FR-018, SC-002)
+- [ ] T075 [US1] Implement complete analysis-anchor construction and reconstructability validation in `isanlp_rst/ingest/service.py` and `isanlp_rst/ingest/validation.py` (FR-009, FR-012, SC-002)
+- [ ] T076 [US1] Implement analysis request/result semantic projections and identity relationships in `isanlp_rst/ingest/identity.py` (FR-011, FR-040-FR-041)
+- [ ] T077 [US1] Update `isanlp_rst/ingest/cache.py` to persist only fully validated canonical v2 outcomes and to bind request, result, and cache-entry identities atomically (FR-018-FR-021, FR-040)
+- [ ] T078 [US1] Rework multi-unit orchestration in `isanlp_rst/ingest/service.py` so internal partial unit outputs cannot escape or enter the success cache (FR-018, SC-008)
+- [ ] T079 [US1] Export the exact `AnalysisParser`, outcome variants, identities, anchors, load/serialize functions, and `analyse()` signature from `isanlp_rst/ingest/__init__.py` and reconcile `isanlp_rst/ingest/public-surface.json` (FR-002, FR-032, FR-035)
+- [ ] T080 [US1] Make all six source-form analysed/empty-primary and canonical round-trip fixtures pass in `tests/ingest/production_ingest/test_conformance_matrix.py` (FR-003, FR-013, FR-037-FR-038, SC-007)
+- [ ] T081 [US1] Make cached and uncached immutable requests produce byte-identical semantic payloads and digests in `tests/ingest/production_ingest/test_determinism.py` and `test_cache.py` (FR-040-FR-041, SC-008-SC-009)
+- [ ] T082 [US1] Make the installed-public-import consumer answer received/retained/transformed/analysed/excluded/model/cache questions solely from one result in `tests/ingest/production_ingest/test_public_consumer_adapter.py` (FR-010, FR-035, SC-004, SC-011)
 
 **Checkpoint**: The core API product is independently usable and self-contained.
 
@@ -191,24 +215,24 @@ evidence, rendering, canonical serialization, and reload.
 
 ### Tests for User Story 3
 
-- [ ] T062 [P] [US3] Add failing all-nine-stage failure taxonomy, stable-code, retryability, and causal-chain tests in `tests/ingest/production_ingest/test_failure_stages.py` (FR-015, FR-037, SC-005)
-- [ ] T063 [P] [US3] Add failing monotonic completed-evidence tests for no evidence, acquisition, inventory, preparation, inference, validation, and assembly variants in `tests/ingest/production_ingest/test_completed_evidence.py` (FR-015-FR-016, SC-005)
-- [ ] T064 [P] [US3] Add failing default `str`/`repr`, nested evidence redaction, private-marker exclusion, and explicit diagnostic opt-in tests in `tests/ingest/production_ingest/test_failure_privacy.py` (FR-017, SC-005)
-- [ ] T065 [P] [US3] Add failing safe and diagnostic failure canonical serialization, schema, digest, and reload tests in `tests/ingest/production_ingest/test_failure_serialization.py` (FR-017, FR-019-FR-021)
-- [ ] T066 [P] [US3] Add failing no-parser, missing-format-extra, unavailable-release, malformed-source, corrupt-cache, and persistence-failure tests in `tests/ingest/production_ingest/test_provider_unavailability.py` (FR-014-FR-015, FR-031, FR-037)
+- [ ] T083 [P] [US3] Add failing all-nine-stage failure taxonomy, stable-code, retryability, and causal-chain tests in `tests/ingest/production_ingest/test_failure_stages.py` (FR-015, FR-037, SC-005)
+- [ ] T084 [P] [US3] Add failing monotonic completed-evidence tests for no evidence, acquisition, inventory, preparation, inference, validation, and assembly variants in `tests/ingest/production_ingest/test_completed_evidence.py` (FR-015-FR-016, SC-005)
+- [ ] T085 [P] [US3] Add failing default `str`/`repr`, nested evidence redaction, private-marker exclusion, and explicit diagnostic opt-in tests in `tests/ingest/production_ingest/test_failure_privacy.py` (FR-017, SC-005)
+- [ ] T086 [P] [US3] Add failing safe and diagnostic failure canonical serialization, schema, digest, and reload tests in `tests/ingest/production_ingest/test_failure_serialization.py` (FR-017, FR-019-FR-021)
+- [ ] T087 [P] [US3] Add failing no-parser, missing-format-extra, unavailable-release, malformed-source, corrupt-cache, and persistence-failure tests in `tests/ingest/production_ingest/test_provider_unavailability.py` (FR-014-FR-015, FR-031, FR-037)
 
 ### Implementation for User Story 3
 
-- [ ] T067 [US3] Complete stage-specific `ProductionFailure`, stable category/code, retryability, safe context/cause, and monotonic completed-evidence validation in `isanlp_rst/ingest/contracts/failure.py` (FR-015-FR-016)
-- [ ] T068 [US3] Implement typed safe redaction of nested completed evidence and separately discriminated diagnostic failure records in `isanlp_rst/ingest/contracts/failure.py` (FR-017, FR-019)
-- [ ] T069 [US3] Implement safe default and explicit diagnostic failure projection in `isanlp_rst/ingest/serialization.py` without serializing traceback frames, locals, arbitrary exception strings, environment values, or private paths (FR-017, FR-019-FR-020)
-- [ ] T070 [US3] Translate acquisition, classification, preparation, planning, inference, validation, and assembly exceptions with explicit `raise ... from ...` chaining in `isanlp_rst/ingest/service.py` (FR-014-FR-016)
-- [ ] T071 [US3] Translate missing optional format distributions into typed provider-unavailable failures in `isanlp_rst/ingest/prepare.py` without exposing `ModuleNotFoundError` (FR-014-FR-015, FR-031)
-- [ ] T072 [US3] Translate cache retrieval, corruption, and persistence errors while preserving request/outcome evidence permitted by stage in `isanlp_rst/ingest/cache.py` (FR-015-FR-018)
-- [ ] T073 [US3] Make `ProductionIngestError.__str__`, `repr`, attributes, and exception chaining safe and inspectable in `isanlp_rst/ingest/contracts/failure.py` (FR-015, FR-017)
-- [ ] T074 [US3] Export failure, diagnostic-policy, retryability, stage, and safe persisted record types from `isanlp_rst/ingest/__init__.py` and reconcile them in `isanlp_rst/ingest/public-surface.json` (FR-002, FR-032)
-- [ ] T075 [US3] Make every induced failure retain all and only completed evidence in `tests/ingest/production_ingest/test_failure_stages.py` and `test_completed_evidence.py` (FR-016, SC-005)
-- [ ] T076 [US3] Make default failure rendering and serialized bytes exclude every private-marker fixture while explicit diagnostic records remain unambiguous in `tests/ingest/production_ingest/test_failure_privacy.py` and `test_failure_serialization.py` (FR-017, SC-005)
+- [ ] T088 [US3] Complete stage-specific `ProductionFailure`, stable category/code, retryability, safe context/cause, and monotonic completed-evidence validation in `isanlp_rst/ingest/contracts/failure.py` (FR-015-FR-016)
+- [ ] T089 [US3] Implement typed safe redaction of nested completed evidence and separately discriminated diagnostic failure records in `isanlp_rst/ingest/contracts/failure.py` (FR-017, FR-019)
+- [ ] T090 [US3] Implement safe default and explicit diagnostic failure projection in `isanlp_rst/ingest/serialization.py` without serializing traceback frames, locals, arbitrary exception strings, environment values, or private paths (FR-017, FR-019-FR-020)
+- [ ] T091 [US3] Translate acquisition, classification, preparation, planning, inference, validation, and assembly exceptions with explicit `raise ... from ...` chaining in `isanlp_rst/ingest/service.py` (FR-014-FR-016)
+- [ ] T092 [US3] Translate missing optional format distributions into typed provider-unavailable failures in `isanlp_rst/ingest/prepare.py` without exposing `ModuleNotFoundError` (FR-014-FR-015, FR-031)
+- [ ] T093 [US3] Translate cache retrieval, corruption, and persistence errors while preserving request/outcome evidence permitted by stage in `isanlp_rst/ingest/cache.py` (FR-015-FR-018)
+- [ ] T094 [US3] Make `ProductionIngestError.__str__`, `repr`, attributes, and exception chaining safe and inspectable in `isanlp_rst/ingest/contracts/failure.py` (FR-015, FR-017)
+- [ ] T095 [US3] Export failure, diagnostic-policy, retryability, stage, and safe persisted record types from `isanlp_rst/ingest/__init__.py` and reconcile them in `isanlp_rst/ingest/public-surface.json` (FR-002, FR-032)
+- [ ] T096 [US3] Make every induced failure retain all and only completed evidence in `tests/ingest/production_ingest/test_failure_stages.py` and `test_completed_evidence.py` (FR-016, SC-005)
+- [ ] T097 [US3] Make default failure rendering and serialized bytes exclude every private-marker fixture while explicit diagnostic records remain unambiguous in `tests/ingest/production_ingest/test_failure_privacy.py` and `test_failure_serialization.py` (FR-017, SC-005)
 
 **Checkpoint**: Failure handling is as complete and contract-governed as success.
 
@@ -226,20 +250,20 @@ format extras; compare predictions with representative accepted/rejected calls.
 
 ### Tests for User Story 5
 
-- [ ] T077 [P] [US5] Add failing offline/no-network/no-model/no-adapter-import capability tests in `tests/ingest/production_ingest/test_capabilities_offline.py` (FR-023, FR-030-FR-031, SC-010)
-- [ ] T078 [P] [US5] Add failing all-source-form availability, required-extra, missing-distribution, media-type, and operation prediction tests in `tests/ingest/production_ingest/test_source_form_capabilities.py` (FR-023, FR-031)
-- [ ] T079 [P] [US5] Add failing immutable, mutable, unidentified, and not-configured parser identity/cache-eligibility tests in `tests/ingest/production_ingest/test_parser_capabilities.py` (FR-023-FR-024)
-- [ ] T080 [P] [US5] Add failing capability canonical serialization, schema, compatibility, and reload tests in `tests/ingest/production_ingest/test_capability_serialization.py` (FR-019-FR-024)
+- [ ] T098 [P] [US5] Add failing offline/no-network/no-model/no-adapter-import capability tests in `tests/ingest/production_ingest/test_capabilities_offline.py` (FR-023, FR-030-FR-031, SC-010)
+- [ ] T099 [P] [US5] Add failing all-source-form availability, required-extra, missing-distribution, media-type, and operation prediction tests in `tests/ingest/production_ingest/test_source_form_capabilities.py` (FR-023, FR-031)
+- [ ] T100 [P] [US5] Add failing immutable, mutable, unidentified, and not-configured parser identity/cache-eligibility plus output-formalism/evidence-capability tests in `tests/ingest/production_ingest/test_parser_capabilities.py` (FR-023-FR-024, FR-047, FR-059, FR-066)
+- [ ] T101 [P] [US5] Add failing capability canonical serialization, schema, compatibility, and reload tests in `tests/ingest/production_ingest/test_capability_serialization.py` (FR-019-FR-024)
 
 ### Implementation for User Story 5
 
-- [ ] T081 [US5] Implement declarative installed-distribution and optional-extra probes that do not import adapters in `isanlp_rst/ingest/capabilities.py` (FR-023, FR-030-FR-031)
-- [ ] T082 [US5] Implement model-free `describe_capabilities(parser=None)` including package/write/read versions, lifecycle kinds, source forms, guarantees, parser state, and cache eligibility in `isanlp_rst/ingest/capabilities.py` (FR-023-FR-024)
-- [ ] T083 [US5] Implement `ProductionIngestor.capabilities()` using the configured parser descriptor without inference or model resolution in `isanlp_rst/ingest/service.py` (FR-023-FR-024)
-- [ ] T084 [US5] Export capability contracts and operations from `isanlp_rst/ingest/__init__.py` and reconcile exact symbols/statuses in `isanlp_rst/ingest/public-surface.json` (FR-002, FR-023, FR-032)
-- [ ] T085 [US5] Make core import and capability discovery pass with Docling, DocLang, and Markdown distributions absent in `tests/ingest/production_ingest/test_capabilities_offline.py` (FR-031, SC-010)
-- [ ] T086 [US5] Make capability predictions agree with representative prepare/analyse acceptance and typed rejection in `tests/ingest/production_ingest/test_source_form_capabilities.py` and `test_parser_capabilities.py` (FR-023-FR-024)
-- [ ] T087 [US5] Make capability records serialize/reload canonically without changing semantic identity in `tests/ingest/production_ingest/test_capability_serialization.py` (FR-019-FR-021)
+- [ ] T102 [US5] Implement declarative installed-distribution and optional-extra probes that do not import adapters in `isanlp_rst/ingest/capabilities.py` (FR-023, FR-030-FR-031)
+- [ ] T103 [US5] Implement model-free `describe_capabilities(parser=None)` including package/write/read versions, lifecycle kinds, source forms, guarantees, parser state, supported output formalisms/evidence levels, evidence availability reasons, and cache eligibility in `isanlp_rst/ingest/capabilities.py` (FR-023-FR-024, FR-047, FR-066)
+- [ ] T104 [US5] Implement `ProductionIngestor.capabilities()` using the configured parser descriptor without inference or model resolution in `isanlp_rst/ingest/service.py` (FR-023-FR-024)
+- [ ] T105 [US5] Export capability contracts and operations from `isanlp_rst/ingest/__init__.py` and reconcile exact symbols/statuses in `isanlp_rst/ingest/public-surface.json` (FR-002, FR-023, FR-032)
+- [ ] T106 [US5] Make core import and capability discovery pass with Docling, DocLang, and Markdown distributions absent in `tests/ingest/production_ingest/test_capabilities_offline.py` (FR-031, SC-010)
+- [ ] T107 [US5] Make capability predictions agree with representative prepare/analyse acceptance and typed rejection in `tests/ingest/production_ingest/test_source_form_capabilities.py` and `test_parser_capabilities.py` (FR-023-FR-024)
+- [ ] T108 [US5] Make capability records serialize/reload canonically without changing semantic identity in `tests/ingest/production_ingest/test_capability_serialization.py` (FR-019-FR-021)
 
 **Checkpoint**: Consumers can decide whether and how to call the provider before
 expensive work.
@@ -251,11 +275,11 @@ expensive work.
 **Purpose**: Reconcile documentation, conformance, performance, scope, and
 quality before immutable source bytes are selected for US4 certification.
 
-- [ ] T088 [P] Generate and reconcile the exact 5.0.0 public symbol, signature, enum, status, error, schema, and compatibility tables in `docs/production-api-contract.md` from `isanlp_rst/ingest/public-surface.json` and runtime inspection (FR-002, FR-032, FR-039, SC-006)
-- [ ] T089 [P] Update the complete preparation, analysis, retained-content, capability, failure, cache, and canonical persistence workflows in `docs/production-source-ingest.md` using exact runtime exports (FR-032, SC-004)
-- [ ] T090 [P] Update core/formats optional boundaries, model-free discovery, immutable/mutable model identity, production/offline exclusions, and installed provenance in `docs/production-offline-boundary.md` (FR-023-FR-025, FR-030-FR-031)
-- [ ] T091 Update Feature 004 Pixi tasks and version-derived artifact paths in `pyproject.toml` so `production-api-contract`, determinism, performance, build, artifact validation, and clean-install commands execute the real implementation (FR-036-FR-039)
-- [ ] T092 Execute every source-valid API example and installed-public-import assertion from `specs/004-production-api-contract/quickstart.md`, record the artifact-, receipt-, and promotion-dependent sections as deferred until T118, and correct only authoritative runtime/docs drift before source selection (FR-032, FR-035)
+- [ ] T109 [P] Generate and reconcile the exact 5.0.0 public symbol, signature, enum, status, error, schema, analysis-policy/evidence, and compatibility tables in `docs/production-api-contract.md` from `isanlp_rst/ingest/public-surface.json` and runtime inspection (FR-002, FR-032, FR-039, FR-047-FR-065, SC-006)
+- [ ] T110 [P] Update the complete preparation, analysed-substrate, primary/eRST evidence, refinement, recombination, validation, retained-content, capability, failure, cache, and canonical persistence workflows in `docs/production-source-ingest.md` using exact runtime exports (FR-032, FR-047-FR-066, SC-004, SC-017-SC-024)
+- [ ] T111 [P] Update core/formats optional boundaries, model-free discovery, immutable/mutable model identity, production/offline exclusions, and installed provenance in `docs/production-offline-boundary.md` (FR-023-FR-025, FR-030-FR-031)
+- [ ] T112 Update Feature 004 Pixi tasks and version-derived artifact paths in `pyproject.toml` so `production-api-contract`, determinism, performance, build, artifact validation, and clean-install commands execute the real implementation (FR-036-FR-039)
+- [ ] T113 Execute every source-valid API example and installed-public-import assertion from `specs/004-production-api-contract/quickstart.md`, record the artifact-, receipt-, and promotion-dependent sections as deferred until T139, and correct only authoritative runtime/docs drift before source selection (FR-032, FR-035)
 
 **Checkpoint**: Runtime documentation and source-valid consumer examples are
 reconciled. Final scope/SOTA and canonical source-quality evidence are generated
@@ -277,36 +301,36 @@ the same wheel, and run complete installed conformance and quickstart acceptance
 
 ### Tests for User Story 4
 
-- [ ] T093 [P] [US4] Add failing package/runtime/filename/metadata/contract-version and immutable-version tests in `tests/production_boundary/test_release_metadata.py` (FR-021-FR-022, SC-013)
-- [ ] T094 [P] [US4] Add failing strict release-receipt and release-evidence lifecycle tests covering schema/version fields, allowed creation states, source/build/artifact/verification fields, canonical bytes, detached digest, and rejection of future/self commit identities in `tests/production_boundary/test_release_receipt.py` (FR-043-FR-044, SC-016)
-- [ ] T095 [P] [US4] Add failing exact-commit archive, deterministic provenance injection, via-sdist double-build, and byte-identical artifact tests in `tests/production_boundary/test_reproducible_build.py` (FR-042-FR-044)
-- [ ] T096 [P] [US4] Add failing wheel `RECORD`, package-content, forbidden-content, artifact-hash, receipt, and source-revision tests in `tests/production_boundary/test_artifact_validation_v2.py` (FR-042-FR-044, SC-016)
-- [ ] T097 [P] [US4] Add failing isolated core/formats environment, `python -I`, checkout-exclusion, offline acceptance, `pip check`, and retained `pip inspect` tests in `tests/production_boundary/test_clean_install_v2.py` (FR-031, FR-035-FR-036, SC-010)
+- [ ] T114 [P] [US4] Add failing package/runtime/filename/metadata/contract-version and immutable-version tests in `tests/production_boundary/test_release_metadata.py` (FR-021-FR-022, SC-013)
+- [ ] T115 [P] [US4] Add failing strict release-receipt and release-evidence lifecycle tests covering schema/version fields, allowed creation states, source/build/artifact/verification fields, canonical bytes, detached digest, and rejection of future/self commit identities in `tests/production_boundary/test_release_receipt.py` (FR-043-FR-044, SC-016)
+- [ ] T116 [P] [US4] Add failing exact-commit archive, deterministic provenance injection, via-sdist double-build, and byte-identical artifact tests in `tests/production_boundary/test_reproducible_build.py` (FR-042-FR-044)
+- [ ] T117 [P] [US4] Add failing wheel `RECORD`, package-content, forbidden-content, artifact-hash, receipt, and source-revision tests in `tests/production_boundary/test_artifact_validation_v2.py` (FR-042-FR-044, SC-016)
+- [ ] T118 [P] [US4] Add failing isolated core/formats environment, `python -I`, checkout-exclusion, offline acceptance, complete installed analysis-evidence surface, forbidden-internal negative surface, `pip check`, and retained `pip inspect` tests in `tests/production_boundary/test_clean_install_v2.py` (FR-031, FR-035-FR-036, FR-047-FR-067, SC-010, SC-017-SC-024)
 
 ### Implementation and certification for User Story 4
 
-- [ ] T098 [US4] Remove the blanket `dist/` ignore while keeping temporary build roots outside the repository in `.gitignore` and `tools/production_boundary/build.py` (FR-042)
-- [ ] T099 [US4] Make `importlib.metadata.version("isanlp_rst")` the runtime package-version authority and remove the duplicate hard-coded version in `isanlp_rst/_version.py` and `isanlp_rst/__init__.py` (FR-022)
-- [ ] T100 [P] [US4] Implement strict versioned canonical contracts for `isanlp_rst.release_receipt` 1.0.0 and every JSON record governed by the release evidence lifecycle in `tools/production_boundary/contracts.py` (FR-043-FR-044)
-- [ ] T101 [P] [US4] Implement deterministic build-provenance generation/injection without artifact self-reference in `tools/production_boundary/build.py` and runtime resource loading in `isanlp_rst/_provenance.py` (FR-043-FR-044)
-- [ ] T102 [US4] Implement clean-status/source-commit/tree/archive checks, commit-derived `SOURCE_DATE_EPOCH`, PyPA build reports, via-sdist wheel builds, and two-build hash equality in `tools/production_boundary/build.py` (FR-042-FR-044)
-- [ ] T103 [US4] Implement wheel/sdist contents, `RECORD`, metadata/version, packaged provenance, source/archive, receipt, verification, and forbidden-offline-content validation in `tools/production_boundary/artifacts.py` and `tools/production_boundary/__main__.py` (FR-036, FR-042-FR-044)
-- [ ] T104 [P] [US4] Implement genuine isolated core and formats installs with exact-wheel paths, `python -I`, temporary working directories, checkout exclusion, network-disabled acceptance, `pip check`, and retained `pip inspect` evidence in `tools/production_boundary/clean_install.py` and `tools/production_boundary/installed_acceptance.py` (FR-031, FR-035-FR-036)
-- [ ] T105 [US4] Make T093-T097 pass with deterministic test fixtures and local build roots, without claiming validation of the not-yet-selected release artifacts, in `tests/production_boundary/` (FR-036-FR-044)
-- [ ] T106 [US4] Run the Feature 004 focused tests plus Ruff and Pyright through Pixi and write canonical results through the T100 evidence contract to `specs/004-production-api-contract/evidence/pre-release-quality.json` (FR-036-FR-038)
-- [ ] T107 [US4] Run the one-warm-up/five-run preparation performance gate and write canonical per-run results through the T100 evidence contract to `specs/004-production-api-contract/evidence/performance.json` (SC-014)
-- [ ] T108 [US4] Audit the final source diff, including T098-T104, for consumer-specific fields, restored format-specific APIs, research/offline leakage, model architecture changes, and inference-mathematics changes, then revalidate that the dated comparison in `specs/004-production-api-contract/research.md` covers every FR-045 practice with zero unclassified gaps; record both dispositions in `specs/004-production-api-contract/evidence/scope-audit.md` (FR-025, FR-029-FR-030, FR-033-FR-034, FR-045-FR-046, SC-015)
-- [ ] T109 [US4] Run the complete source-only lint, Pyright, Markdown, pytest, Feature 004 conformance, determinism, and performance gates, reconcile T106-T108, and persist canonical aggregate results and evidence digests in `specs/004-production-api-contract/evidence/source-release-gates.json`, containing no artifact or clean-install claims (FR-036-FR-041, SC-006-SC-009, SC-014)
-- [ ] T110 [US4] Create the clean source release commit containing the final `isanlp_rst/`, `tools/`, `tests/`, `docs/`, `pyproject.toml`, `pixi.lock`, and `specs/004-production-api-contract/` source candidate after T109 passes (FR-043-FR-044)
-- [ ] T111 [US4] Generate canonical `specs/004-production-api-contract/evidence/source-release.json` after T110 exists, recording the exact source commit, tree, archive, and commit-derived `SOURCE_DATE_EPOCH` identities without claiming its own future commit identity (FR-043-FR-044)
-- [ ] T112 [US4] Build wheel and sdist twice from the named T110 source commit and select only byte-identical `dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl` and `dist/5.0.0/isanlp_rst-5.0.0.tar.gz` artifacts (FR-042-FR-044)
-- [ ] T113 [US4] Run artifact validation, isolated core/formats installs, installed conformance, and both production-boundary gates against the exact T112 bytes, then persist canonical local results in `specs/004-production-api-contract/evidence/artifact-verification.json` (FR-031, FR-035-FR-044, SC-010, SC-013, SC-016)
-- [ ] T114 [US4] Commit the T112 wheel and sdist under `dist/5.0.0/` plus `specs/004-production-api-contract/evidence/source-release.json` and `specs/004-production-api-contract/evidence/artifact-verification.json` as one untagged candidate-artifact commit, without creating any record that claims the candidate commit identity before it exists (FR-042-FR-044)
-- [ ] T115 [US4] On the second supported development machine, check out the T114 candidate-artifact commit, verify and install the exact committed wheel without rebuilding, run installed conformance, and return canonical `specs/004-production-api-contract/evidence/second-machine-candidate-verification.json` identifying that already-existing commit and artifact bytes (FR-036, FR-042-FR-044)
-- [ ] T116 [US4] Generate canonical `dist/5.0.0/release-receipt.json` and `dist/5.0.0/release-receipt.sha256` from the T110 source, T112 artifacts, T113 local evidence, and T115 candidate-verification evidence, then require zero receipt, artifact, or evidence-digest mismatch (FR-043-FR-044, SC-016)
-- [ ] T117 [US4] Commit `specs/004-production-api-contract/evidence/second-machine-candidate-verification.json`, `dist/5.0.0/release-receipt.json`, and `dist/5.0.0/release-receipt.sha256` as the certification commit, push it, tag that unchanged-artifact commit for 5.0.0, push the tag, and verify local/remote commit, tag, and artifact-hash parity without writing self-referential certification data (FR-022, FR-042-FR-044, SC-013, SC-016)
-- [ ] T118 [US4] On the second supported development machine, fetch and check out the T117 release tag, verify the detached receipt and every named artifact/evidence digest, install the exact tagged wheel, run installed conformance and every deferred `specs/004-production-api-contract/quickstart.md` assertion without rebuilding, and return canonical `specs/004-production-api-contract/evidence/release-certification.json` identifying the existing source, candidate, certification, tag, and remote state (FR-032, FR-035-FR-036, FR-042-FR-044, SC-012, SC-016)
-- [ ] T119 [US4] Commit and push T118 as a post-certification evidence-only commit, then prove the 5.0.0 tag still resolves to T117, `git ls-files dist/5.0.0` lists exactly four promoted files, all four hashes are unchanged, and local/remote branch and tag identities agree (FR-022, FR-042-FR-044, SC-012-SC-013, SC-016)
+- [ ] T119 [US4] Remove the blanket `dist/` ignore while keeping temporary build roots outside the repository in `.gitignore` and `tools/production_boundary/build.py` (FR-042)
+- [ ] T120 [US4] Make `importlib.metadata.version("isanlp_rst")` the runtime package-version authority and remove the duplicate hard-coded version in `isanlp_rst/_version.py` and `isanlp_rst/__init__.py` (FR-022)
+- [ ] T121 [P] [US4] Implement strict versioned canonical contracts for `isanlp_rst.release_receipt` 1.0.0 and every JSON record governed by the release evidence lifecycle in `tools/production_boundary/contracts.py` (FR-043-FR-044)
+- [ ] T122 [P] [US4] Implement deterministic build-provenance generation/injection without artifact self-reference in `tools/production_boundary/build.py` and runtime resource loading in `isanlp_rst/_provenance.py` (FR-043-FR-044)
+- [ ] T123 [US4] Implement clean-status/source-commit/tree/archive checks, commit-derived `SOURCE_DATE_EPOCH`, PyPA build reports, via-sdist wheel builds, and two-build hash equality in `tools/production_boundary/build.py` (FR-042-FR-044)
+- [ ] T124 [US4] Implement wheel/sdist contents, `RECORD`, metadata/version, packaged provenance, source/archive, receipt, verification, and forbidden-offline-content validation in `tools/production_boundary/artifacts.py` and `tools/production_boundary/__main__.py` (FR-036, FR-042-FR-044)
+- [ ] T125 [P] [US4] Implement genuine isolated core and formats installs with exact-wheel paths, `python -I`, temporary working directories, checkout exclusion, network-disabled acceptance, `pip check`, and retained `pip inspect` evidence in `tools/production_boundary/clean_install.py` and `tools/production_boundary/installed_acceptance.py` (FR-031, FR-035-FR-036)
+- [ ] T126 [US4] Make T114-T118 pass with deterministic test fixtures and local build roots, without claiming validation of the not-yet-selected release artifacts, in `tests/production_boundary/` (FR-036-FR-044)
+- [ ] T127 [US4] Run the Feature 004 focused tests plus Ruff and Pyright through Pixi and write canonical results through the T121 evidence contract to `specs/004-production-api-contract/evidence/pre-release-quality.json` (FR-036-FR-038)
+- [ ] T128 [US4] Run the one-warm-up/five-run preparation performance gate and write canonical per-run results through the T121 evidence contract to `specs/004-production-api-contract/evidence/performance.json` (SC-014)
+- [ ] T129 [US4] Audit the final source diff, including T119-T125, for consumer-specific fields, restored format-specific APIs, research/offline leakage, forbidden scientific internals, model architecture changes, inference-mathematics changes, and unexplained backend evidence loss, then revalidate that the dated comparison in `specs/004-production-api-contract/research.md` covers every FR-045 practice with zero unclassified gaps; record both dispositions in `specs/004-production-api-contract/evidence/scope-audit.md` (FR-025, FR-029-FR-030, FR-033-FR-034, FR-045-FR-046, FR-064-FR-067, SC-015, SC-018, SC-024)
+- [ ] T130 [US4] Run the complete source-only lint, Pyright, Markdown, pytest, Feature 004 conformance, decision-evidence loss audit, determinism, and performance gates, reconcile T127-T129, and persist canonical aggregate results and evidence digests in `specs/004-production-api-contract/evidence/source-release-gates.json`, containing no artifact or clean-install claims (FR-036-FR-041, FR-047-FR-067, SC-006-SC-009, SC-014, SC-017-SC-024)
+- [ ] T131 [US4] Create the clean source release commit containing the final `isanlp_rst/`, `tools/`, `tests/`, `docs/`, `pyproject.toml`, `pixi.lock`, and `specs/004-production-api-contract/` source candidate after T130 passes (FR-043-FR-044)
+- [ ] T132 [US4] Generate canonical `specs/004-production-api-contract/evidence/source-release.json` after T131 exists, recording the exact source commit, tree, archive, and commit-derived `SOURCE_DATE_EPOCH` identities without claiming its own future commit identity (FR-043-FR-044)
+- [ ] T133 [US4] Build wheel and sdist twice from the named T131 source commit and select only byte-identical `dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl` and `dist/5.0.0/isanlp_rst-5.0.0.tar.gz` artifacts (FR-042-FR-044)
+- [ ] T134 [US4] Run artifact validation, isolated core/formats installs, installed conformance, and both production-boundary gates against the exact T133 bytes, then persist canonical local results in `specs/004-production-api-contract/evidence/artifact-verification.json` (FR-031, FR-035-FR-044, SC-010, SC-013, SC-016)
+- [ ] T135 [US4] Commit the T133 wheel and sdist under `dist/5.0.0/` plus `specs/004-production-api-contract/evidence/source-release.json` and `specs/004-production-api-contract/evidence/artifact-verification.json` as one untagged candidate-artifact commit, without creating any record that claims the candidate commit identity before it exists (FR-042-FR-044)
+- [ ] T136 [US4] On the second supported development machine, check out the T135 candidate-artifact commit, verify and install the exact committed wheel without rebuilding, run installed conformance, and return canonical `specs/004-production-api-contract/evidence/second-machine-candidate-verification.json` identifying that already-existing commit and artifact bytes (FR-036, FR-042-FR-044)
+- [ ] T137 [US4] Generate canonical `dist/5.0.0/release-receipt.json` and `dist/5.0.0/release-receipt.sha256` from the T131 source, T133 artifacts, T134 local evidence, and T136 candidate-verification evidence, then require zero receipt, artifact, or evidence-digest mismatch (FR-043-FR-044, SC-016)
+- [ ] T138 [US4] Commit `specs/004-production-api-contract/evidence/second-machine-candidate-verification.json`, `dist/5.0.0/release-receipt.json`, and `dist/5.0.0/release-receipt.sha256` as the certification commit, push it, tag that unchanged-artifact commit for 5.0.0, push the tag, and verify local/remote commit, tag, and artifact-hash parity without writing self-referential certification data (FR-022, FR-042-FR-044, SC-013, SC-016)
+- [ ] T139 [US4] On the second supported development machine, fetch and check out the T138 release tag, verify the detached receipt and every named artifact/evidence digest, install the exact tagged wheel, run installed conformance and every deferred `specs/004-production-api-contract/quickstart.md` assertion without rebuilding, and return canonical `specs/004-production-api-contract/evidence/release-certification.json` identifying the existing source, candidate, certification, tag, and remote state (FR-032, FR-035-FR-036, FR-042-FR-044, SC-012, SC-016)
+- [ ] T140 [US4] Commit and push T139 as a post-certification evidence-only commit, then prove the 5.0.0 tag still resolves to T138, `git ls-files dist/5.0.0` lists exactly four promoted files, all four hashes are unchanged, and local/remote branch and tag identities agree (FR-022, FR-042-FR-044, SC-012-SC-013, SC-016)
 
 **Checkpoint**: The repository contains one immutable, receipt-governed 5.0.0
 wheel/sdist release whose candidate bytes and final tagged receipt another
@@ -333,8 +357,8 @@ evidence does not move the release tag or change certified bytes.
   before release because core clean-install acceptance exercises discovery.
 - **Phase 8** depends on US1, US2, US3, US5, and US6.
 - **US4 (Phase 9)** depends on every preceding phase because it certifies their
-  exact combined bytes. T115 and T118 require access to the second supported
-  development machine; T117 and T119 require the configured Git remote.
+  exact combined bytes. T136 and T139 require access to the second supported
+  development machine; T138 and T140 require the configured Git remote.
 
 ### User-story dependency graph
 
@@ -376,34 +400,35 @@ one evidence pipeline.
 
 ### User Story 1
 
-T045-T050 may run in parallel. T051 and T055 may run in parallel before T052;
-validation/cache assembly then proceeds T052-T060.
+T045-T059 may run in parallel. T060 establishes the evidence contract;
+T061-T068 then preserve independent producer and receipt paths before T069-T082
+assemble, validate, persist, export, and exercise the complete outcome.
 
 ### User Story 3
 
-T062-T066 may run in parallel. T067-T069 establish the failure value and
-serialization path before service/cache translation in T070-T073.
+T083-T087 may run in parallel. T088-T090 establish the failure value and
+serialization path before service/cache translation in T091-T094.
 
 ### User Story 5
 
-T077-T080 may run in parallel. T081-T083 are ordered; T084-T087 validate the
+T098-T101 may run in parallel. T102-T104 are ordered; T105-T108 validate the
 public installed boundary.
 
 ### User Story 4
 
-T093-T097 may run in parallel. T100, T101, and T104 touch different components
+T114-T118 may run in parallel. T121, T122, and T125 touch different components
 after their tests exist; source selection, artifact construction, certification,
-and post-certification proof T109-T119 are strictly sequential.
+and post-certification proof T130-T140 are strictly sequential.
 
 ## Parallel Execution Examples
 
 ```text
 US6: T021 representation tests | T022 structure tests | T023 disposition tests
 US2: T031 outcome tests | T032 planning tests | T033 empty tests | T034 validation tests | T035 identity tests
-US1: T045 outcome tests | T046 graph tests | T047 anchor tests | T048 atomicity tests | T049 mutation tests | T050 consumer test
-US3: T062 stage tests | T063 evidence tests | T064 privacy tests | T065 serialization tests | T066 unavailability tests
-US5: T077 offline tests | T078 source-form tests | T079 parser tests | T080 serialization tests
-US4: T093 metadata tests | T094 receipt tests | T095 build tests | T096 artifact tests | T097 install tests
+US1: T045-T050 outcome/graph/anchor/atomicity/identity/consumer tests | T051-T059 policy/substrate/decision/refinement/eRST/component/recombination/validation/loss tests
+US3: T083 stage tests | T084 evidence tests | T085 privacy tests | T086 serialization tests | T087 unavailability tests
+US5: T098 offline tests | T099 source-form tests | T100 parser tests | T101 serialization tests
+US4: T114 metadata tests | T115 receipt tests | T116 build tests | T117 artifact tests | T118 install tests
 ```
 
 ## Implementation Strategy

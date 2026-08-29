@@ -112,20 +112,22 @@ def cky_discourse_tree_decode(
             best_nuc = 0
             best_rel = 0
 
+            # Best nuclearity and relation for span (i, k) are invariant to split point j
+            nuc_max_idx = int(torch.argmax(nuc_scores[i, k]).item())
+            nuc_max_val = float(nuc_scores[i, k, nuc_max_idx].item())
+
+            rel_max_idx = int(torch.argmax(rel_scores[i, k]).item())
+            rel_max_val = float(rel_scores[i, k, rel_max_idx].item())
+
+            span_base_score = nuc_max_val + rel_max_val
+
             # Find best split point j where i <= j < k
             for j in range(i, k):
                 left_score = dp_chart[i, j]
                 right_score = dp_chart[j + 1, k]
                 split_score = split_scores[i, j, k]
 
-                # Best nuclearity and relation for this span
-                nuc_max_idx = int(torch.argmax(nuc_scores[i, k]).item())
-                nuc_max_val = float(nuc_scores[i, k, nuc_max_idx].item())
-
-                rel_max_idx = int(torch.argmax(rel_scores[i, k]).item())
-                rel_max_val = float(rel_scores[i, k, rel_max_idx].item())
-
-                total = left_score + right_score + split_score + nuc_max_val + rel_max_val
+                total = left_score + right_score + split_score + span_base_score
                 if total > best_score:
                     best_score = total
                     best_j = j

@@ -326,6 +326,8 @@ A `kind=capabilities` envelope containing:
 - source-form capabilities, including unavailable forms;
 - lifecycle operations and success/failure kinds;
 - parser capacity and identity state when a parser descriptor is supplied;
+- supported output formalisms and evidence-detail levels, plus stable reasons
+  for any unavailable decision-evidence capability;
 - model-free discovery guarantee;
 - canonicalization, persistence, and cache guarantees;
 - semantic-cache eligibility plus stable reason;

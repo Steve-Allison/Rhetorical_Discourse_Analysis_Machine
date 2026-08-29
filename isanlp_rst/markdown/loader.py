@@ -15,6 +15,7 @@ API verified against the live token stream emitted by ``markdown-it-py``
 """
 
 from dataclasses import dataclass
+from functools import cache
 
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
@@ -36,6 +37,7 @@ class LoadResult:
     front_matter_format: str | None
 
 
+@cache
 def build_parser(*, gfm: bool = True) -> MarkdownIt:
     """Construct a configured ``MarkdownIt`` instance.
 

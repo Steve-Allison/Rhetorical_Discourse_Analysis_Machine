@@ -1,5 +1,6 @@
 """Deterministic structure-first subdivision for bounded local RST analysis."""
 
+from itertools import batched, pairwise
 import re
 
 from isanlp_rst.ingest.contracts import (
@@ -42,12 +43,14 @@ def build_subdivision_plan(prepared: PreparedRstDocument, capacity: ParserCapaci
 
 def _edu_ranges(prepared: PreparedRstDocument, maximum: int) -> tuple[PreparedRange, ...]:
     edus = prepared.document.edus or ()
-    starts = list(range(0, len(edus), maximum))
+    if not edus:
+        return ()
     ranges: list[PreparedRange] = []
-    for group_index, edu_index in enumerate(starts):
-        start = 0 if group_index == 0 else edus[edu_index].start
-        next_edu_index = edu_index + maximum
-        end = edus[next_edu_index].start if next_edu_index < len(edus) else len(prepared.text)
+    batches = list(batched(edus, maximum, strict=False))
+    for group_index, batch in enumerate(batches):
+        start = 0 if group_index == 0 else batch[0].start
+        next_index = group_index + 1
+        end = batches[next_index][0].start if next_index < len(batches) else len(prepared.text)
         ranges.append(PreparedRange(start=start, end=end))
     return tuple(ranges)
 
@@ -80,7 +83,7 @@ def _text_ranges(prepared: PreparedRstDocument, maximum: int) -> tuple[PreparedR
     )
     coarse_boundaries = [0, *structural_starts, len(text)]
     ranges: list[PreparedRange] = []
-    for coarse_start, coarse_end in zip(coarse_boundaries, coarse_boundaries[1:], strict=False):
+    for coarse_start, coarse_end in pairwise(coarse_boundaries):
         start = coarse_start
         while coarse_end - start > maximum:
             ceiling = start + maximum

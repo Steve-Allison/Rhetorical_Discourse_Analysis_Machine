@@ -295,6 +295,7 @@ upstream specification and package-version comparison before editing.
 **Files**: `isanlp_rst/ingest/service.py`,
 `isanlp_rst/ingest/validation.py`, `isanlp_rst/ingest/cache.py`,
 `isanlp_rst/ingest/contracts/analysis.py`,
+`isanlp_rst/ingest/contracts/inference.py`,
 `isanlp_rst/ingest/contracts/failure.py`
 
 Additional producer files are `isanlp_rst/parser.py`,

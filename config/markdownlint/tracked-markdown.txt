@@ -78,6 +78,7 @@ specs/003-production-codeline-split/research.md
 specs/003-production-codeline-split/spec.md
 specs/003-production-codeline-split/tasks.md
 specs/004-production-api-contract/checklists/requirements.md
+specs/004-production-api-contract/contracts/analysis-evidence.md
 specs/004-production-api-contract/contracts/distribution-and-public-surface.md
 specs/004-production-api-contract/contracts/production-api-v2.md
 specs/004-production-api-contract/contracts/serialization-and-compatibility.md

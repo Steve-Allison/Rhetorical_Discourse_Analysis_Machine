@@ -1,5 +1,4 @@
-"""Discourse marker feature priming and relation classification refinement for multilingual RST."""
-
+from functools import cache
 import re
 from collections.abc import Sequence
 
@@ -22,6 +21,17 @@ from isanlp_rst.relations.multilingual_markers import (
 __all__ = ["DISCOURSE_MARKER_RULES", "DiscourseMarkerPrimer", "MarkerRule"]
 
 DISCOURSE_MARKER_RULES = MULTILINGUAL_MARKER_RULES["en"]
+
+
+@cache
+def _compile_rule_pattern(cue: str) -> re.Pattern[str]:
+    """Pre-compile regex for a discourse cue."""
+    cue_lower = cue.lower()
+    if any("\u4e00" <= c <= "\u9fff" for c in cue_lower):
+        pattern = r"(?:^|[;,\.，。；、\s]+)" + re.escape(cue_lower)
+    else:
+        pattern = r"(?:^|[;,\.]\s*)\b" + re.escape(cue_lower) + r"\b"
+    return re.compile(pattern)
 
 
 class DiscourseMarkerPrimer:
@@ -47,13 +57,8 @@ class DiscourseMarkerPrimer:
 
         for rule in self.sorted_rules:
             cue = rule.cue.lower()
-            # Support word boundary for latin/cyrillic scripts; match start/punctuation for cjk
-            if any("\u4e00" <= c <= "\u9fff" for c in cue):
-                pattern = r"(?:^|[;,\.，。；、\s]+)" + re.escape(cue)
-            else:
-                pattern = r"(?:^|[;,\.]\s*)\b" + re.escape(cue) + r"\b"
-
-            match = re.search(pattern, text_lower)
+            regex = _compile_rule_pattern(cue)
+            match = regex.search(text_lower)
             if match:
                 cue_start_in_match = match.group(0).lower().find(cue)
                 start_pos = leading_ws + match.start() + cue_start_in_match
@@ -111,12 +116,8 @@ class DiscourseMarkerPrimer:
 
             for rule in primer_rules:
                 cue = rule.cue.lower()
-                if any("\u4e00" <= c <= "\u9fff" for c in cue):
-                    pattern = r"(?:^|[;,\.，。；、\s]+)" + re.escape(cue)
-                else:
-                    pattern = r"(?:^|[;,\.]\s*)\b" + re.escape(cue) + r"\b"
-
-                match = re.search(pattern, text_lower)
+                regex = _compile_rule_pattern(cue)
+                match = regex.search(text_lower)
                 if match:
                     cue_start_in_match = match.group(0).lower().find(cue)
                     start_pos = leading_ws + match.start() + cue_start_in_match

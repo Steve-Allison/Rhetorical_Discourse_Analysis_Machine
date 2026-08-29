@@ -27,6 +27,9 @@ among:
 - inspected signatures and protocol members;
 - enum/status/error values;
 - Pydantic discriminators and fields;
+- analysis-policy/output-formalism/evidence-detail enum values;
+- analysed-document, decision-evidence, composite-identity, refinement,
+  decoder, recombination, and validation receipt models;
 - packaged JSON Schemas;
 - public documentation examples and anchors;
 - compatibility and deprecation declarations.
@@ -247,6 +250,11 @@ Create two isolated environments without `--system-site-packages`:
 - run public-surface and schema reconciliation;
 - query capabilities offline and see unavailable optional forms;
 - serialize/load capabilities, outcomes, and failures;
+- verify the typed analysis policy, exact analysed substrate, decision-complete
+  evidence, composite identity, both-endpoint anchors, recombination receipt,
+  and validation receipt using installed public imports only;
+- prove forbidden raw tensors, embeddings, activations, unrestricted charts,
+  training-only fields, and workbench types are absent from the public surface;
 - attempt an unavailable format and receive typed provider unavailability;
 - run `python -m pip check` and retain `python -m pip inspect` JSON evidence.
 
@@ -257,6 +265,13 @@ Create two isolated environments without `--system-site-packages`:
 - query capabilities and see all supported source forms available;
 - run one conformance fixture for each form and rich retained-content
   round-trip;
+- run one decision-complete primary analysis and one eRST analysis, including
+  marker refinement, signal/candidate links, decoder receipt, and normalized
+  distribution policy when the selected backend supports it;
+- run subdivided analysis and verify complete local-to-global recombination
+  mappings plus the validation receipt;
+- run deliberate evidence-loss fixtures for every packaged production backend
+  and handoff;
 - run `pip check` and retain `pip inspect` evidence.
 
 Network access is allowed only for dependency installation when packages are

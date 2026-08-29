@@ -217,6 +217,11 @@ distribution names. It also reports:
 - parser capacity if declaratively available;
 - model identity state: `immutable_release`, `mutable_instance`,
   `unidentified`, or `not_configured`;
+- supported output formalisms and evidence-detail policies per configured
+  backend;
+- whether exact analysed-substrate, decision-complete primary evidence, marker
+  refinement, eRST evidence, recombination receipt, and validation receipt are
+  available;
 - durable semantic-cache eligibility and stable reason.
 
 Discovery must not import format adapters, instantiate a parser, resolve or

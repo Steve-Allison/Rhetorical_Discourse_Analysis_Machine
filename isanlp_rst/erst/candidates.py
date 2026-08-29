@@ -3,7 +3,7 @@
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 from enum import StrEnum
-from itertools import islice
+from itertools import batched, pairwise
 import math
 
 import networkx as nx
@@ -187,7 +187,7 @@ def _primary_path(
     relation_by_pair: Mapping[tuple[int, int], str],
 ) -> tuple[str, ...]:
     steps: list[str] = []
-    for left, right in zip(node_path, node_path[1:], strict=False):
+    for left, right in pairwise(node_path):
         if (left, right) in relation_by_pair:
             steps.append(f">{relation_by_pair[(left, right)]}")
         else:
@@ -346,9 +346,7 @@ def iter_candidate_batches(
 
     if batch_size < 1:
         raise ValueError("candidate batch size must be at least one")
-    iterator = iter(candidates)
-    while batch := tuple(islice(iterator, batch_size)):
-        yield batch
+    yield from batched(candidates, batch_size, strict=False)
 
 
 __all__ = [

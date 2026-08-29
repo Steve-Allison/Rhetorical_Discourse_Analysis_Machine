@@ -1,26 +1,30 @@
+from collections.abc import Mapping, Sequence
+from typing import Any
+
 from isanlp_rst.annotation_rst import DiscourseUnit
 
 
 class DUConverter:
-    def __init__(self, predictions, tokenization_type="default"):
+    __slots__ = ("du_id", "predictions", "tokenization_type")
+
+    du_id: int
+    predictions: Mapping[str, Any]
+    tokenization_type: str
+
+    def __init__(self, predictions: Mapping[str, Any], tokenization_type: str = "default") -> None:
         self.predictions = predictions
         assert tokenization_type in ("default", "rubert")
         self.tokenization_type = tokenization_type
 
         self.du_id = 0
 
-    def collect(self, tokens=None):
-        """
-        Takes the model outputs and converts them into isanlp binary trees.
+    def collect(self, tokens: Sequence[Sequence[str]] | None = None) -> list[DiscourseUnit]:
+        """Takes the model outputs and converts them into isanlp binary trees.
 
         Returns:
             List of the predictions as isanlp.DiscourseUnit objects.
         """
-
-        # with open(self.predictions_path, 'rb') as f:
-        #    predictions = pickle.load(f)
-
-        data = []
+        data: list[DiscourseUnit] = []
         token_docs = self.predictions["tokens"]
         edu_docs = self.predictions["edu_breaks"]
         span_docs = self.predictions["spans"]
@@ -148,18 +152,28 @@ class DUConverter:
         return rels
 
     @staticmethod
-    def _get_child(start, end, rels):
-        """
-        Selects the discourse unit description for given constituent.
+    def _get_child(
+        start: int,
+        end: int,
+        rels: Sequence[tuple[Any, ...]],
+        span_map: dict[tuple[int, int], int] | None = None,
+    ) -> int:
+        """Selects the discourse unit description for given constituent.
 
         Args:
             start: DU start position.
             end: DU end position.
             rels: List of tuples describing all the RST tree constituents.
+            span_map: Optional precomputed mapping of (start, end) -> rel index.
 
         Returns:
             Index of the given DU in the rels list.
         """
+        if span_map is not None:
+            idx = span_map.get((start, end))
+            if idx is not None:
+                return idx
+            raise ValueError(f"No discourse unit found for span ({start}, {end}).")
 
         for idx, rel in enumerate(rels):
             left_start, _, _, _, _, right_end, *_ = rel
@@ -167,32 +181,40 @@ class DUConverter:
                 return idx
         raise ValueError(f"No discourse unit found for span ({start}, {end}).")
 
-    def construct_tree(self, root, edus, rels):
-        """
-        Constructs the DiscourseUnit binary tree.
+    def construct_tree(
+        self,
+        root: int,
+        edus: Sequence[DiscourseUnit],
+        rels: Sequence[tuple[Any, ...]],
+        span_map: dict[tuple[int, int], int] | None = None,
+    ) -> DiscourseUnit:
+        """Constructs the DiscourseUnit binary tree.
 
         Args:
             root: Index of the root relation in the rels list.
             edus: List of EDUs as DiscourseUnit objects.
             rels: List of tuples describing all the RST tree constituents.
+            span_map: Optional precomputed mapping of (start, end) -> rel index.
 
         Returns:
             Binary DiscourseUnit RST tree.
         """
+        if span_map is None:
+            span_map = {(rel[0], rel[5]): idx for idx, rel in enumerate(rels)}
 
         left_start, left_end, relation, nuclearity, right_start, right_end, entropy = rels[root]
 
         if left_start == left_end:
             left = edus[left_start]
         else:
-            left_root = self._get_child(left_start, left_end, rels)
-            left = self.construct_tree(left_root, edus, rels)
+            left_root = self._get_child(left_start, left_end, rels, span_map=span_map)
+            left = self.construct_tree(left_root, edus, rels, span_map=span_map)
 
         if right_start == right_end:
             right = edus[right_start]
         else:
-            right_root = self._get_child(right_start, right_end, rels)
-            right = self.construct_tree(right_root, edus, rels)
+            right_root = self._get_child(right_start, right_end, rels, span_map=span_map)
+            right = self.construct_tree(right_root, edus, rels, span_map=span_map)
 
         self.du_id += 1
         du = DiscourseUnit(
