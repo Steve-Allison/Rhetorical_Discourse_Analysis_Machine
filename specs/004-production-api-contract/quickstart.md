@@ -313,7 +313,13 @@ The CLI routes structured inputs through the same `SourceArtifact` boundary and
 emits the canonical contract for JSON:
 
 ```bash
-isanlp-rst parse example.md --format json --output /tmp/isanlp-result.json
+isanlp-rst parse example.md \
+  --model-store /models/isanlp_rst \
+  --release-id modernbert-v5 \
+  --formalism rst_tree \
+  --evidence-detail decision_complete \
+  --format json \
+  --output /tmp/isanlp-result.json
 ```
 
 For the equivalent Python request:
