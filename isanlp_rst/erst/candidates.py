@@ -237,19 +237,25 @@ def iter_secondary_edge_candidates(
     }
     gold_by_pair = {(edge.source_id, edge.target_id): edge for edge in analysis.secondary_edges}
     for source in nodes:
-        paths_from_source = nx.single_source_shortest_path(undirected_graph, source.node_id)
+        source_sigs = signals_by_node[source.node_id]
+        paths_from_source: dict[int, list[int]] | None = None
         for target in nodes:
             if source.node_id == target.node_id:
                 continue
+            target_sigs = signals_by_node[target.node_id]
+            if not source_sigs and not target_sigs:
+                continue
             applicable_signal_ids = {
                 signal.signal_id
-                for signal in (*signals_by_node[source.node_id], *signals_by_node[target.node_id])
+                for signal in (*source_sigs, *target_sigs)
             }
             pair_signals = tuple(
                 signal for signal in available_signals if signal.signal_id in applicable_signal_ids
             )
             if not pair_signals:
                 continue
+            if paths_from_source is None:
+                paths_from_source = nx.single_source_shortest_path(undirected_graph, source.node_id)
             node_path = paths_from_source.get(target.node_id)
             if node_path is None:
                 raise ValueError(
