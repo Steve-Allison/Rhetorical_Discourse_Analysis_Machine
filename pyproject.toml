@@ -36,6 +36,9 @@ dependencies = [
   "safetensors>=0.8,<0.9",
 ]
 
+[project.scripts]
+isanlp-rst = "isanlp_rst.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/Steve-Allison/isanlp_rst"
 Repository = "https://github.com/Steve-Allison/isanlp_rst"
