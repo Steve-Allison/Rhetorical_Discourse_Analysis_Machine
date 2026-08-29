@@ -147,6 +147,10 @@ class PureTransformerParsingNet(nn.Module):
 
         # 4. Joint Multi-Task Loss Computation if supervision is provided
         if gold_splits is not None and gold_nucs is not None and gold_rels is not None:
+            gold_splits = gold_splits.to(device=self.dev)
+            gold_nucs = gold_nucs.to(device=self.dev)
+            gold_rels = gold_rels.to(device=self.dev)
+
             # Mask valid constituent spans (i < j)
             mask = torch.triu(torch.ones((num_edus, num_edus), device=self.dev), diagonal=1).bool()
             valid_splits = split_scores[:, mask]

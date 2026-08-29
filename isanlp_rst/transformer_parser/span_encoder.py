@@ -13,21 +13,14 @@ class TransformerSpanAttentionPooling(nn.Module):
         self.query = nn.Linear(hidden_size, 1, bias=False)
 
     def forward(self, hidden_states: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
-        """Pool token representations.
-
-        Args:
-            hidden_states: (B, L, D) token embeddings
-            mask: (B, L) boolean or binary mask indicating valid tokens
-
-        Returns:
-            (B, D) pooled span representations
-        """
+        """Pool token representations safely without NaN gradient instabilities."""
         scores = self.query(hidden_states).squeeze(-1)
-        min_val = torch.finfo(scores.dtype).min
-        scores = scores.masked_fill(~mask.bool(), min_val)
-        weights = F.softmax(scores, dim=-1).unsqueeze(-1)
-        # Clean potential NaNs from all-masked rows
-        weights = torch.nan_to_num(weights, nan=0.0)
+        safe_mask = -1e4 if scores.dtype == torch.float32 else -1e3
+        scores = scores.masked_fill(~mask.bool(), safe_mask)
+        weights = F.softmax(scores, dim=-1)
+        weights = weights.masked_fill(~mask.bool(), 0.0)
+        norm_sum = weights.sum(dim=-1, keepdim=True).clamp(min=1e-6)
+        weights = (weights / norm_sum).unsqueeze(-1)
         return torch.sum(hidden_states * weights, dim=1)
 
 
@@ -88,10 +81,12 @@ class TransformerBoundarySpanEncoder(nn.Module):
         scores = self.attn_pool.query(sequence_hidden_states).squeeze(-1).unsqueeze(1)  # (B, 1, Seq_Len)
         scores = scores.expand(-1, num_spans, -1)  # (B, Num_Spans, Seq_Len)
 
-        min_val = torch.finfo(scores.dtype).min
-        scores = scores.masked_fill(~span_mask, min_val)
-        weights = F.softmax(scores, dim=-1).unsqueeze(-1)  # (B, Num_Spans, Seq_Len, 1)
-        weights = torch.nan_to_num(weights, nan=0.0)
+        safe_mask = -1e4 if scores.dtype == torch.float32 else -1e3
+        scores = scores.masked_fill(~span_mask, safe_mask)
+        weights = F.softmax(scores, dim=-1)
+        weights = weights.masked_fill(~span_mask, 0.0)
+        norm_sum = weights.sum(dim=-1, keepdim=True).clamp(min=1e-6)
+        weights = (weights / norm_sum).unsqueeze(-1)  # (B, Num_Spans, Seq_Len, 1)
 
         # Weighted sum: (B, Num_Spans, Seq_Len, 1) * (B, 1, Seq_Len, D) -> (B, Num_Spans, D)
         h_attn = torch.sum(weights * sequence_hidden_states.unsqueeze(1), dim=2)
