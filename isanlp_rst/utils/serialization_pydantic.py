@@ -11,7 +11,7 @@ Install with ``pip install isanlp_rst[pydantic]``.
 
 from pydantic import BaseModel, ConfigDict
 
-from isanlp.annotation_rst import DiscourseUnit
+from isanlp_rst.annotation_rst import DiscourseUnit
 
 
 class PydanticDiscourseUnit(BaseModel):

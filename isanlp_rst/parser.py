@@ -3,8 +3,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from isanlp.annotation_rst import DiscourseUnit
-
+from .annotation_rst import DiscourseUnit
 from .dmrst_parser.predictor import PredictorDMRST
 from .universal_parser.predictor import PredictorUniRST
 from .utils.parse_result import ParseFailedError, extract_root_tree
@@ -389,6 +388,118 @@ class Parser:
             )
 
         return analysis
+
+    def parse_documents(
+        self,
+        documents: Sequence[RstDocument],
+        batch_size: int = 16,
+        output: str = "rst_tree",
+        prime_markers: bool = True,
+    ) -> list[RstAnalysis]:
+        """Parse a sequence of documents in high-throughput batches.
+
+        Args:
+            documents: Sequence of RstDocument instances to parse.
+            batch_size: Maximum batch size per forward pass.
+            output: Formalism alias ('rst_tree' or 'erst_graph').
+            prime_markers: Whether to apply lexical discourse marker priming.
+
+        Returns:
+            list[RstAnalysis]: Analyzed discourse results corresponding to the input documents.
+        """
+        import time
+        from isanlp_rst._provenance import resolve_package_version, resolve_source_revision
+        from isanlp_rst.contracts import OutputFormalismEnum, ProvenanceRecord, RstAnalysis, TimingRecord
+        from isanlp_rst.erst.checkpoint import ErstCapabilityError
+        from isanlp_rst.erst.converter import du_to_analysis
+        from isanlp_rst.relations.primer import DiscourseMarkerPrimer
+
+        if not documents:
+            return []
+        if batch_size <= 0:
+            raise ValueError(f"batch_size must be positive, got {batch_size}")
+
+        formalism = OutputFormalismEnum(output)
+        erst_checkpoint = getattr(self, "erst_checkpoint", None)
+        if formalism == OutputFormalismEnum.ERST_GRAPH and erst_checkpoint is None:
+            raise ErstCapabilityError(
+                "output='erst_graph' requires a validated completion bundle via "
+                "Parser(erst_scorer_checkpoint=...)"
+            )
+
+        segmenter = getattr(self, "segmenter", None)
+        parse_rst_batch_fn = getattr(self.predictor, "parse_rst_batch", None)
+
+        if (
+            all(doc.edus is None for doc in documents)
+            and segmenter is None
+            and parse_rst_batch_fn is not None
+        ):
+            start_t = time.perf_counter()
+            texts = [doc.text for doc in documents]
+            batch_raw_res: list[dict[str, Any]] = parse_rst_batch_fn(texts, batch_size=batch_size)
+            elapsed_ms = ((time.perf_counter() - start_t) * 1000.0) / max(1, len(documents))
+
+            results: list[RstAnalysis] = []
+            for doc, raw_res in zip(documents, batch_raw_res, strict=True):
+                root_unit = extract_root_tree(raw_res)
+                base_analysis = du_to_analysis(root_unit, document_id=doc.document_id)
+
+                prov = ProvenanceRecord(
+                    producer="isanlp_rst.parser",
+                    software_version=resolve_package_version(),
+                    source_revision=resolve_source_revision(),
+                    model_id=self.hf_model_version or str(getattr(self.predictor, "model_dir", "unknown")),
+                    ontology_version="4.1.0-discourse",
+                )
+                timing = TimingRecord(parsing_ms=elapsed_ms, total_ms=elapsed_ms)
+
+                analysis = RstAnalysis(
+                    document_id=base_analysis.document_id,
+                    formalism=formalism,
+                    nodes=base_analysis.nodes,
+                    primary_edges=base_analysis.primary_edges,
+                    secondary_edges=base_analysis.secondary_edges,
+                    signals=base_analysis.signals,
+                    provenance=prov,
+                    timing=timing,
+                    warnings=base_analysis.warnings,
+                    failure_code=base_analysis.failure_code,
+                )
+
+                if prime_markers:
+                    primer = DiscourseMarkerPrimer()
+                    analysis = primer.prime_analysis(analysis, doc)
+
+                if formalism == OutputFormalismEnum.ERST_GRAPH:
+                    from isanlp_rst.english.erst.completer import CompleterConfig, ErstCompleter
+
+                    if erst_checkpoint is None:
+                        raise RuntimeError("validated eRST checkpoint disappeared during parsing")
+                    completer = ErstCompleter(
+                        config=CompleterConfig(
+                            min_confidence_threshold=erst_checkpoint.decoder_config.edge_threshold,
+                        ),
+                        signal_detector=erst_checkpoint.signal_detector,
+                        decoder_config=erst_checkpoint.decoder_config,
+                    )
+                    analysis = completer.complete_graph(
+                        doc,
+                        analysis,
+                        neural_scorer=erst_checkpoint.scorer,
+                    )
+
+                results.append(analysis)
+            return results
+
+        return [
+            self.parse_document(
+                doc,
+                output=output,
+                prime_markers=prime_markers,
+            )
+            for doc in documents
+        ]
 
     def parse_hierarchical(
         self,

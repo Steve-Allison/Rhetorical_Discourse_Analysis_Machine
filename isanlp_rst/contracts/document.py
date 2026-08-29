@@ -83,11 +83,12 @@ class RstDocument:
 
     document_id: str
     text: str
-    tokens: tuple[DocumentToken, ...]
-    edus: tuple[Edu, ...] | None
+    tokens: tuple[DocumentToken, ...] = ()
+    edus: tuple[Edu, ...] | None = None
     sentence_boundaries: tuple[TextSpan, ...] = ()
     paragraph_boundaries: tuple[TextSpan, ...] = ()
     source: SourceReference | None = None
+    language: str | None = None
     provenance: ProvenanceRecord = field(default_factory=ProvenanceRecord)
     fidelity: InputFidelityEnum = InputFidelityEnum.LOSSLESS
 
@@ -96,6 +97,7 @@ class RstDocument:
         cls,
         text: str,
         document_id: str | None = None,
+        language: str | None = None,
         source: SourceReference | None = None,
         provenance: ProvenanceRecord | None = None,
     ) -> "RstDocument":
@@ -110,6 +112,7 @@ class RstDocument:
             sentence_boundaries=(),
             paragraph_boundaries=(),
             source=source,
+            language=language,
             provenance=prov,
             fidelity=InputFidelityEnum.LOSSLESS,
         )
@@ -119,6 +122,7 @@ class RstDocument:
         cls,
         edus: Sequence[str],
         document_id: str | None = None,
+        language: str | None = None,
         source: SourceReference | None = None,
         provenance: ProvenanceRecord | None = None,
     ) -> "RstDocument":
@@ -158,6 +162,7 @@ class RstDocument:
             sentence_boundaries=(),
             paragraph_boundaries=(),
             source=source,
+            language=language,
             provenance=prov,
             fidelity=InputFidelityEnum.RECONSTRUCTED,
         )
@@ -171,11 +176,12 @@ class RstDocument:
         sentence_boundaries: Sequence[TextSpan] = (),
         paragraph_boundaries: Sequence[TextSpan] = (),
         document_id: str | None = None,
+        language: str | None = None,
         source: SourceReference | None = None,
         provenance: ProvenanceRecord | None = None,
         fidelity: InputFidelityEnum = InputFidelityEnum.LOSSLESS,
     ) -> "RstDocument":
-        """Create a fully aligned RstDocument with tokens and EDUs."""
+        """Create an RstDocument with full token and EDU coordinates."""
         doc_id = document_id or str(uuid4())
         prov = provenance or ProvenanceRecord()
         return cls(
@@ -186,6 +192,7 @@ class RstDocument:
             sentence_boundaries=tuple(sentence_boundaries),
             paragraph_boundaries=tuple(paragraph_boundaries),
             source=source,
+            language=language,
             provenance=prov,
             fidelity=fidelity,
         )

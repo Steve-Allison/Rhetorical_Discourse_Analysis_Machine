@@ -6,7 +6,7 @@ raise when a constituent span is missing.
 """
 
 import pytest
-from isanlp.annotation_rst import DiscourseUnit
+from isanlp_rst.annotation_rst import DiscourseUnit
 
 from isanlp_rst.utils.du_converter import DUConverter
 

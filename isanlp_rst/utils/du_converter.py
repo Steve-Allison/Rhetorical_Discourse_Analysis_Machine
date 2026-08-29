@@ -1,4 +1,4 @@
-from isanlp.annotation_rst import DiscourseUnit
+from isanlp_rst.annotation_rst import DiscourseUnit
 
 
 class DUConverter:

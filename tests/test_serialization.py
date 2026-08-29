@@ -2,7 +2,7 @@
 
 import json
 
-from isanlp.annotation_rst import DiscourseUnit
+from isanlp_rst.annotation_rst import DiscourseUnit
 
 from isanlp_rst.utils.serialization import tree_from_dict, tree_to_dict
 from isanlp_rst.utils.serialization_pydantic import PydanticDiscourseUnit, RstNode

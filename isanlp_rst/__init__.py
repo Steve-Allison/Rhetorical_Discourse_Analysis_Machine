@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import IO
 
 from ._version import resolve_installed_package_version
+from .annotation_rst import DiscourseUnit, register_isanlp_compat
 from .contracts import (
     AnnotationStatusEnum,
     CapabilityStatusEnum,
@@ -44,6 +45,13 @@ from .contracts import (
     TimingRecord,
 )
 from .erst import ErstCapabilityError, RS4Document, RS4Reader, RS4Writer
+from .graph import (
+    to_graphrag_json,
+    to_jsonld,
+    to_networkx_graph,
+    to_rdf_triples,
+    to_turtle,
+)
 from .ontology import OntologyAdapter
 from .parser import Parser
 from .rstviewer import RenderedRST
@@ -56,6 +64,7 @@ __all__ = [
     "ConfidenceKindEnum",
     "DeviceEnum",
     "DiscourseSignal",
+    "DiscourseUnit",
     "DocumentToken",
     "EdgeKindEnum",
     "Edu",
@@ -86,11 +95,17 @@ __all__ = [
     "TextSpan",
     "TimingRecord",
     "find_cdu",
+    "register_isanlp_compat",
     "relation_category",
     "render",
+    "to_graphrag_json",
     "to_html",
+    "to_jsonld",
+    "to_networkx_graph",
     "to_pdf",
     "to_png",
+    "to_rdf_triples",
+    "to_turtle",
     "tree_stats",
     "__version__",
 ]

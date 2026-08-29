@@ -1,0 +1,179 @@
+# Formal LinkML schema specification for RST and eRST discourse graphs
+id: http://example.org/central/ontology/discourse
+name: discourse_ontology
+title: Central Discourse & Rhetorical Structure Ontology
+version: 1.0.0
+license: https://creativecommons.org/licenses/by/4.0/
+
+prefixes:
+  coe: http://example.org/central/ontology/
+  rst: http://example.org/discourse/rst/
+  linkml: https://w3id.org/linkml/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: coe
+default_range: string
+
+enums:
+  FormalismEnum:
+    permissible_values:
+      RST_TREE:
+        description: Classical hierarchical Rhetorical Structure Theory tree.
+      ERST_GRAPH:
+        description: Extended RST directed acyclic graph with secondary relations.
+  NuclearityEnum:
+    permissible_values:
+      NucleusSatellite:
+        meaning: coe:NucleusSatellite
+      SatelliteNucleus:
+        meaning: coe:SatelliteNucleus
+      NucleusNucleus:
+        meaning: coe:NucleusNucleus
+      Root:
+        meaning: coe:RootNuclearity
+  NodeKindEnum:
+    permissible_values:
+      EDU:
+        meaning: coe:ElementaryDiscourseUnit
+      CDU:
+        meaning: coe:ComplexDiscourseUnit
+      ROOT:
+        meaning: coe:RootDiscourseUnit
+
+classes:
+  DiscourseDocument:
+    description: A source document annotated for discourse structure.
+    slots:
+      - document_id
+      - text
+      - language
+      - nodes
+      - primary_edges
+      - secondary_edges
+      - signals
+      - provenance
+
+  DiscourseUnit:
+    description: A span of text acting as a discourse node (leaf EDU or composite CDU).
+    slots:
+      - node_id
+      - kind
+      - char_start
+      - char_end
+      - edu_start
+      - edu_end
+      - text
+      - confidence
+
+  DiscourseRelation:
+    description: A rhetorical relation connecting discourse units.
+    slots:
+      - relation_id
+      - source_unit
+      - target_unit
+      - relation_concept
+      - relation_raw
+      - nuclearity
+      - confidence
+      - calibrated
+      - edge_kind
+
+  DiscourseSignal:
+    description: An anchored lexical, syntactic, or semantic signal supporting a relation.
+    slots:
+      - signal_id
+      - edge_id
+      - signal_type
+      - signal_subtype
+      - char_spans
+      - token_ids
+      - status
+      - confidence
+
+slots:
+  document_id:
+    range: string
+    required: true
+  text:
+    range: string
+    required: true
+  language:
+    range: string
+  node_id:
+    range: integer
+    required: true
+  kind:
+    range: NodeKindEnum
+    required: true
+  char_start:
+    range: integer
+    required: true
+  char_end:
+    range: integer
+    required: true
+  edu_start:
+    range: integer
+    required: true
+  edu_end:
+    range: integer
+    required: true
+  relation_id:
+    range: string
+    required: true
+  source_unit:
+    range: integer
+    required: true
+  target_unit:
+    range: integer
+    required: true
+  relation_concept:
+    range: string
+    required: true
+  relation_raw:
+    range: string
+    required: true
+  nuclearity:
+    range: NuclearityEnum
+  confidence:
+    range: float
+  calibrated:
+    range: boolean
+  edge_kind:
+    range: string
+  signal_id:
+    range: string
+    required: true
+  edge_id:
+    range: string
+  signal_type:
+    range: string
+    required: true
+  signal_subtype:
+    range: string
+    required: true
+  char_spans:
+    multivalued: true
+    range: string
+  token_ids:
+    multivalued: true
+    range: integer
+  status:
+    range: string
+  nodes:
+    multivalued: true
+    range: DiscourseUnit
+    inlined: true
+  primary_edges:
+    multivalued: true
+    range: DiscourseRelation
+    inlined: true
+  secondary_edges:
+    multivalued: true
+    range: DiscourseRelation
+    inlined: true
+  signals:
+    multivalued: true
+    range: DiscourseSignal
+    inlined: true
+  provenance:
+    range: string

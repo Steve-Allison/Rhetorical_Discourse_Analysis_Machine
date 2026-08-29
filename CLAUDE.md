@@ -67,6 +67,7 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 ## Files worth knowing
 
 - [`isanlp_rst/parser.py`](isanlp_rst/parser.py) — public entry point, dispatches to predictor families.
+- [`isanlp_rst/annotation_rst.py`](isanlp_rst/annotation_rst.py) — native `DiscourseUnit` and RS3 XML serialization.
 - [`isanlp_rst/ingest/`](isanlp_rst/ingest/) — sole production source inventory, preparation, analysis, receipt, subdivision, and cache API.
 - [`isanlp_rst/base_predictor.py`](isanlp_rst/base_predictor.py) — shared tokenisation, batching, offset remapping, MPS-safe init.
 - [`isanlp_rst/contracts/`](isanlp_rst/contracts/) — typed contracts: `RstAnalysis`, `RstDocument`, `SecondaryRelationEdge`, `DiscourseSignal`, envelope serializations.

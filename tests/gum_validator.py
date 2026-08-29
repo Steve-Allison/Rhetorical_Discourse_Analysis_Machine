@@ -8,7 +8,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from isanlp.annotation_rst import DiscourseUnit
+from isanlp_rst.annotation_rst import DiscourseUnit
 
 from isanlp_rst.contracts import (
     NodeKindEnum,

@@ -1,6 +1,6 @@
 """Unit tests for Parser.parse_document integration."""
 
-from isanlp.annotation_rst import DiscourseUnit
+from isanlp_rst.annotation_rst import DiscourseUnit
 import pytest
 
 from isanlp_rst import (

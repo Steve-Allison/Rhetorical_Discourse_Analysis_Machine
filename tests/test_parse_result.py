@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pytest
-from isanlp.annotation_rst import DiscourseUnit
+from isanlp_rst.annotation_rst import DiscourseUnit
 
 from isanlp_rst.dmrst_parser.predictor import PredictorDMRST
 from isanlp_rst.parser import Parser

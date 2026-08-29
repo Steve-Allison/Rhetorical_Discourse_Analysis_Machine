@@ -34,7 +34,6 @@ dependencies = [
   "rfc8785>=0.1.4,<0.2",
   "python-dotenv>=1.2.1,<2",
   "safetensors>=0.8,<0.9",
-  "isanlp @ git+https://github.com/iinemo/isanlp.git@2a102e59f9718acc7fe259dd8d83c66d5da39794",
 ]
 
 [project.urls]

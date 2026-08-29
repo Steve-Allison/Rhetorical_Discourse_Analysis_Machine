@@ -242,8 +242,7 @@ class PredictorDMRST(BasePredictor):
         return batches
 
     def parse_rst(self, text: str) -> dict[str, Any]:
-        """
-        Parses the given text to generate a tree of rhetorical structure.
+        """Parses the given text to generate a tree of rhetorical structure.
 
         Args:
             text (str): The input text to be parsed.
@@ -251,68 +250,105 @@ class PredictorDMRST(BasePredictor):
         Returns:
             dict: Tokens and a tree representing the rhetorical structure based on the input text.
         """
-        if text is None:
-            raise ValueError("`text` must be provided for parsing.")
-        if not isinstance(text, str):
-            raise TypeError(f"`text` must be a str, got {type(text).__name__}.")
-        if not text.strip():
-            raise ValueError("`text` must be non-empty (got empty/whitespace-only input).")
+        return self.parse_rst_batch([text], batch_size=1)[0]
 
-        # Prepare the input data
-        razdel_tokens = list(razdel.tokenize(text))
-        tokenized_text = [token.text for token in razdel_tokens]
-        offset_positions, original_offsets = self.build_offset_converter_from_razdel(razdel_tokens)
-        data = {
-            "input_sentences": [tokenized_text],
-            "edu_breaks": [[]],
-            "decoder_input": [[]],
-            "relation_label": [[]],
-            "parsing_breaks": [[]],
-            "golden_metric": [[]],
-        }
+    def parse_rst_batch(self, texts: Sequence[str], batch_size: int = 16) -> list[dict[str, Any]]:
+        """Parses multiple texts in batched forward passes.
 
-        if len(tokenized_text) < 3:
-            tree = DUConverter.dummy_tree(tokenized_text)
-            self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
+        Args:
+            texts: Sequence of input texts to parse.
+            batch_size: Maximum batch size per forward pass.
 
-            return {"rst": [tree]}
+        Returns:
+            list[dict]: List of parser output dictionaries containing ``"rst": [tree]``.
+        """
+        if not texts:
+            return []
+        if batch_size <= 0:
+            raise ValueError(f"batch_size must be positive, got {batch_size}")
 
-        # Initialize predictions dictionary
-        input_data = Data(**data)
+        for idx, text in enumerate(texts):
+            if text is None:
+                raise ValueError(f"`text` at index {idx} must be provided for parsing.")
+            if not isinstance(text, str):
+                raise TypeError(f"`text` at index {idx} must be a str, got {type(text).__name__}.")
+            if not text.strip():
+                raise ValueError(f"`text` at index {idx} must be non-empty (got empty/whitespace-only input).")
 
-        predictions = {"tokens": [], "spans": [], "edu_breaks": [], "true_spans": [], "true_edu_breaks": []}
+        results: list[dict[str, Any]] = [{}] * len(texts)
 
-        # Tokenize the input for the transformer
-        batch = self.tokenize(input_data)
+        for chunk_start in range(0, len(texts), batch_size):
+            chunk_texts = list(texts[chunk_start : chunk_start + batch_size])
 
-        # Perform forward pass
-        with torch.inference_mode(), self._autocast():
-            _, _, span_batch, _, predict_edu_breaks = self.model.testing_loss(
-                batch.input_sentences,
-                batch.sent_breaks,
-                batch.entity_ids,
-                batch.entity_position_ids,
-                batch.edu_breaks,
-                batch.relation_label,
-                batch.parsing_breaks,
-                generate_tree=True,
-                use_pred_segmentation=True,
-            )
+            model_indices: list[int] = []
+            model_input_sentences: list[list[str]] = []
+            chunk_offset_positions: list[list[int]] = []
+            chunk_original_offsets: list[list[int]] = []
 
-        # Update predictions dictionary
-        predictions["tokens"] += [self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences]
-        if span_batch is None:
-            raise RuntimeError("testing_loss returned no spans with generate_tree=True")
-        predictions["spans"] += span_batch
-        predictions["edu_breaks"] += predict_edu_breaks
-        predictions["true_spans"] += batch.golden_metric
-        predictions["true_edu_breaks"] += batch.edu_breaks
+            for local_idx, text in enumerate(chunk_texts):
+                global_idx = chunk_start + local_idx
+                razdel_tokens = list(razdel.tokenize(text))
+                tokenized_text = [token.text for token in razdel_tokens]
+                offset_positions, original_offsets = self.build_offset_converter_from_razdel(razdel_tokens)
 
-        # Convert predictions to a tree structure
-        tree = DUConverter(predictions, tokenization_type="default").collect()[0]
-        self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
+                if len(tokenized_text) < 3:
+                    tree = DUConverter.dummy_tree(tokenized_text)
+                    self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
+                    results[global_idx] = {"rst": [tree]}
+                else:
+                    model_indices.append(global_idx)
+                    model_input_sentences.append(tokenized_text)
+                    chunk_offset_positions.append(offset_positions)
+                    chunk_original_offsets.append(original_offsets)
 
-        return {"rst": [tree]}
+            if not model_indices:
+                continue
+
+            data = {
+                "input_sentences": model_input_sentences,
+                "edu_breaks": [[] for _ in model_input_sentences],
+                "decoder_input": [[] for _ in model_input_sentences],
+                "relation_label": [[] for _ in model_input_sentences],
+                "parsing_breaks": [[] for _ in model_input_sentences],
+                "golden_metric": [[] for _ in model_input_sentences],
+            }
+            input_data = Data(**data)
+            batch = self.tokenize(input_data)
+
+            with torch.inference_mode(), self._autocast():
+                _, _, span_batch, _, predict_edu_breaks = self.model.testing_loss(
+                    batch.input_sentences,
+                    batch.sent_breaks,
+                    batch.entity_ids,
+                    batch.entity_position_ids,
+                    batch.edu_breaks,
+                    batch.relation_label,
+                    batch.parsing_breaks,
+                    generate_tree=True,
+                    use_pred_segmentation=True,
+                )
+
+            if span_batch is None:
+                raise RuntimeError("testing_loss returned no spans with generate_tree=True")
+
+            batch_tokens = [self.tokenizer.convert_ids_to_tokens(sent) for sent in batch.input_sentences]
+            predictions = {
+                "tokens": batch_tokens,
+                "spans": span_batch,
+                "edu_breaks": predict_edu_breaks,
+                "true_spans": batch.golden_metric,
+                "true_edu_breaks": batch.edu_breaks,
+            }
+
+            trees = DUConverter(predictions, tokenization_type="default").collect()
+
+            for g_idx, tree, offset_pos, orig_off in zip(
+                model_indices, trees, chunk_offset_positions, chunk_original_offsets, strict=True
+            ):
+                self.remap_tree_offsets(tree, offset_pos, orig_off, texts[g_idx])
+                results[g_idx] = {"rst": [tree]}
+
+        return results
 
     def parse_from_edus(self, edus: Sequence[str]) -> dict[str, Any]:
         """Parse a document using predefined EDU boundaries."""

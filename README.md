@@ -73,7 +73,6 @@ pixi run -e production production-smoke
 Alternative (raw venv / pip):
 
 ```bash
-pip install git+https://github.com/iinemo/isanlp.git    # required runtime dep
 pip install git+https://github.com/Steve-Allison/isanlp_rst.git
 
 # DocLang, Docling, and Markdown source adapters are production capabilities

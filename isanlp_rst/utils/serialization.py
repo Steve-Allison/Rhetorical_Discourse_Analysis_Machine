@@ -13,7 +13,7 @@ the ``pydantic`` extra: ``pip install isanlp_rst[pydantic]``).
 
 from typing import Any
 
-from isanlp.annotation_rst import DiscourseUnit
+from isanlp_rst.annotation_rst import DiscourseUnit
 
 # Per-node scalar fields serialised, in stable order (deterministic JSON aids
 # caching and round-trip equality). ``orig_text`` is excluded — it holds the

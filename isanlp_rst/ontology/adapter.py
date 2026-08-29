@@ -172,3 +172,16 @@ class OntologyAdapter:
             concept=mapping.concept,
             nuclearity=nuc,
         )
+
+    def get_concept_uri(self, concept: str, base_prefix: str = "http://example.org/central/ontology/DiscourseRelation#") -> str:
+        """Return canonical Central ontology URI for a coarse discourse concept."""
+        normalized = concept.strip()
+        return f"{base_prefix}{normalized}"
+
+    def get_nuclearity_uri(self, nuclearity: NuclearityPatternEnum, base_prefix: str = "http://example.org/central/ontology/Nuclearity#") -> str:
+        """Return canonical Central ontology URI for a nuclearity pattern."""
+        return f"{base_prefix}{nuclearity.name}"
+
+    def get_node_uri(self, document_id: str, node_id: int, base_prefix: str = "http://example.org/documents/") -> str:
+        """Return canonical document-scoped URI for a discourse unit node."""
+        return f"{base_prefix}{document_id}#node_{node_id}"

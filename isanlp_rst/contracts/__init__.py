@@ -1,5 +1,4 @@
-"""Public data contracts and enums for isanlp_rst."""
-
+from isanlp_rst.annotation_rst import DiscourseUnit
 from isanlp_rst.contracts.analysis import (
     DiscourseSignal,
     FormatRstAnalysis,
@@ -103,6 +102,7 @@ __all__ = [
     "DecodeRejectionReason",
     "DeviceEnum",
     "DiscourseSignal",
+    "DiscourseUnit",
     "DocumentToken",
     "EdgeKindEnum",
     "Edu",

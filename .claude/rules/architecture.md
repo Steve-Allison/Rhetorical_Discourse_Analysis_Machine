@@ -100,8 +100,8 @@ Each node carries:
 
 Leaves are EDUs; internal nodes are relations. Every node has `start` / `end` in **original-text character coordinates** after `remap_tree_offsets`.
 
-## Companion runtime
+## Native RST tree representation (`DiscourseUnit`)
 
-[`iinemo/isanlp`](https://github.com/iinemo/isanlp) supplies the `DiscourseUnit` class (at `src/isanlp/annotation_rst.py`) and is a hard runtime dependency. Installed via the `git+` URL pinned in `pyproject.toml` (commit `2a102e59f9718acc7fe259dd8d83c66d5da39794`). If `DiscourseUnit` import fails, that pin is the first place to check.
+`DiscourseUnit` is natively provided in [`isanlp_rst/annotation_rst.py`](../../isanlp_rst/annotation_rst.py) in modern Python 3.14 (Mode A, slotted, strictly typed). The legacy `iinemo/isanlp` Git dependency has been retired, and `isanlp_rst` provides transparent `sys.modules` backward-compatibility aliasing for legacy `from isanlp.annotation_rst import DiscourseUnit` imports.
 
-`DiscourseUnit` constructor fields (verified at the pinned commit): `id`, `left`, `right`, `text`, `start`, `end`, `orig_text`, `relation`, `nuclearity`, `proba`, `entropy`. Methods: `clear_textfields()` (recursively sets `.text = ''`), `fill_textfields(full_text)` (re-extracts substring per node), `to_rs3(filename, encoding='utf8')` (writes RS3 XML via internal `Exporter`).
+`DiscourseUnit` fields: `id`, `left`, `right`, `text`, `start`, `end`, `orig_text`, `relation`, `nuclearity`, `proba`, `entropy`. Methods: `clear_textfields()` (recursively sets `.text = ''`), `fill_textfields(full_text)` (re-extracts substring per node), `to_rs3(filename, encoding='utf8')` (writes RS3 XML via internal `Exporter`).
