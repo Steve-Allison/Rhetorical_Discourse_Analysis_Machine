@@ -30,8 +30,8 @@ AGENTS.md
 CLAUDE.md
 GEMINI.md
 README.md
-UniRST_Metrics.md
 docs/forensic_code_review_report.md
+docs/metrics/UniRST_Metrics.md
 docs/plans/2026-05-15-doclang-native-rst.md
 docs/plans/2026-05-15-docling-native-rst-build.md
 docs/plans/2026-05-15-docling-native-rst.md
@@ -41,7 +41,6 @@ docs/plans/2026-08-16-english-rst-quality.md
 docs/production-offline-boundary.md
 docs/production-source-ingest.md
 docs/raw-material-ingest-forensic-analysis.md
-offline_workbench/README.md
 specs/001-forensic-remediation/checklists/requirements.md
 specs/001-forensic-remediation/contracts/checkpoint-bundle.md
 specs/001-forensic-remediation/contracts/corpus-and-experiment.md
@@ -84,3 +83,4 @@ tests/fixtures/gum/README.md
 tests/fixtures/markdown/README.md
 tests/fixtures/markdown/minimal.md
 tests/fixtures/markdown/multi-level.md
+workbench/README.md

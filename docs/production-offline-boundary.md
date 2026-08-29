@@ -2,7 +2,7 @@
 
 ## The rule
 
-`isanlp_rst` owns only capabilities required while another project performs RST/eRST analysis. `offline_workbench` owns everything that creates, fits, calibrates, evaluates, benchmarks, or promotes those runtime capabilities. `research_harness` is repository-only research code operating inside the same offline environment.
+`isanlp_rst` owns only capabilities required while another project performs RST/eRST analysis. `workbench` owns everything that creates, fits, calibrates, evaluates, benchmarks, or promotes those runtime capabilities. `workbench.research` is repository-only research code operating inside the same offline environment.
 
 The distinction is purpose, not provenance: old research code that is required for inference remains production and must meet the production standard. Conversely, high-quality evaluation or training code remains offline because a consuming project does not need it to analyse a document.
 
@@ -58,11 +58,11 @@ pixi run -e offline test
 | DocLang/Markdown source decoding helpers | private `isanlp_rst.doclang` / `.markdown` modules called only by `isanlp_rst.ingest` | optional implementation detail |
 | RS4/eRST reading, conversion, decoding, validation, and loading | `isanlp_rst.erst` | yes |
 | Released-model manifest validation/loading | `isanlp_rst.model_loading` | yes |
-| Corpus conversion and relation-inventory derivation | `offline_workbench.corpus` | no |
-| Segmenter, parser, and eRST fitting | `offline_workbench.training` | no |
-| Parseval, calibration, and eRST evaluation | `offline_workbench.evaluation` | no |
-| Bundle creation and model promotion | `offline_workbench.promotion` | no |
-| Experimental comparison systems | `research_harness` in the root offline environment | no |
+| Corpus conversion and relation-inventory derivation | `workbench.corpus` | no |
+| Segmenter, parser, and eRST fitting | `workbench.training` | no |
+| Parseval, calibration, and eRST evaluation | `workbench.evaluation` | no |
+| Bundle creation and model promotion | `workbench.promotion` | no |
+| Experimental comparison systems | `workbench.research` in the root offline environment | no |
 | Tests, scripts, specs, corpora, caches, and evidence | repository-only | no |
 
 ## Import migrations
@@ -71,14 +71,14 @@ These are deliberate offline migrations, not production compatibility aliases:
 
 | Previous path | Canonical offline path |
 |---|---|
-| `isanlp_rst.eval.*` | `offline_workbench.evaluation.rst.*` |
-| `isanlp_rst.segmentation.dataset` | `offline_workbench.training.segmentation.dataset` |
-| `isanlp_rst.erst.dataset.GUMSecondaryEdgeDataset` | `offline_workbench.training.erst.dataset.GUMSecondaryEdgeDataset` |
-| `isanlp_rst.erst.corpus` | `offline_workbench.corpus.erst.corpus` |
-| `isanlp_rst.erst.sampling` | `offline_workbench.corpus.erst.sampling` |
-| parser-family `data_manager` and `src.corpus` modules | `offline_workbench.corpus.dmrst` / `.unirst` |
-| parser-family training managers, config readers, and run orchestration | `offline_workbench.training.parsers` |
-| `isanlp_rst.erst.checkpoint.save_erst_checkpoint_bundle` | `offline_workbench.promotion.erst.save_erst_checkpoint_bundle` |
+| `isanlp_rst.eval.*` | `workbench.evaluation.rst.*` |
+| `isanlp_rst.segmentation.dataset` | `workbench.training.segmentation.dataset` |
+| `isanlp_rst.erst.dataset.GUMSecondaryEdgeDataset` | `workbench.training.erst.dataset.GUMSecondaryEdgeDataset` |
+| `isanlp_rst.erst.corpus` | `workbench.corpus.erst.corpus` |
+| `isanlp_rst.erst.sampling` | `workbench.corpus.erst.sampling` |
+| parser-family `data_manager` and `src.corpus` modules | `workbench.corpus.dmrst` / `.unirst` |
+| parser-family training managers, config readers, and run orchestration | `workbench.training.parsers` |
+| `isanlp_rst.erst.checkpoint.save_erst_checkpoint_bundle` | `workbench.promotion.erst.save_erst_checkpoint_bundle` |
 
 `isanlp_rst.model_loading.ParserInput` remains production-owned solely to reconstruct released legacy UniRST inventories through the restricted unpickler. That compatibility leaf does not expose corpus preparation or training.
 

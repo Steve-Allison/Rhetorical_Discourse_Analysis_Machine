@@ -361,7 +361,7 @@ The generator deliberately considers every ordered node pair for which any suffi
 
 ### F-09 — P1 — Research: the eRST cache manifest makes false claims about dev positives
 
-**Evidence.** `_write_candidate_shard()` increments `positive_count` only inside `if partition == TRAIN` (`research_harness/erst/data.py:298-334`). Consequently every dev shard in the persisted manifest declares `positive_count: 0`.
+**Evidence.** `_write_candidate_shard()` increments `positive_count` only inside `if partition == TRAIN` (`workbench.research/erst/data.py:298-334`). Consequently every dev shard in the persisted manifest declares `positive_count: 0`.
 
 That is false. For example, `GUM_academic_exposure.rs4` contains seven secondary edges; live candidate generation produced seven gold candidates, and the stored dev JSONL contains seven `"is_gold_edge":true` records. The same check found gold records in 30 of the 32 dev shards. The manifest validator reconciles only total dev candidate count and hashes, not positive counts (`data.py:157-172`).
 
@@ -672,7 +672,7 @@ The following repository files were read in full before their behavior was used 
 - Central analysis: `isanlp_rst/parser.py`, `isanlp_rst/base_predictor.py`, `isanlp_rst/contracts/document.py`, `isanlp_rst/contracts/analysis.py`, `isanlp_rst/contracts/serialization.py`, `isanlp_rst/contracts/enums.py`.
 - Classical corpus preparation: `isanlp_rst/dmrst_parser/data_manager.py`, `isanlp_rst/universal_parser/data_manager.py`, `isanlp_rst/dmrst_parser/src/corpus/data.py`, `common.py`, `binary_tree.py`, `span_node.py`, `utils_rs3.py`.
 - Segmentation: `isanlp_rst/segmentation/dataset.py`, `isanlp_rst/segmentation/transformer_segmenter.py`, `scripts/fetch_disrpt_data.py`, `scripts/train_segmenter.py`, `tests/test_transformer_segmenter.py`.
-- eRST: `isanlp_rst/erst/corpus.py`, `rs4.py`, `converter.py`, `candidates.py`, `sampling.py`, `scripts/train_erst_scorer.py`, `scripts/verify_gum_corpus_manifest.py`, `scripts/derive_gum_erst_relations.py`, `research_harness/erst/data.py`.
+- eRST: `isanlp_rst/erst/corpus.py`, `rs4.py`, `converter.py`, `candidates.py`, `sampling.py`, `scripts/train_erst_scorer.py`, `scripts/verify_gum_corpus_manifest.py`, `scripts/derive_gum_erst_relations.py`, `workbench.research/erst/data.py`.
 - Fixture and parity authority: all four `tests/fixtures/*/README.md` files and `scripts/verify_doclang_fixtures.py`.
 
 Graph-based repository queries were used only to locate and cross-check call paths; every file relied on substantively was then read in full.

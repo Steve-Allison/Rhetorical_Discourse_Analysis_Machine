@@ -176,7 +176,7 @@ return, silent skip, best-effort tree, or reusable cache write after failure.
 
 The installed production wheel:
 
-- imports no `offline_workbench`, Gold Set, training, corpus, scoring, benchmark,
+- imports no `workbench`, Gold Set, training, corpus, scoring, benchmark,
   or repository tooling module;
 - requires no network access and performs no asset retrieval;
 - reads only caller-submitted sources, released model files, optional local

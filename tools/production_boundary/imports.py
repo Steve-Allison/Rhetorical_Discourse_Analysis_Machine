@@ -52,7 +52,7 @@ def validate_import_boundary(root: Path, authority: OwnershipAuthority | None = 
     started = time.perf_counter()
     repository = root.resolve()
     ownership = authority or OwnershipAuthority(repository)
-    source_roots = {"isanlp_rst", "offline_workbench", "research_harness"}
+    source_roots = {"isanlp_rst", "workbench", "workbench.research"}
     python_files = [
         path
         for path in ownership.iter_relevant_files()

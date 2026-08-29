@@ -73,8 +73,7 @@ offline = [
 [tool.setuptools.packages.find]
 include = ["isanlp_rst*"]
 exclude = [
-  "offline_workbench*",
-  "research_harness*",
+  "workbench*",
   "tests*",
   "scripts*",
   "tools*",
@@ -133,8 +132,7 @@ ignore = [
 [tool.pyright]
 include = [
   "isanlp_rst",
-  "offline_workbench",
-  "research_harness",
+  "workbench",
   "tools",
   "tests",
   "scripts",
@@ -143,6 +141,8 @@ exclude = [
   "**/__pycache__",
   "**/.pixi",
   "build",
+  "workbench/corpora",
+  "workbench/experiments",
 ]
 pythonVersion = "3.14"
 venvPath = "."
@@ -165,21 +165,21 @@ smoke-full-mps = "python scripts/smoke_test.py --full --device mps"
 cuda-smoke = "python scripts/cuda_smoke.py"
 bench = "python -m scripts.bench"
 rst-diag = "python scripts/rst_diag.py"
-lint = "ruff check isanlp_rst research_harness tests scripts"
+lint = "ruff check isanlp_rst workbench tests scripts tools"
 typecheck = "pyright"
 mdlint = "python scripts/verify_markdown_manifest.py --lint"
 cleanup = "python scripts/cleanup.py"
 production-boundary = "python -m tools.production_boundary --root ."
 production-smoke = "python -m tools.production_boundary.production_smoke"
-offline-smoke = "python -m offline_workbench.smoke"
-promote-model = "python -m offline_workbench.promotion.promote"
-research-test = "pytest tests/research_harness -q"
-research-lint = "ruff check research_harness tests/research_harness"
-production-ingest-test = "pytest tests/production_ingest -q"
-production-ingest-conformance = "pytest tests/production_ingest -q -k 'conformance or ingest'"
-production-ingest-determinism = "pytest tests/production_ingest/test_determinism.py tests/production_ingest/test_cache.py -q"
-production-ingest-performance = "pytest tests/production_ingest/test_performance.py -q"
-production-ingest-public-api = "pytest tests/production_ingest/test_public_api.py -q"
+offline-smoke = "python -m workbench.smoke"
+promote-model = "python -m workbench.promotion.promote"
+research-test = "pytest tests/offline/research -q"
+research-lint = "ruff check workbench/research tests/offline/research"
+production-ingest-test = "pytest tests/ingest -q"
+production-ingest-conformance = "pytest tests/ingest -q -k 'conformance or ingest'"
+production-ingest-determinism = "pytest tests/ingest/production_ingest/test_determinism.py tests/ingest/production_ingest/test_cache.py -q"
+production-ingest-performance = "pytest tests/ingest/production_ingest/test_performance.py -q"
+production-ingest-public-api = "pytest tests/ingest/production_ingest/test_public_api.py -q"
 production-ingest-clean-install = "python -m tools.production_ingest clean-install"
 production-ingest-freeze = "python -m tools.production_ingest freeze"
 production-ingest-candidate = "python -m tools.production_ingest candidate"

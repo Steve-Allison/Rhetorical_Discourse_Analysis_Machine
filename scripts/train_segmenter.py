@@ -17,7 +17,7 @@ from transformers import (
 )
 
 from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
-from offline_workbench.training.segmentation.dataset import (
+from workbench.training.segmentation.dataset import (
     EduSegmentationDataset,
     SegmentedSentence,
     parse_disrpt_tok_file,

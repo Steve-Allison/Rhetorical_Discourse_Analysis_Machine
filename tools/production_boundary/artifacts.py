@@ -10,7 +10,7 @@ import zipfile
 from tools.production_boundary.contracts import ArtifactReceipt
 
 
-_FORBIDDEN_PARTS = frozenset({"offline_workbench", "research_harness", "tests", "scripts", "specs", "corpora", "experiments", "__pycache__", ".pytest_cache", ".ruff_cache", ".pixi", "graphify-out"})
+_FORBIDDEN_PARTS = frozenset({"workbench", "workbench.research", "tests", "scripts", "specs", "corpora", "experiments", "__pycache__", ".pytest_cache", ".ruff_cache", ".pixi", "graphify-out"})
 _FORBIDDEN_SUFFIXES = frozenset({".pem", ".key", ".p12", ".pfx", ".pickle", ".pkl", ".pyc"})
 _METADATA_MARKERS = (".dist-info/", ".egg-info/")
 _REQUIREMENT_NAME = re.compile(rb"^\s*([A-Za-z0-9][A-Za-z0-9._-]*)")

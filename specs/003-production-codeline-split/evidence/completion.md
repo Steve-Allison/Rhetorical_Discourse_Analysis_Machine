@@ -19,7 +19,7 @@ The artifact receipt was produced by:
 pixi run --environment production production-artifacts
 ```
 
-It inspected the exact member names and `Requires-Dist` metadata in both archives. Neither archive contains `offline_workbench`, `research_harness`, tests, scripts, specs, corpora, experiments, caches, local data, unsafe serialized model files, or secret-like paths.
+It inspected the exact member names and `Requires-Dist` metadata in both archives. Neither archive contains `workbench`, `workbench.research`, tests, scripts, specs, corpora, experiments, caches, local data, unsafe serialized model files, or secret-like paths.
 
 ## Clean installed-wheel proof
 

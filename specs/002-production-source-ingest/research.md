@@ -12,7 +12,7 @@
 
 ## 2. Production, promotion evidence, and offline evaluation remain separate
 
-**Decision**: Runtime contracts and behavior live only under `isanlp_rst`. Redistributable conformance fixtures live under `tests`; private real Gold Set content remains in a local root; text-free manifests and inspection evidence live under the feature specification; release orchestration lives under `tools/production_ingest`; RST metric math remains canonical in `offline_workbench.evaluation.rst` and scores frozen serialized outputs after clean production execution.
+**Decision**: Runtime contracts and behavior live only under `isanlp_rst`. Redistributable conformance fixtures live under `tests`; private real Gold Set content remains in a local root; text-free manifests and inspection evidence live under the feature specification; release orchestration lives under `tools/production_ingest`; RST metric math remains canonical in `workbench.evaluation.rst` and scores frozen serialized outputs after clean production execution.
 
 **Rationale**: Feature 003 established a one-way dependency: offline/repository code may consume production, never the reverse. Gold labels and Parseval are required to prove ingest quality but are not source-ingest runtime capabilities. Separating clean-wheel execution from later scoring satisfies both the quality gate and the production boundary without duplicating a scorer.
 

@@ -8,7 +8,7 @@ release evidence, not a runtime feature and not training content.
 
 The production wheel executes each source and emits strict serialized results.
 Repository-only tooling then compares those outputs with frozen expectations and
-uses `offline_workbench.evaluation.rst` for canonical RST metrics. Production
+uses `workbench.evaluation.rst` for canonical RST metrics. Production
 code never imports the assessor, scorer, Gold Set, corpus, or labels.
 
 ## Gold Set authority
@@ -169,7 +169,7 @@ From a clean temporary directory and environment containing only the built
 production wheel, its declared production dependencies, and released model:
 
 - all production source forms run without the repository on `sys.path`;
-- no training, corpus, Gold Set, scorer, benchmark, or `offline_workbench`
+- no training, corpus, Gold Set, scorer, benchmark, or `workbench`
   module is installed or importable through the ingest path;
 - no network is used;
 - persisted results validate and can subsequently be scored by the separate

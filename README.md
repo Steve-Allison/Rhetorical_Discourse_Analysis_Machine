@@ -414,7 +414,7 @@ shared parser.
 
 `isanlp_rst` is the importable production product. It contains raw/pre-segmented RST inference, typed contracts, model validation/loading, eRST runtime completion, canonical source ingest, and rendering. Its wheel and source distribution exclude corpus builders, trainers, evaluators, research harnesses, tests, scripts, experiment data, Gold Set content, and model candidates.
 
-`offline_workbench` is the repository-only surface for corpus preparation, training, evaluation, and local model promotion. `research_harness` remains a repository-only research implementation but runs in the same root `offline` Pixi environment. Production never imports either namespace.
+`workbench` is the repository-only surface for corpus preparation, training, evaluation, and local model promotion. `workbench.research` remains a repository-only research implementation but runs in the same root `offline` Pixi environment. Production never imports either namespace.
 
 The causal checks are:
 
@@ -430,7 +430,7 @@ The full ownership and migration map is in [`docs/production-offline-boundary.md
 
 ## Evaluation & metrics
 
-Evaluation is offline-only. Standard/soft Parseval and the eRST scorer live under `offline_workbench.evaluation.rst`; they are available in `pixi run -e offline ...` workflows and are not installed into consumer projects.
+Evaluation is offline-only. Standard/soft Parseval and the eRST scorer live under `workbench.evaluation.rst`; they are available in `pixi run -e offline ...` workflows and are not installed into consumer projects.
 
 ---
 

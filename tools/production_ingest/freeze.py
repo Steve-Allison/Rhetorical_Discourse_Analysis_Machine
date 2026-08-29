@@ -59,7 +59,7 @@ def freeze_baseline(
     model_identity = release.analysis_identity(
         ParserCapacity(unit="edu_count", maximum=512, source="isanlp_rst.parser/recursive-v1")
     )
-    scorer_files = sorted((repo / "offline_workbench/evaluation/rst").glob("*.py"))
+    scorer_files = sorted((repo / "workbench/evaluation/rst").glob("*.py"))
     scorer_digest = semantic_sha256([(path.name, sha256_file(path)) for path in scorer_files])
     return FreezeAuthority(
         frozen_at=datetime.now(UTC),

@@ -20,7 +20,7 @@ _FORMAT_MODULES = (
     "isanlp_rst.doclang",
     "isanlp_rst.markdown",
 )
-_FORBIDDEN_PREFIXES = ("offline_workbench", "research_harness")
+_FORBIDDEN_PREFIXES = ("workbench", "workbench.research")
 
 
 def _distribution_members() -> tuple[str, ...]:

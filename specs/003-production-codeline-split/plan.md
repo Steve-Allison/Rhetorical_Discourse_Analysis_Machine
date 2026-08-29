@@ -72,14 +72,14 @@ isanlp_rst/                         # production distribution authority
 ├── markdown/                      # optional production Markdown adapter
 └── ...                            # parser, hierarchy, ontology, visualization, utilities
 
-offline_workbench/                 # single offline ownership namespace
+workbench/                 # single offline ownership namespace
 ├── corpus/                        # corpus acquisition/preparation and dataset records
 ├── training/                      # trainers, fitting, optimization, checkpoint creation
 ├── evaluation/                    # scoring, calibration, parity/evaluation harnesses
 ├── experiments/                   # run matrices, ablations, benchmarks, research systems
 └── promotion/                     # validate and promote model-release candidates
 
-research_harness/                  # retained experiment implementation; offline-owned
+workbench.research/                  # retained experiment implementation; offline-owned
 scripts/                           # repository-only or offline commands, classified by authority
 tests/                             # repository-only validation
 tools/production_boundary/         # one fast boundary/artifact authority and validator
@@ -88,17 +88,17 @@ pixi.lock                          # one lock containing independently named env
 MANIFEST.in                        # source-distribution pruning to the production surface
 ```
 
-**Structure Decision**: `isanlp_rst/` is the only publishable production namespace. Offline-only canonical modules move to `offline_workbench/`; the existing `research_harness/` remains an offline-owned implementation directory rather than being copied or repackaged. Runtime classes required by released checkpoints stay in production even when historically colocated with training; mixed modules are split at responsibility boundaries. A single machine-readable ownership authority classifies source and dependencies and also drives validation, so there is no duplicate production module allowlist.
+**Structure Decision**: `isanlp_rst/` is the only publishable production namespace. Offline-only canonical modules move to `workbench/`; the existing `workbench.research/` remains an offline-owned implementation directory rather than being copied or repackaged. Runtime classes required by released checkpoints stay in production even when historically colocated with training; mixed modules are split at responsibility boundaries. A single machine-readable ownership authority classifies source and dependencies and also drives validation, so there is no duplicate production module allowlist.
 
 ## Implementation Strategy
 
 1. Freeze the pre-split public-import, checkpoint-load, representative-result, warning/failure, and device evidence before moving code.
 2. Introduce the ownership authority and validator first, initially describing the intended boundary; seed negative tests for direct, transitive, dependency, and artifact violations.
-3. Extract minimal runtime records/model definitions from mixed modules. Move corpus builders, datasets used only for fitting, trainers, optimizers, evaluation scorers, multiple-run orchestration, and eRST research preparation into `offline_workbench/`; update the workbench and tests to their canonical paths.
+3. Extract minimal runtime records/model definitions from mixed modules. Move corpus builders, datasets used only for fitting, trainers, optimizers, evaluation scorers, multiple-run orchestration, and eRST research preparation into `workbench/`; update the workbench and tests to their canonical paths.
 4. Make package discovery and `MANIFEST.in` publish only the production authority. Split dependencies into independently named Pixi `production` and `offline` environments in the single root manifest/lock; remove the obsolete nested workbench manifest after parity.
 5. Retain production validation/loading of immutable model bundles and place creation/promotion in the offline workbench. Wrap already released assets without changing learned bytes.
 6. Build wheel and sdist once for the completion candidate, inspect both, install the wheel with no repository path, execute every required production route, run offline command smokes, and compare the frozen parity evidence.
 
 ## Complexity Tracking
 
-No constitution violations. The existing `research_harness/` directory is retained within the single offline workbench ownership class because moving it adds churn without strengthening the installation or dependency boundary; it is never packaged in production.
+No constitution violations. The existing `workbench.research/` directory is retained within the single offline workbench ownership class because moving it adds churn without strengthening the installation or dependency boundary; it is never packaged in production.

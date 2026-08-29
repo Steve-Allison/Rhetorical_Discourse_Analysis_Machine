@@ -21,8 +21,8 @@ class OwnershipAuthority:
         self.root = root.resolve()
         default_rules = (
             OwnershipRule(rule_id="production", prefix=PurePosixPath("isanlp_rst"), ownership=OwnershipClass.PRODUCTION, reason="installable RST analysis product", publishable=True),
-            OwnershipRule(rule_id="offline", prefix=PurePosixPath("offline_workbench"), ownership=OwnershipClass.OFFLINE, reason="corpus, training, evaluation, and promotion workbench"),
-            OwnershipRule(rule_id="research", prefix=PurePosixPath("research_harness"), ownership=OwnershipClass.OFFLINE, reason="offline research implementation"),
+            OwnershipRule(rule_id="offline", prefix=PurePosixPath("workbench"), ownership=OwnershipClass.OFFLINE, reason="corpus, training, evaluation, and promotion workbench"),
+            OwnershipRule(rule_id="research", prefix=PurePosixPath("workbench.research"), ownership=OwnershipClass.OFFLINE, reason="offline research implementation"),
             OwnershipRule(rule_id="corpora", prefix=PurePosixPath("corpora"), ownership=OwnershipClass.OFFLINE, reason="training/evaluation corpora"),
             OwnershipRule(rule_id="experiments", prefix=PurePosixPath("experiments"), ownership=OwnershipClass.OFFLINE, reason="experiment outputs and configuration"),
             *(OwnershipRule(rule_id=f"repository-{name.lstrip('.').replace('_', '-')}", prefix=PurePosixPath(name), ownership=OwnershipClass.REPOSITORY, reason="repository control, documentation, tests, or tooling") for name in (".agents", ".claude", ".cursor", ".github", ".specify", "config", "docs", "examples", "scripts", "specs", "tests", "tools")),

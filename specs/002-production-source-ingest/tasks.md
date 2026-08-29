@@ -11,7 +11,7 @@ description: "Dependency-ordered implementation tasks for world-class production
 
 **Tests**: Required. The specification makes contract, conformance, determinism, provenance, quality, and real-source promotion evidence part of acceptance. Test tasks precede the implementation they govern and must be observed failing for the intended causal reason before implementation begins.
 
-**Organization**: Tasks are grouped by user story. Production runtime work is confined to `isanlp_rst/`; repository-only Gold Set, scoring, inspection, and release evidence remain under `tools/`, `tests/`, `offline_workbench/`, and `specs/002-production-source-ingest/evidence/`.
+**Organization**: Tasks are grouped by user story. Production runtime work is confined to `isanlp_rst/`; repository-only Gold Set, scoring, inspection, and release evidence remain under `tools/`, `tests/`, `workbench/`, and `specs/002-production-source-ingest/evidence/`.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -159,7 +159,7 @@ description: "Dependency-ordered implementation tasks for world-class production
 
 - [X] T060 [US4] Complete immutable freeze verification and candidate identity checks in `tools/production_ingest/freeze.py` and `tools/production_ingest/contracts.py` so T057 passes.
 - [X] T061 [US4] Implement clean temporary-environment baseline/candidate wheel execution and serialized-output collection in `tools/production_ingest/runner.py` and `tools/production_ingest/__main__.py` so T058 passes.
-- [X] T062 [US4] Implement repository-only content-selection, coverage, anchor, structural-boundary, EDU, and canonical offline Parseval assessment in `tools/production_ingest/assessor.py`, importing `offline_workbench.evaluation.rst` only from the assessor side.
+- [X] T062 [US4] Implement repository-only content-selection, coverage, anchor, structural-boundary, EDU, and canonical offline Parseval assessment in `tools/production_ingest/assessor.py`, importing `workbench.evaluation.rst` only from the assessor side.
 - [X] T063 [US4] Implement mandatory per-source prepared-document/receipt/result inspection records and fail-closed anomaly reconciliation in `tools/production_ingest/inspection.py` and `tools/production_ingest/contracts.py`.
 - [X] T064 [US4] Implement ordered gate evaluation, per-source/per-form reporting, protected-metric enforcement, and a no-waiver promotion decision in `tools/production_ingest/report.py` and `tools/production_ingest/__main__.py`.
 - [X] T065 [US4] Update the dated primary-source comparison with implementation-measurable evidence slots and bounded claim language in `specs/002-production-source-ingest/evidence/current-practice-comparison.md`.

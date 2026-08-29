@@ -10,7 +10,7 @@ from isanlp_rst.contracts import RstAnalysis
 from isanlp_rst.contracts.serialization import analysis_from_dict
 from isanlp_rst.erst.converter import rs4_to_document_and_analysis
 from isanlp_rst.erst.rs4 import RS4Reader
-from offline_workbench.evaluation.rst import StandardParsevalScorer
+from workbench.evaluation.rst import StandardParsevalScorer
 from tools.production_ingest.contracts import GoldSetManifest, SourceGateResult
 
 

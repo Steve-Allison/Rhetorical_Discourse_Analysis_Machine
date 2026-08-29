@@ -2,7 +2,7 @@
 
 ## 1. One root Pixi workspace and lock, two named environments
 
-**Decision**: Define `production` and `offline` environments in root `pyproject.toml` using Pixi features. Production installs only runtime dependencies; offline adds test, training, evaluation, and research dependencies. Remove the nested `research_harness` manifest and lock after command parity.
+**Decision**: Define `production` and `offline` environments in root `pyproject.toml` using Pixi features. Production installs only runtime dependencies; offline adds test, training, evaluation, and research dependencies. Remove the nested `workbench.research` manifest and lock after command parity.
 
 **Rationale**: Current Pixi supports feature-scoped dependencies/tasks and multiple named environments in one manifest, including omission of default features. This gives independent environment resolution with one lock and no nested-authority drift.
 

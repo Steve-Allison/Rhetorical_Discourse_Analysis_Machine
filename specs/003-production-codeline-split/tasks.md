@@ -12,7 +12,7 @@
 - [X] T002 Freeze current supported public runtime imports and training-only import paths in `specs/003-production-codeline-split/evidence/public-import-baseline.json`
 - [X] T003 Freeze representative raw-text, predefined-EDU, serialization, warning, deterministic-failure, CPU, and available-MPS results in `specs/003-production-codeline-split/evidence/parity-baseline.json`
 - [X] T004 Freeze every available released model file identity and loading route in `specs/003-production-codeline-split/evidence/model-baseline.json`
-- [X] T005 Create the canonical `offline_workbench/` package structure and document its relationship to retained `research_harness/` in `offline_workbench/README.md`
+- [X] T005 Create the canonical `workbench/` package structure and document its relationship to retained `workbench.research/` in `workbench/README.md`
 
 ---
 
@@ -39,13 +39,13 @@
 **Independent Test**: Inspect wheel and sdist, install the wheel outside the repository, and execute production imports/routes with no offline source available.
 
 - [X] T013 [US1] Extract legacy-load leaf records from both `isanlp_rst/*_parser/data_manager.py` modules into `isanlp_rst/model_loading/parser_input.py` and adapt `isanlp_rst/universal_parser/inventory.py` without unsafe compatibility imports
-- [X] T014 [US1] Move DMRST corpus preparation from `isanlp_rst/dmrst_parser/data_manager.py` and `isanlp_rst/dmrst_parser/src/corpus/` to `offline_workbench/corpus/dmrst/` and update canonical consumers
-- [X] T015 [US1] Move UniRST corpus preparation from `isanlp_rst/universal_parser/data_manager.py` and `isanlp_rst/universal_parser/src/corpus/` to `offline_workbench/corpus/unirst/` and update canonical consumers
-- [X] T016 [P] [US1] Move EDU training dataset/parsers from `isanlp_rst/segmentation/dataset.py` to `offline_workbench/training/segmentation/dataset.py` and leave `isanlp_rst/segmentation/` runtime-only
-- [X] T017 [US1] Split runtime eRST pair encoding from fitting-only dataset behavior across `isanlp_rst/erst/pair_encoding.py` and `offline_workbench/training/erst/dataset.py`; update `isanlp_rst/english/erst/completer.py`
-- [X] T018 [US1] Move eRST corpus loading and sampling from `isanlp_rst/erst/corpus.py` and `isanlp_rst/erst/sampling.py` to `offline_workbench/corpus/erst/`; split train-derived relation inventory construction from runtime relation resolution
-- [X] T019 [US1] Remove evaluation exports from `isanlp_rst/__init__.py` and move `isanlp_rst/eval/` canonically to `offline_workbench/evaluation/rst/` with test/workbench imports updated
-- [X] T020 [US1] Move both `multiple_runs.py` modules and parser `training_manager.py` modules into `offline_workbench/training/parsers/`; retain only inference-required parser architecture/data/metric functions in production
+- [X] T014 [US1] Move DMRST corpus preparation from `isanlp_rst/dmrst_parser/data_manager.py` and `isanlp_rst/dmrst_parser/src/corpus/` to `workbench/corpus/dmrst/` and update canonical consumers
+- [X] T015 [US1] Move UniRST corpus preparation from `isanlp_rst/universal_parser/data_manager.py` and `isanlp_rst/universal_parser/src/corpus/` to `workbench/corpus/unirst/` and update canonical consumers
+- [X] T016 [P] [US1] Move EDU training dataset/parsers from `isanlp_rst/segmentation/dataset.py` to `workbench/training/segmentation/dataset.py` and leave `isanlp_rst/segmentation/` runtime-only
+- [X] T017 [US1] Split runtime eRST pair encoding from fitting-only dataset behavior across `isanlp_rst/erst/pair_encoding.py` and `workbench/training/erst/dataset.py`; update `isanlp_rst/english/erst/completer.py`
+- [X] T018 [US1] Move eRST corpus loading and sampling from `isanlp_rst/erst/corpus.py` and `isanlp_rst/erst/sampling.py` to `workbench/corpus/erst/`; split train-derived relation inventory construction from runtime relation resolution
+- [X] T019 [US1] Remove evaluation exports from `isanlp_rst/__init__.py` and move `isanlp_rst/eval/` canonically to `workbench/evaluation/rst/` with test/workbench imports updated
+- [X] T020 [US1] Move both `multiple_runs.py` modules and parser `training_manager.py` modules into `workbench/training/parsers/`; retain only inference-required parser architecture/data/metric functions in production
 - [X] T021 [US1] Remove offline exports from `isanlp_rst/erst/__init__.py` and `isanlp_rst/segmentation/__init__.py`; add explicit offline migration mapping in `docs/production-offline-boundary.md`
 - [X] T022 [US1] Split production and optional-format dependencies from offline dependencies in `pyproject.toml`; define independently solvable Pixi `production` and `offline` environments and their exact commands
 - [X] T023 [US1] Restrict Setuptools package discovery/package data in `pyproject.toml` and add `MANIFEST.in` so wheel and sdist publish the same production boundary
@@ -63,9 +63,9 @@
 
 **Independent Test**: Recreate the offline environment and start each retained command to its bounded smoke/quarantine point.
 
-- [X] T027 [US2] Update all repository scripts, tests, and `research_harness/` imports to canonical `offline_workbench` paths
-- [X] T028 [US2] Add explicit offline command registry and bounded import/dependency/quarantine smoke in `offline_workbench/smoke.py`
-- [X] T029 [US2] Migrate nested `research_harness` Pixi tasks/dependencies into the root offline feature, then remove `research_harness/pixi.toml` and `research_harness/pixi.lock`
+- [X] T027 [US2] Update all repository scripts, tests, and `workbench.research/` imports to canonical `workbench` paths
+- [X] T028 [US2] Add explicit offline command registry and bounded import/dependency/quarantine smoke in `workbench/smoke.py`
+- [X] T029 [US2] Migrate nested `workbench.research` Pixi tasks/dependencies into the root offline feature, then remove `workbench.research/pixi.toml` and `workbench.research/pixi.lock`
 - [X] T030 [US2] Prove corpus, parser training, segmenter training, eRST training, evaluation, research, and benchmark command categories start correctly or retain their prior explicit quarantine state
 
 **Checkpoint**: There is one offline environment and no duplicated shared implementation.
@@ -105,9 +105,9 @@
 
 **Independent Test**: Promote a candidate locally, load it in clean production, and reject loose/partial/changed/incompatible inputs.
 
-- [X] T038 [US5] Split eRST bundle creation from validation/loading across `offline_workbench/promotion/erst.py` and `isanlp_rst/erst/checkpoint.py`
+- [X] T038 [US5] Split eRST bundle creation from validation/loading across `workbench/promotion/erst.py` and `isanlp_rst/erst/checkpoint.py`
 - [X] T039 [US5] Add general strict model-release manifest validation and production-store loading in `isanlp_rst/model_loading/release.py`
-- [X] T040 [US5] Add atomic local promotion and Pydantic receipt creation in `offline_workbench/promotion/promote.py`
+- [X] T040 [US5] Add atomic local promotion and Pydantic receipt creation in `workbench/promotion/promote.py`
 - [X] T041 [US5] Add valid promotion/load and loose, partial, changed, incompatible, symlink, and unpromoted rejection tests in `tests/test_model_promotion.py`
 - [X] T042 [US5] Migrate every available released model asset through the promotion boundary byte-for-byte and record receipts in feature evidence
 

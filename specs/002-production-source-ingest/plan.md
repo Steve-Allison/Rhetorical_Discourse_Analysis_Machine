@@ -38,7 +38,7 @@ The implementation reuses the current format loaders, the released `Parser`, the
 - **Scope fidelity**: PASS. Runtime source ingest only. Training corpora, training examples, model fitting/selection, experiment caches, and research workflows are excluded. Repository-only release assessment is separated from runtime implementation.
 - **Canonical contracts**: PASS. `isanlp_rst.ingest` owns the only public source/preparation/result contract. Format-specific code is private implementation detail; no legacy format entry point or compatibility envelope remains.
 - **Current Docling/DocLang contracts**: PASS. `docling-core` 2.92.0 and `doclang` 0.7.3 are current and already pinned. The design accounts for Docling 1.10.0 validation/version normalization, all current content layers, full DocLang XSD+Schematron validation, valid empty namespace, current 42 `.dclg` specimens, `.dclx` archives, element-head metadata, and recursive tables.
-- **Production distribution boundary**: PASS. All runtime changes live under `isanlp_rst`; no production import may reach `offline_workbench`, `tools`, `tests`, corpora, benchmarks, or local evidence. Built-wheel acceptance proves the boundary outside the checkout.
+- **Production distribution boundary**: PASS. All runtime changes live under `isanlp_rst`; no production import may reach `workbench`, `tools`, `tests`, corpora, benchmarks, or local evidence. Built-wheel acceptance proves the boundary outside the checkout.
 - **Honest verification**: PASS. Completion requires real persisted prepared documents, receipts, analyses, built artifacts, clean installs, current normative specimens, model-backed Gold Set results, per-source reports, and direct inspection—not unit status alone.
 
 Post-design re-check: PASS. No constitution exception or complexity waiver is required.
@@ -93,7 +93,7 @@ tests/
 tools/production_ingest/           # repository-only Gold Set runner/report/inspection tooling
 specs/002-production-source-ingest/evidence/
                                    # text-free manifests, frozen expectations, candidate receipts
-offline_workbench/evaluation/rst/ # existing canonical Parseval scorer; never imported by runtime
+workbench/evaluation/rst/ # existing canonical Parseval scorer; never imported by runtime
 ```
 
 **Structure Decision**: Add one small `isanlp_rst.ingest` production package as the sole public source-ingest authority. Keep only the private Markdown and DocLang helpers required by that package; consume `docling-core` directly and remove the obsolete public format packages, entry points, result envelopes, and caches. Do not create a parallel adapter hierarchy or a third shared distribution. Gold content and scoring stay outside the wheel.

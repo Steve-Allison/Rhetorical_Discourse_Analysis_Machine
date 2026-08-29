@@ -39,8 +39,8 @@ The command returns the immutable release path and JSON receipt. Production rece
 
 ## Dependency rule
 
-`offline_workbench` and `research_harness` may import `isanlp_rst`. `isanlp_rst` never imports either offline namespace, repository scripts, or tests.
+`workbench` and `workbench.research` may import `isanlp_rst`. `isanlp_rst` never imports either offline namespace, repository scripts, or tests.
 
 ## Offline import migration
 
-Moved corpus, trainer, evaluation, experiment, and benchmark imports use `offline_workbench.*`. Runtime parser, adapter, contract, safe model-load, and analysis imports remain under `isanlp_rst.*`. No production compatibility shim points into offline code.
+Moved corpus, trainer, evaluation, experiment, and benchmark imports use `workbench.*`. Runtime parser, adapter, contract, safe model-load, and analysis imports remain under `isanlp_rst.*`. No production compatibility shim points into offline code.

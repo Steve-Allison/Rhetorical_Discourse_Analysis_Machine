@@ -14,13 +14,13 @@ from safetensors.torch import save_model
 from transformers import get_cosine_schedule_with_warmup
 
 from isanlp_rst.contracts.erst import HardNegativeSamplingConfig
-from offline_workbench.training.erst.dataset import (
+from workbench.training.erst.dataset import (
     GUMSecondaryEdgeDataset,
 )
-from offline_workbench.corpus.erst.corpus import load_gum_erst_corpus_with_receipt
+from workbench.corpus.erst.corpus import load_gum_erst_corpus_with_receipt
 from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
-from offline_workbench.corpus.erst.relations import derive_raw_relation_inventory
-from offline_workbench.corpus.erst.sampling import prepare_partition_candidates
+from workbench.corpus.erst.relations import derive_raw_relation_inventory
+from workbench.corpus.erst.sampling import prepare_partition_candidates
 from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

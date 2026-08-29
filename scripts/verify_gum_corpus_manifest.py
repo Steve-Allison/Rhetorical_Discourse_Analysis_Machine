@@ -12,9 +12,9 @@ from isanlp_rst.contracts.erst import (
 )
 from isanlp_rst.erst.candidates import SecondaryEdgeCandidate, generate_secondary_edge_candidates
 from isanlp_rst.erst.converter import rs4_to_document_and_analysis
-from offline_workbench.corpus.erst.corpus import load_gum_corpus_authority
+from workbench.corpus.erst.corpus import load_gum_corpus_authority
 from isanlp_rst.erst.rs4 import RS4Reader
-from offline_workbench.corpus.erst.sampling import candidate_identity_sha256
+from workbench.corpus.erst.sampling import candidate_identity_sha256
 
 
 def _root_fingerprint(revision: str, sources: tuple[CorpusSourceIdentity, ...]) -> str:

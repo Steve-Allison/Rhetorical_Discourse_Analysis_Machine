@@ -182,7 +182,7 @@ def module_exists(name):
         return importlib.util.find_spec(name) is not None
     except ModuleNotFoundError:
         return False
-if module_exists("offline_workbench") or module_exists("tools.production_ingest"):
+if module_exists("workbench") or module_exists("tools.production_ingest"):
     raise RuntimeError("production environment exposes repository-only evaluation modules")
 
 from isanlp_rst.ingest import AUTHORED_PROSE_V1, ProductionAnalysisResult, ProductionIngestor, SourceArtifact, SourceForm
@@ -301,7 +301,7 @@ def module_exists(name):
         return importlib.util.find_spec(name) is not None
     except ModuleNotFoundError:
         return False
-if module_exists("offline_workbench") or module_exists("tools.production_ingest"):
+if module_exists("workbench") or module_exists("tools.production_ingest"):
     raise RuntimeError("baseline production environment exposes repository-only evaluation modules")
 
 from isanlp_rst import Parser
