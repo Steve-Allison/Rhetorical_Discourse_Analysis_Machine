@@ -239,6 +239,7 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - **Validation Receipt**: The typed check-by-check evidence that the assembled analysis satisfied the selected production validation policy.
 - **Completed-Stage Failure**: A typed failure that names the failed stage and safely retains evidence from prior completed stages.
 - **Capability Description**: The offline declaration of supported source forms, operations, versions, optional features, and parser requirements.
+- **Installed Contract Projection**: A command-line or loopback-only local-HTTP view that accepts the canonical request and returns the canonical result/failure or an explicitly labelled lossy presentation, without becoming another semantic authority.
 - **Distribution Receipt**: The machine-readable link among source revision, package and contract versions, built artifacts, digests, environment, and verification evidence.
 
 ## Success Criteria *(mandatory)*

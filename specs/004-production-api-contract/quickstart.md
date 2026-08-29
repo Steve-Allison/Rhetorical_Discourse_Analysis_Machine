@@ -316,6 +316,7 @@ emits the canonical contract for JSON:
 isanlp-rst parse example.md \
   --model-store /models/isanlp_rst \
   --release-id modernbert-v5 \
+  --original-source urn:example:markdown \
   --formalism rst_tree \
   --evidence-detail decision_complete \
   --format json \
@@ -326,8 +327,13 @@ For the equivalent Python request:
 
 ```python
 cli_bytes = Path("/tmp/isanlp-result.json").read_bytes()
-assert cli_bytes == serialize_contract(result)
+cli_result = load_contract(cli_bytes)
+assert cli_result.semantic == result.semantic
+assert cli_result.semantic_digest == result.semantic_digest
 ```
+
+Execution identifiers, timings, and cache status may differ between
+invocations; those values are intentionally excluded from semantic parity.
 
 Instrumentation in conformance tests must prove one primary inference execution
 per request. `tree`, `stats`, and `rs3` are declared lossy presentation views of

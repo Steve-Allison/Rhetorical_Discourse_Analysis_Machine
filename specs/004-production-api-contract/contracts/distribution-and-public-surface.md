@@ -11,7 +11,8 @@ production symbol membership and support classification. Each entry declares:
 
 - fully qualified symbol or resource name;
 - supported public import path, if any;
-- kind: function, class, protocol, enum, alias, exception, schema, or resource;
+- kind: function, class, protocol, enum, alias, exception, schema, resource,
+  console command, or loopback-only local endpoint;
 - classification: `supported`, `deprecated`, or `internal`;
 - introduced, deprecated, and removal package versions where applicable;
 - serialized schema membership;

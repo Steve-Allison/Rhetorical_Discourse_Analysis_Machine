@@ -723,7 +723,7 @@ linked using `raise ... from ...` but never automatically serialized.
 |---|---|---|
 | `qualified_name` | string | Canonical symbol identity |
 | `public_import` | optional string | Supported import path |
-| `kind` | enum | Function, class, protocol, enum, alias, exception, schema, or resource |
+| `kind` | enum | Function, class, protocol, enum, alias, exception, schema, resource, console command, or local endpoint |
 | `status` | `supported`, `deprecated`, or `internal` | Contract classification |
 | `introduced` | package version | First supported release |
 | `deprecated` | optional package version | Deprecation release |
