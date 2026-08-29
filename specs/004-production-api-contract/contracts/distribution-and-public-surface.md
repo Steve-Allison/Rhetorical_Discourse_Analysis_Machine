@@ -33,6 +33,8 @@ among:
 - packaged JSON Schemas;
 - public documentation examples and anchors;
 - compatibility and deprecation declarations.
+- installed console-script and retained local-HTTP projection classifications,
+  request/result parity, and presentation-view guarantees.
 
 Generated schema and documentation projections are not independently editable
 authorities.
@@ -46,6 +48,8 @@ The 5.0.0 package must:
 - include `py.typed`;
 - declare `Import-Name: isanlp_rst` through current project metadata;
 - include public-surface, schema, and build-provenance resources;
+- install exactly one supported `isanlp-rst` console entry point whose JSON and
+  retained local-HTTP behaviours project the canonical production contract;
 - report 5.0.0 through `importlib.metadata.version("isanlp_rst")`;
 - contain no research, training, evaluation, promotion, corpus, or model-weight
   content in the production wheel.
@@ -234,6 +238,9 @@ Validation must prove:
    weights;
 9. the source commit and tree exist and correspond to the recorded archive;
 10. required verification records are present and passed.
+11. the installed console entry point, its declared commands, and any retained
+    local-HTTP capability match the public-surface inventory and define no
+    independent result schema.
 
 ## Clean-install conformance
 
@@ -250,6 +257,9 @@ Create two isolated environments without `--system-site-packages`:
 - run public-surface and schema reconciliation;
 - query capabilities offline and see unavailable optional forms;
 - serialize/load capabilities, outcomes, and failures;
+- run the installed CLI and any retained loopback adapter against equivalent
+  Python requests, require canonical semantic-byte parity and one inference
+  execution, and reject raw exception-string or count-only substitutes;
 - verify the typed analysis policy, exact analysed substrate, decision-complete
   evidence, composite identity, both-endpoint anchors, recombination receipt,
   and validation receipt using installed public imports only;
@@ -272,6 +282,8 @@ Create two isolated environments without `--system-site-packages`:
   mappings plus the validation receipt;
 - run deliberate evidence-loss fixtures for every packaged production backend
   and handoff;
+- route each supported structured source form through the installed CLI and
+  shared `SourceArtifact` boundary;
 - run `pip check` and retain `pip inspect` evidence.
 
 Network access is allowed only for dependency installation when packages are

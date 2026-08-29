@@ -12,14 +12,15 @@ Feature 004 is a breaking public-contract redesign. It will therefore ship as
 the compatibility change: [Semantic Versioning 2.0.0](https://semver.org/)
 requires a new major version when a declared public API changes incompatibly.
 
-The design remains one local Python library. It does not introduce a service,
-a consumer-specific schema, a second preparation authority, or any change to
-trained architecture or inference mathematics.
+The design remains one local Python library. It does not introduce a hosted or
+network-exposed service, a consumer-specific schema, a second preparation
+authority, or any change to trained architecture or inference mathematics. The
+newly added loopback adapter is either a canonical local projection or removed.
 
 ## Evidence base
 
 The comparison used current primary sources and direct inspection of the
-repository at `ad853825535649fc55fe2ab12e83654bb213097d` after the
+repository at `821497c3db0d1af5439935bd2df8059aba883839` after the
 ModernBERT production upgrades completed:
 
 - Python 3.14 installed-distribution metadata, exception chaining, import

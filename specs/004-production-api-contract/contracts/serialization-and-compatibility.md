@@ -93,7 +93,7 @@ planning policies, prepared discourse, plan, immutable model identity, parser
 capacity, complete resolved analysis policy, exact analysed-document substrate,
 composite identities for every participating primary, segmenter, refinement,
 eRST, decoder, calibration, relation, and ontology component, analysis pipeline
-version, and result contract write version.
+version, exact loaded-component receipts, and result contract write version.
 
 The result identity adds validated RST/eRST analysis, primary/eRST decision
 evidence, both-endpoint and signal anchors, refinement records, recombination
@@ -209,6 +209,7 @@ by hand is forbidden.
 Required schemas include:
 
 - preparation outcome;
+- parser analysis result;
 - production analysis outcome union;
 - analysis policy and resolved request;
 - analysed document and substrate transformations;
@@ -249,6 +250,8 @@ The conformance suite must prove:
 13. removing any required handoff evidence causes validation or reload to fail;
 14. receipt timings and other execution-only values leave semantic bytes
     unchanged.
+15. equivalent Python, CLI, and retained local-HTTP requests serialize to
+    identical canonical semantic bytes and none defines another JSON schema.
 
 ## Failure serialization
 

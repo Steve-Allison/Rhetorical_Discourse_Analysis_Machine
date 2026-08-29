@@ -151,7 +151,7 @@ exclude = [
 ]
 pythonVersion = "3.14"
 venvPath = "."
-venv = ".pixi/envs/offline"
+venv = ".pixi/envs/default"
 extraPaths = ["scripts"]
 reportMissingImports = "warning"     # pyright runs against the active env
 # torch's runtime API exposes many names not in __all__ (e.g. torch.device,
@@ -193,5 +193,6 @@ production-ingest-candidate = "python -m tools.production_ingest candidate"
 production-ingest-assess = "python -m tools.production_ingest assess"
 
 [tool.pixi.environments]
+default = { features = ["offline"] }
 production = { features = ["production"], no-default-feature = true }
 offline = { features = ["offline"], no-default-feature = true }

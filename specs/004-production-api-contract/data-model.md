@@ -795,6 +795,12 @@ SourceArtifact
             -> RecombinationReceipt
             -> ValidationReceipt
 
+RstDocument
+  -> ParserAnalysisResult
+       -> AnalysedDocument + CompositeAnalysisIdentity
+       -> RstAnalysis + PrimaryInferenceEvidence + ErstCompletionEvidence
+       -> RecombinationReceipt + ValidationReceipt
+
 Any lifecycle stage
   -> ProductionFailure
        -> CompletedStageEvidence from earlier stages only
