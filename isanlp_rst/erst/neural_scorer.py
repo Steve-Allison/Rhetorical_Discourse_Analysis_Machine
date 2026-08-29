@@ -18,7 +18,8 @@ class AttentionPooling(nn.Module):
     def forward(self, hidden_states: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         # hidden_states: (B, L, D), attention_mask: (B, L)
         scores = self.query(hidden_states).squeeze(-1)  # (B, L)
-        scores = scores.masked_fill(attention_mask == 0, -1e9)
+        min_val = torch.finfo(scores.dtype).min
+        scores = scores.masked_fill(attention_mask == 0, min_val)
         weights = F.softmax(scores, dim=-1).unsqueeze(-1)  # (B, L, 1)
         pooled = torch.sum(hidden_states * weights, dim=1)  # (B, D)
         return pooled

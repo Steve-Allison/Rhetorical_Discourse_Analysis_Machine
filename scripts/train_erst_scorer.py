@@ -7,21 +7,18 @@ import math
 from pathlib import Path
 from typing import Any
 
-import torch
-from torch.utils.data import DataLoader
+from isanlp_rst.contracts.erst import HardNegativeSamplingConfig
+from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
 from safetensors import safe_open
 from safetensors.torch import save_model
+import torch
+from torch.utils.data import DataLoader
 from transformers import get_cosine_schedule_with_warmup
-
-from isanlp_rst.contracts.erst import HardNegativeSamplingConfig
-from workbench.training.erst.dataset import (
-    GUMSecondaryEdgeDataset,
-)
 from workbench.corpus.erst.corpus import load_gum_erst_corpus_with_receipt
-from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from workbench.corpus.erst.relations import derive_raw_relation_inventory
 from workbench.corpus.erst.sampling import prepare_partition_candidates
-from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from workbench.training.erst.dataset import GUMSecondaryEdgeDataset
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -146,8 +143,9 @@ def train_erst_scorer(
         raw_relation_inventory=relation_inventory.labels,
     )
 
+    eval_batch_size = max(batch_size, 256)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    dev_loader = DataLoader(dev_dataset, batch_size=batch_size, shuffle=False)
+    dev_loader = DataLoader(dev_dataset, batch_size=eval_batch_size, shuffle=False)
 
     # 4. Optimizer and Cosine Warmup
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=0.01)

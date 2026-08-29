@@ -55,12 +55,9 @@ def _source_tree_sha256(paths: tuple[Path, ...], repository_root: Path) -> str:
 
 
 def _environment_lock_sha256(repository_root: Path) -> str:
-    locks = (
-        repository_root / "pixi.lock",
-        repository_root / "workbench.research" / "pixi.lock",
-    )
+    locks = (repository_root / "pixi.lock",)
     if any(not path.is_file() for path in locks):
-        raise ValueError("production and independent harness Pixi locks must both exist")
+        raise ValueError("production Pixi lock must exist")
     return _source_tree_sha256(locks, repository_root)
 
 
@@ -97,7 +94,7 @@ def build_experiment_protocol(
     repository_root = repository_root.resolve()
     harness_sources = tuple(
         path
-        for path in (repository_root / "workbench.research").rglob("*.py")
+        for path in (repository_root / "workbench/research").rglob("*.py")
         if "__pycache__" not in path.parts
     )
     production_sources = tuple(
@@ -112,7 +109,7 @@ def build_experiment_protocol(
             "isanlp_rst/erst/decoder.py",
             "isanlp_rst/erst/relations.py",
             "isanlp_rst/erst/rs4.py",
-            "isanlp_rst/eval/erst_scorer.py",
+            "isanlp_rst/erst/neural_scorer.py",
         )
     )
     decoder = ErstDecoderConfig(
