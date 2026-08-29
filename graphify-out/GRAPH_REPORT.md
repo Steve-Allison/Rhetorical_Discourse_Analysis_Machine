@@ -1,1010 +1,802 @@
-# Graph Report - isanlp_rst  (2026-08-25)
+# Graph Report - isanlp_rst  (2026-08-29)
 
 ## Corpus Check
-
-- cluster-only mode — file stats not available
+- Large corpus: 511 files · ~494,938 words. Semantic extraction will be expensive (many Claude tokens). Consider running on a subfolder.
 
 ## Summary
-
-- 4103 nodes · 9827 edges · 202 communities (154 shown, 48 thin omitted)
-- Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 1074 edges (avg confidence: 0.56)
-- Token cost: 12,807 input · 2,476 output
-
-## Graph Freshness
-
-- Built from commit: `bf953a73`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
+- 4403 nodes · 11507 edges · 178 communities (155 shown, 23 thin omitted)
+- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 852 edges (avg confidence: 0.94)
+- Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-
-- RST Analysis Models
-- RST Enumerations
-- Discourse Tree Structures
-- Markdown Entry Points
-- Frontend Assets
-- DocLang XML Parsing
-- Docling JSON Parsing
-- RST Tree Rendering
-- EDU Segmentation Dataset
-- DocLang Boundary Detection
-- Markdown Boundary Mapping
-- Content Layer Detection
-- DocLang Text Harvesting
-- Analysis Data Contracts
-- RS4 Format Converters
-- Markdown Harvester Tests
-- Base Predictor Logic
-- RSTWeb SQL Operations
-- Model Validation Logic
-- DocLang Boundary Tests
-- Universal Parser Utils
-- Corpus Loading Contracts
-- Docling Span Mapping
-- Thiago Parser Utils
-- RST Viewer Classes
-- DMRST RS3 Utils
-- Model Integration Tests
-- Structural Data Protocols
-- Secondary Relation Completion
-- eRST Checkpoint State
-- DocLang Eligibility Policy
-- Universal Parser Common
-- Parser Evaluation Metrics
-- Research Authority Models
-- GUM Corpus Authority
-- Data Management Logic
-- Research Promotion Logic
-- Data Management Logic
-- DMRST Corpus Data
-- Universal Parser Data
-- Environment Compatibility Probes
-- Model Identity Helpers
-- Compute Device Resolution
-- DMRST Common Utils
-- DocLang Tree Projection
-- DocLang Span Mapping
-- Inventory Serialization Security
-- Markdown Boundary Detection
-- Shell Utility Scripts
-- Secondary Edge Candidates
-- UniRST Predictor Logic
-- DocLang Table Harvesting
-- Docling Text Harvesting
-- DMRST Tree Utils
-- Docling Error Handling
-- Parser Batch Data
-- Discourse Signal Models
-- RST Structure UI
-- Public Parser API
-- Pydantic Tree Serialization
-- DMRST Predictor Logic
-- Markdown Loader Logic
-- Checkpoint Metadata Evidence
-- Neural Secondary Scorer
-- Format Analysis Schema
-- BiMPM Classifier Modules
-- End-to-End Smoke Tests
-- Result Caching Logic
-- Tree String Converter
-- DMRST Training Runner
-- Relation Inventory IO
-- Source Identity Validation
-- EDU Segmenter Models
-- Markdown Text Harvester
-- EDU Segmenter Models
-- GUM Gold Validation
-- Format Projection Tests
-- Parser Family Resolution
-- Secondary Scorer Training
-- Parse Result Helpers
-- GUM Gold Validator
-- DocLang Source Provenance
-- Checkpoint Family Detection
-- Parsing Network Logic
-- Parsing Network Logic
-- BiMPM Attention Module
-- Result Cache Identity
-- Candidate Selection Logic
-- Baseline Association Serialization
-- DMRST Binary Tree
-- Universal Binary Tree
-- Bottom-Up Transition Parser
-- Schema Compatibility Tests
-- Decoder RNN Modules
-- Markdown Error Handling
-- Runtime Provenance Helpers
-- Wave 4 Integration
-- Tree Flattening Utils
-- Parser Integration Tests
-- Viewer Security Hardening
-- BiMPM Encoder Module
-- eRST Checkpoint Management
-- RST Tree Construction
-- RST Quality Diagnostics
-- DocLang Fixture Verification
-- DMRST Label Ordering
-- RNN Sequence Encoder
-- CRF Sequence Labeling
-- Adversarial Discriminator
-- RNN Sequence Encoder
-- CRF Sequence Labeling
-- Torch Dtype Normalization
-- Multi-Run Experiment Runner
-- Default Label Classifier
-- Repository Cleanup Script
-- Docling Table Harvesting
-- Cleanup Unit Tests
-- RS3 Annotation Parsing
-- Discourse Tree Flattening
-- Docling Smoke Tests
-- RS3 Annotation Parsing
-- GUM Validation Metrics
-- Discourse Unit Mocking
-- DocLang Parity Tests
-- Checkpoint Verification Receipt
-- Docling Text Harvester
-- HTML Viewer Export
-- File Access Linter
-- Speckit Workflow Stages
-- EDU File Utilities
-- Markdown RST Output
-- Parser Protocol Interface
-- Markdown Manifest Verification
-- Schema Verification Status
-- DMRST Config Reader
-- Universal Parser Config
-- Performance Benchmarking
-- Token Offset Conversion
-- Source Origin Serialization
-- Span Character Offsets
-- CUDA Verification Script
-- Table Harvest Invariants
-- LSTM Dropout Tests
-- Speckit Task Management
-- CUDA Device Validation
-- RST Build Planning
-- Custom Tokenizer
-- Custom Tokenizer
-- GUMRRG Parser Fixture
-- GUMRRG Parser Fixture
-- Agent Instructions
-- Assumptions Check Script
-- Design Decisions
-- Document Memory Policy
-- Parser Policy Knobs
-- DocLang Specification Status
-- Speckit Planning
-- Cleanup Shell Script
-- Forensic Remediation Report
-- Parser Documentation
-- Speckit Clarification
-- Docling Integration Decision
-- Project Status
-- Upstream Issue Tracking
-- Architecture Overview
-- Code Standards
-- Command Reference
-- No Assumptions Rule
-- Speckit Clarification
-- Speckit Constitution
-- Speckit Task Automation
-- Speckit Constitution
-- Speckit Checklist
-- DocLang Versioning
-- Docling Core Versioning
-- Markdown Walkthrough
-- RST Output Plan
-- Long-Input Parsing Plan
-- Markdown Output Plan
-- Capability Platform Plan
-- English Tree Visualization
-- Russian Tree Visualization
-- Render Code Example
-- Assumptions Rule Feedback
-- Remediation Data Model
-- Experiment Protocol
-- GUM Corpus
-- GUM Corpus Version
-- IsaNLP DocLang Module
-- IsaNLP Docling Module
-- IsaNLP RST Package
-- Remediation Implementation Plan
-- Research Authority Ledger
-- Task to Issue Conversion
+- Community 0
+- Community 1
+- Community 2
+- Community 3
+- Community 4
+- Community 5
+- Community 6
+- Community 7
+- Community 8
+- Community 9
+- Community 10
+- Community 11
+- Community 12
+- Community 13
+- Community 14
+- Community 15
+- Community 16
+- Community 17
+- Community 18
+- Community 19
+- Community 20
+- Community 21
+- Community 22
+- Community 23
+- Community 24
+- Community 25
+- Community 26
+- Community 27
+- Community 28
+- Community 29
+- Community 30
+- Community 31
+- Community 32
+- Community 33
+- Community 34
+- Community 35
+- Community 36
+- Community 37
+- Community 38
+- Community 39
+- Community 40
+- Community 41
+- Community 42
+- Community 43
+- Community 44
+- Community 45
+- Community 46
+- Community 47
+- Community 48
+- Community 49
+- Community 50
+- Community 51
+- Community 52
+- Community 53
+- Community 54
+- Community 55
+- Community 56
+- Community 57
+- Community 58
+- Community 59
+- Community 60
+- Community 61
+- Community 62
+- Community 63
+- Community 64
+- Community 65
+- Community 66
+- Community 67
+- Community 68
+- Community 69
+- Community 70
+- Community 71
+- Community 72
+- Community 73
+- Community 74
+- Community 75
+- Community 76
+- Community 77
+- Community 78
+- Community 79
+- Community 80
+- Community 81
+- Community 82
+- Community 83
+- Community 84
+- Community 85
+- Community 86
+- Community 87
+- Community 88
+- Community 89
+- Community 90
+- Community 91
+- Community 92
+- Community 93
+- Community 94
+- Community 95
+- Community 96
+- Community 97
+- Community 98
+- Community 99
+- Community 100
+- Community 101
+- Community 102
+- Community 103
+- Community 104
+- Community 105
+- Community 106
+- Community 107
+- Community 108
+- Community 109
+- Community 110
+- Community 111
+- Community 112
+- Community 113
+- Community 114
+- Community 115
+- Community 116
+- Community 117
+- Community 118
+- Community 119
+- Community 120
+- Community 121
+- Community 122
+- Community 123
+- Community 124
+- Community 125
+- Community 126
+- Community 127
+- Community 128
+- Community 129
+- Community 130
+- Community 131
+- Community 132
+- Community 133
+- Community 134
+- Community 135
+- Community 136
+- Community 137
+- Community 138
+- Community 139
+- Community 140
+- Community 141
+- Community 142
+- Community 143
+- Community 144
+- Community 145
+- Community 146
+- Community 147
+- Community 148
+- Community 149
+- Community 150
+- Community 152
+- Community 153
+- Community 154
+- Community 155
+- Community 156
+- Community 157
+- Community 158
+- Community 159
+- Community 160
+- Community 161
+- Community 162
+- Community 163
+- Community 164
+- Community 165
+- Community 171
 
 ## God Nodes (most connected - your core abstractions)
-
-1. `Parser` - 112 edges
-2. `RstAnalysis` - 103 edges
-3. `SpanNode` - 68 edges
-4. `parse_doclang()` - 61 edges
-5. `parse_markdown()` - 60 edges
-6. `parse_docling()` - 60 edges
-7. `RstDocument` - 58 edges
-8. `RstNode` - 56 edges
-9. `harvest_doclang_text()` - 51 edges
-10. `BasePredictor` - 50 edges
+1. `RstAnalysis` - 159 edges
+2. `Parser` - 113 edges
+3. `RstDocument` - 100 edges
+4. `SpanNode` - 68 edges
+5. `RstNode` - 67 edges
+6. `SourceArtifact` - 67 edges
+7. `CorpusPartition` - 66 edges
+8. `DiscourseUnit` - 64 edges
+9. `ProductionIngestor` - 61 edges
+10. `PrimaryRelationEdge` - 55 edges
 
 ## Surprising Connections (you probably didn't know these)
-
-- `_Predictor` --uses--> `BasePredictor`  [INFERRED]
-  tests/test_base_predictor.py → isanlp_rst/base_predictor.py
-- `_BundleInputs` --uses--> `NeuralSecondaryEdgeScorer`  [INFERRED]
-  tests/test_erst_checkpoint.py → isanlp_rst/erst/neural_scorer.py
-- `_BundleInputs` --uses--> `RuleBasedSignalDetector`  [INFERRED]
-  tests/test_erst_checkpoint.py → isanlp_rst/erst/signals.py
-- `TestResolveFamily` --uses--> `Parser`  [INFERRED]
-  tests/test_parser_facade.py → isanlp_rst/parser.py
-- `GumGoldValidator` --uses--> `RS4Document`  [INFERRED]
-  tests/gum_validator.py → isanlp_rst/erst/rs4.py
+- `test_tracked_train_inventory_is_hash_valid_and_raw_to_concept_complete()` --uses--> `RawRelationInventory`  [INFERRED]
+  tests/integration/test_erst_relations.py → isanlp_rst/contracts/erst.py
+- `test_source_revision_is_separate_from_semantic_version()` --calls--> `resolve_source_revision()`  [EXTRACTED]
+  tests/unit/test_runtime_provenance.py → isanlp_rst/_provenance.py
+- `DummyPredictor` --uses--> `DiscourseUnit`  [INFERRED]
+  tests/integration/test_batch_inference.py → isanlp_rst/annotation_rst.py
+- `GumGoldValidator` --uses--> `DiscourseUnit`  [INFERRED]
+  tests/offline/gum_validator.py → isanlp_rst/annotation_rst.py
+- `test_discourse_unit_internal_node()` --calls--> `DiscourseUnit`  [EXTRACTED]
+  tests/unit/test_discourse_unit.py → isanlp_rst/annotation_rst.py
 
 ## Import Cycles
+- 3-file cycle: `workbench/corpus/unirst/__init__.py -> workbench/corpus/unirst/data_manager.py -> workbench/corpus/unirst/data.py -> workbench/corpus/unirst/__init__.py`
+- 3-file cycle: `workbench/corpus/dmrst/__init__.py -> workbench/corpus/dmrst/data_manager.py -> workbench/corpus/dmrst/data.py -> workbench/corpus/dmrst/__init__.py`
 
-- None detected.
+## Communities (178 total, 23 thin omitted)
 
-## Hyperedges (group relationships)
+### Community 0 - "Community 0"
+Cohesion: 0.03
+Nodes (101): Exception, load_repository_environment(), _nonempty_environment_value(), BaseModel, Path, Explicit, non-logging repository environment loading for eRST operations., Validated evidence for one explicit repository-root environment load., Load only ``<repository_root>/.env`` and resolve the supported HF token.… (+93 more)
 
-- **Native Document Format Support** — doclang_native_plan, docling_native_plan, docs_examples_markdown_native_walkthrough [EXTRACTED 0.90]
-- **DocLang Integration Design** — claude_memory_verified_doclang_fixtures, claude_memory_verified_doclang_spec [EXTRACTED 1.00]
-- **Docling-Native RST Design** — claude_memory_open_output_schema_specifics, claude_memory_open_parse_per_boundary, claude_memory_open_parser_facade_unverified, claude_memory_open_rst_real_world_quality, claude_memory_open_schema_detail_verifications, claude_memory_open_v1_policy_knobs, claude_memory_verified_docling_core_api, claude_memory_verified_docling_schema [EXTRACTED 1.00]
-- **Spec-Kit SDD Lifecycle** — specify_skill, plan_skill, tasks_skill, implement_skill, clarify_skill, converge_skill [EXTRACTED 1.00]
-- **Spec Kit Core Workflow** — claude_skills_speckit_specify_skill, claude_skills_speckit_plan_skill, claude_skills_speckit_tasks_skill, claude_skills_speckit_implement_skill, claude_skills_speckit_converge_skill [EXTRACTED 1.00]
-- **Spec Kit Core Workflow** — claude_skills_speckit_specify_skill, claude_skills_speckit_clarify_skill, claude_skills_speckit_plan_skill, claude_skills_speckit_tasks_skill, claude_skills_speckit_implement_skill, claude_skills_speckit_converge_skill [EXTRACTED]
+### Community 1 - "Community 1"
+Cohesion: 0.05
+Nodes (98): CorpusPartition, Official GUM document partitions., _protocol(), Regression tests for calibration, statistics, resources, and system constraints., _receipt(), _resource(), test_bootstrap_and_holm_are_reproducible_and_content_hashed(), test_screening_completeness_requires_every_system_seed_disposition() (+90 more)
 
-## Communities (202 total, 48 thin omitted)
-
-### Community 0 - "RST Analysis Models"
-
+### Community 2 - "Community 2"
 Cohesion: 0.04
-Nodes (71): Counter, DirectedSpanKey, Complete discourse analysis result., Find the root node if present., Look up a node by its ID., RstAnalysis, NodeKindEnum, Discourse tree or graph node kind. (+63 more)
+Nodes (79): NuclearityPatternEnum, Nuclearity pattern for primary relation edges., analysis_to_rs4(), Conversion utilities between RS4 DOM, DiscourseUnit, and typed contracts., Convert an RstDocument and RstAnalysis back into an RS4Document., Convert an RS4Document into an RstDocument and an RstAnalysis., rs4_to_document_and_analysis(), RS4 XML processing, eRST data structures, and converters. (+71 more)
 
-### Community 1 - "RST Enumerations"
+### Community 3 - "Community 3"
+Cohesion: 0.05
+Nodes (103): ErstCalibrationState, ErstCheckpointBuildSpec, ErstCheckpointComponent, ErstCheckpointFile, ErstCheckpointFileRole, ErstCheckpointLicenses, ErstCheckpointManifest, ErstCheckpointMetrics (+95 more)
 
-Cohesion: 0.04
-Nodes (71): AnnotationStatusEnum, CapabilityStatusEnum, ConfidenceKindEnum, DeviceEnum, EdgeKindEnum, InputModeEnum, MappingKindEnum, NuclearityPatternEnum (+63 more)
+### Community 4 - "Community 4"
+Cohesion: 0.05
+Nodes (73): Native Rhetorical Structure Theory (RST) tree annotations and RS3…, Complete discourse analysis result., RstAnalysis, Lossless document representation for discourse parsing., RstDocument, NodeKindEnum, OutputFormalismEnum, Discourse tree or graph node kind. (+65 more)
 
-### Community 2 - "Discourse Tree Structures"
-
+### Community 5 - "Community 5"
 Cohesion: 0.06
-Nodes (65): PrimaryRelationEdge, Execution timing profile in milliseconds., A node in a discourse tree or graph., A directed primary rhetorical relation edge with nuclearity., RstNode, TimingRecord, DocumentToken, Edu (+57 more)
+Nodes (69): Path, Causal tests for the production/offline boundary authority., test_ambiguous_relevant_path_fails_closed(), test_artifact_dependencies_are_read_from_metadata(), test_authority_classifies_each_surface(), test_commit_export_build_cannot_package_stale_build_tree(), test_direct_production_to_offline_import_reports_complete_path(), test_forbidden_sdist_member_is_named() (+61 more)
 
-### Community 3 - "Markdown Entry Points"
+### Community 6 - "Community 6"
+Cohesion: 0.05
+Nodes (69): DiscourseSignal, BaseModel, Discourse analysis result models and graph structures., Immutable identity of the detector or source that produced a signal., Typed, anchored discourse signal; overlaps are explicitly permitted., SignalDetectorProvenance, AnnotationStatusEnum, How a discourse signal entered the analysis. (+61 more)
 
+### Community 7 - "Community 7"
 Cohesion: 0.06
-Nodes (61): parse_markdown(), Any, Path, Build the ``source_origin`` block for the result., Parse a markdown file and return its RST analysis. Args: path: filesystem path…,_source_origin(),_Node, Path (+53 more)
+Nodes (71): DoclangIngestError, InvalidDoclangError, ValueError, Failures raised by the private DocLang source loader., A DocLang archive violates bounded local ZIP safety invariants., Base class for DocLang validation and archive-loading failures., The XML file is not a valid DocLang document., UnsafeDoclangArchiveError (+63 more)
 
-### Community 4 - "Frontend Assets"
+### Community 8 - "Community 8"
+Cohesion: 0.06
+Nodes (62): Production-safe released-model contracts and loaders., canonical_json_bytes(), load_model_release(), ModelFile, ModelReleaseError, ModelReleaseIdentity, ModelReleaseManifest, PromotionReceipt (+54 more)
 
+### Community 9 - "Community 9"
+Cohesion: 0.06
+Nodes (67): FormatRstAnalysis, Composite analysis for structured documents (Docling, DocLang, Markdown)., ProvenanceRecord, Document input models and coordinate representation., Create an RstDocument from pre-segmented EDU strings. Note: Character offsets…, Provenance pointer to the source document., Provenance and derivation record., SourceReference (+59 more)
+
+### Community 10 - "Community 10"
+Cohesion: 0.05
+Nodes (48): calc_metrics(), get_batch_metrics(), get_eval_data_parseval(), get_eval_data_rst_parseval(), get_macro_metrics(), get_measurement(), get_micro_metrics(), get_seg_measure() (+40 more)
+
+### Community 11 - "Community 11"
+Cohesion: 0.06
+Nodes (49): PrivateCorpusVerificationReceipt, Full-source and sampled-candidate verification for the private corpus., _candidate(), Focused system serialization and private candidate-cache contract tests., test_candidate_cache_round_trips_gold_fields_and_overlapping_signal_spans(), test_signal_aware_serialization_preserves_each_exact_overlapping_anchor(), test_text_only_serialization_contains_no_signal_or_structure_tokens(), ChampionManifest (+41 more)
+
+### Community 12 - "Community 12"
+Cohesion: 0.06
+Nodes (52): AnalysisStatus, _identify_path(), _media_type(), Path, _raw_contract(), SourceArtifact, SourceForm, inventory_source() (+44 more)
+
+### Community 13 - "Community 13"
 Cohesion: 0.06
 Nodes (42): ba(), Ea(), Fa(), fb(), ga(), ha(), b(), hb() (+34 more)
 
-### Community 5 - "DocLang XML Parsing"
-
+### Community 14 - "Community 14"
 Cohesion: 0.06
-Nodes (53): parse_doclang(), Parse a DocLang XML file and return its RST analysis. Args: path: filesystem…, EmptyDoclangError, EmptyHarvestError, The harvest produced no text (e.g. a tables-only document)., The loaded DocLang document has no harvestable body content., MonkeyPatch, Path (+45 more)
+Nodes (47): inference_mode, Execution timing profile in milliseconds., TimingRecord, DocumentToken, Edu, Create an RstDocument from raw text without pre-segmented EDUs., A single token aligned with character coordinates., Create an RstDocument with full token and EDU coordinates. (+39 more)
 
-### Community 6 - "Docling JSON Parsing"
-
-Cohesion: 0.08
-Nodes (52): parse_docling(), Path, Parse a Docling JSON file and return its RST analysis. Args: path: filesystem…,_minimal_docling_json(), _Node, Path, slow, Unit + integration tests for ``isanlp_rst.docling.parse_docling``. Fast unit… (+44 more)
-
-### Community 7 - "RST Tree Rendering"
-
-Cohesion: 0.06
-Nodes (53): AsyncBrowser, AsyncPage, AsyncPlaywright, Browser, IO, T, Render an RST tree and, optionally, display it inline. This is a light-weight…, Render an ``.rs3`` file to PNG (works in both sync and async environments). (+45 more)
-
-### Community 8 - "EDU Segmentation Dataset"
-
-Cohesion: 0.06
-Nodes (46): inference_mode, EduSegmentationDataset, parse_disrpt_tok_file(), parse_rs4_to_sentences(), Any, Dataset, Path, Tensor (+38 more)
-
-### Community 9 - "DocLang Boundary Detection"
-
-Cohesion: 0.07
-Nodes (55): _detect_document_fallback(),_detect_field_region_boundaries(),_detect_group_boundaries(), _detect_heading_boundaries(),_detect_page_boundaries(), _detect_table_boundaries(),_harvest_eligible_xpaths(), _is_within() (+47 more)
-
-### Community 10 - "Markdown Boundary Mapping"
-
-Cohesion: 0.08
-Nodes (53): Detect structural boundaries in a markdown harvest. Boundaries are derived from…, Markdown-native RST parsing for isanlp_rst. Public API: -…, compute_overlap_refs(), flatten_tree(), _make_edu(), Any, Boundary, HarvestSpan (+45 more)
-
-### Community 11 - "Content Layer Detection"
-
-Cohesion: 0.08
-Nodes (55): ContentLayer, _content_layers(), detect_boundaries(),_detect_pptx_slide_boundaries(),_detect_section_boundaries(), _detect_table_boundaries(),_detect_vtt_turn_boundaries(),_iter_body_self_refs() (+47 more)
-
-### Community 12 - "DocLang Text Harvesting"
-
-Cohesion: 0.07
-Nodes (56): harvest_doclang_text(), HarvestResult, Produce the main document harvest with per-span xpath mapping. Args: tree: a…, _ElementTree, parametrize, Unit tests for the doclang harvesters (main text + per-table)., ``ok_table_rectangular`` is table-only — the main harvest must be empty; the…, The fixture has 3 tables; harvests must match boundary numbering (document… (+48 more)
-
-### Community 13 - "Analysis Data Contracts"
-
+### Community 15 - "Community 15"
 Cohesion: 0.09
-Nodes (46): Discourse analysis result models and graph structures., ProvenanceRecord, Document input models and coordinate representation., Provenance pointer to the source document., Provenance and derivation record., SourceReference, FailureCodeEnum, InputFidelityEnum (+38 more)
+Nodes (50): AnalysisAnchor, AnalysisUnit, Disposition, DuplicateFinding, PreparationPolicy, PreparedRange, PreparedRstDocument, PreparedSegment (+42 more)
 
-### Community 14 - "RS4 Format Converters"
-
-Cohesion: 0.09
-Nodes (42): analysis_to_rs4(), Conversion utilities between RS4 DOM, DiscourseUnit, and typed contracts., Convert an RstDocument and RstAnalysis back into an RS4Document., Convert an RS4Document into an RstDocument and an RstAnalysis., rs4_to_document_and_analysis(), RS4 XML processing, eRST data structures, and converters., Any, Path (+34 more)
-
-### Community 15 - "Markdown Harvester Tests"
-
+### Community 16 - "Community 16"
 Cohesion: 0.06
-Nodes (53): _harvest(), Unit tests for ``isanlp_rst.markdown.harvester``. Tests focus on inline-…, h1..h6 must yield level 1..6 respectively., Three bullet items → three list_item spans, not one., Nested bullets join their parent item's text rather than emit separate spans —…, Paragraphs inside `>` become blockquote_paragraph, not paragraph., Negative-space: a plain para must not be classified as blockquote., A heading inside `>` is quoted content — it must not carry the plain `heading`… (+45 more)
+Nodes (53): HfApi, One pinned tokenizer's fast/parity/MPS compatibility evidence., Hashed Python/Transformers/MPS compatibility receipt for mandatory tokenizers., TokenizerCompatibilityReceipt, TokenizerProbeResult, _encoding_payload(), main(), _payload_hash() (+45 more)
 
-### Community 16 - "Base Predictor Logic"
+### Community 17 - "Community 17"
+Cohesion: 0.12
+Nodes (56): AnchorKind, AuthorshipRole, ContentClass, ContentInventoryItem, DispositionKind, NativeAnchor, StrEnum, RawContractDeclaration (+48 more)
 
-Cohesion: 0.06
-Nodes (41): AbstractContextManager, BasePredictor, Any, Path, T, Mixin-style base with shared tokenization, batching and offset utils. Not…, Yield chunks of size `n` from `_list` (handles empty lists)., Build offset converter from word tokens and optional (start, end) pairs. If… (+33 more)
+### Community 18 - "Community 18"
+Cohesion: 0.07
+Nodes (50): AsyncBrowser, AsyncPage, AsyncPlaywright, Browser, T, Render an ``.rs3`` file to PNG (works in both sync and async environments)., Render an ``.rs3`` file to PDF. The viewer exposes only an asynchronous PDF…, Execute `coro` to completion and return its result, regardless of asyncio state. (+42 more)
 
-### Community 17 - "RSTWeb SQL Operations"
+### Community 19 - "Community 19"
+Cohesion: 0.08
+Nodes (40): ingest_result_from_json(), Validate and deserialize canonical production-ingest JSON., ProductionIngestCache, Path, Integrity-checked, same-filesystem atomic cache for semantic ingest results., Small local file cache keyed only by a complete analytical fingerprint., CacheStatus, ExecutionReceipt (+32 more)
 
+### Community 20 - "Community 20"
+Cohesion: 0.07
+Nodes (46): AblationAdapter, AblationDefinition, AblationPlan, AblationResult, canonical_ablation_plan(), BaseModel, model_validator, Frozen, model-neutral ablation definitions and evidence boundaries. (+38 more)
+
+### Community 21 - "Community 21"
+Cohesion: 0.07
+Nodes (41): DecodeRejectionReason, ErstDecodeReceipt, Reconciled proof of threshold selection and formal eRST constraints., The only formal reasons an above-threshold eRST edge may be rejected., Complete evidence for one ordered primary-tree node pair., SecondaryEdgeCandidate, DecodedErstEdges, ErstSecondaryEdgeDecoder (+33 more)
+
+### Community 22 - "Community 22"
 Cohesion: 0.13
 Nodes (49): add_node(), add_seg(), count_children(), count_multinuc_children(), count_span_children(), delete_document(), delete_node(), generic_query() (+41 more)
 
-### Community 18 - "Model Validation Logic"
-
+### Community 23 - "Community 23"
 Cohesion: 0.07
-Nodes (13): field_validator, Require valid half-open anchors while retaining overlap and order., Require non-empty, unique raw relation labels., Require unique non-negative token identifiers without reordering.,_canonical_model_hash(), model_validator,_canonical_hash(), field_validator (+5 more)
+Nodes (40): Dataset, Immutable upstream model revisions selected by the v4 research protocol., InvalidSegmenterCheckpointError, device, dtype, ValueError, Raised when a path is not a complete, trained EDU-segmentation checkpoint., download_dataset() (+32 more)
 
-### Community 19 - "DocLang Boundary Tests"
-
-Cohesion: 0.07
-Nodes (50): detect_boundaries(),_ElementTree, HarvestResult, Detect all structures using the exact policy and harvested membership., _ElementTree, parametrize, Path, Unit tests for ``isanlp_rst.doclang.boundaries.detect_boundaries``. (+42 more)
-
-### Community 20 - "Universal Parser Utils"
-
+### Community 24 - "Community 24"
 Cohesion: 0.11
-Nodes (47): RST tree node used by the universal parser corpus readers., SpanNode, areAdjacent(), binarizeTreeGeneral(), buildNodes(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU() (+39 more)
+Nodes (44): RST tree node used by the universal parser corpus readers., SpanNode, _apply_node_content(), binarizeTreeRight(), binarizeTreeRightThiago(), bTree(), buildTree(), buildTreeThiago() (+36 more)
 
-### Community 21 - "Corpus Loading Contracts"
+### Community 25 - "Community 25"
+Cohesion: 0.10
+Nodes (46): areAdjacent(), binarizeTreeGeneral(), buildNodes(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU(), cleanLonelyEDU(), cleanTree() (+38 more)
 
-Cohesion: 0.08
-Nodes (44): CorpusAuthorityEntry, CorpusDocumentReceipt, CorpusLoadFailure, CorpusLoadReceipt, CorpusPartition, DecodeRejectionReason, ErstCheckpointFileRole, HardNegativeStrategy (+36 more)
+### Community 26 - "Community 26"
+Cohesion: 0.10
+Nodes (45): areAdjacent(), binarizeTreeGeneral(), buildNodes(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU(), cleanLonelyEDU(), cleanTree() (+37 more)
 
-### Community 22 - "Docling Span Mapping"
-
-Cohesion: 0.14
-Nodes (47): HarvestSpan, One eligible DocLang text span with parser-input coordinates., compute_overlap_refs(), Map an RST tree's character-offset spans to Docling self_refs. Thin format…, Return ``(refs, note)`` for the half-open range ``[start, end)``. Docling-…, HarvestSpan, One harvested Docling span with offsets into its parser input., FakeUnit (+39 more)
-
-### Community 23 - "Thiago Parser Utils"
-
+### Community 27 - "Community 27"
 Cohesion: 0.09
-Nodes (48): _apply_node_content(), binarizeTreeRight(), binarizeTreeRightThiago(), bTree(), buildTree(), buildTreeThiago(), checkcontent(), cleanChildren() (+40 more)
+Nodes (45): _assert_aligned(), _collect_leaf_units(), _collect_leaves(), dmrst_gumrrg_cpu(), dmrst_rstdt_cpu(), dmrst_rstreebank_cpu(), fixture, parametrize (+37 more)
 
-### Community 24 - "RST Viewer Classes"
+### Community 28 - "Community 28"
+Cohesion: 0.08
+Nodes (39): FinalEvaluationReceipt, One-time untouched test evaluation bound to a frozen champion., _aggregate_final(), finalize_selection(), _load_receipts(), main(), _mean_full(), Path (+31 more)
 
+### Community 29 - "Community 29"
 Cohesion: 0.09
 Nodes (39): Document, get_depth(), get_left_right(), NODE, NodeMap, RST tree node types and parent-chain attribute walks., EDU used by the segmenter, not by the structurer., Set graphical nesting depth of ``orig_node`` from the parent chain. RST… (+31 more)
 
-### Community 25 - "DMRST RS3 Utils"
-
-Cohesion: 0.10
-Nodes (44): areAdjacent(), binarizeTreeGeneral(), buildNodes(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU(), cleanLonelyEDU(), cleanTree() (+36 more)
-
-### Community 26 - "Model Integration Tests"
-
+### Community 30 - "Community 30"
 Cohesion: 0.09
-Nodes (45): _assert_aligned(), _collect_leaf_units(),_collect_leaves(), dmrst_gumrrg_cpu(), dmrst_rstdt_cpu(), dmrst_rstreebank_cpu(), fixture, parametrize (+37 more)
+Nodes (33): _analysis_semantic_payload(), _canonical_edus(), model_validator, Self, canonical_json_bytes(), _json_value(), Any, Path (+25 more)
 
-### Community 27 - "Structural Data Protocols"
-
+### Community 31 - "Community 31"
 Cohesion: 0.07
-Nodes (35): ProjectedEduLike, ProjectedRelationLike, Protocol, Structural contract shared by all format-native EDU wire objects., Structural contract shared by all format-native relation wire objects., find_cdu(),_is_leaf(), Any (+27 more)
+Nodes (43): addLabels(), backprop(), BFTbin(), checkTree(), countLabels(), Document, __getforminfo(), getLabelMapping() (+35 more)
 
-### Community 28 - "Secondary Relation Completion"
-
-Cohesion: 0.09
-Nodes (35): A directed secondary rhetorical relation edge without nuclearity., SecondaryRelationEdge, ErstDecoderConfig, ErstDecodeReceipt, Immutable threshold and raw-relation inventory for eRST decoding., Reconciled proof of threshold selection and formal eRST constraints., Any, Complete a classical primary tree into an eRST graph with signals and secondary… (+27 more)
-
-### Community 29 - "eRST Checkpoint State"
-
-Cohesion: 0.12
-Nodes (42): ErstCalibrationState, ErstCheckpointBuildSpec, ErstCheckpointManifest, ErstCheckpointTestVector, ErstGraphComponentConfig, ErstScorerConfig, Dev-fitted edge calibration and decision threshold., Architecture fields required to reconstruct a scorer without network access. (+34 more)
-
-### Community 30 - "DocLang Eligibility Policy"
-
+### Community 32 - "Community 32"
 Cohesion: 0.08
-Nodes (30): DoclangEligibility, Single immutable eligibility policy for DocLang harvest and boundaries., All switches that determine text harvest and boundary membership., Return the DocLang layers admitted by this policy., Return whether ``layer`` contributes harvestable content., Return whether a semantic kind contributes to the main harvest., Path, ``parse_doclang`` entry point — load → harvest → boundaries → parse → flatten.… (+22 more)
+Nodes (39): addLabels(), backprop(), BFTbin(), checkTree(), countLabels(), __getforminfo(), getLabelMapping(), getParse() (+31 more)
 
-### Community 31 - "Universal Parser Common"
-
-Cohesion: 0.08
-Nodes (41): addLabels(), backprop(), BFTbin(), checkTree(), countLabels(), Document, __getforminfo(), getLabelMapping() (+33 more)
-
-### Community 32 - "Parser Evaluation Metrics"
-
+### Community 33 - "Community 33"
 Cohesion: 0.09
-Nodes (29): calc_metrics(), get_batch_metrics(), get_eval_data_parseval(), get_eval_data_rst_parseval(), get_macro_metrics(), get_measurement(), get_micro_metrics(), get_seg_measure() (+21 more)
+Nodes (16): associate_tree_edus(), Corpus, DisDocument, Document, getFiles(), Path, Offline DMRST corpus document conversion., Write the bracketed tree into a file Remove the original extension, keep only… (+8 more)
 
-### Community 33 - "Research Authority Models"
+### Community 34 - "Community 34"
+Cohesion: 0.09
+Nodes (16): associate_tree_edus(), Corpus, DisDocument, Document, getFiles(), Path, Offline UniRST corpus document conversion., Write the bracketed tree into a file Remove the original extension, keep only… (+8 more)
 
-Cohesion: 0.11
-Nodes (38): date, datetime, CorpusLicenseClass, Conservative release-safety class for underlying document text., AuthoritySearchEvidence, BaselineAuthorityBlocker, BaselineCorpusSource, ErstBaselineAuthorityReceipt (+30 more)
+### Community 35 - "Community 35"
+Cohesion: 0.08
+Nodes (28): AbstractContextManager, BasePredictor, Any, Path, Mixin-style base with shared tokenization, batching and offset utils. Not…, Recursively remap ``.start``/``.end`` of leaf/internal nodes from the tokenized…, Map an inferred tree onto authoritative predefined-EDU spans. Transformer…, Given word span boundaries, recount for subwords. (+20 more)
 
-### Community 34 - "GUM Corpus Authority"
+### Community 36 - "Community 36"
+Cohesion: 0.08
+Nodes (21): _mps_available(), Robust string-to-bool conversion used in configs., True when this host has a usable MPS (Apple Silicon Metal) backend., str2bool(), PredictorDMRST, Any, Data, device (+13 more)
 
-Cohesion: 0.11
-Nodes (38): CorpusFailureType, GumCorpusAuthority, HardNegativeSamplingConfig, Hashed interpretation of pinned GUM split and licence authorities., Return the upstream authority entry for one exact document ID., Deterministic training-only hard-negative selection configuration., Stable machine-readable corpus failure categories., CorpusLoadError (+30 more)
-
-### Community 35 - "Data Management Logic"
-
+### Community 37 - "Community 37"
 Cohesion: 0.10
-Nodes (15): DataManager, ParserInput, Any, Data, Node, Path, Mutable per-document parser example. Extra attributes (legacy pickle…, One-way import of a published HF pickle → relation labels only. (+7 more)
+Nodes (33): PrimaryRelationEdge, Find the root node if present., Look up a node by its ID., A node in a discourse tree or graph., A directed primary rhetorical relation edge with nuclearity., A directed secondary rhetorical relation edge without nuclearity., RstNode, SecondaryRelationEdge (+25 more)
 
-### Community 36 - "Research Promotion Logic"
-
-Cohesion: 0.09
-Nodes (36): BaselineEvaluationSetting, BaselineReproductionDiagnosis, MandatoryResearchSystem, MandatorySystemDisposition, PromotionDecision, PromotionGateName, PromotionOutcome, StrEnum (+28 more)
-
-### Community 37 - "Data Management Logic"
-
-Cohesion: 0.09
-Nodes (15): DataManager, ParserInput, Any, Data, Node, Path, Mutable per-document parser example. Extra attributes stay settable., One-way import of a published HF pickle → relation labels only. (+7 more)
-
-### Community 38 - "DMRST Corpus Data"
-
-Cohesion: 0.08
-Nodes (15): associate_tree_edus(), Corpus, DisDocument, Document, getFiles(), Path, Write the bracketed tree into a file Remove the original extension, keep only…, Draw RST tree into a file (+7 more)
-
-### Community 39 - "Universal Parser Data"
-
-Cohesion: 0.08
-Nodes (15): associate_tree_edus(), Corpus, DisDocument, Document, getFiles(), Path, Write the bracketed tree into a file Remove the original extension, keep only…, Draw RST tree into a file (+7 more)
-
-### Community 40 - "Environment Compatibility Probes"
-
+### Community 38 - "Community 38"
 Cohesion: 0.10
-Nodes (36): One pinned tokenizer's fast/parity/MPS compatibility evidence., Hashed Python/Transformers/MPS compatibility receipt for mandatory tokenizers., TokenizerCompatibilityReceipt, TokenizerProbeResult, HfTokenSource, load_repository_environment(), _nonempty_environment_value(), BaseModel (+28 more)
+Nodes (34): audit_technology_matrix(), LicenseAuditReceipt, main(), ModelLicenseRecord, BaseModel, Path, Verify commercial license compliance for candidate and released model weights.…, Audit the research technology matrix for license compliance. (+26 more)
 
-### Community 41 - "Model Identity Helpers"
-
-Cohesion: 0.10
-Nodes (36): model_identity_knobs(), Model-identity helpers for format-native result metadata and caching. An…, Return cache-key parts that identify the producing model., Return ``(model_version, inventory)`` for a result payload. Prefer attributes…, resolve_result_model_meta(), Pick the inventory string for result metadata. Explicit ``relinventory`` wins;…, resolve_inventory(), _InjectedParser (+28 more)
-
-### Community 42 - "Compute Device Resolution"
-
-Cohesion: 0.12
-Nodes (34): _device_from_legacy_int(), _device_from_spec(), DeviceProbe,_mps_available(), device, Reproduce the historical ``cuda_device: int`` selection exactly. ``-1`` -> CPU.…, Resolve the compute device from the string API (or the deprecated int).…, Immutable snapshot of which accelerators the host exposes. Production code uses… (+26 more)
-
-### Community 43 - "DMRST Common Utils"
-
-Cohesion: 0.09
-Nodes (37): addLabels(), backprop(), BFTbin(), checkTree(), countLabels(), __getforminfo(), getLabelMapping(), getParse() (+29 more)
-
-### Community 44 - "DocLang Tree Projection"
-
-Cohesion: 0.09
-Nodes (28): Map an RST tree's character-offset spans to DocLang xpaths. Thin format binding…, AuthoritativeProjection, flatten_tree(), project_tree(), ProjectedTreeNode, Any, E, R (+20 more)
-
-### Community 45 - "DocLang Span Mapping"
-
+### Community 39 - "Community 39"
 Cohesion: 0.14
-Nodes (35): compute_overlap_refs(), Return ``(xpaths, note)`` for the half-open range ``[start, end)``. DocLang-…, One self-contained internal RST node., One self-contained Elementary Discourse Unit., RstEdu, RstRelation, FakeUnit, flatten_tree() (+27 more)
+Nodes (32): Offline DMRST corpus span node., RST tree node used by the DMRST corpus readers., SpanNode, _apply_node_content(), binarizeTreeRight(), binarizeTreeRightThiago(), bTree(), cleanChildren() (+24 more)
 
-### Community 46 - "Inventory Serialization Security"
+### Community 40 - "Community 40"
+Cohesion: 0.07
+Nodes (21): DecoderRNN, DefaultLabelClassifier, DefaultPlusBiMPMClassifier, PointerAtten, device, Tensor, :param transformer: transformers.PreTrainedModel - LM encoder :param word_dim:…, :param input_size: int - input size :param hidden_size: int - hidden size of… (+13 more)
 
-Cohesion: 0.11
-Nodes (32): dump_relation_inventory(), import_relation_table_from_legacy_pickle(), Path, One-way import: published HF pickles → ``relation_table`` labels only., Unpickler that only reconstructs inventory leaf types + containers.…, RestrictedUnpickler,_EvilReduce, _local_shell() (+24 more)
-
-### Community 47 - "Markdown Boundary Detection"
-
-Cohesion: 0.08
-Nodes (35): detect_boundaries(), Boundary, HarvestSpan, TableHarvest, Detect all boundaries in the main ``spans`` + ``table_harvests``., harvest_markdown_tables(), TableHarvest, Produce one ``TableHarvest`` per table, in document order. Tables inside… (+27 more)
-
-### Community 48 - "Shell Utility Scripts"
-
-Cohesion: 0.08
-Nodes (17): check-prerequisites.sh script, check_dir(), check_file(), get_feature_paths(), get_repo_root(), has_jq(),_persist_feature_json(), resolve_specify_init_dir() (+9 more)
-
-### Community 49 - "Secondary Edge Candidates"
-
+### Community 41 - "Community 41"
 Cohesion: 0.13
-Nodes (33): DiGraph, CandidateMode, compute_structural_features(), generate_secondary_edge_candidates(), iter_candidate_batches(), iter_secondary_edge_candidates(), _node_heads(), _overlaps() (+25 more)
+Nodes (29): check-prerequisites.sh script, check_dir(), check_file(), find_specify_root(), format_speckit_command(), get_current_branch(), get_feature_paths(), get_invoke_separator() (+21 more)
 
-### Community 50 - "UniRST Predictor Logic"
-
+### Community 42 - "Community 42"
 Cohesion: 0.10
-Nodes (15): Robust string-to-bool conversion used in configs., str2bool(), PredictorUniRST, Data, device, dtype, txt (published) → JSON (native) → legacy pickle (labels only)., Load ``relation_table_<variant>.txt`` using corpus aliases. (+7 more)
+Nodes (14): Data, One batched parser example. Field order matches the historical constructor., collect(), DataManager, Any, Node, Path, :param corpus: str - from {'GUM', 'RST-DT', 'RuRSTB', 'RST-DT-tr',} :param… (+6 more)
 
-### Community 51 - "DocLang Table Harvesting"
+### Community 43 - "Community 43"
+Cohesion: 0.14
+Nodes (31): _device_from_legacy_int(), _device_from_spec(), DeviceProbe, device, Reproduce the historical ``cuda_device: int`` selection exactly. ``-1`` -> CPU.…, Resolve the compute device from the string API (or the deprecated int).…, Immutable snapshot of which accelerators the host exposes. Production code uses…, Probe the real host (CUDA, then MPS, else CPU-only). (+23 more)
 
-Cohesion: 0.08
-Nodes (34): _element_layer(), harvest_doclang_tables(), _list_items(), _Element,_ElementTree, TableHarvest, Yield ``(marker, item_text)`` for each ``<ldiv/>`` in a ``<list>`` body. Item…, Yield ``(marker, kind, text, row, col)`` per non-empty cell in a ``<table>``.… (+26 more)
+### Community 44 - "Community 44"
+Cohesion: 0.10
+Nodes (26): CandidateDocumentSelection, CandidateSelectionReceipt, Complete-versus-selected counts for one already-partitioned document., Hashed evidence that only train candidates were sampled., main(), Derive the raw eRST relation inventory from the official GUM train partition., Persist a text-free train-derived raw relation inventory., LoadedGumCorpus (+18 more)
 
-### Community 52 - "Docling Text Harvesting"
-
-Cohesion: 0.12
-Nodes (34): harvest_docling_text(), HarvestResult, Produce the main document harvest with per-span self_ref mapping. Args: doc: a…, markdown_doc(), pdf_doc(), pptx_doc(), DoclingDocument, fixture (+26 more)
-
-### Community 53 - "DMRST Tree Utils"
-
-Cohesion: 0.16
-Nodes (30): RST tree node used by the DMRST corpus readers., SpanNode, _apply_node_content(), binarizeTreeRight(), binarizeTreeRightThiago(), bTree(), cleanChildren(), correctThiago() (+22 more)
-
-### Community 54 - "Docling Error Handling"
-
+### Community 45 - "Community 45"
 Cohesion: 0.09
-Nodes (24): ``parse_docling`` entry point — load → harvest → boundaries → parse → flatten.…, DoclingRstError, EmptyDoclingError, EmptyHarvestError, InputTooLargeError, Exception, Custom exceptions for Docling-native RST parsing., The harvest produced no text (e.g. a tables-only document). (+16 more)
+Nodes (25): OntologyAdapter, Return canonical Central ontology URI for a coarse discourse concept., Return canonical Central ontology URI for a nuclearity pattern., Return canonical document-scoped URI for a discourse unit node., Adapts and resolves model outputs and corpus labels against the pinned ontology., Strip embedded (-e) and nuclearity (-s/-n) suffixes from RST-DT labels., Resolve a raw corpus label to its canonical label and coarse concept., load_ontology_lock() (+17 more)
 
-### Community 55 - "Parser Batch Data"
+### Community 46 - "Community 46"
+Cohesion: 0.06
+Nodes (32): schema_version, additionalProperties, pattern, type, pattern, type, type, type (+24 more)
 
-Cohesion: 0.11
-Nodes (20): Data, One batched parser example. Field order matches the historical constructor., calc_metrics(), get_batch_metrics(), get_eval_data_parseval(), get_eval_data_rst_parseval(), get_macro_metrics(), get_measurement() (+12 more)
-
-### Community 56 - "Discourse Signal Models"
-
-Cohesion: 0.12
-Nodes (26): DiscourseSignal, BaseModel, Immutable identity of the detector or source that produced a signal., Typed, anchored discourse signal; overlaps are explicitly permitted., SignalDetectorProvenance, How a discourse signal entered the analysis., SignalDetectionMethod, eRST graph completer: secondary-edge candidate generation and signal anchoring. (+18 more)
-
-### Community 57 - "RST Structure UI"
-
+### Community 47 - "Community 47"
 Cohesion: 0.18
-Nodes (30): act(), add_node(), count_children(), count_multinuc_children(), count_span_children(), create_node_div(), crel(), delete_node() (+22 more)
+Nodes (31): act(), add_node(), count_children(), count_multinuc_children(), count_span_children(), create_node_div(), crel(), delete_node() (+23 more)
 
-### Community 58 - "Public Parser API"
-
+### Community 48 - "Community 48"
 Cohesion: 0.08
-Nodes (19): Parser, Public façade for the DMRST and UniRST parser families. The family is resolved…, Parse a document using predefined EDUs., parser(), fixture, Construct gumrrg parser once for the slow tests., parser_cpu(), fixture (+11 more)
+Nodes (17): Parser, Return the safe recursive-analysis capacity in the parser's limiting unit., Public façade for the DMRST and UniRST parser families. The family is resolved…, Parse a document using predefined EDUs., parser_cpu(), fixture, Real DMRST end-to-end model parsing into a typed RstAnalysis contract., Real UniRST end-to-end multilingual model parse into RstAnalysis. (+9 more)
 
-### Community 59 - "Pydantic Tree Serialization"
-
-Cohesion: 0.12
-Nodes (26): Any, DiscourseUnit, BaseModel, DiscourseUnit, PydanticDiscourseUnit, Typed Pydantic model for RST trees — optional, requires the ``pydantic`` extra.…, Validated, JSON-serialisable representation of one DiscourseUnit RST tree node.…, Build a ``PydanticDiscourseUnit`` from a ``DiscourseUnit`` tree (recursive). (+18 more)
-
-### Community 60 - "DMRST Predictor Logic"
-
+### Community 49 - "Community 49"
 Cohesion: 0.11
-Nodes (16): PredictorDMRST, Any, Data, device, dtype, Path, Takes data with word level tokenization, run current transformer tokenizer and…, Splits a batch into multiple smaller with given size. (+8 more)
+Nodes (11): collect(), DataManager, Node, Path, :param corpus: str - from {'GUM', 'RST-DT', 'RuRSTB'} :param cross_validation:…, One-way import of a published HF pickle → relation labels only., Makes self.mixed_train_* versions with 100% train files from first language and…, Take all rs3 documents and save them in the same directory as *.edus and *.lisp… (+3 more)
 
-### Community 61 - "Markdown Loader Logic"
+### Community 50 - "Community 50"
+Cohesion: 0.13
+Nodes (22): ConversionActivity, ProductionIngestor, One in-process authority for production source preparation and analysis., RecordingParser, test_analysis_uses_canonical_prepared_document_and_disables_cache_for_mutable_parser(), test_empty_primary_discourse_returns_explicit_status_without_parser_call(), ImmutableEmptyParser, Path (+14 more)
 
+### Community 51 - "Community 51"
 Cohesion: 0.10
 Nodes (28): build_parser(), load_markdown(), LoadResult, Tokenise a markdown source string into a ``markdown-it-py`` token stream. The…, The output of ``load_markdown``. ``tokens`` is the body token stream (front-…, Construct a configured ``MarkdownIt`` instance. The ``front_matter`` plugin is…, Tokenise ``source_text`` and split out the YAML front-matter., MarkdownIt (+20 more)
 
-### Community 62 - "Checkpoint Metadata Evidence"
-
+### Community 52 - "Community 52"
 Cohesion: 0.13
-Nodes (28): ErstCheckpointLicenses, ErstCheckpointMetrics, ErstCheckpointResearchEvidence, ErstFeatureSchema, Content identities for every feature and decoding contract., Immutable research authorities used to construct a checkpoint., Official secondary, calibration, runtime, and parity evidence., Licence and release-policy evidence carried by every bundle. (+20 more)
+Nodes (27): Unpickler that only reconstructs inventory leaf types + containers.…, RestrictedUnpickler, _EvilReduce, _local_shell(), parametrize, Path, Adversarial / inventory-load tests for UniRST pickle handling. No HF downloads,…, A planted eval-gadget pickle must not load; loader returns None. (+19 more)
 
-### Community 63 - "Neural Secondary Scorer"
+### Community 53 - "Community 53"
+Cohesion: 0.11
+Nodes (20): Counter, DirectedSpanKey, K, main(), Path, Smoke-iterate Docling JSON fixtures via docling-core's canonical walker. Phase…, smoke_iterate(), UnorderedSpanKey (+12 more)
 
-Cohesion: 0.10
-Nodes (19): AttentionPooling, BoundaryAwareSpanEncoder, NeuralSecondaryEdgeScorer, device, dtype, Tensor, Neural Secondary Edge Scorer with boundary-aware span pooling and asymmetric…, Learned attention pooling over sequence representations. (+11 more)
+### Community 54 - "Community 54"
+Cohesion: 0.11
+Nodes (9): LinearSegmenter, PointerSegmenter, device, Tensor, ToNySegmenter, parametrize, PyTorch RNN dropout is inter-layer only. A 1-layer LSTM with non-zero dropout…, test_tony_one_layer_lstm_does_not_warn() (+1 more)
 
-### Community 64 - "Format Analysis Schema"
-
-Cohesion: 0.12
-Nodes (20): FormatRstAnalysis, Composite analysis for structured documents (Docling, DocLang, Markdown)., DoclangRstResult, Any, Top-level output of ``parse_doclang``., Return JSON-shaped plain data., Serialize deterministically without non-JSON dataclass values., Project through the single shared ``RstAnalysis`` conversion. (+12 more)
-
-### Community 65 - "BiMPM Classifier Modules"
-
-Cohesion: 0.12
-Nodes (13): DefaultPlusBiMPMClassifier, PointerAtten, Default classifier takes as input averaged DU representations, BiMPM computes…, DecoderRNN, DefaultPlusBiMPMClassifier, PointerAtten, Tensor, Default classifier takes as input averaged DU representations, BiMPM computes… (+5 more)
-
-### Community 66 - "End-to-End Smoke Tests"
-
-Cohesion: 0.15
-Nodes (24): _assert_tree_aligned(),_check(), _check_from_edus(),_check_parse_rst(), _collect_leaves(), _expect_raises(), main(), Path (+16 more)
-
-### Community 67 - "Result Caching Logic"
-
+### Community 55 - "Community 55"
 Cohesion: 0.14
-Nodes (23): _coerce(), dataclass_from_dict(), load_cached(), normalize_source_basename(), Any, Path, T, Optional on-disk result cache for the format-native entry points. Keyed on the… (+15 more)
+Nodes (26): CorpusAuthorityEntry, GumCorpusAuthority, One document assignment derived from immutable upstream authority., Hashed interpretation of pinned GUM split and licence authorities., Return the upstream authority entry for one exact document ID., test_authority_parser_rejects_missing_partition_or_inventory_marker(), _document_receipt(), _failure() (+18 more)
 
-### Community 68 - "Tree String Converter"
+### Community 56 - "Community 56"
+Cohesion: 0.21
+Nodes (14): FinalEvaluationCorpusPayload, Test-only payload created after champion freeze, with no train/dev source paths., FrozenEvaluationAdapter, _PeftModelType, CandidateScoringFunction, device, Module, Path (+6 more)
 
+### Community 57 - "Community 57"
+Cohesion: 0.14
+Nodes (24): CorpusDocumentReceipt, CorpusLicenseClass, CorpusLoadFailure, CorpusLoadReceipt, HardNegativeStrategy, StrEnum, Pydantic boundaries for private GUM/eRST corpus loading and partitioning., Sanitized failure for one source or corpus-level load step. (+16 more)
+
+### Community 58 - "Community 58"
+Cohesion: 0.15
+Nodes (23): Any, BaseModel, PydanticDiscourseUnit, Typed Pydantic model for RST trees — optional, requires the ``pydantic`` extra.…, Validated, JSON-serialisable representation of one DiscourseUnit RST tree node.…, Build a ``PydanticDiscourseUnit`` from a ``DiscourseUnit`` tree (recursive)., JSON-serialisation helpers for the RST trees produced by ``isanlp_rst``. The…, Serialise a ``DiscourseUnit`` RST tree to a nested, JSON-ready dict.… (+15 more)
+
+### Community 59 - "Community 59"
+Cohesion: 0.10
+Nodes (14): CandidateIdentityProbe, CorpusSourceIdentity, datetime, field_validator, Text-free identity for one source in a private corpus checkout., Determinism evidence for one private document without candidate text., _validate_relative_source_path(), main() (+6 more)
+
+### Community 60 - "Community 60"
+Cohesion: 0.16
+Nodes (18): Minimal legacy parser-input leaf record required for safe model inventory…, dump_relation_inventory(), _ensure_parent_module(), ensure_unirst_module_aliases(), import_relation_table_from_legacy_pickle(), load_relation_inventory_json(), parse_corpora_config(), Path (+10 more)
+
+### Community 61 - "Community 61"
+Cohesion: 0.12
+Nodes (23): HardNegativeSamplingConfig, Deterministic training-only hard-negative selection configuration., compute_edge_metrics(), epoch_improves(), Any, Path, Training script for fine-tuning NeuralSecondaryEdgeScorer on GUM eRST treebanks., Reject zero-step runs before a scheduler or success receipt can exist. (+15 more)
+
+### Community 62 - "Community 62"
+Cohesion: 0.13
+Nodes (9): Any, device, dtype, Path, Validate and load one immutable child of the production model store., Inspect a local checkpoint directory and infer the parser family. Returns…, Read ``path`` as JSON. Returns ``None`` if the file is missing, unreadable, or…, If both signatures are present, UniRST wins (more specific). (+1 more)
+
+### Community 63 - "Community 63"
+Cohesion: 0.13
+Nodes (10): PredictorUniRST, Data, device, dtype, txt (published) → JSON (native) → legacy pickle (labels only)., Load ``relation_table_<variant>.txt`` using corpus aliases., Count distinct ``label_classifiers.<N>.*`` indices in a state dict. Returns…, Splits a batch into multiple smaller batches of the given size. Note:… (+2 more)
+
+### Community 64 - "Community 64"
+Cohesion: 0.15
+Nodes (24): _assert_tree_aligned(), _check(), _check_from_edus(), _check_parse_rst(), _collect_leaves(), _expect_raises(), main(), Path (+16 more)
+
+### Community 65 - "Community 65"
+Cohesion: 0.14
+Nodes (13): GraphAttentionConfig, Complete-primary-tree edge-featured graph-attention configuration., _edge_feature(), _EdgeGraphAttentionLayer, GraphAttentionAdapter, _GraphScorer, device, Path (+5 more)
+
+### Community 66 - "Community 66"
 Cohesion: 0.13
 Nodes (15): DUConverter, Parses the tree predictions given in a string format. Args: description: Tree…, Takes the model outputs and converts them into isanlp binary trees. Returns:…, Selects the discourse unit description for given constituent. Args: start: DU…, Constructs the DiscourseUnit binary tree. Args: root: Index of the root…, Produces EDUs in isanlp format from the model predictions. Args: tokens: List…, Unit tests for ``isanlp_rst.utils.du_converter.DUConverter``. Focuses on the…, When the first gold token already covers the whitespace-stripped predicted… (+7 more)
 
-### Community 69 - "DMRST Training Runner"
-
+### Community 67 - "Community 67"
 Cohesion: 0.10
-Nodes (11): MultipleRunnerGeneral, Script for multiple runs of experiments. For monolingual experiments run: #…, Running training with second language injection of ``mixed`` %, :param corpus: (str) - 'GUM' or 'RST-DT' :param lang: (str) - 'en' or 'ru'…, Discriminator, device, Module, Tensor (+3 more)
+Nodes (10): PayloadT, test_disabled_mps_sampler_has_no_measurement_side_effect(), MpsMemorySampler, Measured MPS allocation sampling for independent experiment runs., Sample driver allocations during a run because PyTorch exposes no MPS peak API., ExperimentIndexStore, Path, Atomic, append-only receipt and index persistence. (+2 more)
 
-### Community 70 - "Relation Inventory IO"
-
-Cohesion: 0.13
-Nodes (17): _ensure_parent_module(), ensure_unirst_module_aliases(), load_relation_inventory_json(), parse_corpora_config(), Relation-inventory I/O for UniRST. Native format is JSON (or a plain…, Register Elena-era module paths so legacy pickles can unpickle ParserInput., ``config['data']['corpora']`` is sometimes a Python-literal string., relation_table_from_json_obj() (+9 more)
-
-### Community 71 - "Source Identity Validation"
-
-Cohesion: 0.11
-Nodes (12): CandidateIdentityProbe, CorpusSourceIdentity, field_validator, Text-free identity for one source in a private corpus checkout., Determinism evidence for one private document without candidate text.,_validate_relative_source_path(), main(), Path (+4 more)
-
-### Community 72 - "EDU Segmenter Models"
-
-Cohesion: 0.14
-Nodes (5): LinearSegmenter, PointerSegmenter, device, Tensor, ToNySegmenter
-
-### Community 73 - "Markdown Text Harvester"
-
+### Community 68 - "Community 68"
 Cohesion: 0.12
-Nodes (19): harvest_markdown_text(), _inline_text(), _InlineToken,_line_range(), HarvestResult, Protocol, Harvest text from a markdown token stream for RST parsing. Two harvesters: -…, Produce the main document harvest with per-span ``block_ref`` mapping. Args:… (+11 more)
+Nodes (14): Group, An elementary discourse unit (EDU) leaf element for RS3 XML., A composite structural group element for RS3 XML., A root group element for RS3 XML., Register transparent `isanlp.annotation_rst` in sys.modules if not present., register_isanlp_compat(), Root, Segment (+6 more)
 
-### Community 74 - "EDU Segmenter Models"
+### Community 69 - "Community 69"
+Cohesion: 0.11
+Nodes (15): AttentionPooling, BoundaryAwareSpanEncoder, device, dtype, PreTrainedTokenizerBase, Tensor, Learned attention pooling over sequence representations., Move the complete scorer while keeping its runtime contract synchronized. (+7 more)
 
+### Community 70 - "Community 70"
+Cohesion: 0.13
+Nodes (19): ExperimentConfigurationBundle, BaseModel, Exact typed configuration for all ten mandatory systems., build_experiment_protocol(), _environment_lock_sha256(), BaseModel, Path, Build and freeze the executable eRST experiment protocol. (+11 more)
+
+### Community 71 - "Community 71"
+Cohesion: 0.16
+Nodes (20): DoclingDocument, PictureItem, main(), Any, Phase 0 steps 6 and 7 — long-input smoke and determinism check. Step 6: parse a…, Build a structural signature of a tree for equality comparison. Captures…, tree_signature(), collect_leaves() (+12 more)
+
+### Community 72 - "Community 72"
 Cohesion: 0.14
 Nodes (5): LinearSegmenter, PointerSegmenter, device, Tensor, ToNySegmenter
 
-### Community 75 - "GUM Gold Validation"
-
+### Community 73 - "Community 73"
 Cohesion: 0.13
-Nodes (21): gold_edus(),_gold_path(), gumrrg_cpu(), fixture, parametrize, Path, slow, GUM gold RST fixtures — real documents with human trees to compare against. The… (+13 more)
+Nodes (11): ParserInput, Any, Path, Mutable historical parser record with no corpus or training behavior., Return the parser's exact limiting-unit count for this materialized input., Data, :param number: int - fold number :param lang: str - (main) language :param…, :param lang: str - (main) language :param mixed: int - percentage for other… (+3 more)
 
-### Community 76 - "Format Projection Tests"
+### Community 74 - "Community 74"
+Cohesion: 0.13
+Nodes (21): gold_edus(), _gold_path(), gumrrg_cpu(), fixture, parametrize, Path, slow, GUM gold RST fixtures — real documents with human trees to compare against. The… (+13 more)
 
-Cohesion: 0.18
-Nodes (18): DoclingRstResult, Any, Return JSON-shaped plain data., Serialize deterministically without non-JSON dataclass values., Top-level output of ``parse_docling``., _doclang_projection(), _docling_projection(), _format_analyses() (+10 more)
+### Community 75 - "Community 75"
+Cohesion: 0.13
+Nodes (14): getLabelOrdered(), nucs_and_rels(), Any, ArrayLike, Get the right order of lable for stacks manner. E.g. [8,3,9,2,6,10,1,5,7,11,4]…, orthogonal_(), Tensor, Device-aware orthogonal weight initialisation for Apple Silicon MPS. PyTorch's… (+6 more)
 
-### Community 77 - "Parser Family Resolution"
+### Community 76 - "Community 76"
+Cohesion: 0.12
+Nodes (15): test_generative_outcomes_are_unique_and_include_explicit_no_edge(), GenerativeDecoderAdapter, _label_tokens(), _load_peft(), _PeftApi, device, Module, Path (+7 more)
 
-Cohesion: 0.15
-Nodes (6): Any, device, dtype, When both family and version are set, version must belong to family., Explicit family must match detectable signatures when present., TestResolveFamily
+### Community 77 - "Community 77"
+Cohesion: 0.13
+Nodes (6): _canonical_model_hash(), datetime, field_validator, model_validator, One model-neutral signal-aware pairwise candidate., SignalMarkedExample
 
-### Community 78 - "Secondary Scorer Training"
+### Community 78 - "Community 78"
+Cohesion: 0.25
+Nodes (18): CorpusFailureType, Stable machine-readable corpus failure categories., _authority(), _corpus_root(), Path, Authority-backed, fail-closed GUM/eRST corpus loading tests., test_authority_parser_assigns_official_partitions_and_conservative_licences(), test_document_with_no_sufficient_signal_cannot_be_accepted() (+10 more)
 
-Cohesion: 0.15
-Nodes (19): compute_edge_metrics(), epoch_improves(), Any, Path, Training script for fine-tuning NeuralSecondaryEdgeScorer on GUM eRST treebanks., Reject zero-step runs before a scheduler or success receipt can exist., Treat the first finite metric as the baseline, including an exact zero., Reject absent, empty, pickle-capable, or unreadable training state. (+11 more)
+### Community 79 - "Community 79"
+Cohesion: 0.13
+Nodes (9): DecoderRNN, DefaultLabelClassifier, DefaultPlusBiMPMClassifier, PointerAtten, device, Tensor, :param transformer: transformers.PreTrainedModel - LM encoder :param word_dim:…, :param input_size: int - input size :param hidden_size: int - hidden size of… (+1 more)
 
-### Community 79 - "Parse Result Helpers"
-
-Cohesion: 0.18
-Nodes (17): DiscourseUnit, Parse text and return a typed RST root instead of the legacy mapping payload.…, extract_root_tree(), ParseFailedError, Any, RuntimeError, Helpers for unpacking ``Parser`` / predictor call results., Return ``result['rst'][0]``, or raise :class:`ParseFailedError`. Preferred over… (+9 more)
-
-### Community 80 - "GUM Gold Validator"
-
+### Community 80 - "Community 80"
 Cohesion: 0.16
-Nodes (11): GumGoldValidator, GumValidationReport, DiscourseUnit, Path, Validator that verifies model predictions or processed files against GUM gold…, Validate an RstAnalysis against a GUM gold fixture., Validate a legacy DiscourseUnit tree against a GUM gold fixture., Validate a processed JSON or RS4 file against a GUM gold fixture. (+3 more)
+Nodes (10): GumGoldValidator, GumValidationReport, Path, Validator that verifies model predictions or processed files against GUM gold…, Validate an RstAnalysis against a GUM gold fixture., Validate a legacy DiscourseUnit tree against a GUM gold fixture., Validate a processed JSON or RS4 file against a GUM gold fixture., Run the neural parser against a GUM gold document and validate results. (+2 more)
 
-### Community 81 - "DocLang Source Provenance"
+### Community 81 - "Community 81"
+Cohesion: 0.12
+Nodes (15): test_temperature_scaler_handles_extreme_overflow_underflow_logits(), test_temperature_scaler_handles_uniform_zero_logits(), test_temperature_scaler_homogeneous_labels_does_not_crash(), Path, test_temperature_scaler_fit_and_predict(), _golden_section_search_1d(), Any, ndarray (+7 more)
 
+### Community 82 - "Community 82"
 Cohesion: 0.13
-Nodes (19): Any, Capture lightweight provenance from the parsed tree. Reports: declared…, _source_origin(), parse_doclang_xml(), _ElementTree, Path, Parse the ``.dclg`` file at ``path`` and return the ElementTree. Uses a…, ``ok_comprehensive.dclg`` has ``<head>`` with several children (title, author,… (+11 more)
+Nodes (10): DiscourseUnit, Recursively populate the text attribute from full_text using node character…, A node in a binary Rhetorical Structure Theory (RST) discourse tree., Recursively clear the text attribute across the tree to save memory., Reconstruct a ``DiscourseUnit`` tree from this model (recursive)., DummyPredictor, test_discourse_unit_slotted_attributes_strictly_enforced(), Path (+2 more)
 
-### Community 82 - "Checkpoint Family Detection"
+### Community 83 - "Community 83"
+Cohesion: 0.19
+Nodes (16): Parse text and return a typed RST root instead of the legacy mapping payload.…, extract_root_tree(), ParseFailedError, Any, RuntimeError, Helpers for unpacking ``Parser`` / predictor call results., Return ``result['rst'][0]``, or raise :class:`ParseFailedError`. Preferred over…, Raised when a parse result has no usable RST root tree. (+8 more)
 
-Cohesion: 0.18
-Nodes (5): Path, Inspect a local checkpoint directory and infer the parser family. Returns…, Read ``path`` as JSON. Returns ``None`` if the file is missing, unreadable, or…, If both signatures are present, UniRST wins (more specific)., TestDetectFamilyFromModelDir
-
-### Community 83 - "Parsing Network Logic"
-
+### Community 84 - "Community 84"
 Cohesion: 0.19
 Nodes (9): ParsingNet, Any, device, Module, Tensor, Input: input_sentence: [batch_size, length] input_EDU_breaks: e.g.…, :param cur_encoder_outputs: torch.FloatTensor - EDU embeddings of shape…, :param token_ids: list - token ids of shape (n_tokens,) :param edu_breaks: list… (+1 more)
 
-### Community 84 - "Parsing Network Logic"
+### Community 85 - "Community 85"
+Cohesion: 0.19
+Nodes (15): Adversarial and numerical edge-case tests for calibration math. Tests…, test_calibration_summary_handles_empty_inputs(), test_compute_calibration_error_boundary_cases(), Unit tests for offline probability calibration and temperature scaling., test_compute_calibration_error_perfect(), test_calibration_ece_hand_computed(), test_calibration_error_mismatched_and_empty(), CalibrationBin (+7 more)
 
+### Community 86 - "Community 86"
+Cohesion: 0.22
+Nodes (8): BiMPM, device, Tensor, :param v1: (batch, seq_len, hidden_size) :param v2: (batch, seq_len,…, :param v1: (batch, seq_len1, hidden_size) :param v2: (batch, seq_len2,…, :param v1: (batch, seq_len1, hidden_size) :param v2: (batch, seq_len2,…, Inputs can be of infinite length, hence BiMPM matching can cause OOM. This is a…, LSTM
+
+### Community 87 - "Community 87"
 Cohesion: 0.18
 Nodes (9): ParsingNet, Any, device, Module, Tensor, Input: input_sentence: [batch_size, length] input_EDU_breaks: e.g.…, :param cur_encoder_outputs: torch.FloatTensor - EDU embeddings of shape…, :param token_ids: list - token ids of shape (n_tokens,) :param edu_breaks: list… (+1 more)
 
-### Community 85 - "BiMPM Attention Module"
+### Community 88 - "Community 88"
+Cohesion: 0.16
+Nodes (14): MonkeyPatch, parametrize, Isolated wheel runner fails closed before executing ambiguous candidates., test_baseline_runner_requires_full_immutable_commit(), test_candidate_runner_rejects_invalid_determinism_run_counts(), test_candidate_runner_rejects_nonexistent_wheel(), test_candidate_runner_requires_model_store_and_release_as_one_identity(), _git() (+6 more)
 
-Cohesion: 0.25
-Nodes (7): BiMPM, device, Tensor, :param v1: (batch, seq_len, hidden_size) :param v2: (batch, seq_len,…, :param v1: (batch, seq_len1, hidden_size) :param v2: (batch, seq_len2,…, Inputs can be of infinite length, hence BiMPM matching can cause OOM. This is a…, LSTM
+### Community 89 - "Community 89"
+Cohesion: 0.21
+Nodes (16): _analysis(), Promotion assessment protects EDU quality and structural-boundary gains., test_edu_boundary_f1_detects_regression_without_using_source_text(), test_preparation_identity_requires_exact_contract_preparation_and_text(), test_structural_gate_counts_pre_feature_cross_boundary_relation_and_macro_fix(), test_structural_gate_rejects_cross_boundary_relation_mislabelled_local(), assess_candidate_preparation(), _edu_boundary_f1() (+8 more)
 
-### Community 86 - "Result Cache Identity"
-
+### Community 90 - "Community 90"
 Cohesion: 0.18
-Nodes (14): Compute a stable hex key from source bytes + sorted knob parts. Values are…, result_cache_key(), _Node, parametrize, Path, Result-cache identity and persisted provenance regressions.,_StubParser, test_behavior_option_change_forces_cache_miss() (+6 more)
+Nodes (6): Exporter, ForestExporter, Path, Serialize this discourse tree to RS3 XML format., RS3 XML document exporter for a single DiscourseUnit tree., RS3 XML exporter for a collection of DiscourseUnit trees.
 
-### Community 87 - "Candidate Selection Logic"
+### Community 92 - "Community 92"
+Cohesion: 0.21
+Nodes (3): When both family and version are set, version must belong to family., Explicit family must match detectable signatures when present., TestResolveFamily
 
-Cohesion: 0.20
-Nodes (14): CandidateDocumentSelection, CandidateSelectionReceipt, Complete-versus-selected counts for one already-partitioned document., Hashed evidence that only train candidates were sampled., _candidate_identity(), candidate_identity_sha256(), _document_selection(), _hardness_key() (+6 more)
+### Community 93 - "Community 93"
+Cohesion: 0.22
+Nodes (14): _candidate(), parametrize, Promotion authority rejects mutable, contradictory, or waiver-bearing evidence., _source_result(), test_candidate_identity_rejects_changed_or_partial_digests(), test_promotion_decision_cannot_contradict_a_failed_gate_or_inspection(), CandidateIdentity, PromotionDecision (+6 more)
 
-### Community 88 - "Baseline Association Serialization"
-
-Cohesion: 0.28
-Nodes (14): BaselineDirection, BaselineSignalLocation, PublishedBaselineExample, One exact association-classifier input before deterministic serialization., Direction token used by the released association serialization., Span containing the signal targeted by one association example., _marked_text(), Deterministic serialization for the published eRST association baseline. (+6 more)
-
-### Community 89 - "DMRST Binary Tree"
-
-Cohesion: 0.20
-Nodes (8): collect(), BinaryTree, Node, Path, :return: convert a dmrg file into a string., :return: find a index which separate the left and right child., :return: a binary tree., :param text_file_path: text contains sentence and paragraph information. :param…
-
-### Community 90 - "Universal Binary Tree"
-
-Cohesion: 0.20
-Nodes (8): collect(), BinaryTree, Node, Path, :return: convert a dmrg file into a string., :return: find a index which separate the left and right child., :return: a binary tree., :param text_file_path: text contains sentence and paragraph information. :param…
-
-### Community 91 - "Bottom-Up Transition Parser"
-
-Cohesion: 0.23
+### Community 94 - "Community 94"
+Cohesion: 0.22
 Nodes (8): _Node, ParsingNetBottomUp, Any, Tensor, Bottom-up transition-based parser. This module reuses the encoder, segmenters…, Reconstructs the gold tree from pre-order traversal., Return gold transition sequence in postorder., ParsingNet
 
-### Community 92 - "Schema Compatibility Tests"
+### Community 95 - "Community 95"
+Cohesion: 0.24
+Nodes (13): inspect_candidate_outputs(), inspection_status_by_id(), Path, Fail-closed direct inspection of private candidate outputs., Inspect every persisted preparation/result without exporting source text., _segments_reconstruct(), _git(), main() (+5 more)
 
-Cohesion: 0.17
-Nodes (15): parametrize, Path, Compatibility guard: do we still read CURRENT Docling / DocLang output? The…, Return the XML namespace declared on a fixture's root element (or '')., Guard against the guard silently no-opping if fixtures are moved/renamed — an…, Each fixture's declared Docling schema version must equal the installed…, The installed docling-core must validate-load each fixture AND our harvester…, Our ``DOCLANG_NS`` constant must match the namespace the installed doclang… (+7 more)
+### Community 96 - "Community 96"
+Cohesion: 0.20
+Nodes (8): BinaryTree, Node, Path, Offline DMRST binary-tree corpus conversion., :return: convert a dmrg file into a string., :return: find a index which separate the left and right child., :return: a binary tree., :param text_file_path: text contains sentence and paragraph information. :param…
 
-### Community 93 - "Decoder RNN Modules"
+### Community 97 - "Community 97"
+Cohesion: 0.20
+Nodes (8): BinaryTree, Node, Path, Offline UniRST binary-tree corpus conversion., :return: convert a dmrg file into a string., :return: find a index which separate the left and right child., :return: a binary tree., :param text_file_path: text contains sentence and paragraph information. :param…
 
-Cohesion: 0.15
-Nodes (6): DecoderRNN, DefaultLabelClassifier, device, Tensor, :param transformer: transformers.PreTrainedModel - LM encoder :param word_dim:…, :param input_size: int - input size :param hidden_size: int - hidden size of…
+### Community 98 - "Community 98"
+Cohesion: 0.32
+Nodes (13): HfTokenSource, StrEnum, Supported Hugging Face token environment variables in precedence order., _clear_hf_tokens(), CaptureFixture, MonkeyPatch, Path, Repository-root environment loading and Hugging Face credential precedence. (+5 more)
 
-### Community 94 - "Markdown Error Handling"
-
-Cohesion: 0.19
-Nodes (13): ``parse_markdown`` entry point — load → harvest → boundaries → parse → flatten.…, EmptyHarvestError, EmptyMarkdownError, InputTooLargeError, MarkdownRstError, Exception, Custom exceptions for Markdown-native RST parsing., The harvest produced no text (e.g. all knobs gated their content out). (+5 more)
-
-### Community 95 - "Runtime Provenance Helpers"
-
-Cohesion: 0.16
-Nodes (13): Shared runtime helpers for the format-native entry points. One home for the…, Backward-compatible name for installed semantic package version., Return the checkout commit, with dirty state, independently of SemVer., resolve_source_revision(), resolve_tool_version(), _clear_runtime_caches(), fixture, MonkeyPatch (+5 more)
-
-### Community 96 - "Wave 4 Integration"
-
-Cohesion: 0.16
-Nodes (12): _CapturingParser,_Node, MonkeyPatch, parametrize, Path, Wave 4 — construct-path kwargs + formats-extra isolation., Core ``isanlp_rst.parser`` must not require the formats extra., Stand-in for ``Parser`` that records constructor kwargs. (+4 more)
-
-### Community 97 - "Tree Flattening Utils"
-
-Cohesion: 0.16
-Nodes (14): flatten_tree(),_make_edu(), Any, Boundary, HarvestSpan, RstEdu, RstRelation, Flatten a DiscourseUnit tree into ``(relations, edus)`` tuples. Ids are… (+6 more)
-
-### Community 98 - "Parser Integration Tests"
-
-Cohesion: 0.22
-Nodes (10): du_to_analysis(), Any, Convert an isanlp.annotation_rst.DiscourseUnit tree into a typed RstAnalysis., DummyPredictor, DiscourseUnit, MonkeyPatch, Unit tests for Parser.parse_document integration., test_du_to_analysis_nuclearity_and_relations() (+2 more)
-
-### Community 99 - "Viewer Security Hardening"
-
+### Community 99 - "Community 99"
 Cohesion: 0.32
 Nodes (13): rs3tohtml(), Create a private SQLite file for one render; unlink in ``finally``., _resolve_dbpath(), setup_db(), temporary_db(), Path, Viewer hardening: XXE posture, HTML escape, per-render SQLite., test_rs3tohtml_escapes_basename_in_header() (+5 more)
 
-### Community 100 - "BiMPM Encoder Module"
+### Community 100 - "Community 100"
+Cohesion: 0.25
+Nodes (10): _source(), test_gold_manifest_enforces_depth_forms_risks_and_rst_gold(), test_gold_manifest_rejects_shallow_set(), _EvidenceModel, GoldSetManifest, GoldSource, ProvenanceClass, BaseModel (+2 more)
 
-Cohesion: 0.15
-Nodes (11): _DistinctBiMpmEncoder, Any, Module, parametrize, Tensor, The MPS-safe elementwise reduction remains mathematically equivalent to GEMV., Capture the representations passed by the combined classifier., The right DU must use right BiMPM features and its own length. (+3 more)
+### Community 101 - "Community 101"
+Cohesion: 0.22
+Nodes (12): FixtureParityError, FixtureParityReceipt, _GithubEntry, _Manifest, BaseModel, RuntimeError, Verify local DocLang fixtures against an immutable upstream GitHub commit., Raised when local, manifest, and upstream fixture authority diverge. (+4 more)
 
-### Community 101 - "eRST Checkpoint Management"
-
-Cohesion: 0.15
-Nodes (11): ErstCheckpointComponent, ErstCheckpointFile, ErstCheckpointProvenance, BaseModel, One declared, content-addressed file in an eRST completion bundle., Reload contract for one explicit eRST completion component., Producer and immutable source identity for one bundle construction., Train-derived raw eRST labels with explicit ontology projections. (+3 more)
-
-### Community 102 - "RST Tree Construction"
-
+### Community 102 - "Community 102"
 Cohesion: 0.21
 Nodes (13): buildTree(), buildTreeThiago(), checkcontent(), convert_parens_in_rst_tree_str(), createtext(), processtext(), Preprocessing token list for filtering '(' and ')' in text (from DPLP, by…, Create text from a list of tokens (from DPLP, by Yangfeng Ji) :type lst: list… (+5 more)
 
-### Community 103 - "RST Quality Diagnostics"
+### Community 103 - "Community 103"
+Cohesion: 0.17
+Nodes (10): Build offset converter from word tokens and optional (start, end) pairs. If…, Best-effort alignment of already-tokenized `tokens` to raw `text`. Used when…, The fix: a missing token must raise rather than silently fall back., Token at the very end should match cleanly., test_guess_token_offsets_at_text_boundary(), test_guess_token_offsets_raises_on_miss(), test_guess_token_offsets_simple(), test_guess_token_offsets_token_longer_than_text() (+2 more)
 
-Cohesion: 0.29
-Nodes (12): _discover(), DocMetrics,_format_of(), main(),_metrics(), _parse(),_print_table(), Any (+4 more)
-
-### Community 104 - "DocLang Fixture Verification"
-
-Cohesion: 0.22
-Nodes (12): FixtureParityError, FixtureParityReceipt, _GithubEntry,_Manifest, BaseModel, RuntimeError, Verify local DocLang fixtures against an immutable upstream GitHub commit., Raised when local, manifest, and upstream fixture authority diverge. (+4 more)
-
-### Community 105 - "DMRST Label Ordering"
-
+### Community 104 - "Community 104"
 Cohesion: 0.21
-Nodes (10): getLabelOrdered(), nucs_and_rels(), Any, ArrayLike, Get the right order of lable for stacks manner. E.g. [8,3,9,2,6,10,1,5,7,11,4]…, parametrize, DMRST ``nucs_and_rels`` must match UniRST ``rpartition`` semantics., test_dmrst_ns_satellite_on_right() (+2 more)
+Nodes (5): Parse a document using predefined EDU boundaries., Any, Takes word-level tokenized data and converts it to transformer subword inputs., Parse text into an RST tree. Args: text: Original document text. tokens:…, Parses multiple texts in batched forward passes using UniRST. Args: texts:…
 
-### Community 106 - "RNN Sequence Encoder"
-
+### Community 105 - "Community 105"
 Cohesion: 0.23
 Nodes (6): EncoderRNN, Module, Input: [batch, length] Output: encoder_output: [batch, length, hidden_size]…, :param edu_embeddings: torch.FloatTensor - Subwords embeddings of shape…, Sliding window for encoding long sequences., Encodes the sequence of tokens, returns two matrices: for left and right texts.
 
-### Community 107 - "CRF Sequence Labeling"
-
+### Community 106 - "Community 106"
 Cohesion: 0.23
-Nodes (4): CRF, Conditional random field. modified from <https://github.com/kmkurn/pytorch-…>, Compute the conditional negative log likelihood of a sequence of tags given…, Find the most likely tag sequence using Viterbi algorithm. Args: emissions…
+Nodes (4): CRF, Conditional random field. modified from https://github.com/kmkurn/pytorch-…, Compute the conditional negative log likelihood of a sequence of tags given…, Find the most likely tag sequence using Viterbi algorithm. Args: emissions…
 
-### Community 108 - "Adversarial Discriminator"
-
+### Community 107 - "Community 107"
 Cohesion: 0.18
-Nodes (6): Discriminator, device, Module, Tensor, (batch, colors, height, width) (5, 3, 20, 80) 16 *19* 1 = 304, Discriminator used in adversarial learning; Based on the code from…
+Nodes (6): Discriminator, device, Module, Tensor, (batch, colors, height, width) (5, 3, 20, 80) 16 * 19 * 1 = 304, Discriminator used in adversarial learning; Based on the code from…
 
-### Community 109 - "RNN Sequence Encoder"
-
+### Community 108 - "Community 108"
 Cohesion: 0.23
 Nodes (6): EncoderRNN, Module, Input: [batch, length] Output: encoder_output: [batch, length, hidden_size]…, :param edu_embeddings: torch.FloatTensor - Subwords embeddings of shape…, Sliding window for encoding long sequences., Encodes the sequence of tokens, returns two matrices: for left and right texts.
 
-### Community 110 - "CRF Sequence Labeling"
-
+### Community 109 - "Community 109"
 Cohesion: 0.23
-Nodes (4): CRF, Conditional random field. modified from <https://github.com/kmkurn/pytorch-…>, Compute the conditional negative log likelihood of a sequence of tags given…, Find the most likely tag sequence using Viterbi algorithm. Args: emissions…
+Nodes (4): CRF, Conditional random field. modified from https://github.com/kmkurn/pytorch-…, Compute the conditional negative log likelihood of a sequence of tags given…, Find the most likely tag sequence using Viterbi algorithm. Args: emissions…
 
-### Community 111 - "Torch Dtype Normalization"
+### Community 110 - "Community 110"
+Cohesion: 0.23
+Nodes (5): range, MultipleRunnerGeneral, Offline DMRST multiple-run experiment orchestration. For monolingual…, Running training with second language injection of ``mixed`` %, :param corpus: (str) - 'GUM' or 'RST-DT' :param lang: (str) - 'en' or 'ru'…
 
+### Community 111 - "Community 111"
+Cohesion: 0.17
+Nodes (8): _CrossEncoder, CrossEncoderConfig, BaseModel, model_validator, Path, PreTrainedModel, Tensor, Frozen model, serialization, optimization, and decoding configuration.
+
+### Community 112 - "Community 112"
 Cohesion: 0.20
 Nodes (10): dtype, Normalise a dtype spec to a ``torch.dtype``. Accepts: * ``None`` -> ``float32``…, parametrize, Default is fp32 on every device — measured fp32 wins on MPS for typical inputs;…, test_resolve_dtype_default_is_float32(), test_resolve_dtype_passthrough(), test_resolve_dtype_string_parsing(), test_resolve_dtype_unknown_string_raises() (+2 more)
 
-### Community 112 - "Multi-Run Experiment Runner"
-
-Cohesion: 0.25
-Nodes (4): MultipleRunnerGeneral, Script for multiple runs of experiments. For monolingual experiments run: #…, Running training with second language injection of ``mixed`` %, :param corpora: corpus names, e.g. ['GUM'] or ['RST-DT'] :param lang: 'en' or…
-
-### Community 113 - "Default Label Classifier"
-
-Cohesion: 0.22
-Nodes (4): DefaultLabelClassifier, device, :param transformer: transformers.PreTrainedModel - LM encoder :param word_dim:…, :param input_size: int - input size :param hidden_size: int - hidden size of…
-
-### Community 114 - "Repository Cleanup Script"
-
-Cohesion: 0.31
-Nodes (10): collect_junk(),_display(), is_junk_dir(), is_junk_file(), main(), Path, Remove regenerable junk from the repo: bytecode, tool caches, temp files. Does…, Delete ``paths``. Returns the number of paths acted on. (+2 more)
-
-### Community 115 - "Docling Table Harvesting"
-
+### Community 113 - "Community 113"
 Cohesion: 0.20
-Nodes (10): harvest_docling_tables(), DoclingDocument, TableHarvest, Produce one ``TableHarvest`` per ``TableItem``, in ``doc.tables`` order. Cell…, Each cell span must carry kind + row/col from TableCell., Cell refs must resolve mechanically against the Docling JSON — the path…, test_table_harvest_carries_grid_metadata(), test_table_harvest_offsets_tile_full_text() (+2 more)
+Nodes (6): Discriminator, device, Module, Tensor, (batch, colors, height, width) (5, 3, 20, 80) 16 * 19 * 1 = 304, Discriminator used in adversarial learning; Based on the code from…
 
-### Community 116 - "Cleanup Unit Tests"
+### Community 114 - "Community 114"
+Cohesion: 0.20
+Nodes (10): IO, PathLike, Render an RST tree and, optionally, display it inline. This is a light-weight…, Convert an ``.rs3`` file into HTML. Parameters ---------- rs3_path: Path to the…, render(), to_html(), Path, Unit tests for viewer convenience helpers in ``isanlp_rst``. (+2 more)
 
+### Community 115 - "Community 115"
+Cohesion: 0.27
+Nodes (10): find_cdu(), _is_leaf(), Any, Analytical helpers for parsed RST trees. These functions operate on…, Classify an RST relation label as subject-matter or presentational. Follows…, Compute structural diagnostics for an RST tree. Returned dict keys: ``depth``…, Locate the Central Discourse Unit (CDU) of an RST tree. Descends from the root…, relation_category() (+2 more)
+
+### Community 116 - "Community 116"
+Cohesion: 0.31
+Nodes (10): collect_junk(), _display(), is_junk_dir(), is_junk_file(), main(), Path, Remove regenerable junk from the repo: bytecode, tool caches, temp files. Does…, Delete ``paths``. Returns the number of paths acted on. (+2 more)
+
+### Community 117 - "Community 117"
+Cohesion: 0.25
+Nodes (10): _FakeNode, _Predictor, Stand-in for isanlp.DiscourseUnit with the attributes used by remap., Minimal concrete subclass (BasePredictor is ABC)., Unary node = DUConverter bug; surface it rather than patch it., test_remap_tree_offsets_binary(), test_remap_tree_offsets_leaf(), test_remap_tree_offsets_unary_raises() (+2 more)
+
+### Community 118 - "Community 118"
+Cohesion: 0.25
+Nodes (4): MultipleRunnerGeneral, Offline UniRST multiple-run experiment orchestration. For monolingual…, Running training with second language injection of ``mixed`` %, :param corpora: corpus names, e.g. ['GUM'] or ['RST-DT'] :param lang: 'en' or…
+
+### Community 119 - "Community 119"
 Cohesion: 0.29
 Nodes (8): fixture, Path, Unit tests for ``scripts/cleanup.py`` (stdlib-only project cleaner)., test_collects_bytecode_caches_and_temp_not_source(), test_dry_run_does_not_delete(), test_remove_deletes_junk_keeps_source_and_protected(), test_skips_git_and_pixi_trees(), tree()
 
-### Community 117 - "RS3 Annotation Parsing"
-
-Cohesion: 0.22
-Nodes (9): getRelationsType(), parseXML(), _Element,_ElementTree, Path, a group's ``type`` attribute tells us whether the group node represents a span…, Write files similar to the .edus files in the RST DT for the other RST…, readRS3Annotation() (+1 more)
-
-### Community 118 - "Discourse Tree Flattening"
-
-Cohesion: 0.22
-Nodes (9): flatten_tree(), Any, Boundary, HarvestSpan, RstEdu, RstRelation, Return the deduplicated thread ids carried by the named spans. Order is the…, Flatten a DiscourseUnit tree into ``(relations, edus)`` tuples. Ids are… (+1 more)
-
-### Community 119 - "Docling Smoke Tests"
-
-Cohesion: 0.25
-Nodes (7): _picture_description(), PictureItem, Return ``picture.meta.description.text`` when present and non-empty., main(), Path, Smoke-iterate Docling JSON fixtures via docling-core's canonical walker. Phase…, smoke_iterate()
-
-### Community 120 - "RS3 Annotation Parsing"
-
-Cohesion: 0.22
-Nodes (9): getRelationsType(), parseXML(), _Element,_ElementTree, Path, a group's ``type`` attribute tells us whether the group node represents a span…, Write files similar to the .edus files in the RST DT for the other RST…, readRS3Annotation() (+1 more)
-
-### Community 122 - "Discourse Unit Mocking"
-
-Cohesion: 0.28
-Nodes (8): _FakeNode,_Predictor, Stand-in for isanlp.DiscourseUnit with the attributes used by remap., Minimal concrete subclass (BasePredictor is ABC)., Unary node = DUConverter bug; surface it rather than patch it., test_remap_tree_offsets_binary(), test_remap_tree_offsets_leaf(), test_remap_tree_offsets_unary_raises()
-
-### Community 123 - "DocLang Parity Tests"
-
-Cohesion: 0.22
-Nodes (6): BaseModel, parametrize, Path, Pinned upstream parity and locked-validator tests for DocLang fixtures., test_locked_doclang_validator_accepts_every_upstream_fixture(),_UpstreamManifest
-
-### Community 124 - "Checkpoint Verification Receipt"
-
-Cohesion: 0.32
-Nodes (7): ErstCheckpointVerificationReceipt, Machine-readable proof that a bundle reloaded and passed its graph vector., main(), Path, Fail-closed clean-process verifier for an eRST completion bundle., Strict-reload a bundle, run its test vector, and emit a typed receipt., verify_checkpoint()
-
-### Community 125 - "Docling Text Harvester"
-
-Cohesion: 0.25
-Nodes (7): _label_value(), Harvest text from a DoclingDocument for RST parsing. Two harvesters: -…, Return the string value of a Docling enum label, or str(thing)., HarvestResult, Concatenated document harvest and its source-address spans., One table-cell harvest with coordinates local to ``full_text``., TableHarvest
-
-### Community 126 - "HTML Viewer Export"
-
+### Community 120 - "Community 120"
 Cohesion: 0.29
-Nodes (7): PathLike, Convert an ``.rs3`` file into HTML. Parameters ---------- rs3_path: Path to the…, to_html(), Path, Unit tests for viewer convenience helpers in ``isanlp_rst``., When ``html_path`` is set, ``to_html`` must write the file AND return the HTML…, test_to_html_returns_string_and_writes_file()
+Nodes (9): CommandCategory, CommandReceipt, _execute(), main(), BaseModel, Path, Execute every retained offline command to a bounded, evidence-bearing start., One canonical retained command and its bounded-start contract. (+1 more)
 
-### Community 127 - "File Access Linter"
+### Community 121 - "Community 121"
+Cohesion: 0.22
+Nodes (6): BaseModel, parametrize, Path, Pinned upstream parity and locked-validator tests for DocLang fixtures., test_locked_doclang_validator_accepts_every_upstream_fixture(), _UpstreamManifest
 
+### Community 123 - "Community 123"
+Cohesion: 0.25
+Nodes (7): _clear_runtime_caches(), fixture, MonkeyPatch, Installed-version and source-revision provenance boundaries., test_source_revision_is_separate_from_semantic_version(), test_unexpected_metadata_failure_is_not_hidden(), test_unknown_is_only_used_when_distribution_metadata_is_absent()
+
+### Community 124 - "Community 124"
+Cohesion: 0.39
+Nodes (8): _analysis_payload(), _compare(), main(), Any, Run and compare deterministic production behavior across the codeline split., run(), _sha256_json(), _tree_payload()
+
+### Community 125 - "Community 125"
+Cohesion: 0.22
+Nodes (9): getRelationsType(), parseXML(), _Element, _ElementTree, Path, a group's ``type`` attribute tells us whether the group node represents a span…, Write files similar to the .edus files in the RST DT for the other RST…, readRS3Annotation() (+1 more)
+
+### Community 126 - "Community 126"
+Cohesion: 0.22
+Nodes (9): getRelationsType(), parseXML(), _Element, _ElementTree, Path, a group's ``type`` attribute tells us whether the group node represents a span…, Write files similar to the .edus files in the RST DT for the other RST…, readRS3Annotation() (+1 more)
+
+### Community 127 - "Community 127"
+Cohesion: 0.28
+Nodes (5): BaseModel, Tensor, Frozen finite optimization and decoding configuration., _StructuralClassifier, StructuralConfig
+
+### Community 128 - "Community 128"
+Cohesion: 0.43
+Nodes (7): FreezeAuthority, freeze_baseline(), _git(), Path, Immutable pre-candidate authority and baseline-wheel preparation freeze., Build the immutable baseline wheel and record isolated legacy prepared inputs., _run_isolated_baseline()
+
+### Community 129 - "Community 129"
 Cohesion: 0.43
 Nodes (6): is_content_free(), looks_like_path(), main(), offending_tool(), Return (tool, path) for the first file-reading invocation, else None.…, True when this invocation cannot print a line of file content. Every argument…
 
-### Community 128 - "Speckit Workflow Stages"
-
+### Community 130 - "Community 130"
 Cohesion: 0.29
-Nodes (7): speckit-converge, CI Workflow, speckit-implement, speckit-plan, isanlp_rst Constitution, speckit-specify, speckit-tasks
+Nodes (4): field_validator, Require valid half-open anchors while retaining overlap and order., Require non-empty, unique raw relation labels., Require unique non-negative token identifiers without reordering.
 
-### Community 129 - "EDU File Utilities"
+### Community 131 - "Community 131"
+Cohesion: 0.48
+Nodes (6): _is_approved_exclusion(), main(), _manifest_paths(), Verify and lint the complete repository Markdown manifest., _repository_markdown(), verify_manifest()
 
+### Community 132 - "Community 132"
+Cohesion: 0.57
+Nodes (6): _install_and_run(), main(), Path, Create clean core/formats wheel installs and execute installed acceptance., _run(), _venv_python()
+
+### Community 133 - "Community 133"
 Cohesion: 0.29
 Nodes (7): findFile(), getDisFiles(), Any, Path, Retrieve the edu file corresponding to the basename_dis, Read information from the edu file, and fill the fields tokendict and edudict…, readEduDoc()
 
-### Community 130 - "Markdown RST Output"
-
-Cohesion: 0.33
-Nodes (5): MarkdownRstResult, Any, Top-level output of ``parse_markdown``., Return JSON-shaped plain data., Serialize deterministically without non-JSON dataclass values.
-
-### Community 131 - "Parser Protocol Interface"
-
+### Community 134 - "Community 134"
 Cohesion: 0.29
-Nodes (5): Protocol, Structural contract for injectable RST parsers., Return a parser result containing an RST tree., Callable boundary used by format-native parsing entry points., RstParser
+Nodes (7): findFile(), getDisFiles(), Any, Path, Retrieve the edu file corresponding to the basename_dis, Read information from the edu file, and fill the fields tokendict and edudict…, readEduDoc()
 
-### Community 132 - "Markdown Manifest Verification"
+### Community 135 - "Community 135"
+Cohesion: 0.29
+Nodes (4): ConfigReader, Any, Path, Offline DMRST training configuration reader.
 
-Cohesion: 0.48
-Nodes (6): _is_approved_exclusion(), main(),_manifest_paths(), Verify and lint the complete repository Markdown manifest.,_repository_markdown(), verify_manifest()
+### Community 136 - "Community 136"
+Cohesion: 0.29
+Nodes (4): ConfigReader, Any, Path, Offline UniRST training configuration reader.
 
-### Community 133 - "Schema Verification Status"
-
+### Community 137 - "Community 137"
 Cohesion: 0.47
-Nodes (6): Open Output Schema Specifics, Open Parse Per Boundary, Open RST Real World Quality, Open Schema Detail Verifications, Verified Docling Core API, Verified Docling Schema
+Nodes (5): main(), Performance benchmark for isanlp_rst across devices and dtypes. Usage: pixi run…, Run parser n times after a warm-up. Return median seconds and tree shape., _shape(), _time_parse()
 
-### Community 134 - "DMRST Config Reader"
+### Community 138 - "Community 138"
+Cohesion: 0.40
+Nodes (3): _module_exists(), The canonical ingest package is the only production source-ingest surface., test_obsolete_envelopes_and_entry_modules_are_absent()
 
-Cohesion: 0.33
-Nodes (3): ConfigReader, Any, Path
-
-### Community 135 - "Universal Parser Config"
-
-Cohesion: 0.33
-Nodes (3): ConfigReader, Any, Path
-
-### Community 136 - "Performance Benchmarking"
-
-Cohesion: 0.47
-Nodes (5): main(), Performance benchmark for isanlp_rst across devices and dtypes. Usage: pixi run…, Run parser n times after a warm-up. Return median seconds and tree shape.,_shape(), _time_parse()
-
-### Community 137 - "Token Offset Conversion"
-
+### Community 139 - "Community 139"
 Cohesion: 0.40
 Nodes (4): _OffsetToken, Protocol, Minimal razdel-token surface used by offset remapping., Build offset converter from a list of `razdel.Token` objects.
 
-### Community 138 - "Source Origin Serialization"
-
+### Community 140 - "Community 140"
 Cohesion: 0.40
-Nodes (5): Any, Serialise ``doc.origin`` (a Pydantic model) to a JSON-safe dict. Returns ``{}``…, _serialise_source_origin(), test_serialise_source_origin_none_returns_empty_dict(), test_serialise_source_origin_real_fixture_has_mimetype_and_hash()
+Nodes (4): T, Yield chunks of size `n` from `_list` (handles empty lists)., test_divide_chunks_basic(), test_divide_chunks_empty()
 
-### Community 139 - "Span Character Offsets"
-
-Cohesion: 0.40
-Nodes (3): Protocol, Any harvest span with half-open ``[start, end)`` character offsets., SpanLike
-
-### Community 140 - "CUDA Verification Script"
-
+### Community 141 - "Community 141"
 Cohesion: 0.60
 Nodes (4): _assert_aligned(), _collect_leaves(), main(), CUDA verification script — to be run on a real NVIDIA host. Usage: pixi run…
 
-### Community 141 - "Table Harvest Invariants"
-
+### Community 144 - "Community 144"
 Cohesion: 0.50
-Nodes (5): FixtureRequest, parametrize, Two-level invariant: tables live in their own harvests; the main document…, test_main_harvest_never_contains_table_refs(), test_offsets_match_full_text()
+Nodes (4): getLabelOrdered(), Any, ArrayLike, Get the right order of lable for stacks manner. E.g. [8,3,9,2,6,10,1,5,7,11,4]…
 
-### Community 142 - "LSTM Dropout Tests"
-
+### Community 147 - "Community 147"
 Cohesion: 0.50
-Nodes (4): parametrize, PyTorch RNN dropout is inter-layer only. A 1-layer LSTM with non-zero dropout…, test_tony_one_layer_lstm_does_not_warn(), test_tony_stacked_lstm_keeps_dropout()
+Nodes (3): The core parser remains isolated from optional source-format dependencies., Core ``isanlp_rst.parser`` must not require the formats extra., test_parser_imports_without_docling_core()
 
-### Community 143 - "Speckit Task Management"
-
-Cohesion: 0.50
-Nodes (4): speckit-converge, speckit-implement, speckit-tasks, speckit-analyze
-
-### Community 145 - "RST Build Planning"
-
+### Community 148 - "Community 148"
 Cohesion: 0.67
-Nodes (3): Central Ontology Lock, DocLang-native RST Plan, Docling-native RST Build Plan
-
-### Community 148 - "GUMRRG Parser Fixture"
-
-Cohesion: 0.67
-Nodes (3): parser(), fixture, Construct gumrrg parser once for the slow tests.
-
-### Community 149 - "GUMRRG Parser Fixture"
-
-Cohesion: 0.67
-Nodes (3): parser(), fixture, Construct gumrrg parser once for the slow tests.
+Nodes (3): _distribution_members(), main(), Smoke-test the installed production package without loading model weights.
 
 ## Knowledge Gaps
-
-- **56 isolated node(s):** `no-assumptions-check.sh script`, `cleanup.sh script`, `isanlp_rst`, `common.sh script`, `Docling-native RST output plan` (+51 more)
+- **22 isolated node(s):** `no-assumptions-check.sh script`, `common.sh script`, `isanlp_rst`, `$schema`, `$id` (+17 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **48 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
+_Questions this graph is uniquely positioned to answer:_
 
-*Questions this graph is uniquely positioned to answer:*
-
-- **Why does `Parser` connect `Public Parser API` to `RST Enumerations`, `Discourse Tree Structures`, `EDU Segmentation Dataset`, `Parser Family Resolution`, `Parse Result Helpers`, `Checkpoint Family Detection`?**
-  *High betweenness centrality (0.006) - this node is a cross-community bridge.*
-- **Why does `HierarchicalSectionStitcher` connect `Discourse Tree Structures` to `RST Analysis Models`, `Analysis Data Contracts`, `Discourse Signal Models`, `Public Parser API`, `Secondary Relation Completion`?**
-  *High betweenness centrality (0.003) - this node is a cross-community bridge.*
-- **Why does `parse_docling()` connect `Docling JSON Parsing` to `Tree Flattening Utils`, `Result Caching Logic`, `Parser Protocol Interface`, `Markdown Text Harvester`, `Source Origin Serialization`, `Content Layer Detection`, `Format Projection Tests`, `Model Identity Helpers`, `Parse Result Helpers`, `Docling Table Harvesting`, `Docling Text Harvesting`, `Docling Error Handling`, `Result Cache Identity`, `Public Parser API`, `Runtime Provenance Helpers`?**
-  *High betweenness centrality (0.002) - this node is a cross-community bridge.*
-- **Are the 6 inferred relationships involving `Parser` (e.g. with `CompleterConfig` and `ErstCompleter`) actually correct?**
-  *`Parser` has 6 INFERRED edges - model-reasoned connections that need verification.*
-- **Are the 4 inferred relationships involving `RstAnalysis` (e.g. with `ProvenanceRecord` and `FailureCodeEnum`) actually correct?**
-  *`RstAnalysis` has 4 INFERRED edges - model-reasoned connections that need verification.*
-- **Are the 8 inferred relationships involving `parse_doclang()` (e.g. with `DoclangEligibility` and `EmptyDoclangError`) actually correct?**
-  *`parse_doclang()` has 8 INFERRED edges - model-reasoned connections that need verification.*
-- **What connects `no-assumptions-check.sh script`, `cleanup.sh script`, `isanlp_rst` to the rest of the system?**
-  *56 weakly-connected nodes found - possible documentation gaps or missing edges.*
+- **Why does `RstAnalysis` connect `Community 4` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 6`, `Community 9`, `Community 11`, `Community 14`, `Community 15`, `Community 19`, `Community 21`, `Community 27`, `Community 30`, `Community 37`, `Community 50`, `Community 53`, `Community 55`, `Community 65`, `Community 74`, `Community 80`, `Community 89`?**
+  _High betweenness centrality (0.112) - this node is a cross-community bridge._
+- **Why does `RstDocument` connect `Community 4` to `Community 0`, `Community 2`, `Community 3`, `Community 37`, `Community 6`, `Community 9`, `Community 11`, `Community 14`, `Community 15`, `Community 80`, `Community 17`, `Community 50`, `Community 19`, `Community 23`, `Community 27`, `Community 124`?**
+  _High betweenness centrality (0.101) - this node is a cross-community bridge._
+- **Why does `Parser` connect `Community 48` to `Community 2`, `Community 3`, `Community 4`, `Community 8`, `Community 9`, `Community 137`, `Community 141`, `Community 14`, `Community 142`, `Community 19`, `Community 148`, `Community 23`, `Community 27`, `Community 62`, `Community 64`, `Community 71`, `Community 74`, `Community 80`, `Community 82`, `Community 83`, `Community 92`, `Community 124`?**
+  _High betweenness centrality (0.071) - this node is a cross-community bridge._
+- **Are the 33 inferred relationships involving `RstAnalysis` (e.g. with `ProvenanceRecord` and `FailureCodeEnum`) actually correct?**
+  _`RstAnalysis` has 33 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 40 inferred relationships involving `Parser` (e.g. with `HierarchicalSectionStitcher` and `DiscourseUnit`) actually correct?**
+  _`Parser` has 40 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 22 inferred relationships involving `RstDocument` (e.g. with `InputFidelityEnum` and `document_from_json()`) actually correct?**
+  _`RstDocument` has 22 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 49 inferred relationships involving `SpanNode` (e.g. with `backprop()` and `BFTbin()`) actually correct?**
+  _`SpanNode` has 49 INFERRED edges - model-reasoned connections that need verification._

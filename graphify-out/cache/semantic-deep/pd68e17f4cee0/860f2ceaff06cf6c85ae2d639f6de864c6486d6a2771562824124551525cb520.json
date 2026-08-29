@@ -1,1 +1,0 @@
-{"nodes": [{"id": "no_assumptions_md", "label": "No Assumptions Rule", "file_type": "document", "source_file": ".claude/rules/no-assumptions.md", "rationale": "Mandatory project rule requiring explicit verification or marking of assumptions."}], "edges": [], "hyperedges": []}

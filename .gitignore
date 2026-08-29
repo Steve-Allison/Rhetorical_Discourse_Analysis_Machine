@@ -28,5 +28,5 @@ corpora/
 .DS_Store
 **/.DS_Store
 # Graphify extraction caches are reproducible and machine-local
-graphify-out/cache/ast/
-graphify-out/cache/semantic/
+graphify-out/cache/
+graphify-out/.graphify_*
