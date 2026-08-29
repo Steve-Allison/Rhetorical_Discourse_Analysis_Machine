@@ -32,6 +32,7 @@ A downstream application submits a supported source and receives one self-contai
 5. **Given** a successful eRST completion, **When** a consumer inspects an accepted secondary edge, **Then** it can trace the edge to both endpoints, supporting signals, edge and relation scores, joint selection score, calibration identity, and the decoder receipt that proves the accepted graph satisfied its constraints.
 6. **Given** a subdivided analysis, **When** a consumer inspects the result, **Then** it can trace every local unit into the recombined document graph and inspect the deterministic recombination receipt without requiring duplicate full local graphs.
 7. **Given** two evidence-detail policies over the same source and immutable model, **When** the requests are compared, **Then** each request records its resolved policy and has a distinct semantic request and cache identity whenever the returned evidence differs.
+8. **Given** a caller already has an `RstDocument`, **When** it uses the canonical parser analysis operation directly, **Then** it receives the exact analysed substrate, graph, decision evidence, component identity, and validation/recombination receipts without using production ingest or private imports.
 
 ---
 
@@ -135,6 +136,9 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - A decoder accepts no secondary edges but still completes constraint evaluation successfully.
 - Two output formalisms or evidence-detail policies would produce different semantic results from otherwise identical inputs.
 - A relation label is returned without a declared relation scheme, confidence meaning, calibration identity, or ontology-mapping provenance.
+- A model release is validated and reported in provenance, but the runtime loads tokenizer, configuration, or weight bytes from another location or revision.
+- A parser adapter fills an unanalysed suffix with midpoint splits, default relations or nuclearities, or fabricated character offsets.
+- Capability discovery advertises an archived or deliberately unavailable parser family as an active production backend.
 
 ## Requirements *(mandatory)*
 
@@ -207,6 +211,10 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - **FR-065**: Raw tensors, embeddings, hidden activations, unrestricted cubic parsing charts, training-only gold labels, research-corpus records, and private workbench state MUST remain internal unless a future provider-owned requirement explicitly promotes a bounded value.
 - **FR-066**: When the provider does not genuinely compute a named evidence value, the contract MUST represent that capability as unavailable or the value as not produced; it MUST NOT fabricate, approximate, or infer provider evidence merely to populate a field.
 - **FR-067**: Conformance tests MUST audit each production backend and every primary-to-eRST, marker-refinement, subdivision, recombination, validation, serialization, and cache handoff for retained decision evidence and fail on any unexplained loss.
+- **FR-068**: The public parser facade MUST expose one canonical typed parser-analysis result containing the exact analysed substrate, validated graph, primary and eRST decision evidence, composite component identity, refinements, recombination receipt when applicable, validation receipt, and semantic identity; a graph-only parser operation MAY remain as an explicitly documented convenience projection but MUST NOT be the authority used by production ingest.
+- **FR-069**: Every immutable model or component identity claimed by a result MUST identify the exact tokenizer, configuration, weights, calibration, inventory, rules, and ontology bytes actually loaded for that execution; validating one release while loading another artifact or remote revision MUST fail closed.
+- **FR-070**: The production parser MUST NOT synthesize midpoint splits, default relation or nuclearity labels, sequential character offsets, or any other apparently analysed decision for content the model did not analyse; missing alignment or capacity-safe coverage MUST produce a typed failure unless an explicit loss policy represents the exact transformation without fabricating inference evidence.
+- **FR-071**: Capability discovery and the public-surface inventory MUST distinguish the active ModernBERT production backend from archived or deliberately unavailable parser families and MUST NOT advertise a family, release, evidence level, or output formalism that the installed runtime cannot execute through the canonical typed parser-analysis operation.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -219,6 +227,7 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - **Analysis Plan**: The deterministic mapping from prepared discourse to one or more parser-capacity-safe analysis units and their recombination boundaries.
 - **Model Identity and Capability**: Immutable model-release identity and the constraints or supported behaviours that affect preparation, analysis, and semantic caching.
 - **Production Analysis Outcome**: The validated discourse result together with the full preparation outcome, status, anchors, model identity, execution facts, and cache provenance.
+- **Parser Analysis Result**: The provider-owned result returned for an already-constructed `RstDocument`, containing the exact analysed substrate, validated graph, decision evidence, component identity, refinements, optional recombination receipt, validation receipt, execution facts, and semantic identity without source-ingest preparation evidence.
 - **Analysis Policy**: The closed caller-selected and fully resolved semantic policy for output formalism, evidence detail, refinement, validation, relation interpretation, and loss handling.
 - **Analysed Document**: The exact ordered tokens, EDUs, boundaries, mappings, source anchors, and fidelity records actually supplied to analysis.
 - **Primary Inference Evidence**: Decision-linked segmentation, tree, split, relation, nuclearity, confidence, uncertainty, distribution, and refinement evidence produced by the primary pipeline.
@@ -258,6 +267,9 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - **SC-022**: Every successful analysis exposes a validation receipt whose overall disposition agrees with every required check and whose digest recomputes from exposed values.
 - **SC-023**: Decision-complete and distribution-requested evidence policies each round-trip deterministically, and changing policy changes semantic request/cache identity in 100% of mutation tests where returned evidence differs.
 - **SC-024**: Installed-contract inspection finds zero public raw tensors, embeddings, hidden activations, unrestricted parsing charts, training-only gold fields, or private research/workbench values.
+- **SC-025**: A direct parser consumer explains every returned node, primary edge, secondary edge, refinement, and validation/recombination decision using one public parser-analysis result and zero private imports; production ingest embeds that same semantic parser result rather than reconstructing it from a graph-only projection.
+- **SC-026**: For every immutable production fixture, byte-inventory validation proves that every loaded tokenizer, configuration, weight, calibration, relation-inventory, rule, and ontology component matches the exact component identity reported in the result; deliberate path or revision substitution fails in 100% of mutation tests.
+- **SC-027**: Capacity, truncation, alignment, and capability mutation tests produce zero fabricated parser decisions and zero advertised-but-unexecutable parser families or evidence levels.
 
 ## Assumptions
 
