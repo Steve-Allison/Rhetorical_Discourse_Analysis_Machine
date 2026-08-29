@@ -123,12 +123,12 @@ def ensure_unirst_module_aliases() -> None:
     """Register Elena-era module paths so legacy pickles can unpickle ParserInput."""
     aliases = {
         "src.universal_parser.du_converter": "isanlp_rst.utils.du_converter",
-        "src.universal_parser.src.parser.data": "isanlp_rst.universal_parser.src.parser.data",
-        "src.universal_parser.src.parser.modules": "isanlp_rst.universal_parser.src.parser.modules",
-        "src.universal_parser.src.parser.segmenters": "isanlp_rst.universal_parser.src.parser.segmenters",
-        "src.universal_parser.src.parser.parsing_net": "isanlp_rst.universal_parser.src.parser.parsing_net",
-        "src.universal_parser.src.parser.parsing_net_bottom_up": "isanlp_rst.universal_parser.src.parser.parsing_net_bottom_up",
-        "src.universal_parser.src.parser.metrics": "isanlp_rst.universal_parser.src.parser.metrics",
+        "src.universal_parser.src.parser.data": "workbench.archive.legacy_2021.universal_parser.src.parser.data",
+        "src.universal_parser.src.parser.modules": "workbench.archive.legacy_2021.universal_parser.src.parser.modules",
+        "src.universal_parser.src.parser.segmenters": "workbench.archive.legacy_2021.universal_parser.src.parser.segmenters",
+        "src.universal_parser.src.parser.parsing_net": "workbench.archive.legacy_2021.universal_parser.src.parser.parsing_net",
+        "src.universal_parser.src.parser.parsing_net_bottom_up": "workbench.archive.legacy_2021.universal_parser.src.parser.parsing_net_bottom_up",
+        "src.universal_parser.src.parser.metrics": "workbench.archive.legacy_2021.universal_parser.src.parser.metrics",
     }
     for alias, target in aliases.items():
         if alias in sys.modules:

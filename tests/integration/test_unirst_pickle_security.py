@@ -12,12 +12,12 @@ from pathlib import Path
 import pytest
 
 from isanlp_rst.model_loading.parser_input import ParserInput
-from isanlp_rst.universal_parser.inventory import (
+from workbench.archive.legacy_2021.universal_parser.inventory import (
     RestrictedUnpickler,
     dump_relation_inventory,
     import_relation_table_from_legacy_pickle,
 )
-from isanlp_rst.universal_parser.predictor import PredictorUniRST
+from workbench.archive.legacy_2021.universal_parser.predictor import PredictorUniRST
 
 
 def _local_shell(model_dir: Path) -> PredictorUniRST:

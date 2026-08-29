@@ -129,7 +129,7 @@ def test_transformer_segmenter_character_invariance(tmp_path: Path) -> None:
 @pytest.mark.slow
 def test_parser_with_transformer_segmenter(tmp_path: Path) -> None:
     segmenter = TransformerEduSegmenter(model_name_or_path=str(_tiny_segmenter_checkpoint(tmp_path)), device="cpu")
-    parser = Parser(hf_model_version="gumrrg", device="cpu", segmenter=segmenter)
+    parser = Parser(family="modernbert", device="cpu", segmenter=segmenter)
 
     raw_text = "The system initialized.\nBecause cache was loaded, latency stayed minimal."
     doc = RstDocument.from_text(raw_text, document_id="doc_seg_test")

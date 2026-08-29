@@ -291,6 +291,27 @@ A discriminated union:
 
 Only `immutable_release` is eligible for durable semantic caching.
 
+### `CompositeAnalysisIdentity`
+
+One closed semantic record for every component that affected the result:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `primary_parser` | `ModelIdentity` | Primary tree parser release/instance |
+| `segmenter` | typed component identity | Segmenter model/rule identity actually used |
+| `marker_refiner` | typed component identity or `not_used` | Marker/rule refinement algorithm and policy |
+| `erst_detector` | typed component identity or `not_used` | Signal detector/primer identity |
+| `erst_scorer` | typed component identity or `not_used` | Secondary-edge scorer and checkpoint |
+| `erst_decoder` | typed component identity or `not_used` | Constraint decoder and policy version |
+| `calibration` | typed component identity or `not_used` | Temperature/calibration parameters and digest |
+| `relation_inventory` | typed component identity | Relation label scheme and inventory digest |
+| `ontology_mapping` | typed component identity or `not_used` | Mapping algorithm, ontology version, and digest |
+| `semantic_digest` | SHA-256 identity | Recomputable identity over all components |
+
+Each component state is explicit: `immutable_release`, `mutable_instance`,
+`unidentified`, or `not_used`. Durable caching requires every participating
+semantic component to have immutable identity.
+
 ### `SourceFormCapability`
 
 Reports source form, availability, required extra, missing distributions,
@@ -312,6 +333,82 @@ A `kind=capabilities` envelope containing:
 
 ## Analysis
 
+### `OutputFormalism`
+
+Closed enum: `rst_tree` or `erst_graph`. The selected value constrains whether
+secondary-edge evidence may be present. Free-form output strings are invalid.
+
+### `EvidenceDetailPolicy`
+
+Closed enum:
+
+- `decision_complete`: selected decisions, provider-computed confidence and
+  uncertainty, refinement, supporting evidence, and receipts;
+- `normalized_distributions`: all decision-complete values plus finite
+  normalized provider-computed distributions genuinely available from the
+  selected backend.
+
+The policy never authorizes raw tensors, embeddings, activations, unrestricted
+charts, training-only fields, or workbench records.
+
+### `AnalysisPolicy`
+
+| Field | Type | Meaning |
+|---|---|---|
+| `output_formalism` | `OutputFormalism` | Required output graph formalism |
+| `evidence_detail` | `EvidenceDetailPolicy` | Returned decision-evidence level |
+| `marker_refinement` | closed policy | Whether and how marker refinement may alter model decisions |
+| `validation` | `ValidationPolicy` | Required validation checks and policy version |
+| `relation_interpretation` | closed policy | Relation scheme and ontology mapping behaviour |
+| `lossy_input` | literal `forbid` or explicit closed policy | Handling of truncation/capping/approximation; production default is `forbid` |
+| `policy_version` | semantic version | Exact provider policy contract |
+| `semantic_digest` | SHA-256 identity | Recomputable policy identity |
+
+Resolved defaults are returned as complete values. A policy that changes
+returned semantic evidence changes request and cache identity.
+
+### `AnalysisRequest`
+
+The complete resolved semantic request embedded in an analysis outcome:
+
+- source and preparation semantic identities;
+- complete `AnalysisPolicy`;
+- analysis plan and parser capacity identities;
+- `CompositeAnalysisIdentity`;
+- analysis pipeline and production contract write versions;
+- semantic request identity.
+
+It contains no cache directory, device, timing, or other execution-only value.
+
+### `AnalysedToken`
+
+Token identifier/order, exact token text used by inference, character range in
+the analysed text, source anchors, sentence/paragraph membership, and any
+normalization/transformation links.
+
+### `AnalysedEdu`
+
+EDU identifier/order, exact analysed text, ordered token identifiers,
+sentence/paragraph membership, prepared segment links, and complete source
+anchors.
+
+### `AnalysisSubstrateTransformation`
+
+A typed record for any authorized transformation between prepared and analysed
+content: algorithm/version, inputs/outputs, exact parameters, affected ranges,
+source anchors, fidelity classification, and semantic digest. Silent
+truncation, capping, approximate token allocation, or dropped content is
+invalid. With the default `lossy_input=forbid`, a lossy transformation cannot be
+constructed.
+
+### `AnalysedDocument`
+
+Contains ordered `AnalysedToken` and `AnalysedEdu` values, exact
+token-to-EDU/sentence/paragraph mappings, structural boundaries, prepared
+segment mapping, source anchors, substrate transformations, fidelity status,
+coverage, and semantic digest. It is the document actually passed to inference,
+not a reconstruction from the returned tree.
+
 ### `AnalysisStatus`
 
 Exactly two analysis-success statuses:
@@ -326,26 +423,123 @@ and exclusive.
 
 ### `AnalysisAnchor`
 
-Links an EDU, node, primary edge, or secondary edge to prepared segments and
-source anchors. Every analysed segment and discourse node has reconstructable,
-in-bounds coverage.
+Links an EDU, node, primary edge, secondary edge, decision, or supporting signal
+to analysed tokens/EDUs, prepared segments, and source anchors. Relation and
+secondary-edge anchors contain distinct source and target endpoint anchors;
+supporting signal anchors are linked separately. Every analysed value has
+reconstructable, in-bounds coverage.
+
+### `ScoreValue`
+
+Finite provider-computed score plus `confidence_kind`, declared range,
+calibration identity when applicable, and producing component identity. A raw
+number without meaning is invalid.
+
+### `NormalizedDistribution`
+
+Ordered labelled `ScoreValue` entries whose normalized probabilities are
+finite, in range, and sum to one within the contract tolerance. It is present
+only under `normalized_distributions` and only when the backend genuinely
+produces it.
+
+### `RelationInterpretation`
+
+Raw label, declared relation scheme and inventory identity, optional selected
+ontology concept, mapping status (`mapped`, `identity_only`, `not_mapped`, or
+`not_available`), mapping algorithm/version, ontology version/digest, and
+calibration/confidence semantics. Copying a raw label into a concept field is
+`identity_only`, not proven ontology mapping.
+
+### `SegmentationDecisionEvidence`
+
+Boundary identity, selected boundary state, provider confidence, optional
+normalized boundary distribution, affected analysed tokens, resulting EDU
+links, and producing component identity.
+
+### `PrimaryStructureDecisionEvidence`
+
+Stable decision identity linked to the resulting node/primary edges, analysed
+span, selected split or attachment, nuclearity, relation interpretation,
+provider confidence, normalized split entropy when produced, optional split,
+relation, and nuclearity distributions, and producing component identity.
+
+### `RefinementRecord`
+
+Stable identity, decision kind, complete before/after values, trigger signal or
+rule identities and anchors, policy/algorithm identity, affected graph element
+identifiers, explanation code, and semantic digest. A revised value must differ
+from the before value and neither value may be omitted.
+
+### `PrimaryInferenceEvidence`
+
+Contains complete segmentation decisions, primary structure decisions, and
+refinement records at the selected evidence level. Every final primary node and
+edge links to its creating decision; every returned refinement links to the
+decision it changed.
+
+### `ErstCandidateDecision`
+
+Candidate identity, source and target node identifiers, supporting signal
+identifiers, edge probability, selected relation interpretation and relation
+probability, joint selection score, calibration identity, decision
+(`accepted` or stable rejection reason), decoder order, and produced secondary
+edge identifier when accepted.
+
+### `ErstDecodeReceipt`
+
+The provider decoder's complete stable receipt: policy/version, ordered
+candidate decision identities, input/accepted/rejected counts, constraint check
+counts, rejection-reason counts, deterministic ordering identity, warnings,
+and digest.
+
+### `ErstCompletionEvidence`
+
+Contains detector signals with candidate/edge back-links, candidate decisions
+at the selected evidence level, the complete decode receipt, scorer/calibration
+identity, relation inventory identity, and semantic digest. Every accepted edge
+links to its candidate and supporting signals; no returned signal is orphaned.
+
+### `RecombinationReceipt`
+
+Contains ordered local analysis unit and local result identities, complete
+local-to-global segment/node/edge mappings, boundary and nuclear-spine inputs,
+deterministic stitching decisions, warnings, timings, policy/version, and
+semantic digest. Full local graphs are not duplicated by default.
+
+### `ValidationCheckReceipt`
+
+Stable check identifier, required/advisory classification, outcome, exact
+counts, affected identifiers, and stable warning/error code. It contains no
+free-form private source text.
+
+### `ValidationReceipt`
+
+Validation policy/version, ordered `ValidationCheckReceipt` values, overall
+`passed` disposition, graph/anchor/evidence coverage counts, warnings, and
+semantic digest. A successful outcome requires every required check to pass.
 
 ### `InferenceEvidence`
 
-A safe record that inference completed, containing model identity, analysis
-unit identities, output byte/digest summaries, and unit-completion counts. It
-does not claim that unvalidated parser output is a valid analysis.
+A safe completed-stage record containing `AnalysisRequest`, analysed-document
+identity, composite analysis identity, unit identities, primary/eRST evidence
+digests, output summaries, and unit-completion counts. It does not claim that
+unvalidated parser output is a valid analysis.
 
 ### `AnalysisSemanticEvidence`
 
 Contains:
 
 - complete `PreparationOutcome`;
-- complete immutable or explicitly unstable `ModelIdentity`;
+- complete resolved `AnalysisRequest` and `AnalysisPolicy`;
+- complete `AnalysedDocument`;
+- complete immutable or explicitly unstable `CompositeAnalysisIdentity`;
 - analysis status;
 - validated `RstAnalysis` for `analysed` only;
-- analysis anchors;
-- inference and validation policy identities;
+- primary inference evidence and eRST completion evidence as selected by the
+  output formalism;
+- complete both-endpoint analysis and supporting-signal anchors;
+- recombination receipt when units were assembled;
+- complete validation receipt;
 - cache request identity and semantic result identity.
 
 The analysis semantic projection embeds the preparation semantic value, not
@@ -355,8 +549,8 @@ nested outcome but is excluded from analysis semantic identity.
 ### `AnalysisExecutionEvidence`
 
 Contains execution identifier, timing, device, cache hit/miss/bypass status,
-cache entry identity where applicable, unit execution receipts, and software
-release provenance. It cannot change the semantic digest.
+cache entry identity where applicable, unit execution receipts, recombination
+timings, and software release provenance. It cannot change the semantic digest.
 
 ### `AnalysedOutcome`
 
@@ -551,9 +745,15 @@ SourceArtifact
   -> AnalysisPlan
   -> PreparationOutcome
        -> ProductionAnalysisOutcome
-            -> ModelIdentity
+            -> AnalysisRequest + AnalysisPolicy
+            -> AnalysedDocument
+            -> CompositeAnalysisIdentity
             -> RstAnalysis
+            -> PrimaryInferenceEvidence
+            -> ErstCompletionEvidence
             -> AnalysisAnchor[*]
+            -> RecombinationReceipt
+            -> ValidationReceipt
 
 Any lifecycle stage
   -> ProductionFailure
@@ -601,6 +801,12 @@ all outcome invariants validate.
 | Inventory representation, disposition, transformation, or prepared discourse | Preparation, analysis, and cache identities |
 | Analysis plan or parser capacity | Plan, analysis request, result, and cache identities |
 | Immutable model identity | Analysis request, result, and cache identities |
+| Output formalism, evidence detail, refinement, validation, relation, or loss policy | Analysis request, result, and cache identities |
+| Analysed tokens, EDUs, boundaries, mappings, or fidelity transformations | Analysis request, result, and cache identities |
+| Participating segmenter, marker, eRST, decoder, calibration, relation-inventory, or ontology component identity | Analysis request, result, and cache identities |
+| Primary decision, confidence, uncertainty, distribution, or refinement evidence | Analysis result and cache identities |
+| eRST candidate, signal, score, calibration, decision, or decoder receipt | Analysis result and cache identities |
+| Recombination mapping/decision or validation receipt | Analysis result and cache identities |
 | Validated RST/eRST analysis or anchors | Analysis result identity |
 | Timing, host, device, cache-hit status, or local execution identifier | No semantic identity |
 

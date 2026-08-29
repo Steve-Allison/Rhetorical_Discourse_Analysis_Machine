@@ -15,8 +15,8 @@ import torch.optim as optim
 from tqdm import tqdm
 
 # from src import keys
-from isanlp_rst.universal_parser.src.parser.data import Data
-from isanlp_rst.universal_parser.src.parser.metrics import get_macro_metrics, get_micro_metrics
+from workbench.archive.legacy_2021.universal_parser.src.parser.data import Data
+from workbench.archive.legacy_2021.universal_parser.src.parser.metrics import get_macro_metrics, get_micro_metrics
 
 # os.environ["WANDB_API_KEY"] = keys.WANDB_KEY
 

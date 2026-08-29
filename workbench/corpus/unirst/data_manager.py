@@ -7,7 +7,7 @@ from typing import Any
 import fire
 from tqdm import tqdm
 
-from isanlp_rst.universal_parser.inventory import (
+from workbench.archive.legacy_2021.universal_parser.inventory import (
     RestrictedUnpickler,
     dump_relation_inventory,
     ensure_unirst_module_aliases,
@@ -16,8 +16,12 @@ from isanlp_rst.universal_parser.inventory import (
 from isanlp_rst.model_loading.parser_input import ParserInput
 from workbench.corpus.unirst.binary_tree import BinaryTree, Node
 from workbench.corpus.unirst.data import Rs3Document
-from isanlp_rst.universal_parser.src.parser.data import Data
-from isanlp_rst.universal_parser.src.parser.data import RelationTableGUM, RelationTableRSTDT, RelationTableRuRSTB
+from workbench.archive.legacy_2021.universal_parser.src.parser.data import Data
+from workbench.archive.legacy_2021.universal_parser.src.parser.data import (
+    RelationTableGUM,
+    RelationTableRSTDT,
+    RelationTableRuRSTB,
+)
 
 random.seed(42)
 

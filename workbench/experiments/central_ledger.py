@@ -15,8 +15,6 @@ import subprocess
 from typing import Any
 import uuid
 
-from workbench.hashing import blake3_digest, canonical_json_digest
-
 logger = logging.getLogger(__name__)
 
 DEFAULT_EXPERIMENTS_ROOT = Path("workbench/experiments")
@@ -34,7 +32,7 @@ def get_current_git_commit() -> str:
             timeout=5,
         )
         return res.stdout.strip()
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return "untracked"
 
 

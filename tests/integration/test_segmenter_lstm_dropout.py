@@ -7,8 +7,8 @@ import warnings
 
 import pytest
 
-from isanlp_rst.dmrst_parser.src.parser.segmenters import ToNySegmenter as DmrstTony
-from isanlp_rst.universal_parser.src.parser.segmenters import ToNySegmenter as UnirstTony
+from workbench.archive.legacy_2021.dmrst_parser.src.parser.segmenters import ToNySegmenter as DmrstTony
+from workbench.archive.legacy_2021.universal_parser.src.parser.segmenters import ToNySegmenter as UnirstTony
 
 
 @pytest.mark.parametrize("cls", [DmrstTony, UnirstTony])

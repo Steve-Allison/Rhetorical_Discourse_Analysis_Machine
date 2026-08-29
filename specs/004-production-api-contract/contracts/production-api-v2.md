@@ -72,6 +72,7 @@ class ProductionIngestor:
         *,
         policy: PreparationPolicy | None = None,
         planning_policy: PlanningPolicy | None = None,
+        analysis_policy: AnalysisPolicy | None = None,
         cache_directory: Path | None = None,
         diagnostic_policy: DiagnosticPolicy | None = None,
     ) -> ProductionAnalysisOutcome: ...
@@ -82,6 +83,12 @@ capacity to preparation automatically during `analyse()`. A caller may supply
 capacity explicitly to `prepare()` without loading a model. A `None` policy
 selects the documented production default, and the resolved complete policy is
 always returned in the outcome rather than remaining implicit.
+
+The resolved `AnalysisPolicy` uses `output_formalism=rst_tree`,
+`evidence_detail=decision_complete`, and `lossy_input=forbid` by default. It is
+embedded in the result. Selecting `erst_graph` requests secondary-edge
+completion; selecting `normalized_distributions` requests only distributions
+the configured provider genuinely computes.
 
 ## Return and raise contract
 
@@ -178,11 +185,19 @@ Every analysis success variant embeds the complete `PreparationOutcome` and
 adds:
 
 - exclusive analysis status;
-- full typed model identity and parser capacity;
+- complete resolved `AnalysisRequest` and `AnalysisPolicy`;
+- exact `AnalysedDocument` tokens, EDUs, sentence/paragraph boundaries,
+  mappings, anchors, and fidelity records actually supplied to inference;
+- full composite analysis identity and parser capacity;
 - validated `RstAnalysis` nodes, primary edges, and secondary edges where
   present;
-- complete analysis anchors;
-- inference and validation policy identities;
+- decision-complete primary inference evidence;
+- eRST candidate, signal, score, calibration, decision, and decoder evidence
+  when requested;
+- complete both-endpoint analysis and supporting-signal anchors;
+- marker before/after refinement records;
+- deterministic recombination receipt for multi-unit analysis;
+- typed check-by-check validation receipt;
 - semantic request and result identities;
 - execution receipt and cache provenance.
 
@@ -224,7 +239,7 @@ class AnalysisParser(Protocol):
     def parse_document(
         self,
         document: RstDocument,
-        output: str = "rst_tree",
+        output: OutputFormalism = OutputFormalism.RST_TREE,
     ) -> RstAnalysis: ...
 ```
 
@@ -233,6 +248,14 @@ adapter method. Production ingest performs subdivision and recombination around
 the parser call. A missing `model_release_identity` means the parser is mutable
 or unidentified and therefore ineligible for durable semantic caching. Parser
 output never becomes a public success value before provider validation.
+
+The protocol's semantic return is the final `RstAnalysis`, while the production
+facade additionally requires a provider evidence adapter declared in capability
+discovery. That adapter must expose the exact analysed substrate and decision
+evidence defined in [analysis-evidence.md](./analysis-evidence.md). A backend
+that cannot supply required decision-complete evidence is reported unavailable
+for this production contract; the service does not fabricate it from the final
+tree.
 
 ## Optional dependency behaviour
 
@@ -258,6 +281,16 @@ Before success, the provider validates:
 7. anchor completeness, bounds, uniqueness, and source reconstruction;
 8. multi-unit completeness and deterministic recombination;
 9. semantic request, result, and stored cache identity agreement.
+10. output formalism, analysed-substrate fidelity, and evidence-detail policy
+    agreement;
+11. primary decision-to-node/edge completeness and refinement before/after
+    provenance;
+12. eRST candidate/signal/score/decoder links and non-orphaned signals;
+13. both-endpoint relation/secondary-edge anchors;
+14. recombination local-to-global completeness and validation-receipt
+    consistency;
+15. declared relation scheme, confidence kind, calibration, and ontology
+    mapping provenance.
 
 Validation failure returns no success value. Cache persistence is invoked only
 after the complete outcome passes all checks.

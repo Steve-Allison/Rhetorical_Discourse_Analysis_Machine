@@ -10,8 +10,8 @@ from typing import Any
 import pytest
 
 from isanlp_rst.base_predictor import resolve_device
-from isanlp_rst.dmrst_parser.predictor import PredictorDMRST
-from isanlp_rst.universal_parser.predictor import PredictorUniRST
+from workbench.archive.legacy_2021.dmrst_parser.predictor import PredictorDMRST
+from workbench.archive.legacy_2021.universal_parser.predictor import PredictorUniRST
 
 
 class TestDMRSTArgValidation:

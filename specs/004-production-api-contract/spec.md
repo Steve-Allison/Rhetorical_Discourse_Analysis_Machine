@@ -28,6 +28,10 @@ A downstream application submits a supported source and receives one self-contai
 1. **Given** a valid source with primary discourse and retained non-primary material, **When** analysis succeeds, **Then** the result exposes the complete preparation and analysis evidence, including accessible retained content and its disposition.
 2. **Given** a successful result, **When** a consumer recomputes its documented semantic digests from the exposed semantic values, **Then** every digest matches.
 3. **Given** a serialized successful result, **When** it is reloaded in a compatible runtime, **Then** its semantic meaning, status, evidence, and digests are unchanged.
+4. **Given** a successful primary analysis, **When** a consumer inspects any selected discourse decision, **Then** it can identify the analysed tokens and EDUs, selected split, relation, nuclearity, confidence semantics, uncertainty, and any post-model refinement that determined the returned graph.
+5. **Given** a successful eRST completion, **When** a consumer inspects an accepted secondary edge, **Then** it can trace the edge to both endpoints, supporting signals, edge and relation scores, joint selection score, calibration identity, and the decoder receipt that proves the accepted graph satisfied its constraints.
+6. **Given** a subdivided analysis, **When** a consumer inspects the result, **Then** it can trace every local unit into the recombined document graph and inspect the deterministic recombination receipt without requiring duplicate full local graphs.
+7. **Given** two evidence-detail policies over the same source and immutable model, **When** the requests are compared, **Then** each request records its resolved policy and has a distinct semantic request and cache identity whenever the returned evidence differs.
 
 ---
 
@@ -124,6 +128,13 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - Optional source dependencies are missing while the core package remains installed.
 - Documentation, runtime exports, serialized schemas, statuses, or error categories drift apart.
 - A development checkout is dirty while an immutable release artifact must still identify exactly what it contains.
+- A parser backend emits a complete decoded tree but an adapter attempts to return only its root or another lossy projection.
+- Tokenization, EDU capping, context-window truncation, or approximate token-to-source mapping would alter the analysed substrate.
+- A relation marker refines a model relation, nuclearity, concept, or confidence after inference.
+- An eRST candidate has supporting signals but is rejected, or an accepted edge has multiple supporting signals.
+- A decoder accepts no secondary edges but still completes constraint evaluation successfully.
+- Two output formalisms or evidence-detail policies would produce different semantic results from otherwise identical inputs.
+- A relation label is returned without a declared relation scheme, confidence meaning, calibration identity, or ontology-mapping provenance.
 
 ## Requirements *(mandatory)*
 
@@ -175,6 +186,27 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - **FR-044**: A release artifact MUST be built from an immutable, identified source revision; uncommitted source changes MUST NOT be silently incorporated into a release artifact.
 - **FR-045**: State-of-the-art claims MUST be bounded to the production API contract and supported by a dated comparison with current production-library practices for typed contracts, provenance, deterministic persistence, capability discovery, compatibility, and failure semantics.
 - **FR-046**: Any gap identified by that comparison MUST be resolved in the specification, explicitly rejected with rationale, or recorded as a named open decision before planning completes.
+- **FR-047**: Every analysis request MUST select a closed, typed output formalism and resolved analysis policy rather than relying on an unvalidated string or hidden backend default.
+- **FR-048**: The resolved analysis policy MUST expose output formalism, marker-refinement policy, evidence-detail policy, validation policy, relation-interpretation policy, and every other provider setting that can change the semantic result or returned evidence.
+- **FR-049**: The default evidence-detail policy MUST be decision-complete: it MUST expose the selected decision, its provider-computed confidence and uncertainty, and the evidence needed to explain that decision without requiring full model tensors or complete probability charts.
+- **FR-050**: A caller MUST be able to request normalized provider-computed score distributions through an explicit evidence-detail policy when those distributions are genuinely produced and can be retained without changing inference mathematics.
+- **FR-051**: Any evidence-detail choice that changes returned semantic evidence MUST participate in semantic request, result, and cache identity.
+- **FR-052**: Every analysed result MUST expose the exact analysed document substrate, including ordered tokens, EDUs, sentence and paragraph boundaries, token-to-EDU mapping, source anchors, and fidelity or transformation records for the values actually supplied to inference.
+- **FR-053**: Context-window truncation, EDU capping, uniform or approximate token allocation, or any other lossy analysis-substrate transformation MUST NOT occur silently; it MUST either fail closed or be explicitly authorized, represented, anchored, and included in semantic identity.
+- **FR-054**: Primary inference evidence MUST preserve, for each selected structural decision, the selected split or attachment, relation, nuclearity, provider-computed confidence values, uncertainty values such as normalized split entropy when produced, and stable links to the resulting nodes and edges.
+- **FR-055**: When normalized split, relation, nuclearity, or segmentation-boundary distributions are requested and genuinely produced, they MUST be returned in a typed, finite, normalized representation linked to the selected decision.
+- **FR-056**: Any marker, rule, ontology, or other post-model refinement MUST preserve a typed before-and-after record containing the original model decision, revised decision, triggering evidence, policy and algorithm identity, and affected graph elements.
+- **FR-057**: eRST completion evidence MUST preserve candidate identity, supporting signal identities, edge probability, selected relation and relation probability, joint selection score, calibration identity, decoder policy identity, and the complete provider decoder receipt for accepted and rejected decisions at the declared evidence level.
+- **FR-058**: Accepted secondary edges MUST link to both discourse endpoints and every supporting signal, and every returned supporting signal MUST identify the candidates or accepted edge decisions it supports so no public signal is orphaned.
+- **FR-059**: Model identity MUST be composite when production analysis uses multiple learned or rule-governed components, covering primary parser, segmenter, marker refinement, eRST detector/scorer, decoder, calibration, relation inventory, and ontology mapping whenever each component participates.
+- **FR-060**: Every successful analysis MUST expose a typed validation receipt containing validation policy and version, stable check identifiers, per-check outcomes or counts, overall disposition, warnings, and a recomputable receipt digest.
+- **FR-061**: Every multi-unit analysis MUST expose a typed recombination receipt containing local unit result identities, local-to-global node/edge/segment mappings, boundary and nuclear-spine inputs used for stitching, deterministic decisions, warnings, timings, and recomputable identity.
+- **FR-062**: Analysis anchors for relations and secondary edges MUST cover both endpoints and any supporting signal anchors; a parent-only or source-only endpoint projection is insufficient.
+- **FR-063**: Every returned relation and confidence MUST declare its relation scheme, confidence kind, calibration identity when applicable, and ontology-mapping provenance; an ontology concept MUST NOT be presented as mapped when the provider only copied a raw relation label.
+- **FR-064**: No production parser adapter MAY discard decoded tree depth, decision scores, boundary scores, unit mappings, decoder receipts, or other provider-owned inference evidence required by this contract; adapters MUST prove lossless handoff from backend output to the public contract.
+- **FR-065**: Raw tensors, embeddings, hidden activations, unrestricted cubic parsing charts, training-only gold labels, research-corpus records, and private workbench state MUST remain internal unless a future provider-owned requirement explicitly promotes a bounded value.
+- **FR-066**: When the provider does not genuinely compute a named evidence value, the contract MUST represent that capability as unavailable or the value as not produced; it MUST NOT fabricate, approximate, or infer provider evidence merely to populate a field.
+- **FR-067**: Conformance tests MUST audit each production backend and every primary-to-eRST, marker-refinement, subdivision, recombination, validation, serialization, and cache handoff for retained decision evidence and fail on any unexplained loss.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -187,6 +219,13 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - **Analysis Plan**: The deterministic mapping from prepared discourse to one or more parser-capacity-safe analysis units and their recombination boundaries.
 - **Model Identity and Capability**: Immutable model-release identity and the constraints or supported behaviours that affect preparation, analysis, and semantic caching.
 - **Production Analysis Outcome**: The validated discourse result together with the full preparation outcome, status, anchors, model identity, execution facts, and cache provenance.
+- **Analysis Policy**: The closed caller-selected and fully resolved semantic policy for output formalism, evidence detail, refinement, validation, relation interpretation, and loss handling.
+- **Analysed Document**: The exact ordered tokens, EDUs, boundaries, mappings, source anchors, and fidelity records actually supplied to analysis.
+- **Primary Inference Evidence**: Decision-linked segmentation, tree, split, relation, nuclearity, confidence, uncertainty, distribution, and refinement evidence produced by the primary pipeline.
+- **eRST Completion Evidence**: Candidate, signal, score, calibration, decoder, acceptance/rejection, and constraint-receipt evidence produced by secondary-edge completion.
+- **Composite Analysis Identity**: The exact identity of every learned, rule-based, calibrated, decoded, relation-inventory, and ontology component that affected the result.
+- **Recombination Receipt**: The deterministic account of how local analysis units map into the final document graph.
+- **Validation Receipt**: The typed check-by-check evidence that the assembled analysis satisfied the selected production validation policy.
 - **Completed-Stage Failure**: A typed failure that names the failed stage and safely retains evidence from prior completed stages.
 - **Capability Description**: The offline declaration of supported source forms, operations, versions, optional features, and parser requirements.
 - **Distribution Receipt**: The machine-readable link among source revision, package and contract versions, built artifacts, digests, environment, and verification evidence.
@@ -211,6 +250,14 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - **SC-014**: On the reference local development machine, preparation excluding model inference completes within 2 seconds for a 100,000-character source and within 15 seconds for a 1,000,000-character source, measured over five runs after one warm-up, with every run meeting the threshold.
 - **SC-015**: The dated production-library comparison covers every practice named in FR-045 and leaves zero unclassified gaps.
 - **SC-016**: Direct inspection of every release artifact and receipt finds zero missing required fields, digest mismatches, unidentified source states, or unverified compatibility claims.
+- **SC-017**: Across every production backend fixture, 100% of returned discourse nodes and edges trace to the exact analysed tokens and EDUs and to the provider decisions that created or refined them.
+- **SC-018**: Loss-audit mutation tests detect 100% of deliberately removed decoded spans, selected scores, boundary scores, refinement records, signal links, decoder receipts, recombination mappings, and validation checks.
+- **SC-019**: Every accepted secondary edge in the eRST conformance corpus has two valid endpoint anchors, at least one valid support path when supporting signals exist, and score semantics that reproduce its recorded decoder ordering inputs.
+- **SC-020**: Every post-model refinement fixture preserves both the original and revised decision with the exact triggering evidence and algorithm identity; zero overwritten decisions lack provenance.
+- **SC-021**: Every subdivided conformance fixture maps 100% of local nodes, edges, and segments into exactly one final result location and reproduces the recombination receipt digest.
+- **SC-022**: Every successful analysis exposes a validation receipt whose overall disposition agrees with every required check and whose digest recomputes from exposed values.
+- **SC-023**: Decision-complete and distribution-requested evidence policies each round-trip deterministically, and changing policy changes semantic request/cache identity in 100% of mutation tests where returned evidence differs.
+- **SC-024**: Installed-contract inspection finds zero public raw tensors, embeddings, hidden activations, unrestricted parsing charts, training-only gold fields, or private research/workbench values.
 
 ## Assumptions
 
@@ -218,6 +265,8 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - Feature 002's production ingest behaviour remains the baseline unless this specification explicitly strengthens the public contract.
 - Parser mathematics and trained architecture remain unchanged by this feature.
 - “Complete evidence” means evidence `isanlp_rst` genuinely creates, consumes, validates, or derives as provider authority.
+- Decision-complete evidence is the default balance: retain selected decisions, their confidence and uncertainty, and explanatory receipts; expose normalized distributions only when explicitly requested and genuinely produced.
+- Scientific internals that do not constitute stable production evidence remain private even when they are temporarily available during inference.
 - Downstream projects translate the provider contract into their own domain-specific reporting and unavailable/non-use semantics.
 - Raw source text is omitted from default failure diagnostics; an explicitly enabled diagnostic mode may be evaluated during planning.
 - Durable local release artifacts are intentionally version-controlled so development machines can consume the same immutable build without rebuilding.

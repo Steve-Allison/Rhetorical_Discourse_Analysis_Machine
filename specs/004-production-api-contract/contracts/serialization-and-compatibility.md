@@ -90,11 +90,16 @@ The contract distinguishes:
 
 The request identity contains source identity, source contract, preparation and
 planning policies, prepared discourse, plan, immutable model identity, parser
-capacity, analysis pipeline version, and result contract write version.
+capacity, complete resolved analysis policy, exact analysed-document substrate,
+composite identities for every participating primary, segmenter, refinement,
+eRST, decoder, calibration, relation, and ontology component, analysis pipeline
+version, and result contract write version.
 
-The result identity adds validated RST/eRST analysis and anchors. The cache
-entry identity binds request and result identities. A cache load succeeds only
-when all three independently recompute and agree with the current request.
+The result identity adds validated RST/eRST analysis, primary/eRST decision
+evidence, both-endpoint and signal anchors, refinement records, recombination
+receipt, and validation receipt. The cache entry identity binds request and
+result identities. A cache load succeeds only when all three independently
+recompute and agree with the current request.
 
 Mutable, unidentified, or absent model identities are explicitly ineligible
 for durable semantic caching. The service may still analyse with a mutable
@@ -108,6 +113,12 @@ segment, item, and anchor counts are integers. Confidence or calibrated score
 values produced by the scientific model remain the model's defined values, but
 their serialization must be finite and use the validated representation of the
 existing analysis contract. Feature 004 does not change their mathematics.
+
+Every score additionally carries its declared confidence kind, range,
+producing component, and calibration identity or explicit uncalibrated state.
+Normalized distributions use ordered labelled finite values and validate their
+sum within the contract tolerance. Raw tensors and unrestricted parsing charts
+are not serializable public contract values.
 
 ## Loader sequence
 
@@ -199,6 +210,11 @@ Required schemas include:
 
 - preparation outcome;
 - production analysis outcome union;
+- analysis policy and resolved request;
+- analysed document and substrate transformations;
+- primary inference and eRST completion evidence;
+- composite analysis identity;
+- recombination and validation receipts;
 - production capability description;
 - safe production failure union;
 - explicitly opted-in diagnostic production failure union;
@@ -223,7 +239,16 @@ The conformance suite must prove:
    serialize identically;
 8. duplicate keys, unknown fields, invalid values, corrupt digests, and
    unsupported versions fail before use;
-9. generated schemas and packaged schemas are byte-identical.
+9. generated schemas and packaged schemas are byte-identical;
+10. output-formalism and evidence-detail changes alter request/cache identity
+    whenever returned semantic evidence changes;
+11. analysed-token/EDU/boundary/mapping/fidelity changes alter request and
+    result identity;
+12. primary/eRST decision, refinement, decoder, composite-component,
+    recombination, and validation receipt changes alter result identity;
+13. removing any required handoff evidence causes validation or reload to fail;
+14. receipt timings and other execution-only values leave semantic bytes
+    unchanged.
 
 ## Failure serialization
 

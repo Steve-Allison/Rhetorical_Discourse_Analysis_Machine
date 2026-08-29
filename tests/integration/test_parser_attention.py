@@ -7,14 +7,16 @@ import pytest
 import torch
 from torch import Tensor, nn
 
-from isanlp_rst.dmrst_parser.src.parser.modules import (
+from workbench.archive.legacy_2021.dmrst_parser.src.parser.modules import (
     DefaultPlusBiMPMClassifier as DmrstDefaultPlusBiMPMClassifier,
 )
-from isanlp_rst.dmrst_parser.src.parser.modules import PointerAtten as DmrstPointerAtten
-from isanlp_rst.universal_parser.src.parser.modules import (
+from workbench.archive.legacy_2021.dmrst_parser.src.parser.modules import PointerAtten as DmrstPointerAtten
+from workbench.archive.legacy_2021.universal_parser.src.parser.modules import (
     DefaultPlusBiMPMClassifier as UnirstDefaultPlusBiMPMClassifier,
 )
-from isanlp_rst.universal_parser.src.parser.modules import PointerAtten as UnirstPointerAtten
+from workbench.archive.legacy_2021.universal_parser.src.parser.modules import (
+    PointerAtten as UnirstPointerAtten,
+)
 
 
 _POINTER_CLASSES = (DmrstPointerAtten, UnirstPointerAtten)

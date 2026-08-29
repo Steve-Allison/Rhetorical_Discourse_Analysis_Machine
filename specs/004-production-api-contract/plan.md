@@ -20,6 +20,14 @@ public-surface inventory, canonical persistence, clean-install conformance, and
 tracked release artifacts will make the contract dependable across local
 development machines.
 
+Analysis is also made decision-complete. A resolved `AnalysisPolicy` selects
+the output formalism and evidence detail; the outcome retains the exact
+analysed document, primary and eRST decision evidence, composite component
+identity, refinement provenance, both-endpoint anchors, recombination receipt,
+and validation receipt. Production adapters may normalize backend-specific
+values into this contract but may not reduce a decoded tree, overwrite a model
+decision without trace, orphan a signal, or discard a provider receipt.
+
 The incompatibility requires `isanlp_rst` 5.0.0 and serialized production
 contract 2.0.0. The work changes the public contract and orchestration around
 existing inference; it does not change model architecture, inference
@@ -59,13 +67,19 @@ discovery performs no model load, network access, or analysis
 import independent of optional format packages; immutable public values; no
 raw private source text in default failure rendering; fail closed on incomplete
 evidence; no partial multi-unit success; no model or scientific changes; no
-downstream-specific fields
+downstream-specific fields; no silent truncation, EDU capping, approximate
+token allocation, root-only tree projection, or evidence loss at backend
+handoffs; no public raw tensors, embeddings, activations, unrestricted charts,
+training-only fields, or private workbench records
 
 **Scale/Scope**: Six source forms; nine lifecycle failure stages; complete
 inventory for every valid source item; analysed and empty-primary analysis
 success variants; preparation-only intentional non-analysis; provider
 unavailability and processing-failure records; one current write contract and an
-explicit read-version registry
+explicit read-version registry; two output formalisms (`rst_tree`,
+`erst_graph`); decision-complete evidence by default and optional normalized
+distributions; every active production backend and analysis handoff covered by
+a loss audit
 
 ## Constitution Check
 
@@ -104,6 +118,7 @@ specs/004-production-api-contract/
 ├── quickstart.md
 ├── contracts/
 │   ├── production-api-v2.md
+│   ├── analysis-evidence.md
 │   ├── serialization-and-compatibility.md
 │   └── distribution-and-public-surface.md
 ├── evidence/
@@ -143,6 +158,7 @@ isanlp_rst/
 │   │   ├── source.py               # artifact, contract, representations
 │   │   ├── preparation.py          # policy, inventory, plan, outcome
 │   │   ├── analysis.py             # success variants and execution evidence
+│   │   ├── inference.py            # policies, analysed document, decisions, receipts
 │   │   ├── failure.py              # stage-specific persisted failures
 │   │   └── capabilities.py         # capability and parser identity contracts
 │   ├── capabilities.py             # offline discovery
@@ -175,6 +191,14 @@ tests/
 │       ├── test_capabilities_offline.py
 │       ├── test_preparation_outcome.py
 │       ├── test_analysis_outcomes_v2.py
+│       ├── test_analysis_policy.py
+│       ├── test_analysed_document.py
+│       ├── test_primary_inference_evidence.py
+│       ├── test_erst_completion_evidence.py
+│       ├── test_refinement_provenance.py
+│       ├── test_recombination_receipt.py
+│       ├── test_validation_receipt.py
+│       ├── test_backend_evidence_loss.py
 │       ├── test_failure_stages.py
 │       ├── test_serialization_v2.py
 │       ├── test_semantic_mutations.py
@@ -266,25 +290,43 @@ If this phase changes Docling or DocLang harvest meaning rather than merely
 exposing existing values, implementation pauses for the mandated current
 upstream specification and package-version comparison before editing.
 
-### Phase D: Make analysis and failures fail closed
+### Phase D: Preserve decision-complete analysis evidence and fail closed
 
 **Files**: `isanlp_rst/ingest/service.py`,
 `isanlp_rst/ingest/validation.py`, `isanlp_rst/ingest/cache.py`,
 `isanlp_rst/ingest/contracts/analysis.py`,
 `isanlp_rst/ingest/contracts/failure.py`
 
-1. Embed the complete preparation outcome in both analysis success variants.
-2. Expose full model identity, anchors, execution facts, and cache provenance.
-3. Validate RST tree, eRST DAG, anchors, unit completeness, and identity
-   consistency before return or cache write.
-4. Translate every lifecycle failure into a safe stage-specific payload and
-   wrap it in an idiomatic chained exception.
-5. Retain all and only completed-stage evidence; never persist partial success.
+Additional producer files are `isanlp_rst/parser.py`,
+`isanlp_rst/transformer_parser/`, `isanlp_rst/english/relations/primer.py`,
+`isanlp_rst/english/erst/completer.py`, `isanlp_rst/erst/decoder.py`, and
+`isanlp_rst/hierarchical/stitcher.py`. They are touched only to retain or map
+provider values the production pipeline genuinely creates; trained mathematics
+and selection behaviour remain unchanged.
 
-**Success criterion**: each documented success state and every acquisition,
-classification, preparation, planning, inference, validation, assembly,
-persistence, and cache-retrieval failure is reachable through a conformance
-fixture with the exact allowed evidence.
+1. Resolve and embed a closed `AnalysisPolicy` covering output formalism,
+   evidence detail, marker refinement, relation interpretation, validation, and
+   lossy-input handling.
+2. Embed the complete preparation outcome and exact `AnalysedDocument` in both
+   analysis success variants.
+3. Preserve primary segmentation/tree/relation/nuclearity decisions and
+   uncertainties, with normalized distributions only at the requested evidence
+   level.
+4. Preserve marker before/after refinements, eRST signal/candidate/score links,
+   the full decoder receipt, and the composite component identity.
+5. For multi-unit analysis, emit a compact deterministic recombination receipt
+   with complete local-to-global mappings rather than duplicating local graphs.
+6. Validate RST tree, eRST DAG, both-endpoint anchors, evidence links, unit
+   completeness, and identity consistency; return a typed validation receipt.
+7. Translate every lifecycle failure into a safe stage-specific payload and
+   wrap it in an idiomatic chained exception.
+8. Retain all and only completed-stage evidence; never persist partial success.
+
+**Success criterion**: every backend and handoff passes the evidence-loss audit;
+every returned node and edge traces to the analysed substrate and creating
+decision; every refinement, accepted eRST edge, recombination, and validation
+decision has its typed receipt; and each documented success state and lifecycle
+failure is reachable with exactly the allowed evidence.
 
 ### Phase E: Add offline capability and deterministic persistence
 
@@ -353,6 +395,10 @@ hashes unchanged.
 | FR-031, FR-035-FR-038 | Installed consumer boundary in Phases E-F | Core/formats isolated installs and zero-private-import adapter fixture |
 | FR-042-FR-044 | Durable release in Phase F | [distribution-and-public-surface.md](./contracts/distribution-and-public-surface.md), tracked artifact/receipt and second-machine proof |
 | FR-045-FR-046 | Dated Phase 0 comparison | [research.md](./research.md) with every material gap resolved or rejected |
+| FR-047-FR-053 | Typed request, formalism, evidence policy, and exact analysed substrate in Phase D | [analysis-evidence.md](./contracts/analysis-evidence.md), policy/identity and no-silent-loss tests |
+| FR-054-FR-058 | Primary decision, refinement, eRST score/signal/decoder evidence in Phase D | Producer handoff and evidence-link conformance tests |
+| FR-059-FR-064 | Composite identity, validation/recombination receipts, both-endpoint anchors, and lossless adapters in Phase D | Receipt, anchor, mapping, and backend loss-audit tests |
+| FR-065-FR-067 | Public evidence boundary, honest unavailability, and every-handoff coverage in Phases D-F | Public-surface negative tests and installed conformance matrix |
 
 ## Verification Plan
 
@@ -383,7 +429,18 @@ pixi run -e production production-clean-install
 - rich outcome, capability, and failure round-trips;
 - semantic mutation and execution-only negative controls;
 - graph, anchor, coverage, and cache corruption failures;
-- cached/uncached canonical semantic-byte equality.
+- cached/uncached canonical semantic-byte equality;
+- typed output-formalism and evidence-detail policy mutation coverage;
+- exact analysed tokens, EDUs, boundaries, mappings, and fail-closed truncation
+  or approximation behaviour;
+- primary split, relation, nuclearity, segmentation evidence, and marker
+  before/after refinements;
+- eRST candidate, signal, score, calibration links, and exact decoder receipts;
+- composite model identity, recombination receipts, validation receipts, and
+  both-endpoint anchors;
+- deliberate evidence-removal mutations for every production backend and
+  handoff, plus negative public-surface checks for forbidden scientific
+  internals.
 
 Release promotion additionally records exact output from the build report,
 artifact validator, clean-install checks, full quality gates, and candidate

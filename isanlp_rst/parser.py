@@ -4,8 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .annotation_rst import DiscourseUnit
-from .dmrst_parser.predictor import PredictorDMRST
-from .universal_parser.predictor import PredictorUniRST
+from .transformer_parser.predictor import PredictorModernBERT
 from .utils.parse_result import ParseFailedError, extract_root_tree
 
 __all__ = ["ParseFailedError", "Parser", "extract_root_tree"]
@@ -17,33 +16,20 @@ if TYPE_CHECKING:
 
 
 class Parser:
-    """Public façade for the DMRST and UniRST parser families.
+    """Public façade for Modern pure transformer discourse parsing.
 
-    The family is resolved in priority order:
-
-    1. Explicit ``family='dmrst'|'unirst'`` argument.
-    2. ``hf_model_version`` (mapped to a family via ``DMRST_PARSERS`` /
-       ``UNIVERSAL_PARSERS``).
-    3. ``model_dir`` content auto-detection (UniRST: ``data_manager_*.json``,
-       legacy ``data_manager_*.pickle``, ``relation_table_*.txt``, or a
-       ``config.json`` with ``data.corpora``; DMRST: ``relation_table.txt``).
-
-    Device selection uses ``device=`` (``"auto"`` by default — CUDA if
-    present, else MPS on Apple Silicon, else CPU). The legacy integer
-    ``cuda_device=`` is still accepted but deprecated.
-
-    Examples:
-        >>> Parser(hf_model_version='gumrrg', device='cpu')               # DMRST
-        >>> Parser(hf_model_version='unirst', relinventory='eng.erst.gum') # UniRST
-        >>> Parser.from_model_release('/models', 'gumrrg-v3', family='dmrst')
+    Modern Pure Transformer Parser is the production default:
+        >>> Parser(family="modernbert", device="auto")
+        >>> Parser.from_model_release('/models', 'modernbert-v5', family='modernbert')
     """
 
+    MODERNBERT_PARSERS = ("modernbert", "modernbert-base", "modernbert-large")
     DMRST_PARSERS = ("gumrrg", "rstdt", "rstreebank")
     UNIVERSAL_PARSERS = ("rrtrrg", "unirst")
-    MODERNBERT_PARSERS = ("modernbert", "modernbert-base", "modernbert-large")
-    AVAILABLE_VERSIONS = DMRST_PARSERS + UNIVERSAL_PARSERS + MODERNBERT_PARSERS
-    AVAILABLE_FAMILIES = ("dmrst", "unirst", "modernbert")
-    _DEFAULT_HF_MODEL_NAME = "tchewik/isanlp_rst_v3"
+    AVAILABLE_VERSIONS = MODERNBERT_PARSERS + DMRST_PARSERS + UNIVERSAL_PARSERS
+    AVAILABLE_FAMILIES = ("modernbert", "dmrst", "unirst")
+    _DEFAULT_HF_MODEL_NAME = "answerdotai/ModernBERT-base"
+    predictor: Any
 
     def __init__(
         self,
@@ -85,14 +71,8 @@ class Parser:
         self.relinventory = relinventory
         self._validated_model_release = _validated_model_release
 
-        # When loading from disk, suppress the default HF repo name so the
-        # predictor unambiguously selects local mode.
-        effective_hf_name = None if model_dir is not None else hf_model_name
-
         match resolved_family:
             case "modernbert":
-                from isanlp_rst.transformer_parser import PredictorModernBERT
-
                 model_size = "large" if (hf_model_version == "modernbert-large" or (model_dir and "large" in str(model_dir))) else "base"
                 self.predictor = PredictorModernBERT(
                     model_size=model_size,
@@ -100,25 +80,9 @@ class Parser:
                     device=device or "auto",
                     torch_dtype=dtype or "auto",
                 )
-            case "dmrst":
-                self.predictor = PredictorDMRST(
-                    model_dir=model_dir,
-                    hf_model_name=effective_hf_name,
-                    hf_model_version=hf_model_version,
-                    device=device,
-                    cuda_device=cuda_device,
-                    dtype=dtype,
-                )
-            case "unirst":
-                self.predictor = PredictorUniRST(
-                    model_dir=model_dir,
-                    hf_model_name=effective_hf_name,
-                    hf_model_version=hf_model_version,
-                    relinventory=relinventory,
-                    relinventory_idx=relinventory_idx,
-                    device=device,
-                    cuda_device=cuda_device,
-                    dtype=dtype,
+            case "dmrst" | "unirst":
+                raise ValueError(
+                    f"Legacy {resolved_family!r} has been archived from production. Use family='modernbert' for production parsing."
                 )
             case _:
                 raise ValueError(f"Unknown family {resolved_family!r}.")

@@ -62,6 +62,10 @@ repository content.
 |---|---|---|---|
 | Strict typed values | Pydantic supports strict, frozen, closed models and explicit tagged unions ([configuration](https://docs.pydantic.dev/latest/api/config/), [unions](https://docs.pydantic.dev/latest/concepts/unions/)) | Models are frozen and closed, but state-dependent optional fields and incomplete nested strictness still permit weak states | Use one shared strict base and explicit discriminated success and failure variants |
 | Complete provider evidence | Typed domain contracts expose decision inputs and results, not only fingerprints | Inventory, policy, plan, source contract, retained values, and model identity are dropped or digest-only | Return complete `PreparationOutcome`; embed it in analysis outcomes; retain full typed representations |
+| Decision-complete inference | Explainable production contracts preserve the selected decision, confidence meaning, uncertainty, and stable links to the returned structure | Primary split/relation/nuclearity scores, segmentation boundary scores, and entropy can be reduced to the final tree; marker refinement can overwrite the original decision | Add typed primary decision and refinement evidence, with decision-complete default and explicit distribution detail |
+| Lossless backend handoff | A public adapter must preserve the semantic output of the backend it wraps and disclose any lossy input transformation | A backend can compute a full decoded structure while an adapter returns only a projection; capping, truncation, or approximate token allocation can be hidden | Add exact `AnalysedDocument`, fail-closed loss policy, and deliberate evidence-removal conformance tests for every backend/handoff |
+| Composite analysis identity | Reproducible composite inference identifies every learned, calibrated, decoded, rule-based, inventory, and ontology component that affects a result | A primary release identity does not identify marker refinement, eRST scorer/decoder/calibration, relation inventory, or ontology mapping | Add one composite identity whose participating components are explicit and semantic |
+| Decision and validation receipts | Constraint decoders, graph recombination, and validation should return inspectable typed evidence of the decisions and checks they performed | eRST decode receipts and stitching inputs/mappings can be discarded; validation currently returns only pass/fail behaviour | Expose eRST decode, recombination, and validation receipts with stable check/decision identifiers and recomputable digests |
 | Deterministic identity | RFC 8785 defines invariant I-JSON bytes suitable for hashing ([RFC 8785](https://www.rfc-editor.org/rfc/rfc8785.html)) | Semantic hashing uses RFC 8785 in places, but public JSON persistence and digest projection are not one documented contract | Canonicalize every top-level persisted record; document the exact semantic projection; separate semantic and execution evidence |
 | Published schemas | Pydantic can generate serialization-mode JSON Schema; Draft 2020-12 is the current JSON Schema dialect ([Pydantic JSON Schema](https://docs.pydantic.dev/latest/concepts/json_schema/), [Draft 2020-12](https://json-schema.org/draft/2020-12)) | No committed public schemas or byte-parity gate | Generate, package, commit, and parity-test schemas from runtime models |
 | Compatibility | SemVer requires a precise public API and a major bump for incompatible changes ([SemVer](https://semver.org/)) | Package remains 4.0.0 despite the proposed breaking contract; loaders have no compatibility registry | Release package 5.0.0 and contract 2.0.0; one write version, explicit readable versions, fail-closed dispatch |
@@ -76,6 +80,39 @@ repository content.
 
 Every material comparison gap has a disposition. No open decision remains for
 planning.
+
+## Provider-value retention audit for this revision
+
+The revision inspected the production contract and the active analysis
+handoffs, not merely the final `RstAnalysis` shape. The checkout was concurrently
+changing, so these observations define requirements rather than certifying a
+release candidate:
+
+- primary backends compute structural split choices, relation/nuclearity
+  scores, segmentation boundary scores, and uncertainty values that are not
+  all retained by the public result;
+- relation-marker refinement can replace model relation, concept, nuclearity,
+  or confidence without preserving the original decision and trigger;
+- eRST scoring and decoding create signal-gated candidates, edge probability,
+  relation probability, joint ordering score, calibration context, and an
+  `ErstDecodeReceipt`, while the completion path retains only a subset;
+- signal identities can become disconnected from accepted secondary edges, and
+  the canonical prepared document does not yet guarantee the complete token
+  substrate required by signal detection;
+- hierarchical stitching can discard local result identities, local-to-global
+  maps, nuclear-spine inputs, warnings, and timings;
+- analysis validation has no typed receipt even though a successful return
+  depends on its checks;
+- relation labels and confidence values do not consistently declare scheme,
+  confidence kind, calibration, and ontology-mapping provenance;
+- the active transformer parser path demonstrates why lossless-adapter
+  requirements are necessary: a backend may expose a complete decoded span set
+  while an adapter, token cap, context truncation, or approximate token mapping
+  can reduce the evidence visible above it.
+
+These are provider-owned values because `isanlp_rst` creates or uses them to
+select, refine, validate, or assemble its own result. The revision does not
+require evidence that exists only in a downstream workflow.
 
 ## Decision 1: Success and failure algebra
 
@@ -286,6 +323,85 @@ failures, `pip check`, and retained `pip inspect` environment evidence.
 
 The second development machine installs and verifies the tracked wheel; it does
 not rebuild the sdist.
+
+## Decision 9: Typed analysis policy and exact analysed substrate
+
+### Selected policy contract
+
+`analyse()` accepts a closed `AnalysisPolicy`. The resolved policy is embedded
+in the semantic outcome and contains:
+
+- `output_formalism`: `rst_tree` or `erst_graph`;
+- `evidence_detail`: `decision_complete` or `normalized_distributions`;
+- marker-refinement policy;
+- validation policy and version;
+- relation-interpretation and ontology-mapping policy;
+- lossy-input policy, whose production default is `forbid`.
+
+The outcome exposes an `AnalysedDocument` containing the exact tokens, EDUs,
+sentence/paragraph boundaries, token-to-EDU mapping, source anchors, and
+fidelity records actually supplied to inference. Context truncation, EDU caps,
+or approximate token allocation cannot be hidden inside an adapter. They either
+fail closed or require an explicit policy and fully anchored transformation.
+
+### Rejected alternatives
+
+- Free-form output strings: invalid or unsupported formalism remains
+  representable and semantic identity is ambiguous.
+- Backend defaults not returned in the outcome: a consumer cannot reproduce the
+  request.
+- Returning prepared segments as a proxy for analysed tokens/EDUs: preparation
+  and the actual inference substrate are not necessarily identical.
+
+## Decision 10: Bounded decision evidence
+
+### Selected evidence boundary
+
+The default is `decision_complete`. It retains selected segmentation, split,
+relation, nuclearity, eRST, refinement, recombination, and validation decisions;
+provider-computed confidence; uncertainty such as normalized split entropy;
+and the stable evidence/receipt links required to explain the final graph.
+
+`normalized_distributions` additionally retains the finite normalized split,
+relation, nuclearity, and boundary distributions that the active backend
+genuinely computes. The policy participates in semantic request and cache
+identity because returned semantic evidence differs.
+
+Raw tensors, embeddings, hidden activations, unrestricted cubic charts,
+training-only gold labels, corpus records, and private workbench state remain
+internal. The API does not fabricate a distribution for a backend that does not
+produce one.
+
+## Decision 11: Refinement and eRST provenance
+
+Every post-model refinement is a before/after record linked to the original
+decision, revised decision, trigger signal or rule, policy identity, algorithm
+identity, and affected graph elements. Overwrite-without-trace is invalid.
+
+Every eRST accepted edge retains its candidate identity, both endpoints,
+supporting signal identities, edge probability, selected relation and relation
+probability, joint selection score, calibration identity, decoder policy, and
+decoder receipt. Rejected candidates are retained at the selected evidence
+level. Signals and decisions are linked in both directions so returned signals
+cannot be orphaned.
+
+## Decision 12: Composite identity, recombination, and validation
+
+The semantic result contains one `CompositeAnalysisIdentity` whose components
+cover every participating primary parser, segmenter, marker refiner, eRST
+detector/scorer, decoder, calibration, relation inventory, and ontology mapping.
+Absent components are explicitly `not_used`, not omitted ambiguously.
+
+Multi-unit analysis returns a compact `RecombinationReceipt`: local result
+identities, complete local-to-global mappings, boundary/nuclear-spine inputs,
+deterministic stitching decisions, warnings, timings, and digest. It does not
+duplicate complete local graphs unless a future evidence policy explicitly
+requests them.
+
+Every success returns a `ValidationReceipt` containing the policy/version,
+stable check identifiers, outcomes and counts, overall disposition, warnings,
+and digest. A required failed check makes construction of a success outcome
+impossible.
 
 ## Rejected scope
 

@@ -4,10 +4,9 @@ from pathlib import Path
 
 import pytest
 from isanlp_rst.annotation_rst import DiscourseUnit
-
-from isanlp_rst.dmrst_parser.predictor import PredictorDMRST
 from isanlp_rst.parser import Parser
 from isanlp_rst.utils.parse_result import ParseFailedError, extract_root_tree
+from workbench.archive.legacy_2021.dmrst_parser.predictor import PredictorDMRST
 
 
 def test_extract_root_tree_happy_path():
@@ -41,12 +40,12 @@ def test_extract_root_tree_not_mapping():
 
 
 def test_parser_typed_boundary_returns_discourse_unit() -> None:
-    class FakePredictor(PredictorDMRST):
+    class FakePredictor:
         def parse_rst(self, text: str) -> dict[str, list[DiscourseUnit]]:
             return {"rst": [DiscourseUnit(id=1, start=0, end=len(text), text=text)]}
 
     parser = Parser.__new__(Parser)
-    parser.predictor = FakePredictor.__new__(FakePredictor)
+    parser.predictor = FakePredictor()
     root = parser.parse_tree("Typed boundary.")
     assert isinstance(root, DiscourseUnit)
     assert root.text == "Typed boundary."

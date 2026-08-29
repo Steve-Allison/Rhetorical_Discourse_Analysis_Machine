@@ -89,6 +89,9 @@ class PredictorModernBERT:
         output_formalism: str = "rst_tree",
     ) -> tuple[DiscourseUnit, RstAnalysis]:
         """Parse raw text or segmented EDUs into a DiscourseUnit tree and RstAnalysis DAG."""
+        if not text or not text.strip():
+            raise ValueError("Input text must be non-empty.")
+
         if not edus:
             import re
 
@@ -152,8 +155,8 @@ class PredictorModernBERT:
         edus: Sequence[str],
         full_text: str,
     ) -> DiscourseUnit:
-        """Construct hierarchical DiscourseUnit tree from decoded CKY tree spans."""
-        if not tree_spans:
+        """Construct full recursive DiscourseUnit tree from decoded CKY tree spans."""
+        if not edus:
             return DiscourseUnit(
                 id=1,
                 text=full_text,
@@ -163,46 +166,81 @@ class PredictorModernBERT:
                 end=len(full_text),
             )
 
-        root_span = tree_spans[0]
-        root_unit = DiscourseUnit(
-            id=1000,
-            text=full_text,
-            relation=root_span.relation,
-            nuclearity=root_span.nuclearity,
-            start=0,
-            end=len(full_text),
-        )
+        # Build map from (start, end) to ParsedRstTreeSpan
+        span_map: dict[tuple[int, int], ParsedRstTreeSpan] = {
+            (s.start, s.end): s for s in tree_spans
+        }
 
-        # Build left and right children
-        left_edus = edus[root_span.start : root_span.split + 1]
-        right_edus = edus[root_span.split + 1 : root_span.end + 1]
+        # Calculate exact character offsets for each EDU in full_text
+        edu_char_spans: list[tuple[int, int]] = []
+        cur_pos = 0
+        for edu_text in edus:
+            idx = full_text.find(edu_text, cur_pos)
+            if idx != -1:
+                st = idx
+                en = idx + len(edu_text)
+                cur_pos = en
+            else:
+                st = cur_pos
+                en = min(len(full_text), cur_pos + len(edu_text))
+                cur_pos = en + 1
+            edu_char_spans.append((st, en))
 
-        left_text = " ".join(left_edus)
-        right_text = " ".join(right_edus)
+        node_id_counter = 1
 
-        left_nuc = "N" if root_span.nuclearity in ("NS", "NN") else "S"
-        right_nuc = "N" if root_span.nuclearity in ("SN", "NN") else "S"
+        def build_subtree(i: int, j: int, parent_nuc: str = "N", parent_rel: str = "same-unit") -> DiscourseUnit:
+            nonlocal node_id_counter
+            st_char = edu_char_spans[i][0]
+            en_char = edu_char_spans[j][1]
+            span_text = full_text[st_char:en_char]
 
-        left_child = DiscourseUnit(
-            id=root_span.start + 1,
-            text=left_text,
-            relation="span" if left_nuc == "N" else root_span.relation,
-            nuclearity=left_nuc,
-            start=0,
-            end=len(left_text),
-        )
-        right_child = DiscourseUnit(
-            id=root_span.split + 2,
-            text=right_text,
-            relation="span" if right_nuc == "N" else root_span.relation,
-            nuclearity=right_nuc,
-            start=len(left_text) + 1,
-            end=len(full_text),
-        )
+            if i == j:
+                # EDU Leaf node
+                unit_id = node_id_counter
+                node_id_counter += 1
+                return DiscourseUnit(
+                    id=unit_id,
+                    text=span_text,
+                    relation=parent_rel,
+                    nuclearity=parent_nuc,
+                    start=st_char,
+                    end=en_char,
+                )
 
-        root_unit.left = left_child
-        root_unit.right = right_child
-        return root_unit
+            span = span_map.get((i, j))
+            if span is not None:
+                split = span.split
+                rel = span.relation
+                nuc = span.nuclearity
+            else:
+                split = (i + j) // 2
+                rel = "elaboration"
+                nuc = "NS"
+
+            left_nuc = "N" if nuc in ("NS", "NN") else "S"
+            right_nuc = "N" if nuc in ("SN", "NN") else "S"
+
+            left_rel = "span" if left_nuc == "N" else rel
+            right_rel = "span" if right_nuc == "N" else rel
+
+            left_child = build_subtree(i, split, parent_nuc=left_nuc, parent_rel=left_rel)
+            right_child = build_subtree(split + 1, j, parent_nuc=right_nuc, parent_rel=right_rel)
+
+            unit_id = node_id_counter
+            node_id_counter += 1
+
+            return DiscourseUnit(
+                id=unit_id,
+                left=left_child,
+                right=right_child,
+                relation=parent_rel,
+                nuclearity=parent_nuc,
+                start=st_char,
+                end=en_char,
+                text=span_text,
+            )
+
+        return build_subtree(0, len(edus) - 1, parent_nuc="N", parent_rel="same-unit")
 
     def _build_rst_analysis(self, root_unit: DiscourseUnit, full_text: str) -> RstAnalysis:
         """Convert root DiscourseUnit to governed RstAnalysis contract."""

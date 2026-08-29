@@ -56,6 +56,7 @@ from .ontology import OntologyAdapter
 from .parser import Parser
 from .rstviewer import RenderedRST
 from .rstviewer import main as _rst_main
+from .transformer_parser import PredictorModernBERT, PureTransformerParsingNet
 from .utils.analysis import find_cdu, relation_category, tree_stats
 
 __all__ = [
@@ -63,6 +64,8 @@ __all__ = [
     "CapabilityStatusEnum",
     "ConfidenceKindEnum",
     "DeviceEnum",
+    "PredictorModernBERT",
+    "PureTransformerParsingNet",
     "DiscourseSignal",
     "DiscourseUnit",
     "DocumentToken",

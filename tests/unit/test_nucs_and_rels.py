@@ -2,8 +2,8 @@
 
 import pytest
 
-from isanlp_rst.dmrst_parser.src.parser.data import nucs_and_rels as dmrst_nucs
-from isanlp_rst.universal_parser.src.parser.data import nucs_and_rels as unirst_nucs
+from workbench.archive.legacy_2021.dmrst_parser.src.parser.data import nucs_and_rels as dmrst_nucs
+from workbench.archive.legacy_2021.universal_parser.src.parser.data import nucs_and_rels as unirst_nucs
 
 
 @pytest.mark.parametrize(
