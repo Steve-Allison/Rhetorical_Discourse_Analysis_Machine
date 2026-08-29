@@ -88,6 +88,7 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 markers = [
   "slow: integration tests that download models from HF (~2 GB each)",
+  "stress: concurrency, megadoc, and memory-leak stress tests",
 ]
 
 [tool.pixi.workspace]
@@ -157,8 +158,10 @@ reportPrivateImportUsage = "none"
 [tool.pixi.feature.offline.tasks]
 build-production = "python -m tools.production_boundary.build"
 validate-production-artifacts = "python -m tools.production_boundary --root . --artifact dist/isanlp_rst-4.0.0-py3-none-any.whl --artifact dist/isanlp_rst-4.0.0.tar.gz"
-test = "pytest -m 'not slow' -q"
+test = "pytest -m 'not slow and not stress' -q"
 test-all = "pytest -q"
+test-stress = "pytest tests/stress -q"
+test-deep = "pytest -q"
 smoke = "python scripts/smoke_test.py"
 smoke-full = "python scripts/smoke_test.py --full"
 smoke-mps = "python scripts/smoke_test.py --device mps"
