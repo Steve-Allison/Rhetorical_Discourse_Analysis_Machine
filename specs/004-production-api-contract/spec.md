@@ -215,6 +215,8 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - **FR-069**: Every immutable model or component identity claimed by a result MUST identify the exact tokenizer, configuration, weights, calibration, inventory, rules, and ontology bytes actually loaded for that execution; validating one release while loading another artifact or remote revision MUST fail closed.
 - **FR-070**: The production parser MUST NOT synthesize midpoint splits, default relation or nuclearity labels, sequential character offsets, or any other apparently analysed decision for content the model did not analyse; missing alignment or capacity-safe coverage MUST produce a typed failure unless an explicit loss policy represents the exact transformation without fabricating inference evidence.
 - **FR-071**: Capability discovery and the public-surface inventory MUST distinguish the active ModernBERT production backend from archived or deliberately unavailable parser families and MUST NOT advertise a family, release, evidence level, or output formalism that the installed runtime cannot execute through the canonical typed parser-analysis operation.
+- **FR-072**: The installed `isanlp-rst` command MUST be a projection of the same canonical source-ingest and parser-analysis contracts: structured inputs MUST enter through `SourceArtifact`, one request MUST execute inference at most once, JSON output MUST use the versioned canonical contract rather than a separately invented schema, and human-readable tree/statistics/RS3 views MUST declare that they are lossy presentation projections.
+- **FR-073**: If the local HTTP adapter remains a supported installed capability, it MUST use the same typed request, success, failure, serialization, component-identity, and evidence contracts as the Python and command-line APIs; it MUST NOT expose raw exception strings, return count-only analysis as a complete result, or become a separate semantic authority.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -270,6 +272,7 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - **SC-025**: A direct parser consumer explains every returned node, primary edge, secondary edge, refinement, and validation/recombination decision using one public parser-analysis result and zero private imports; production ingest embeds that same semantic parser result rather than reconstructing it from a graph-only projection.
 - **SC-026**: For every immutable production fixture, byte-inventory validation proves that every loaded tokenizer, configuration, weight, calibration, relation-inventory, rule, and ontology component matches the exact component identity reported in the result; deliberate path or revision substitution fails in 100% of mutation tests.
 - **SC-027**: Capacity, truncation, alignment, and capability mutation tests produce zero fabricated parser decisions and zero advertised-but-unexecutable parser families or evidence levels.
+- **SC-028**: Installed CLI and retained local-HTTP conformance tests produce semantic bytes identical to the equivalent Python request, execute primary inference exactly once per request, route all six source forms through the shared boundary, and expose zero independent JSON schemas or raw exception strings.
 
 ## Assumptions
 

@@ -437,8 +437,10 @@ contains:
 - `ValidationReceipt`;
 - semantic and execution identities.
 
-`ParserAnalysisResult` contains no source-ingest inventory or preparation
-outcome because those values are outside the parser operation. The graph-only
+`ParserAnalysisResult` is a `kind=parser_analysis_result` contract envelope and
+therefore round-trips through the same canonical serializer. It contains no
+source-ingest inventory or preparation outcome because those values are outside
+the parser operation. The graph-only
 `parse_document()` convenience operation is a projection of this result.
 `ProductionIngestor.analyse()` consumes and embeds this result; it does not call
 the graph projection and reconstruct discarded evidence.

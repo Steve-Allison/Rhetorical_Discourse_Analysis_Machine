@@ -78,7 +78,9 @@ downstream-specific fields; no silent truncation, EDU capping, approximate
 token allocation, fabricated fallback splits/relations/offsets, root-only tree
 projection, identity-versus-loaded-byte contradiction, or evidence loss at
 backend handoffs; no public raw tensors, embeddings, activations, unrestricted
-charts, training-only fields, or private workbench records
+charts, training-only fields, or private workbench records; installed CLI and
+retained local-HTTP paths are projections of the canonical contract, execute
+inference once, and define no independent JSON authority
 
 **Scale/Scope**: Six source forms; nine lifecycle failure stages; complete
 inventory for every valid source item; analysed and empty-primary analysis
@@ -156,6 +158,7 @@ installed API surface.
 isanlp_rst/
 ├── __init__.py
 ├── _version.py
+├── cli.py                         # canonical CLI/local-HTTP projections
 ├── parser.py
 ├── segmentation/
 │   └── transformer_segmenter.py    # exact boundary substrate and evidence
@@ -372,6 +375,27 @@ availability accurately; cached and uncached identical semantic requests yield
 byte-identical semantic payloads; every semantic mutation changes its identity
 and execution-only mutations do not.
 
+### Phase E2: Reconcile installed command projections
+
+**Files**: `isanlp_rst/cli.py`, `tests/unit/test_cli.py`,
+`tests/ingest/production_ingest/test_cli_contract.py`, and
+`tests/ingest/production_ingest/test_local_http_contract.py`
+
+1. Route text and every supported structured input through `SourceArtifact`
+   and the canonical ingest/parser result path.
+2. Execute inference once per request and derive every presentation view from
+   that one typed result.
+3. Emit canonical contract bytes for JSON output; classify tree, statistics,
+   and RS3 output as explicit lossy presentation projections.
+4. If the loopback HTTP adapter remains supported, reuse canonical request,
+   success, failure, capability, and serialization records and remove raw
+   exception-string/count-only result behaviour.
+
+**Success criterion**: equivalent Python, CLI, and retained local-HTTP requests
+produce identical semantic contract bytes, all six source forms use the shared
+boundary, instrumentation records one inference execution, and no independent
+JSON schema or raw exception string crosses an installed boundary.
+
 ### Phase F: Prove the installed release
 
 **Files**: `.gitignore`, `pyproject.toml`, `tools/production_boundary/`,
@@ -424,6 +448,7 @@ hashes unchanged.
 | FR-054-FR-058 | Primary decision, refinement, eRST score/signal/decoder evidence in Phase D | Producer handoff and evidence-link conformance tests |
 | FR-059-FR-064 | Composite identity, validation/recombination receipts, both-endpoint anchors, and lossless adapters in Phase D | Receipt, anchor, mapping, and backend loss-audit tests |
 | FR-065-FR-071 | Public evidence boundary, canonical rich parser result, runtime-byte identity, honest capability inventory, and every-handoff coverage in Phases D-F | Public-surface negative tests, component-substitution tests, and installed conformance matrix |
+| FR-072-FR-073 | Installed CLI and retained local-HTTP projections in Phase E2 | Cross-interface semantic-byte parity, single-inference, structured-input, and safe-failure tests |
 
 ## Verification Plan
 
@@ -472,6 +497,9 @@ pixi run -e production production-clean-install
 - 512/8,192-token truncation, 128-EDU capacity, tokenizer-offset alignment,
   fabricated fallback-decision, component path/revision substitution, and
   archived-family capability mutations.
+- Python/CLI/local-HTTP canonical semantic-byte parity, one-inference
+  instrumentation, all-source-form routing, presentation-projection labelling,
+  and safe typed failure serialization.
 
 Release promotion additionally records exact output from the build report,
 artifact validator, clean-install checks, full quality gates, and candidate

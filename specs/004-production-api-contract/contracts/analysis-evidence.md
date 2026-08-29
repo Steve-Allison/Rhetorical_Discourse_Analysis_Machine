@@ -18,6 +18,12 @@ exists in memory. Raw tensors, embeddings, activations, unrestricted parsing
 charts, training-only gold labels, corpus records, and private workbench state
 remain internal.
 
+For callers that already have an `RstDocument`, the canonical public parser
+operation returns `ParserAnalysisResult`: this evidence contract without the
+source-ingest preparation account. Production ingest embeds that parser result
+and adds preparation/source evidence; it does not reconstruct parser evidence
+from a graph-only projection.
+
 ## Analysis policy
 
 `AnalysisPolicy` is a strict closed semantic value with these required fields:
@@ -63,6 +69,10 @@ With `lossy_input=forbid`, any lossy transformation is a typed preparation or
 inference failure. A future explicit lossy policy must identify affected
 content, exact transformation, source anchors, coverage deficit, and semantic
 identity; it may not convert loss into an unexplained warning.
+
+The provider must not fill unanalysed content with synthesized midpoint splits,
+default relation/nuclearity labels, or sequential character offsets. Those are
+fabricated inference decisions, not authorized lossy transformations.
 
 ## Primary inference evidence
 
@@ -195,6 +205,13 @@ Non-participating components are `not_used`. Participating components are
 caching requires immutable identity for every participating component, not
 only the primary parser.
 
+Every immutable component also has a `LoadedComponentReceipt` binding the
+declared role-labelled byte inventory to the exact local tokenizer,
+configuration, weight, calibration, relation-inventory, ruleset, and ontology
+members opened by the runtime. Manifest validation without runtime construction
+from those same members is insufficient. Any path, model-ID, or revision
+substitution fails before inference.
+
 ## Recombination receipt
 
 For subdivided analysis, `RecombinationReceipt` contains:
@@ -234,13 +251,15 @@ required failed check makes a success outcome unconstructable.
 Every production backend and handoff must pass loss-audit fixtures:
 
 1. backend output to parser facade;
-2. parser facade to production ingest;
-3. segmentation to analysed document;
-4. primary inference to relation refinement;
-5. primary result to eRST candidate generation/scoring/decoding;
-6. analysis units to hierarchical recombination;
-7. assembled outcome to validation;
-8. validation to serialization and cache reload.
+2. canonical `ParserAnalysisResult` to its graph-only convenience projection;
+3. canonical `ParserAnalysisResult` to production ingest without reconstruction;
+4. segmentation to analysed document;
+5. primary inference to relation refinement;
+6. primary result to eRST candidate generation/scoring/decoding;
+7. analysis units to hierarchical recombination;
+8. assembled outcome to validation;
+9. validation to serialization and cache reload;
+10. canonical parser/ingest result to CLI and retained local-HTTP projections.
 
 Tests deliberately remove one decoded span, score, boundary, refinement,
 signal link, decoder receipt, local mapping, or validation check and require the

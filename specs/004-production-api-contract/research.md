@@ -19,7 +19,7 @@ trained architecture or inference mathematics.
 ## Evidence base
 
 The comparison used current primary sources and direct inspection of the
-repository at `cd17fa4493e427dec2e3f418e808cb53ef65e278` after the
+repository at `ad853825535649fc55fe2ab12e83654bb213097d` after the
 ModernBERT production upgrades completed:
 
 - Python 3.14 installed-distribution metadata, exception chaining, import
@@ -137,6 +137,12 @@ the implementation baseline but do not certify a future 5.0.0 release:
   without the former membership cap, so Feature 004 protects complete
   candidate membership rather than describing candidate truncation as a
   current gap.
+- the newly installed `isanlp-rst` CLI is another public production boundary,
+  but its parse command currently runs inference twice, ignores its detected
+  structured-input format, emits an independent partial JSON schema labelled
+  `1.0`, and omits most provider evidence; its local HTTP adapter returns only
+  counts and serializes raw exception strings. Both must project the canonical
+  Python contracts rather than become independent semantic authorities.
 
 These are provider-owned values because `isanlp_rst` creates or uses them to
 select, refine, validate, or assemble its own result. The revision does not
@@ -450,6 +456,22 @@ composite identity. Path or revision substitution, including validating a
 local release and then loading a fixed remote model identifier, is a typed
 failure. Capability discovery reports only families and evidence levels that
 can execute through this canonical result path.
+
+## Decision 14: Installed CLI and local HTTP projections
+
+The installed `isanlp-rst` command is a supported projection of the same
+provider contract. Structured files enter through `SourceArtifact` and
+`ProductionIngestor`; already-constructed document requests use
+`ParserAnalysisResult`. One invocation performs inference once. JSON output is
+the canonical serialized contract, while tree, statistics, and RS3 output are
+explicit presentation projections with no compatibility claim beyond their
+declared view contract.
+
+If the loopback HTTP adapter remains installed, it uses the same typed request,
+canonical success/failure records, safe serialization, and capability
+description. It does not define a second JSON result, expose raw exception
+strings, or represent counts as a complete analysis. No hosted deployment or
+multi-user infrastructure is introduced by Feature 004.
 
 ## Rejected scope
 

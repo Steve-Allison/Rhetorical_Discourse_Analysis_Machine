@@ -34,3 +34,9 @@
 - Direct validation found no unresolved placeholders, sequential requirement and
   success-criterion declarations, all mandatory sections, and zero Markdown
   issues across both feature files.
+- The 2026-08-29 post-upgrade reanalysis added the canonical public parser
+  result, exact loaded-component byte identity, no-fabricated-decision, and
+  active-capability requirements after full inspection of the production path.
+  The subsequent `ad853825535649fc55fe2ab12e83654bb213097d` CLI addition was
+  separately inspected and added canonical CLI/local-HTTP projection and
+  cross-interface parity requirements.

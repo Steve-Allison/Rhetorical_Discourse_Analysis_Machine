@@ -135,7 +135,11 @@ from isanlp_rst.ingest import (
     ProductionIngestor,
 )
 
-parser = Parser.from_model_release("rstdt-cc01afde1232")
+parser = Parser.from_model_release(
+    Path("/models/isanlp_rst"),
+    "modernbert-v5",
+    family="modernbert",
+)
 ingestor = ProductionIngestor(parser=parser)
 analysis_policy = AnalysisPolicy(
     output_formalism=OutputFormalism.RST_TREE,
@@ -163,6 +167,31 @@ if result.status == "analysed":
 else:
     assert result.status == "empty_primary_discourse"
 ```
+
+For an already-constructed `RstDocument`, use the canonical parser result
+directly rather than production ingest:
+
+```python
+from isanlp_rst import RstDocument
+
+document = RstDocument.from_text("A claim. Because evidence supports it.")
+parser_result = parser.analyse_document(
+    document,
+    analysis_policy=analysis_policy,
+)
+
+assert parser_result.analysis.document_id == document.document_id
+assert parser_result.analysed_document.edus
+assert parser_result.validation_receipt.overall_disposition == "passed"
+assert parser_result.composite_analysis_identity.primary_parser.state == (
+    "immutable_release"
+)
+assert parser_result.loaded_component_receipts
+```
+
+`parse_document()` is the supported graph-only convenience projection.
+`ProductionIngestor.analyse()` consumes and embeds `ParserAnalysisResult`; it
+does not reconstruct discarded evidence from that projection.
 
 The result embeds the complete preparation outcome. A consumer does not rerun
 preparation, import an adapter, or reconstruct a source contract or model
@@ -278,7 +307,30 @@ failure:
 - whether the result is semantically cacheable;
 - what failed and which earlier stages completed.
 
-## 10. Run the full implementation gates
+## 10. Verify installed command parity
+
+The CLI routes structured inputs through the same `SourceArtifact` boundary and
+emits the canonical contract for JSON:
+
+```bash
+isanlp-rst parse example.md --format json --output /tmp/isanlp-result.json
+```
+
+For the equivalent Python request:
+
+```python
+cli_bytes = Path("/tmp/isanlp-result.json").read_bytes()
+assert cli_bytes == serialize_contract(result)
+```
+
+Instrumentation in conformance tests must prove one primary inference execution
+per request. `tree`, `stats`, and `rs3` are declared lossy presentation views of
+that same typed result. If `isanlp-rst serve` remains installed, its loopback
+endpoint returns the same canonical success or safe failure bytes and derives
+health/capability output from `describe_capabilities()`; it never returns raw
+exception text or a count-only substitute for the result.
+
+## 11. Run the full implementation gates
 
 ```bash
 pixi run -e offline lint

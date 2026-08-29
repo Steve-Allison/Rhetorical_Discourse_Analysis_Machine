@@ -15,6 +15,11 @@ The package-level `isanlp_rst.Parser` remains the supported parser facade. Its
 production identity and capacity values are exposed through typed contracts
 re-exported from `isanlp_rst.ingest` where lifecycle callers need them.
 
+`Parser.analyse_document()` is the canonical parser operation for callers that
+already have an `RstDocument`. `Parser.parse_document()` may remain as a
+documented graph-only convenience projection, but production ingest must not
+use that projection as its evidence authority.
+
 ## Required public operations
 
 The signatures below are normative design targets. Exact annotations and
@@ -31,6 +36,21 @@ class SourceArtifact:
         original_source: str | None = None,
         conversion_provenance: Sequence[ConversionActivity] = (),
     ) -> SourceArtifact: ...
+
+
+class Parser:
+    def analyse_document(
+        self,
+        document: RstDocument,
+        *,
+        analysis_policy: AnalysisPolicy | None = None,
+    ) -> ParserAnalysisResult: ...
+
+    def parse_document(
+        self,
+        document: RstDocument,
+        output: OutputFormalism = OutputFormalism.RST_TREE,
+    ) -> RstAnalysis: ...
 
 
 def describe_capabilities(
@@ -90,6 +110,12 @@ embedded in the result. Selecting `erst_graph` requests secondary-edge
 completion; selecting `normalized_distributions` requests only distributions
 the configured provider genuinely computes.
 
+`ParserAnalysisResult` is the self-contained provider result for parser-only
+use: exact analysed substrate, validated graph, decision evidence, refinements,
+composite and loaded-component identities, optional recombination receipt,
+validation receipt, execution evidence, and semantic identity. It deliberately
+does not contain source-ingest inventory or preparation evidence.
+
 ## Return and raise contract
 
 ### `prepare()`
@@ -137,6 +163,7 @@ private content.
 | Kind | Python type | Produced by |
 |---|---|---|
 | `preparation_outcome` | `PreparationOutcome` | `prepare()` |
+| `parser_analysis_result` | `ParserAnalysisResult` | `Parser.analyse_document()` |
 | `analysed_outcome` | `AnalysedOutcome` | `analyse()` |
 | `empty_primary_analysis_outcome` | `EmptyPrimaryAnalysisOutcome` | `analyse()` |
 | `capabilities` | `ProductionCapabilities` | capability discovery |
@@ -241,26 +268,28 @@ class AnalysisParser(Protocol):
     @property
     def model_release_identity(self) -> ModelReleaseIdentity | None: ...
 
-    def parse_document(
+    def analyse_document(
         self,
         document: RstDocument,
-        output: OutputFormalism = OutputFormalism.RST_TREE,
-    ) -> RstAnalysis: ...
+        *,
+        analysis_policy: AnalysisPolicy | None = None,
+    ) -> ParserAnalysisResult: ...
 ```
 
-This preserves the current parser facade rather than inventing a downstream
-adapter method. Production ingest performs subdivision and recombination around
-the parser call. A missing `model_release_identity` means the parser is mutable
-or unidentified and therefore ineligible for durable semantic caching. Parser
-output never becomes a public success value before provider validation.
+This strengthens the current parser facade without inventing a downstream
+adapter method. Production ingest receives the provider-owned rich result,
+adds source preparation and source-level anchors, and performs any required
+subdivision through the same typed path. A missing `model_release_identity`
+means the parser is mutable or unidentified and therefore ineligible for
+durable semantic caching. Parser output never becomes a public success value
+before provider validation.
 
-The protocol's semantic return is the final `RstAnalysis`, while the production
-facade additionally requires a provider evidence adapter declared in capability
-discovery. That adapter must expose the exact analysed substrate and decision
-evidence defined in [analysis-evidence.md](./analysis-evidence.md). A backend
-that cannot supply required decision-complete evidence is reported unavailable
-for this production contract; the service does not fabricate it from the final
-tree.
+The protocol's semantic return includes the final `RstAnalysis` and the exact
+analysed substrate and decision evidence defined in
+[analysis-evidence.md](./analysis-evidence.md). A backend that cannot supply
+required decision-complete evidence is reported unavailable for this production
+contract; the service does not fabricate it from the final tree. Any claimed
+immutable identity must match the exact loaded component receipts.
 
 ## Optional dependency behaviour
 
@@ -271,6 +300,24 @@ visible with `available=false` and `install_extra="formats"`.
 Attempting to prepare an unavailable form raises a typed provider-unavailable
 failure naming only the missing distribution and supported extra. Raw
 `ModuleNotFoundError` must not cross the public boundary.
+
+## Installed command projections
+
+The `isanlp-rst` console script is a supported installed projection of this
+contract. Its structured-file inputs construct `SourceArtifact` values and use
+`ProductionIngestor`; its parser-only path uses `ParserAnalysisResult`. One
+request performs inference at most once.
+
+`--format json` writes `serialize_contract()` bytes for the canonical result.
+Tree, statistics, and RS3 formats are explicitly documented presentation views
+derived from that same result and do not claim to preserve the complete
+contract. The CLI does not define a separate schema version.
+
+If `isanlp-rst serve` remains supported, its loopback endpoint accepts a typed
+request and returns the same canonical success or safe failure record as the
+Python API. Health/capability output is derived from
+`describe_capabilities()`. It does not return count-only analysis as a complete
+result or serialize arbitrary exception text.
 
 ## Validation contract
 
@@ -296,6 +343,13 @@ Before success, the provider validates:
     consistency;
 15. declared relation scheme, confidence kind, calibration, and ontology
     mapping provenance.
+16. canonical parser-result completeness and equivalence of any graph-only
+    convenience projection;
+17. exact equality between reported immutable component identities and the
+    tokenizer/configuration/weight/calibration/inventory/rules/ontology bytes
+    loaded by the runtime;
+18. absence of fabricated decisions for unanalysed content and absence of
+    archived or unexecutable families from active capabilities.
 
 Validation failure returns no success value. Cache persistence is invoked only
 after the complete outcome passes all checks.
