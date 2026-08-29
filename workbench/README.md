@@ -10,4 +10,5 @@ This is the single offline ownership surface for corpus preparation, training, e
 - `workbench/research/`: Evidence-first architecture comparison trial harness and technology matrix.
 - `workbench/promotion/`: Gated model packaging, manifest generation, and promotion receipts.
 - `workbench/corpora/`: Local gold reference treebanks (GUM 12.1.0, RST-DT, DISRPT).
+- `workbench/experiments/`: Central append-only audit ledger (`central_ledger.jsonl`) and reproducible run trackers.
 - `workbench/hashing.py`: High-throughput BLAKE3 and NIST SHA-256 hybrid cryptographic hashing engine.

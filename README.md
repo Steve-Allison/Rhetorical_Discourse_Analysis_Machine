@@ -90,65 +90,56 @@ pixi run -e offline test
 
 See [Production package and offline workbench](#production-package-and-offline-workbench) for the ownership contract.
 
-### 2. Basic usage
+#### 2. Command-line interface (`isanlp-rst`)
+
+The package provides a fast, unified CLI for parsing, visualization, and serving:
+
+```bash
+# Parse text and display a terminal ASCII discourse tree
+isanlp-rst parse --text "ModernBERT provides fast attention. This enables rich discourse parsing." -f tree
+
+# Parse files (Markdown, Docling JSON, DocLang XML, plain text) to structured JSON DAG
+isanlp-rst parse report.md -f json -o analysis.json
+
+# Extract Mann & Thompson structural diagnostics
+isanlp-rst parse report.txt -f stats
+
+# Render an RS3 XML file as an interactive HTML visualisation
+isanlp-rst view document.rs3 --open
+
+# Launch high-throughput local HTTP REST parsing daemon
+isanlp-rst serve --host 127.0.0.1 --port 8080
+
+# Inspect environment and hardware backend capabilities
+isanlp-rst version
+```
+
+### 3. Python API usage
 
 ```python
-from isanlp_rst.parser import Parser
+from isanlp_rst import Parser, RstDocument
+from isanlp_rst.utils.analysis import tree_stats
 
-# Choose a model version
-version = "gumrrg"  # one of: 'gumrrg', 'rstdt', 'rstreebank', 'rrtrrg', 'unirst'
-
-# Initialise the parser (downloads weights from HF on first call)
-parser = Parser(
-    hf_model_name="tchewik/isanlp_rst_v3", hf_model_version=version, device="auto"
-)  # 'auto' (default) | 'cpu' | 'mps' | 'cuda' | 'cuda:N'
+# Initialise SOTA ModernBERT parser (downloads weights on first call, autodispatches to MPS/CUDA)
+parser = Parser(family="modernbert", device="auto")
 
 text = """
 On Saturday, in the ninth edition of the T20 Men's Cricket World Cup, Team India won against South Africa by seven runs.
-The final match was played at the Kensington Oval Stadium in Barbados. This marks India's second win in the T20 World Cup,
-which was co-hosted by the West Indies and the USA between June 2 and June 29.
-
-After winning the toss, India decided to bat first and scored 176 runs for the loss of seven wickets.
-Virat Kohli top-scored with 76 runs, followed by Axar Patel with 47 runs. Hardik Pandya took three wickets,
-and Jasprit Bumrah took two wickets.
+The final match was played at the Kensington Oval Stadium in Barbados. This marks India's second win in the T20 World Cup.
+Virat Kohli top-scored with 76 runs, followed by Axar Patel with 47 runs.
 """
 
-res = parser(text)  # res['rst'] contains the binary discourse tree
-print(vars(res["rst"][0]))
-```
+# 1. Direct RST tree parsing
+tree = parser.parse_tree(text)
+print(tree)
+stats = tree_stats(tree)
+print(f"Tree Depth: {stats['depth']}, Leaves: {stats['n_leaves']}")
 
-For the multilingual `unirst` model, specify the relation inventory:
-
-```python
-parser = Parser(
-    hf_model_name="tchewik/isanlp_rst_v3", hf_model_version="unirst", device="auto", relinventory="eng.erst.gum"
-)  # see docs/metrics/UniRST_Metrics.md for options
-```
-
-#### Loading from a local checkpoint
-
-For offline / air-gapped use, point `Parser` at a directory containing the checkpoint:
-
-```python
-# Family auto-detected:
-#   data_manager_*.json / relation_table_<corpus>.txt / legacy data_manager_*.pickle
-#     or config.json with `data.corpora`  -> UniRST
-#   relation_table.txt                                        -> DMRST
-parser = Parser.from_model_release(
-    "/path/to/model-releases",
-    "gumrrg-eb1d5745f3a1",
-    family="dmrst",
-    device="auto",
-)
-
-# Override auto-detection:
-parser = Parser.from_model_release(
-    "/path/to/model-releases",
-    "unirst-9407970f1d9d",
-    family="unirst",
-    relinventory="eng.erst.gum",
-    device="auto",
-)
+# 2. Canonical structured document analysis (RstAnalysis DAG)
+doc = RstDocument.from_text(text, document_id="cricket_match_001")
+analysis = parser.parse_document(doc)
+print(f"Discourse Nodes: {len(analysis.nodes)}")
+print(f"Primary Edges:   {len(analysis.primary_edges)}")
 ```
 
 #### Device selection (`device=`)
@@ -157,10 +148,8 @@ parser = Parser.from_model_release(
 
 - `"auto"` (default) → CUDA if present, else MPS on Apple Silicon, else CPU
 - `"cpu"` → CPU
-- `"mps"` → Apple Silicon Metal backend (raises if unavailable)
-- `"cuda"` / `"cuda:N"` → a specific NVIDIA device (raises if no CUDA)
-
-The integer `cuda_device=` parameter is **deprecated** but still accepted (`-1` → CPU, `>= 0` → best available accelerator); passing it emits a `DeprecationWarning`. Migrate to `device=`.
+- `"mps"` → Apple Silicon Metal backend (accelerated FP32/BF16)
+- `"cuda"` / `"cuda:N"` → specific NVIDIA GPU (raises if CUDA is unavailable)
 
 PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogonal_` during weight init). The parser routes this via CPU automatically — no env-var hacks required.
 

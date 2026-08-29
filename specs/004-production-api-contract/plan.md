@@ -28,6 +28,13 @@ and validation receipt. Production adapters may normalize backend-specific
 values into this contract but may not reduce a decoded tree, overwrite a model
 decision without trace, orphan a signal, or discard a provider receipt.
 
+The package-level parser gains a canonical typed `ParserAnalysisResult` for
+already-constructed `RstDocument` values. Production ingest consumes this rich
+result directly; `parse_document()` may remain only as an explicit graph
+convenience projection. Runtime construction must also prove that every
+reported immutable component identity names the exact bytes loaded for that
+execution.
+
 The incompatibility requires `isanlp_rst` 5.0.0 and serialized production
 contract 2.0.0. The work changes the public contract and orchestration around
 existing inference; it does not change model architecture, inference
@@ -68,9 +75,10 @@ import independent of optional format packages; immutable public values; no
 raw private source text in default failure rendering; fail closed on incomplete
 evidence; no partial multi-unit success; no model or scientific changes; no
 downstream-specific fields; no silent truncation, EDU capping, approximate
-token allocation, root-only tree projection, or evidence loss at backend
-handoffs; no public raw tensors, embeddings, activations, unrestricted charts,
-training-only fields, or private workbench records
+token allocation, fabricated fallback splits/relations/offsets, root-only tree
+projection, identity-versus-loaded-byte contradiction, or evidence loss at
+backend handoffs; no public raw tensors, embeddings, activations, unrestricted
+charts, training-only fields, or private workbench records
 
 **Scale/Scope**: Six source forms; nine lifecycle failure stages; complete
 inventory for every valid source item; analysed and empty-primary analysis
@@ -78,8 +86,9 @@ success variants; preparation-only intentional non-analysis; provider
 unavailability and processing-failure records; one current write contract and an
 explicit read-version registry; two output formalisms (`rst_tree`,
 `erst_graph`); decision-complete evidence by default and optional normalized
-distributions; every active production backend and analysis handoff covered by
-a loss audit
+distributions; the active ModernBERT production backend and every advertised
+analysis handoff covered by a loss and executability audit; archived DMRST and
+UniRST families excluded from active capability claims
 
 ## Constitution Check
 
@@ -148,6 +157,11 @@ isanlp_rst/
 ├── __init__.py
 ├── _version.py
 ├── parser.py
+├── segmentation/
+│   └── transformer_segmenter.py    # exact boundary substrate and evidence
+├── transformer_parser/
+│   ├── predictor.py                # canonical rich parser result handoff
+│   └── ...                         # selected primary decisions and scores
 ├── contracts/
 │   └── ...                         # existing RST/eRST analysis contracts
 ├── ingest/
@@ -299,7 +313,8 @@ upstream specification and package-version comparison before editing.
 `isanlp_rst/ingest/contracts/failure.py`
 
 Additional producer files are `isanlp_rst/parser.py`,
-`isanlp_rst/transformer_parser/`, `isanlp_rst/english/relations/primer.py`,
+`isanlp_rst/segmentation/transformer_segmenter.py`,
+`isanlp_rst/transformer_parser/`, `isanlp_rst/relations/primer.py`,
 `isanlp_rst/english/erst/completer.py`, `isanlp_rst/erst/decoder.py`, and
 `isanlp_rst/hierarchical/stitcher.py`. They are touched only to retain or map
 provider values the production pipeline genuinely creates; trained mathematics
@@ -308,22 +323,31 @@ and selection behaviour remain unchanged.
 1. Resolve and embed a closed `AnalysisPolicy` covering output formalism,
    evidence detail, marker refinement, relation interpretation, validation, and
    lossy-input handling.
-2. Embed the complete preparation outcome and exact `AnalysedDocument` in both
+2. Add the canonical public `ParserAnalysisResult`; make the active ModernBERT
+   parser construct it from exact tokenizer/EDU mappings and make production
+   ingest embed that result instead of consuming a graph-only projection.
+3. Embed the complete preparation outcome and exact `AnalysedDocument` in both
    analysis success variants.
-3. Preserve primary segmentation/tree/relation/nuclearity decisions and
+4. Preserve primary segmentation/tree/relation/nuclearity decisions and
    uncertainties, with normalized distributions only at the requested evidence
    level.
-4. Preserve marker before/after refinements, eRST signal/candidate/score links,
+5. Preserve marker before/after refinements, eRST signal/candidate/score links,
    the full decoder receipt, and the composite component identity.
-5. For multi-unit analysis, emit a compact deterministic recombination receipt
+6. Prove every immutable identity names the exact primary, segmenter, eRST,
+   calibration, relation-inventory, rule, and ontology bytes loaded; reject
+   path/revision substitution and exclude archived families from capabilities.
+7. For multi-unit analysis, emit a compact deterministic recombination receipt
    with complete local-to-global mappings rather than duplicating local graphs.
-6. Validate RST tree, eRST DAG, both-endpoint anchors, evidence links, unit
+8. Validate RST tree, eRST DAG, both-endpoint anchors, evidence links, unit
    completeness, and identity consistency; return a typed validation receipt.
-7. Translate every lifecycle failure into a safe stage-specific payload and
+9. Translate every lifecycle failure into a safe stage-specific payload and
    wrap it in an idiomatic chained exception.
-8. Retain all and only completed-stage evidence; never persist partial success.
+10. Retain all and only completed-stage evidence; never persist partial success.
 
-**Success criterion**: every backend and handoff passes the evidence-loss audit;
+**Success criterion**: the active ModernBERT backend and every handoff pass the
+evidence-loss audit; direct parser users receive the complete public parser
+result; loaded bytes match reported component identities; archived families
+are not advertised; no capacity/alignment path fabricates decisions;
 every returned node and edge traces to the analysed substrate and creating
 decision; every refinement, accepted eRST edge, recombination, and validation
 decision has its typed receipt; and each documented success state and lifecycle
@@ -399,7 +423,7 @@ hashes unchanged.
 | FR-047-FR-053 | Typed request, formalism, evidence policy, and exact analysed substrate in Phase D | [analysis-evidence.md](./contracts/analysis-evidence.md), policy/identity and no-silent-loss tests |
 | FR-054-FR-058 | Primary decision, refinement, eRST score/signal/decoder evidence in Phase D | Producer handoff and evidence-link conformance tests |
 | FR-059-FR-064 | Composite identity, validation/recombination receipts, both-endpoint anchors, and lossless adapters in Phase D | Receipt, anchor, mapping, and backend loss-audit tests |
-| FR-065-FR-067 | Public evidence boundary, honest unavailability, and every-handoff coverage in Phases D-F | Public-surface negative tests and installed conformance matrix |
+| FR-065-FR-071 | Public evidence boundary, canonical rich parser result, runtime-byte identity, honest capability inventory, and every-handoff coverage in Phases D-F | Public-surface negative tests, component-substitution tests, and installed conformance matrix |
 
 ## Verification Plan
 
@@ -442,6 +466,12 @@ pixi run -e production production-clean-install
 - deliberate evidence-removal mutations for every production backend and
   handoff, plus negative public-surface checks for forbidden scientific
   internals.
+- direct `ParserAnalysisResult` conformance, graph-projection equivalence, and
+  proof that production ingest embeds rather than reconstructs the rich parser
+  result;
+- 512/8,192-token truncation, 128-EDU capacity, tokenizer-offset alignment,
+  fabricated fallback-decision, component path/revision substitution, and
+  archived-family capability mutations.
 
 Release promotion additionally records exact output from the build report,
 artifact validator, clean-install checks, full quality gates, and candidate

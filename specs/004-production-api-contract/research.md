@@ -19,7 +19,8 @@ trained architecture or inference mathematics.
 ## Evidence base
 
 The comparison used current primary sources and direct inspection of the
-repository at `4309672e7a45a56ea768d4947c339060df2b3520`:
+repository at `cd17fa4493e427dec2e3f418e808cb53ef65e278` after the
+ModernBERT production upgrades completed:
 
 - Python 3.14 installed-distribution metadata, exception chaining, import
   resources, signatures, and public-interface semantics;
@@ -83,14 +84,35 @@ planning.
 
 ## Provider-value retention audit for this revision
 
-The revision inspected the production contract and the active analysis
-handoffs, not merely the final `RstAnalysis` shape. The checkout was concurrently
-changing, so these observations define requirements rather than certifying a
-release candidate:
+The revision inspected the production contract and every active ModernBERT
+analysis handoff, not merely the final `RstAnalysis` shape. The inspected
+checkout was clean and matched `origin/master`; these observations establish
+the implementation baseline but do not certify a future 5.0.0 release:
 
-- primary backends compute structural split choices, relation/nuclearity
-  scores, segmentation boundary scores, and uncertainty values that are not
-  all retained by the public result;
+- the ModernBERT primary decoder now preserves the complete decoded span set
+  through recursive tree construction; Feature 004 therefore treats full tree
+  depth as a verified baseline and a protected non-regression, not as a current
+  missing feature;
+- the active primary pipeline computes segmentation logits, split choices,
+  relation/nuclearity logits and selected CKY decisions, but the public parser
+  result retains only the graph and an aggregate tree score rather than the
+  decision-linked evidence;
+- paragraph segmentation silently tokenizes with a 512-token maximum and
+  truncation, then extends the final EDU over the unanalysed suffix; the parser
+  separately tokenizes with an 8,192-token maximum, caps the document at 128
+  EDUs, and allocates EDU token spans uniformly rather than from tokenizer
+  offsets;
+- when decoded spans or source alignment are missing, the parser facade can
+  synthesize midpoint splits, `elaboration`/`NS` decisions, and sequential
+  character offsets, producing apparently analysed structure for content that
+  did not reach the model;
+- a validated local `model_dir` is passed to `PredictorModernBERT` but is not
+  retained or used there; the predictor loads its fixed Hugging Face model ID
+  and revision instead, so reported release identity can differ from the bytes
+  actually executed;
+- the parser facade advertises archived DMRST and UniRST family/version names
+  even though construction rejects them; capability discovery must describe
+  only executable production capabilities;
 - relation-marker refinement can replace model relation, concept, nuclearity,
   or confidence without preserving the original decision and trigger;
 - eRST scoring and decoding create signal-gated candidates, edge probability,
@@ -105,10 +127,16 @@ release candidate:
   depends on its checks;
 - relation labels and confidence values do not consistently declare scheme,
   confidence kind, calibration, and ontology-mapping provenance;
-- the active transformer parser path demonstrates why lossless-adapter
-  requirements are necessary: a backend may expose a complete decoded span set
-  while an adapter, token cap, context truncation, or approximate token mapping
-  can reduce the evidence visible above it.
+- `ProductionIngestor` consumes the graph-only `parse_document()` projection,
+  creates relation anchors from only the parent/source endpoint, and hashes a
+  model identity without proving that it names the loaded runtime bytes;
+- hierarchical stitching preserves the recombined graph but drops local result
+  identities, complete local-to-global evidence, nuclear-spine inputs, local
+  warnings, and component timings;
+- eRST candidate generation now streams every signal-sufficient candidate
+  without the former membership cap, so Feature 004 protects complete
+  candidate membership rather than describing candidate truncation as a
+  current gap.
 
 These are provider-owned values because `isanlp_rst` creates or uses them to
 select, refine, validate, or assemble its own result. The revision does not
@@ -402,6 +430,26 @@ Every success returns a `ValidationReceipt` containing the policy/version,
 stable check identifiers, outcomes and counts, overall disposition, warnings,
 and digest. A required failed check makes construction of a success outcome
 impossible.
+
+## Decision 13: Canonical public parser result and runtime-byte identity
+
+The package-level parser facade exposes a canonical typed
+`ParserAnalysisResult` for callers that already have an `RstDocument`. It
+contains the exact analysed substrate, validated graph, primary/eRST evidence,
+refinements, composite component identity, optional recombination receipt,
+validation receipt, execution evidence, and semantic identity. The existing
+graph-only `parse_document()` operation may remain as a documented convenience
+projection, but production ingest consumes `ParserAnalysisResult` directly and
+must not reconstruct provider evidence from `RstAnalysis`.
+
+Immutable component identity is an execution invariant, not a manifest claim.
+The runtime loader must reconstruct the primary parser, segmenter, eRST scorer,
+tokenizers, decoder/calibration configuration, relation inventory, rules, and
+ontology mapping from the exact validated byte inventories reported in the
+composite identity. Path or revision substitution, including validating a
+local release and then loading a fixed remote model identifier, is a typed
+failure. Capability discovery reports only families and evidence levels that
+can execute through this canonical result path.
 
 ## Rejected scope
 

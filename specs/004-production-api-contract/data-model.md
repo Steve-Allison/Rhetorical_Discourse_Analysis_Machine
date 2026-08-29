@@ -312,6 +312,15 @@ Each component state is explicit: `immutable_release`, `mutable_instance`,
 `unidentified`, or `not_used`. Durable caching requires every participating
 semantic component to have immutable identity.
 
+For an `immutable_release` component, identity includes a role-labelled byte
+inventory for every tokenizer, configuration, weight, calibration, relation
+inventory, ruleset, and ontology artifact actually opened by the runtime. The
+runtime loader returns a `LoadedComponentReceipt` containing the resolved local
+member identities and verifies exact equality with the declared component
+inventory before inference. A validated manifest is not sufficient when the
+executing object was constructed from another path, model identifier, or
+revision.
+
 ### `SourceFormCapability`
 
 Reports source form, availability, required extra, missing distributions,
@@ -381,6 +390,8 @@ The complete resolved semantic request embedded in an analysis outcome:
 - semantic request identity.
 
 It contains no cache directory, device, timing, or other execution-only value.
+Its composite identity must agree exactly with the loaded-component receipts in
+the corresponding `ParserAnalysisResult`.
 
 ### `AnalysedToken`
 
@@ -410,6 +421,27 @@ token-to-EDU/sentence/paragraph mappings, structural boundaries, prepared
 segment mapping, source anchors, substrate transformations, fidelity status,
 coverage, and semantic digest. It is the document actually passed to inference,
 not a reconstruction from the returned tree.
+
+### `ParserAnalysisResult`
+
+The canonical public result for an already-constructed `RstDocument`. It
+contains:
+
+- the resolved `AnalysisPolicy`;
+- exact `AnalysedDocument`;
+- validated `RstAnalysis`;
+- complete primary and applicable eRST inference evidence;
+- refinement records;
+- `CompositeAnalysisIdentity` and loaded-component receipts;
+- `RecombinationReceipt` when hierarchical parsing was used;
+- `ValidationReceipt`;
+- semantic and execution identities.
+
+`ParserAnalysisResult` contains no source-ingest inventory or preparation
+outcome because those values are outside the parser operation. The graph-only
+`parse_document()` convenience operation is a projection of this result.
+`ProductionIngestor.analyse()` consumes and embeds this result; it does not call
+the graph projection and reconstruct discarded evidence.
 
 ### `AnalysisStatus`
 
@@ -547,6 +579,10 @@ Contains:
 The analysis semantic projection embeds the preparation semantic value, not
 merely its digest. Preparation execution evidence remains exposed through the
 nested outcome but is excluded from analysis semantic identity.
+
+The parser-owned portion is the exact semantic payload of the embedded
+`ParserAnalysisResult`; production ingest adds preparation and source-level
+anchors without altering or recreating parser decisions.
 
 ### `AnalysisExecutionEvidence`
 
@@ -806,6 +842,7 @@ all outcome invariants validate.
 | Output formalism, evidence detail, refinement, validation, relation, or loss policy | Analysis request, result, and cache identities |
 | Analysed tokens, EDUs, boundaries, mappings, or fidelity transformations | Analysis request, result, and cache identities |
 | Participating segmenter, marker, eRST, decoder, calibration, relation-inventory, or ontology component identity | Analysis request, result, and cache identities |
+| Loaded tokenizer, configuration, weight, calibration, relation-inventory, ruleset, or ontology bytes | Parser result, analysis request, result, and cache identities |
 | Primary decision, confidence, uncertainty, distribution, or refinement evidence | Analysis result and cache identities |
 | eRST candidate, signal, score, calibration, decision, or decoder receipt | Analysis result and cache identities |
 | Recombination mapping/decision or validation receipt | Analysis result and cache identities |
