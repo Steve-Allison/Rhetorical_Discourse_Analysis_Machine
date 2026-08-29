@@ -1,15 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: unratified template -> 1.0.0
-- Modified principles:
-  - Placeholder Principle 1 -> I. Evidence Before Claims
-  - Placeholder Principle 2 -> II. One Production Quality Bar
-  - Placeholder Principle 3 -> III. Solo-Local Simplicity and Scope Fidelity
-  - Placeholder Principle 4 -> IV. Honest Verification and Reproducible Evidence
-  - Placeholder Principle 5 -> V. Canonical Contracts and Current Specifications
-- Added sections:
-  - Technical and Distribution Constraints
-  - Development Workflow and Quality Gates
+- Version change: 1.0.0 -> 1.1.0
+- Modified principles: none (core principles I-V remain inviolate)
+- Added sections / clauses:
+  - Technical and Distribution Constraints: codified two-tier Pixi environment topology (`default` dev workbench vs `production` clean-room boundary)
+  - SOTA Architecture: codified pure-transformer ModernBERT architecture and unified `isanlp-rst` CLI
 - Removed sections: none
 - Follow-up TODOs: none
 -->
@@ -81,6 +76,11 @@ reliably expose.
 - Project Python MUST remain `>=3.14`; Python commands and dependency changes MUST run through the
   repository's locked Pixi environment. Bare `python`, `pip`, Conda, Poetry, and manual edits to
   `pixi.lock` are prohibited.
+- The repository MUST maintain a two-environment topology: `default` (containing all developer, format,
+  and offline tools for daily work) and `production` (isolated clean-room consumer environment for release
+  certification). Production code MUST NOT import offline or dev dependencies.
+- The flagship parser MUST use pure-transformer architecture (`ModernBERT-base`, 8k context window, RoPE,
+  SDPA, vectorized span representations) with zero legacy model debt in production codelines.
 - The parser MUST preserve its Apple-Silicon-first, MPS-aware behaviour, CPU fallback, and explicit
   CUDA paths unless an approved feature changes those supported targets.
 - Original source licensing MUST remain attributed. Published model weights are CC BY-NC 4.0 and
@@ -126,4 +126,4 @@ Specifications, plans, tasks, implementations, and completion reviews MUST check
 this constitution. Any deviation MUST be identified before implementation and justified explicitly;
 unjustified complexity or an unverified exception is non-compliant.
 
-**Version**: 1.0.0 | **Ratified**: 2026-08-24 | **Last Amended**: 2026-08-24
+**Version**: 1.1.0 | **Ratified**: 2026-08-24 | **Last Amended**: 2026-08-29
