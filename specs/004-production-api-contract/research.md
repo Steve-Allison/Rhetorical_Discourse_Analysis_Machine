@@ -1,0 +1,308 @@
+# Phase 0 Research: World-Class Production API Contract
+
+**Feature**: `004-production-api-contract`  
+**Research date**: 2026-08-29  
+**Scope**: The installed, production-facing `isanlp_rst` provider contract only
+
+## Executive decision
+
+Feature 004 is a breaking public-contract redesign. It will therefore ship as
+`isanlp_rst` **5.0.0**, with serialized production contract
+`isanlp_rst.production` **2.0.0**. Calling the release 4.0.1 would misrepresent
+the compatibility change: [Semantic Versioning 2.0.0](https://semver.org/)
+requires a new major version when a declared public API changes incompatibly.
+
+The design remains one local Python library. It does not introduce a service,
+a consumer-specific schema, a second preparation authority, or any change to
+trained architecture or inference mathematics.
+
+## Evidence base
+
+The comparison used current primary sources and direct inspection of the
+repository at `4309672e7a45a56ea768d4947c339060df2b3520`:
+
+- Python 3.14 installed-distribution metadata, exception chaining, import
+  resources, signatures, and public-interface semantics;
+- Pydantic 2.13 strict models, discriminated unions, serialization-mode JSON
+  Schema, and explicit serialization;
+- JSON Schema Draft 2020-12;
+- RFC 8785 canonical JSON, RFC 7493 I-JSON, and SHA-256;
+- Python packaging metadata, wheel and source-distribution specifications,
+  isolated build reports, and pip inspection;
+- SemVer compatibility and W3C PROV concepts.
+
+“State of the art” in this feature means that the production API applies the
+strongest relevant current practices listed above. It does not claim that
+`isanlp_rst` defines a general industry standard.
+
+## Current implementation baseline
+
+The current implementation already has strong foundations:
+
+- all six source forms enter through `SourceArtifact`;
+- preparation inventories content and records dispositions internally;
+- exact-commit builds use `git archive` rather than mutable checkout bytes;
+- model releases can carry immutable byte-level identities;
+- cache writes are atomic and validate stored result identities;
+- strict, frozen Pydantic models and RFC 8785 hashing are already dependencies.
+
+The central defect is not parsing capability. The public API discards or
+reduces provider-owned evidence that the implementation already creates.
+`ProductionIngestor.prepare()` returns only the prepared document; analysis
+reduces the source contract, policy, plan, inventory, and model identity to
+partial receipts or digests; retained content is reachable only by identifier;
+and failures are neither versioned nor able to carry typed completed-stage
+evidence. Capability discovery and a machine-readable public-surface inventory
+do not exist. The current wheel and sdist are ignored rather than durable
+repository content.
+
+## Dated production-practice comparison
+
+| Practice | Current production practice, checked 2026-08-29 | Current `isanlp_rst` gap | Feature 004 disposition |
+|---|---|---|---|
+| Strict typed values | Pydantic supports strict, frozen, closed models and explicit tagged unions ([configuration](https://docs.pydantic.dev/latest/api/config/), [unions](https://docs.pydantic.dev/latest/concepts/unions/)) | Models are frozen and closed, but state-dependent optional fields and incomplete nested strictness still permit weak states | Use one shared strict base and explicit discriminated success and failure variants |
+| Complete provider evidence | Typed domain contracts expose decision inputs and results, not only fingerprints | Inventory, policy, plan, source contract, retained values, and model identity are dropped or digest-only | Return complete `PreparationOutcome`; embed it in analysis outcomes; retain full typed representations |
+| Deterministic identity | RFC 8785 defines invariant I-JSON bytes suitable for hashing ([RFC 8785](https://www.rfc-editor.org/rfc/rfc8785.html)) | Semantic hashing uses RFC 8785 in places, but public JSON persistence and digest projection are not one documented contract | Canonicalize every top-level persisted record; document the exact semantic projection; separate semantic and execution evidence |
+| Published schemas | Pydantic can generate serialization-mode JSON Schema; Draft 2020-12 is the current JSON Schema dialect ([Pydantic JSON Schema](https://docs.pydantic.dev/latest/concepts/json_schema/), [Draft 2020-12](https://json-schema.org/draft/2020-12)) | No committed public schemas or byte-parity gate | Generate, package, commit, and parity-test schemas from runtime models |
+| Compatibility | SemVer requires a precise public API and a major bump for incompatible changes ([SemVer](https://semver.org/)) | Package remains 4.0.0 despite the proposed breaking contract; loaders have no compatibility registry | Release package 5.0.0 and contract 2.0.0; one write version, explicit readable versions, fail-closed dispatch |
+| Installed identity | `importlib.metadata` provides installed version, requirements, and file hashes from distribution metadata ([Python 3.14](https://docs.python.org/3.14/library/importlib.metadata.html)) | Package version is duplicated in `pyproject.toml` and `_version.py` | Use installed distribution metadata at runtime and retain the build version only in package metadata |
+| Public API authority | Python public interfaces use explicit exports; typing and metadata distinguish public imports ([PEP 8](https://peps.python.org/pep-0008/#public-and-internal-interfaces), [Core Metadata](https://packaging.python.org/en/latest/specifications/core-metadata/)) | `__all__` exists but no inventory reconciles exports, schemas, statuses, errors, and docs | Add one declarative public-surface inventory and reconcile it with runtime-derived signatures and generated projections |
+| Typed failures | Python exceptions support structured attributes and explicit causal chaining ([Python exceptions](https://docs.python.org/3.14/tutorial/errors.html#exception-chaining)) | `ProductionIngestError` has free text, no retryability or safe cause chain, and no completed-stage evidence | Exception hierarchy wraps immutable, serializable failure records; stage-specific types constrain completed evidence |
+| Capability discovery | Installed metadata and optional extras can be inspected without importing expensive providers | No model-free capability contract; missing format extras leak `ModuleNotFoundError` | Add offline discovery that reports all forms, availability, required extras, parser identity state, and cache eligibility |
+| Artifact integrity | Wheel `RECORD` hashes files inside a wheel; it does not prove the external artifact or source revision ([wheel specification](https://packaging.python.org/en/latest/specifications/binary-distribution-format/)) | Build receipt is stdout-only; `dist/` is ignored; local artifacts identify an older revision | Track versioned wheel, sdist, canonical receipt, and receipt digest under `dist/5.0.0/` |
+| Reproducible build | Isolated build reports and `SOURCE_DATE_EPOCH` support independently comparable artifacts ([PyPA build](https://build.pypa.io/en/latest/reference/cli.html), [SOURCE_DATE_EPOCH](https://reproducible-builds.org/specs/source-date-epoch/)) | Exact-commit build is strong but not double-built or receipt-governed | Build twice from the named source commit, require identical artifact hashes, and persist the combined report |
+| Clean installed proof | `pip check` and stable `pip inspect` JSON verify installed dependency state ([pip check](https://pip.pypa.io/en/stable/cli/pip_check/), [pip inspect](https://pip.pypa.io/en/stable/reference/inspect-report/)) | Existing clean-install proof can inherit system packages and does not exercise Feature 004 | Test exact tracked wheel in isolated core and formats environments with checkout-path exclusion and networking disabled during acceptance |
+| Provenance | W3C PROV distinguishes entities, activities, agents, and plans ([PROV-DM](https://www.w3.org/TR/prov-dm/)) | Evidence exists but lifecycle provenance is incomplete or digest-only | Apply the concepts to typed source, preparation, inference, validation, and distribution evidence without exposing a generic PROV graph |
+
+Every material comparison gap has a disposition. No open decision remains for
+planning.
+
+## Decision 1: Success and failure algebra
+
+### Selected outcome algebra
+
+Use separate, closed contract families:
+
+- `PreparationOutcome` is the successful, intentional preparation-only result.
+  Calling `prepare()` is the explicit intentional-non-analysis path.
+- `ProductionAnalysisOutcome` is a discriminated union of
+  `AnalysedOutcome` and `EmptyPrimaryAnalysisOutcome`.
+- `ProductionFailure` is a discriminated hierarchy that includes provider
+  unavailability and processing failures by lifecycle stage.
+- `ProductionIngestError` wraps one `ProductionFailure` and uses Python
+  exception chaining for the in-process cause.
+
+This makes every documented analysis status reachable without treating an
+invalid or unavailable analysis as success. Failure records remain
+deterministically serializable even though the Python API raises them.
+
+### Rejected outcome alternatives
+
+- One result with many optional fields: invalid combinations remain
+  representable.
+- A five-variant success result containing failures: conflicts with idiomatic
+  Python errors and risks caching failed work as a result.
+- Exceptions without payloads: cannot be persisted or compared reliably.
+- Treating missing parser configuration as “not analysed”: conflates an
+  intentional `prepare()` call with provider unavailability during
+  `analyse()`.
+
+## Decision 2: Contract model discipline
+
+### Selected model discipline
+
+All persisted nested models use the same Pydantic configuration:
+
+```python
+ConfigDict(
+    strict=True,
+    extra="forbid",
+    frozen=True,
+    validate_default=True,
+    revalidate_instances="always",
+    allow_inf_nan=False,
+    ser_json_bytes="base64",
+    val_json_bytes="base64",
+)
+```
+
+Persist tuples and frozen nested values, not mutable containers or unordered
+sets. Use `Literal` discriminator fields and explicit discriminated unions.
+Represent semantic ratios exactly as integer counts plus a derived display
+ratio; binary floating-point values do not define semantic identity.
+
+### Rejected modelling alternatives
+
+- Frozen standard-library dataclasses alone: no strict recursive validation,
+  discriminated serialization, or schema generation.
+- Pydantic smart unions: selection is heuristic and may change between minor
+  releases.
+- Arbitrary extension dictionaries: future readers could silently discard or
+  misinterpret semantic evidence.
+
+## Decision 3: Complete preparation evidence
+
+### Selected preparation evidence
+
+`PreparationOutcome` contains the complete provider-owned preparation account:
+source artifact summary and contract, explicit policy and planning policy, full
+inventory, one final disposition per item, duplicate links, explicit
+transformation records, typed content representations, prepared discourse,
+source mapping, structural boundaries, exact coverage, warnings, optional
+subdivision plan, and semantic identity.
+
+The canonical disposition is embedded once in its inventory item. A public
+computed disposition view may be provided, but serialization must not maintain
+two independently editable copies.
+
+Typed representations preserve the source semantics `isanlp_rst` actually
+harvests: text, table, list, metadata, note/caption, media reference, structural
+container, and cross-reference. This feature exposes those values; it does not
+change Docling or DocLang interpretation. If implementation later touches
+harvesting or format semantics, the mandatory current upstream-spec check is
+triggered before that edit.
+
+## Decision 4: Validation and atomicity
+
+### Selected validation boundary
+
+Validate before returning success or writing the cache:
+
+- every valid discovered item has exactly one final disposition;
+- primary plus retained coverage is complete and unexplained coverage is zero;
+- mappings and anchors are in bounds and reconstruct analysed text;
+- the primary RST structure is connected, acyclic, and single-rooted;
+- secondary edges meet eRST DAG constraints;
+- every analysis unit is present exactly once in deterministic recombination;
+- model, request, plan, and result identities agree.
+
+Multi-unit inference may hold internal partial unit evidence during execution,
+but it never returns or stores partial success as a complete outcome.
+
+## Decision 5: Canonical persistence and compatibility
+
+### Selected persistence contract
+
+Every top-level persisted record uses this envelope:
+
+```json
+{
+  "contract": "isanlp_rst.production",
+  "contract_version": "2.0.0",
+  "kind": "preparation_outcome",
+  "semantic": {},
+  "execution": {},
+  "semantic_digest": {
+    "algorithm": "sha256",
+    "hex_digest": "..."
+  }
+}
+```
+
+The exact digest input is RFC 8785 canonical bytes for `contract`,
+`contract_version`, `kind`, and `semantic`. The digest field and all execution
+evidence are excluded. Duplicate JSON keys, invalid Unicode, NaN/Infinity,
+unknown fields, and unsupported versions fail before semantic use.
+
+Runtime models are the field/type authority. Serialization-mode Draft 2020-12
+schemas are deterministic committed projections and must byte-match generated
+output. The loader uses an explicit compatibility registry: one write version,
+named readable versions, explicit migrations only, and fail-closed rejection
+of unsupported future or old major versions.
+
+## Decision 6: Public surface and capability discovery
+
+### Selected discovery authority
+
+Add one machine-readable public-surface manifest for membership,
+classification, public import path, kind, introduced/deprecated versions,
+schema membership, documentation anchor, and compatibility guarantee. Runtime
+signatures and model schemas remain code-derived facts; reconciliation tests
+join both sources and fail on drift. Generated schema and documentation tables
+are projections, not competing authorities.
+
+Expose `describe_capabilities(parser=None)` and
+`ProductionIngestor.capabilities()`. Discovery reports package and contract
+versions, lifecycle operations, every source form and availability, missing
+optional distributions and install extra, persistence guarantees, parser
+capacity, model-identity state, and semantic-cache eligibility. It must not
+load an adapter or model, resolve weights, access research code, or use a
+network.
+
+## Decision 7: Distribution and release receipt
+
+### Selected release contract
+
+Use `dist/5.0.0/` as durable, version-controlled release content:
+
+```text
+dist/5.0.0/
+├── isanlp_rst-5.0.0-py3-none-any.whl
+├── isanlp_rst-5.0.0.tar.gz
+├── release-receipt.json
+└── release-receipt.sha256
+```
+
+Remove the blanket `dist/` ignore. Build scratch directories remain outside
+the repository, so `dist/` contains only promoted artifacts. Build twice from
+the same verified source commit with `SOURCE_DATE_EPOCH` set from that commit;
+require identical wheel and sdist hashes. Build the wheel through the sdist to
+prove source completeness.
+
+The canonical release receipt records package and contract versions, exact
+source revision and source state, Python/build frontend/backend/platform/lock
+identity, artifact names/kinds/sizes/SHA-256 hashes/tags, and named verification
+results with evidence digests. A detached SHA-256 covers the receipt. Wheel
+`RECORD` remains the authority for files inside the wheel; the release receipt
+covers the external artifacts and source/build relationship.
+
+The release sequence is intentionally staged: a clean source release commit is
+built; its immutable wheel and sdist are added in an untagged candidate commit;
+the second machine verifies those exact committed artifact bytes; and the final
+receipt and detached digest are added in a certification commit. The release
+tag points to the certification commit while the receipt identifies the source
+commit whose bytes were built and the unchanged artifact digests verified on
+both machines. The second machine then verifies the tagged receipt and unchanged
+artifact bytes, and that proof is added in a post-certification evidence commit
+that neither moves the release tag nor changes any certified byte. Candidate
+verification is an input to the receipt; final receipt verification cannot be
+an input to the receipt it verifies.
+
+## Decision 8: Clean-install and conformance proof
+
+### Selected installation proof
+
+Use two genuine isolated environments:
+
+1. core wheel only;
+2. wheel plus `isanlp_rst[formats]` dependencies.
+
+Install the exact tracked wheel by path, run acceptance with networking
+disabled, execute Python with `-I` from a temporary directory, and prove no
+module was imported from the checkout. Verify receipt hashes, package/contract
+versions, packaged provenance, public-surface reconciliation, capability
+discovery, optional-dependency reporting, serialization/reload, all lifecycle
+failures, `pip check`, and retained `pip inspect` environment evidence.
+
+The second development machine installs and verifies the tracked wheel; it does
+not rebuild the sdist.
+
+## Rejected scope
+
+| Candidate | Disposition |
+|---|---|
+| Consumer-specific fields or statuses | Rejected: downstream translation is downstream authority |
+| Restored `parse_markdown`, `parse_docling`, or `parse_doclang` APIs | Rejected: shared source inventory remains the only public path |
+| Durable caching for mutable/unidentified model instances | Rejected: no immutable model-byte identity exists |
+| Full generic W3C PROV graph | Rejected: typed provider evidence is simpler and sufficient for one local library |
+| Hosted signing, transparency log, or index attestation | Rejected for this local release; evaluate PEP 740 only if publication to a package index is requested |
+| Mandatory format dependencies in the core wheel | Rejected: violates the explicit optional boundary |
+| Model architecture or inference changes | Rejected: outside this feature and prohibited by FR-029 |
+
+## Research closure
+
+All Feature 004 unknowns are resolved. The plan contains no unresolved marker.
+Implementation must re-open research only if it
+changes source-format interpretation, adopts hosted publication, or discovers
+that a planned contract value is not genuinely created or used by
+`isanlp_rst`.
