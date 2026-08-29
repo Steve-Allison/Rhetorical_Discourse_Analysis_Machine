@@ -188,17 +188,8 @@ class PureTransformerParsingNet(nn.Module):
             nuc_scores = outputs["nuc_scores"][0]      # (N, N, Num_Nuc)
             rel_scores = outputs["rel_scores"][0]      # (N, N, Num_Rel)
 
-            num_edus = split_scores.shape[0]
-            # Construct 3D split chart (i, j, k) where split score is split_scores[i, j] + split_scores[j+1, k]
-            chart_splits = torch.zeros((num_edus, num_edus, num_edus), device=self.dev, dtype=self.dtype)
-            for length in range(2, num_edus + 1):
-                for i in range(num_edus - length + 1):
-                    k = i + length - 1
-                    for j in range(i, k):
-                        chart_splits[i, j, k] = split_scores[i, j] + split_scores[j + 1, k]
-
             tree = cky_discourse_tree_decode(
-                chart_splits.float(),
+                split_scores.float(),
                 nuc_scores.float(),
                 rel_scores.float(),
                 self.nuclearity_labels,

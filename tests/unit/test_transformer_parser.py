@@ -54,32 +54,44 @@ def test_deep_biaffine_scorer() -> None:
 
 
 def test_cky_discourse_tree_decoder() -> None:
-    """Verify CKY dynamic programming reconstructs a full projective discourse tree."""
+    """Verify CKY dynamic programming reconstructs a full projective discourse tree from 2D or 3D splits."""
     num_edus = 5
     nuc_labels = ("NS", "SN", "NN")
     rel_labels = ("elaboration", "attribution", "contrast", "cause")
 
-    split_scores = torch.randn(num_edus, num_edus, num_edus)
+    # 1. Test 3D split tensor
+    split_scores_3d = torch.randn(num_edus, num_edus, num_edus)
     nuc_scores = torch.randn(num_edus, num_edus, len(nuc_labels))
     rel_scores = torch.randn(num_edus, num_edus, len(rel_labels))
 
-    tree = cky_discourse_tree_decode(
-        split_scores,
+    tree_3d = cky_discourse_tree_decode(
+        split_scores_3d,
         nuc_scores,
         rel_scores,
         nuc_labels,
         rel_labels,
     )
 
-    # For N EDUs in a strictly binary tree, there must be exactly N - 1 internal split spans
-    assert len(tree) == num_edus - 1
-    # Top-level root span must cover [0, N - 1]
-    root_span = tree[0]
+    assert len(tree_3d) == num_edus - 1
+    root_span = tree_3d[0]
     assert root_span.start == 0
     assert root_span.end == num_edus - 1
     assert 0 <= root_span.split < num_edus - 1
     assert root_span.nuclearity in nuc_labels
     assert root_span.relation in rel_labels
+
+    # 2. Test 2D split matrix (O(N^2) memory footprint)
+    split_scores_2d = torch.randn(num_edus, num_edus)
+    tree_2d = cky_discourse_tree_decode(
+        split_scores_2d,
+        nuc_scores,
+        rel_scores,
+        nuc_labels,
+        rel_labels,
+    )
+    assert len(tree_2d) == num_edus - 1
+    assert tree_2d[0].start == 0
+    assert tree_2d[0].end == num_edus - 1
 
 
 def test_pure_transformer_parsing_net_forward_and_loss() -> None:

@@ -82,7 +82,7 @@ def cky_discourse_tree_decode(
     """Exact CKY dynamic programming chart decoder for hierarchical RST discourse trees.
 
     Args:
-        split_scores: (Num_EDUs, Num_EDUs, Num_EDUs) score of splitting span (i, k) at j
+        split_scores: (Num_EDUs, Num_EDUs) pairwise span scores or (Num_EDUs, Num_EDUs, Num_EDUs) 3D split chart
         nuc_scores: (Num_EDUs, Num_EDUs, Num_Nuclearities) nuclearity classification scores
         rel_scores: (Num_EDUs, Num_EDUs, Num_Relations) relation classification scores
         nuclearity_labels: tuple of nuclearity strings (e.g. ('NS', 'SN', 'NN'))
@@ -92,6 +92,8 @@ def cky_discourse_tree_decode(
         List of decoded tree spans in top-down hierarchy.
     """
     n = split_scores.shape[0]
+    is_2d_split = split_scores.ndim == 2
+
     # dp_chart[i][j] holds max score for span (i, j)
     dp_chart = torch.full((n, n), -math.inf, device=split_scores.device, dtype=torch.float32)
     split_chart = torch.zeros((n, n), dtype=torch.long, device=split_scores.device)
@@ -125,7 +127,7 @@ def cky_discourse_tree_decode(
             for j in range(i, k):
                 left_score = dp_chart[i, j]
                 right_score = dp_chart[j + 1, k]
-                split_score = split_scores[i, j, k]
+                split_score = (split_scores[i, j] + split_scores[j + 1, k]) if is_2d_split else split_scores[i, j, k]
 
                 total = left_score + right_score + split_score + span_base_score
                 if total > best_score:
