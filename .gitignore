@@ -27,6 +27,3 @@ corpora/
 # macOS Finder metadata
 .DS_Store
 **/.DS_Store
-# Graphify extraction caches are reproducible and machine-local
-graphify-out/cache/
-graphify-out/.graphify_*
