@@ -2,7 +2,7 @@
 
 ## The rule
 
-`isanlp_rst` owns only capabilities required while another project performs RST/eRST analysis. `workbench` owns everything that creates, fits, calibrates, evaluates, benchmarks, or promotes those runtime capabilities. `workbench.research` is repository-only research code operating inside the same offline environment.
+`isanlp_rst` owns only capabilities required while another project performs RST/eRST analysis. `workbench` owns everything that creates, fits, calibrates, evaluates, benchmarks, or promotes those runtime capabilities. `workbench/research` is repository-only research code operating inside the same offline environment.
 
 The distinction is purpose, not provenance: old research code that is required for inference remains production and must meet the production standard. Conversely, high-quality evaluation or training code remains offline because a consuming project does not need it to analyse a document.
 

@@ -53,7 +53,7 @@ The parser achieves strong end-to-end performance across standard RST corpora.
 | | | | zho.rst.gcdt | 93.0 | 64.5 | 50.7 | 45.9 | 44.6 |
 | | | | zho.rst.sctb | 95.4 | 67.5 | 51.5 | 39.9 | 39.9 |
 
-Full per-corpus UniRST metrics: [`UniRST_Metrics.md`](UniRST_Metrics.md).
+Full per-corpus UniRST metrics: [`docs/metrics/UniRST_Metrics.md`](docs/metrics/UniRST_Metrics.md).
 
 </details>
 
@@ -122,7 +122,7 @@ For the multilingual `unirst` model, specify the relation inventory:
 ```python
 parser = Parser(
     hf_model_name="tchewik/isanlp_rst_v3", hf_model_version="unirst", device="auto", relinventory="eng.erst.gum"
-)  # see UniRST_Metrics.md for options
+)  # see docs/metrics/UniRST_Metrics.md for options
 ```
 
 #### Loading from a local checkpoint
