@@ -106,6 +106,12 @@ def _extract_archive(archive_path: Path, destination: Path) -> None:
         archive.extractall(destination, filter="data")
 
 
+def _prepare_package_source(export_root: Path) -> None:
+    """Remove build-control files that Hatchling always adds to an sdist."""
+
+    (export_root / ".gitignore").unlink(missing_ok=True)
+
+
 def _provenance_bytes(
     export_root: Path,
     *,
@@ -213,6 +219,7 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> tuple
             run_root = workspace / f"run-{index}"
             export_root = run_root / "source"
             _extract_archive(archive_path, export_root)
+            _prepare_package_source(export_root)
             candidate = _provenance_bytes(
                 export_root,
                 commit=commit,

@@ -33,6 +33,7 @@ def built_release_pair(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, 
         encoding="utf-8",
     )
     (root / "pixi.lock").write_text("fixture-lock\n", encoding="utf-8")
+    (root / ".gitignore").write_text("dist/\n", encoding="utf-8")
     (root / "pyproject.toml").write_text(
         """[build-system]
 requires = ["hatchling>=1.32,<2"]
@@ -49,6 +50,9 @@ isanlp-rst = "isanlp_rst.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["isanlp_rst"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/isanlp_rst", "/pyproject.toml"]
 """,
         encoding="utf-8",
     )
