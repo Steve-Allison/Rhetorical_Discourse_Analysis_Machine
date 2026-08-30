@@ -180,13 +180,17 @@ class ProductionCapabilities(StrictContractModel):
 
 def _source_capability(source_form: SourceForm) -> SourceFormCapability:
     requirements = {
-        SourceForm.MARKDOWN: "markdown-it-py",
-        SourceForm.DOCLING_JSON: "docling-core",
-        SourceForm.DOCLANG_XML: "doclang",
-        SourceForm.DOCLANG_ARCHIVE: "doclang",
+        SourceForm.MARKDOWN: ("markdown-it-py", "mdit-py-plugins"),
+        SourceForm.DOCLING_JSON: ("docling-core",),
+        SourceForm.DOCLANG_XML: ("doclang",),
+        SourceForm.DOCLANG_ARCHIVE: ("doclang",),
     }
-    required = requirements.get(source_form)
-    missing = () if required is None or _distribution_installed(required) else (required,)
+    required = requirements.get(source_form, ())
+    missing = tuple(
+        distribution
+        for distribution in required
+        if not _distribution_installed(distribution)
+    )
     media_types = {
         SourceForm.TEXT: ("text/plain; charset=utf-8",),
         SourceForm.EDUS: ("application/vnd.isanlp-rst.edus+json",),
@@ -198,7 +202,7 @@ def _source_capability(source_form: SourceForm) -> SourceFormCapability:
     return SourceFormCapability(
         source_form=source_form,
         availability=Availability.UNAVAILABLE if missing else Availability.AVAILABLE,
-        required_extra="formats" if required is not None else None,
+        required_extra="formats" if required else None,
         missing_distributions=missing,
         accepted_media_types=media_types,
         preparation_supported=not missing,

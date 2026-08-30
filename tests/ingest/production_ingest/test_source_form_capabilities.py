@@ -1,6 +1,11 @@
 """Truthful availability and operation predictions for every source form."""
 
+from importlib.metadata import PackageNotFoundError
+
+import pytest
+
 from isanlp_rst.ingest import SourceForm, describe_capabilities
+from isanlp_rst.ingest.contracts import capabilities as capability_contracts
 from isanlp_rst.ingest.contracts.capabilities import Availability
 
 
@@ -29,3 +34,21 @@ def test_capability_operations_name_every_discriminated_success_and_failure() ->
         "empty_primary_analysis_outcome",
     )
     assert {item.failure_kind for item in operations.values()} == {"safe_production_failure"}
+
+
+def test_markdown_capability_requires_parser_and_plugin_distributions(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def installed_version(distribution: str) -> str:
+        if distribution in {"isanlp_rst", "markdown-it-py"}:
+            return "5.0.0"
+        raise PackageNotFoundError(distribution)
+
+    monkeypatch.setattr(capability_contracts, "version", installed_version)
+    by_form = {
+        item.source_form: item
+        for item in describe_capabilities().semantic.source_forms
+    }
+    markdown = by_form[SourceForm.MARKDOWN]
+    assert markdown.availability is Availability.UNAVAILABLE
+    assert markdown.missing_distributions == ("mdit-py-plugins",)
