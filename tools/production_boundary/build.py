@@ -16,7 +16,12 @@ import uuid
 
 import rfc8785
 
-from tools.production_boundary.contracts import sha256_path
+from tools.production_boundary.contracts import (
+    SourceReleaseIdentity,
+    SourceReleaseRecord,
+    sha256_path,
+    write_canonical_record,
+)
 
 
 PACKAGE_VERSION: Final = "5.0.0"
@@ -76,6 +81,23 @@ def _archive_commit(root: Path, commit: str, destination: Path) -> str:
         capture_output=False,
     )
     return sha256_path(destination)
+
+
+def source_release_record(repository_root: Path) -> SourceReleaseRecord:
+    """Select and identify the exact clean source revision for a release."""
+
+    root = repository_root.resolve()
+    commit, tree, source_date_epoch = _require_clean_source(root)
+    with tempfile.TemporaryDirectory(prefix="isanlp-rst-source-release-") as temporary:
+        archive_sha256 = _archive_commit(root, commit, Path(temporary) / "source.tar")
+    return SourceReleaseRecord(
+        source=SourceReleaseIdentity(
+            commit=commit,
+            tree=tree,
+            archive_sha256=archive_sha256,
+            source_date_epoch=source_date_epoch,
+        )
+    )
 
 
 def _extract_archive(archive_path: Path, destination: Path) -> None:
@@ -242,7 +264,12 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> tuple
 
 def main() -> int:
     root = Path.cwd()
+    source_record = source_release_record(root)
     build_production_artifacts(root, root / "dist" / PACKAGE_VERSION)
+    write_canonical_record(
+        root / "specs/004-production-api-contract/evidence/source-release.json",
+        source_record,
+    )
     return 0
 
 
@@ -255,4 +282,5 @@ __all__ = [
     "SDIST_NAME",
     "WHEEL_NAME",
     "build_production_artifacts",
+    "source_release_record",
 ]

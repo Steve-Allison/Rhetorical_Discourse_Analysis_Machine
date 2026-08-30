@@ -15,6 +15,7 @@ from tools.production_boundary.contracts import (
     ReleaseContractIdentity,
     ReleaseReceipt,
     SourceReleaseIdentity,
+    SourceReleaseRecord,
     VerificationCheck,
     canonical_record_bytes,
 )
@@ -58,6 +59,28 @@ def test_pre_source_evidence_rejects_future_commit_identity() -> None:
             created_at=NOW,
             source_commit=COMMIT,
             checks=(_gate(),),
+        )
+
+
+def test_source_release_record_is_versioned_canonical_and_source_selected() -> None:
+    record = SourceReleaseRecord(
+        source=SourceReleaseIdentity(
+            commit=COMMIT,
+            tree=TREE,
+            archive_sha256=IDENTITY,
+            source_date_epoch=1_787_958_400,
+        )
+    )
+    payload = canonical_record_bytes(record)
+    assert SourceReleaseRecord.model_validate_json(payload) == record
+    assert record.state is EvidenceState.SOURCE_SELECTED
+    with pytest.raises(ValidationError, match="Input should be"):
+        SourceReleaseRecord.model_validate(
+            record.model_dump(mode="json") | {"state": EvidenceState.PRE_SOURCE}
+        )
+    with pytest.raises(ValidationError, match="Extra inputs"):
+        SourceReleaseRecord.model_validate(
+            record.model_dump(mode="json") | {"candidate_commit": COMMIT}
         )
 
 

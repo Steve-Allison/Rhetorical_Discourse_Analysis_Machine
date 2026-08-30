@@ -1,10 +1,10 @@
 # Feature 004 Source Scope and SOTA Audit
 
-**Audit date**: 2026-08-29
+**Audit date**: 2026-08-30
 
 **Candidate state**: pre-source, uncommitted working tree
 
-**Scope**: Feature 004 production API, source gates, and release tooling through T131
+**Scope**: Feature 004 production API, corrected source-evidence contract, and release tooling through T132
 
 ## Disposition
 
@@ -34,7 +34,7 @@ gated by T133-T142.
 | Runtime identity contradictions | Pass | `test_composite_analysis_identity.py` exercises loaded tokenizer/configuration/state bytes and rejects path, revision, inventory, and weight substitutions. |
 | Archived capability claims | Pass | `capabilities.py` excludes `dmrst` and `unirst` from canonical-result support, and `test_parser_capabilities.py` verifies the rejection. |
 | CLI/local HTTP semantics | Pass | `test_cli_contract.py` and `test_local_http_contract.py` require canonical Python-byte parity, one inference execution, typed capability/health records, loopback-only HTTP, and safe typed failures. |
-| Release tooling scope | Pass | T121-T127 tooling uses exact clean commits, Git archives, deterministic provenance, via-sdist double builds, strict artifact/receipt validation, and isolated installed acceptance without claiming not-yet-created artifacts. |
+| Release tooling scope | Pass | T121-T127 tooling uses exact clean commits, Git archives, deterministic provenance, via-sdist double builds, strict artifact/receipt validation, and isolated installed acceptance. The T134 generator now emits a strict, schema-versioned `source_selected` record and rejects candidate-commit fields before those identities exist. |
 
 ## Dated SOTA comparison closure
 
@@ -49,7 +49,7 @@ unclassified and no implementation decision re-opens the research scope.
 
 ## Source evidence identities
 
-- `pre-release-quality.json`: `a9fda99632af1ea0e06d53bfe949e8de5df79e2854e57761abfc2feaf779ae3d`
+- `pre-release-quality.json`: `fdb3769a274665ca4bef314264c3e0730619f9e92a92eea191509000277c2e4a`
 - `performance.json`: `9af5fc53d3c46695a985d312998a0daee6c701dedebfaa837a276f21b47bb5fa`
 - `source-spec-currency.md`: `88e22f25ab61c70ee070457597ed9f74266f760e869cdd772cbdb1c39d5e7b0f`
 

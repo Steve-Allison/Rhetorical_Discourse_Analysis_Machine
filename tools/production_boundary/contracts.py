@@ -187,6 +187,17 @@ class SourceReleaseIdentity(StrictModel):
     source_date_epoch: int = Field(gt=0)
 
 
+class SourceReleaseRecord(StrictModel):
+    """Canonical evidence selecting one immutable clean source revision."""
+
+    schema_name: Literal["isanlp_rst.release_evidence.source_release"] = (
+        "isanlp_rst.release_evidence.source_release"
+    )
+    schema_version: Literal["1.0.0"] = "1.0.0"
+    state: Literal[EvidenceState.SOURCE_SELECTED] = EvidenceState.SOURCE_SELECTED
+    source: SourceReleaseIdentity
+
+
 class BuildIdentity(StrictModel):
     python_implementation: str = Field(min_length=1)
     python_version: str = Field(min_length=1)
@@ -280,6 +291,7 @@ __all__ = [
     "ReleaseContractIdentity",
     "ReleaseReceipt",
     "SourceReleaseIdentity",
+    "SourceReleaseRecord",
     "VerificationCheck",
     "ViolationKind",
     "canonical_record_bytes",
