@@ -5,6 +5,9 @@ from pathlib import Path
 import subprocess
 import sys
 
+from isanlp_rst.doclang.loader import load_doclang_archive
+from tools.production_boundary.installed_acceptance import _archive_bytes
+
 
 def _run(command: tuple[str, ...], cwd: Path) -> str:
     completed = subprocess.run(
@@ -46,3 +49,9 @@ def test_fixture_wheel_installs_without_checkout_or_system_site_packages(
     _run((str(python), "-m", "pip", "check"), tmp_path)
     inspection = json.loads(_run((str(python), "-m", "pip", "inspect"), tmp_path))
     assert inspection["version"] == "1"
+
+
+def test_installed_acceptance_builds_a_valid_doclang_opc_archive() -> None:
+    document = b"<doclang><text>Installed acceptance.</text></doclang>"
+    loaded = load_doclang_archive(_archive_bytes(document))
+    assert loaded.document_bytes == document

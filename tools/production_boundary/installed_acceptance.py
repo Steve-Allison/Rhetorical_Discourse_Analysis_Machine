@@ -59,6 +59,7 @@ def _assert_offline_distributions_absent() -> None:
 def _archive_bytes(document: bytes) -> bytes:
     content_types = b'''<?xml version="1.0" encoding="UTF-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Override PartName="/document.xml" ContentType="application/vnd.doclang.document+xml"/>
 </Types>'''
     relationships = b'''<?xml version="1.0" encoding="UTF-8"?>
