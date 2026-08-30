@@ -1,189 +1,192 @@
 # Production source ingest
 
-`isanlp_rst.ingest` is the only production API for turning real-world source
-material into an RST analysis. It owns source validation, complete inventory,
-relevance policy, reversible preparation, structural subdivision, analysis,
-source anchoring, deterministic serialization, and the optional local cache.
+`isanlp_rst.ingest` is the production boundary for source acquisition,
+inventory, policy, reversible preparation, deterministic planning, parser
+analysis, source anchoring, validation, canonical persistence, and the optional
+local cache.
 
-The removed `parse_markdown`, `parse_docling`, and `parse_doclang` functions are
-not deprecated aliases. They no longer exist, and their separate result
-envelopes and caches are not supported.
+Format adapters remain private. `parse_markdown`, `parse_docling`,
+`parse_doclang`, their historical result envelopes, and format-owned caches are
+not public aliases.
 
-## Supported source forms
+## Source forms and optional packages
 
-| `SourceForm` | Construction | Validation and addressing |
+| Form | Construction | Provider evidence |
 |---|---|---|
-| `PLAIN_TEXT` | `SourceArtifact.from_text()` | Exact Unicode characters and source ranges |
-| `PRESEGMENTED_EDUS` | `SourceArtifact.from_edus()` | Exact EDU sequence; supplied boundaries are indivisible |
-| `MARKDOWN` | `SourceArtifact.from_path()` or `from_bytes()` | CommonMark/GFM tokens, source lines, parsed HTML nodes |
-| `DOCLING_JSON` | `from_path(..., source_form=...)` or `from_bytes()` | Current `docling-core` validation, JSON pointers, layers, groups, pages, tables and provenance |
-| `DOCLANG_XML` | `SourceArtifact.from_path()` or `from_bytes()` | Current DocLang XSD and Schematron validation, canonical local-name XML paths |
-| `DOCLANG_ARCHIVE` | `SourceArtifact.from_path()` or `from_bytes()` | Bounded in-memory `.dclx` OPC validation, required content types/root relationship, validated `document.xml`, page bounds and asset identities |
+| `text` | `SourceArtifact.from_text()` or explicit bytes/path | exact UTF-8 text and source spans |
+| `edus` | `SourceArtifact.from_edus()` | exact indivisible EDU sequence |
+| `markdown` | path or bytes, `formats` extra | GFM blocks, hierarchy, lists, tables, HTML, metadata, images, and source paths |
+| `docling_json` | explicit/inferred `.docling.json`, `formats` extra | validated items, layers, groups, tables, pages, boxes, captions, provenance, and provider attributes |
+| `doclang_xml` | `.dclg` path or bytes, `formats` extra | current element heads, layers, tables, lists, notes, captions, metadata, links, paths, and locations |
+| `doclang_archive` | `.dclx` path or bytes, `formats` extra | validated OPC members, document XML, asset identities, and archive-member anchors |
 
-Ambiguous JSON, XML, text, extensionless, and byte inputs require an explicit
-`SourceForm`. Identification never substitutes for validation.
+Core import and capability discovery do not import the optional adapters.
+Attempting an unavailable form produces `source_adapter_distribution_unavailable`
+with the required `formats` extra, never a raw `ModuleNotFoundError`.
 
-Current DocLang `.dclx` input is an Open Packaging Conventions ZIP package. It
-must contain `[Content_Types].xml`, `_rels/.rels`, and `document.xml`; the
-content-types part must declare the DocLang document media type, and the root
-relationships part must identify `document.xml` with the current DocLang
-relationship URI. Relative `<src>` assets must resolve to package parts, and
-page-image numbers cannot exceed the page count expressed by top-level
-`<page_break/>` elements. The former bare ZIP containing only `document.xml`
-is rejected rather than treated as a compatibility format.
-
-## Analyse a source
+## Prepare without inference
 
 ```python
 from pathlib import Path
 
-from isanlp_rst import Parser
-from isanlp_rst.ingest import (
-    AUTHORED_PROSE_V1,
-    ProductionIngestor,
-    SourceArtifact,
+from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
+
+source = SourceArtifact.from_path(
+    Path("example.md"),
+    original_source="urn:example:markdown",
 )
+prepared = ProductionIngestor().prepare(source)
+
+assert prepared.semantic.inventory_coverage.covered_units == (
+    prepared.semantic.inventory_coverage.total_units
+)
+assert prepared.semantic.mapping_coverage.covered_units == (
+    prepared.semantic.mapping_coverage.total_units
+)
+for item in prepared.semantic.inventory:
+    print(item.item_id, item.representation.kind, item.disposition.decision)
+```
+
+`PreparationOutcome.semantic` contains the source summary, accepted source
+contract, resolved preparation/planning policies, complete inventory,
+relationships, dispositions, transformations, prepared document, structural
+boundaries, plan, exact coverage, and warnings. `execution` contains only
+observed adapter and timing facts. The semantic digest excludes execution
+variation.
+
+Every valid inventory item has exactly one final disposition:
+
+- `primary` contributes source text to analysis;
+- `retained` remains accessible as a typed value;
+- `excluded` records a stable reason without pretending the item vanished;
+- `duplicate` links to exactly one canonical item.
+
+Representations are closed typed variants for text, tables and cells, lists,
+metadata, annotations, media references, structure, cross-references, and
+redacted content. A digest is never substituted for a representation the
+provider actually has.
+
+## Plan declaratively
+
+```python
+from isanlp_rst.ingest import CapacityUnit, ParserCapacity, SemanticVersion
+
+capacity = ParserCapacity(
+    unit=CapacityUnit.TOKEN_COUNT,
+    maximum=8192,
+    estimation_algorithm="provider_declared",
+    estimation_version=SemanticVersion(root="2.0.0"),
+    source="modernbert_release_manifest",
+)
+planned = ProductionIngestor().prepare(source, parser_capacity=capacity)
+print(planned.semantic.analysis_plan.status)
+```
+
+No capacity gives `not_planned`. A fitting source gives `single_unit`; otherwise
+the source is subdivided at complete prepared-segment boundaries. No unit may
+truncate a segment or an EDU. A segment larger than usable capacity is a typed
+planning failure.
+
+## Analyse with the provider result
+
+```python
+from isanlp_rst import Parser
+from isanlp_rst.ingest import ProductionIngestor
 
 parser = Parser.from_model_release(
-    Path("/absolute/path/to/model-releases"),
-    "gumrrg-eb1d5745f3a1",
-    family="dmrst",
+    Path("/absolute/model-releases"),
+    "the-promoted-modernbert-release-id",
+    family="modernbert",
     device="auto",
 )
-ingestor = ProductionIngestor(parser=parser)
+result = ProductionIngestor(parser=parser).analyse(source)
 
-artifact = SourceArtifact.from_path(
-    Path("/absolute/path/to/source.md"),
-    original_source="local:source.md",
-)
-result = ingestor.analyse(
-    artifact,
-    policy=AUTHORED_PROSE_V1,
-    cache_dir=Path("/absolute/path/to/cache"),
-)
+print(result.semantic.status)
+print(result.semantic.composite_identity.primary_parser.state)
+print(result.semantic.validation.passed if result.semantic.validation else None)
 ```
 
-Construct a plain-text or exact-EDU artifact without a file:
+The active ModernBERT release is valid only when its manifest names exactly one
+encoder configuration, one full parser-state safetensors file, one relation
+inventory, and at least one tokenizer file. The runtime builds the network from
+the release configuration, strict-loads the complete parser state, rehashes all
+loaded files, and refuses an immutable identity claim if runtime bytes differ.
+
+The neural segmenter and parser never truncate silently. Context overflow,
+unaligned tokenizer offsets, boundary-crossing tokens, capped EDUs, or a
+dropped suffix fail closed. Contract offsets trim tokenizer-reported leading or
+trailing whitespace only; non-whitespace coverage remains exact.
+
+For subdivided analysis, every unit must complete before recombination. The
+recombination receipt gives local result identities, node/edge mappings,
+boundary inputs, stitching decisions, warnings, and timings. If eRST is
+requested, secondary completion runs once over the globally recombined primary
+tree, not independently inside units.
+
+## Empty primary discourse
+
+Empty, whitespace-only, or retained-only input is a successful preparation.
+Analysis returns `EmptyPrimaryAnalysisOutcome` with status
+`empty_primary_discourse`, the complete preparation outcome, an explicit
+not-used component identity, and no fabricated root, graph, anchors, or parser
+result.
+
+## Cache
+
+`cache_directory` enables an atomic content-addressed cache only when every
+participating component has an immutable exact runtime identity. Its request
+identity covers source, complete preparation, analysis plan, capacity, resolved
+policy, and composite component identity.
+
+Only a fully validated canonical outcome is stored. Retrieval verifies record
+schema, semantic digest, request binding, result binding, parser result, graph,
+anchors, and validation receipt. Corruption and persistence failures are typed;
+they are never silently treated as a cache miss.
+
+## Canonical persistence
 
 ```python
-text_artifact = SourceArtifact.from_text(
-    "The context is clear. Therefore, the decision follows.",
-    source_name="decision.txt",
-)
+from isanlp_rst.ingest import load_contract, serialize_contract
 
-edu_artifact = SourceArtifact.from_edus(
-    ("The context is clear.", "Therefore, the decision follows."),
-    source_name="decision.edus",
-)
+payload = serialize_contract(result)
+reloaded = load_contract(payload)
+assert serialize_contract(reloaded) == payload
+assert reloaded.semantic_digest == result.semantic_digest
 ```
 
-`analyse_source()` is the functional convenience form of the same service. It
-does not create a second pipeline.
+Canonical bytes are strict UTF-8 I-JSON under RFC 8785. Duplicate object keys,
+non-finite numbers, unsafe integers, unpaired surrogates, unknown fields,
+unsupported versions, unknown discriminators, and semantic-digest
+contradictions are rejected.
 
-## What the default policy analyses
-
-`AUTHORED_PROSE_V1` inventories the entire valid source before deciding what
-enters primary RST analysis.
-
-| Disposition | Default material |
-|---|---|
-| Primary | Authored titles, headings, paragraphs, meaningful list items and authored turns |
-| Retained side channel | Captions, tables and cells, code, formulas, raw markup, pictures, metadata, groups, fields, assets and unknown valid content |
-| Excluded from primary but retained in receipt | Machine-generated picture descriptions, notes, navigation, furniture, backgrounds and invisible content |
-
-Every inventory item receives exactly one disposition. Exact duplicates are
-reported but authored repetition is not silently removed. There are no
-format-specific booleans that can widen the production default.
-
-## Preparation and provenance
-
-`ProductionIngestor.prepare()` runs validation, inventory, policy,
-transformation, structure planning and coverage verification without model
-inference or a durable analysis-cache write.
-
-The resulting `PreparedRstDocument` contains:
-
-- the exact prepared text;
-- source-derived and explicit synthetic segments;
-- reversible prepared/source ranges and native anchors;
-- structure nodes used for subdivision;
-- primary and retained side-channel item identities;
-- a deterministic semantic digest.
-
-Source text is preserved by default. Any required line-ending, whitespace or
-format transformation must be explicit and mapped. An unresolved native
-reference, inventory gap, overlap, duplicate mapping or unreceipted
-transformation fails closed.
-
-## Result acceptance
-
-`ProductionAnalysisResult` contains the source summary, prepared document,
-preparation and execution receipts, optional coherent `RstAnalysis`, analysis
-anchors, cache fingerprint and semantic digest.
-
-Require complete accounting before consuming an analysis:
+## Failures
 
 ```python
-receipt = result.preparation_receipt
-assert receipt.inventory_coverage == 1.0
-assert receipt.primary_source_coverage == 1.0
-assert receipt.prepared_text_coverage == 1.0
-assert receipt.analysis_anchor_coverage == 1.0
+from isanlp_rst.ingest import ProductionIngestError, serialize_contract
+
+try:
+    ProductionIngestor(parser=parser).analyse(source)
+except ProductionIngestError as error:
+    print(error.failure.failed_stage, error.failure.code)
+    safe_payload = serialize_contract(error.failure)
 ```
 
-When no authored primary discourse exists, the result uses
-`empty_primary_discourse`, retains the full inventory and dispositions, and
-contains no fabricated tree.
+Completed evidence is monotonic: acquisition, inventory, preparation,
+inference, validation, and assembly variants may be carried only when that
+stage genuinely completed before the failure. The default serialized projection
+retains identities and counts while redacting private representation values.
 
-## Long documents
-
-The service derives safe unit capacity from the loaded parser. It partitions at
-source structure first, recursively subdivides only when necessary, analyses
-local and macro units with the unchanged released model, and stitches one
-coherent tree. Pre-segmented EDUs are indivisible. No route truncates the source
-or uses a format-specific character ceiling.
-
-## Cache behavior
-
-The optional cache is local, content-addressed and analytical. Its identity
-covers:
-
-- raw source and declared/accepted source contract;
-- validator and adapter behavior;
-- preparation policy and implementation;
-- immutable released-model files and parser capability;
-- result schema and semantic payload.
-
-Validation and preparation identity are established before cache lookup. A
-changed identity is a normal miss. A corrupt, stale or contradictory entry is
-an actionable failure, never a silent hit or silent miss. Injected parsers
-without an immutable released-model identity may analyse but cannot write or
-reuse the durable cache.
-
-## Serialization
-
-The canonical envelope is `isanlp_rst_ingest` version `1.0.0`.
-`model_dump_json()` emits strict UTF-8 JSON. Semantic content and the execution
-receipt are separate: timestamps, timings, peak RSS and cache-hit observations
-remain truthful evidence without changing analytical equality.
-
-## Runtime boundary
-
-The installed production wheel contains the ingest service and its private
-format helpers. It contains and imports no training corpus, corpus compiler,
-trainer, evaluator, Gold Set, benchmark, research harness or repository tool.
-Gold Set comparison and Parseval scoring consume serialized production results
-from the repository-only side; production never imports them.
-
-Build and verify the exact wheel:
+## Verification
 
 ```bash
-pixi run -e offline build-production
-pixi run -e offline production-ingest-public-api
-pixi run -e offline production-ingest-conformance
-pixi run -e offline production-ingest-clean-install
-pixi run -e production production-boundary
+pixi run -e default production-api-contract
+pixi run -e default production-ingest-determinism
+pixi run -e default production-ingest-performance
+pixi run -e default lint
+pixi run -e default typecheck
+pixi run -e default mdlint
 ```
 
-The built-wheel clean-install test runs all five source families outside the
-repository with offline/training/evaluation packages unavailable.
+These source checks do not certify a wheel. Distribution certification also
+requires deterministic exact-commit artifacts, local clean installs, exact
+loaded-model evidence, and second-machine verification of the committed wheel.

@@ -1,17 +1,31 @@
 """Wheel and source-distribution boundary inspection."""
 
+import base64
+import csv
 import hashlib
+import io
+import json
 from email.parser import BytesParser
 from pathlib import Path, PurePosixPath
 import re
+import subprocess
 import tarfile
 import zipfile
 
-from tools.production_boundary.contracts import ArtifactReceipt
+import rfc8785
+
+from tools.production_boundary.contracts import (
+    ArtifactReceipt,
+    ReleaseReceipt,
+    canonical_record_bytes,
+    sha256_path,
+)
 
 
 _FORBIDDEN_PARTS = frozenset({"workbench", "workbench.research", "tests", "scripts", "specs", "corpora", "experiments", "__pycache__", ".pytest_cache", ".ruff_cache", ".pixi", "graphify-out"})
-_FORBIDDEN_SUFFIXES = frozenset({".pem", ".key", ".p12", ".pfx", ".pickle", ".pkl", ".pyc"})
+_FORBIDDEN_SUFFIXES = frozenset(
+    {".pem", ".key", ".p12", ".pfx", ".pickle", ".pkl", ".pyc", ".pt", ".pth", ".safetensors"}
+)
 _METADATA_MARKERS = (".dist-info/", ".egg-info/")
 _REQUIREMENT_NAME = re.compile(rb"^\s*([A-Za-z0-9][A-Za-z0-9._-]*)")
 _EXTRA_MARKER = re.compile(r"\bextra\s*==\s*['\"]([^'\"]+)['\"]")
@@ -87,7 +101,19 @@ def _forbidden(kind: str, name: str) -> bool:
         return True
     if kind == "wheel":
         return not (lower.startswith("isanlp_rst/") or any(marker in lower for marker in _METADATA_MARKERS))
-    allowed_root = {"pyproject.toml", "manifest.in", "readme.md", "license", "license_models", "license.txt", "license.md", "notice", "pkg-info", "setup.cfg"}
+    allowed_root = {
+        "pyproject.toml",
+        "pixi.lock",
+        "manifest.in",
+        "readme.md",
+        "license",
+        "license_models",
+        "license.txt",
+        "license.md",
+        "notice",
+        "pkg-info",
+        "setup.cfg",
+    }
     return not (lower.startswith("isanlp_rst/") or lower in allowed_root or any(marker in lower for marker in _METADATA_MARKERS))
 
 
@@ -98,3 +124,234 @@ def inspect_artifact(path: Path, declared_dependencies: tuple[str, ...] = ()) ->
     production = tuple(member for member in members if member not in forbidden)
     dependencies = declared_dependencies or _declared_dependencies(artifact, kind)
     return ArtifactReceipt(artifact_path=str(artifact), artifact_kind=kind, artifact_sha256=_sha256(artifact), member_count=len(members), production_members=production, forbidden_members=forbidden, declared_dependencies=dependencies)
+
+
+def validate_release_artifacts(
+    wheel: Path,
+    sdist: Path,
+    *,
+    expected_source_commit: str | None = None,
+) -> dict[str, object]:
+    """Validate the exact 5.0.0 package pair and return machine-readable evidence."""
+
+    wheel_receipt = inspect_artifact(wheel)
+    sdist_receipt = inspect_artifact(sdist)
+    if wheel_receipt.artifact_kind != "wheel" or sdist_receipt.artifact_kind != "sdist":
+        raise ValueError("release artifact pair must be ordered as wheel then sdist")
+    if not wheel_receipt.valid or not sdist_receipt.valid:
+        raise ValueError("release artifacts contain forbidden members")
+    wheel_evidence = _validate_wheel(wheel.resolve(), expected_source_commit)
+    sdist_evidence = _validate_sdist(sdist.resolve(), expected_source_commit)
+    if wheel_evidence["provenance"] != sdist_evidence["provenance"]:
+        raise ValueError("wheel and sdist package different build provenance")
+    return {
+        "schema_name": "isanlp_rst.release_evidence.artifact_validation",
+        "schema_version": "1.0.0",
+        "wheel": wheel_receipt.model_dump(mode="json"),
+        "sdist": sdist_receipt.model_dump(mode="json"),
+        "wheel_validation": wheel_evidence,
+        "sdist_validation": sdist_evidence,
+        "valid": True,
+    }
+
+
+def validate_release_directory(release_directory: Path) -> dict[str, object]:
+    """Verify the immutable four-file promoted release and every receipt identity."""
+
+    directory = release_directory.resolve()
+    expected_names = {
+        "isanlp_rst-5.0.0-py3-none-any.whl",
+        "isanlp_rst-5.0.0.tar.gz",
+        "release-receipt.json",
+        "release-receipt.sha256",
+    }
+    observed_names = {path.name for path in directory.iterdir() if path.is_file()}
+    if observed_names != expected_names:
+        raise ValueError(
+            f"promoted release membership differs: expected={sorted(expected_names)}, "
+            f"observed={sorted(observed_names)}"
+        )
+    receipt_path = directory / "release-receipt.json"
+    receipt_bytes = receipt_path.read_bytes()
+    receipt = ReleaseReceipt.model_validate_json(receipt_bytes)
+    if receipt_bytes != canonical_record_bytes(receipt):
+        raise ValueError("release receipt is not canonical RFC 8785 JSON")
+    detached = (directory / "release-receipt.sha256").read_text(encoding="ascii")
+    expected_detached = f"{sha256_path(receipt_path)}  release-receipt.json\n"
+    if detached != expected_detached:
+        raise ValueError("detached release receipt digest does not verify")
+
+    artifacts = validate_release_artifacts(
+        directory / "isanlp_rst-5.0.0-py3-none-any.whl",
+        directory / "isanlp_rst-5.0.0.tar.gz",
+        expected_source_commit=receipt.source.commit,
+    )
+    identities = {artifact.filename: artifact for artifact in receipt.artifacts}
+    for filename in ("isanlp_rst-5.0.0-py3-none-any.whl", "isanlp_rst-5.0.0.tar.gz"):
+        path = directory / filename
+        identity = identities.get(filename)
+        if identity is None:
+            raise ValueError(f"release receipt omits artifact: {filename}")
+        if path.stat().st_size != identity.size_bytes or sha256_path(path) != identity.sha256:
+            raise ValueError(f"release artifact contradicts receipt: {filename}")
+
+    repository = directory.parents[1]
+    for check in receipt.verification:
+        evidence = repository / check.evidence_path
+        if not evidence.is_file() or sha256_path(evidence) != check.evidence_sha256:
+            raise ValueError(f"release verification evidence does not match: {check.check_id}")
+    tree = subprocess.run(
+        ("git", "rev-parse", f"{receipt.source.commit}^{{tree}}"),
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    if tree != receipt.source.tree:
+        raise ValueError("release source tree contradicts the named source commit")
+    return {
+        "schema_name": "isanlp_rst.release_evidence.promoted_release_validation",
+        "schema_version": "1.0.0",
+        "receipt_sha256": sha256_path(receipt_path),
+        "source_commit": receipt.source.commit,
+        "source_tree": tree,
+        "artifacts": artifacts,
+        "valid": True,
+    }
+
+
+def _validate_wheel(path: Path, expected_source_commit: str | None) -> dict[str, object]:
+    with zipfile.ZipFile(path) as archive:
+        names = set(archive.namelist())
+        metadata_name = _one_name(names, ".dist-info/METADATA")
+        record_name = _one_name(names, ".dist-info/RECORD")
+        entry_points_name = _one_name(names, ".dist-info/entry_points.txt")
+        metadata = BytesParser().parsebytes(archive.read(metadata_name))
+        _validate_metadata(metadata)
+        _verify_record(archive, record_name)
+        entry_points = archive.read(entry_points_name).decode("utf-8", errors="strict")
+        if "isanlp-rst = isanlp_rst.cli:main" not in entry_points:
+            raise ValueError("wheel does not install the canonical isanlp-rst command")
+        required = {
+            "isanlp_rst/py.typed",
+            "isanlp_rst/build-provenance.json",
+            "isanlp_rst/ingest/public-surface.json",
+        }
+        missing = required - names
+        if missing or not any(name.startswith("isanlp_rst/ingest/schemas/") for name in names):
+            raise ValueError(f"wheel lacks required production contract resources: {sorted(missing)}")
+        provenance = _validate_provenance(
+            archive.read("isanlp_rst/build-provenance.json"),
+            expected_source_commit,
+        )
+        surface = json.loads(
+            archive.read("isanlp_rst/ingest/public-surface.json").decode("utf-8", errors="strict")
+        )
+        qualified = {entry["qualified_name"] for entry in surface["entries"]}
+        required_surface = {
+            "isanlp-rst",
+            "isanlp-rst.local-http./analyse",
+            "isanlp-rst.local-http./capabilities",
+            "isanlp-rst.local-http./health",
+        }
+        if not required_surface <= qualified:
+            raise ValueError("wheel public surface omits installed command or local HTTP projections")
+    return {
+        "metadata_name": metadata.get("Name"),
+        "metadata_version": metadata.get("Version"),
+        "requires_python": metadata.get("Requires-Python"),
+        "record_verified": True,
+        "provenance": provenance,
+    }
+
+
+def _validate_sdist(path: Path, expected_source_commit: str | None) -> dict[str, object]:
+    with tarfile.open(path, mode="r:gz") as archive:
+        members = {member.name: member for member in archive.getmembers() if member.isfile()}
+        pkg_info_name = _one_name(set(members), "/PKG-INFO")
+        pkg_stream = archive.extractfile(members[pkg_info_name])
+        if pkg_stream is None:
+            raise ValueError("sdist PKG-INFO cannot be read")
+        metadata = BytesParser().parsebytes(pkg_stream.read())
+        _validate_metadata(metadata)
+        provenance_name = _one_name(set(members), "/isanlp_rst/build-provenance.json")
+        provenance_stream = archive.extractfile(members[provenance_name])
+        if provenance_stream is None:
+            raise ValueError("sdist build provenance cannot be read")
+        provenance = _validate_provenance(provenance_stream.read(), expected_source_commit)
+        required_suffixes = {
+            "/isanlp_rst/py.typed",
+            "/isanlp_rst/ingest/public-surface.json",
+        }
+        missing = {
+            suffix
+            for suffix in required_suffixes
+            if not any(name.endswith(suffix) for name in members)
+        }
+        if missing or not any("/isanlp_rst/ingest/schemas/" in name for name in members):
+            raise ValueError(f"sdist lacks required production contract resources: {sorted(missing)}")
+    return {
+        "metadata_name": metadata.get("Name"),
+        "metadata_version": metadata.get("Version"),
+        "requires_python": metadata.get("Requires-Python"),
+        "provenance": provenance,
+    }
+
+
+def _validate_metadata(metadata: object) -> None:
+    getter = getattr(metadata, "get", None)
+    if not callable(getter):
+        raise TypeError("artifact metadata is not message-like")
+    if getter("Name") != "isanlp_rst" or getter("Version") != "5.0.0":
+        raise ValueError("artifact metadata does not identify isanlp_rst 5.0.0")
+    if getter("Requires-Python") != ">=3.14":
+        raise ValueError("artifact metadata does not require Python 3.14")
+
+
+def _verify_record(archive: zipfile.ZipFile, record_name: str) -> None:
+    rows = csv.reader(io.StringIO(archive.read(record_name).decode("utf-8", errors="strict")))
+    seen: set[str] = set()
+    for name, encoded_hash, size in rows:
+        if name in seen:
+            raise ValueError(f"wheel RECORD contains duplicate path: {name}")
+        seen.add(name)
+        if name == record_name:
+            if encoded_hash or size:
+                raise ValueError("wheel RECORD self-entry must omit hash and size")
+            continue
+        algorithm, separator, encoded = encoded_hash.partition("=")
+        if separator != "=" or algorithm != "sha256":
+            raise ValueError(f"wheel RECORD entry lacks SHA-256: {name}")
+        payload = archive.read(name)
+        observed = base64.urlsafe_b64encode(hashlib.sha256(payload).digest()).rstrip(b"=").decode("ascii")
+        if observed != encoded or int(size) != len(payload):
+            raise ValueError(f"wheel RECORD entry does not verify: {name}")
+    if seen != set(archive.namelist()):
+        raise ValueError("wheel RECORD membership differs from archive membership")
+
+
+def _validate_provenance(payload: bytes, expected_source_commit: str | None) -> dict[str, object]:
+    parsed = json.loads(payload.decode("utf-8", errors="strict"))
+    if payload != rfc8785.dumps(parsed) + b"\n":
+        raise ValueError("build provenance is not canonical RFC 8785 JSON")
+    if parsed.get("schema_name") != "isanlp_rst.build_provenance":
+        raise ValueError("artifact build provenance names the wrong contract")
+    if parsed.get("package_version") != "5.0.0":
+        raise ValueError("artifact provenance version contradicts package version")
+    if expected_source_commit is not None and parsed.get("source_commit") != expected_source_commit:
+        raise ValueError("artifact provenance contradicts the expected source commit")
+    return parsed
+
+
+def _one_name(names: set[str], suffix: str) -> str:
+    matches = tuple(name for name in names if name.endswith(suffix))
+    if len(matches) != 1:
+        raise ValueError(f"expected one artifact member ending {suffix!r}, found {matches}")
+    return matches[0]
+
+
+__all__ = [
+    "inspect_artifact",
+    "validate_release_artifacts",
+    "validate_release_directory",
+]

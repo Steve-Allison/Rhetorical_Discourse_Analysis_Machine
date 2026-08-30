@@ -1,384 +1,874 @@
-"""Canonical production source-ingest orchestration."""
+"""Canonical v2 production source preparation and analysis orchestration."""
 
-from datetime import UTC, datetime
 from pathlib import Path
-import resource
 from time import perf_counter
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 from uuid import uuid4
 
-from isanlp_rst.contracts import RstAnalysis, RstDocument, TextSpan
-from isanlp_rst.ingest.cache import ProductionIngestCache
-from isanlp_rst.ingest.contracts import (
-    AnalysisAnchor,
+from isanlp_rst._provenance import resolve_package_version, resolve_source_revision
+from isanlp_rst.contracts import Edu, RstDocument
+from isanlp_rst.ingest.contracts.analysis import (
+    AnalysedOutcome,
+    AnalysisExecutionEvidence,
+    AnalysisPolicy,
+    AnalysisRequest,
+    AnalysisSemanticEvidence,
     AnalysisStatus,
-    AnalysisUnit,
     CacheStatus,
-    ContentInventoryItem,
-    Disposition,
-    ExecutionReceipt,
-    FailureStage,
-    PreparationPolicy,
-    PreparationReceipt,
-    PreparedRange,
-    PreparedRstDocument,
-    ProductionAnalysisResult,
-    ProductionIngestError,
-    INGEST_PIPELINE_VERSION,
-    SegmentKind,
-    SourceArtifact,
-    SourceContractIdentity,
-    INGEST_SCHEMA_NAME,
-    INGEST_SCHEMA_VERSION,
+    EmptyPrimaryAnalysisOutcome,
+    LossyInputPolicy,
+    MarkerRefinementMode,
+    ParserAnalysisResult,
+    ProductionAnalysisOutcome,
+    RelationInterpretationPolicy,
+    ValidationPolicy,
 )
+from isanlp_rst.ingest.contracts.base import SemanticVersion, Sha256Identity
+from isanlp_rst.ingest.contracts.capabilities import ProductionCapabilities
+from isanlp_rst.ingest.contracts.failure import (
+    AcquisitionCompletedEvidence,
+    DiagnosticPolicy,
+    FailureCategory,
+    InferenceCompletedEvidence,
+    LifecycleStage,
+    MissingDistributionContext,
+    PreparationCompletedEvidence,
+    ProductionFailure,
+    ProductionIngestError,
+    Retryability,
+    SafeCause,
+    ValidationCompletedEvidence,
+)
+from isanlp_rst.ingest.contracts.inference import (
+    CompositeAnalysisIdentity,
+    EvidenceDetailPolicy,
+    InferenceEvidence,
+    NotUsedComponentIdentity,
+    OutputFormalism,
+)
+from isanlp_rst.ingest.contracts.preparation import (
+    AnalysisPlanStatus,
+    CapacityUnit,
+    ParserCapacity,
+    PlanningPolicy,
+    PreparationOutcome,
+    PreparationPolicy,
+    PreparedRstDocument,
+    SegmentKind,
+)
+from isanlp_rst.ingest.contracts.source import SourceArtifact, SourceForm
 from isanlp_rst.ingest.identity import semantic_sha256
-from isanlp_rst.ingest.policy import AUTHORED_PROSE_V1, apply_policy
-from isanlp_rst.ingest.prepare import prepare_source
-from isanlp_rst.ingest.subdivision import build_subdivision_plan
-from isanlp_rst.model_loading import ModelReleaseIdentity, ParserCapacity
+from isanlp_rst.ingest.capabilities import describe_capabilities
+from isanlp_rst.ingest.cache import ProductionIngestCache, cache_entry_identity
+from isanlp_rst.ingest.policy import DEFAULT_PLANNING_POLICY, DEFAULT_PREPARATION_POLICY
+from isanlp_rst.ingest.prepare import (
+    PreparationValidationError,
+    SourceClassificationError,
+    prepare_source,
+)
+from isanlp_rst.ingest.subdivision import AnalysisPlanningError
 
 
+DEFAULT_ANALYSIS_POLICY = AnalysisPolicy(
+    output_formalism=OutputFormalism.RST_TREE,
+    evidence_detail=EvidenceDetailPolicy.DECISION_COMPLETE,
+    marker_refinement=MarkerRefinementMode.EVIDENCE_PRESERVING,
+    validation=ValidationPolicy(
+        policy_version=SemanticVersion(root="2.0.0"),
+        required_checks=(
+            "source_substrate_identity",
+            "primary_tree",
+            "erst_formal_rules",
+            "analysis_anchors",
+            "decision_evidence",
+            "component_identity",
+            "semantic_identity",
+        ),
+        advisory_checks=(),
+    ),
+    relation_interpretation=RelationInterpretationPolicy(
+        relation_scheme="provider_native",
+        ontology_mapping="disabled",
+        policy_version=SemanticVersion(root="2.0.0"),
+    ),
+    lossy_input=LossyInputPolicy.FORBID,
+    policy_version=SemanticVersion(root="2.0.0"),
+)
+
+
+@runtime_checkable
 class AnalysisParser(Protocol):
-    """Minimum parser surface required by production ingest."""
+    """Complete parser boundary consumed by production ingest."""
 
     @property
-    def analysis_capacity(self) -> ParserCapacity: ...
+    def analysis_capacity(self) -> object: ...
 
     @property
-    def model_release_identity(self) -> ModelReleaseIdentity | None: ...
+    def model_release_identity(self) -> object | None: ...
 
-    def parse_document(self, document: RstDocument, output: str = "rst_tree") -> RstAnalysis: ...
+    def analyse_document(
+        self,
+        document: RstDocument,
+        *,
+        analysis_policy: AnalysisPolicy | None = None,
+    ) -> ParserAnalysisResult: ...
+
+
+@runtime_checkable
+class ErstCompletionParser(Protocol):
+    """Optional extension required for document-global subdivided eRST completion."""
+
+    def complete_erst_document(
+        self,
+        document: RstDocument,
+        primary_result: ParserAnalysisResult,
+        *,
+        analysis_policy: AnalysisPolicy,
+    ) -> ParserAnalysisResult: ...
+
+
+@runtime_checkable
+class AnalysisIdentityProvider(Protocol):
+    """Model-free exact component identity required for pre-inference cache lookup."""
+
+    def describe_analysis_identity(
+        self,
+        *,
+        analysis_policy: AnalysisPolicy,
+        segmentation_source: str,
+    ) -> CompositeAnalysisIdentity: ...
 
 
 class ProductionIngestor:
-    """One in-process authority for production source preparation and analysis."""
+    """One provider-owned authority for preparation and evidence-complete analysis."""
 
-    def __init__(self, *, parser: AnalysisParser | None) -> None:
+    def __init__(self, *, parser: AnalysisParser | None = None) -> None:
         self.parser = parser
+
+    def capabilities(self) -> ProductionCapabilities:
+        return describe_capabilities(self.parser)
 
     def prepare(
         self,
-        artifact: SourceArtifact,
+        source: SourceArtifact,
         *,
-        policy: PreparationPolicy = AUTHORED_PROSE_V1,
-    ) -> PreparedRstDocument:
-        prepared, _inventory, _dispositions, _contract = _prepare_with_diagnostics(artifact, policy)
-        return prepared
+        policy: PreparationPolicy | None = None,
+        planning_policy: PlanningPolicy | None = None,
+        parser_capacity: ParserCapacity | None = None,
+    ) -> PreparationOutcome:
+        acquired = AcquisitionCompletedEvidence(source=source.summary())
+        try:
+            return prepare_source(
+                source,
+                policy=policy or DEFAULT_PREPARATION_POLICY,
+                planning_policy=planning_policy or DEFAULT_PLANNING_POLICY,
+                parser_capacity=parser_capacity,
+            )
+        except ProductionIngestError:
+            raise
+        except PreparationValidationError as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.VALIDATION,
+                category=FailureCategory.VALIDATION_FAILURE,
+                code="preparation_validation_failed",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="assembled_preparation_failed_required_validation",
+                completed=PreparationCompletedEvidence(preparation=exc.outcome),
+                cause=_safe_cause(_root_cause(exc), FailureCategory.VALIDATION_FAILURE),
+            )
+            raise ProductionIngestError(failure) from exc
+        except SourceClassificationError as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.CLASSIFICATION,
+                category=FailureCategory.MALFORMED_INPUT,
+                code="source_classification_failed",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="source_could_not_be_classified_under_its_declared_contract",
+                completed=acquired,
+                cause=_safe_cause(_root_cause(exc), FailureCategory.MALFORMED_INPUT),
+            )
+            raise ProductionIngestError(failure) from exc
+        except AnalysisPlanningError as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.PLANNING,
+                category=FailureCategory.UNSUPPORTED_INPUT,
+                code="analysis_planning_failed",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="source_cannot_be_planned_with_declared_capacity",
+                completed=acquired,
+                cause=_safe_cause(exc, FailureCategory.UNSUPPORTED_INPUT),
+            )
+            raise ProductionIngestError(failure) from exc
+        except ModuleNotFoundError as exc:
+            distribution, extra = _source_requirement(source)
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.CLASSIFICATION,
+                category=FailureCategory.PROVIDER_UNAVAILABLE,
+                code="source_adapter_distribution_unavailable",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="source_form_requires_an_uninstalled_distribution",
+                diagnostic_context=(
+                    MissingDistributionContext(
+                        distributions=(distribution,),
+                        required_extra=extra,
+                    ),
+                ),
+                completed=acquired,
+                cause=_safe_cause(exc, FailureCategory.PROVIDER_UNAVAILABLE),
+            )
+            raise ProductionIngestError(failure) from exc
+        except UnicodeError as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.CLASSIFICATION,
+                category=FailureCategory.MALFORMED_INPUT,
+                code="source_classification_failed",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="source_could_not_be_classified_under_its_declared_contract",
+                completed=acquired,
+                cause=_safe_cause(exc, FailureCategory.MALFORMED_INPUT),
+            )
+            raise ProductionIngestError(failure) from exc
+        except (TypeError, ValueError) as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.PREPARATION,
+                category=FailureCategory.VALIDATION_FAILURE,
+                code="source_preparation_failed",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="source_could_not_be_prepared_under_the_resolved_policy",
+                completed=acquired,
+                cause=_safe_cause(exc, FailureCategory.VALIDATION_FAILURE),
+            )
+            raise ProductionIngestError(failure) from exc
+        except Exception as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.PREPARATION,
+                category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+                code="source_preparation_internal_failure",
+                retryability=Retryability.UNKNOWN,
+                message_template="source_preparation_failed_before_a_complete_outcome",
+                completed=acquired,
+                cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
+            )
+            raise ProductionIngestError(failure) from exc
 
     def analyse(
         self,
-        artifact: SourceArtifact,
+        source: SourceArtifact,
         *,
-        policy: PreparationPolicy = AUTHORED_PROSE_V1,
-        cache_dir: Path | None = None,
-    ) -> ProductionAnalysisResult:
-        started_at = datetime.now(UTC)
-        run_id = str(uuid4())
-        timings: list[tuple[str, float]] = []
+        policy: PreparationPolicy | None = None,
+        planning_policy: PlanningPolicy | None = None,
+        analysis_policy: AnalysisPolicy | None = None,
+        cache_directory: Path | None = None,
+        diagnostic_policy: DiagnosticPolicy | None = None,
+    ) -> ProductionAnalysisOutcome:
+        """Analyse atomically or raise one typed completed-stage failure."""
 
-        stage_started = perf_counter()
-        prepared, inventory, dispositions, contract = _prepare_with_diagnostics(artifact, policy)
-        _policy_dispositions, duplicates = apply_policy(inventory, policy)
-        timings.append(("prepare", _elapsed_ms(stage_started)))
-
+        started = perf_counter()
         parser = self.parser
-        capacity = parser.analysis_capacity if parser is not None else ParserCapacity(
-            unit="edu_count",
-            maximum=512,
-            source="isanlp_rst.ingest/empty-only",
-        )
-        plan = build_subdivision_plan(prepared, capacity)
-        model_identity = parser.model_release_identity if parser is not None else None
-        model_digest = (
-            model_identity.semantic_digest
-            if model_identity is not None
-            else semantic_sha256(
-                {
-                    "mutable_parser": (
-                        f"{type(parser).__module__}.{type(parser).__qualname__}" if parser is not None else "none"
-                    ),
-                    "capacity": capacity,
-                }
+        try:
+            capacity = _parser_capacity(parser.analysis_capacity) if parser is not None else None
+        except Exception as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.PLANNING,
+                category=FailureCategory.PROVIDER_UNAVAILABLE,
+                code="parser_capacity_unavailable",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="parser_did_not_expose_a_valid_declarative_capacity",
+                completed=AcquisitionCompletedEvidence(source=source.summary()),
+                cause=_safe_cause(exc, FailureCategory.PROVIDER_UNAVAILABLE),
             )
+            raise ProductionIngestError(failure) from exc
+        preparation = self.prepare(
+            source,
+            policy=policy,
+            planning_policy=planning_policy,
+            parser_capacity=capacity,
         )
-        cache_fingerprint = (
-            semantic_sha256(
-                {
-                    "source": artifact.source_id,
-                    "source_contract": contract.semantic_digest,
-                    "policy": policy.policy_digest,
-                    "prepared": prepared.semantic_digest,
-                    "subdivision": plan.semantic_digest,
-                    "model": model_digest,
-                    "pipeline": INGEST_PIPELINE_VERSION,
-                    "result_contract": f"{INGEST_SCHEMA_NAME}/{INGEST_SCHEMA_VERSION}",
-                }
+        resolved_policy = analysis_policy or DEFAULT_ANALYSIS_POLICY
+        if not preparation.semantic.prepared_document.text:
+            empty = _empty_outcome(
+                source,
+                preparation,
+                resolved_policy,
+                started=started,
             )
-            if model_identity is not None
-            else None
-        )
-        warnings = () if model_identity is not None else ("durable_cache_disabled_without_released_model_identity",)
-
-        if cache_fingerprint is not None and cache_dir is not None:
-            cached = ProductionIngestCache(cache_dir).load(cache_fingerprint)
+            return _resolve_empty_cache(empty, cache_directory, started=started)
+        if parser is None:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.INFERENCE,
+                category=FailureCategory.PROVIDER_UNAVAILABLE,
+                code="parser_not_configured",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="non_empty_primary_discourse_requires_parser",
+                completed=PreparationCompletedEvidence(preparation=preparation),
+            )
+            raise ProductionIngestError(failure)
+        prepared_document = preparation.semantic.prepared_document
+        plan = preparation.semantic.analysis_plan
+        request: AnalysisRequest | None = None
+        cache: ProductionIngestCache | None = None
+        declared_composite: CompositeAnalysisIdentity | None = None
+        if cache_directory is not None:
+            if not isinstance(parser, AnalysisIdentityProvider):
+                failure = ProductionFailure(
+                    failed_stage=LifecycleStage.CACHE_RETRIEVAL,
+                    category=FailureCategory.PROVIDER_UNAVAILABLE,
+                    code="exact_cache_identity_unavailable",
+                    retryability=Retryability.NOT_RETRYABLE,
+                    message_template="parser_cannot_describe_runtime_identity_before_inference",
+                    completed=PreparationCompletedEvidence(preparation=preparation),
+                )
+                raise ProductionIngestError(failure)
+            segmentation_source = (
+                "presegmented"
+                if source.source_form is SourceForm.EDUS
+                else "model"
+                if getattr(parser, "segmenter", None) is not None
+                else "deterministic_sentence_boundary_v1"
+            )
+            declared_composite = parser.describe_analysis_identity(
+                analysis_policy=resolved_policy,
+                segmentation_source=segmentation_source,
+            )
+            if not declared_composite.durable_cache_eligible:
+                failure = ProductionFailure(
+                    failed_stage=LifecycleStage.CACHE_RETRIEVAL,
+                    category=FailureCategory.PROVIDER_UNAVAILABLE,
+                    code="analysis_not_cache_eligible",
+                    retryability=Retryability.NOT_RETRYABLE,
+                    message_template="participating_components_are_not_immutable",
+                    completed=PreparationCompletedEvidence(preparation=preparation),
+                )
+                raise ProductionIngestError(failure)
+            request = _analysis_request(
+                source,
+                preparation,
+                resolved_policy,
+                capacity,
+                declared_composite,
+            )
+            request_identity = _required_identity(request.semantic_digest, "analysis request")
+            cache = ProductionIngestCache(cache_directory)
+            cached = cache.load(request_identity)
             if cached is not None:
-                return cached.model_copy(
-                    update={
-                        "execution_receipt": _execution_receipt(
-                            run_id,
-                            started_at,
-                            CacheStatus.HIT,
-                            timings,
-                            warnings,
-                        )
+                return _with_cache_execution(cached, CacheStatus.HIT, started=started)
+        if plan.status is AnalysisPlanStatus.SUBDIVIDED:
+            unit_policy = resolved_policy
+            if resolved_policy.output_formalism is OutputFormalism.ERST_GRAPH:
+                unit_policy = AnalysisPolicy.model_validate(
+                    {
+                        **resolved_policy.model_dump(exclude={"semantic_digest"}),
+                        "output_formalism": OutputFormalism.RST_TREE,
                     }
                 )
-
-        if not prepared.text:
-            analysis = None
-            analysis_status = AnalysisStatus.EMPTY_PRIMARY_DISCOURSE
-        else:
-            if parser is None:
-                raise ProductionIngestError(
-                    stage=FailureStage.ANALYSE,
-                    code="parser_required",
-                    artifact_id=artifact.source_id,
-                    expectation="a configured parser for non-empty primary discourse",
-                    detail="ProductionIngestor was constructed without a parser",
+            unit_ranges = tuple(
+                (
+                    prepared_document.segments[unit.first_segment_order].prepared_range.start,
+                    prepared_document.segments[unit.last_segment_order].prepared_range.end,
                 )
-            stage_started = perf_counter()
-            if len(plan.units) <= 1:
-                analysis = _parse_document(parser, prepared.document, artifact.source_id)
-            else:
-                parse_hierarchical = getattr(parser, "parse_hierarchical", None)
-                if parse_hierarchical is None:
-                    raise ProductionIngestError(
-                        stage=FailureStage.ANALYSE,
-                        code="hierarchical_parser_required",
-                        artifact_id=artifact.source_id,
-                        expectation="a parser implementing parse_hierarchical for subdivided input",
-                        detail=f"subdivision produced {len(plan.units)} analysis units",
-                    )
-                boundaries = tuple(
-                    TextSpan(
-                        start=unit.output_range.start,
-                        end=unit.output_range.end,
-                        text=prepared.text[unit.output_range.start : unit.output_range.end],
-                    )
-                    for unit in plan.units
-                )
-                try:
-                    analysis = parse_hierarchical(
-                        prepared.document,
-                        custom_boundaries=boundaries,
-                        output="rst_tree",
-                    )
-                except (OSError, RuntimeError, TypeError, ValueError) as exc:
-                    raise ProductionIngestError(
-                        stage=FailureStage.ANALYSE,
-                        code="hierarchical_analysis_failed",
-                        artifact_id=artifact.source_id,
-                        expectation="one complete coherent RST analysis from every subdivision",
-                        detail=f"hierarchical parser failed ({type(exc).__name__})",
-                        diagnostic_counts={"analysis_units": len(plan.units)},
-                    ) from exc
-            timings.append(("analyse", _elapsed_ms(stage_started)))
-            analysis_status = AnalysisStatus.ANALYSED
-
-        anchors = _analysis_anchors(analysis, prepared, plan.units)
-        target_count = 0 if analysis is None else len(analysis.nodes) + len(analysis.primary_edges) + len(analysis.secondary_edges)
-        anchor_coverage = 1.0 if target_count == 0 else len(anchors) / target_count
-        primary_count = len(prepared.primary_item_ids)
-        mapped_primary = sum(
-            any(segment.source_item_id == item_id for segment in prepared.segments)
-            for item_id in prepared.primary_item_ids
-        )
-        receipt = PreparationReceipt(
-            source_id=artifact.source_id,
-            source_contract_digest=contract.semantic_digest,
-            policy_digest=policy.policy_digest,
-            preparation_digest=prepared.semantic_digest,
-            subdivision_digest=plan.semantic_digest,
-            model_digest=model_digest,
-            pipeline_version=INGEST_PIPELINE_VERSION,
-            inventory_count=len(inventory),
-            disposition_count=len(dispositions),
-            inventory_coverage=1.0,
-            primary_source_coverage=1.0 if primary_count == 0 else mapped_primary / primary_count,
-            prepared_text_coverage=1.0,
-            analysis_anchor_coverage=anchor_coverage,
-            dispositions=dispositions,
-            duplicate_findings=duplicates,
-            warnings=warnings,
-            cache_fingerprint=cache_fingerprint,
-        )
-        cache_status = CacheStatus.MISS if cache_fingerprint is not None else CacheStatus.DISABLED
-        result = ProductionAnalysisResult(
-            source=artifact.summary(),
-            analysis_status=analysis_status,
-            prepared_document=prepared,
-            analysis=analysis,
-            analysis_anchors=anchors,
-            preparation_receipt=receipt,
-            execution_receipt=_execution_receipt(run_id, started_at, cache_status, timings, warnings),
-        )
-        if cache_fingerprint is not None and cache_dir is not None:
-            ProductionIngestCache(cache_dir).store(cache_fingerprint, result)
-            result = result.model_copy(
-                update={
-                    "execution_receipt": _execution_receipt(
-                        run_id,
-                        started_at,
-                        CacheStatus.WRITTEN,
-                        timings,
-                        warnings,
-                    )
-                }
+                for unit in plan.units
             )
-        return result
+            unit_results = tuple(
+                _analyse_parser_unit(
+                    parser,
+                    _rst_document(
+                        prepared_document,
+                        source.source_form,
+                        document_id=f"{source.source_id}:{plan.units[index].unit_id}",
+                        start=start,
+                        end=end,
+                    ),
+                    unit_policy,
+                    preparation,
+                )
+                for index, (start, end) in enumerate(unit_ranges)
+            )
+            from isanlp_rst.ingest.recombination import recombine_parser_results
+
+            try:
+                parser_result = recombine_parser_results(
+                    document_id=source.source_id,
+                    text=prepared_document.text,
+                    plan=plan,
+                    unit_ranges=unit_ranges,
+                    results=unit_results,
+                )
+            except ProductionIngestError:
+                raise
+            except Exception as exc:
+                failure = ProductionFailure(
+                    failed_stage=LifecycleStage.ASSEMBLY,
+                    category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+                    code="multi_unit_recombination_failed",
+                    retryability=Retryability.UNKNOWN,
+                    message_template="complete_unit_results_could_not_be_recombined",
+                    completed=_inference_completed(preparation, unit_results),
+                    cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
+                )
+                raise ProductionIngestError(failure) from exc
+            if resolved_policy.output_formalism is OutputFormalism.ERST_GRAPH:
+                if not isinstance(parser, ErstCompletionParser):
+                    raise TypeError(
+                        "subdivided eRST analysis requires document-global completion support"
+                    )
+                try:
+                    parser_result = parser.complete_erst_document(
+                        _rst_document(
+                            prepared_document,
+                            source.source_form,
+                            document_id=source.source_id,
+                        ),
+                        parser_result,
+                        analysis_policy=resolved_policy,
+                    )
+                except ProductionIngestError:
+                    raise
+                except Exception as exc:
+                    failure = ProductionFailure(
+                        failed_stage=LifecycleStage.INFERENCE,
+                        category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+                        code="document_global_erst_completion_failed",
+                        retryability=Retryability.UNKNOWN,
+                        message_template="erst_completion_failed_after_primary_recombination",
+                        completed=_inference_completed(preparation, (parser_result,)),
+                        cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
+                    )
+                    raise ProductionIngestError(failure) from exc
+        else:
+            document = _rst_document(
+                prepared_document,
+                source.source_form,
+                document_id=source.source_id,
+            )
+            parser_result = _analyse_parser_unit(
+                parser,
+                document,
+                resolved_policy,
+                preparation,
+            )
+        from isanlp_rst.ingest.enrichment import enrich_parser_evidence
+        from isanlp_rst.ingest.validation import build_analysis_validation_receipt
+
+        try:
+            analysed_document, anchors = enrich_parser_evidence(preparation, parser_result)
+        except Exception as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.ASSEMBLY,
+                category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+                code="source_evidence_enrichment_failed",
+                retryability=Retryability.UNKNOWN,
+                message_template="parser_coordinates_could_not_be_mapped_to_source_evidence",
+                completed=ValidationCompletedEvidence(
+                    preparation=preparation,
+                    analysis_draft=parser_result.semantic.analysis,
+                    validation=parser_result.semantic.validation,
+                ),
+                cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
+            )
+            raise ProductionIngestError(failure) from exc
+        try:
+            validation = build_analysis_validation_receipt(
+                parser_result.semantic.analysis,
+                analysed_document,
+                parser_result.semantic.primary_inference,
+                parser_result.semantic.erst_completion,
+                anchors,
+                policy=parser_result.semantic.policy,
+                composite=parser_result.semantic.composite_identity,
+                recombination=parser_result.semantic.recombination,
+            )
+        except Exception as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.VALIDATION,
+                category=FailureCategory.VALIDATION_FAILURE,
+                code="analysis_validation_failed",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="analysis_evidence_failed_required_validation",
+                completed=_inference_completed(preparation, (parser_result,)),
+                cause=_safe_cause(exc, FailureCategory.VALIDATION_FAILURE),
+            )
+            raise ProductionIngestError(failure) from exc
+        composite_identity = parser_result.semantic.composite_identity
+        if declared_composite is not None and declared_composite != composite_identity:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.VALIDATION,
+                category=FailureCategory.IDENTITY_CONTRADICTION,
+                code="runtime_identity_contradiction",
+                retryability=Retryability.NOT_RETRYABLE,
+                message_template="declared_and_participating_component_identities_differ",
+                completed=PreparationCompletedEvidence(preparation=preparation),
+            )
+            raise ProductionIngestError(failure)
+        request = request or _analysis_request(
+            source,
+            preparation,
+            parser_result.semantic.policy,
+            capacity,
+            composite_identity,
+        )
+        semantic = AnalysisSemanticEvidence(
+            preparation=preparation,
+            request=request,
+            policy=parser_result.semantic.policy,
+            analysed_document=analysed_document,
+            composite_identity=composite_identity,
+            parser_result=parser_result,
+            status=AnalysisStatus.ANALYSED,
+            analysis=parser_result.semantic.analysis,
+            primary_inference=parser_result.semantic.primary_inference,
+            erst_completion=parser_result.semantic.erst_completion,
+            anchors=anchors,
+            recombination=parser_result.semantic.recombination,
+            validation=validation,
+            cache_request_identity=request.semantic_digest,
+        )
+        outcome = AnalysedOutcome(
+            semantic=semantic,
+            execution=AnalysisExecutionEvidence(
+                execution_id=str(uuid4()),
+                duration_ms=(perf_counter() - started) * 1_000.0,
+                device=parser_result.execution.device,
+                cache_status=CacheStatus.BYPASS,
+                unit_executions=parser_result.execution.unit_executions,
+                software_version=resolve_package_version(),
+                source_revision=resolve_source_revision(),
+            ),
+        )
+        if cache is None:
+            return outcome
+        request_identity = _required_identity(request.semantic_digest, "analysis request")
+        persisted = _with_cache_execution(outcome, CacheStatus.WRITTEN, started=started)
+        cache.store(request_identity, persisted)
+        return persisted
 
 
-def analyse_source(
-    artifact: SourceArtifact,
+def _empty_outcome(
+    source: SourceArtifact,
+    preparation: PreparationOutcome,
+    policy: AnalysisPolicy,
     *,
-    parser: AnalysisParser | None,
-    policy: PreparationPolicy = AUTHORED_PROSE_V1,
-    cache_dir: Path | None = None,
-) -> ProductionAnalysisResult:
-    """Analyse one materialized source through the canonical production path."""
-
-    return ProductionIngestor(parser=parser).analyse(
-        artifact,
+    started: float,
+) -> EmptyPrimaryAnalysisOutcome:
+    component = NotUsedComponentIdentity(
+        component="all_analysis_components",
+        reason="empty_primary_discourse",
+    )
+    composite = CompositeAnalysisIdentity(
+        primary_parser=component,
+        segmenter=component.model_copy(update={"component": "segmenter"}),
+        marker_refiner=component.model_copy(update={"component": "marker_refiner"}),
+        erst_detector=component.model_copy(update={"component": "erst_detector"}),
+        erst_scorer=component.model_copy(update={"component": "erst_scorer"}),
+        erst_decoder=component.model_copy(update={"component": "erst_decoder"}),
+        calibration=component.model_copy(update={"component": "calibration"}),
+        relation_inventory=component.model_copy(update={"component": "relation_inventory"}),
+        ontology_mapping=component.model_copy(update={"component": "ontology_mapping"}),
+    )
+    plan_identity = preparation.semantic.analysis_plan.semantic_digest
+    preparation_identity = preparation.semantic_digest
+    if plan_identity is None or preparation_identity is None:
+        raise ValueError("validated preparation identities are absent")
+    request = AnalysisRequest(
+        source_identity=Sha256Identity(hex_digest=source.source_id),
+        preparation_identity=preparation_identity,
+        analysis_policy=policy,
+        analysis_plan_identity=plan_identity,
+        parser_capacity_identity=None,
+        composite_analysis_identity=composite,
+        pipeline_version=SemanticVersion(root="2.0.0"),
+        production_contract_version=SemanticVersion(root="2.0.0"),
+    )
+    semantic = AnalysisSemanticEvidence(
+        preparation=preparation,
+        request=request,
         policy=policy,
-        cache_dir=cache_dir,
+        analysed_document=None,
+        composite_identity=composite,
+        parser_result=None,
+        status=AnalysisStatus.EMPTY_PRIMARY_DISCOURSE,
+        analysis=None,
+        primary_inference=None,
+        erst_completion=None,
+        anchors=(),
+        recombination=None,
+        validation=None,
+        cache_request_identity=_required_identity(request.semantic_digest, "analysis request"),
+    )
+    return EmptyPrimaryAnalysisOutcome(
+        semantic=semantic,
+        execution=AnalysisExecutionEvidence(
+            execution_id=str(uuid4()),
+            duration_ms=(perf_counter() - started) * 1_000.0,
+            device="not_used",
+            cache_status=CacheStatus.BYPASS,
+            unit_executions=(),
+            software_version=resolve_package_version(),
+            source_revision=resolve_source_revision(),
+        ),
     )
 
 
-def _prepare_with_diagnostics(
-    artifact: SourceArtifact,
-    policy: PreparationPolicy,
-) -> tuple[
-    PreparedRstDocument,
-    tuple[ContentInventoryItem, ...],
-    tuple[Disposition, ...],
-    SourceContractIdentity,
-]:
-    """Run canonical preparation and convert unsafe partial failures to evidence."""
+def _analysis_request(
+    source: SourceArtifact,
+    preparation: PreparationOutcome,
+    policy: AnalysisPolicy,
+    capacity: ParserCapacity | None,
+    composite: CompositeAnalysisIdentity,
+) -> AnalysisRequest:
+    preparation_identity = _required_identity(preparation.semantic_digest, "preparation")
+    plan_identity = _required_identity(
+        preparation.semantic.analysis_plan.semantic_digest,
+        "analysis plan",
+    )
+    return AnalysisRequest(
+        source_identity=Sha256Identity(hex_digest=source.source_id),
+        preparation_identity=preparation_identity,
+        analysis_policy=policy,
+        analysis_plan_identity=plan_identity,
+        parser_capacity_identity=(
+            Sha256Identity(hex_digest=semantic_sha256(capacity))
+            if capacity is not None
+            else None
+        ),
+        composite_analysis_identity=composite,
+        pipeline_version=SemanticVersion(root="2.0.0"),
+        production_contract_version=SemanticVersion(root="2.0.0"),
+    )
 
-    try:
-        return prepare_source(artifact, policy=policy)
-    except ProductionIngestError:
-        raise
-    except (OSError, SyntaxError, TypeError, UnicodeError, ValueError) as exc:
-        raise ProductionIngestError(
-            stage=FailureStage.VALIDATE,
-            code=f"invalid_{artifact.source_form.value}",
-            artifact_id=artifact.source_id,
-            expectation="a complete source valid under the current accepted contract",
-            detail=f"source validation or inventory failed ({type(exc).__name__})",
-        ) from exc
+
+def _rst_document(
+    prepared: PreparedRstDocument,
+    source_form: SourceForm,
+    *,
+    document_id: str,
+    start: int = 0,
+    end: int | None = None,
+) -> RstDocument:
+    resolved_end = len(prepared.text) if end is None else end
+    text = prepared.text[start:resolved_end]
+    if source_form is not SourceForm.EDUS:
+        return RstDocument.from_text(text, document_id=document_id)
+    edus = tuple(
+        Edu(
+            edu_id=index,
+            text=segment.text,
+            start=segment.prepared_range.start - start,
+            end=segment.prepared_range.end - start,
+        )
+        for index, segment in enumerate(
+            (
+                item
+                for item in prepared.segments
+                if item.kind is SegmentKind.SOURCE
+                and start <= item.prepared_range.start
+                and item.prepared_range.end <= resolved_end
+            ),
+            start=1,
+        )
+    )
+    if not edus:
+        raise ValueError("presegmented source unit contains no complete EDUs")
+    return RstDocument(
+        document_id=document_id,
+        text=text,
+        edus=edus,
+    )
 
 
-def _parse_document(
+def _analyse_parser_unit(
     parser: AnalysisParser,
     document: RstDocument,
-    artifact_id: str,
-) -> RstAnalysis:
+    policy: AnalysisPolicy,
+    preparation: PreparationOutcome,
+) -> ParserAnalysisResult:
+    from isanlp_rst.transformer_parser.predictor import ParserInputLimitError
+
     try:
-        return parser.parse_document(document, output="rst_tree")
+        return parser.analyse_document(document, analysis_policy=policy)
     except ProductionIngestError:
         raise
-    except (OSError, RuntimeError, TypeError, ValueError) as exc:
-        raise ProductionIngestError(
-            stage=FailureStage.ANALYSE,
-            code="analysis_failed",
-            artifact_id=artifact_id,
-            expectation="a complete RST analysis over the prepared primary discourse",
-            detail=f"parser failed ({type(exc).__name__})",
-        ) from exc
+    except Exception as exc:
+        if isinstance(exc, ParserInputLimitError):
+            category = FailureCategory.UNSUPPORTED_INPUT
+            code = "parser_capacity_exceeded"
+            retryability = Retryability.NOT_RETRYABLE
+            message = "exact_inference_substrate_exceeds_declared_parser_capacity"
+        elif isinstance(exc, ValueError):
+            category = FailureCategory.VALIDATION_FAILURE
+            code = "parser_evidence_invalid"
+            retryability = Retryability.NOT_RETRYABLE
+            message = "parser_did_not_return_a_valid_canonical_result"
+        else:
+            category = FailureCategory.INTERNAL_PROCESSING_FAILURE
+            code = "parser_execution_failed"
+            retryability = Retryability.UNKNOWN
+            message = "parser_failed_before_a_complete_result_was_available"
+        failure = ProductionFailure(
+            failed_stage=LifecycleStage.INFERENCE,
+            category=category,
+            code=code,
+            retryability=retryability,
+            message_template=message,
+            completed=PreparationCompletedEvidence(preparation=preparation),
+            cause=_safe_cause(exc, category),
+        )
+        raise ProductionIngestError(failure) from exc
 
 
-def _analysis_anchors(
-    analysis: RstAnalysis | None,
-    prepared: PreparedRstDocument,
-    units: tuple[AnalysisUnit, ...],
-) -> tuple[AnalysisAnchor, ...]:
-    if analysis is None:
-        return ()
-    anchors: list[AnalysisAnchor] = []
-    node_by_id = {node.node_id: node for node in analysis.nodes}
-    for node in analysis.nodes:
-        anchor = _anchor_for_range(f"node:{node.node_id}", "node", node.char_span, prepared, units)
-        if anchor is not None:
-            anchors.append(anchor)
-    for edge in (*analysis.primary_edges, *analysis.secondary_edges):
-        node_id = getattr(edge, "parent_id", getattr(edge, "source_id", None))
-        if not isinstance(node_id, int):
-            continue
-        node = node_by_id.get(node_id)
-        if node is None:
-            continue
-        anchor = _anchor_for_range(f"edge:{edge.edge_id}", "relation", node.char_span, prepared, units)
-        if anchor is not None:
-            anchors.append(anchor)
-    return tuple(anchors)
-
-
-def _anchor_for_range(
-    analysis_id: str,
-    analysis_kind: str,
-    char_span: tuple[int, int],
-    prepared: PreparedRstDocument,
-    units: tuple[AnalysisUnit, ...],
-) -> AnalysisAnchor | None:
-    start, end = char_span
-    if end <= start:
-        return None
-    prepared_range = PreparedRange(start=start, end=end)
-    source_segments = tuple(
-        segment
-        for segment in prepared.segments
-        if segment.kind is SegmentKind.SOURCE
-        and segment.prepared_range.start < end
-        and start < segment.prepared_range.end
+def _inference_completed(
+    preparation: PreparationOutcome,
+    results: tuple[ParserAnalysisResult, ...],
+) -> InferenceCompletedEvidence:
+    if not results:
+        raise ValueError("inference completed evidence requires at least one complete result")
+    unit_identities = tuple(
+        _required_identity(result.semantic_digest, "parser result") for result in results
     )
-    if not source_segments:
-        return None
-    touched_units = sum(
-        unit.output_range.start < end and start < unit.output_range.end
-        for unit in units
-    )
-    return AnalysisAnchor(
-        analysis_id=analysis_id,
-        analysis_kind=analysis_kind,
-        prepared_ranges=(prepared_range,),
-        source_segment_ids=tuple(segment.segment_id for segment in source_segments),
-        native_anchors=tuple(anchor for segment in source_segments for anchor in segment.native_anchors),
-        origin="macro" if touched_units > 1 else "local",
-    )
-
-
-def _execution_receipt(
-    run_id: str,
-    started_at: datetime,
-    cache_status: CacheStatus,
-    timings: list[tuple[str, float]],
-    warnings: tuple[str, ...],
-) -> ExecutionReceipt:
-    peak_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    peak_rss_bytes = peak_rss if peak_rss > 10_000_000 else peak_rss * 1_024
-    return ExecutionReceipt(
-        run_id=run_id,
-        started_at=started_at,
-        cache_status=cache_status,
-        duration_ms=tuple(timings),
-        peak_rss_bytes=peak_rss_bytes,
-        warnings=warnings,
+    final = results[-1]
+    semantic = final.semantic
+    return InferenceCompletedEvidence(
+        preparation=preparation,
+        inference=InferenceEvidence(
+            request_identity=Sha256Identity(
+                hex_digest=semantic_sha256(
+                    {
+                        "preparation": preparation.semantic_digest,
+                        "policy": semantic.policy,
+                        "composite": semantic.composite_identity,
+                    }
+                )
+            ),
+            analysed_document_identity=_required_identity(
+                semantic.analysed_document.semantic_digest,
+                "analysed document",
+            ),
+            composite_identity=_required_identity(
+                semantic.composite_identity.semantic_digest,
+                "composite analysis",
+            ),
+            unit_identities=unit_identities,
+            primary_evidence_identity=Sha256Identity(
+                hex_digest=semantic_sha256(semantic.primary_inference)
+            ),
+            erst_evidence_identity=(
+                _required_identity(semantic.erst_completion.semantic_digest, "eRST evidence")
+                if semantic.erst_completion is not None
+                else None
+            ),
+            output_node_count=sum(len(result.semantic.analysis.nodes) for result in results),
+            output_primary_edge_count=sum(
+                len(result.semantic.analysis.primary_edges) for result in results
+            ),
+            output_secondary_edge_count=sum(
+                len(result.semantic.analysis.secondary_edges) for result in results
+            ),
+            completed_unit_count=len(results),
+            expected_unit_count=len(results),
+        ),
     )
 
 
-def _elapsed_ms(started: float) -> float:
-    return (perf_counter() - started) * 1_000.0
+def _safe_cause(exc: Exception, category: FailureCategory) -> SafeCause:
+    return SafeCause(
+        category=category,
+        exception_type=type(exc).__qualname__,
+        message_template="underlying_operation_failed",
+    )
 
 
-__all__ = ["AnalysisParser", "ProductionIngestor", "analyse_source"]
+def _root_cause(exc: Exception) -> Exception:
+    cause = exc.__cause__
+    return cause if isinstance(cause, Exception) else exc
+
+
+def _source_requirement(source: SourceArtifact) -> tuple[str, str | None]:
+    requirement = {
+        SourceForm.MARKDOWN: "markdown-it-py",
+        SourceForm.DOCLING_JSON: "docling-core",
+        SourceForm.DOCLANG_XML: "doclang",
+        SourceForm.DOCLANG_ARCHIVE: "doclang",
+    }.get(source.source_form)
+    return (requirement or "isanlp-rst", "formats" if requirement is not None else None)
+
+
+def _resolve_empty_cache(
+    outcome: EmptyPrimaryAnalysisOutcome,
+    cache_directory: Path | None,
+    *,
+    started: float,
+) -> EmptyPrimaryAnalysisOutcome:
+    if cache_directory is None:
+        return outcome
+    request_identity = _required_identity(
+        outcome.semantic.request.semantic_digest,
+        "analysis request",
+    )
+    cache = ProductionIngestCache(cache_directory)
+    cached = cache.load(request_identity)
+    if cached is not None:
+        resolved = _with_cache_execution(cached, CacheStatus.HIT, started=started)
+        if not isinstance(resolved, EmptyPrimaryAnalysisOutcome):
+            raise ValueError("empty-primary request resolved to an analysed cache outcome")
+        return resolved
+    persisted = _with_cache_execution(outcome, CacheStatus.WRITTEN, started=started)
+    if not isinstance(persisted, EmptyPrimaryAnalysisOutcome):
+        raise TypeError("empty-primary cache binding changed outcome kind")
+    cache.store(request_identity, persisted)
+    return persisted
+
+
+def _with_cache_execution(
+    outcome: ProductionAnalysisOutcome,
+    status: CacheStatus,
+    *,
+    started: float,
+) -> ProductionAnalysisOutcome:
+    request_identity = _required_identity(
+        outcome.semantic.request.semantic_digest,
+        "analysis request",
+    )
+    result_identity = _required_identity(outcome.semantic_digest, "analysis outcome")
+    execution = outcome.execution.model_copy(
+        update={
+            "execution_id": str(uuid4()),
+            "duration_ms": (perf_counter() - started) * 1_000.0,
+            "cache_status": status,
+            "cache_entry_identity": cache_entry_identity(request_identity, result_identity),
+        }
+    )
+    return outcome.model_copy(update={"execution": execution})
+
+
+def _required_identity(
+    identity: Sha256Identity | None,
+    label: str,
+) -> Sha256Identity:
+    if identity is None:
+        raise ValueError(f"{label} has no semantic identity")
+    return identity
+
+
+def _parser_capacity(value: object) -> ParserCapacity:
+    if isinstance(value, ParserCapacity):
+        return value
+    unit = getattr(value, "unit", None)
+    maximum = getattr(value, "maximum", None)
+    source = getattr(value, "source", None)
+    if not isinstance(unit, str) or not isinstance(maximum, int) or not isinstance(source, str):
+        raise TypeError("parser analysis_capacity does not satisfy the public capacity contract")
+    return ParserCapacity(
+        unit=CapacityUnit(unit),
+        maximum=maximum,
+        estimation_algorithm="provider_declared",
+        estimation_version=SemanticVersion(root="2.0.0"),
+        source=source,
+    )
+
+
+__all__ = [
+    "AnalysisIdentityProvider",
+    "AnalysisParser",
+    "DEFAULT_ANALYSIS_POLICY",
+    "ErstCompletionParser",
+    "ProductionIngestor",
+]

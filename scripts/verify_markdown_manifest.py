@@ -14,7 +14,12 @@ GENERATED_SPEC_KIT_PREFIXES = (
     ".specify/templates/",
 )
 GENERATED_PROJECTION_PREFIXES = ("graphify-out/",)
-INTENTIONAL_SYNTAX_FIXTURES = frozenset({"tests/fixtures/markdown/gfm-rich.md"})
+INTENTIONAL_SYNTAX_FIXTURES = frozenset(
+    {
+        "tests/fixtures/markdown/gfm-rich.md",
+        "tests/fixtures/production_api/retained_content/mixed.md",
+    }
+)
 
 
 def _repository_markdown() -> tuple[str, ...]:
@@ -23,6 +28,8 @@ def _repository_markdown() -> tuple[str, ...]:
             "git",
             "ls-files",
             "--cached",
+            "--others",
+            "--exclude-standard",
             "--",
             "*.md",
         ),

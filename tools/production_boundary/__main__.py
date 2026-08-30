@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from tools.production_boundary.artifacts import inspect_artifact
+from tools.production_boundary.artifacts import inspect_artifact, validate_release_directory
 from tools.production_boundary.authority import OwnershipAuthority, validate_ownership
 from tools.production_boundary.contracts import BoundaryReport, BoundaryViolation, OwnershipClass, ViolationKind
 from tools.production_boundary.dependencies import validate_declared_dependencies
@@ -15,6 +15,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--artifact", action="append", type=Path, default=[])
+    parser.add_argument("--release-dir", type=Path)
     args = parser.parse_args()
     authority = OwnershipAuthority(args.root)
     imports = validate_import_boundary(args.root, authority)
@@ -53,7 +54,11 @@ def main() -> int:
             + tuple(artifact_violations)
         ),
     )
-    print(json.dumps(report.model_dump(mode="json") | {"valid": report.valid}, indent=2, sort_keys=True))
+    payload = report.model_dump(mode="json")
+    payload["valid"] = report.valid
+    if args.release_dir is not None:
+        payload["promoted_release"] = validate_release_directory(args.release_dir)
+    print(json.dumps(payload, indent=2, sort_keys=True))
     return 0 if report.valid else 1
 
 

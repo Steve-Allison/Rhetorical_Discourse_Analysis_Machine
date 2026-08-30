@@ -341,8 +341,12 @@ and selection behaviour remain unchanged.
    path/revision substitution and exclude archived families from capabilities.
 7. For multi-unit analysis, emit a compact deterministic recombination receipt
    with complete local-to-global mappings rather than duplicating local graphs.
-8. Validate RST tree, eRST DAG, both-endpoint anchors, evidence links, unit
-   completeness, and identity consistency; return a typed validation receipt.
+8. Validate primary RST-tree connectedness, acyclicity, and single-rootedness;
+   apply the four eRST secondary-edge rules—sufficient signal, no self-loop,
+   existing endpoints, and no duplicate directed pair—while permitting cycles,
+   crossings, overlap, and unrestricted degree; validate both-endpoint anchors,
+   evidence links, unit completeness, and identity consistency; return a typed
+   validation receipt.
 9. Translate every lifecycle failure into a safe stage-specific payload and
    wrap it in an idiomatic chained exception.
 10. Retain all and only completed-stage evidence; never persist partial success.
@@ -456,15 +460,15 @@ The implementation phase must provide Pixi tasks that make these checks
 repeatable from the repository root:
 
 ```bash
-pixi run -e offline lint
-pixi run -e offline typecheck
-pixi run -e offline mdlint
-pixi run -e offline production-api-contract
-pixi run -e offline production-ingest-determinism
-pixi run -e offline production-ingest-performance
-pixi run -e offline build-production
-pixi run -e offline validate-production-artifacts
-pixi run -e offline production-ingest-clean-install
+pixi run -e default lint
+pixi run -e default typecheck
+pixi run -e default mdlint
+pixi run -e default production-api-contract
+pixi run -e default production-ingest-determinism
+pixi run -e default production-ingest-performance
+pixi run -e default build-production
+pixi run -e default validate-production-artifacts
+pixi run -e default production-ingest-clean-install
 pixi run -e production production-boundary
 pixi run -e production production-clean-install
 ```

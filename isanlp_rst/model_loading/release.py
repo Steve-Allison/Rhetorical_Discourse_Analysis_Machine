@@ -16,6 +16,13 @@ from isanlp_rst._version import resolve_installed_package_version
 MODEL_RELEASE_MANIFEST = "release-manifest.json"
 _MAX_MANIFEST_BYTES = 4 * 1024 * 1024
 _RELEASE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+_MODERNBERT_RUNTIME_CONTRACT = "isanlp_rst.parser/modernbert-v1"
+_MODERNBERT_FILE_ROLES = {
+    "encoder_config",
+    "parser_state",
+    "relation_inventory",
+    "tokenizer",
+}
 
 
 class ModelReleaseError(RuntimeError):
@@ -69,13 +76,13 @@ class ModelReleaseManifest(_StrictModel):
         if len(paths) != len(set(paths)):
             raise ValueError("model release file paths must be unique")
         if bool(self.evaluation_evidence) == bool(self.evaluation_unavailable_reason):
-            raise ValueError(
-                "provide evaluation_evidence or evaluation_unavailable_reason, exactly one"
-            )
+            raise ValueError("provide evaluation_evidence or evaluation_unavailable_reason, exactly one")
         try:
             SpecifierSet(self.compatibility_range)
         except InvalidSpecifier as exc:
             raise ValueError("compatibility_range must be a valid Python version specifier") from exc
+        if self.runtime_contract == _MODERNBERT_RUNTIME_CONTRACT:
+            _validate_modernbert_files(self.files)
         return self
 
     @property
@@ -148,6 +155,14 @@ class ValidatedModelRelease:
             capacity=capacity,
         )
 
+    def one_file_for_role(self, role: str) -> ModelFile:
+        """Return the one declared member for a singleton runtime role."""
+
+        matches = tuple(item for item in self.manifest.files if item.role == role)
+        if len(matches) != 1:
+            raise ModelReleaseError(f"model release requires exactly one {role!r} member; found {len(matches)}")
+        return matches[0]
+
 
 def canonical_json_bytes(value: BaseModel | dict[str, object]) -> bytes:
     payload = value.model_dump(mode="json") if isinstance(value, BaseModel) else value
@@ -185,13 +200,10 @@ def validate_model_release(
         raise ModelReleaseError("model release manifest is invalid") from exc
 
     if require_release_name and release.name != manifest.release_id:
-        raise ModelReleaseError(
-            f"release directory {release.name!r} does not match release_id {manifest.release_id!r}"
-        )
+        raise ModelReleaseError(f"release directory {release.name!r} does not match release_id {manifest.release_id!r}")
     if expected_runtime_contract is not None and manifest.runtime_contract != expected_runtime_contract:
         raise ModelReleaseError(
-            f"runtime contract mismatch: expected {expected_runtime_contract!r}, "
-            f"found {manifest.runtime_contract!r}"
+            f"runtime contract mismatch: expected {expected_runtime_contract!r}, found {manifest.runtime_contract!r}"
         )
     current_version = package_version or resolve_installed_package_version()
     try:
@@ -200,8 +212,7 @@ def validate_model_release(
         raise ModelReleaseError(f"installed package version is invalid: {current_version!r}") from exc
     if not compatible:
         raise ModelReleaseError(
-            f"isanlp_rst {current_version} is outside model compatibility range "
-            f"{manifest.compatibility_range}"
+            f"isanlp_rst {current_version} is outside model compatibility range {manifest.compatibility_range}"
         )
 
     declared = {str(item.path): item for item in manifest.files}
@@ -241,6 +252,25 @@ def load_model_release(
     if release.parent != root:
         raise ModelReleaseError(f"release_id escapes the production store: {release_id!r}")
     return validate_model_release(release, expected_runtime_contract=expected_runtime_contract)
+
+
+def _validate_modernbert_files(files: tuple[ModelFile, ...]) -> None:
+    roles = [item.role for item in files]
+    unknown = set(roles) - _MODERNBERT_FILE_ROLES
+    if unknown:
+        raise ValueError(f"ModernBERT release contains unsupported runtime roles: {sorted(unknown)}")
+    for role in ("encoder_config", "parser_state", "relation_inventory"):
+        if roles.count(role) != 1:
+            raise ValueError(f"ModernBERT release requires exactly one {role} file")
+    if roles.count("tokenizer") < 1:
+        raise ValueError("ModernBERT release requires at least one tokenizer file")
+    by_role = {role: tuple(item for item in files if item.role == role) for role in set(roles)}
+    if by_role["encoder_config"][0].path.as_posix() != "config.json":
+        raise ValueError("ModernBERT encoder_config must be config.json")
+    if by_role["parser_state"][0].path.suffix != ".safetensors":
+        raise ValueError("ModernBERT parser_state must use safetensors")
+    if by_role["relation_inventory"][0].path.suffix != ".json":
+        raise ValueError("ModernBERT relation_inventory must be JSON")
 
 
 __all__ = [

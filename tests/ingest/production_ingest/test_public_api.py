@@ -15,10 +15,12 @@ def _module_exists(module_name: str) -> bool:
 
 
 def test_canonical_ingest_exports_complete_public_service() -> None:
-    assert ingest.analyse_source is not None
     assert ingest.ProductionIngestor is not None
     assert ingest.SourceArtifact is not None
-    assert ingest.AUTHORED_PROSE_V1 is not None
+    assert ingest.ProductionAnalysisOutcome is not None
+    assert ingest.describe_capabilities is not None
+    assert ingest.serialize_contract is not None
+    assert ingest.load_contract is not None
 
 
 def test_obsolete_public_entry_points_are_absent() -> None:

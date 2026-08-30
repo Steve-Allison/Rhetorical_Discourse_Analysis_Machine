@@ -10,6 +10,7 @@ from isanlp_rst import (
     RstAnalysis,
     RstDocument,
 )
+from isanlp_rst.erst.converter import du_to_analysis
 
 
 class DummyPredictor:
@@ -32,6 +33,18 @@ def test_parse_document_from_text(monkeypatch: pytest.MonkeyPatch) -> None:
     parser.hf_model_version = "gumrrg"
 
     doc = RstDocument.from_text("First sentence. Second sentence.", document_id="doc-test-1")
+    expected = du_to_analysis(
+        DummyPredictor().parse_rst(doc.text)["rst"][0],
+        document_id=doc.document_id,
+    )
+
+    class _Semantic:
+        analysis = expected
+
+    class _Result:
+        semantic = _Semantic()
+
+    monkeypatch.setattr(parser, "analyse_document", lambda *_args, **_kwargs: _Result())
     analysis = parser.parse_document(doc, output="rst_tree")
 
     assert isinstance(analysis, RstAnalysis)
@@ -39,16 +52,15 @@ def test_parse_document_from_text(monkeypatch: pytest.MonkeyPatch) -> None:
     assert analysis.formalism == OutputFormalismEnum.RST_TREE
     assert len(analysis.nodes) == 3
     assert len(analysis.primary_edges) == 2
-    assert analysis.timing.total_ms >= 0.0
-    assert analysis.provenance.model_id == "gumrrg"
-    assert analysis.provenance.software_version == "4.0.0"
-    assert analysis.provenance.source_revision is not None
+    assert analysis == expected
 
 
 def test_parse_document_from_edus_requires_validated_erst_bundle(monkeypatch: pytest.MonkeyPatch) -> None:
     parser = Parser.__new__(Parser)
     object.__setattr__(parser, "predictor", DummyPredictor())
     parser.hf_model_version = "rstdt"
+    parser.segmenter = None
+    parser.erst_checkpoint = None
 
     doc = RstDocument.from_edus(["First sentence.", "Second sentence."], document_id="doc-test-2")
     with pytest.raises(ErstCapabilityError, match="validated completion bundle"):

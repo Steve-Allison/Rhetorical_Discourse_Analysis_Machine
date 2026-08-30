@@ -15,7 +15,7 @@ import sys
 
 from isanlp_rst.contracts import NodeKindEnum
 from isanlp_rst.ingest import (
-    ProductionAnalysisResult,
+    ProductionAnalysisOutcome,
     ProductionIngestor,
     SourceArtifact,
     SourceForm,
@@ -39,8 +39,9 @@ class DocMetrics:
     joint_ratio: float
     tree_skew: float
     inventory_coverage: float
-    source_coverage: float
-    prepared_coverage: float
+    primary_coverage: float
+    retained_coverage: float
+    mapping_coverage: float
     anchor_coverage: float
 
 
@@ -61,8 +62,8 @@ def _artifact(path: Path) -> SourceArtifact:
     return SourceArtifact.from_path(path)
 
 
-def _tree_depth(result: ProductionAnalysisResult) -> int:
-    analysis = result.analysis
+def _tree_depth(result: ProductionAnalysisOutcome) -> int:
+    analysis = result.semantic.analysis
     if analysis is None or not analysis.nodes:
         return 0
     children: dict[int, list[int]] = defaultdict(list)
@@ -80,8 +81,12 @@ def _tree_depth(result: ProductionAnalysisResult) -> int:
     return maximum
 
 
-def _metrics(result: ProductionAnalysisResult) -> DocMetrics:
-    analysis = result.analysis
+def _coverage_ratio(covered: int, total: int) -> float:
+    return 1.0 if total == 0 else covered / total
+
+
+def _metrics(result: ProductionAnalysisOutcome) -> DocMetrics:
+    analysis = result.semantic.analysis
     nodes = analysis.nodes if analysis is not None else ()
     edus = sum(node.kind is NodeKindEnum.EDU for node in nodes)
     relation_by_parent: dict[int, str] = {}
@@ -94,22 +99,43 @@ def _metrics(result: ProductionAnalysisResult) -> DocMetrics:
     thin = sum(label.lower().startswith(_THIN_PREFIXES) for label in relation_by_parent.values())
     joint_ratio = thin / relations if relations else 0.0
     skew_base = math.ceil(math.log2(edus)) if edus > 1 else 1
-    prepared = result.prepared_document
-    receipt = result.preparation_receipt
+    preparation = result.semantic.preparation.semantic
+    prepared = preparation.prepared_document
+    validation = result.semantic.validation
     return DocMetrics(
-        source=result.source.source_name,
-        source_form=result.source.source_form.value,
-        status=result.analysis_status.value,
-        prepared_chars=len(prepared.text) if prepared is not None else 0,
-        prepared_segments=len(prepared.segments) if prepared is not None else 0,
+        source=preparation.source.source_name,
+        source_form=preparation.source.source_form.value,
+        status=result.semantic.status.value,
+        prepared_chars=len(prepared.text),
+        prepared_segments=len(prepared.segments),
         edus=edus,
         relations=relations,
         joint_ratio=round(joint_ratio, 3),
         tree_skew=round(_tree_depth(result) / skew_base, 2),
-        inventory_coverage=receipt.inventory_coverage,
-        source_coverage=receipt.primary_source_coverage,
-        prepared_coverage=receipt.prepared_text_coverage,
-        anchor_coverage=receipt.analysis_anchor_coverage,
+        inventory_coverage=_coverage_ratio(
+            preparation.inventory_coverage.covered_units,
+            preparation.inventory_coverage.total_units,
+        ),
+        primary_coverage=_coverage_ratio(
+            preparation.primary_coverage.covered_units,
+            preparation.primary_coverage.total_units,
+        ),
+        retained_coverage=_coverage_ratio(
+            preparation.retained_coverage.covered_units,
+            preparation.retained_coverage.total_units,
+        ),
+        mapping_coverage=_coverage_ratio(
+            preparation.mapping_coverage.covered_units,
+            preparation.mapping_coverage.total_units,
+        ),
+        anchor_coverage=(
+            _coverage_ratio(
+                validation.anchor_coverage.covered_units,
+                validation.anchor_coverage.total_units,
+            )
+            if validation is not None
+            else 1.0
+        ),
     )
 
 
@@ -126,7 +152,7 @@ def _print_table(rows: list[DocMetrics]) -> None:
             str(row.relations),
             f"{row.joint_ratio:.3f}",
             f"{row.tree_skew:.2f}",
-            f"{min(row.inventory_coverage, row.source_coverage, row.prepared_coverage, row.anchor_coverage):.3f}",
+            f"{min(row.inventory_coverage, row.primary_coverage, row.retained_coverage, row.mapping_coverage, row.anchor_coverage):.3f}",
         )
         for row in rows
     ]
@@ -147,21 +173,26 @@ def _print_table(rows: list[DocMetrics]) -> None:
 def main(argv: list[str] | None = None) -> int:
     argument_parser = argparse.ArgumentParser(description=__doc__)
     argument_parser.add_argument("paths", nargs="+", type=Path, help="source files or directories")
-    argument_parser.add_argument("--model-version", default="gumrrg", dest="model_version")
+    argument_parser.add_argument("--model-store", required=True, type=Path)
+    argument_parser.add_argument("--release-id", required=True)
     argument_parser.add_argument("--relinventory")
     argument_parser.add_argument("--device", default="auto")
     argument_parser.add_argument("--dtype")
+    argument_parser.add_argument("--erst-checkpoint", type=Path)
     argument_parser.add_argument("--json", action="store_true", help="emit JSON instead of a table")
     args = argument_parser.parse_args(argv)
     sources = _discover(args.paths)
     if not sources:
         print("No supported sources found.", file=sys.stderr)
         return 1
-    parser = Parser(
-        hf_model_version=args.model_version,
+    parser = Parser.from_model_release(
+        args.model_store,
+        args.release_id,
+        family="modernbert",
         relinventory=args.relinventory,
         device=args.device,
         dtype=args.dtype,
+        erst_scorer_checkpoint=args.erst_checkpoint,
     )
     ingestor = ProductionIngestor(parser=parser)
     rows = [_metrics(ingestor.analyse(_artifact(path))) for path in sources]

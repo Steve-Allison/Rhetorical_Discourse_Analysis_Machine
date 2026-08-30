@@ -3,7 +3,12 @@
 import json
 from pathlib import Path
 
-from isanlp_rst.ingest import ProductionAnalysisResult
+from isanlp_rst.ingest import (
+    AnalysedOutcome,
+    EmptyPrimaryAnalysisOutcome,
+    PreparationOutcome,
+    load_contract,
+)
 from isanlp_rst.ingest.identity import sha256_file
 from tools.production_ingest.contracts import GoldSetManifest
 
@@ -21,12 +26,12 @@ def inspect_candidate_outputs(
         payload = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(payload, dict):
             raise ValueError(f"candidate output must be an object: {source.source_id}")
-        prepared = payload.get("prepared")
+        preparation_payload = payload.get("preparation_outcome")
         result_payload = payload.get("analysis_result")
         checks: dict[str, bool] = {
             "source_record_matches": isinstance(payload.get("source"), dict)
             and payload["source"].get("source_id") == source.source_id,
-            "prepared_present": isinstance(prepared, dict),
+            "preparation_outcome_present": isinstance(preparation_payload, dict),
             "result_present": isinstance(result_payload, dict),
         }
         prepared_digest: str | None = None
@@ -34,42 +39,58 @@ def inspect_candidate_outputs(
         inventory_count = 0
         node_count = 0
         anchor_count = 0
-        if isinstance(prepared, dict):
-            prepared_digest = prepared.get("semantic_digest") if isinstance(prepared.get("semantic_digest"), str) else None
-            segments = prepared.get("segments")
-            text = prepared.get("text")
-            checks["prepared_ranges_reconstruct"] = (
-                isinstance(segments, list)
-                and isinstance(text, str)
-                and _segments_reconstruct(segments, text)
+        preparation: PreparationOutcome | None = None
+        if isinstance(preparation_payload, dict):
+            loaded_preparation = load_contract(json.dumps(preparation_payload, ensure_ascii=False))
+            if not isinstance(loaded_preparation, PreparationOutcome):
+                raise ValueError(f"candidate preparation has wrong contract kind: {source.source_id}")
+            preparation = loaded_preparation
+            prepared = preparation.semantic.prepared_document
+            if prepared.semantic_digest is None:
+                raise ValueError("prepared document omitted its semantic digest")
+            prepared_digest = prepared.semantic_digest.hex_digest
+            inventory_count = len(preparation.semantic.inventory)
+            checks["prepared_ranges_reconstruct"] = _segments_reconstruct(
+                [segment.model_dump(mode="json") for segment in prepared.segments],
+                prepared.text,
             )
-        inventory = payload.get("inventory")
-        dispositions = payload.get("dispositions")
-        if isinstance(inventory, list):
-            inventory_count = len(inventory)
-        checks["inventory_dispositions_reconcile"] = (
-            isinstance(inventory, list)
-            and isinstance(dispositions, list)
-            and len(inventory) == len(dispositions)
-            and {item.get("item_id") for item in inventory if isinstance(item, dict)}
-            == {item.get("item_id") for item in dispositions if isinstance(item, dict)}
-        )
+            checks["inventory_dispositions_reconcile"] = (
+                len(preparation.dispositions) == inventory_count
+                and all(item.disposition == disposition for item, disposition in zip(
+                    preparation.semantic.inventory,
+                    preparation.dispositions,
+                    strict=True,
+                ))
+            )
         if isinstance(result_payload, dict):
-            result = ProductionAnalysisResult.model_validate(result_payload)
-            result_digest = result.semantic_digest
-            node_count = len(result.analysis.nodes) if result.analysis is not None else 0
-            edge_count = (
-                len(result.analysis.primary_edges) + len(result.analysis.secondary_edges)
-                if result.analysis is not None
-                else 0
+            result = load_contract(json.dumps(result_payload, ensure_ascii=False))
+            checks["analysis_outcome_kind"] = isinstance(
+                result,
+                AnalysedOutcome | EmptyPrimaryAnalysisOutcome,
             )
-            anchor_count = len(result.analysis_anchors)
-            checks["persisted_digest_valid"] = bool(result_digest)
-            checks["receipt_reconciles"] = (
-                result.preparation_receipt.inventory_count == inventory_count
-                and result.preparation_receipt.disposition_count == len(dispositions or ())
+            if not isinstance(result, AnalysedOutcome | EmptyPrimaryAnalysisOutcome):
+                raise ValueError(f"candidate analysis has wrong contract kind: {source.source_id}")
+            if result.semantic_digest is None:
+                raise ValueError("analysis outcome omitted its semantic digest")
+            result_digest = result.semantic_digest.hex_digest
+            analysis = result.semantic.analysis
+            node_count = len(analysis.nodes) if analysis is not None else 0
+            anchor_count = len(result.semantic.anchors)
+            checks["persisted_digest_valid"] = True
+            checks["embedded_preparation_reconciles"] = (
+                preparation is not None
+                and result.semantic.preparation.semantic_digest == preparation.semantic_digest
             )
-            checks["analysis_targets_anchored"] = anchor_count == node_count + edge_count
+            validation = result.semantic.validation
+            checks["analysis_validation_passed"] = (
+                isinstance(result, EmptyPrimaryAnalysisOutcome)
+                or (
+                    validation is not None
+                    and validation.passed
+                    and validation.anchor_coverage.covered_units
+                    == validation.anchor_coverage.total_units
+                )
+            )
         passed = all(checks.values())
         records.append(
             {

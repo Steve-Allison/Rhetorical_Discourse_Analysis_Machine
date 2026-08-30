@@ -70,7 +70,8 @@ def test_concurrent_ingest_service_execution() -> None:
             raw_bytes=raw_text.encode("utf-8"),
         )
         prepared = service.prepare(artifact)
-        return index, prepared.document.document_id, len(prepared.segments)
+        document = prepared.semantic.prepared_document
+        return index, document.source.source_id, len(document.segments)
 
     with ThreadPoolExecutor(max_workers=16) as executor:
         futures = [executor.submit(_ingest_worker, i) for i in range(len(texts))]

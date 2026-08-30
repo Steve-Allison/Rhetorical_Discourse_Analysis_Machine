@@ -13,13 +13,14 @@ def test_raw_html_is_structurally_inventoried_without_script_navigation_or_style
         media_type="text/markdown; charset=utf-8",
     )
     inventory, _ = inventory_source(artifact)
-    prepared = ProductionIngestor(parser=None).prepare(artifact)
-    assert "Authored HTML prose." in prepared.text
-    assert "steal" not in prepared.text
-    assert "Menu" not in prepared.text
-    assert ".x" not in prepared.text
-    assert ContentClass.RAW_MARKUP in {item.content_class for item in inventory}
-    assert all(item.native_anchors for item in inventory)
+    outcome = ProductionIngestor().prepare(artifact)
+    text = outcome.semantic.prepared_document.text
+    assert "Authored HTML prose." in text
+    assert "steal" not in text
+    assert "Menu" not in text
+    assert ".x" not in text
+    assert ContentClass.RAW_MARKUP in {item.classification for item in inventory}
+    assert all(item.anchors for item in inventory)
 
 
 def test_image_only_markdown_and_conversion_analysis_sections_are_not_primary() -> None:
@@ -39,8 +40,9 @@ Authored speaker narrative.
         source_name="converted.md",
         media_type="text/markdown; charset=utf-8",
     )
-    prepared = ProductionIngestor(parser=None).prepare(artifact)
-    assert "Slide title" in prepared.text
-    assert "Authored speaker narrative." in prepared.text
-    assert "slide.webp" not in prepared.text
-    assert "Machine visual description." not in prepared.text
+    outcome = ProductionIngestor().prepare(artifact)
+    text = outcome.semantic.prepared_document.text
+    assert "Slide title" in text
+    assert "Authored speaker narrative." in text
+    assert "slide.webp" not in text
+    assert "Machine visual description." not in text

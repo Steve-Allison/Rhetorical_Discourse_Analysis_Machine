@@ -1,22 +1,47 @@
-"""Exercise the installed wheel's complete production surface outside the repository."""
+"""Exercise the installed 5.0.0 contract outside the source checkout."""
 
 import argparse
-from importlib.metadata import PackageNotFoundError, distribution
+from importlib import import_module, resources
+from importlib.metadata import PackageNotFoundError, distribution, version
+import io
 import json
+import os
 from pathlib import Path
+import socket
+import subprocess
 import sys
+import tempfile
+import zipfile
 
 
-_MODEL_RELEASES = (
-    ("gumrrg", "gumrrg-eb1d5745f3a1", "dmrst", None),
-    ("rrtrrg", "rrtrrg-a4d19fc65bb1", "unirst", None),
-    ("rstdt", "rstdt-cc01afde1232", "dmrst", None),
-    ("rstreebank", "rstreebank-a3df81661baa", "dmrst", None),
-    ("unirst", "unirst-9407970f1d9d", "unirst", "eng.erst.gum"),
-)
 _OFFLINE_DISTRIBUTIONS = ("fire", "jsonnet", "nltk", "peft", "pytest", "tiktoken")
 _TEXT = "Because it rained, the match stopped. The crowd left."
 _EDUS = ("Because it rained, the match stopped.", "The crowd left.")
+
+
+def _required_digest(value: object, label: str) -> str:
+    digest = getattr(value, "hex_digest", None)
+    if not isinstance(digest, str):
+        raise AssertionError(f"{label} has no semantic digest")
+    return digest
+
+
+def _disable_external_network() -> None:
+    if os.environ.get("ISANLP_RST_NETWORK_DISABLED") != "1":
+        raise AssertionError("installed acceptance requires explicit network-disable mode")
+    original_connect = socket.socket.connect
+
+    def guarded_connect(instance: socket.socket, address: object) -> None:
+        if isinstance(address, tuple) and address and str(address[0]) in {
+            "127.0.0.1",
+            "::1",
+            "localhost",
+        }:
+            original_connect(instance, address)
+            return
+        raise OSError("external network access is disabled during installed acceptance")
+
+    socket.socket.connect = guarded_connect
 
 
 def _assert_offline_distributions_absent() -> None:
@@ -31,118 +56,206 @@ def _assert_offline_distributions_absent() -> None:
         raise AssertionError(f"offline distributions are available in production: {present}")
 
 
-def _run_formats(markdown: Path, doclang: Path, docling: Path) -> dict[str, object]:
-    from isanlp_rst.contracts import OutputFormalismEnum, RstAnalysis, RstDocument
-    from isanlp_rst.ingest import ProductionAnalysisResult, ProductionIngestor, SourceArtifact, SourceForm
-    from isanlp_rst.model_loading import ParserCapacity
+def _archive_bytes(document: bytes) -> bytes:
+    content_types = b'''<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Override PartName="/document.xml" ContentType="application/vnd.doclang.document+xml"/>
+</Types>'''
+    relationships = b'''<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://doclang.ai/ns/package/2026/relationships/document" Target="document.xml"/>
+</Relationships>'''
+    output = io.BytesIO()
+    with zipfile.ZipFile(output, mode="w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("[Content_Types].xml", content_types)
+        archive.writestr("_rels/.rels", relationships)
+        archive.writestr("document.xml", document)
+    return output.getvalue()
 
-    class _AcceptanceParser:
-        analysis_capacity = ParserCapacity(unit="edu_count", maximum=512, source="installed-acceptance")
-        model_release_identity = None
 
-        def parse_document(self, document: RstDocument, output: str = "rst_tree") -> RstAnalysis:
-            return RstAnalysis(
-                document_id=document.document_id,
-                formalism=OutputFormalismEnum(output),
-                nodes=(),
-                primary_edges=(),
-            )
+def _prepare_sources(
+    *,
+    markdown: Path | None,
+    doclang: Path | None,
+    docling: Path | None,
+) -> dict[str, object]:
+    from isanlp_rst.ingest import (
+        Availability,
+        ProductionIngestError,
+        ProductionIngestor,
+        SafeProductionFailureRecord,
+        SourceArtifact,
+        SourceForm,
+        describe_capabilities,
+        load_contract,
+        serialize_contract,
+    )
 
-        def parse_hierarchical(
-            self,
-            document: RstDocument,
-            custom_boundaries: object | None = None,
-            output: str = "rst_tree",
-        ) -> RstAnalysis:
-            if custom_boundaries is None:
-                raise AssertionError("structured acceptance requires explicit subdivision boundaries")
-            return self.parse_document(document, output)
-
-    artifacts = (
+    ingestor = ProductionIngestor()
+    artifacts = [
         SourceArtifact.from_text(_TEXT, source_name="acceptance.txt"),
         SourceArtifact.from_edus(_EDUS, source_name="acceptance.edus"),
-        SourceArtifact.from_path(markdown),
-        SourceArtifact.from_path(doclang),
-        SourceArtifact.from_path(docling, source_form=SourceForm.DOCLING_JSON),
-    )
-    ingestor = ProductionIngestor(parser=_AcceptanceParser())
-    result: dict[str, object] = {}
-    for artifact in artifacts:
-        analysis = ingestor.analyse(artifact)
-        payload = json.loads(analysis.model_dump_json())
-        reloaded = ProductionAnalysisResult.model_validate(payload)
-        if reloaded != analysis:
-            raise AssertionError(f"canonical serialization changed for {artifact.source_form.value}")
-        result[artifact.source_form.value] = {
-            "analysis_status": analysis.analysis_status.value,
-            "prepared_segments": len(analysis.prepared_document.segments) if analysis.prepared_document else 0,
-        }
-    return result
-
-
-def _run_full(model_store: Path, device: str) -> dict[str, object]:
-    from isanlp_rst import Parser
-    from isanlp_rst.contracts import RstDocument, analysis_from_json, to_json
-    from isanlp_rst.erst import RS4Document, RS4Group, RS4Reader, RS4Segment, RS4Writer
-    from isanlp_rst.erst.checkpoint import ErstCapabilityError
-
-    model_results: dict[str, dict[str, int | str]] = {}
-    gum_parser = None
-    for model, release_id, family, relinventory in _MODEL_RELEASES:
-        parser = Parser.from_model_release(
-            model_store,
-            release_id,
-            family=family,
-            relinventory=relinventory,
-            device=device,
+    ]
+    if markdown is not None and doclang is not None and docling is not None:
+        artifacts.extend(
+            (
+                SourceArtifact.from_path(markdown),
+                SourceArtifact.from_path(docling, source_form=SourceForm.DOCLING_JSON),
+                SourceArtifact.from_path(doclang),
+                SourceArtifact.from_bytes(
+                    _archive_bytes(doclang.read_bytes()),
+                    source_form=SourceForm.DOCLANG_ARCHIVE,
+                    source_name="acceptance.dclx",
+                    media_type="application/vnd.doclang.archive+zip",
+                ),
+            )
         )
-        raw = parser(_TEXT)["rst"][0]
-        presegmented = parser.from_edus(_EDUS)["rst"][0]
-        analysis = parser.parse_document(RstDocument.from_text(_TEXT, document_id=f"acceptance-{model}"), prime_markers=False)
-        reloaded = analysis_from_json(to_json(analysis))
-        if reloaded != analysis:
-            raise AssertionError(f"analysis serialization changed for {model}")
-        model_results[model] = {
-            "actual_device": str(parser.predictor._device),
-            "raw_end": int(raw.end or 0),
-            "presegmented_end": int(presegmented.end or 0),
-            "nodes": len(analysis.nodes),
+    results: dict[str, object] = {}
+    for artifact in artifacts:
+        prepared = ingestor.prepare(artifact)
+        encoded = serialize_contract(prepared)
+        if serialize_contract(load_contract(encoded)) != encoded:
+            raise AssertionError(f"canonical preparation changed for {artifact.source_form.value}")
+        results[artifact.source_form.value] = {
+            "inventory_items": len(prepared.semantic.inventory),
+            "prepared_segments": len(prepared.semantic.prepared_document.segments),
+            "semantic_digest": _required_digest(
+                prepared.semantic_digest,
+                "preparation outcome",
+            ),
         }
-        if model == "gumrrg":
-            gum_parser = parser
 
-    if gum_parser is None:
-        raise AssertionError("gumrrg acceptance parser was not created")
-    hierarchical_text = "First section explains the context.\n\nSecond section gives the result."
-    hierarchical = gum_parser.parse_hierarchical(
-        RstDocument.from_text(hierarchical_text, document_id="acceptance-hierarchical")
-    )
-    if hierarchical.root_node is None:
-        raise AssertionError("hierarchical production route returned no root")
-    try:
-        gum_parser.parse_document(RstDocument.from_text(_TEXT), output="erst_graph")
-    except ErstCapabilityError:
-        pass
-    else:
-        raise AssertionError("eRST route accepted a parser without a completion bundle")
-
-    rs4 = RS4Document(
-        relations={"elaboration-additional": "rst"},
-        segments=(
-            RS4Segment(id=1, text="Context.", parent=3, relname="span"),
-            RS4Segment(id=2, text="Result.", parent=1, relname="elaboration-additional"),
+    capabilities = describe_capabilities()
+    availability = {
+        item.source_form.value: item.availability.value
+        for item in capabilities.semantic.source_forms
+    }
+    formats_installed = markdown is not None
+    if formats_installed and set(availability.values()) != {Availability.AVAILABLE.value}:
+        raise AssertionError("formats installation does not advertise all six source forms")
+    if not formats_installed:
+        optional = {
+            SourceForm.MARKDOWN,
+            SourceForm.DOCLING_JSON,
+            SourceForm.DOCLANG_XML,
+            SourceForm.DOCLANG_ARCHIVE,
+        }
+        advertised = {
+            item.source_form
+            for item in capabilities.semantic.source_forms
+            if item.availability is Availability.UNAVAILABLE
+        }
+        if advertised != optional:
+            raise AssertionError("core capability discovery contradicts optional format availability")
+        try:
+            ingestor.prepare(
+                SourceArtifact.from_bytes(
+                    b"# Heading",
+                    source_form=SourceForm.MARKDOWN,
+                    source_name="unavailable.md",
+                    media_type="text/markdown; charset=utf-8",
+                )
+            )
+        except ProductionIngestError as error:
+            record = load_contract(serialize_contract(error.failure))
+            if not isinstance(record, SafeProductionFailureRecord):
+                raise AssertionError(
+                    "unavailable format did not yield a safe typed failure"
+                ) from error
+        else:
+            raise AssertionError("core installation unexpectedly prepared Markdown")
+    return {
+        "capability_identity": _required_digest(
+            capabilities.semantic_digest,
+            "capabilities",
         ),
-        groups=(RS4Group(id=3, type="span"),),
+        "availability": availability,
+        "preparation": results,
+    }
+
+
+def _analyse_with_release(
+    *,
+    model_store: Path,
+    release_id: str,
+    erst_checkpoint: Path | None,
+    device: str,
+) -> dict[str, object]:
+    from isanlp_rst import Parser
+    from isanlp_rst.ingest import (
+        AnalysedOutcome,
+        ParserAnalysisResult,
+        ProductionIngestor,
+        SourceArtifact,
+        load_contract,
+        serialize_contract,
     )
-    if RS4Reader.read_string(RS4Writer.to_string(rs4)) != rs4:
-        raise AssertionError("eRST RS4 runtime round trip changed the document")
-    return {"models": model_results, "hierarchical_nodes": len(hierarchical.nodes), "erst_rs4": True}
+
+    parser = Parser.from_model_release(
+        model_store,
+        release_id,
+        family="modernbert",
+        device=device,
+        erst_scorer_checkpoint=erst_checkpoint,
+    )
+    ingestor = ProductionIngestor(parser=parser)
+    source = SourceArtifact.from_text(_TEXT, source_name="installed-analysis.txt")
+    outcome = ingestor.analyse(source)
+    if not isinstance(outcome, AnalysedOutcome):
+        raise AssertionError("non-empty installed analysis did not return AnalysedOutcome")
+    parser_result = outcome.semantic.parser_result
+    if not isinstance(parser_result, ParserAnalysisResult):
+        raise AssertionError("installed analysis omitted the canonical parser result")
+    if not parser_result.semantic.loaded_components:
+        raise AssertionError("installed analysis omitted loaded-component receipts")
+    if not outcome.semantic.validation or not outcome.semantic.validation.passed:
+        raise AssertionError("installed analysis did not pass complete validation")
+    encoded = serialize_contract(outcome)
+    if serialize_contract(load_contract(encoded)) != encoded:
+        raise AssertionError("installed analysis failed canonical round-trip")
+
+    with tempfile.TemporaryDirectory(prefix="isanlp-rst-cli-acceptance-") as directory:
+        output = Path(directory) / "result.json"
+        command = [
+            str(Path(sys.executable).with_name("isanlp-rst")),
+            "parse",
+            "--text",
+            _TEXT,
+            "--source-name",
+            "installed-analysis.txt",
+            "--model-store",
+            str(model_store),
+            "--release-id",
+            release_id,
+            "--device",
+            device,
+            "--output",
+            str(output),
+        ]
+        if erst_checkpoint is not None:
+            command.extend(("--erst-checkpoint", str(erst_checkpoint)))
+        subprocess.run(command, check=True, env=os.environ.copy())
+        cli = load_contract(output.read_bytes())
+        if cli.semantic_digest != outcome.semantic_digest:
+            raise AssertionError("installed CLI semantic result differs from Python API")
+    return {
+        "outcome_identity": _required_digest(outcome.semantic_digest, "analysis outcome"),
+        "parser_result_identity": _required_digest(
+            parser_result.semantic_digest,
+            "parser result",
+        ),
+        "loaded_components": len(parser_result.semantic.loaded_components),
+        "validation_checks": len(outcome.semantic.validation.checks),
+        "cli_semantic_parity": True,
+    }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, required=True)
-    parser.add_argument("--model-store", type=Path)
+    parser.add_argument("--model-store", type=Path, required=True)
+    parser.add_argument("--release-id")
+    parser.add_argument("--erst-checkpoint", type=Path)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--formats", action="store_true")
     parser.add_argument("--full", action="store_true")
@@ -151,28 +264,60 @@ def main() -> int:
     parser.add_argument("--docling", type=Path)
     args = parser.parse_args()
 
-    from isanlp_rst import Parser
+    _disable_external_network()
+    import isanlp_rst
 
-    package_file = Path(sys.modules["isanlp_rst"].__file__ or "").resolve()
+    package_file = Path(isanlp_rst.__file__ or "").resolve()
     if package_file.is_relative_to(args.source_root.resolve()):
         raise AssertionError(f"installed acceptance imported the source tree: {package_file}")
+    if version("isanlp_rst") != "5.0.0" or isanlp_rst.__version__ != "5.0.0":
+        raise AssertionError("installed metadata and runtime version do not agree on 5.0.0")
     _assert_offline_distributions_absent()
-    try:
-        Parser()
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("Parser() must reject a missing model identity")
+    surface = json.loads(
+        resources.files("isanlp_rst.ingest")
+        .joinpath("public-surface.json")
+        .read_text(encoding="utf-8")
+    )
+    entries = surface["entries"]
+    for entry in entries:
+        public_import = entry.get("public_import")
+        if public_import is None:
+            continue
+        module_name, separator, attribute_path = public_import.partition(":")
+        if not separator:
+            raise AssertionError(f"invalid public import declaration: {public_import}")
+        value: object = import_module(module_name)
+        for part in attribute_path.split("."):
+            value = getattr(value, part)
+    forbidden = ("tensor", "embedding", "activation", "workbench", "traininglabel")
+    names = {entry["qualified_name"].casefold() for entry in entries}
+    if any(marker in name for marker in forbidden for name in names):
+        raise AssertionError("installed public surface exposes forbidden scientific internals")
 
-    result: dict[str, object] = {"package_file": str(package_file), "offline_distributions_absent": True}
-    if args.formats:
-        if args.markdown is None or args.doclang is None or args.docling is None:
-            raise ValueError("format acceptance requires --markdown, --doclang, and --docling")
-        result["formats"] = _run_formats(args.markdown, args.doclang, args.docling)
+    formats = args.formats
+    if formats and (args.markdown is None or args.doclang is None or args.docling is None):
+        raise ValueError("formats acceptance requires --markdown, --doclang, and --docling")
+    result: dict[str, object] = {
+        "package_file": str(package_file),
+        "package_version": version("isanlp_rst"),
+        "network_disabled": True,
+        "offline_distributions_absent": True,
+        "public_surface_entries": len(entries),
+        "source_contract": _prepare_sources(
+            markdown=args.markdown if formats else None,
+            doclang=args.doclang if formats else None,
+            docling=args.docling if formats else None,
+        ),
+    }
     if args.full:
-        if args.model_store is None:
-            raise ValueError("full acceptance requires --model-store")
-        result["full"] = _run_full(args.model_store, args.device)
+        if args.release_id is None:
+            raise ValueError("full installed acceptance requires --release-id")
+        result["analysis"] = _analyse_with_release(
+            model_store=args.model_store,
+            release_id=args.release_id,
+            erst_checkpoint=args.erst_checkpoint,
+            device=args.device,
+        )
     result["valid"] = True
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0

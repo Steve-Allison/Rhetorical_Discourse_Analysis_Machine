@@ -1,346 +1,410 @@
-"""World-class CLI entrypoint for isanlp_rst discourse parsing and analysis."""
+"""Canonical command-line and loopback HTTP projections of the production API."""
 
 import argparse
-from collections.abc import Sequence
+import base64
+from collections.abc import Mapping, Sequence
+from http import HTTPStatus
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import sys
-from typing import Any
+from typing import Any, Final, Protocol
 
-from isanlp_rst import Parser, RstDocument, __version__
-from isanlp_rst.annotation_rst import DiscourseUnit
-from isanlp_rst.utils.analysis import tree_stats
+import rfc8785
 
+from isanlp_rst import Parser, __version__
+from isanlp_rst.ingest import (
+    AnalysisPolicy,
+    EvidenceDetailPolicy,
+    FailureCategory,
+    LifecycleStage,
+    MarkerRefinementMode,
+    OutputFormalism,
+    ProductionFailure,
+    ProductionIngestError,
+    ProductionIngestor,
+    ProductionAnalysisOutcome,
+    ProductionCapabilities,
+    SourceArtifact,
+    SourceForm,
+    Retryability,
+    SafeCause,
+    serialize_contract,
+)
+from isanlp_rst.ingest.service import DEFAULT_ANALYSIS_POLICY
 
-def _render_tree_ascii(node: DiscourseUnit, prefix: str = "", is_last: bool = True, is_root: bool = True) -> str:
-    """Render a DiscourseUnit binary tree as a beautiful ASCII/Unicode hierarchy."""
-    lines: list[str] = []
-
-    branch = "" if is_root else ("└── " if is_last else "├── ")
-    connector = prefix + branch
-
-    # Leaf EDU
-    if node.left is None and node.right is None:
-        rel = f" [{node.nuclearity}: {node.relation}]" if node.relation else ""
-        span = f" ({node.start}-{node.end})" if node.start is not None and node.end is not None else ""
-        text_snippet = f' "{node.text}"' if node.text else ""
-        lines.append(f"{connector}EDU #{node.id}{rel}{span}{text_snippet}")
-        return "\n".join(lines)
-
-    # Internal constituent
-    nuc_str = f" [{node.nuclearity}: {node.relation}]" if node.relation else (f" [{node.nuclearity}]" if node.nuclearity else "")
-    entropy_str = f" [H={node.entropy:.3f}]" if node.entropy is not None and node.entropy > 0 else ""
-    span_str = f" ({node.start}-{node.end})" if node.start is not None and node.end is not None else ""
-    lines.append(f"{connector}Node #{node.id}{nuc_str}{entropy_str}{span_str}")
-
-    next_prefix = prefix + ("    " if is_last else "│   ")
-    children: list[DiscourseUnit] = []
-    if node.left is not None:
-        children.append(node.left)
-    if node.right is not None:
-        children.append(node.right)
-
-    for i, child in enumerate(children):
-        is_child_last = i == (len(children) - 1)
-        child_rendered = _render_tree_ascii(child, prefix=next_prefix, is_last=is_child_last, is_root=False)
-        lines.append(child_rendered)
-
-    return "\n".join(lines)
+_LOOPBACK_HOSTS: Final = {"127.0.0.1", "::1", "localhost"}
+_MEDIA_TYPES: Final = {
+    SourceForm.TEXT: "text/plain; charset=utf-8",
+    SourceForm.EDUS: "application/vnd.isanlp-rst.edus+json",
+    SourceForm.MARKDOWN: "text/markdown; charset=utf-8",
+    SourceForm.DOCLING_JSON: "application/vnd.docling.document+json",
+    SourceForm.DOCLANG_XML: "application/vnd.doclang+xml",
+    SourceForm.DOCLANG_ARCHIVE: "application/vnd.doclang.archive+zip",
+}
 
 
-def _load_input_text(args: argparse.Namespace) -> tuple[str, str | None]:
-    """Resolve input text and optional filepath."""
-    if args.text:
-        return args.text, None
+class _ProductionService(Protocol):
+    def analyse(self, source: SourceArtifact) -> ProductionAnalysisOutcome: ...
 
-    if args.input == "-" or (not args.input and not sys.stdin.isatty()):
-        return sys.stdin.read(), None
-
-    if args.input:
-        path = Path(args.input)
-        if not path.is_file():
-            raise FileNotFoundError(f"Input file not found: {path}")
-        return path.read_text(encoding="utf-8"), str(path)
-
-    raise ValueError("No input text provided. Provide an input file, --text string, or pipe via stdin.")
+    def capabilities(self) -> ProductionCapabilities: ...
 
 
 def cmd_parse(args: argparse.Namespace) -> int:
-    """Execute the parse command."""
-    text, filepath = _load_input_text(args)
-    if not text.strip():
-        sys.stderr.write("Error: Input text is empty.\n")
-        return 1
+    """Run one canonical production analysis or emit one safe typed failure."""
 
-    device = args.device
-    family = args.family or "modernbert"
-    parser = Parser(family=family, device=device)
-
-    # Detect input format from extension if available
-    input_format = args.input_format
-    if not input_format and filepath:
-        suffix = Path(filepath).suffix.lower()
-        if suffix in (".md", ".markdown"):
-            input_format = "markdown"
-        elif suffix in (".json",):
-            input_format = "docling"
-        elif suffix in (".xml", ".dclg"):
-            input_format = "doclang"
-
-    # Parse according to format
-    doc = RstDocument.from_text(text, document_id=filepath or "cli_doc")
-    analysis = parser.parse_document(doc)
-    tree = parser.parse_tree(text)
-
-    # Format output
-    out_format = args.format.lower()
-    output_str = ""
-
-    if out_format == "tree":
-        output_str = _render_tree_ascii(tree)
-    elif out_format == "json":
-        analysis_dict: dict[str, Any] = {
-            "schema_version": "1.0",
-            "document_id": analysis.document_id,
-            "nodes": [
-                {
-                    "node_id": node.node_id,
-                    "kind": node.kind.value if hasattr(node.kind, "value") else str(node.kind),
-                    "char_span": list(node.char_span),
-                    "text": node.text,
-                }
-                for node in analysis.nodes
-            ],
-            "primary_edges": [
-                {
-                    "parent_id": edge.parent_id,
-                    "child_id": edge.child_id,
-                    "relation": edge.relation_raw,
-                    "concept": edge.relation_concept,
-                    "nuclearity": edge.nuclearity.value if hasattr(edge.nuclearity, "value") else str(edge.nuclearity),
-                    "confidence": edge.confidence,
-                }
-                for edge in analysis.primary_edges
-            ],
-            "secondary_edges": [
-                {
-                    "source_id": edge.source_id,
-                    "target_id": edge.target_id,
-                    "relation": edge.relation_raw,
-                    "concept": edge.relation_concept,
-                    "confidence": edge.confidence,
-                }
-                for edge in analysis.secondary_edges
-            ],
-            "signals": [
-                {
-                    "signal_id": sig.signal_id,
-                    "signal_type": sig.signal_type,
-                    "edge_id": sig.edge_id,
-                    "token_ids": list(sig.token_ids),
-                }
-                for sig in analysis.signals
-            ],
-        }
-        output_str = json.dumps(analysis_dict, indent=2, ensure_ascii=False)
-    elif out_format == "stats":
-        stats = tree_stats(tree)
-        output_str = json.dumps(stats, indent=2, ensure_ascii=False)
-    elif out_format == "rs3":
-        exporter = tree._exporter or None
-        if exporter is None:
-            from isanlp_rst.annotation_rst import Exporter
-            exporter = Exporter()
-        output_str = "<rst>\n" + exporter.make_header(tree) + exporter.make_body(tree) + "</rst>"
-    else:
-        sys.stderr.write(f"Unknown format: {out_format}\n")
-        return 1
-
-    if args.output:
-        out_path = Path(args.output)
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(output_str, encoding="utf-8")
-        sys.stderr.write(f"Wrote output to {out_path}\n")
-    else:
-        print(output_str)
-
+    try:
+        source = _source_from_cli(args)
+        ingestor = _configured_ingestor(args)
+        outcome = ingestor.analyse(
+            source,
+            analysis_policy=_analysis_policy(args),
+            cache_directory=Path(args.cache_directory) if args.cache_directory else None,
+        )
+        payload = _render_outcome(outcome, args.format)
+    except ProductionIngestError as exc:
+        payload = serialize_contract(exc.failure) + b"\n"
+        _write_payload(payload, args.output, stream=sys.stderr.buffer)
+        return 2
+    except (OSError, UnicodeError, ValueError, TypeError) as exc:
+        payload = serialize_contract(
+            _safe_boundary_failure(
+                exc,
+                stage=LifecycleStage.ACQUISITION,
+                category=FailureCategory.MALFORMED_INPUT,
+                code="cli_source_acquisition_failed",
+                message_template="cli_source_could_not_be_acquired",
+            )
+        ) + b"\n"
+        _write_payload(payload, args.output, stream=sys.stderr.buffer)
+        return 2
+    _write_payload(payload, args.output, stream=sys.stdout.buffer)
     return 0
 
 
-def cmd_view(args: argparse.Namespace) -> int:
-    """Export or visualize an RST tree / RS3 file."""
-    from isanlp_rst.rstviewer.main import rs3tohtml, rs3topng
+def cmd_capabilities(args: argparse.Namespace) -> int:
+    """Emit canonical model-free or configured-parser capability evidence."""
 
-    input_path = Path(args.input)
-    if not input_path.is_file():
-        sys.stderr.write(f"Error: file not found: {input_path}\n")
-        return 1
-
-    out_format = (args.format or input_path.suffix.lstrip(".") or "html").lower()
-    target_out = args.output or f"{input_path.stem}.{out_format}"
-
-    if out_format == "html":
-        html_content = rs3tohtml(input_path)
-        Path(target_out).write_text(html_content, encoding="utf-8")
-        sys.stderr.write(f"Rendered HTML to {target_out}\n")
-    elif out_format == "png":
-        png_bytes = rs3topng(input_path)
-        if isinstance(png_bytes, bytes):
-            Path(target_out).write_bytes(png_bytes)
-        elif isinstance(png_bytes, str):
-            Path(target_out).write_text(png_bytes, encoding="utf-8")
-        sys.stderr.write(f"Rendered PNG to {target_out}\n")
-    else:
-        sys.stderr.write(f"Unknown viewer format: {out_format}\n")
-        return 1
-
-    if args.open:
-        import webbrowser
-        webbrowser.open(f"file://{Path(target_out).resolve()}")
-
+    ingestor = _configured_ingestor(args) if args.release_id else ProductionIngestor()
+    _write_payload(
+        serialize_contract(ingestor.capabilities()) + b"\n",
+        args.output,
+        stream=sys.stdout.buffer,
+    )
     return 0
 
 
 def cmd_serve(args: argparse.Namespace) -> int:
-    """Run lightweight HTTP discourse parsing server."""
-    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    """Serve the exact production contract on a loopback-only HTTP endpoint."""
 
-    host = args.host or "127.0.0.1"
-    port = args.port or 8080
-    device = args.device or "auto"
-
-    sys.stderr.write(f"Initializing isanlp_rst parser on device '{device}'...\n")
-    parser = Parser(family="modernbert", device=device)
-
-    class ParseRequestHandler(BaseHTTPRequestHandler):
-        def do_GET(self) -> None:
-            if self.path in ("/health", "/"):
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json")
-                self.end_headers()
-                payload = {
-                    "status": "ok",
-                    "package": "isanlp_rst",
-                    "version": __version__,
-                    "engine": "modernbert",
-                }
-                self.wfile.write(json.dumps(payload).encode("utf-8"))
-            else:
-                self.send_response(404)
-                self.end_headers()
-
-        def do_POST(self) -> None:
-            if self.path == "/parse":
-                content_len = int(self.headers.get("Content-Length", 0))
-                body = self.rfile.read(content_len)
-                try:
-                    data = json.loads(body.decode("utf-8"))
-                    text = data.get("text", "")
-                    if not text.strip():
-                        self.send_response(400)
-                        self.send_header("Content-Type", "application/json")
-                        self.end_headers()
-                        self.wfile.write(b'{"error": "empty text"}')
-                        return
-
-                    tree = parser.parse_tree(text)
-                    stats = tree_stats(tree)
-                    doc = RstDocument.from_text(text, document_id="api_request")
-                    analysis = parser.parse_document(doc)
-
-                    resp: dict[str, Any] = {
-                        "tree_ascii": _render_tree_ascii(tree),
-                        "stats": stats,
-                        "nodes_count": len(analysis.nodes),
-                        "primary_edges_count": len(analysis.primary_edges),
-                        "secondary_edges_count": len(analysis.secondary_edges),
-                    }
-                    self.send_response(200)
-                    self.send_header("Content-Type", "application/json")
-                    self.end_headers()
-                    self.wfile.write(json.dumps(resp).encode("utf-8"))
-                except (ValueError, TypeError, KeyError, RuntimeError, json.JSONDecodeError) as exc:
-                    self.send_response(500)
-                    self.send_header("Content-Type", "application/json")
-                    self.end_headers()
-                    self.wfile.write(json.dumps({"error": str(exc)}).encode("utf-8"))
-            else:
-                self.send_response(404)
-                self.end_headers()
-
-    server = ThreadingHTTPServer((host, port), ParseRequestHandler)
-    sys.stderr.write(f"isanlp_rst server running at http://{host}:{port} (Press Ctrl+C to stop)\n")
+    if args.host not in _LOOPBACK_HOSTS:
+        raise ValueError("the local HTTP service may bind only to a loopback host")
+    ingestor = _configured_ingestor(args)
+    server = ThreadingHTTPServer((args.host, args.port), _handler_type(ingestor))
+    sys.stderr.write(f"isanlp_rst local API: http://{args.host}:{args.port}\n")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        sys.stderr.write("\nServer stopped.\n")
+        sys.stderr.write("server_stopped\n")
+    finally:
+        server.server_close()
     return 0
 
 
 def cmd_version(args: argparse.Namespace) -> int:
-    """Print package runtime and environment information."""
-    import platform
-    import torch
+    """Emit the installed package version as stable JSON."""
 
-    print(f"isanlp_rst: {__version__}")
-    print(f"Python:     {platform.python_version()} ({platform.python_implementation()})")
-    print(f"PyTorch:    {torch.__version__}")
-    print(f"MPS:        {'available' if torch.backends.mps.is_available() else 'unavailable'}")
-    print(f"CUDA:       {'available' if torch.cuda.is_available() else 'unavailable'}")
-    print("Backbone:   answerdotai/ModernBERT-base (8,192 token window, RoPE, SDPA)")
+    _write_payload(
+        rfc8785.dumps({"package": "isanlp_rst", "version": __version__}) + b"\n",
+        args.output,
+        stream=sys.stdout.buffer,
+    )
     return 0
 
 
-def create_parser() -> argparse.ArgumentParser:
-    """Build the top-level argument parser."""
-    parser = argparse.ArgumentParser(
-        prog="isanlp-rst",
-        description="World-class Rhetorical Structure Theory (RST) parser and discourse graph engine.",
+def _configured_ingestor(args: argparse.Namespace) -> ProductionIngestor:
+    if not args.model_store or not args.release_id:
+        raise ValueError("analysis requires --model-store and --release-id")
+    parser = Parser.from_model_release(
+        args.model_store,
+        args.release_id,
+        family="modernbert",
+        device=args.device,
+        erst_scorer_checkpoint=args.erst_checkpoint,
     )
-    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+    return ProductionIngestor(parser=parser)
 
-    # parse
-    p_parse = subparsers.add_parser("parse", help="Parse text or document into an RST discourse tree/graph")
-    p_parse.add_argument("input", nargs="?", help="Input file (.txt, .md, .xml, .json) or '-' for stdin")
-    p_parse.add_argument("-t", "--text", help="Raw input string to parse directly")
-    p_parse.add_argument("-f", "--format", choices=["tree", "json", "stats", "rs3"], default="tree", help="Output format")
-    p_parse.add_argument("-i", "--input-format", choices=["text", "markdown", "docling", "doclang"], help="Explicit input format override")
-    p_parse.add_argument("-o", "--output", help="Write output to filepath instead of stdout")
-    p_parse.add_argument("-d", "--device", default="auto", choices=["auto", "cpu", "mps", "cuda"], help="Compute device")
-    p_parse.add_argument("--family", default="modernbert", help="Model family")
-    p_parse.set_defaults(func=cmd_parse)
 
-    # view
-    p_view = subparsers.add_parser("view", help="Render RST tree or RS3 XML as interactive HTML, SVG, or PNG")
-    p_view.add_argument("input", help="Path to .rs3 file")
-    p_view.add_argument("-f", "--format", choices=["html", "svg", "png"], default="html", help="Render output format")
-    p_view.add_argument("-o", "--output", help="Output filepath")
-    p_view.add_argument("--open", action="store_true", help="Open rendered HTML in web browser")
-    p_view.set_defaults(func=cmd_view)
+def _analysis_policy(args: argparse.Namespace) -> AnalysisPolicy:
+    return AnalysisPolicy.model_validate(
+        {
+            **DEFAULT_ANALYSIS_POLICY.model_dump(exclude={"semantic_digest"}),
+            "output_formalism": OutputFormalism(args.output_formalism),
+            "evidence_detail": EvidenceDetailPolicy(args.evidence_detail),
+            "marker_refinement": (
+                MarkerRefinementMode.DISABLED if args.no_marker_refinement else MarkerRefinementMode.EVIDENCE_PRESERVING
+            ),
+        }
+    )
 
-    # serve
-    p_serve = subparsers.add_parser("serve", help="Run high-throughput HTTP discourse parsing API server")
-    p_serve.add_argument("--host", default="127.0.0.1", help="Bind host (default: 127.0.0.1)")
-    p_serve.add_argument("-p", "--port", type=int, default=8080, help="Bind port (default: 8080)")
-    p_serve.add_argument("-d", "--device", default="auto", choices=["auto", "cpu", "mps", "cuda"], help="Compute device")
-    p_serve.set_defaults(func=cmd_serve)
 
-    # version
-    p_version = subparsers.add_parser("version", help="Show version and hardware backend info")
-    p_version.set_defaults(func=cmd_version)
+def _source_from_cli(args: argparse.Namespace) -> SourceArtifact:
+    if args.text is not None:
+        return SourceArtifact.from_text(args.text, source_name=args.source_name or "cli-text")
+    if args.edus is not None:
+        values = json.loads(args.edus)
+        if not isinstance(values, list) or any(not isinstance(item, str) for item in values):
+            raise ValueError("--edus must be a JSON array of strings")
+        return SourceArtifact.from_edus(tuple(values), source_name=args.source_name or "cli-edus")
+    if args.input and args.input != "-":
+        source_form = _optional_source_form(args.source_form)
+        if source_form is None and Path(args.input).suffix.casefold() in {".txt", ".text"}:
+            source_form = SourceForm.TEXT
+        return SourceArtifact.from_path(args.input, source_form=source_form)
+    payload = sys.stdin.buffer.read()
+    source_form = SourceForm(args.source_form or SourceForm.TEXT)
+    if source_form is SourceForm.TEXT:
+        return SourceArtifact.from_text(
+            payload.decode("utf-8", errors="strict"),
+            source_name=args.source_name or "stdin",
+        )
+    return SourceArtifact.from_bytes(
+        payload,
+        source_form=source_form,
+        source_name=args.source_name or "stdin",
+        media_type=_MEDIA_TYPES[source_form],
+    )
 
+
+def _source_from_http(data: Mapping[str, Any]) -> SourceArtifact:
+    source_form = SourceForm(data.get("source_form", SourceForm.TEXT))
+    source_name = str(data.get("source_name", "http-request"))
+    if source_form is SourceForm.EDUS:
+        edus = data.get("edus")
+        if not isinstance(edus, list) or any(not isinstance(item, str) for item in edus):
+            raise ValueError("EDU requests require an edus array of strings")
+        return SourceArtifact.from_edus(tuple(edus), source_name=source_name)
+    if "text" in data:
+        text = data["text"]
+        if not isinstance(text, str):
+            raise ValueError("text must be a string")
+        if source_form is SourceForm.TEXT:
+            return SourceArtifact.from_text(text, source_name=source_name)
+        payload = text.encode("utf-8")
+    else:
+        encoded = data.get("payload_base64")
+        if not isinstance(encoded, str):
+            raise ValueError("request requires text, edus, or payload_base64")
+        payload = base64.b64decode(encoded, validate=True)
+    return SourceArtifact.from_bytes(
+        payload,
+        source_form=source_form,
+        source_name=source_name,
+        media_type=str(data.get("media_type", _MEDIA_TYPES[source_form])),
+    )
+
+
+def _handler_type(ingestor: _ProductionService) -> type[BaseHTTPRequestHandler]:
+    class ProductionRequestHandler(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            if self.path == "/capabilities":
+                self._send(HTTPStatus.OK, serialize_contract(ingestor.capabilities()))
+                return
+            if self.path in {"/", "/health"}:
+                capabilities = ingestor.capabilities()
+                self._send(
+                    HTTPStatus.OK,
+                    rfc8785.dumps(
+                        {
+                            "status": "ok",
+                            "contract": capabilities.contract,
+                            "contract_version": capabilities.contract_version,
+                            "capability_identity": (
+                                capabilities.semantic_digest.hex_digest
+                                if capabilities.semantic_digest is not None
+                                else None
+                            ),
+                        }
+                    ),
+                )
+                return
+            self._send(HTTPStatus.NOT_FOUND, b'{"code":"not_found"}')
+
+        def do_POST(self) -> None:
+            if self.path != "/analyse":
+                self._send(HTTPStatus.NOT_FOUND, b'{"code":"not_found"}')
+                return
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                data = json.loads(self.rfile.read(length).decode("utf-8", errors="strict"))
+                if not isinstance(data, dict):
+                    raise ValueError("request body must be a JSON object")
+                outcome = ingestor.analyse(_source_from_http(data))
+                self._send(HTTPStatus.OK, serialize_contract(outcome))
+            except ProductionIngestError as exc:
+                status = (
+                    HTTPStatus.SERVICE_UNAVAILABLE
+                    if exc.failure.category.value == "provider_unavailable"
+                    else HTTPStatus.UNPROCESSABLE_ENTITY
+                )
+                self._send(
+                    status,
+                    serialize_contract(exc.failure),
+                )
+            except (ValueError, TypeError, UnicodeError, json.JSONDecodeError) as exc:
+                self._send(
+                    HTTPStatus.BAD_REQUEST,
+                    serialize_contract(
+                        _safe_boundary_failure(
+                            exc,
+                            stage=LifecycleStage.ACQUISITION,
+                            category=FailureCategory.MALFORMED_INPUT,
+                            code="http_request_acquisition_failed",
+                            message_template="http_request_could_not_be_acquired",
+                        )
+                    ),
+                )
+
+        def _send(self, status: HTTPStatus, payload: bytes) -> None:
+            self.send_response(status.value)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+
+        def log_message(self, format: str, *args: object) -> None:
+            del format, args
+
+    return ProductionRequestHandler
+
+
+def _render_outcome(outcome: Any, output_format: str) -> bytes:
+    if output_format == "canonical-json":
+        return serialize_contract(outcome) + b"\n"
+    analysis = outcome.semantic.analysis
+    payload = {
+        "projection": "presentation_only",
+        "canonical_semantic_identity": outcome.semantic_digest,
+        "status": outcome.semantic.status,
+        "node_count": len(analysis.nodes) if analysis is not None else 0,
+        "primary_edge_count": len(analysis.primary_edges) if analysis is not None else 0,
+        "secondary_edge_count": len(analysis.secondary_edges) if analysis is not None else 0,
+    }
+    return rfc8785.dumps(payload) + b"\n"
+
+
+def _write_payload(payload: bytes, output: str | None, *, stream: Any) -> None:
+    if output is None:
+        stream.write(payload)
+        stream.flush()
+        return
+    path = Path(output)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(payload)
+
+
+def _optional_source_form(value: str | None) -> SourceForm | None:
+    return SourceForm(value) if value is not None else None
+
+
+def _safe_boundary_failure(
+    exc: Exception,
+    *,
+    stage: LifecycleStage,
+    category: FailureCategory,
+    code: str,
+    message_template: str,
+) -> ProductionFailure:
+    return ProductionFailure(
+        failed_stage=stage,
+        category=category,
+        code=code,
+        retryability=Retryability.NOT_RETRYABLE,
+        message_template=message_template,
+        cause=SafeCause(
+            category=category,
+            exception_type=type(exc).__qualname__,
+            message_template="underlying_operation_failed",
+        ),
+    )
+
+
+def _add_model_arguments(parser: argparse.ArgumentParser, *, required: bool) -> None:
+    parser.add_argument("--model-store", required=required)
+    parser.add_argument("--release-id", required=required)
+    parser.add_argument("--erst-checkpoint")
+    parser.add_argument("--device", default="auto", choices=("auto", "cpu", "mps", "cuda"))
+
+
+def create_parser() -> argparse.ArgumentParser:
+    """Build the stable command grammar."""
+
+    parser = argparse.ArgumentParser(prog="isanlp-rst")
+    commands = parser.add_subparsers(dest="command")
+
+    parse = commands.add_parser("parse", help="run canonical production analysis")
+    parse.add_argument("input", nargs="?")
+    parse.add_argument("--text")
+    parse.add_argument("--edus")
+    parse.add_argument("--source-name")
+    parse.add_argument("--source-form", choices=tuple(item.value for item in SourceForm))
+    parse.add_argument("--output")
+    parse.add_argument("--format", choices=("canonical-json", "summary"), default="canonical-json")
+    parse.add_argument("--output-formalism", choices=tuple(OutputFormalism), default=OutputFormalism.RST_TREE)
+    parse.add_argument(
+        "--evidence-detail", choices=tuple(EvidenceDetailPolicy), default=EvidenceDetailPolicy.DECISION_COMPLETE
+    )
+    parse.add_argument("--no-marker-refinement", action="store_true")
+    parse.add_argument("--cache-directory")
+    _add_model_arguments(parse, required=True)
+    parse.set_defaults(func=cmd_parse)
+
+    capabilities = commands.add_parser("capabilities", help="describe installed capability")
+    capabilities.add_argument("--output")
+    _add_model_arguments(capabilities, required=False)
+    capabilities.set_defaults(func=cmd_capabilities)
+
+    serve = commands.add_parser("serve", help="run loopback-only canonical HTTP API")
+    serve.add_argument("--host", default="127.0.0.1", choices=tuple(sorted(_LOOPBACK_HOSTS)))
+    serve.add_argument("--port", type=int, default=8080)
+    _add_model_arguments(serve, required=True)
+    serve.set_defaults(func=cmd_serve)
+
+    version = commands.add_parser("version")
+    version.add_argument("--output")
+    version.set_defaults(func=cmd_version)
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """CLI main entrypoint."""
+    """Run one CLI command."""
+
     parser = create_parser()
     args = parser.parse_args(argv)
-    if not hasattr(args, "func"):
+    function = getattr(args, "func", None)
+    if function is None:
         parser.print_help()
         return 1
-    return args.func(args)
+    try:
+        return int(function(args))
+    except (OSError, ValueError) as exc:
+        sys.stderr.buffer.write(
+            serialize_contract(
+                _safe_boundary_failure(
+                    exc,
+                    stage=LifecycleStage.INFERENCE,
+                    category=FailureCategory.PROVIDER_UNAVAILABLE,
+                    code="cli_provider_configuration_failed",
+                    message_template="configured_parser_could_not_be_created",
+                )
+            )
+            + b"\n"
+        )
+        return 2
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+__all__ = ["main"]

@@ -10,7 +10,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from lxml import etree
 
-from isanlp_rst.ingest.contracts import SourceForm
+from isanlp_rst.ingest.contracts import DispositionDecision, Sha256Identity, SourceForm
 from isanlp_rst.ingest.identity import semantic_sha256, sha256_bytes, sha256_file
 from tools.production_ingest.contracts import GoldSetManifest, GoldSource, ProvenanceClass
 
@@ -138,9 +138,7 @@ def adjudicate_gold_set(
 ) -> tuple[GoldSetManifest, dict[str, object]]:
     """Lock the directly inspected inventory/disposition authority without source text."""
 
-    from isanlp_rst.ingest import SourceArtifact
-    from isanlp_rst.ingest.policy import AUTHORED_PROSE_V1, apply_policy
-    from isanlp_rst.ingest.prepare import inventory_source, prepare_source
+    from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
 
     root = gold_root.resolve()
     expectation_payloads: list[dict[str, object]] = []
@@ -152,10 +150,10 @@ def adjudicate_gold_set(
             artifact = SourceArtifact.from_edus(payload["edus"], source_name=path.name, original_source=path.as_uri())
         else:
             artifact = SourceArtifact.from_path(path, source_form=source.source_form, original_source=path.as_uri())
-        inventory, contract = inventory_source(artifact)
-        dispositions, duplicate_findings = apply_policy(inventory, AUTHORED_PROSE_V1)
-        prepared, _inventory, _dispositions, _contract = prepare_source(artifact, policy=AUTHORED_PROSE_V1)
-        disposition_by_id = {item.item_id: item for item in dispositions}
+        outcome = ProductionIngestor().prepare(artifact)
+        semantic = outcome.semantic
+        inventory = semantic.inventory
+        prepared = semantic.prepared_document
         expectation = {
             "schema_version": "1.0.0",
             "source_id": source.source_id,
@@ -170,23 +168,30 @@ def adjudicate_gold_set(
             },
             "adjudication": "direct_source_and_contract_inspection",
             "adjudicated_at": adjudicated_at.isoformat(),
-            "policy_digest": AUTHORED_PROSE_V1.policy_digest,
+            "policy_digest": _identity_hex(semantic.preparation_policy.semantic_digest),
             "source_artifact_id": artifact.source_id,
-            "source_raw_sha256": artifact.raw_sha256,
-            "source_contract_digest": contract.semantic_digest,
-            "prepared_digest": prepared.semantic_digest,
+            "source_raw_sha256": _identity_hex(artifact.raw_sha256),
+            "source_contract_digest": semantic.source_contract.semantic_digest,
+            "prepared_digest": _identity_hex(prepared.semantic_digest),
             "prepared_text_sha256": sha256_bytes(prepared.text.encode("utf-8")),
             "inventory_count": len(inventory),
-            "disposition_counts": dict(sorted(Counter(item.kind.value for item in dispositions).items())),
-            "duplicate_count": len(duplicate_findings),
+            "disposition_counts": dict(
+                sorted(Counter(item.disposition.decision.value for item in inventory).items())
+            ),
+            "duplicate_count": sum(
+                item.disposition.decision is DispositionDecision.DUPLICATE for item in inventory
+            ),
             "item_expectations": [
                 {
                     "item_id": item.item_id,
-                    "content_class": item.content_class.value,
-                    "authorship_role": item.authorship_role.value,
-                    "text_sha256": item.text_sha256,
-                    "disposition": disposition_by_id[item.item_id].kind.value,
-                    "reason_code": disposition_by_id[item.item_id].reason_code,
+                    "content_class": item.classification.value,
+                    "authorship_role": item.origin.authorship.value,
+                    "text_sha256": (
+                        sha256_bytes(item.text.encode("utf-8")) if item.text is not None else None
+                    ),
+                    "representation_kind": item.representation.kind,
+                    "disposition": item.disposition.decision.value,
+                    "reason_code": item.disposition.reason.value,
                 }
                 for item in inventory
             ],
@@ -202,7 +207,7 @@ def adjudicate_gold_set(
                 "source_form": source.source_form.value,
                 "inventory_count": len(inventory),
                 "disposition_counts": expectation["disposition_counts"],
-                "prepared_digest": prepared.semantic_digest,
+                "prepared_digest": _identity_hex(prepared.semantic_digest),
                 "inspected": True,
                 "anomaly": None,
             }
@@ -361,6 +366,12 @@ def _rs4_edus(path: Path) -> tuple[str, ...]:
     if not edus or any(not edu for edu in edus):
         raise ValueError(f"RST fixture has missing EDU text: {path}")
     return edus
+
+
+def _identity_hex(identity: Sha256Identity | None) -> str:
+    if identity is None:
+        raise ValueError("validated contract omitted its required semantic identity")
+    return identity.hex_digest
 
 
 __all__ = ["adjudicate_gold_set", "assemble_gold_set", "verify_gold_set"]

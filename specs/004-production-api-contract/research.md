@@ -244,7 +244,9 @@ Validate before returning success or writing the cache:
 - primary plus retained coverage is complete and unexplained coverage is zero;
 - mappings and anchors are in bounds and reconstruct analysed text;
 - the primary RST structure is connected, acyclic, and single-rooted;
-- secondary edges meet eRST DAG constraints;
+- secondary edges satisfy the provider's four formal rules: sufficient signal,
+  no self-loop, existing endpoints, and no duplicate directed pair; cycles,
+  crossings, overlap, and unrestricted degree remain formally permitted;
 - every analysis unit is present exactly once in deterministic recombination;
 - model, request, plan, and result identities agree.
 

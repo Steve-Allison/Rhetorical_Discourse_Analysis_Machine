@@ -3,7 +3,7 @@
 from dataclasses import asdict, is_dataclass
 from enum import Enum
 import json
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -32,10 +32,6 @@ from isanlp_rst.contracts.enums import (
     NuclearityPatternEnum,
     OutputFormalismEnum,
 )
-
-if TYPE_CHECKING:
-    from isanlp_rst.ingest.contracts import ProductionAnalysisResult
-
 
 def _custom_asdict(obj: Any) -> Any:
     if isinstance(obj, BaseModel):
@@ -267,19 +263,3 @@ def format_analysis_from_dict(payload: dict[str, Any]) -> FormatRstAnalysis:
 def format_analysis_from_json(json_str: str) -> FormatRstAnalysis:
     """Deserialize a FormatRstAnalysis from a JSON string."""
     return format_analysis_from_dict(json.loads(json_str))
-
-
-def ingest_result_from_dict(payload: dict[str, Any]) -> ProductionAnalysisResult:
-    """Validate and deserialize the canonical production-ingest result."""
-
-    from isanlp_rst.ingest.contracts import ProductionAnalysisResult
-
-    return ProductionAnalysisResult.model_validate(payload)
-
-
-def ingest_result_from_json(json_str: str | bytes) -> ProductionAnalysisResult:
-    """Validate and deserialize canonical production-ingest JSON."""
-
-    from isanlp_rst.ingest.contracts import ProductionAnalysisResult
-
-    return ProductionAnalysisResult.model_validate_json(json_str)

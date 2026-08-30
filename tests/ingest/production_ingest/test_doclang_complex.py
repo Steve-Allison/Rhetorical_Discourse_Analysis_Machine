@@ -14,16 +14,16 @@ from isanlp_rst.ingest.prepare import inventory_source
 
 
 FIXTURE = Path("tests/fixtures/doclang/ok_no_namespace.dclg")
-CONTENT_TYPES = b'''<?xml version="1.0" encoding="UTF-8"?>
+CONTENT_TYPES = b"""<?xml version="1.0" encoding="UTF-8"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="bin" ContentType="application/octet-stream"/>
   <Override PartName="/document.xml" ContentType="application/vnd.doclang.document+xml"/>
-</Types>'''
-RELATIONSHIPS = b'''<?xml version="1.0" encoding="UTF-8"?>
+</Types>"""
+RELATIONSHIPS = b"""<?xml version="1.0" encoding="UTF-8"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="http://doclang.ai/ns/package/2026/relationships/document" Target="document.xml"/>
-</Relationships>'''
+</Relationships>"""
 
 
 def _archive(
@@ -55,7 +55,7 @@ def test_doclang_archive_validates_document_and_retains_asset_identity() -> None
         media_type="application/vnd.doclang.archive+zip",
     )
     inventory, _ = inventory_source(artifact)
-    assert any(item.content_class is ContentClass.ASSET for item in inventory)
+    assert any(item.classification is ContentClass.ASSET for item in inventory)
 
 
 @pytest.mark.parametrize("name", ("../escape", "/absolute", "assets\\windows"))
@@ -89,7 +89,7 @@ def test_doclang_archive_rejects_legacy_bare_zip() -> None:
     ("content_types", "message"),
     [
         (CONTENT_TYPES.replace(b"application/vnd.doclang.document+xml", b"application/xml"), "document.xml"),
-        (CONTENT_TYPES.replace(b"Extension=\"rels\"", b"Extension=\"rels2\""), "rels content type"),
+        (CONTENT_TYPES.replace(b'Extension="rels"', b'Extension="rels2"'), "rels content type"),
     ],
 )
 def test_doclang_archive_rejects_invalid_content_types(content_types: bytes, message: str) -> None:
@@ -102,7 +102,7 @@ def test_doclang_archive_rejects_invalid_content_types(content_types: bytes, mes
     [
         RELATIONSHIPS.replace(b"document.xml", b"other.xml"),
         RELATIONSHIPS.replace(b"relationships/document", b"relationships/legacy-document"),
-        RELATIONSHIPS.replace(b"Target=\"document.xml\"", b"Target=\"document.xml\" TargetMode=\"External\""),
+        RELATIONSHIPS.replace(b'Target="document.xml"', b'Target="document.xml" TargetMode="External"'),
     ],
 )
 def test_doclang_archive_rejects_invalid_document_relationship(relationships: bytes) -> None:
@@ -111,7 +111,7 @@ def test_doclang_archive_rejects_invalid_document_relationship(relationships: by
 
 
 def test_doclang_archive_requires_referenced_assets() -> None:
-    document = b"<doclang><picture><src uri=\"assets/missing.bin\"/></picture></doclang>"
+    document = b'<doclang><picture><src uri="assets/missing.bin"/></picture></doclang>'
     with pytest.raises(InvalidDoclangError, match="missing asset"):
         load_doclang_archive(_archive(document=document))
 
@@ -122,6 +122,4 @@ def test_doclang_archive_rejects_page_image_beyond_markup_page_count() -> None:
         b'<Default Extension="png" ContentType="image/png"/>',
     )
     with pytest.raises(InvalidDoclangError, match="exceeds the document page count"):
-        load_doclang_archive(
-            _archive(extra_name="pages/2.png", content_types=content_types)
-        )
+        load_doclang_archive(_archive(extra_name="pages/2.png", content_types=content_types))

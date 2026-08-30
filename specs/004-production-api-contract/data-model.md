@@ -127,9 +127,10 @@ implementation classes remain private.
 
 ### `SourceAnchor`
 
-A discriminated union for text spans, page/bounding boxes, source paths,
-document item identifiers, table coordinates, and archive members. Every anchor
-is bound to one source artifact identity and validates its own bounds.
+A discriminated union for text spans, pages, page/bounding boxes, DocLang
+coordinate boxes with exact per-axis resolution, source paths, document item
+identifiers, table coordinates, and archive members. Every anchor is bound to
+one source artifact identity and validates its own bounds.
 
 ### `Disposition`
 
@@ -157,6 +158,7 @@ Valid unsupported-for-analysis content uses `retained`, never
 | `parent_id` | optional item identifier | Structural parent |
 | `child_ids` | ordered tuple | Structural children |
 | `relationships` | ordered tuple | Other provider-observed relations |
+| `provider_attributes` | ordered key/value tuple | Complete format-adapter attributes genuinely observed for the item |
 | `disposition` | `Disposition` | Exactly one final provider decision |
 
 The final disposition is embedded once in the item. `PreparationOutcome`

@@ -10,6 +10,7 @@ from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE
 from isanlp_rst.transformer_parser.span_encoder import TransformerBoundarySpanEncoder
 from isanlp_rst.transformer_parser.biaffine_decoder import (
     DeepBiaffineScorer,
+    ParsedRstTreeEvidence,
     ParsedRstTreeSpan,
     cky_discourse_tree_decode,
 )
@@ -33,6 +34,7 @@ class PureTransformerParsingNet(nn.Module):
         torch_dtype: str | torch.dtype = "auto",
         encoder_config: PretrainedConfig | None = None,
         tokenizer: PreTrainedTokenizerBase | None = None,
+        local_files_only: bool = False,
     ) -> None:
         super().__init__()
         self.model_name_or_path = model_name_or_path
@@ -70,17 +72,21 @@ class PureTransformerParsingNet(nn.Module):
 
         # 3. Backbone and Tokenizer
         revision_kwargs = {"revision": self.model_revision} if self.model_revision is not None else {}
+        loading_kwargs = {
+            **revision_kwargs,
+            "local_files_only": local_files_only,
+        }
         self.tokenizer = tokenizer or AutoTokenizer.from_pretrained(
             model_name_or_path,
             use_fast=True,
-            **revision_kwargs,
+            **loading_kwargs,
         )
         if encoder_config is None:
             self.encoder = AutoModel.from_pretrained(
                 model_name_or_path,
                 dtype=self.dtype,
                 use_safetensors=True,
-                **revision_kwargs,
+                **loading_kwargs,
             ).to(self.dev)
         else:
             self.encoder = AutoModel.from_config(
@@ -181,6 +187,22 @@ class PureTransformerParsingNet(nn.Module):
         edu_ends: torch.Tensor,
     ) -> list[ParsedRstTreeSpan]:
         """Decode a single document into an optimal projective RST discourse tree."""
+        return [item.span for item in self.decode_document_tree_with_evidence(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            edu_starts=edu_starts,
+            edu_ends=edu_ends,
+        )]
+
+    def decode_document_tree_with_evidence(
+        self,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor,
+        edu_starts: torch.Tensor,
+        edu_ends: torch.Tensor,
+    ) -> list[ParsedRstTreeEvidence]:
+        """Decode and retain only scores needed to explain selected decisions."""
+
         self.eval()
         with torch.inference_mode():
             outputs = self.forward(input_ids, attention_mask, edu_starts, edu_ends)
@@ -195,4 +217,29 @@ class PureTransformerParsingNet(nn.Module):
                 self.nuclearity_labels,
                 self.raw_relation_inventory,
             )
-            return tree
+            evidence: list[ParsedRstTreeEvidence] = []
+            for span in tree:
+                split_candidates = tuple(range(span.start, span.end))
+                split_logits = tuple(
+                    float(
+                        (
+                            split_scores[span.start, split]
+                            + split_scores[split + 1, span.end]
+                        ).float().item()
+                    )
+                    for split in split_candidates
+                )
+                evidence.append(
+                    ParsedRstTreeEvidence(
+                        span=span,
+                        split_candidates=split_candidates,
+                        split_logits=split_logits,
+                        nuclearity_logits=tuple(
+                            float(value) for value in nuc_scores[span.start, span.end].float().tolist()
+                        ),
+                        relation_logits=tuple(
+                            float(value) for value in rel_scores[span.start, span.end].float().tolist()
+                        ),
+                    )
+                )
+            return evidence

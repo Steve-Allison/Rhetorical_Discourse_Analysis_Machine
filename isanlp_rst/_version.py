@@ -4,7 +4,6 @@ from functools import cache
 from importlib.metadata import PackageNotFoundError, version as distribution_version
 
 PACKAGE_NAME = "isanlp_rst"
-PACKAGE_VERSION = "4.0.0"
 TOOL_NAME = "isanlp_rst"
 
 
@@ -16,6 +15,9 @@ def resolve_installed_package_version() -> str:
         return distribution_version(PACKAGE_NAME)
     except PackageNotFoundError:
         return "unknown"
+
+
+PACKAGE_VERSION = resolve_installed_package_version()
 
 
 __all__ = [

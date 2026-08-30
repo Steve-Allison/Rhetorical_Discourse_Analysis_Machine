@@ -24,11 +24,26 @@ class _ScoredCandidate:
 
 
 @dataclass(frozen=True, slots=True)
+class DecodedErstCandidate:
+    """One candidate's complete stable decoder disposition."""
+
+    candidate: SecondaryEdgeCandidate
+    edge_probability: float
+    relation_raw: str
+    relation_probability: float
+    joint_score: float
+    decoder_order: int
+    accepted_edge_id: str | None
+    rejection_reason: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class DecodedErstEdges:
     """Decoded edges and their serializable proof receipt."""
 
     edges: tuple[SecondaryRelationEdge, ...]
     receipt: ErstDecodeReceipt
+    decisions: tuple[DecodedErstCandidate, ...]
 
 
 def _softmax_best(logits: Sequence[float]) -> tuple[int, float]:
@@ -85,9 +100,6 @@ class ErstSecondaryEdgeDecoder:
             if len(logits) != len(relation_inventory):
                 raise ValueError("relation-logit width does not match the raw relation inventory")
             relation_index, relation_probability = _softmax_best(logits)
-            if edge_probability < self.config.edge_threshold:
-                below_threshold_count += 1
-                continue
             scored.append(
                 _ScoredCandidate(
                     candidate=candidate,
@@ -112,11 +124,16 @@ class ErstSecondaryEdgeDecoder:
             {reason: 0 for reason in DecodeRejectionReason}
         )
         accepted: list[SecondaryRelationEdge] = []
-        for scored_candidate in scored:
+        decisions: list[DecodedErstCandidate] = []
+        for decoder_order, scored_candidate in enumerate(scored):
             candidate = scored_candidate.candidate
             pair = (candidate.source_id, candidate.target_id)
             reason: DecodeRejectionReason | None = None
-            if not any(signal_id in sufficient_signal_ids for signal_id in candidate.signal_ids):
+            rejection_reason: str | None = None
+            if scored_candidate.edge_probability < self.config.edge_threshold:
+                below_threshold_count += 1
+                rejection_reason = "below_threshold"
+            elif not any(signal_id in sufficient_signal_ids for signal_id in candidate.signal_ids):
                 reason = DecodeRejectionReason.INSUFFICIENT_SIGNAL
             elif candidate.source_id == candidate.target_id:
                 reason = DecodeRejectionReason.SELF_LOOP
@@ -126,11 +143,24 @@ class ErstSecondaryEdgeDecoder:
                 reason = DecodeRejectionReason.DUPLICATE_DIRECTED_PAIR
             if reason is not None:
                 rejection_counts[reason] += 1
+                rejection_reason = reason.value
+            if rejection_reason is not None:
+                decisions.append(
+                    DecodedErstCandidate(
+                        candidate=candidate,
+                        edge_probability=scored_candidate.edge_probability,
+                        relation_raw=scored_candidate.relation_raw,
+                        relation_probability=scored_candidate.relation_probability,
+                        joint_score=scored_candidate.joint_score,
+                        decoder_order=decoder_order,
+                        accepted_edge_id=None,
+                        rejection_reason=rejection_reason,
+                    )
+                )
                 continue
             seen_pairs.add(pair)
             relation_concept = self.ontology_adapter(scored_candidate.relation_raw)
-            accepted.append(
-                SecondaryRelationEdge(
+            edge = SecondaryRelationEdge(
                     edge_id=f"se_pred_{candidate.source_id}_{candidate.target_id}",
                     source_id=candidate.source_id,
                     target_id=candidate.target_id,
@@ -138,6 +168,18 @@ class ErstSecondaryEdgeDecoder:
                     relation_concept=relation_concept,
                     confidence=scored_candidate.edge_probability,
                     calibrated=True,
+                )
+            accepted.append(edge)
+            decisions.append(
+                DecodedErstCandidate(
+                    candidate=candidate,
+                    edge_probability=scored_candidate.edge_probability,
+                    relation_raw=scored_candidate.relation_raw,
+                    relation_probability=scored_candidate.relation_probability,
+                    joint_score=scored_candidate.joint_score,
+                    decoder_order=decoder_order,
+                    accepted_edge_id=edge.edge_id,
+                    rejection_reason=None,
                 )
             )
 
@@ -153,7 +195,11 @@ class ErstSecondaryEdgeDecoder:
             output_edge_ids=tuple(edge.edge_id for edge in accepted),
             decoder_config_sha256=self.config.config_sha256,
         )
-        return DecodedErstEdges(edges=tuple(accepted), receipt=receipt)
+        return DecodedErstEdges(
+            edges=tuple(accepted),
+            receipt=receipt,
+            decisions=tuple(decisions),
+        )
 
     def decode(
         self,
@@ -178,6 +224,7 @@ class ErstSecondaryEdgeDecoder:
 
 
 __all__ = [
+    "DecodedErstCandidate",
     "DecodedErstEdges",
     "ErstSecondaryEdgeDecoder",
 ]

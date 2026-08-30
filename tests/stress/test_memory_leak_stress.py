@@ -37,7 +37,7 @@ def test_zero_memory_leakage_across_consecutive_ingest_cycles() -> None:
             raw_bytes=raw_bytes,
         )
         prepared = service.prepare(artifact)
-        assert len(prepared.segments) > 0
+        assert len(prepared.semantic.prepared_document.segments) > 0
 
         # Run garbage collection and take measurement after warmup (iter 10) and at end (iter 49)
         if iteration == 10:

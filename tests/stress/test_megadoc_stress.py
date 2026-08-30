@@ -66,22 +66,23 @@ def test_megadoc_ingest_and_boundary_integrity() -> None:
     )
     service = ProductionIngestor(parser=None)
     prepared = service.prepare(artifact)
+    document = prepared.semantic.prepared_document
 
     # 1. Structural Verification
-    assert len(prepared.document.document_id) == 64
-    assert len(prepared.segments) > 100, f"Expected > 100 prepared segments (got {len(prepared.segments)})"
+    assert len(document.source.source_id) == 64
+    assert len(document.segments) > 100, f"Expected > 100 prepared segments (got {len(document.segments)})"
 
     # 2. Strict Monotonic Character Span Integrity
-    doc_text_len = len(prepared.text)
+    doc_text_len = len(document.text)
     last_end = 0
-    for segment in prepared.segments:
+    for segment in document.segments:
         start = segment.prepared_range.start
         end = segment.prepared_range.end
         assert 0 <= start < end <= doc_text_len, f"Invalid segment span: ({start}, {end}) vs {doc_text_len}"
         assert start >= last_end, f"Overlapping span detected: {start} < {last_end}"
         last_end = end
         # Verify text slicing exact match
-        assert prepared.text[start:end] == segment.text
+        assert document.text[start:end] == segment.text
 
     # 3. Memory Consumption Assertion (< 500 MB peak RAM)
     _, peak_mem = tracemalloc.get_traced_memory()

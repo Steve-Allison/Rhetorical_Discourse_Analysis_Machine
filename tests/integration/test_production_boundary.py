@@ -9,7 +9,7 @@ import pytest
 
 from tools.production_boundary.artifacts import inspect_artifact
 from tools.production_boundary.authority import OwnershipAuthority, OwnershipClassificationError, validate_ownership
-from tools.production_boundary.build import build_production_artifacts
+from tools.production_boundary.build import _archive_commit, _require_clean_source
 from tools.production_boundary.contracts import OwnershipClass, OwnershipRule, ViolationKind
 from tools.production_boundary.dependencies import validate_declared_dependencies
 from tools.production_boundary.imports import validate_import_boundary
@@ -145,6 +145,7 @@ version = "1.0.0"
 """,
     )
     _write(repository / "clean_build_fixture/__init__.py", 'VALUE = "committed"\n')
+    _write(repository / ".gitignore", "build/\n")
     subprocess.run(("git", "init", "-q"), cwd=repository, check=True)
     subprocess.run(("git", "add", "."), cwd=repository, check=True)
     subprocess.run(
@@ -163,8 +164,10 @@ version = "1.0.0"
     )
     _write(repository / "build/lib/clean_build_fixture/stale.py", 'VALUE = "stale"\n')
 
-    wheel, _sdist = build_production_artifacts(repository, tmp_path / "dist")
+    commit, _tree, _source_date_epoch = _require_clean_source(repository)
+    archive_path = tmp_path / "source.tar"
+    _archive_commit(repository, commit, archive_path)
 
-    with zipfile.ZipFile(wheel) as archive:
-        assert "clean_build_fixture/__init__.py" in archive.namelist()
-        assert "clean_build_fixture/stale.py" not in archive.namelist()
+    with tarfile.open(archive_path) as archive:
+        assert "clean_build_fixture/__init__.py" in archive.getnames()
+        assert "build/lib/clean_build_fixture/stale.py" not in archive.getnames()

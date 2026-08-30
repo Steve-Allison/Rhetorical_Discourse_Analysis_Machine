@@ -1,0 +1,3 @@
+Primary authored prose remains exact.
+
+The second paragraph preserves source order and spacing.

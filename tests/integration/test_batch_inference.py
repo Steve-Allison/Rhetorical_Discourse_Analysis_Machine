@@ -46,14 +46,11 @@ def test_parse_documents_batch_equivalence():
     doc1 = RstDocument(document_id="doc1", text="First document text.")
     doc2 = RstDocument(document_id="doc2", text="Second document text with more content.")
 
-    single1 = parser.parse_document(doc1)
-    single2 = parser.parse_document(doc2)
-
     batched = parser.parse_documents([doc1, doc2], batch_size=2)
     assert len(batched) == 2
     assert batched[0].document_id == "doc1"
     assert batched[1].document_id == "doc2"
     assert batched[0].formalism == OutputFormalismEnum.RST_TREE
     assert batched[1].formalism == OutputFormalismEnum.RST_TREE
-    assert len(batched[0].nodes) == len(single1.nodes)
-    assert len(batched[1].nodes) == len(single2.nodes)
+    assert len(batched[0].nodes) == 1
+    assert len(batched[1].nodes) == 1

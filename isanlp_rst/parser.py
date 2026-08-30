@@ -12,6 +12,8 @@ __all__ = ["ParseFailedError", "Parser", "extract_root_tree"]
 if TYPE_CHECKING:
     import torch
     from isanlp_rst.contracts import RstAnalysis, RstDocument, TextSpan
+    from isanlp_rst.ingest.contracts.analysis import AnalysisPolicy, ParserAnalysisResult
+    from isanlp_rst.ingest.contracts.inference import CompositeAnalysisIdentity
     from isanlp_rst.model_loading import ModelReleaseIdentity, ParserCapacity
 
 
@@ -73,12 +75,17 @@ class Parser:
 
         match resolved_family:
             case "modernbert":
-                model_size = "large" if (hf_model_version == "modernbert-large" or (model_dir and "large" in str(model_dir))) else "base"
+                model_size = (
+                    "large"
+                    if (hf_model_version == "modernbert-large" or (model_dir and "large" in str(model_dir)))
+                    else "base"
+                )
                 self.predictor = PredictorModernBERT(
                     model_size=model_size,
                     model_dir=model_dir,
                     device=device or "auto",
                     torch_dtype=dtype or "auto",
+                    validated_release=_validated_model_release,
                 )
             case "dmrst" | "unirst":
                 raise ValueError(
@@ -286,88 +293,160 @@ class Parser:
         """Parse a document using predefined EDUs."""
         return self.predictor.parse_from_edus(edus)
 
+    def analyse_document(
+        self,
+        document: RstDocument,
+        *,
+        analysis_policy: AnalysisPolicy | None = None,
+    ) -> ParserAnalysisResult:
+        """Return the canonical evidence-complete analysis of one exact document."""
+
+        import time
+
+        from isanlp_rst.english.erst.completer import CompleterConfig, ErstCompleter
+        from isanlp_rst.ingest.contracts.analysis import (
+            AnalysisPolicy,
+            MarkerRefinementMode,
+        )
+        from isanlp_rst.ingest.contracts.inference import OutputFormalism
+        from isanlp_rst.ingest.parser_result import build_parser_analysis_result
+        from isanlp_rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+        from isanlp_rst.relations.primer import DiscourseMarkerPrimer
+
+        policy = AnalysisPolicy.model_validate((analysis_policy or DEFAULT_ANALYSIS_POLICY).model_dump())
+        if policy.output_formalism is OutputFormalism.ERST_GRAPH and self.erst_checkpoint is None:
+            from isanlp_rst.erst.checkpoint import ErstCapabilityError
+
+            raise ErstCapabilityError("output_formalism='erst_graph' requires a validated completion bundle")
+        started = time.perf_counter()
+        segmentation_source: str | None = None
+        edus = document.edus
+        if edus is None and self.segmenter is not None:
+            edus = self.segmenter.segment(document.text)
+            segmentation_source = "model"
+        trace = self.predictor.analyse_with_evidence(
+            document.text,
+            edus=edus,
+            sentence_boundaries=document.sentence_boundaries,
+            paragraph_boundaries=document.paragraph_boundaries,
+            segmentation_source=segmentation_source,
+        )
+        model_analysis = _analysis_with_document_identity(
+            trace.analysis,
+            document_id=document.document_id,
+            elapsed_ms=(time.perf_counter() - started) * 1_000.0,
+            model_id=self.hf_model_version or str(getattr(self.predictor, "model_dir", "unknown")),
+        )
+        if policy.marker_refinement is MarkerRefinementMode.EVIDENCE_PRESERVING:
+            primary_analysis = DiscourseMarkerPrimer().prime_analysis(model_analysis, document)
+        else:
+            primary_analysis = model_analysis
+        erst_trace = None
+        final_analysis = primary_analysis
+        if policy.output_formalism is OutputFormalism.ERST_GRAPH:
+            checkpoint = self.erst_checkpoint
+            if checkpoint is None:
+                raise RuntimeError("validated eRST checkpoint disappeared during analysis")
+            completer = ErstCompleter(
+                config=CompleterConfig(
+                    min_confidence_threshold=checkpoint.decoder_config.edge_threshold,
+                ),
+                signal_detector=checkpoint.signal_detector,
+                decoder_config=checkpoint.decoder_config,
+            )
+            erst_trace = completer.complete_graph_with_evidence(
+                document,
+                primary_analysis,
+                neural_scorer=checkpoint.scorer,
+            )
+            final_analysis = erst_trace.analysis
+        duration_ms = (time.perf_counter() - started) * 1_000.0
+        return build_parser_analysis_result(
+            self,
+            document,
+            trace,
+            policy=policy,
+            model_analysis=model_analysis,
+            final_analysis=final_analysis,
+            erst_trace=erst_trace,
+            duration_ms=duration_ms,
+        )
+
     def parse_document(
         self,
         document: RstDocument,
         output: str = "rst_tree",
         prime_markers: bool = True,
     ) -> RstAnalysis:
-        """Parse an RstDocument into a typed, ontology-aligned RstAnalysis."""
-        import time
-        from isanlp_rst._provenance import resolve_package_version, resolve_source_revision
-        from isanlp_rst.contracts import OutputFormalismEnum, ProvenanceRecord, RstAnalysis, TimingRecord
-        from isanlp_rst.english.relations.primer import DiscourseMarkerPrimer
-        from isanlp_rst.erst.converter import du_to_analysis
+        """Project the canonical parser result to its final graph."""
 
-        formalism = OutputFormalismEnum(output)
-        erst_checkpoint = getattr(self, "erst_checkpoint", None)
-        if formalism == OutputFormalismEnum.ERST_GRAPH and erst_checkpoint is None:
-            from isanlp_rst.erst.checkpoint import ErstCapabilityError
+        from isanlp_rst.ingest.contracts.analysis import AnalysisPolicy, MarkerRefinementMode
+        from isanlp_rst.ingest.contracts.inference import OutputFormalism
+        from isanlp_rst.ingest.service import DEFAULT_ANALYSIS_POLICY
 
-            raise ErstCapabilityError(
-                "output='erst_graph' requires a validated completion bundle via "
-                "Parser(erst_scorer_checkpoint=...)"
-            )
-
-        start_t = time.perf_counter()
-        segmenter = getattr(self, "segmenter", None)
-        if document.edus is not None:
-            raw_res = self.predictor.parse_from_edus([edu.text for edu in document.edus])
-        elif segmenter is not None:
-            segmented_edus = segmenter.segment(document.text)
-            raw_res = self.predictor.parse_from_edus([edu.text for edu in segmented_edus])
-        else:
-            raw_res = self.predictor.parse_rst(document.text)
-        elapsed_ms = (time.perf_counter() - start_t) * 1000.0
-
-        root_unit = extract_root_tree(raw_res)
-        base_analysis = du_to_analysis(root_unit, document_id=document.document_id)
-
-        prov = ProvenanceRecord(
-            producer="isanlp_rst.parser",
-            software_version=resolve_package_version(),
-            source_revision=resolve_source_revision(),
-            model_id=self.hf_model_version or str(getattr(self.predictor, "model_dir", "unknown")),
-            ontology_version="4.1.0-discourse",
-        )
-        timing = TimingRecord(parsing_ms=elapsed_ms, total_ms=elapsed_ms)
-
-        analysis = RstAnalysis(
-            document_id=base_analysis.document_id,
-            formalism=formalism,
-            nodes=base_analysis.nodes,
-            primary_edges=base_analysis.primary_edges,
-            secondary_edges=base_analysis.secondary_edges,
-            signals=base_analysis.signals,
-            provenance=prov,
-            timing=timing,
-            warnings=base_analysis.warnings,
-            failure_code=base_analysis.failure_code,
-        )
-
-        if prime_markers:
-            primer = DiscourseMarkerPrimer()
-            analysis = primer.prime_analysis(analysis, document)
-
-        if formalism == OutputFormalismEnum.ERST_GRAPH or output == "erst_graph":
-            from isanlp_rst.english.erst.completer import CompleterConfig, ErstCompleter
-
-            if erst_checkpoint is None:
-                raise RuntimeError("validated eRST checkpoint disappeared during parsing")
-            completer = ErstCompleter(
-                config=CompleterConfig(
-                    min_confidence_threshold=erst_checkpoint.decoder_config.edge_threshold,
+        policy = AnalysisPolicy.model_validate(
+            {
+                **DEFAULT_ANALYSIS_POLICY.model_dump(exclude={"semantic_digest"}),
+                "output_formalism": OutputFormalism(output),
+                "marker_refinement": (
+                    MarkerRefinementMode.EVIDENCE_PRESERVING if prime_markers else MarkerRefinementMode.DISABLED
                 ),
-                signal_detector=erst_checkpoint.signal_detector,
-                decoder_config=erst_checkpoint.decoder_config,
-            )
-            analysis = completer.complete_graph(
-                document,
-                analysis,
-                neural_scorer=erst_checkpoint.scorer,
-            )
+            }
+        )
+        return self.analyse_document(document, analysis_policy=policy).semantic.analysis
 
-        return analysis
+    def complete_erst_document(
+        self,
+        document: RstDocument,
+        primary_result: ParserAnalysisResult,
+        *,
+        analysis_policy: AnalysisPolicy,
+    ) -> ParserAnalysisResult:
+        """Add global eRST evidence to a complete validated primary result."""
+
+        from isanlp_rst.english.erst.completer import CompleterConfig, ErstCompleter
+        from isanlp_rst.erst.checkpoint import ErstCapabilityError
+        from isanlp_rst.ingest.parser_result import complete_parser_analysis_result_with_erst
+
+        checkpoint = self.erst_checkpoint
+        if checkpoint is None:
+            raise ErstCapabilityError("output_formalism='erst_graph' requires a validated completion bundle")
+        completer = ErstCompleter(
+            config=CompleterConfig(
+                min_confidence_threshold=checkpoint.decoder_config.edge_threshold,
+            ),
+            signal_detector=checkpoint.signal_detector,
+            decoder_config=checkpoint.decoder_config,
+        )
+        trace = completer.complete_graph_with_evidence(
+            document,
+            primary_result.semantic.analysis,
+            neural_scorer=checkpoint.scorer,
+        )
+        return complete_parser_analysis_result_with_erst(
+            self,
+            document,
+            primary_result,
+            trace,
+            policy=analysis_policy,
+        )
+
+    def describe_analysis_identity(
+        self,
+        *,
+        analysis_policy: AnalysisPolicy,
+        segmentation_source: str,
+    ) -> CompositeAnalysisIdentity:
+        """Return the exact composite runtime identity without running inference."""
+
+        from isanlp_rst.ingest.parser_result import describe_analysis_components
+
+        composite, _ = describe_analysis_components(
+            self,
+            segmentation_source=segmentation_source,
+            policy=analysis_policy,
+        )
+        return composite
 
     def parse_documents(
         self,
@@ -403,18 +482,13 @@ class Parser:
         erst_checkpoint = getattr(self, "erst_checkpoint", None)
         if formalism == OutputFormalismEnum.ERST_GRAPH and erst_checkpoint is None:
             raise ErstCapabilityError(
-                "output='erst_graph' requires a validated completion bundle via "
-                "Parser(erst_scorer_checkpoint=...)"
+                "output='erst_graph' requires a validated completion bundle via Parser(erst_scorer_checkpoint=...)"
             )
 
         segmenter = getattr(self, "segmenter", None)
         parse_rst_batch_fn = getattr(self.predictor, "parse_rst_batch", None)
 
-        if (
-            all(doc.edus is None for doc in documents)
-            and segmenter is None
-            and parse_rst_batch_fn is not None
-        ):
+        if all(doc.edus is None for doc in documents) and segmenter is None and parse_rst_batch_fn is not None:
             start_t = time.perf_counter()
             texts = [doc.text for doc in documents]
             batch_raw_res: list[dict[str, Any]] = parse_rst_batch_fn(texts, batch_size=batch_size)
@@ -501,3 +575,33 @@ class Parser:
             custom_boundaries=custom_boundaries,
             output=output,
         )
+
+
+def _analysis_with_document_identity(
+    analysis: RstAnalysis,
+    *,
+    document_id: str,
+    elapsed_ms: float,
+    model_id: str,
+) -> RstAnalysis:
+    from isanlp_rst._provenance import resolve_package_version, resolve_source_revision
+    from isanlp_rst.contracts import ProvenanceRecord, RstAnalysis, TimingRecord
+
+    return RstAnalysis(
+        document_id=document_id,
+        formalism=analysis.formalism,
+        nodes=analysis.nodes,
+        primary_edges=analysis.primary_edges,
+        secondary_edges=analysis.secondary_edges,
+        signals=analysis.signals,
+        provenance=ProvenanceRecord(
+            producer="isanlp_rst.parser",
+            software_version=resolve_package_version(),
+            source_revision=resolve_source_revision(),
+            model_id=model_id,
+            ontology_version="4.1.0-discourse",
+        ),
+        timing=TimingRecord(parsing_ms=elapsed_ms, total_ms=elapsed_ms),
+        warnings=analysis.warnings,
+        failure_code=analysis.failure_code,
+    )

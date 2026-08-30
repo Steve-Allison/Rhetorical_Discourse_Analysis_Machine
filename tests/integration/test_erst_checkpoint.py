@@ -40,9 +40,12 @@ from isanlp_rst.contracts import (
     RstAnalysis,
     RstDocument,
     RstNode,
+    Edu,
+    TextSpan,
     to_json,
 )
 from isanlp_rst.english.erst.completer import CompleterConfig, ErstCompleter
+from isanlp_rst.erst.converter import du_to_analysis
 from isanlp_rst.erst.checkpoint import (
     ErstCheckpointError,
     load_erst_checkpoint_bundle,
@@ -51,6 +54,9 @@ from isanlp_rst.erst.checkpoint import (
 from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from isanlp_rst.erst.signals import RuleBasedSignalDetector
 from isanlp_rst.parser import Parser
+from isanlp_rst import __version__
+from isanlp_rst.transformer_parser.biaffine_decoder import ParsedRstTreeEvidence, ParsedRstTreeSpan
+from isanlp_rst.transformer_parser.predictor import PredictorAnalysisTrace
 from workbench.promotion.erst import save_erst_checkpoint_bundle
 
 _GIT_REVISION = "a" * 40
@@ -270,7 +276,7 @@ def _bundle_inputs() -> _BundleInputs:
         ),
         provenance=ErstCheckpointProvenance(
             producer="isanlp_rst.erst.checkpoint",
-            producer_version="4.0.0",
+            producer_version=__version__,
             source_revision=_GIT_REVISION,
             created_at=datetime.now(UTC),
             private_hf_repository="steve-allison-sensei/isanlp-rst-erst-v4",
@@ -343,7 +349,7 @@ def test_safetensors_bundle_strict_reload_preserves_outputs(tmp_path: Path) -> N
     after = _forward(loaded.scorer)
 
     assert loaded.manifest.manifest_sha256 == manifest_hash
-    assert loaded.manifest.package_version == "4.0.0"
+    assert loaded.manifest.package_version == __version__
     assert loaded.graph_config.architecture == "none"
     assert loaded.signal_detector.provenance == RuleBasedSignalDetector().provenance
     assert torch.equal(before["edge_logits"], after["edge_logits"])
@@ -374,6 +380,12 @@ def test_checkpoint_cpu_mps_outputs_and_decoded_graphs_are_equivalent(tmp_path: 
 def test_parser_erst_graph_uses_validated_completion_bundle(tmp_path: Path) -> None:
     class _Predictor:
         model_dir = "synthetic-primary"
+        _device = "cpu"
+
+        class _Model:
+            raw_relation_inventory = ("elaboration-additional",)
+
+        model = _Model()
 
         @staticmethod
         def parse_rst(text: str) -> dict[str, list[DiscourseUnit]]:
@@ -402,12 +414,62 @@ def test_parser_erst_graph_uses_validated_completion_bundle(tmp_path: Path) -> N
         def parse_from_edus(cls, edus: list[str]) -> dict[str, list[DiscourseUnit]]:
             return cls.parse_rst(" ".join(edus))
 
+        @classmethod
+        def analyse_with_evidence(
+            cls,
+            text: str,
+            **_kwargs: object,
+        ) -> PredictorAnalysisTrace:
+            root = cls.parse_rst(text)["rst"][0]
+            tokens = (
+                DocumentToken(token_id=0, text="Alpha", start=0, end=5, sentence_id=1, paragraph_id=1),
+                DocumentToken(token_id=1, text=".", start=5, end=6, sentence_id=1, paragraph_id=1),
+                DocumentToken(token_id=2, text="However", start=7, end=14, sentence_id=2, paragraph_id=1),
+                DocumentToken(token_id=3, text="beta", start=15, end=19, sentence_id=2, paragraph_id=1),
+                DocumentToken(token_id=4, text=".", start=19, end=20, sentence_id=2, paragraph_id=1),
+            )
+            edus = (
+                Edu(edu_id=1, text="Alpha.", start=0, end=6, token_ids=(0, 1)),
+                Edu(edu_id=2, text="However beta.", start=7, end=20, token_ids=(2, 3, 4)),
+            )
+            sentence_boundaries = (
+                TextSpan(start=0, end=6, text="Alpha."),
+                TextSpan(start=7, end=20, text="However beta."),
+            )
+            return PredictorAnalysisTrace(
+                root_unit=root,
+                analysis=du_to_analysis(root, document_id="parser-bundle-test"),
+                tokens=tokens,
+                edus=edus,
+                sentence_boundaries=sentence_boundaries,
+                paragraph_boundaries=(TextSpan(start=0, end=20, text=text),),
+                structure_decisions=(
+                    ParsedRstTreeEvidence(
+                        span=ParsedRstTreeSpan(
+                            start=0,
+                            end=1,
+                            split=0,
+                            nuclearity="NS",
+                            relation="elaboration-additional",
+                            score=1.0,
+                        ),
+                        split_candidates=(0,),
+                        split_logits=(1.0,),
+                        nuclearity_logits=(1.0, 0.0, 0.0),
+                        relation_logits=(1.0,),
+                    ),
+                ),
+                segmentation_source="deterministic_sentence_boundary_v1",
+                relation_inventory=("elaboration-additional",),
+            )
+
     bundle = tmp_path / "bundle"
     _save_bundle(bundle)
     loaded = load_erst_checkpoint_bundle(bundle)
     parser = Parser.__new__(Parser)
     vars(parser)["predictor"] = _Predictor()
     parser.hf_model_version = "synthetic-primary"
+    parser._validated_model_release = None
     parser.segmenter = None
     parser.erst_checkpoint = loaded
 

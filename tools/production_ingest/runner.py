@@ -41,9 +41,9 @@ def run_candidate_preparation(
     with tempfile.TemporaryDirectory(prefix="isanlp-rst-candidate-") as temporary:
         root = Path(temporary)
         environment_root = root / "venv"
-        subprocess.run([sys.executable, "-m", "venv", "--system-site-packages", environment_root], check=True)
+        subprocess.run([sys.executable, "-m", "venv", environment_root], check=True)
         python = environment_root / "bin/python"
-        subprocess.run([python, "-m", "pip", "install", "--no-deps", str(candidate_wheel)], check=True)
+        subprocess.run([python, "-m", "pip", "install", f"{candidate_wheel}[formats]"], check=True)
         control = root / "control.json"
         report = root / "report.json"
         control.write_text(
@@ -124,9 +124,9 @@ def run_baseline_gold_analysis(
         if len(wheels) != 1:
             raise RuntimeError(f"baseline build produced {len(wheels)} wheels")
         environment_root = root / "venv"
-        subprocess.run([sys.executable, "-m", "venv", "--system-site-packages", environment_root], check=True)
+        subprocess.run([sys.executable, "-m", "venv", environment_root], check=True)
         python = environment_root / "bin/python"
-        subprocess.run([python, "-m", "pip", "install", "--no-deps", str(wheels[0])], check=True)
+        subprocess.run([python, "-m", "pip", "install", str(wheels[0])], check=True)
         control = root / "control.json"
         report = root / "report.json"
         control.write_text(
@@ -185,10 +185,14 @@ def module_exists(name):
 if module_exists("workbench") or module_exists("tools.production_ingest"):
     raise RuntimeError("production environment exposes repository-only evaluation modules")
 
-from isanlp_rst.ingest import AUTHORED_PROSE_V1, ProductionAnalysisResult, ProductionIngestor, SourceArtifact, SourceForm
-from isanlp_rst.ingest.policy import apply_policy
-from isanlp_rst.ingest.prepare import prepare_source
-from isanlp_rst.ingest.subdivision import build_subdivision_plan
+from isanlp_rst.ingest import (
+    DispositionDecision,
+    ProductionIngestor,
+    SourceArtifact,
+    SourceForm,
+    load_contract,
+    serialize_contract,
+)
 
 model_store = control["model_store"]
 repetitions = control["repetitions"]
@@ -199,7 +203,7 @@ else:
     parser = Parser.from_model_release(
         model_store,
         control["model_release_id"],
-        family="dmrst",
+        family="modernbert",
         device=control["device"],
     )
     ingestor = ProductionIngestor(parser=parser)
@@ -214,18 +218,18 @@ for source in control["sources"]:
         artifact = SourceArtifact.from_edus(json.loads(path.read_text(encoding="utf-8"))["edus"], source_name=path.name, original_source=path.as_uri())
     else:
         artifact = SourceArtifact.from_path(path, source_form=form, original_source=path.as_uri())
-    prepared, inventory, dispositions, contract = prepare_source(artifact, policy=AUTHORED_PROSE_V1)
-    _, duplicate_findings = apply_policy(inventory, AUTHORED_PROSE_V1)
+    preparation_ingestor = ingestor or ProductionIngestor()
+    preparation = preparation_ingestor.prepare(
+        artifact,
+        parser_capacity=(parser.analysis_capacity if ingestor is not None else None),
+    )
+    semantic = preparation.semantic
+    prepared = semantic.prepared_document
+    inventory = semantic.inventory
     output = {
         "schema_version": "1.0.0",
         "source": source,
-        "artifact": artifact.model_dump(mode="json"),
-        "contract": contract.model_dump(mode="json"),
-        "contract_digest": contract.semantic_digest,
-        "inventory": [item.model_dump(mode="json") for item in inventory],
-        "dispositions": [item.model_dump(mode="json") for item in dispositions],
-        "duplicate_findings": [item.model_dump(mode="json") for item in duplicate_findings],
-        "prepared": prepared.model_dump(mode="json"),
+        "preparation_outcome": json.loads(serialize_contract(preparation)),
     }
     result_digest = None
     analysis_status = None
@@ -233,13 +237,11 @@ for source in control["sources"]:
     anchor_coverage = None
     determinism = None
     if ingestor is not None:
-        subdivision = build_subdivision_plan(prepared, parser.analysis_capacity)
-        output["subdivision_plan"] = subdivision.model_dump(mode="json")
         uncached_runs = repetitions if repetitions == 1 else repetitions // 2
         results = [
             ingestor.analyse(
                 artifact,
-                cache_dir=(
+                cache_directory=(
                     None
                     if run_index < uncached_runs
                     else Path(control["cache_root"]) / source["source_id"]
@@ -247,7 +249,7 @@ for source in control["sources"]:
             )
             for run_index in range(repetitions)
         ]
-        semantic_digests = [candidate.semantic_digest for candidate in results]
+        semantic_digests = [candidate.semantic_digest.hex_digest for candidate in results]
         if len(set(semantic_digests)) != 1:
             raise RuntimeError("repeated candidate analysis changed semantic identity")
         result = results[0]
@@ -256,28 +258,39 @@ for source in control["sources"]:
             "uncached_runs": uncached_runs,
             "cached_runs": repetitions - uncached_runs,
             "unique_semantic_digests": len(set(semantic_digests)),
-            "cache_statuses": [candidate.execution_receipt.cache_status.value for candidate in results],
+            "cache_statuses": [candidate.execution.cache_status.value for candidate in results],
         }
         output["determinism"] = determinism
-        persisted = result.to_json()
-        reloaded = ProductionAnalysisResult.from_json(persisted)
+        persisted = serialize_contract(result)
+        reloaded = load_contract(persisted)
         if reloaded.semantic_digest != result.semantic_digest:
             raise RuntimeError("persisted production result changed semantic identity")
         output["analysis_result"] = json.loads(persisted)
-        result_digest = result.semantic_digest
-        analysis_status = result.analysis_status.value
-        node_count = len(result.analysis.nodes) if result.analysis is not None else 0
-        anchor_coverage = result.preparation_receipt.analysis_anchor_coverage
+        result_digest = result.semantic_digest.hex_digest
+        analysis_status = result.semantic.status.value
+        analysis = result.semantic.analysis
+        node_count = len(analysis.nodes) if analysis is not None else 0
+        validation = result.semantic.validation
+        anchor_coverage = (
+            1.0
+            if validation is None and result.semantic.status.value == "empty_primary_discourse"
+            else validation.anchor_coverage.ratio
+            if validation is not None
+            else None
+        )
     output_path = output_root / f"{source['source_id']}.json"
     output_path.write_text(json.dumps(output, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
     records.append({
         "source_id": source["source_id"],
         "source_form": source["source_form"],
         "output_file": output_path.name,
-        "prepared_digest": prepared.semantic_digest,
-        "contract_digest": contract.semantic_digest,
+        "prepared_digest": prepared.semantic_digest.hex_digest,
+        "contract_digest": semantic.source_contract.semantic_digest,
         "inventory_count": len(inventory),
-        "disposition_count": len(dispositions),
+        "disposition_count": len(preparation.dispositions),
+        "duplicate_count": sum(
+            item.disposition.decision is DispositionDecision.DUPLICATE for item in inventory
+        ),
         "result_digest": result_digest,
         "analysis_status": analysis_status,
         "node_count": node_count,

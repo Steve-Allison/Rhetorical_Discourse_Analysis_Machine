@@ -18,6 +18,17 @@ class ParsedRstTreeSpan:
     score: float
 
 
+@dataclass(frozen=True, slots=True)
+class ParsedRstTreeEvidence:
+    """Bounded provider scores for one selected constituent decision."""
+
+    span: ParsedRstTreeSpan
+    split_candidates: tuple[int, ...]
+    split_logits: tuple[float, ...]
+    nuclearity_logits: tuple[float, ...]
+    relation_logits: tuple[float, ...]
+
+
 class DeepBiaffineScorer(nn.Module):
     """Deep Biaffine Scoring for span splitting, nuclearity, and rhetorical relations.
 
@@ -167,3 +178,11 @@ def cky_discourse_tree_decode(
 
     _reconstruct(0, n - 1)
     return tree_spans
+
+
+__all__ = [
+    "DeepBiaffineScorer",
+    "ParsedRstTreeEvidence",
+    "ParsedRstTreeSpan",
+    "cky_discourse_tree_decode",
+]

@@ -15,6 +15,7 @@ from workbench.training.segmentation.dataset import (
 )
 from isanlp_rst.segmentation.transformer_segmenter import (
     InvalidSegmenterCheckpointError,
+    SegmenterInputLimitError,
     TransformerEduSegmenter,
 )
 from scripts.train_segmenter import compute_metrics
@@ -145,3 +146,14 @@ def test_segmenter_rejects_untrained_base_model(tmp_path: Path) -> None:
 
     with pytest.raises(InvalidSegmenterCheckpointError, match="base model"):
         TransformerEduSegmenter(model_name_or_path=str(tmp_path), device="cpu")
+
+
+def test_segmenter_rejects_context_overflow_without_truncating(tmp_path: Path) -> None:
+    segmenter = TransformerEduSegmenter(
+        model_name_or_path=str(_tiny_segmenter_checkpoint(tmp_path)),
+        device="cpu",
+        max_length=4,
+    )
+
+    with pytest.raises(SegmenterInputLimitError, match="exact segmenter input"):
+        segmenter.segment("the system initialized because cache loaded")

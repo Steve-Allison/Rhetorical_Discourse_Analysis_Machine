@@ -1,32 +1,27 @@
 # Quickstart: Production Contract 5.0.0
 
-**Status**: Phase 1 executable design; commands and imports become valid after
-Feature 004 implementation and release promotion.
-
-This quickstart is both the intended consumer workflow and a clean-install
-acceptance script. It uses only supported installed exports.
+This is the consumer workflow and installed-wheel acceptance authority. Source
+examples are executable before release selection. Steps that require committed
+artifacts, the promoted ModernBERT release, or another machine are explicitly
+release-gated.
 
 ## 1. Verify the tracked release
 
-From the repository promotion commit:
+After certification:
 
 ```bash
 shasum -a 256 -c dist/5.0.0/release-receipt.sha256
-pixi run -e offline validate-production-artifacts
+pixi run -e default validate-production-artifacts
 ```
 
-The validator must report:
-
-- package version: `5.0.0`;
-- write contract: `isanlp_rst.production` `2.0.0`;
-- wheel and sdist digests: matched;
-- source revision and tree: identified and clean;
-- required verification checks: present and passed.
+The validator requires the exact four-file release directory, canonical receipt
+and detached digest, matching artifact hashes and sizes, verified wheel
+`RECORD`, package/provenance/receipt version agreement, the named source commit
+and tree, and every required passed evidence digest.
 
 ## 2. Install the exact wheel
 
-Create a genuine isolated Python 3.14 environment and install the promoted
-wheel. Do not rebuild the sdist.
+After deterministic artifact selection:
 
 ```bash
 python3.14 -m venv /tmp/isanlp-rst-5-core
@@ -35,48 +30,51 @@ python3.14 -m venv /tmp/isanlp-rst-5-core
 /tmp/isanlp-rst-5-core/bin/python -m pip check
 ```
 
-The repository's automated clean-install task must use a fresh temporary
-directory rather than this illustrative fixed path.
+Install the same wheel with `[formats]` for Markdown, Docling, DocLang XML, and
+DocLang archive sources. Do not rebuild the sdist on a consuming machine.
 
 ## 3. Discover capability without a model
 
 ```python
-from isanlp_rst.ingest import describe_capabilities
+from isanlp_rst.ingest import (
+    Availability,
+    ModelIdentityState,
+    describe_capabilities,
+)
 
 capabilities = describe_capabilities()
 
 assert capabilities.semantic.package_version == "5.0.0"
 assert capabilities.contract_version == "2.0.0"
-assert capabilities.semantic.model_identity_state == "not_configured"
-assert capabilities.semantic.semantic_cache_eligible is False
+assert capabilities.semantic.parser_identity_state is ModelIdentityState.NOT_CONFIGURED
+assert capabilities.semantic.cache_eligibility.state.value == "ineligible"
 
-for source_form in capabilities.semantic.source_forms:
+for source_capability in capabilities.semantic.source_forms:
     print(
-        source_form.source_form,
-        source_form.available,
-        source_form.install_extra,
-        source_form.missing_distributions,
+        source_capability.source_form,
+        source_capability.availability,
+        source_capability.required_extra,
+        source_capability.missing_distributions,
     )
+    assert isinstance(source_capability.availability, Availability)
 ```
 
-This call must not load a parser, import optional adapters, resolve model
-weights, access a network, or inspect the offline workbench.
+This call does not import adapters, instantiate a parser, resolve/download model
+bytes, access a network, or inspect `workbench`.
 
 ## 4. Prepare and inspect complete evidence
 
 ```python
-from pathlib import Path
-
 from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
 
-source = SourceArtifact.from_path(
-    Path("example.md"),
-    original_source="urn:example:markdown",
+source = SourceArtifact.from_text(
+    "A claim. Because evidence supports it.",
+    source_name="example.txt",
 )
 ingestor = ProductionIngestor()
 prepared = ingestor.prepare(source)
 
-print(prepared.semantic.source_summary.byte_digest)
+print(prepared.semantic.source.byte_identity)
 print(prepared.semantic.source_contract)
 print(prepared.semantic.preparation_policy)
 print(prepared.semantic.analysis_plan.status)
@@ -90,200 +88,165 @@ for item in prepared.semantic.inventory:
         item.disposition.reason,
     )
 
-assert all(item.disposition is not None for item in prepared.semantic.inventory)
 assert prepared.semantic.inventory_coverage.covered_units == (
     prepared.semantic.inventory_coverage.total_units
 )
+assert prepared.semantic.mapping_coverage.covered_units == (
+    prepared.semantic.mapping_coverage.total_units
+)
 ```
 
-`prepare()` is the explicit intentional-non-analysis path. It returns retained
-content as accessible typed values, not merely identifiers or digests.
-
-If Markdown support is unavailable in the core environment, this call raises a
-typed provider-unavailable error that names `isanlp_rst[formats]`; raw
-`ModuleNotFoundError` does not cross the boundary.
+`prepare()` is the explicit intentional-non-analysis operation. Valid retained
+content remains accessible as typed values, not only identifiers or digests.
 
 ## 5. Plan without loading a model
 
-When a consumer knows the parser capacity declaratively, preparation can expose
-the complete deterministic analysis plan without running inference:
-
 ```python
-from isanlp_rst.ingest import ParserCapacity
+from isanlp_rst.ingest import CapacityUnit, ParserCapacity, SemanticVersion
 
 capacity = ParserCapacity(
-    capacity_kind="segments",
-    maximum=384,
-    estimator="prepared_segments",
-    estimator_version="1.0.0",
+    unit=CapacityUnit.TOKEN_COUNT,
+    maximum=8192,
+    estimation_algorithm="provider_declared",
+    estimation_version=SemanticVersion(root="2.0.0"),
+    source="consumer_known_capacity",
 )
 planned = ingestor.prepare(source, parser_capacity=capacity)
 
-assert planned.semantic.analysis_plan.status in {"single_unit", "subdivided"}
+assert planned.semantic.analysis_plan.status.value in {"single_unit", "subdivided"}
 for unit in planned.semantic.analysis_plan.units:
-    print(unit.unit_id, unit.segment_range, unit.boundary_reason)
+    print(
+        unit.unit_id,
+        unit.first_segment_order,
+        unit.last_segment_order,
+        unit.boundary_reason,
+    )
 ```
 
 ## 6. Analyse with an immutable model release
 
+This section runs after the promoted active ModernBERT release exists in the
+local model store.
+
 ```python
-from isanlp_rst import Parser
-from isanlp_rst.ingest import (
-    AnalysisPolicy,
-    EvidenceDetailPolicy,
-    OutputFormalism,
-    ProductionIngestor,
-)
+from pathlib import Path
+
+from isanlp_rst import Parser, RstDocument
+from isanlp_rst.ingest import AnalysedOutcome, ProductionIngestor
 
 parser = Parser.from_model_release(
-    Path("/models/isanlp_rst"),
-    "modernbert-v5",
+    Path("/absolute/model-releases"),
+    "the-promoted-modernbert-release-id",
     family="modernbert",
+    device="auto",
 )
 ingestor = ProductionIngestor(parser=parser)
-analysis_policy = AnalysisPolicy(
-    output_formalism=OutputFormalism.RST_TREE,
-    evidence_detail=EvidenceDetailPolicy.DECISION_COMPLETE,
+result = ingestor.analyse(source)
+
+assert isinstance(result, AnalysedOutcome)
+assert result.semantic.status.value == "analysed"
+assert result.semantic.analysed_document is not None
+assert result.semantic.analysis is not None
+assert result.semantic.primary_inference is not None
+assert result.semantic.parser_result is not None
+assert result.semantic.validation is not None and result.semantic.validation.passed
+assert result.semantic.anchors
+assert result.semantic.parser_result.semantic.loaded_components
+
+document = RstDocument.from_text(
+    "A claim. Because evidence supports it.",
+    document_id="parser-only",
 )
-result = ingestor.analyse(source, analysis_policy=analysis_policy)
+parser_result = parser.analyse_document(document)
 
-print(result.status)
-print(result.semantic.analysis_request.analysis_policy)
-print(result.semantic.composite_analysis_identity.primary_parser.state)
-print(result.semantic.preparation.semantic.source_contract)
-print(result.semantic.semantic_request_identity)
-print(result.semantic_digest)
-
-if result.status == "analysed":
-    analysed_document = result.semantic.analysed_document
-    print(len(analysed_document.tokens), len(analysed_document.edus))
-    print(len(result.semantic.analysis.nodes))
-    print(len(result.semantic.analysis.primary_edges))
-    print(len(result.semantic.analysis.secondary_edges))
-    print(len(result.semantic.primary_inference.structure_decisions))
-    print(result.semantic.validation_receipt.overall_disposition)
-    assert result.semantic.analysis_anchors
-    assert result.semantic.validation_receipt.overall_disposition == "passed"
-else:
-    assert result.status == "empty_primary_discourse"
+assert parser_result.semantic.analysis.document_id == document.document_id
+assert parser_result.semantic.analysed_document.edus
+assert parser_result.semantic.validation.passed
+assert parser_result.semantic.loaded_components
+graph_projection = parser.parse_document(document)
+assert graph_projection.nodes == parser_result.semantic.analysis.nodes
+assert graph_projection.primary_edges == parser_result.semantic.analysis.primary_edges
+assert graph_projection.secondary_edges == parser_result.semantic.analysis.secondary_edges
 ```
 
-For an already-constructed `RstDocument`, use the canonical parser result
-directly rather than production ingest:
+`ParserAnalysisResult` is the provider-owned source for the graph, exact
+analysed substrate, primary/eRST decisions, refinement, component identities,
+loaded-component receipts, recombination, validation, execution, and semantic
+identity. Production ingest embeds it; it does not reconstruct evidence from a
+graph-only projection.
+
+For eRST, derive a complete policy from the returned resolved default so no
+policy field remains implicit:
 
 ```python
-from isanlp_rst import RstDocument
+from isanlp_rst.ingest import AnalysisPolicy, OutputFormalism
 
-document = RstDocument.from_text("A claim. Because evidence supports it.")
-parser_result = parser.analyse_document(
-    document,
-    analysis_policy=analysis_policy,
+erst_policy = AnalysisPolicy.model_validate(
+    {
+        **result.semantic.policy.model_dump(exclude={"semantic_digest"}),
+        "output_formalism": OutputFormalism.ERST_GRAPH,
+    }
 )
+erst_result = ingestor.analyse(source, analysis_policy=erst_policy)
 
-assert parser_result.analysis.document_id == document.document_id
-assert parser_result.analysed_document.edus
-assert parser_result.validation_receipt.overall_disposition == "passed"
-assert parser_result.composite_analysis_identity.primary_parser.state == (
-    "immutable_release"
-)
-assert parser_result.loaded_component_receipts
-```
-
-`parse_document()` is the supported graph-only convenience projection.
-`ProductionIngestor.analyse()` consumes and embeds `ParserAnalysisResult`; it
-does not reconstruct discarded evidence from that projection.
-
-The result embeds the complete preparation outcome. A consumer does not rerun
-preparation, import an adapter, or reconstruct a source contract or model
-identity.
-
-The default is decision-complete evidence. To request provider-computed
-normalized split, relation, nuclearity, or segmentation distributions, select
-`EvidenceDetailPolicy.NORMALIZED_DISTRIBUTIONS`. That choice is semantic and
-therefore changes request/cache identity whenever the returned evidence differs.
-
-For `OutputFormalism.ERST_GRAPH`, inspect accepted secondary-edge evidence
-without reconstructing decoder state:
-
-```python
-erst_result = ingestor.analyse(
-    source,
-    analysis_policy=AnalysisPolicy(
-        output_formalism=OutputFormalism.ERST_GRAPH,
-        evidence_detail=EvidenceDetailPolicy.DECISION_COMPLETE,
-    ),
-)
-
+assert erst_result.semantic.erst_completion is not None
 for decision in erst_result.semantic.erst_completion.candidate_decisions:
-    if decision.decision == "accepted":
-        print(
-            decision.source_node_id,
-            decision.target_node_id,
-            decision.supporting_signal_ids,
-            decision.edge_probability,
-            decision.relation_probability,
-            decision.joint_selection_score,
-        )
-
+    print(
+        decision.candidate_id,
+        decision.decision,
+        decision.supporting_signal_ids,
+        decision.joint_selection_score,
+    )
 print(erst_result.semantic.erst_completion.decode_receipt)
 ```
-
-Every relation declares its scheme, confidence kind, calibration state, and
-ontology-mapping provenance. Every marker refinement preserves the before and
-after decision. Subdivided results additionally expose a complete compact
-`recombination_receipt`.
 
 ## 7. Persist and reload canonically
 
 ```python
 from isanlp_rst.ingest import load_contract, serialize_contract
 
-encoded = serialize_contract(result)
+encoded = serialize_contract(prepared)
 reloaded = load_contract(encoded)
 
 assert serialize_contract(reloaded) == encoded
-assert reloaded.semantic_digest == result.semantic_digest
+assert reloaded.semantic_digest == prepared.semantic_digest
 ```
 
-The bytes are RFC 8785 canonical JSON. Pretty JSON and Pydantic's ordinary JSON
-rendering are not cache or digest authorities.
+The exact same assertions apply to parser results, analysed outcomes, empty
+outcomes, capabilities, and failure records.
 
 ## 8. Handle typed completed-stage failure
 
 ```python
-from isanlp_rst.ingest import ProductionIngestError, serialize_contract
+from isanlp_rst.ingest import ProductionIngestError, ProductionIngestor, serialize_contract
 
 try:
-    ingestor.analyse(source)
+    ProductionIngestor().analyse(source)
 except ProductionIngestError as error:
     failure = error.failure
-    print(failure.semantic.failed_stage)
-    print(failure.semantic.category)
-    print(failure.semantic.retryability)
-    print(failure.semantic.completed_evidence.kind)
+    print(failure.failed_stage)
+    print(failure.category)
+    print(failure.retryability)
+    print(failure.completed.kind)
 
     safe_bytes = serialize_contract(failure)
-    # The conformance fixture contains this exact private marker.
-    assert "PRIVATE_CONFORMANCE_MARKER" not in safe_bytes.decode("utf-8")
+    assert b"A claim" not in safe_bytes
 ```
 
-If preparation completed and inference failed, completed evidence contains the
-full in-memory `PreparationOutcome` and no claimed analysis. Default
-serialization emits the separately typed safe projection with private content
-redacted. If acquisition failed, no later-stage evidence is representable.
+Default rendering and persistence never include raw source/prepared text,
+arbitrary exception strings, traceback frames, locals, environment values, or
+private paths.
 
 ## 9. Verify a consumer uses only the public contract
-
-A representative adapter conformance fixture must import exclusively from:
 
 ```python
 from isanlp_rst import Parser
 from isanlp_rst.ingest import (
-    ProductionIngestError,
-    ProductionIngestor,
     AnalysisPolicy,
     EvidenceDetailPolicy,
     OutputFormalism,
+    ProductionIngestError,
+    ProductionIngestor,
     SourceArtifact,
     describe_capabilities,
     load_contract,
@@ -291,74 +254,59 @@ from isanlp_rst.ingest import (
 )
 ```
 
-The fixture fails if it imports `isanlp_rst.ingest._*`, format adapters,
-`prepare_source`, cache internals, research modules, or unexported contract
-modules. It must answer the following solely from one outcome or completed-stage
-failure:
-
-- what source was received;
-- what was inventoried and retained;
-- what was transformed, analysed, excluded, or duplicated and why;
-- what model and policy determined the result;
-- what exact tokens and EDUs were analysed;
-- which primary/eRST decisions, scores, signals, refinements, and component
-  identities produced the graph;
-- how local units were recombined and which validation checks passed;
-- whether the result is semantically cacheable;
-- what failed and which earlier stages completed.
+A consumer must not import `isanlp_rst.ingest._*`, contract submodules, format
+adapters, cache internals, `prepare_source`, or `workbench`. One outcome or
+completed-stage failure answers what was received, inventoried, retained,
+transformed, analysed, excluded, duplicated, modelled, recombined, validated,
+and cached.
 
 ## 10. Verify installed command parity
 
-The CLI routes structured inputs through the same `SourceArtifact` boundary and
-emits the canonical contract for JSON:
+After the promoted model release exists:
 
 ```bash
-isanlp-rst parse example.md \
-  --model-store /models/isanlp_rst \
-  --release-id modernbert-v5 \
-  --original-source urn:example:markdown \
-  --formalism rst_tree \
+isanlp-rst parse --text "A claim. Because evidence supports it." \
+  --source-name example.txt \
+  --model-store /absolute/model-releases \
+  --release-id the-promoted-modernbert-release-id \
+  --output-formalism rst_tree \
   --evidence-detail decision_complete \
-  --format json \
+  --format canonical-json \
   --output /tmp/isanlp-result.json
 ```
 
-For the equivalent Python request:
-
 ```python
-cli_bytes = Path("/tmp/isanlp-result.json").read_bytes()
-cli_result = load_contract(cli_bytes)
-assert cli_result.semantic == result.semantic
+cli_result = load_contract(Path("/tmp/isanlp-result.json").read_bytes())
 assert cli_result.semantic_digest == result.semantic_digest
 ```
 
-Execution identifiers, timings, and cache status may differ between
-invocations; those values are intentionally excluded from semantic parity.
+Execution timing may differ; semantic identity must not. `POST /analyse` and
+`GET /capabilities` use the same canonical records. `GET /health` is a labelled
+presentation projection derived from capability identity. All endpoints are
+loopback-only.
 
-Instrumentation in conformance tests must prove one primary inference execution
-per request. `tree`, `stats`, and `rs3` are declared lossy presentation views of
-that same typed result. If `isanlp-rst serve` remains installed, its loopback
-endpoint returns the same canonical success or safe failure bytes and derives
-health/capability output from `describe_capabilities()`; it never returns raw
-exception text or a count-only substitute for the result.
-
-## 11. Run the full implementation gates
+## 11. Run the implementation and release gates
 
 ```bash
-pixi run -e offline lint
-pixi run -e offline typecheck
-pixi run -e offline mdlint
-pixi run -e offline production-api-contract
-pixi run -e offline production-ingest-determinism
-pixi run -e offline production-ingest-performance
-pixi run -e offline build-production
-pixi run -e offline validate-production-artifacts
-pixi run -e offline production-ingest-clean-install
+pixi run -e default lint
+pixi run -e default typecheck
+pixi run -e default mdlint
+pixi run -e default production-api-contract
+pixi run -e default production-ingest-determinism
+pixi run -e default production-ingest-performance
+```
+
+After the clean source release commit exists:
+
+```bash
+pixi run -e default build-production
+pixi run -e default validate-production-artifacts
+pixi run -e default production-ingest-clean-install
 pixi run -e production production-boundary
 pixi run -e production production-clean-install
 ```
 
-Completion requires observed passing output from every gate, the four tracked
-`dist/5.0.0/` files, and successful installation of that exact wheel on the
-second supported development machine. Source-checkout tests alone are
-insufficient.
+Final certification additionally requires the exact committed artifacts to be
+verified without rebuilding on the second supported development machine. That
+artifact-, receipt-, model-release-, commit-, tag-, remote-, and second-machine
+evidence cannot be truthfully produced from the current dirty source worktree.

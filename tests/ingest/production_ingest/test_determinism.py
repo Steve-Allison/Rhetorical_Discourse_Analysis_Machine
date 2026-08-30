@@ -1,44 +1,32 @@
-from pathlib import Path, PurePosixPath
+"""Cached and uncached semantic determinism for immutable requests."""
 
-from isanlp_rst.contracts import OutputFormalismEnum, RstAnalysis, RstDocument
-from isanlp_rst.ingest import CacheStatus, SourceArtifact
-from isanlp_rst.ingest.service import ProductionIngestor
-from isanlp_rst.model_loading import ModelFile, ModelReleaseIdentity, ParserCapacity
+from pathlib import Path
 
+from isanlp_rst.ingest import CacheStatus, ProductionIngestor, SourceArtifact
+from isanlp_rst.ingest.identity import (
+    analysis_outcome_semantic_projection,
+    canonical_json_bytes,
+)
 
-class ImmutableEmptyParser:
-    analysis_capacity = ParserCapacity(unit="edu_count", maximum=512, source="test")
-    model_release_identity = ModelReleaseIdentity(
-        release_id="test-release",
-        manifest_sha256="a" * 64,
-        runtime_contract="isanlp_rst.parser/test-v1",
-        architecture="test",
-        files=(
-            ModelFile(
-                path=PurePosixPath("model.bin"),
-                role="weights",
-                size_bytes=1,
-                sha256="b" * 64,
-            ),
-        ),
-        capacity=analysis_capacity,
-    )
-
-    def parse_document(self, document: RstDocument, output: str = "rst_tree") -> RstAnalysis:
-        return RstAnalysis(
-            document_id=document.document_id,
-            formalism=OutputFormalismEnum(output),
-            nodes=(),
-            primary_edges=(),
-        )
+from .conftest import ParserBuilder
 
 
-def test_ten_cached_and_uncached_runs_have_one_semantic_identity(tmp_path: Path) -> None:
-    artifact = SourceArtifact.from_text("", source_name="empty.txt")
-    service = ProductionIngestor(parser=ImmutableEmptyParser())
-    uncached = [service.analyse(artifact) for _ in range(5)]
-    cached = [service.analyse(artifact, cache_dir=tmp_path) for _ in range(5)]
-    assert len({result.semantic_digest for result in (*uncached, *cached)}) == 1
-    assert cached[0].execution_receipt.cache_status is CacheStatus.WRITTEN
-    assert all(result.execution_receipt.cache_status is CacheStatus.HIT for result in cached[1:])
-    assert uncached[0].preparation_receipt.cache_fingerprint == cached[0].preparation_receipt.cache_fingerprint
+def test_cached_and_uncached_runs_have_byte_identical_semantic_payloads(
+    parser_builder: ParserBuilder,
+    tmp_path: Path,
+) -> None:
+    source = SourceArtifact.from_text("First. Second.", source_name="determinism.txt")
+    ingestor = ProductionIngestor(parser=parser_builder())
+    uncached = tuple(ingestor.analyse(source) for _ in range(5))
+    cached = tuple(ingestor.analyse(source, cache_directory=tmp_path) for _ in range(5))
+
+    identities = tuple(result.semantic_digest for result in (*uncached, *cached))
+    assert all(identity is not None for identity in identities)
+    assert len({identity.hex_digest for identity in identities if identity is not None}) == 1
+    assert cached[0].execution.cache_status is CacheStatus.WRITTEN
+    assert all(result.execution.cache_status is CacheStatus.HIT for result in cached[1:])
+    semantic_bytes = {
+        canonical_json_bytes(analysis_outcome_semantic_projection(result))
+        for result in (*uncached, *cached)
+    }
+    assert len(semantic_bytes) == 1

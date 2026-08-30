@@ -1,144 +1,122 @@
-"""Deterministic structure-first subdivision for bounded local RST analysis."""
+"""Deterministic structure-first analysis planning over prepared segments."""
 
-from itertools import batched, pairwise
-import re
-
-from isanlp_rst.ingest.contracts import (
+from isanlp_rst.ingest.contracts.preparation import (
+    AnalysisPlan,
+    AnalysisPlanStatus,
     AnalysisUnit,
-    PreparedRange,
+    BoundaryPreference,
+    ParserCapacity,
+    PlanningPolicy,
     PreparedRstDocument,
-    StructureKind,
-    SubdivisionPlan,
+    RecombinationLink,
+    RecombinationPlan,
+    SegmentKind,
 )
-from isanlp_rst.model_loading import ParserCapacity
-
-ALGORITHM_VERSION = "structure_first_v1"
-_CHARACTERS_PER_CAPACITY_UNIT = 512
 
 
-def build_subdivision_plan(prepared: PreparedRstDocument, capacity: ParserCapacity) -> SubdivisionPlan:
-    """Partition the complete output exactly once, without splitting supplied EDUs."""
+class AnalysisPlanningError(ValueError):
+    """The declared capacity cannot yield a lossless analysis plan."""
 
-    if not prepared.text:
-        return SubdivisionPlan(algorithm_version=ALGORITHM_VERSION, units=())
-    ranges = (
-        _edu_ranges(prepared, capacity.maximum)
-        if prepared.document.edus is not None
-        else _text_ranges(prepared, max(1_024, capacity.maximum * _CHARACTERS_PER_CAPACITY_UNIT))
-    )
+
+def build_analysis_plan(
+    prepared: PreparedRstDocument,
+    *,
+    capacity: ParserCapacity | None,
+    policy: PlanningPolicy,
+) -> AnalysisPlan:
+    """Build a complete capacity-safe plan without splitting prepared segments."""
+
+    if capacity is None:
+        return AnalysisPlan(
+            status=AnalysisPlanStatus.NOT_PLANNED,
+            parser_capacity=None,
+            policy=policy,
+            units=(),
+            recombination=RecombinationPlan(links=()),
+        )
+
+    available = capacity.maximum - policy.capacity_margin
+    if available <= 0:
+        raise AnalysisPlanningError(
+            "planning capacity margin leaves no usable parser capacity"
+        )
+    if not prepared.segments:
+        return AnalysisPlan(
+            status=AnalysisPlanStatus.SINGLE_UNIT,
+            parser_capacity=capacity,
+            policy=policy,
+            units=(),
+            recombination=RecombinationPlan(links=()),
+        )
+
+    groups: list[tuple[int, int, int]] = []
+    start = 0
+    demand = 0
+    for index, segment in enumerate(prepared.segments):
+        segment_demand = _estimated_demand(segment.text, segment.kind, capacity)
+        if segment_demand > available:
+            raise AnalysisPlanningError(
+                f"prepared segment {segment.segment_id!r} exceeds usable parser capacity"
+            )
+        if demand and demand + segment_demand > available:
+            groups.append((start, index - 1, demand))
+            start = index
+            demand = 0
+        demand += segment_demand
+    groups.append((start, len(prepared.segments) - 1, demand))
+
     units = tuple(
         AnalysisUnit(
-            unit_id=f"unit:{index:04}",
-            structure_kind=_operative_kind(prepared, output_range),
-            output_range=output_range,
-            source_item_ids=_source_items(prepared, output_range),
-            capacity_unit=capacity.unit,
-            capacity_maximum=capacity.maximum,
+            unit_id=f"unit:{index:04d}",
+            order=index,
+            first_segment_order=first,
+            last_segment_order=last,
+            estimated_demand=unit_demand,
+            capacity=available,
+            boundary_reason=_boundary_reason(prepared, first, policy),
+            predecessor_id=f"unit:{index - 1:04d}" if index else None,
+            successor_id=f"unit:{index + 1:04d}" if index + 1 < len(groups) else None,
         )
-        for index, output_range in enumerate(ranges)
+        for index, (first, last, unit_demand) in enumerate(groups)
     )
-    _verify_complete(units, len(prepared.text))
-    return SubdivisionPlan(algorithm_version=ALGORITHM_VERSION, units=units)
-
-
-def _edu_ranges(prepared: PreparedRstDocument, maximum: int) -> tuple[PreparedRange, ...]:
-    edus = prepared.document.edus or ()
-    if not edus:
-        return ()
-    ranges: list[PreparedRange] = []
-    batches = list(batched(edus, maximum, strict=False))
-    for group_index, batch in enumerate(batches):
-        start = 0 if group_index == 0 else batch[0].start
-        next_index = group_index + 1
-        end = batches[next_index][0].start if next_index < len(batches) else len(prepared.text)
-        ranges.append(PreparedRange(start=start, end=end))
-    return tuple(ranges)
-
-
-def _text_ranges(prepared: PreparedRstDocument, maximum: int) -> tuple[PreparedRange, ...]:
-    text = prepared.text
-    preferred = {
-        node.prepared_range.end
-        for node in prepared.structure
-        if node.prepared_range is not None
-        and node.kind
-        in {
-            StructureKind.SECTION,
-            StructureKind.HEADING,
-            StructureKind.PARAGRAPH,
-            StructureKind.LIST_ITEM,
-            StructureKind.TURN,
-        }
-    }
-    preferred.update(match.end() for match in re.finditer(r"\n\s*\n+|(?<=[.!?])\s+", text))
-    candidates = sorted(point for point in preferred if 0 < point < len(text))
-    structural_starts = sorted(
-        {
-            _separator_start(prepared, node.prepared_range.start)
-            for node in prepared.structure
-            if node.prepared_range is not None
-            and node.kind in {StructureKind.HEADING, StructureKind.TURN}
-            and node.prepared_range.start > 0
-        }
+    links = tuple(
+        RecombinationLink(
+            predecessor_unit_id=left.unit_id,
+            successor_unit_id=right.unit_id,
+            boundary_segment_order=right.first_segment_order,
+        )
+        for left, right in zip(units, units[1:], strict=False)
     )
-    coarse_boundaries = [0, *structural_starts, len(text)]
-    ranges: list[PreparedRange] = []
-    for coarse_start, coarse_end in pairwise(coarse_boundaries):
-        start = coarse_start
-        while coarse_end - start > maximum:
-            ceiling = start + maximum
-            usable = [point for point in candidates if start < point <= ceiling]
-            end = usable[-1] if usable else ceiling
-            ranges.append(PreparedRange(start=start, end=end))
-            start = end
-        if coarse_end > start:
-            ranges.append(PreparedRange(start=start, end=coarse_end))
-    return tuple(ranges)
-
-
-def _separator_start(prepared: PreparedRstDocument, position: int) -> int:
-    preceding = next(
-        (
-            segment
-            for segment in reversed(prepared.segments)
-            if segment.prepared_range.end == position
-        ),
-        None,
-    )
-    return preceding.prepared_range.start if preceding is not None else position
-
-
-def _source_items(prepared: PreparedRstDocument, output_range: PreparedRange) -> tuple[str, ...]:
-    return tuple(
-        segment.source_item_id
-        for segment in prepared.segments
-        if segment.source_item_id is not None and _overlaps(segment.prepared_range, output_range)
+    return AnalysisPlan(
+        status=(AnalysisPlanStatus.SINGLE_UNIT if len(units) == 1 else AnalysisPlanStatus.SUBDIVIDED),
+        parser_capacity=capacity,
+        policy=policy,
+        units=units,
+        recombination=RecombinationPlan(links=links),
     )
 
 
-def _operative_kind(prepared: PreparedRstDocument, output_range: PreparedRange) -> StructureKind:
-    candidates = [
-        node.kind
-        for node in prepared.structure
-        if node.prepared_range is not None
-        and node.prepared_range.start <= output_range.start
-        and output_range.end <= node.prepared_range.end
-    ]
-    return candidates[-1] if candidates else StructureKind.RANGE
+def _estimated_demand(
+    text: str,
+    kind: SegmentKind,
+    capacity: ParserCapacity,
+) -> int:
+    if kind is SegmentKind.SEPARATOR:
+        return 0
+    if capacity.unit.value == "token_count":
+        return max(1, len(text.split()))
+    return 1
 
 
-def _overlaps(left: PreparedRange, right: PreparedRange) -> bool:
-    return left.start < right.end and right.start < left.end
+def _boundary_reason(
+    prepared: PreparedRstDocument,
+    first_segment_order: int,
+    policy: PlanningPolicy,
+) -> BoundaryPreference:
+    segment = prepared.segments[first_segment_order]
+    if segment.structural_boundary_id is not None:
+        return policy.boundary_preference[0]
+    return policy.boundary_preference[-1]
 
 
-def _verify_complete(units: tuple[AnalysisUnit, ...], text_length: int) -> None:
-    cursor = 0
-    for unit in units:
-        if unit.output_range.start != cursor:
-            raise ValueError("subdivision output ranges must be contiguous and ordered")
-        cursor = unit.output_range.end
-    if cursor != text_length:
-        raise ValueError("subdivision output ranges must cover prepared text exactly")
-
-
-__all__ = ["ALGORITHM_VERSION", "build_subdivision_plan"]
+__all__ = ["AnalysisPlanningError", "build_analysis_plan"]

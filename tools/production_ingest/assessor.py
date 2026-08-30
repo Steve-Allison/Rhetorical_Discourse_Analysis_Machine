@@ -3,13 +3,20 @@
 from collections import Counter
 import hashlib
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from isanlp_rst.contracts import RstAnalysis
 from isanlp_rst.contracts.serialization import analysis_from_dict
 from isanlp_rst.erst.converter import rs4_to_document_and_analysis
 from isanlp_rst.erst.rs4 import RS4Reader
+from isanlp_rst.ingest import (
+    AnalysedOutcome,
+    EmptyPrimaryAnalysisOutcome,
+    PreparationOutcome,
+    load_contract,
+)
+from isanlp_rst.ingest.identity import sha256_bytes
 from workbench.evaluation.rst import StandardParsevalScorer
 from tools.production_ingest.contracts import GoldSetManifest, SourceGateResult
 
@@ -32,22 +39,23 @@ def assess_candidate_preparation(
     for source in manifest.sources:
         expectation = _object(root / source.expectation_ref)
         candidate = _object(candidate_root / f"{source.source_id}.json")
-        inventory = _objects(candidate, "inventory")
-        dispositions = _objects(candidate, "dispositions")
+        preparation = _preparation_outcome(candidate, source.source_id)
+        inventory = preparation.semantic.inventory
+        dispositions = preparation.dispositions
         expected_items = expectation.get("item_expectations")
         if not isinstance(expected_items, list):
             raise ValueError(f"Gold expectation is not adjudicated: {source.source_id}")
         actual_by_id = {
-            str(item["item_id"]): (
-                item["content_class"],
-                item["authorship_role"],
-                item.get("text_sha256"),
+            item.item_id: (
+                item.classification.value,
+                item.origin.authorship.value,
+                sha256_bytes(item.text.encode("utf-8")) if item.text is not None else None,
             )
             for item in inventory
         }
         disposition_by_id = {
-            str(item["item_id"]): (item["kind"], item["reason_code"])
-            for item in dispositions
+            item.item_id: (disposition.decision.value, disposition.reason.value)
+            for item, disposition in zip(inventory, dispositions, strict=True)
         }
         expected_by_id = {
             str(item["item_id"]): (
@@ -63,45 +71,58 @@ def assess_candidate_preparation(
             for item in expected_items
             if isinstance(item, dict)
         }
-        prepared = candidate.get("prepared")
-        if not isinstance(prepared, dict):
-            raise ValueError(f"candidate prepared payload is missing: {source.source_id}")
-        contract = candidate.get("contract")
-        if not isinstance(contract, dict):
-            raise ValueError(f"candidate source contract payload is missing: {source.source_id}")
-        segments = prepared.get("segments")
-        prepared_text = prepared.get("text")
-        complete_segments = isinstance(segments, list) and isinstance(prepared_text, str) and _segments_cover(segments, prepared_text)
+        prepared = preparation.semantic.prepared_document
+        segments = [segment.model_dump(mode="json") for segment in prepared.segments]
+        prepared_text = prepared.text
+        complete_segments = _segments_cover(segments, prepared_text)
+        if prepared.semantic_digest is None:
+            raise ValueError("prepared document omitted its semantic digest")
         contract_identity_matches, preparation_identity_matches, prepared_text_matches = _preparation_identity_matches(
             expectation=expectation,
-            contract_digest=candidate.get("contract_digest"),
-            prepared=prepared,
+            contract_digest=preparation.semantic.source_contract.semantic_digest,
+            prepared={
+                "semantic_digest": prepared.semantic_digest.hex_digest,
+                "text": prepared.text,
+            },
         )
         exact_inventory = actual_by_id == expected_by_id
         exact_relevance = disposition_by_id == expected_dispositions
-        candidate_artifact = candidate.get("artifact")
+        source_summary = preparation.semantic.source
         source_identity_matches = (
-            isinstance(candidate_artifact, dict)
-            and candidate_artifact.get("source_id") == expectation.get("source_artifact_id")
-            and candidate_artifact.get("raw_sha256") == expectation.get("source_raw_sha256")
+            source_summary.source_id == expectation.get("source_artifact_id")
+            and source_summary.byte_identity.hex_digest == expectation.get("source_raw_sha256")
         )
-        primary_item_ids = prepared.get("primary_item_ids") if isinstance(prepared, dict) else None
-        primary_is_empty = isinstance(primary_item_ids, list) and not primary_item_ids
+        primary_is_empty = not prepared.text
         analysis_payload = candidate.get("analysis_result")
         analysis: RstAnalysis | None = None
         analysis_complete = False
         analysis_anchor_coverage = 0.0
+        recombination_complete = preparation.semantic.analysis_plan.status.value != "subdivided"
         if isinstance(analysis_payload, dict):
-            status = analysis_payload.get("analysis_status")
-            raw_analysis = analysis_payload.get("analysis")
-            if isinstance(raw_analysis, dict):
-                analysis = analysis_from_dict(raw_analysis)
-            receipt = analysis_payload.get("preparation_receipt")
-            if isinstance(receipt, dict) and isinstance(receipt.get("analysis_anchor_coverage"), int | float):
-                analysis_anchor_coverage = float(receipt["analysis_anchor_coverage"])
+            outcome = load_contract(json.dumps(analysis_payload, ensure_ascii=False))
+            if not isinstance(outcome, AnalysedOutcome | EmptyPrimaryAnalysisOutcome):
+                raise ValueError(f"candidate analysis payload has wrong kind: {source.source_id}")
+            analysis = outcome.semantic.analysis
+            validation = outcome.semantic.validation
+            if validation is not None:
+                analysis_anchor_coverage = validation.anchor_coverage.ratio or 0.0
+            recombination_complete = (
+                preparation.semantic.analysis_plan.status.value != "subdivided"
+                or outcome.semantic.recombination is not None
+            )
             analysis_complete = (
-                (primary_is_empty and status == "empty_primary_discourse" and analysis is None)
-                or (not primary_is_empty and status == "analysed" and analysis is not None)
+                (
+                    primary_is_empty
+                    and isinstance(outcome, EmptyPrimaryAnalysisOutcome)
+                    and analysis is None
+                )
+                or (
+                    not primary_is_empty
+                    and isinstance(outcome, AnalysedOutcome)
+                    and analysis is not None
+                    and validation is not None
+                    and validation.passed
+                )
             )
         gold_metrics: tuple[tuple[str, float], ...] = ()
         baseline_available = source.rst_gold_ref is None
@@ -158,12 +179,6 @@ def assess_candidate_preparation(
                 ("candidate_parseval_full_f1", candidate_score.full_f1),
                 ("baseline_parseval_full_f1", baseline_score.full_f1),
             )
-        baseline_structural_violations, candidate_structural_violations = _structural_violations(candidate)
-        structural_improvement = (
-            1.0
-            if baseline_structural_violations == 0
-            else 1.0 - candidate_structural_violations / baseline_structural_violations
-        )
         gates = (
             ("candidate_clean", candidate_clean),
             ("source_identity", source_identity_matches),
@@ -179,10 +194,10 @@ def assess_candidate_preparation(
             ("baseline_analysis_available", baseline_available),
             ("edu_non_regression", edu_non_regression),
             ("parseval_non_regression", parseval_non_regression),
-            ("structural_boundary_improvement_50pct", structural_improvement >= 0.5),
+            ("multi_unit_recombination_complete", recombination_complete),
             ("protected_text_absent_from_report", True),
         )
-        counts = Counter(str(item["kind"]) for item in dispositions)
+        counts = Counter(disposition.decision.value for disposition in dispositions)
         results.append(
             SourceGateResult(
                 source_id=source.source_id,
@@ -193,9 +208,7 @@ def assess_candidate_preparation(
                     ("disposition_coverage", 1.0 if set(actual_by_id) == set(disposition_by_id) else 0.0),
                     ("primary_items", float(counts["primary"])),
                     ("analysis_anchor_coverage", analysis_anchor_coverage),
-                    ("baseline_structural_boundary_violations", float(baseline_structural_violations)),
-                    ("candidate_structural_boundary_violations", float(candidate_structural_violations)),
-                    ("structural_boundary_improvement", structural_improvement),
+                    ("multi_unit_recombination_complete", float(recombination_complete)),
                     *gold_metrics,
                 ),
                 inspected=bool(inspection_by_id and inspection_by_id.get(source.source_id, False)),
@@ -278,7 +291,7 @@ def _structural_violations(candidate: dict[str, object]) -> tuple[int, int]:
     return baseline_violations, candidate_violations
 
 
-def _segments_cover(segments: list[object], text: str) -> bool:
+def _segments_cover(segments: Sequence[object], text: str) -> bool:
     cursor = 0
     pieces: list[str] = []
     for raw in segments:
@@ -306,6 +319,16 @@ def _objects(parent: dict[str, object], key: str) -> list[dict[str, object]]:
     if not isinstance(value, list) or any(not isinstance(item, dict) for item in value):
         raise ValueError(f"candidate field {key!r} must be a list of objects")
     return value
+
+
+def _preparation_outcome(candidate: dict[str, object], source_id: str) -> PreparationOutcome:
+    payload = candidate.get("preparation_outcome")
+    if not isinstance(payload, dict):
+        raise ValueError(f"candidate preparation outcome is missing: {source_id}")
+    outcome = load_contract(json.dumps(payload, ensure_ascii=False))
+    if not isinstance(outcome, PreparationOutcome):
+        raise ValueError(f"candidate preparation payload has wrong kind: {source_id}")
+    return outcome
 
 
 __all__ = ["assess_candidate_preparation"]

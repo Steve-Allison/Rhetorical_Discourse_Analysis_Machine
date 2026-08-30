@@ -241,9 +241,13 @@ Every successful result contains `ValidationReceipt` with:
 - overall `passed` disposition;
 - recomputable semantic digest.
 
-Required checks cover source/substrate identity, primary tree, eRST DAG,
-decision-to-graph links, refinements, both-endpoint anchors, signals/candidates,
-composite identity, recombination, semantic identities, and cache agreement. A
+Required checks cover source/substrate identity; primary-tree connectedness,
+acyclicity, and single-rootedness; the four eRST secondary-edge rules of
+sufficient signal, no self-loop, existing endpoints, and no duplicate directed
+pair; decision-to-graph links; refinements; both-endpoint anchors;
+signals/candidates; composite identity; recombination; semantic identities; and
+cache agreement. Secondary-edge cycles, crossings, overlap, and unrestricted
+degree are formally permitted and therefore are not validation failures. A
 required failed check makes a success outcome unconstructable.
 
 ## Backend handoff conformance

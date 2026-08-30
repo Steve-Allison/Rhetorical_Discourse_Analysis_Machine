@@ -71,7 +71,7 @@ def test_docling_current_package_and_canonical_ingest_accept_fixtures(fixture: P
     prepared = ProductionIngestor(parser=None).prepare(
         SourceArtifact.from_path(fixture, source_form=SourceForm.DOCLING_JSON)
     )
-    assert prepared.primary_item_ids or prepared.side_channel_item_ids, (
+    assert prepared.semantic.inventory, (
         f"{fixture.name}: canonical ingest produced no inventoried items"
     )
 

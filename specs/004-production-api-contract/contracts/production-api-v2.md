@@ -329,7 +329,9 @@ Before success, the provider validates:
 4. parser/model identity and cache eligibility;
 5. primary RST connectedness, acyclicity, root count, nuclearity and relation
    invariants;
-6. eRST secondary-edge DAG constraints;
+6. the four eRST secondary-edge rules—sufficient signal, no self-loop,
+   existing endpoints, and no duplicate directed pair—without rejecting
+   formally permitted cycles, crossings, overlap, or unrestricted degree;
 7. anchor completeness, bounds, uniqueness, and source reconstruction;
 8. multi-unit completeness and deterministic recombination;
 9. semantic request, result, and stored cache identity agreement.

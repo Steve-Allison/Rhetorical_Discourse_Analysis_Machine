@@ -4,8 +4,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 import subprocess
 
-from isanlp_rst.ingest import AUTHORED_PROSE_V1, INGEST_SCHEMA_VERSION
-from isanlp_rst.ingest.identity import sha256_file
+from isanlp_rst.ingest import WRITE_CONTRACT_VERSION
+from isanlp_rst.ingest.policy import DEFAULT_PREPARATION_POLICY
+from isanlp_rst.ingest.identity import semantic_sha256, sha256_file
 from isanlp_rst.model_loading import ParserCapacity, validate_model_release
 from tools.production_ingest.contracts import CandidateIdentity, PromotionDecision, SourceGateResult
 
@@ -23,7 +24,7 @@ def build_promotion_decision(
     dirty = bool(_git(repository_root, "status", "--porcelain", "--untracked-files=no"))
     release = validate_model_release(
         model_release,
-        expected_runtime_contract="isanlp_rst.parser/dmrst-v1",
+        expected_runtime_contract="isanlp_rst.parser/modernbert-v1",
     )
     candidate = CandidateIdentity(
         git_commit=revision,
@@ -37,8 +38,8 @@ def build_promotion_decision(
                 source="isanlp_rst.parser/recursive-v1",
             )
         ).semantic_digest,
-        policy_digest=AUTHORED_PROSE_V1.policy_digest,
-        result_contract_version=INGEST_SCHEMA_VERSION,
+        policy_digest=semantic_sha256(DEFAULT_PREPARATION_POLICY),
+        result_contract_version=WRITE_CONTRACT_VERSION,
     )
     passed = not dirty and all(
         result.inspected and all(gate_passed for _, gate_passed in result.gates)

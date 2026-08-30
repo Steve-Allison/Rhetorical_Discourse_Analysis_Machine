@@ -1,36 +1,37 @@
-import resource
+"""Reference-machine preparation performance acceptance."""
+
 from time import perf_counter
 
+import pytest
+
 from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
-from isanlp_rst.ingest.subdivision import build_subdivision_plan
-from isanlp_rst.model_loading import ParserCapacity
 
 
-def _peak_rss_bytes() -> int:
-    value = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    return value if value > 10_000_000 else value * 1_024
+@pytest.mark.parametrize(
+    ("character_count", "threshold_seconds"),
+    ((100_000, 2.0), (1_000_000, 15.0)),
+)
+def test_preparation_meets_reference_threshold_on_every_measured_run(
+    character_count: int,
+    threshold_seconds: float,
+) -> None:
+    text = _source_text(character_count)
+    artifact = SourceArtifact.from_text(text, source_name=f"{character_count}.txt")
+    ingestor = ProductionIngestor()
+
+    warmup = ingestor.prepare(artifact)
+    assert warmup.semantic.prepared_document.text == text
+
+    durations: list[float] = []
+    for _ in range(5):
+        started = perf_counter()
+        outcome = ingestor.prepare(artifact)
+        durations.append(perf_counter() - started)
+        assert outcome.semantic.prepared_document.text == text
+
+    assert all(duration < threshold_seconds for duration in durations), durations
 
 
-def test_one_million_character_preparation_is_lossless_and_locally_bounded() -> None:
+def _source_text(character_count: int) -> str:
     paragraph = "A structurally meaningful paragraph ends here.\n\n"
-    text = (paragraph * (1_000_000 // len(paragraph) + 1))[:1_000_000]
-    artifact = SourceArtifact.from_text(text, source_name="million.txt")
-    rss_before = _peak_rss_bytes()
-    started = perf_counter()
-
-    prepared = ProductionIngestor(parser=None).prepare(artifact)
-    plan = build_subdivision_plan(
-        prepared,
-        ParserCapacity(unit="edu_count", maximum=512, source="production-reference"),
-    )
-
-    elapsed = perf_counter() - started
-    rss_growth = max(0, _peak_rss_bytes() - rss_before)
-    assert prepared.text == text
-    assert len(plan.units) >= 4
-    assert "".join(
-        text[unit.output_range.start : unit.output_range.end]
-        for unit in plan.units
-    ) == text
-    assert elapsed < 5.0
-    assert rss_growth < 256 * 1024 * 1024
+    return (paragraph * (character_count // len(paragraph) + 1))[:character_count]

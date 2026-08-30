@@ -74,13 +74,15 @@ A downstream project installs an immutable `isanlp_rst` distribution built from 
 
 **Why this priority**: Source code that cannot be installed reproducibly, or incompatible behaviour published under an unchanged version, is not a usable production API.
 
-**Independent Test**: On a second development machine, install the repository's committed distribution artifact, verify its receipt and source revision, import the declared public surface, and run the contract conformance suite without rebuilding.
+**Independent Test**: On a second development machine, install the repository's committed distribution artifact, verify its receipt and source revision, import the declared public surface, run equivalent Python and installed-CLI requests plus any retained loopback-HTTP request, and complete the contract conformance suite without rebuilding.
 
 **Acceptance Scenarios**:
 
 1. **Given** a committed release artifact and receipt, **When** it is installed on another supported machine, **Then** its package version, contract version, artifact digest, and source revision match the receipt.
 2. **Given** a breaking public-contract change, **When** a distribution is produced, **Then** it has a new major package version and no incompatible artifact shares the previous version.
 3. **Given** runtime and serialized contract versions, **When** compatibility is checked, **Then** the result is explicit before source processing begins.
+4. **Given** semantically equivalent Python and installed-CLI requests, **When** each request completes, **Then** both expose identical canonical semantic values and digest, each performs inference at most once, and any execution-evidence differences remain outside semantic identity.
+5. **Given** the loopback-only local HTTP adapter remains an installed capability, **When** it receives an equivalent request or encounters a failure, **Then** it uses the same typed capability, success, failure, and serialization contracts as Python and the CLI without raw exception strings or a count-only result substitute.
 
 ---
 
@@ -122,7 +124,7 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 - Source structure is deeply nested, discontinuous, duplicated, or contains overlapping representations.
 - A source exceeds parser capacity by a large margin and requires many deterministic analysis units.
 - Returned anchors are missing, duplicated, outside their source bounds, or do not reconstruct the analysed text.
-- The parser returns a disconnected, cyclic, multi-rooted, or otherwise invalid discourse graph.
+- The parser returns a disconnected, cyclic, multi-rooted, or otherwise invalid primary RST tree, or the secondary-edge graph violates sufficient-signal, no-self-loop, existing-endpoint, or unique-directed-pair rules. Secondary-edge cycles, crossings, overlap, and unrestricted degree are not violations by themselves.
 - A parser instance is mutable or its model identity cannot be established.
 - A persisted result is truncated, corrupt, or has a semantic digest that does not match its exposed values.
 - Failure occurs during acquisition, classification, preparation, planning, inference, validation, assembly, persistence, or cache retrieval.

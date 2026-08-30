@@ -1,6 +1,7 @@
 import pytest
 
-from isanlp_rst.ingest import FailureStage, ProductionIngestError, ProductionIngestor, SourceArtifact, SourceForm
+from isanlp_rst.ingest import ProductionIngestError, ProductionIngestor, SourceArtifact, SourceForm
+from isanlp_rst.ingest.contracts.failure import FailureCategory, LifecycleStage
 
 
 def test_invalid_doclang_is_a_text_safe_typed_failure() -> None:
@@ -13,10 +14,11 @@ def test_invalid_doclang_is_a_text_safe_typed_failure() -> None:
     )
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor(parser=None).prepare(artifact)
-    assert raised.value.stage is FailureStage.VALIDATE
-    assert raised.value.code == "invalid_doclang_xml"
-    assert raised.value.artifact_id == artifact.source_id
+    assert raised.value.failure.failed_stage is LifecycleStage.CLASSIFICATION
+    assert raised.value.failure.category is FailureCategory.MALFORMED_INPUT
+    assert raised.value.failure.code == "source_classification_failed"
     assert private_text not in str(raised.value)
+    assert private_text not in repr(raised.value)
 
 
 def test_invalid_doclang_archive_never_returns_a_partial_preparation() -> None:
@@ -28,5 +30,6 @@ def test_invalid_doclang_archive_never_returns_a_partial_preparation() -> None:
     )
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor(parser=None).prepare(artifact)
-    assert raised.value.stage is FailureStage.VALIDATE
-    assert raised.value.code == "invalid_doclang_archive"
+    assert raised.value.failure.failed_stage is LifecycleStage.CLASSIFICATION
+    assert raised.value.failure.category is FailureCategory.MALFORMED_INPUT
+    assert raised.value.failure.code == "source_classification_failed"

@@ -2,14 +2,27 @@
 
 import argparse
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from typing import Any
 
 
-def _run(command: list[str], *, cwd: Path) -> str:
-    completed = subprocess.run(command, cwd=cwd, capture_output=True, text=True)
+def _run(
+    command: list[str],
+    *,
+    cwd: Path,
+    environment: dict[str, str] | None = None,
+) -> str:
+    completed = subprocess.run(
+        command,
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        env=environment,
+    )
     if completed.returncode != 0:
         raise RuntimeError(
             f"command failed ({completed.returncode}): {command!r}\n"
@@ -34,16 +47,15 @@ def _install_and_run(
     device: str,
     parity_baseline: Path | None,
     base_python: Path,
+    release_id: str | None,
+    erst_checkpoint: Path | None,
 ) -> dict[str, object]:
     with tempfile.TemporaryDirectory(prefix=f"isanlp-rst-{name}-") as directory:
         root = Path(directory)
-        subprocess.run([str(base_python), "-m", "venv", "--system-site-packages", str(root)], check=True)
+        subprocess.run([str(base_python), "-m", "venv", str(root)], check=True)
         python = _venv_python(root)
         requirement = f"{wheel}[formats]" if name == "formats" else str(wheel)
-        install = [str(python), "-m", "pip", "install"]
-        if name == "core":
-            install.append("--no-deps")
-        install.append(requirement)
+        install = [str(python), "-m", "pip", "install", requirement]
         _run(install, cwd=root)
         command = [
             str(python),
@@ -56,6 +68,10 @@ def _install_and_run(
             "--device",
             device,
         ]
+        if release_id is not None:
+            command.extend(("--release-id", release_id))
+        if erst_checkpoint is not None:
+            command.extend(("--erst-checkpoint", str(erst_checkpoint)))
         if name == "formats":
             command.extend(
                 [
@@ -70,8 +86,27 @@ def _install_and_run(
             )
         if full:
             command.append("--full")
-        payload = json.loads(_run(command, cwd=root))
-        receipt: dict[str, object] = {"environment": name, "python": str(python), "acceptance": payload}
+        acceptance_environment = dict(os.environ)
+        acceptance_environment.update(
+            {
+                "HF_HUB_OFFLINE": "1",
+                "ISANLP_RST_NETWORK_DISABLED": "1",
+                "PIP_NO_INDEX": "1",
+                "TRANSFORMERS_OFFLINE": "1",
+            }
+        )
+        payload = json.loads(_run(command, cwd=root, environment=acceptance_environment))
+        _run([str(python), "-m", "pip", "check"], cwd=root)
+        inspection: Any = json.loads(
+            _run([str(python), "-m", "pip", "inspect"], cwd=root)
+        )
+        receipt: dict[str, object] = {
+            "environment": name,
+            "python": str(python),
+            "acceptance": payload,
+            "pip_check": "passed",
+            "pip_inspect": inspection,
+        }
         if parity_baseline is not None and name == "formats":
             parity_command = [
                 str(python),
@@ -95,6 +130,8 @@ def main() -> int:
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--parity-baseline", type=Path)
     parser.add_argument("--base-python", type=Path, default=Path(sys.executable))
+    parser.add_argument("--release-id")
+    parser.add_argument("--erst-checkpoint", type=Path)
     args = parser.parse_args()
     root = args.root.resolve()
     fixtures = (
@@ -115,6 +152,10 @@ def main() -> int:
             device=args.device,
             parity_baseline=args.parity_baseline.resolve() if args.parity_baseline is not None else None,
             base_python=args.base_python.resolve(),
+            release_id=args.release_id,
+            erst_checkpoint=(
+                args.erst_checkpoint.resolve() if args.erst_checkpoint is not None else None
+            ),
         )
         for name in ("core", "formats")
     )

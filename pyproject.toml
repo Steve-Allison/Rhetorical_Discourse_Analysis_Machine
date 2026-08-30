@@ -1,10 +1,11 @@
 [build-system]
-requires = ["setuptools>=84,<85"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.32,<2"]
+build-backend = "hatchling.build"
 
 [project]
 name = "isanlp_rst"
-version = "4.0.0"
+version = "5.0.0"
+import-names = ["isanlp_rst"]
 description = "End-to-end RST parser across 11 languages (Steve Allison's evolution of the IsaNLP RST Parser by Elena Chistova)."
 readme = "README.md"
 requires-python = ">=3.14"
@@ -30,7 +31,7 @@ dependencies = [
   "pillow>=10",
   "networkx>=2.5.1",
   "packaging>=24,<27",
-  "pydantic>=2.12,<3",
+  "pydantic>=2.13,<3",
   "rfc8785>=0.1.4,<0.2",
   "python-dotenv>=1.2.1,<2",
   "safetensors>=0.8,<0.9",
@@ -46,7 +47,8 @@ Issues = "https://github.com/Steve-Allison/isanlp_rst/issues"
 
 [project.optional-dependencies]
 dev = [
-  "build>=1.3,<2",
+  "build>=1.6,<2",
+  "hatchling>=1.32,<2",
   "pytest>=8",
   "ruff>=0.6",
   "pyright>=1.1.380",
@@ -74,17 +76,17 @@ offline = [
   "tiktoken>=0.13,<0.14",
 ]
 
-[tool.setuptools.packages.find]
-include = ["isanlp_rst*"]
-exclude = [
-  "workbench*",
-  "tests*",
-  "scripts*",
-  "tools*",
-]
+[tool.hatch.build.targets.wheel]
+packages = ["isanlp_rst"]
 
-[tool.setuptools.package-data]
-"isanlp_rst.rstviewer" = ["data/**"]
+[tool.hatch.build.targets.sdist]
+include = [
+  "/isanlp_rst",
+  "/LICENSE",
+  "/LICENSE_MODELS",
+  "/README.md",
+  "/pyproject.toml",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -110,8 +112,8 @@ isanlp_rst = { path = ".", editable = true }
 [tool.pixi.feature.production.tasks]
 production-boundary = "python -m tools.production_boundary --root ."
 production-smoke = "python -m tools.production_boundary.production_smoke"
-production-artifacts = "python -m tools.production_boundary --root . --artifact dist/isanlp_rst-4.0.0-py3-none-any.whl --artifact dist/isanlp_rst-4.0.0.tar.gz"
-production-clean-install = "python tools/production_boundary/clean_install.py --wheel dist/isanlp_rst-4.0.0-py3-none-any.whl --root . --model-store /Users/steveallison/.cache/isanlp_rst/model-releases --full --parity-baseline specs/003-production-codeline-split/evidence/parity-baseline.json"
+production-artifacts = "python -m tools.production_boundary --root . --artifact dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --artifact dist/5.0.0/isanlp_rst-5.0.0.tar.gz"
+production-clean-install = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store /Users/steveallison/.cache/isanlp_rst/model-releases"
 
 [tool.pixi.feature.offline.dependencies]
 python = "3.14.*"
@@ -160,7 +162,7 @@ reportPrivateImportUsage = "none"
 
 [tool.pixi.feature.offline.tasks]
 build-production = "python -m tools.production_boundary.build"
-validate-production-artifacts = "python -m tools.production_boundary --root . --artifact dist/isanlp_rst-4.0.0-py3-none-any.whl --artifact dist/isanlp_rst-4.0.0.tar.gz"
+validate-production-artifacts = "python -m tools.production_boundary --root . --release-dir dist/5.0.0"
 test = "pytest -m 'not slow and not stress' -q"
 test-all = "pytest -q"
 test-stress = "pytest tests/stress -q"
@@ -187,10 +189,11 @@ production-ingest-conformance = "pytest tests/ingest -q -k 'conformance or inges
 production-ingest-determinism = "pytest tests/ingest/production_ingest/test_determinism.py tests/ingest/production_ingest/test_cache.py -q"
 production-ingest-performance = "pytest tests/ingest/production_ingest/test_performance.py -q"
 production-ingest-public-api = "pytest tests/ingest/production_ingest/test_public_api.py -q"
-production-ingest-clean-install = "python -m tools.production_ingest clean-install"
-production-ingest-freeze = "python -m tools.production_ingest freeze"
-production-ingest-candidate = "python -m tools.production_ingest candidate"
-production-ingest-assess = "python -m tools.production_ingest assess"
+production-api-contract = "pytest tests/ingest/production_ingest tests/production_boundary -q"
+production-pre-release-quality = "python -m tools.production_boundary.evidence quality --output specs/004-production-api-contract/evidence/pre-release-quality.json"
+production-performance-evidence = "python -m tools.production_boundary.evidence performance --output specs/004-production-api-contract/evidence/performance.json"
+production-source-release-gates = "python -m tools.production_boundary.evidence source-gates --output specs/004-production-api-contract/evidence/source-release-gates.json"
+production-ingest-clean-install = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store /Users/steveallison/.cache/isanlp_rst/model-releases"
 
 [tool.pixi.environments]
 default = { features = ["offline"] }

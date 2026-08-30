@@ -1,4 +1,4 @@
-"""Strict production source-ingest contracts."""
+"""Version 1 contract models retained only during the version 2 migration."""
 
 from collections.abc import Sequence
 from datetime import datetime

@@ -1,91 +1,113 @@
 # Production package and offline workbench boundary
 
-## The rule
+## Ownership rule
 
-`isanlp_rst` owns only capabilities required while another project performs RST/eRST analysis. `workbench` owns everything that creates, fits, calibrates, evaluates, benchmarks, or promotes those runtime capabilities. `workbench/research` is repository-only research code operating inside the same offline environment.
+`isanlp_rst` contains only code and resources required while a consumer performs
+RST/eRST analysis. `workbench` owns corpus construction, training, calibration,
+evaluation, benchmarking, research, and model promotion. Provenance does not
+change that boundary: inherited inference code is production code and must meet
+the same Python 3.14 standard.
 
-The distinction is purpose, not provenance: old research code that is required for inference remains production and must meet the production standard. Conversely, high-quality evaluation or training code remains offline because a consuming project does not need it to analyse a document.
+`isanlp_rst.ingest` is core production code. Docling, DocLang, and Markdown
+distributions are optional under the `formats` extra; their adapter modules are
+private implementation details. The core wheel can import, load schemas,
+serialize contracts, prepare text/EDUs, and discover all capability states
+without those distributions installed.
 
-Feature 002 source ingest is independent of this split. The canonical `isanlp_rst.ingest` service processes real-world text, Markdown, Docling JSON, DocLang XML, and DocLang archives into production RST analysis and therefore remains production. Corpus conversion for training/evaluation is offline.
-
-## Install and run
-
-Production checkout:
+## Install boundaries
 
 ```bash
+# Core runtime
+pip install dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl
+
+# Core plus Markdown, Docling, DocLang XML, and DocLang archive ingest
+pip install "dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl[formats]"
+
+# Repository development environments
 pixi install -e production
-pixi run -e production production-smoke
-pixi run -e production production-artifacts
-pixi run -e production production-clean-install
-```
-
-Production package for another project:
-
-```bash
-pip install ./dist/isanlp_rst-4.0.0-py3-none-any.whl
-# Add format-native ingest when needed:
-pip install "./dist/isanlp_rst-4.0.0-py3-none-any.whl[formats]"
-```
-
-Load a promoted local parser without permitting a loose candidate path:
-
-```python
-from isanlp_rst import Parser
-
-parser = Parser.from_model_release(
-    "/Users/steveallison/.cache/isanlp_rst/model-releases",
-    "gumrrg-eb1d5745f3a1",
-    family="dmrst",
-    device="auto",
-)
-```
-
-Offline repository work:
-
-```bash
 pixi install -e offline
-pixi run -e offline offline-smoke
-pixi run -e offline test
 ```
 
-## Ownership map
+The production environment runs inference and production-boundary checks. The
+offline environment adds test, lint, type-check, corpus, training, evaluation,
+research, and promotion dependencies.
 
-| Capability | Canonical owner | Published |
+## Capability and identity boundary
+
+Capability discovery reads installed distribution metadata only. It must not:
+
+- import a format adapter;
+- instantiate a parser;
+- resolve, download, or mmap model bytes;
+- access a network;
+- inspect `workbench`.
+
+Parser identity has four explicit states:
+
+| State | Meaning | Durable cache |
+|---|---|---|
+| `immutable_release` | every participating runtime file is manifest-validated, loaded locally, and rehashed | eligible when every component is immutable |
+| `mutable_instance` | a configured component has no immutable release | ineligible |
+| `unidentified` | a parser-like object cannot state its identity | ineligible |
+| `not_configured` | preparation is available but analysis is not | ineligible |
+
+The active production parser family is ModernBERT. Historical DMRST and UniRST
+releases remain repository/runtime history but are not advertised as active
+5.0 canonical-result capability. No model weight is packaged in the wheel.
+
+## Published and excluded content
+
+| Capability | Owner | Wheel |
 |---|---|---:|
-| Raw text and predefined-EDU inference | `isanlp_rst.parser` and runtime predictors | yes |
-| Typed request/result contracts and serialization | `isanlp_rst.contracts` | yes |
-| Real-source inventory, preparation, analysis, receipts, and cache identity | `isanlp_rst.ingest` via `formats` | optional production extra |
-| DocLang/Markdown source decoding helpers | private `isanlp_rst.doclang` / `.markdown` modules called only by `isanlp_rst.ingest` | optional implementation detail |
-| RS4/eRST reading, conversion, decoding, validation, and loading | `isanlp_rst.erst` | yes |
-| Released-model manifest validation/loading | `isanlp_rst.model_loading` | yes |
-| Corpus conversion and relation-inventory derivation | `workbench.corpus` | no |
-| Segmenter, parser, and eRST fitting | `workbench.training` | no |
-| Parseval, calibration, and eRST evaluation | `workbench.evaluation` | no |
-| Bundle creation and model promotion | `workbench.promotion` | no |
-| Experimental comparison systems | `workbench.research` in the root offline environment | no |
-| Tests, scripts, specs, corpora, caches, and evidence | repository-only | no |
+| Parser facade and active inference runtime | `isanlp_rst.parser`, predictors, segmenter | yes |
+| Strict source, preparation, analysis, inference, failure, and capability contracts | `isanlp_rst.ingest` | yes |
+| Canonical schemas, public-surface inventory, and build provenance | package resources | yes |
+| Private Docling/DocLang/Markdown loaders | `isanlp_rst.doclang`, `isanlp_rst.markdown`, ingest harvest | yes, dependencies via `formats` |
+| eRST signal detection, scoring, decoding, checkpoint loading | `isanlp_rst.erst`, `isanlp_rst.english.erst` | yes |
+| Released-model manifest validation and loading | `isanlp_rst.model_loading` | yes |
+| Corpora and corpus conversion | `workbench.corpus` | no |
+| Training and calibration | `workbench.training` | no |
+| Evaluation and benchmarking | `workbench.evaluation` | no |
+| Research comparisons | `workbench.research` | no |
+| Promotion/build tooling, tests, specs, evidence, caches | repository-only | no |
 
-## Import migrations
+The artifact validator rejects workbench, tests, scripts, specs, corpora,
+experiments, cache files, secrets, pickles, Python bytecode, and model-weight
+extensions in the wheel. It verifies wheel `RECORD`, metadata, console entry
+point, schemas, public surface, `py.typed`, and packaged provenance.
 
-These are deliberate offline migrations, not production compatibility aliases:
+## Installed provenance
 
-| Previous path | Canonical offline path |
-|---|---|
-| `isanlp_rst.eval.*` | `workbench.evaluation.rst.*` |
-| `isanlp_rst.segmentation.dataset` | `workbench.training.segmentation.dataset` |
-| `isanlp_rst.erst.dataset.GUMSecondaryEdgeDataset` | `workbench.training.erst.dataset.GUMSecondaryEdgeDataset` |
-| `isanlp_rst.erst.corpus` | `workbench.corpus.erst.corpus` |
-| `isanlp_rst.erst.sampling` | `workbench.corpus.erst.sampling` |
-| parser-family `data_manager` and `src.corpus` modules | `workbench.corpus.dmrst` / `.unirst` |
-| parser-family training managers, config readers, and run orchestration | `workbench.training.parsers` |
-| `isanlp_rst.erst.checkpoint.save_erst_checkpoint_bundle` | `workbench.promotion.erst.save_erst_checkpoint_bundle` |
+The release build exports one clean named Git commit, derives
+`SOURCE_DATE_EPOCH` from that commit, and injects canonical
+`isanlp_rst/build-provenance.json` into independent temporary build roots. The
+wheel is built through the sdist twice; corresponding SHA-256 hashes must be
+identical.
 
-`isanlp_rst.model_loading.ParserInput` remains production-owned solely to reconstruct released legacy UniRST inventories through the restricted unpickler. That compatibility leaf does not expose corpus preparation or training.
+Installed runtime provenance reads that packaged resource. It does not call Git
+or assume a checkout exists. The resource identifies source commit/tree/archive
+and build input, but excludes wheel/sdist hashes to avoid self-reference. The
+external release receipt owns artifact and verification identities.
 
-## Enforcement and proof
+## Clean-install proof
 
-`pixi run -e production production-boundary` performs the sub-second exhaustive ownership, AST import-closure, and declared-dependency check. `production-artifacts` adds exact wheel/sdist membership and metadata receipts. Negative tests prove unmatched, ambiguous, direct, transitive, dependency, wheel-member, and source-distribution-member failures. All relevant paths must match exactly one ownership rule; there is no fallback classification or second module allowlist.
+The clean-install tool creates fresh virtual environments without
+`--system-site-packages`, installs the exact wheel path, runs `python -I` from a
+temporary directory, rejects imports from the checkout, disables external
+network access for acceptance, runs `pip check`, and retains `pip inspect`.
 
-Completion acceptance builds the wheel and source distribution, inspects their exact members and metadata dependencies, and independently installs the exact wheel into core-only and formats-enabled temporary environments outside this repository. It proves all five promoted parser variants, raw and predefined-EDU analysis, typed serialization/reload, hierarchy, eRST runtime behavior, all five canonical source forms, CPU/MPS parity, and the absence of offline packages. This catches packaging or environment leakage that a source-tree inspection cannot detect.
+Core acceptance proves unavailable optional forms yield typed provider
+failures. Formats acceptance covers all six source forms. Full acceptance also
+requires the exact promoted ModernBERT release and checks canonical parser
+results, loaded-component receipts, validation, and CLI semantic parity.
 
-Model creation never runs in production. Offline promotion validates a complete strict manifest, copies to a temporary sibling, verifies every copied byte, and atomically renames to an immutable release ID. Production loading rejects loose, partial, changed, incompatible, symlinked, or unpromoted inputs before inference.
+```bash
+pixi run -e default build-production
+pixi run -e default validate-production-artifacts
+pixi run -e default production-ingest-clean-install
+pixi run -e production production-boundary
+```
+
+The build command refuses any tracked or untracked worktree change and never
+overwrites an existing promoted artifact. It becomes executable only after the
+source-release commit exists; source-tree tests are not artifact certification.

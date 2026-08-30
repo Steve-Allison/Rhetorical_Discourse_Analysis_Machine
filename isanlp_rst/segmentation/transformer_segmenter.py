@@ -8,6 +8,7 @@ from transformers import AutoConfig, AutoModelForTokenClassification, AutoTokeni
 
 from isanlp_rst.contracts.document import DocumentToken, Edu
 
+
 @dataclass(frozen=True, slots=True)
 class SegmentationResult:
     """Result of neural EDU segmentation containing aligned tokens and EDUs."""
@@ -19,6 +20,10 @@ class SegmentationResult:
 
 class InvalidSegmenterCheckpointError(ValueError):
     """Raised when a path is not a complete, trained EDU-segmentation checkpoint."""
+
+
+class SegmenterInputLimitError(ValueError):
+    """The exact segmentation substrate exceeds the configured model context."""
 
 
 class TransformerEduSegmenter:
@@ -78,9 +83,7 @@ class TransformerEduSegmenter:
             )
         expected_labels = {0: "I-EDU", 1: "B-EDU"}
         if config.num_labels != 2 or config.id2label != expected_labels:
-            raise InvalidSegmenterCheckpointError(
-                "EDU segmenter config must declare exactly {0: 'I-EDU', 1: 'B-EDU'}"
-            )
+            raise InvalidSegmenterCheckpointError("EDU segmenter config must declare exactly {0: 'I-EDU', 1: 'B-EDU'}")
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name_or_path,
@@ -139,8 +142,7 @@ class TransformerEduSegmenter:
         for p_start, _p_end, p_text in paragraphs:
             encoding = self.tokenizer(
                 p_text,
-                max_length=self.max_length,
-                truncation=True,
+                truncation=False,
                 return_offsets_mapping=True,
                 return_tensors="pt",
             )
@@ -148,6 +150,16 @@ class TransformerEduSegmenter:
             input_ids = encoding["input_ids"].to(self.device)
             attention_mask = encoding["attention_mask"].to(self.device)
             offset_mapping = encoding["offset_mapping"][0].cpu().numpy()
+            context_limit = _segmenter_context_limit(
+                self.model,
+                self.tokenizer,
+                self.max_length,
+            )
+            if input_ids.shape[1] > context_limit:
+                raise SegmenterInputLimitError(
+                    f"exact segmenter input has {input_ids.shape[1]} tokens; limit is {context_limit}"
+                )
+            _validate_offset_coverage(p_text, offset_mapping)
 
             outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
             logits = outputs.logits[0]  # (seq_len, 2)
@@ -226,3 +238,45 @@ class TransformerEduSegmenter:
             tokens=tuple(tokens),
             edus=edus,
         )
+
+
+def _segmenter_context_limit(
+    model: PreTrainedModel,
+    tokenizer: Any,
+    configured_limit: int,
+) -> int:
+    model_limit = getattr(model.config, "max_position_embeddings", None)
+    tokenizer_limit = getattr(tokenizer, "model_max_length", None)
+    candidates = [
+        value
+        for value in (configured_limit, model_limit, tokenizer_limit)
+        if isinstance(value, int) and 1 < value < 1_000_000
+    ]
+    if not candidates:
+        raise InvalidSegmenterCheckpointError("EDU segmenter has no finite declared context limit")
+    return min(candidates)
+
+
+def _validate_offset_coverage(text: str, offsets: Any) -> None:
+    covered = [False] * len(text)
+    for raw_start, raw_end in offsets:
+        start = int(raw_start)
+        end = int(raw_end)
+        if start < 0 or end < start or end > len(text):
+            raise ValueError("segmenter tokenizer returned an invalid character offset")
+        for index in range(start, end):
+            covered[index] = True
+    missing = next(
+        (index for index, character in enumerate(text) if not character.isspace() and not covered[index]),
+        None,
+    )
+    if missing is not None:
+        raise ValueError(f"segmenter tokenizer offsets omit non-whitespace input at character {missing}")
+
+
+__all__ = [
+    "InvalidSegmenterCheckpointError",
+    "SegmentationResult",
+    "SegmenterInputLimitError",
+    "TransformerEduSegmenter",
+]
