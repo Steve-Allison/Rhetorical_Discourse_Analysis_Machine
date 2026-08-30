@@ -17,6 +17,7 @@ import zipfile
 _OFFLINE_DISTRIBUTIONS = ("fire", "jsonnet", "nltk", "peft", "pytest", "tiktoken")
 _TEXT = "Because it rained, the match stopped. The crowd left."
 _EDUS = ("Because it rained, the match stopped.", "The crowd left.")
+_DOCLANG_ARCHIVE_DOCUMENT = b"<doclang><text>Installed archive acceptance.</text></doclang>"
 
 
 def _required_digest(value: object, label: str) -> str:
@@ -104,7 +105,7 @@ def _prepare_sources(
                 SourceArtifact.from_path(docling, source_form=SourceForm.DOCLING_JSON),
                 SourceArtifact.from_path(doclang),
                 SourceArtifact.from_bytes(
-                    _archive_bytes(doclang.read_bytes()),
+                    _archive_bytes(_DOCLANG_ARCHIVE_DOCUMENT),
                     source_form=SourceForm.DOCLANG_ARCHIVE,
                     source_name="acceptance.dclx",
                     media_type="application/vnd.doclang.archive+zip",
