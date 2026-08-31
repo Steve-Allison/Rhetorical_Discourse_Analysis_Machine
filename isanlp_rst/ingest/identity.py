@@ -60,11 +60,13 @@ def preparation_semantic_projection(outcome: BaseModel) -> dict[str, Any]:
         raise TypeError("preparation outcome has no public contract identity")
     if kind != "preparation_outcome" or not isinstance(semantic, BaseModel):
         raise TypeError("value is not a preparation outcome")
+    semantic_payload = semantic.model_dump(mode="python")
+    semantic_payload.pop("execution", None)
     return {
         "contract": contract,
         "contract_version": contract_version,
         "kind": kind,
-        "semantic": semantic,
+        "semantic": semantic_payload,
     }
 
 
@@ -72,6 +74,16 @@ def preparation_semantic_identity(outcome: BaseModel) -> str:
     """Recompute a preparation semantic identity from public exposed values."""
 
     return semantic_sha256(preparation_semantic_projection(outcome))
+
+
+def _normalize_analysis_semantic(payload: dict[str, Any]) -> None:
+    analysis = payload.get("analysis")
+    if isinstance(analysis, dict):
+        if "timing" in analysis:
+            analysis["timing"] = None
+        if "provenance" in analysis and isinstance(analysis["provenance"], dict):
+            analysis["provenance"] = dict(analysis["provenance"])
+            analysis["provenance"]["timestamp"] = None
 
 
 def parser_result_semantic_projection(result: BaseModel) -> dict[str, Any]:
@@ -86,6 +98,8 @@ def parser_result_semantic_projection(result: BaseModel) -> dict[str, Any]:
     if kind != "parser_analysis_result" or not isinstance(semantic, BaseModel):
         raise TypeError("value is not a parser analysis result")
     semantic_payload = semantic.model_dump(mode="python")
+    semantic_payload.pop("execution", None)
+    _normalize_analysis_semantic(semantic_payload)
     recombination = getattr(semantic, "recombination", None)
     if recombination is not None:
         if not isinstance(recombination, BaseModel):
@@ -122,6 +136,8 @@ def analysis_outcome_semantic_projection(outcome: BaseModel) -> dict[str, Any]:
     if not isinstance(semantic, BaseModel):
         raise TypeError("analysis outcome has no semantic evidence")
     semantic_payload = semantic.model_dump(mode="python")
+    semantic_payload.pop("execution", None)
+    _normalize_analysis_semantic(semantic_payload)
     preparation = getattr(semantic, "preparation", None)
     if not isinstance(preparation, BaseModel):
         raise TypeError("analysis outcome has no preparation outcome")
