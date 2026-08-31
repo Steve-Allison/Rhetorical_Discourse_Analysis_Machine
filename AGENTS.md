@@ -29,6 +29,12 @@ gates, second-machine ceremonies, downstream-specific contracts, or other
 process machinery unless the user has explicitly asked for that mechanism or it
 is technically necessary for the stated release.
 
+External publication is forbidden unless the user explicitly names the exact
+destination in that request. In particular, never upload this project or its
+artefacts to PyPI, package indexes, registries, release services, or any other
+external destination by inference from the word “release”. A repository tag and
+tracked artefacts are a complete release when that is what the user requested.
+
 Verification must establish the requested fact, then stop. Do not turn a
 straightforward build, install, commit, tag, or push into a new release system.
 Do not delay a release because of a process requirement the project does not
