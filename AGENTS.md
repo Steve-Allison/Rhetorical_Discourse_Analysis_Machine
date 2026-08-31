@@ -20,6 +20,21 @@ The repository defines two Pixi environments:
 
 Do not break this boundary: production code (`isanlp_rst/`) must never import offline/dev packages (`pytest`, `nltk`, `peft`, `fire`, `jsonnet`, `blake3`).
 
+## HARD RULE — no invented release theatre
+
+When asked to release or publish an API, deliver the requested distributable
+artefacts and the requested publication action directly. It is forbidden to
+invent, require, or preserve receipt files, evidence lifecycles, promotion
+gates, second-machine ceremonies, downstream-specific contracts, or other
+process machinery unless the user has explicitly asked for that mechanism or it
+is technically necessary for the stated release.
+
+Verification must establish the requested fact, then stop. Do not turn a
+straightforward build, install, commit, tag, or push into a new release system.
+Do not delay a release because of a process requirement the project does not
+already require. If an existing mechanism blocks the requested delivery without
+serving it, remove that mechanism rather than asking the user to satisfy it.
+
 ## HARD RULE — Docling / DocLang spec currency
 
 Before changing `parse_docling`, `parse_doclang`, format harvest / boundaries / mappers, fixtures, or docs that describe those contracts, **verify we are compliant with the current Docling and DocLang specs**. Do this even when the task looks unrelated to a version bump.
