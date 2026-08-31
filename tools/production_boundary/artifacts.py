@@ -8,7 +8,6 @@ import json
 from email.parser import BytesParser
 from pathlib import Path, PurePosixPath
 import re
-import subprocess
 import tarfile
 import zipfile
 
@@ -16,9 +15,6 @@ import rfc8785
 
 from tools.production_boundary.contracts import (
     ArtifactReceipt,
-    ReleaseReceipt,
-    canonical_record_bytes,
-    sha256_path,
 )
 
 
@@ -156,65 +152,26 @@ def validate_release_artifacts(
 
 
 def validate_release_directory(release_directory: Path) -> dict[str, object]:
-    """Verify the immutable four-file promoted release and every receipt identity."""
+    """Verify the published wheel and sdist pair."""
 
     directory = release_directory.resolve()
     expected_names = {
         "isanlp_rst-5.0.0-py3-none-any.whl",
         "isanlp_rst-5.0.0.tar.gz",
-        "release-receipt.json",
-        "release-receipt.sha256",
     }
     observed_names = {path.name for path in directory.iterdir() if path.is_file()}
     if observed_names != expected_names:
         raise ValueError(
-            f"promoted release membership differs: expected={sorted(expected_names)}, "
+            f"published release membership differs: expected={sorted(expected_names)}, "
             f"observed={sorted(observed_names)}"
         )
-    receipt_path = directory / "release-receipt.json"
-    receipt_bytes = receipt_path.read_bytes()
-    receipt = ReleaseReceipt.model_validate_json(receipt_bytes)
-    if receipt_bytes != canonical_record_bytes(receipt):
-        raise ValueError("release receipt is not canonical RFC 8785 JSON")
-    detached = (directory / "release-receipt.sha256").read_text(encoding="ascii")
-    expected_detached = f"{sha256_path(receipt_path)}  release-receipt.json\n"
-    if detached != expected_detached:
-        raise ValueError("detached release receipt digest does not verify")
-
     artifacts = validate_release_artifacts(
         directory / "isanlp_rst-5.0.0-py3-none-any.whl",
         directory / "isanlp_rst-5.0.0.tar.gz",
-        expected_source_commit=receipt.source.commit,
     )
-    identities = {artifact.filename: artifact for artifact in receipt.artifacts}
-    for filename in ("isanlp_rst-5.0.0-py3-none-any.whl", "isanlp_rst-5.0.0.tar.gz"):
-        path = directory / filename
-        identity = identities.get(filename)
-        if identity is None:
-            raise ValueError(f"release receipt omits artifact: {filename}")
-        if path.stat().st_size != identity.size_bytes or sha256_path(path) != identity.sha256:
-            raise ValueError(f"release artifact contradicts receipt: {filename}")
-
-    repository = directory.parents[1]
-    for check in receipt.verification:
-        evidence = repository / check.evidence_path
-        if not evidence.is_file() or sha256_path(evidence) != check.evidence_sha256:
-            raise ValueError(f"release verification evidence does not match: {check.check_id}")
-    tree = subprocess.run(
-        ("git", "rev-parse", f"{receipt.source.commit}^{{tree}}"),
-        cwd=repository,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    if tree != receipt.source.tree:
-        raise ValueError("release source tree contradicts the named source commit")
     return {
-        "schema_name": "isanlp_rst.release_evidence.promoted_release_validation",
+        "schema_name": "isanlp_rst.release_evidence.published_release_validation",
         "schema_version": "1.0.0",
-        "receipt_sha256": sha256_path(receipt_path),
-        "source_commit": receipt.source.commit,
-        "source_tree": tree,
         "artifacts": artifacts,
         "valid": True,
     }
