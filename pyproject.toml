@@ -113,7 +113,7 @@ isanlp_rst = { path = ".", editable = true }
 production-boundary = "python -m tools.production_boundary --root ."
 production-smoke = "python -m tools.production_boundary.production_smoke"
 production-artifacts = "python -m tools.production_boundary --root . --artifact dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --artifact dist/5.0.0/isanlp_rst-5.0.0.tar.gz"
-production-clean-install = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store /Users/steveallison/.cache/isanlp_rst/model-releases"
+production-clean-install = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store models/model-releases --release-id modernbert-v1-e5ea56cd620f --full"
 
 [tool.pixi.feature.offline.dependencies]
 python = "3.14.*"

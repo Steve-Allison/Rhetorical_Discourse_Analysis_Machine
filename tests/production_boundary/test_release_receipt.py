@@ -11,6 +11,8 @@ from tools.production_boundary.contracts import (
     EvidenceRecord,
     EvidenceState,
     GateResult,
+    PreparationPerformanceCase,
+    PreparationPerformanceEvidence,
     ReleaseArtifactIdentity,
     ReleaseContractIdentity,
     ReleaseReceipt,
@@ -59,6 +61,37 @@ def test_pre_source_evidence_rejects_future_commit_identity() -> None:
             created_at=NOW,
             source_commit=COMMIT,
             checks=(_gate(),),
+        )
+
+
+def test_performance_evidence_requires_exactly_one_warm_up_and_five_runs() -> None:
+    measurements = PreparationPerformanceEvidence(
+        cases=(
+            PreparationPerformanceCase(
+                character_count=100_000,
+                threshold_seconds=2.0,
+                warmup_seconds=0.1,
+                run_seconds=(0.1, 0.2, 0.1, 0.2, 0.1),
+            ),
+        ),
+    )
+    record = EvidenceRecord(
+        schema_name="isanlp_rst.release_evidence.performance",
+        state=EvidenceState.PRE_SOURCE,
+        created_at=NOW,
+        checks=(_gate(),),
+        preparation_performance=measurements,
+    )
+    assert record.preparation_performance is not None
+    assert record.preparation_performance.passed
+
+    with pytest.raises(ValidationError, match="only performance evidence"):
+        EvidenceRecord(
+            schema_name="isanlp_rst.release_evidence.pre_release_quality",
+            state=EvidenceState.PRE_SOURCE,
+            created_at=NOW,
+            checks=(_gate(),),
+            preparation_performance=measurements,
         )
 
 

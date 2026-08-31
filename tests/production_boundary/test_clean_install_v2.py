@@ -5,7 +5,10 @@ from pathlib import Path
 import subprocess
 import sys
 
+import pytest
+
 from isanlp_rst.doclang.loader import load_doclang_archive
+from tools.production_boundary import clean_install
 from tools.production_boundary.installed_acceptance import _archive_bytes
 
 
@@ -55,3 +58,67 @@ def test_installed_acceptance_builds_a_valid_doclang_opc_archive() -> None:
     document = b"<doclang><text>Installed acceptance.</text></doclang>"
     loaded = load_doclang_archive(_archive_bytes(document))
     assert loaded.document_bytes == document
+
+
+def test_full_clean_install_runs_inference_in_core_and_formats(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    observed: list[tuple[str, bool, str | None]] = []
+
+    def fake_install_and_run(**kwargs: object) -> dict[str, object]:
+        name = kwargs["name"]
+        full = kwargs["full"]
+        release_id = kwargs["release_id"]
+        assert isinstance(name, str)
+        assert isinstance(full, bool)
+        assert release_id is None or isinstance(release_id, str)
+        observed.append((name, full, release_id))
+        return {"environment": name, "valid": True}
+
+    monkeypatch.setattr(clean_install, "_install_and_run", fake_install_and_run)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "clean_install.py",
+            "--wheel",
+            str(tmp_path / "isanlp_rst-5.0.0-py3-none-any.whl"),
+            "--root",
+            str(tmp_path),
+            "--model-store",
+            str(tmp_path / "model-releases"),
+            "--release-id",
+            "modernbert-v1-e5ea56cd620f",
+            "--full",
+        ],
+    )
+
+    assert clean_install.main() == 0
+    assert observed == [
+        ("core", True, "modernbert-v1-e5ea56cd620f"),
+        ("formats", True, "modernbert-v1-e5ea56cd620f"),
+    ]
+    assert json.loads(capsys.readouterr().out)["valid"] is True
+
+
+def test_full_clean_install_requires_explicit_release_id(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "clean_install.py",
+            "--wheel",
+            str(tmp_path / "isanlp_rst-5.0.0-py3-none-any.whl"),
+            "--model-store",
+            str(tmp_path / "model-releases"),
+            "--full",
+        ],
+    )
+
+    with pytest.raises(ValueError, match="requires --release-id"):
+        clean_install.main()

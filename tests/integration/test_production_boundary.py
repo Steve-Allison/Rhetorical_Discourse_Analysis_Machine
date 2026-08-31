@@ -26,6 +26,8 @@ def test_authority_classifies_each_surface() -> None:
     assert authority.classify("workbench/evaluation/rst/parseval.py") == OwnershipClass.OFFLINE
     assert authority.classify("workbench/training/run.py") == OwnershipClass.OFFLINE
     assert authority.classify("tests/test_parser.py") == OwnershipClass.REPOSITORY
+    assert authority.classify("models/modernbert_v1/model.safetensors") == OwnershipClass.MODEL
+    assert authority.classify("models/model-releases/modernbert-v1-e5ea56cd620f/release-manifest.json") == OwnershipClass.MODEL
     assert authority.classify("dist/isanlp_rst.whl") == OwnershipClass.GENERATED
 
 
@@ -117,6 +119,18 @@ def test_forbidden_sdist_member_is_named(tmp_path: Path) -> None:
         archive.add(metadata, arcname="isanlp_rst-1/PKG-INFO")
     receipt = inspect_artifact(sdist)
     assert receipt.forbidden_members == ("isanlp_rst-1/workbench/trainer.py",)
+
+
+@pytest.mark.parametrize("suffix", (".pt", ".pth", ".safetensors"))
+def test_model_weight_members_are_forbidden_from_wheels(tmp_path: Path, suffix: str) -> None:
+    wheel = tmp_path / "isanlp_rst-1-py3-none-any.whl"
+    member = f"isanlp_rst/models/parser{suffix}"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr("isanlp_rst/__init__.py", "")
+        archive.writestr(member, b"weight bytes")
+        archive.writestr("isanlp_rst-1.dist-info/METADATA", "")
+    receipt = inspect_artifact(wheel)
+    assert receipt.forbidden_members == (member,)
 
 
 def test_artifact_dependencies_are_read_from_metadata(tmp_path: Path) -> None:

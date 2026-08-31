@@ -40,6 +40,15 @@ contract 2.0.0. The work changes the public contract and orchestration around
 existing inference; it does not change model architecture, inference
 mathematics, source-format meaning, or downstream project schemas.
 
+Model training, scientific evaluation, quality thresholds, experiment-ledger
+evidence, and model promotion are outside this plan. Feature 004 does not
+reproduce or prescribe them. It may select an immutable ModernBERT release for
+its installed API and distribution gates only when the runtime itself can prove
+the exact component bytes it loads and execute the canonical typed
+parser-analysis operation. Feature 004 then independently proves exact-byte
+loading, truthful capability reporting, contract conformance, and installed
+Python-distribution behaviour.
+
 ## Technical Context
 
 **Language/Version**: Python 3.14, strict Mode A with native deferred annotation
@@ -102,7 +111,7 @@ UniRST families excluded from active capability claims
 | World-class Python 3.14 | PASS | Strict closed models, tagged unions, exact identities, no suppressions, generated projections, and fail-closed validators are required |
 | Solo local scale | PASS | No service, RBAC, CI bureaucracy, hosted signing, or enterprise infrastructure is introduced |
 | Optional dependency boundary | PASS | Core import/discovery remains model-free and format-extra-free; missing extras become typed unavailability |
-| Scientific integrity | PASS | Parser architecture, learned weights, inference mathematics, and interpretation are unchanged |
+| Scientific integrity | PASS | Feature 004 does not train, evaluate, alter, or promote learned weights; it independently verifies only exact runtime bytes and API behaviour it genuinely consumes |
 | Evidence before completion | PASS | Installed-wheel conformance, deterministic build comparison, receipt validation, and second-machine verification are release gates |
 | Provider ownership | PASS | Only evidence created, consumed, validated, or derived by `isanlp_rst` is exposed; no CSM schema is copied |
 
@@ -111,7 +120,7 @@ UniRST families excluded from active capability claims
 The Phase 1 design preserves every pre-design result. The model and contracts
 use one provider envelope; generated schemas and documentation are projections,
 not new authorities; optional source dependencies remain lazy; tracked
-artifacts are bounded to versioned promoted releases; and no inference or
+artifacts are bounded to versioned immutable releases; and no inference or
 source-format semantic change is planned.
 
 **Post-design result**: PASS. No justified constitution violation exists.
@@ -406,6 +415,12 @@ JSON schema or raw exception string crosses an installed boundary.
 `dist/5.0.0/`, `specs/004-production-api-contract/evidence/`, production
 documentation, and conformance tests
 
+0. Require an immutable model release that validates every component byte the
+   runtime reports and executes the canonical typed parser-analysis operation
+   through the selected installed API. A release that is merely named,
+   structurally incomplete, or unable to establish loaded-byte identity is not
+   an eligible production release. This is a runtime-contract gate, not a
+   training, scientific-evaluation, or model-promotion gate.
 1. Remove the blanket `dist/` ignore and keep build scratch outside the
    repository.
 2. Correct all public documentation from runtime and manifest facts, run every
@@ -434,7 +449,9 @@ wheel; artifact and receipt validation reports zero mismatch; the second
 machine verifies both the candidate bytes and the final tagged receipt without
 rebuilding; `git ls-files dist/5.0.0` lists all four promoted files; and the
 post-certification evidence commit leaves the release tag and all four file
-hashes unchanged.
+hashes unchanged. The exact model release exercised by installed conformance
+establishes the component bytes it loads and canonical parser-analysis
+executability; Feature 004 records no substitute scientific or promotion claim.
 
 ## Requirement Traceability
 
@@ -451,7 +468,7 @@ hashes unchanged.
 | FR-047-FR-053 | Typed request, formalism, evidence policy, and exact analysed substrate in Phase D | [analysis-evidence.md](./contracts/analysis-evidence.md), policy/identity and no-silent-loss tests |
 | FR-054-FR-058 | Primary decision, refinement, eRST score/signal/decoder evidence in Phase D | Producer handoff and evidence-link conformance tests |
 | FR-059-FR-064 | Composite identity, validation/recombination receipts, both-endpoint anchors, and lossless adapters in Phase D | Receipt, anchor, mapping, and backend loss-audit tests |
-| FR-065-FR-071 | Public evidence boundary, canonical rich parser result, runtime-byte identity, honest capability inventory, and every-handoff coverage in Phases D-F | Public-surface negative tests, component-substitution tests, and installed conformance matrix |
+| FR-065-FR-071 | Public evidence boundary, canonical rich parser result, runtime-byte identity, honest capability inventory, and every-handoff coverage in Phases D-F | Feature 004 public-surface negative tests, component-substitution tests, and installed conformance matrix for API/runtime truth |
 | FR-072-FR-073 | Installed CLI and retained local-HTTP projections in Phase E2 | Cross-interface semantic-byte parity, single-inference, structured-input, and safe-failure tests |
 
 ## Verification Plan
@@ -510,7 +527,10 @@ artifact validator, clean-install checks, full quality gates, and candidate
 second-machine verification in the receipt or named evidence digests. Final
 tagged-receipt verification is recorded separately after certification because
 it cannot truthfully be an input to the receipt it verifies. No release is
-complete from an editable-checkout test alone.
+complete from an editable-checkout test alone. Model training, scientific
+evaluation, release-threshold enforcement, and model-bundle promotion are not
+Feature 004 release-promotion steps. Feature 004 records only the public
+runtime identities, capabilities, and execution evidence it genuinely uses.
 
 ## Migration and Compatibility
 

@@ -1,59 +1,74 @@
 # Feature 004 Source Scope and SOTA Audit
 
-**Audit date**: 2026-08-30
+**Audit date**: 2026-08-31
 
 **Candidate state**: pre-source, uncommitted working tree
 
-**Scope**: Feature 004 production API, corrected source-evidence contract, and release tooling through T132
+**Scope**: Feature 004 provider API, current production/runtime changes, and
+release tooling through T132. This is source-only evidence: it makes no wheel,
+sdist, candidate, second-machine, receipt, tag, push, or remote-parity claim.
 
 ## Disposition
 
-The source candidate conforms to the Feature 004 provider boundary. No
-consumer-specific field, restored format-specific public API, production-to-
-offline dependency, forbidden scientific internal, model-architecture change,
-inference-mathematics change, fabricated fallback, runtime-identity
-contradiction, archived-family capability claim, or independent CLI/HTTP
-semantic authority remains in the audited implementation.
+Feature 004 remains bounded to provider-owned API, runtime-byte identity,
+capability, distribution, and release-boundary obligations. No Feature 004
+change introduces a downstream-specific contract, a restored format-specific
+public API, a production-to-offline dependency, raw scientific internals, a
+fabricated parser decision, an archived capability claim, or an independent
+CLI/local-HTTP semantic authority.
 
-This is source-only evidence. It makes no wheel, sdist, clean-install,
-second-machine, receipt, tag, push, or remote-parity claim. Those claims remain
-gated by T133-T142.
+The current worktree also contains ModernBERT architecture, loss, training,
+benchmark, corpus, and experiment-ledger changes. Those are not Feature 004
+work and this audit neither evaluates their scientific quality nor requires
+Feature 005 to change. Feature 004 has verified only the provider values it
+actually consumes: the exact runtime-byte inventory and canonical executable
+parser-analysis contract of `modernbert-v1-e5ea56cd620f`.
+
+During this audit, `scripts/train_modernbert_treebank.py` was corrected because
+its final receipt referenced the nonexistent `args.lr` rather than the actual
+`encoder_lr` and `head_lr` inputs. This is a factual receipt/runtime repair,
+not a training-policy or model-quality change.
 
 ## Scope audit
 
-| Audit question | Disposition | Evidence |
+| Audit question | Disposition | Current evidence |
 |---|---|---|
-| Downstream-specific contract values | Pass | Public contracts describe only values created, selected, retained, validated, or executed by `isanlp_rst`; `tests/ingest/production_ingest/test_public_consumer_adapter.py` consumes the result without adding provider evidence. |
-| Restored format-specific APIs | Pass | The public surface exposes `SourceArtifact` and the shared prepare/analyse operations; `test_public_surface.py` rejects undeclared exports and `public-surface.json` contains no `parse_markdown`, `parse_docling`, or `parse_doclang` member. |
-| Source-format interpretation | Pass | Current Docling/DocLang versions, fixtures, namespaces, archive forms, and optional extras are recorded in `source-spec-currency.md`; Feature 004 retains one canonical inventory path. |
-| Research/offline leakage | Pass | Public-surface negative assertions and artifact fixture validation reject workbench, research, corpus, training, and weight leakage; the core/formats dependency boundary remains explicit in `pyproject.toml`. |
-| Raw scientific internals | Pass | Public-surface tests reject tensors, embeddings, hidden activations, unrestricted charts, training-only labels, and workbench values; only bounded selected decisions, normalized distributions, and receipts are public. |
-| Model architecture or inference mathematics | Pass | Changes in the active ModernBERT path preserve exact tokenizer offsets, decoded decisions, scores, and runtime bytes or fail closed. They do not change layer topology, learned parameter shapes, score equations, CKY selection rules, or eRST decision thresholds. |
-| Backend evidence loss | Pass | `test_backend_evidence_loss.py`, `test_analysed_document.py`, `test_primary_inference_evidence.py`, `test_refinement_provenance.py`, and `test_erst_completion_evidence.py` deliberately remove or mutate evidence and require rejection. |
-| Fabricated decisions or approximate fallbacks | Pass | Exact-substrate tests reject truncation, capped or missing suffixes, approximate allocation, synthesized decisions, and graph-only reconstruction. |
-| Runtime identity contradictions | Pass | `test_composite_analysis_identity.py` exercises loaded tokenizer/configuration/state bytes and rejects path, revision, inventory, and weight substitutions. |
-| Archived capability claims | Pass | `capabilities.py` excludes `dmrst` and `unirst` from canonical-result support, and `test_parser_capabilities.py` verifies the rejection. |
-| CLI/local HTTP semantics | Pass | `test_cli_contract.py` and `test_local_http_contract.py` require canonical Python-byte parity, one inference execution, typed capability/health records, loopback-only HTTP, and safe typed failures. |
-| Release tooling scope | Pass | T121-T127 tooling uses exact clean commits, Git archives, deterministic provenance, via-sdist double builds, strict artifact/receipt validation, and isolated installed acceptance. The T134 generator now emits a strict, schema-versioned `source_selected` record and rejects candidate-commit fields before those identities exist. |
+| Downstream-specific contract values | Pass | Production contracts and public surface have no CSM-specific value; consumer adapter conformance uses only public provider evidence. |
+| Restored format-specific APIs | Pass | The installed surface provides `SourceArtifact` plus shared `prepare`/`analyse`; legacy `parse_markdown`, `parse_docling`, and `parse_doclang` names appear only in historical documentation or private adapters. |
+| Source-format interpretation | Pass | No Feature 004 change alters harvest semantics. The existing current-spec determination remains `source-spec-currency.md`. |
+| Research/offline leakage and weights | Pass | `pixi run -e production production-boundary` returned `valid: true`; ownership now classifies `models/` as non-publishable model material, while artifact inspection still forbids `.pt`, `.pth`, and `.safetensors`. |
+| Raw scientific internals | Pass | Installed clean-room acceptance imports the 202-entry public surface and rejects tensors, embeddings, activations, training labels, and workbench values. |
+| Model architecture and inference mathematics | External to Feature 004 | The current diff changes ModernBERT loss/dtype/span-pooling and offline training. Feature 004 makes no scientific or promotion claim about them; it verifies only exact runtime bytes and public executability. |
+| Backend evidence loss and fabricated decisions | Pass | Existing canonical-result conformance plus focused component-identity tests reject removed evidence, runtime-file substitution, and a component/result identity contradiction. |
+| Runtime identity and capability truth | Pass | `load_model_release()` revalidated all five declared release files; clean core and formats installs each reported four loaded components, seven validation checks, canonical parser analysis, and Python/CLI semantic parity. |
+| Archived capability claims | Pass | Capability conformance retains ModernBERT as the executable immutable family and excludes archived DMRST/UniRST canonical-result support. |
+| CLI/local HTTP semantics | Pass | Focused production-contract conformance passed in the regenerated pre-release quality record. |
+| Release tooling scope | Pass | Clean-install certification now requires `--full`, the explicit in-tree release, network-disabled inference, and retained core/formats receipts. Preparation-only certification fails before T136. |
+
+`git diff --check` reported no whitespace errors. The current source diff was
+read for all production-boundary changes and all touched production/runtime
+paths relevant to this audit.
 
 ## Dated SOTA comparison closure
 
-The 2026-08-29 comparison in `research.md` classifies every FR-045 practice:
-strict typed values, complete provider evidence, decision-complete inference,
-lossless backend handoff, composite identity, decision and validation receipts,
-deterministic identity, published schemas, compatibility, installed identity,
-public-surface authority, typed failures, capability discovery, artifact
-integrity, reproducible builds, clean installed proof, and lifecycle
-provenance. Each row has one explicit Feature 004 disposition; no practice is
-unclassified and no implementation decision re-opens the research scope.
+`research.md` was re-read in full. Its 2026-08-29 comparison classifies every
+FR-045 practice—strict typing, provider evidence, decision and validation
+receipts, deterministic identities, schemas, compatibility, installed and
+runtime identity, public-surface authority, typed failures, capabilities,
+artifact integrity, reproducible builds, clean installs, and lifecycle
+provenance—with an explicit Feature 004 disposition. The present audit found no
+unclassified Feature 004 gap. Scientific model evaluation, thresholds, training
+records, and promotion remain deliberately outside that comparison and Feature
+004 authority.
 
-## Source evidence identities
+## Current source-only evidence identities
 
-- `pre-release-quality.json`: `fdb3769a274665ca4bef314264c3e0730619f9e92a92eea191509000277c2e4a`
-- `performance.json`: `9af5fc53d3c46695a985d312998a0daee6c701dedebfaa837a276f21b47bb5fa`
-- `source-spec-currency.md`: `88e22f25ab61c70ee070457597ed9f74266f760e869cdd772cbdb1c39d5e7b0f`
+- `pre-release-quality.json`:
+  `1b11c0e61b280768108f516f3a55bc02c8f4fc9339366cd515ac4dcbad9ddae8`
+- `performance.json`:
+  `bce52431c2ecd4715e9ce7c39caaba8d2d85107d72f033f0b3ce2e48edaf7804`
+  (one warm-up and five retained runs for both governed source sizes)
+- `source-spec-currency.md`:
+  `88e22f25ab61c70ee070457597ed9f74266f760e869cdd772cbdb1c39d5e7b0f`
 
-The quality record reports the focused Feature 004 tests, Ruff, and Pyright as
-passed. The performance record reports the governed preparation-performance
-gate as passed. Final aggregate source-only evidence is generated by T132 after
-this audit is included in the candidate.
+Final aggregate source-only evidence is regenerated by T132 after this audit.

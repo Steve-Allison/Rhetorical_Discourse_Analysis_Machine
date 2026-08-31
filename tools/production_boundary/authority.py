@@ -21,6 +21,7 @@ class OwnershipAuthority:
         self.root = root.resolve()
         default_rules = (
             OwnershipRule(rule_id="production", prefix=PurePosixPath("isanlp_rst"), ownership=OwnershipClass.PRODUCTION, reason="installable RST analysis product", publishable=True),
+            OwnershipRule(rule_id="models", prefix=PurePosixPath("models"), ownership=OwnershipClass.MODEL, reason="governed model candidates and immutable runtime releases"),
             OwnershipRule(rule_id="offline", prefix=PurePosixPath("workbench"), ownership=OwnershipClass.OFFLINE, reason="corpus, training, evaluation, and promotion workbench"),
             OwnershipRule(rule_id="research", prefix=PurePosixPath("workbench.research"), ownership=OwnershipClass.OFFLINE, reason="offline research implementation"),
             OwnershipRule(rule_id="corpora", prefix=PurePosixPath("corpora"), ownership=OwnershipClass.OFFLINE, reason="training/evaluation corpora"),

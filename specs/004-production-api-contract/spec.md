@@ -13,6 +13,23 @@ It supersedes Feature 002 only where that feature's public contract is incomplet
 
 The contract is provider-owned. It exposes evidence that `isanlp_rst` genuinely creates or uses; it does not reproduce a downstream project's schema, workflow state, or invented evidence. Removed format-specific public entry points remain removed.
 
+### External model work
+
+Model training, scientific evaluation, quality thresholds, experiment-ledger
+design, and model promotion are outside this feature. Feature 004 neither
+duplicates nor specifies them. It consumes only the provider-owned model
+identity, capabilities, component-byte inventory, and execution evidence that
+the selected runtime genuinely exposes.
+
+Feature 004 remains the sole authority for the provider-owned public API,
+exact runtime component identity, capability truth, installed-distribution
+behaviour, and Python wheel/sdist certification. A model release that cannot
+establish its claimed loaded-byte identity or execute the canonical typed
+parser-analysis operation MUST be unavailable through the public contract.
+The API and model-free capability contract remain usable when no executable
+immutable release is configured and MUST report that runtime state honestly,
+without performing training or scientific evaluation in production code.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Consume a complete analysis result (Priority: P1)
@@ -281,7 +298,10 @@ A caller can retrieve valid source material that `isanlp_rst` intentionally does
 
 - The product remains a solo, local Python library rather than a hosted or multi-user service.
 - Feature 002's production ingest behaviour remains the baseline unless this specification explicitly strengthens the public contract.
-- Parser mathematics and trained architecture remain unchanged by this feature.
+- Parser mathematics, trained architecture, model training, scientific
+  evaluation, and model promotion remain unchanged by this feature. This
+  feature consumes only provider-owned runtime values that are genuinely
+  available from the selected model release.
 - “Complete evidence” means evidence `isanlp_rst` genuinely creates, consumes, validates, or derives as provider authority.
 - Decision-complete evidence is the default balance: retain selected decisions, their confidence and uncertainty, and explanatory receipts; expose normalized distributions only when explicitly requested and genuinely produced.
 - Scientific internals that do not constitute stable production evidence remain private even when they are temporarily available during inference.

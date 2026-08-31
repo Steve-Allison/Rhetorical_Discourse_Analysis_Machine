@@ -23,6 +23,7 @@ class StrictModel(BaseModel):
 
 class OwnershipClass(StrEnum):
     PRODUCTION = "production"
+    MODEL = "model"
     OFFLINE = "offline"
     REPOSITORY = "repository"
     GENERATED = "generated"
@@ -141,6 +142,47 @@ class GateResult(StrictModel):
     summary: str = Field(min_length=1)
 
 
+class PreparationPerformanceCase(StrictModel):
+    """One source-size measurement with its warm-up and all retained runs."""
+
+    character_count: int = Field(gt=0)
+    threshold_seconds: float = Field(gt=0)
+    warmup_seconds: float = Field(ge=0)
+    run_seconds: tuple[float, float, float, float, float]
+
+    @field_validator("run_seconds")
+    @classmethod
+    def non_negative_runs(
+        cls,
+        value: tuple[float, float, float, float, float],
+    ) -> tuple[float, float, float, float, float]:
+        if any(run < 0 for run in value):
+            raise ValueError("performance runs must be non-negative")
+        return value
+
+    @property
+    def passed(self) -> bool:
+        return all(run < self.threshold_seconds for run in self.run_seconds)
+
+
+class PreparationPerformanceEvidence(StrictModel):
+    """The complete one-warm-up/five-run preparation performance record."""
+
+    warmup_runs: Literal[1] = 1
+    measured_runs: Literal[5] = 5
+    cases: tuple[PreparationPerformanceCase, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def case_sizes_are_unique(self) -> Self:
+        if len({case.character_count for case in self.cases}) != len(self.cases):
+            raise ValueError("performance character counts must be unique")
+        return self
+
+    @property
+    def passed(self) -> bool:
+        return all(case.passed for case in self.cases)
+
+
 class EvidenceRecord(StrictModel):
     """Canonical lifecycle record used by every Feature 004 JSON evidence file."""
 
@@ -152,6 +194,7 @@ class EvidenceRecord(StrictModel):
     candidate_commit: str | None = Field(default=None, pattern=_GIT_IDENTITY_PATTERN)
     certification_commit: str | None = Field(default=None, pattern=_GIT_IDENTITY_PATTERN)
     checks: tuple[GateResult, ...]
+    preparation_performance: PreparationPerformanceEvidence | None = None
 
     @model_validator(mode="after")
     def identities_follow_lifecycle(self) -> Self:
@@ -167,6 +210,11 @@ class EvidenceRecord(StrictModel):
             raise ValueError("release certification requires the existing certification commit")
         if len({check.check_id for check in self.checks}) != len(self.checks):
             raise ValueError("evidence check identifiers must be unique")
+        is_performance = self.schema_name == "isanlp_rst.release_evidence.performance"
+        if is_performance != (self.preparation_performance is not None):
+            raise ValueError(
+                "only performance evidence carries complete preparation measurements"
+            )
         return self
 
 
@@ -286,6 +334,8 @@ __all__ = [
     "OwnershipClass",
     "OwnershipRule",
     "ParityCase",
+    "PreparationPerformanceCase",
+    "PreparationPerformanceEvidence",
     "PromotionReceipt",
     "ReleaseArtifactIdentity",
     "ReleaseContractIdentity",

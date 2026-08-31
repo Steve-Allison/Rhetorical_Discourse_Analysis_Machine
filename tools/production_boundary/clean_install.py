@@ -133,6 +133,8 @@ def main() -> int:
     parser.add_argument("--release-id")
     parser.add_argument("--erst-checkpoint", type=Path)
     args = parser.parse_args()
+    if args.full and args.release_id is None:
+        raise ValueError("full clean-install certification requires --release-id")
     root = args.root.resolve()
     fixtures = (
         root / "tests/fixtures/markdown/minimal.md",
@@ -148,7 +150,7 @@ def main() -> int:
             acceptance=acceptance,
             model_store=args.model_store.resolve(),
             fixtures=fixtures,
-            full=args.full and name == "formats",
+            full=args.full,
             device=args.device,
             parity_baseline=args.parity_baseline.resolve() if args.parity_baseline is not None else None,
             base_python=args.base_python.resolve(),

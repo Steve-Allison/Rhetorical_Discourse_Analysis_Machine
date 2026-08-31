@@ -14,6 +14,7 @@ from tools.production_boundary.contracts import (
     GateResult,
     write_canonical_record,
 )
+from tools.production_boundary.performance import measure_preparation
 
 
 QUALITY_COMMANDS = (
@@ -98,6 +99,38 @@ def execute_evidence(
     return passed
 
 
+def execute_performance_evidence(root: Path, *, output: Path) -> bool:
+    """Persist the full measured distribution as well as the gate command result."""
+
+    check_id, command = PERFORMANCE_COMMANDS[0]
+    completed = subprocess.run(command, cwd=root, capture_output=True, check=False)
+    payload = completed.stdout + b"\n--- stderr ---\n" + completed.stderr
+    measurements = measure_preparation()
+    passed = completed.returncode == 0 and measurements.passed
+    record = EvidenceRecord(
+        schema_name="isanlp_rst.release_evidence.performance",
+        state=EvidenceState.PRE_SOURCE,
+        created_at=datetime.now(UTC),
+        checks=(
+            GateResult(
+                check_id=check_id,
+                status=CheckStatus.PASSED if passed else CheckStatus.FAILED,
+                command=command,
+                tool_identity=f"CPython {sys.version.split()[0]}",
+                output_sha256=hashlib.sha256(payload).hexdigest(),
+                completed_at=datetime.now(UTC),
+                summary=(
+                    f"exit_code={completed.returncode}; "
+                    f"measurement_thresholds_passed={measurements.passed}"
+                ),
+            ),
+        ),
+        preparation_performance=measurements,
+    )
+    write_canonical_record(output, record)
+    return passed
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("kind", choices=("quality", "performance", "source-gates"))
@@ -109,6 +142,8 @@ def main() -> int:
         "performance": ("performance", PERFORMANCE_COMMANDS),
         "source-gates": ("source_release_gates", SOURCE_GATE_COMMANDS),
     }[args.kind]
+    if args.kind == "performance":
+        return 0 if execute_performance_evidence(args.root.resolve(), output=args.output.resolve()) else 1
     return 0 if execute_evidence(
         args.root.resolve(),
         schema_suffix=schema_suffix,
@@ -126,4 +161,5 @@ __all__ = [
     "QUALITY_COMMANDS",
     "SOURCE_GATE_COMMANDS",
     "execute_evidence",
+    "execute_performance_evidence",
 ]

@@ -1,10 +1,8 @@
 """Reference-machine preparation performance acceptance."""
 
-from time import perf_counter
-
 import pytest
 
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
+from tools.production_boundary.performance import measure_preparation_case, source_text
 
 
 @pytest.mark.parametrize(
@@ -15,23 +13,10 @@ def test_preparation_meets_reference_threshold_on_every_measured_run(
     character_count: int,
     threshold_seconds: float,
 ) -> None:
-    text = _source_text(character_count)
-    artifact = SourceArtifact.from_text(text, source_name=f"{character_count}.txt")
-    ingestor = ProductionIngestor()
-
-    warmup = ingestor.prepare(artifact)
-    assert warmup.semantic.prepared_document.text == text
-
-    durations: list[float] = []
-    for _ in range(5):
-        started = perf_counter()
-        outcome = ingestor.prepare(artifact)
-        durations.append(perf_counter() - started)
-        assert outcome.semantic.prepared_document.text == text
-
-    assert all(duration < threshold_seconds for duration in durations), durations
+    measurement = measure_preparation_case(character_count, threshold_seconds)
+    assert len(measurement.run_seconds) == 5
+    assert measurement.passed, measurement.run_seconds
 
 
-def _source_text(character_count: int) -> str:
-    paragraph = "A structurally meaningful paragraph ends here.\n\n"
-    return (paragraph * (character_count // len(paragraph) + 1))[:character_count]
+def test_source_text_has_the_requested_character_count() -> None:
+    assert len(source_text(100_000)) == 100_000
