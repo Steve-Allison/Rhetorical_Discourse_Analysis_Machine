@@ -9,21 +9,23 @@ host (Linux + CUDA-built PyTorch) to confirm the CUDA dispatch path of the
 ``Parser`` façade end-to-end. Verifies:
 
 * ``torch.cuda.is_available()`` returns True (otherwise the test refuses to run).
-* ``Parser(device='cuda')`` resolves to ``cuda:0`` (not MPS, not CPU).
-* DMRST ``gumrrg`` and UniRST ``unirst`` both load and parse on GPU.
+* Every ModernBERT release in ``models/model-releases`` loads on ``cuda:0``
+  through ``Parser.from_model_release`` (not MPS, not CPU).
 * Tree alignment matches the input text.
-* ``parse_from_edus`` round-trips the input EDUs.
+* ``from_edus`` round-trips the input EDUs.
 
-Models are pulled from the HF Hub (~2 GB each on first run).
+Releases are loaded from the local immutable store; nothing is downloaded.
+DMRST and UniRST are archived from production and are not exercised.
 """
 
+from pathlib import Path
 import sys
 import time
 
 import torch
 
+from isanlp_rst.annotation_rst import DiscourseUnit
 from isanlp_rst.parser import Parser
-
 
 SAMPLE_TEXT = "The cat sat on the mat. It was a black cat. The mat was red."
 SAMPLE_EDUS = [
@@ -31,29 +33,29 @@ SAMPLE_EDUS = [
     "It was a black cat.",
     "The mat was red.",
 ]
+STORE = Path("models/model-releases")
 
 
-def _assert_aligned(tree, text: str) -> None:
+def _assert_aligned(tree: DiscourseUnit, text: str) -> None:
     expected = text[tree.start : tree.end]
     if tree.text != expected:
         raise AssertionError(f"alignment failed: tree.text={tree.text!r} != text[{tree.start}:{tree.end}]={expected!r}")
-    for child in (getattr(tree, "left", None), getattr(tree, "right", None)):
+    for child in (tree.left, tree.right):
         if child is not None:
             _assert_aligned(child, text)
 
 
-def _collect_leaves(tree) -> list[str]:
+def _collect_leaves(tree: DiscourseUnit) -> list[str]:
     out: list[str] = []
 
-    def walk(u) -> None:
-        l, r = getattr(u, "left", None), getattr(u, "right", None)
-        if l is None and r is None:
-            out.append(u.text)
+    def walk(unit: DiscourseUnit) -> None:
+        if unit.left is None and unit.right is None:
+            out.append(unit.text)
             return
-        if l is not None:
-            walk(l)
-        if r is not None:
-            walk(r)
+        if unit.left is not None:
+            walk(unit.left)
+        if unit.right is not None:
+            walk(unit.right)
 
     walk(tree)
     return out
@@ -70,22 +72,16 @@ def main() -> int:
 
     print(f"CUDA: {torch.cuda.get_device_name(0)} | torch {torch.__version__}")
 
-    cases: list[tuple[str, dict]] = [
-        ("DMRST gumrrg", dict(hf_model_version="gumrrg")),
-        (
-            "UniRST unirst",
-            dict(hf_model_version="unirst", relinventory="eng.erst.gum"),
-        ),
-    ]
+    store = STORE.resolve()
+    releases = sorted(child.name for child in store.iterdir() if (child / "release-manifest.json").is_file())
+    if not releases:
+        print(f"FAIL — no releases found in {store}", file=sys.stderr)
+        return 1
 
-    for name, kwargs in cases:
-        print(f"\n--- {name} ---")
+    for release_id in releases:
+        print(f"\n--- {release_id} ---")
         t0 = time.time()
-        parser = Parser(
-            hf_model_name="tchewik/isanlp_rst_v3",
-            device="cuda",
-            **kwargs,
-        )
+        parser = Parser.from_model_release(store, release_id, family="modernbert", device="cuda")
         device = parser.predictor._device
         if device.type != "cuda":
             print(f"FAIL — expected cuda device, got {device}", file=sys.stderr)
@@ -93,20 +89,15 @@ def main() -> int:
         print(f"  loaded in {time.time() - t0:.1f}s on {device}")
 
         t0 = time.time()
-        res = parser(SAMPLE_TEXT)
-        _assert_aligned(res["rst"][0], SAMPLE_TEXT)
+        _assert_aligned(parser(SAMPLE_TEXT)["rst"][0], SAMPLE_TEXT)
         print(f"  parse_rst: {time.time() - t0:.2f}s, alignment OK")
 
         t0 = time.time()
-        res = parser.from_edus(SAMPLE_EDUS)
-        leaves = _collect_leaves(res["rst"][0])
+        leaves = _collect_leaves(parser.from_edus(SAMPLE_EDUS)["rst"][0])
         if leaves != SAMPLE_EDUS:
-            print(
-                f"FAIL — EDU round-trip mismatch: {leaves} != {SAMPLE_EDUS}",
-                file=sys.stderr,
-            )
+            print(f"FAIL — EDU round-trip mismatch: {leaves} != {SAMPLE_EDUS}", file=sys.stderr)
             return 1
-        print(f"  parse_from_edus: {time.time() - t0:.2f}s, round-trip OK")
+        print(f"  from_edus: {time.time() - t0:.2f}s, round-trip OK")
 
     print("\nPASS — CUDA path verified end-to-end.")
     return 0

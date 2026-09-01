@@ -24,7 +24,7 @@ pixi run build-production               # build reproducible production wheel an
 ## Performance and verification commands
 
 ```bash
-pixi run smoke-full     # full smoke (all five published models)
+pixi run smoke-full     # full smoke: every ModernBERT release in models/model-releases, CPU
 pixi run smoke-full-mps # full smoke on MPS
 pixi run bench          # performance bench across models / dtypes
 pixi run cuda-smoke     # CUDA verification (for NVIDIA hosts only)
