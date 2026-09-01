@@ -39,6 +39,20 @@ every future provider semantically aligned *without* premature code sharing.
 | P11 | **Model loading & device handling** — model release identity, verified file manifests, device resolution, MPS-safe initialisation | `isanlp_rst/model_loading.py`, `isanlp_rst/utils/mps_init.py`, `base_predictor` device rules | local-model providers only | SDRT provider feature (first second local model) |
 | P12 | **Gate evidence records** — versioned evidence schemas persisted by verification gates (e.g. `isanlp_rst.release_evidence.performance`) | `tools/production_boundary/` evidence flow | promotion system + provider gates | workbench promotion system feature |
 
+## Named feature-007 design item: the shared analysis store
+
+P4 and P5 together already make a machine-level shared cache safe by construction:
+entries are content-addressed by the complete pipeline identity (source, policy, every
+component fingerprint), writes are atomic and integrity-checked, a promoted model
+changes the fingerprint so stale results can never be served, and deterministic
+providers make concurrent same-key writers byte-identical. The aggregate-contract
+feature (007) MUST therefore rule on the machine's shared analysis store explicitly:
+one default store location shared by all machine consumers; per-technique
+content-addressed entries; a garbage-collection rule for entries orphaned by component
+promotions; and the privacy posture of the shared location (cached outcomes contain
+full source text — the safe/diagnostic discipline of P1 extends to the store). Until
+007 rules, per-consumer `cache_directory` remains the supported sharing mechanism.
+
 ## What this register deliberately is not
 
 It is not a shared library, a `common/` boundary, or permission to create one — FR-029
