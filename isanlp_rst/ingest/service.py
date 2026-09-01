@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from time import perf_counter
-from typing import Protocol, runtime_checkable
+from typing import Final, Protocol, runtime_checkable
 from uuid import uuid4
 
 from isanlp_rst._provenance import resolve_package_version, resolve_source_revision
@@ -199,6 +199,21 @@ class ProductionIngestor:
             )
             raise ProductionIngestError(failure) from exc
         except ModuleNotFoundError as exc:
+            missing_root = (exc.name or "").split(".")[0]
+            if missing_root not in _ADAPTER_IMPORT_ROOTS.get(source.source_form, frozenset()):
+                # The missing module is not this source form's optional adapter,
+                # so "requires an uninstalled distribution" would be a false
+                # claim; classify honestly as an internal failure instead.
+                failure = ProductionFailure(
+                    failed_stage=LifecycleStage.CLASSIFICATION,
+                    category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+                    code="source_classification_internal_failure",
+                    retryability=Retryability.UNKNOWN,
+                    message_template="source_classification_failed_before_a_complete_outcome",
+                    completed=acquired,
+                    cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
+                )
+                raise ProductionIngestError(failure) from exc
             distribution, extra = _source_requirement(source)
             failure = ProductionFailure(
                 failed_stage=LifecycleStage.CLASSIFICATION,
@@ -794,6 +809,14 @@ def _safe_cause(exc: Exception, category: FailureCategory) -> SafeCause:
 def _root_cause(exc: Exception) -> Exception:
     cause = exc.__cause__
     return cause if isinstance(cause, Exception) else exc
+
+
+_ADAPTER_IMPORT_ROOTS: Final = {
+    SourceForm.MARKDOWN: frozenset({"markdown_it", "mdit_py_plugins"}),
+    SourceForm.DOCLING_JSON: frozenset({"docling_core"}),
+    SourceForm.DOCLANG_XML: frozenset({"doclang"}),
+    SourceForm.DOCLANG_ARCHIVE: frozenset({"doclang"}),
+}
 
 
 def _source_requirement(source: SourceArtifact) -> tuple[str, str | None]:

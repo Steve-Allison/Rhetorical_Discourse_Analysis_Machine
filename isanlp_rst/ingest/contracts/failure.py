@@ -96,7 +96,7 @@ type SafeDiagnosticContext = Annotated[
 class SafeCause(StrictContractModel):
     category: FailureCategory
     exception_type: str
-    message_template: str
+    message_template: str = Field(pattern=r"^[a-z0-9]+(?:_[a-z0-9]+)*$")
     nested: "SafeCause | None" = None
 
 

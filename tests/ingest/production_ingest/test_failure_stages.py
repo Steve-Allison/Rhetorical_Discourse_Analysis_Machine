@@ -267,6 +267,63 @@ def test_validation_internal_failure_is_not_labelled_a_validation_verdict(
     assert "PRIVATE" not in str(raised.value)
 
 
+def test_safe_cause_rejects_free_text_message_templates() -> None:
+    from isanlp_rst.ingest.contracts.failure import SafeCause
+
+    with pytest.raises(ValidationError, match="string_pattern_mismatch"):
+        SafeCause(
+            category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+            exception_type="ValueError",
+            message_template="leaked private detail: /private/path",
+        )
+
+
+def test_unrelated_missing_module_is_not_blamed_on_a_distribution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def missing_unrelated(*_args: object) -> None:
+        raise ModuleNotFoundError(
+            "No module named 'definitely_not_installed'",
+            name="definitely_not_installed",
+        )
+
+    monkeypatch.setattr("isanlp_rst.ingest._harvest.inventory_source", missing_unrelated)
+    with pytest.raises(ProductionIngestError) as raised:
+        ProductionIngestor().prepare(
+            SourceArtifact.from_text("content", source_name="source.txt")
+        )
+    assert raised.value.failure.failed_stage is LifecycleStage.CLASSIFICATION
+    assert raised.value.failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
+    assert raised.value.failure.retryability is Retryability.UNKNOWN
+    assert raised.value.failure.diagnostic_context == ()
+
+
+def test_matching_missing_adapter_reports_the_true_distribution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from isanlp_rst.ingest import SourceForm
+    from isanlp_rst.ingest.contracts.failure import MissingDistributionContext
+
+    def missing_adapter(*_args: object) -> None:
+        raise ModuleNotFoundError("No module named 'markdown_it'", name="markdown_it")
+
+    monkeypatch.setattr("isanlp_rst.ingest._harvest.inventory_source", missing_adapter)
+    source = SourceArtifact.from_bytes(
+        b"# heading",
+        source_form=SourceForm.MARKDOWN,
+        source_name="doc.md",
+        media_type="text/markdown; charset=utf-8",
+    )
+    with pytest.raises(ProductionIngestError) as raised:
+        ProductionIngestor().prepare(source)
+    assert raised.value.failure.category is FailureCategory.PROVIDER_UNAVAILABLE
+    assert raised.value.failure.retryability is Retryability.NOT_RETRYABLE
+    context = raised.value.failure.diagnostic_context[0]
+    assert isinstance(context, MissingDistributionContext)
+    assert context.distributions == ("markdown-it-py",)
+    assert context.required_extra == "formats"
+
+
 def test_enrichment_failure_claims_only_inference_completed(
     parser_builder: ParserBuilder,
     monkeypatch: pytest.MonkeyPatch,

@@ -31,7 +31,10 @@ def test_missing_optional_format_distribution_is_typed_unavailable(
     )
 
     def unavailable(_source: object) -> object:
-        raise ModuleNotFoundError("PRIVATE module import detail")
+        # A real missing-adapter import always carries the module name; a
+        # nameless ModuleNotFoundError proves nothing about any distribution
+        # and now classifies as an internal failure instead.
+        raise ModuleNotFoundError("PRIVATE module import detail", name="markdown_it")
 
     monkeypatch.setattr("isanlp_rst.ingest.prepare.inventory_source", unavailable)
     with pytest.raises(ProductionIngestError) as raised:
