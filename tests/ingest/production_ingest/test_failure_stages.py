@@ -267,6 +267,53 @@ def test_validation_internal_failure_is_not_labelled_a_validation_verdict(
     assert "PRIVATE" not in str(raised.value)
 
 
+def test_enrichment_failure_claims_only_inference_completed(
+    parser_builder: ParserBuilder,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def broken(*_args: object) -> None:
+        raise RuntimeError("PRIVATE enrichment bug")
+
+    monkeypatch.setattr("isanlp_rst.ingest.enrichment.enrich_parser_evidence", broken)
+    ingestor = ProductionIngestor(parser=parser_builder())
+    with pytest.raises(ProductionIngestError) as raised:
+        ingestor.analyse(
+            SourceArtifact.from_text("First. Second.", source_name="source.txt")
+        )
+    assert raised.value.failure.failed_stage is LifecycleStage.ASSEMBLY
+    assert raised.value.failure.code == "source_evidence_enrichment_failed"
+    assert raised.value.failure.completed.kind == "inference"
+    assert raised.value.failure.retryability is Retryability.UNKNOWN
+    assert "PRIVATE" not in str(raised.value)
+
+
+def test_identity_contradiction_carries_completed_inference_evidence(
+    parser_builder: ParserBuilder,
+    tmp_path: Any,
+) -> None:
+    from .conftest import DeterministicParser
+
+    class MismatchedParser(DeterministicParser):
+        def describe_analysis_identity(self, **kwargs: Any) -> Any:
+            kwargs["segmentation_source"] = "presegmented"
+            return super().describe_analysis_identity(**kwargs)
+
+    base = parser_builder()
+    parser = MismatchedParser(
+        analysis_capacity=base.analysis_capacity,
+        model_release_identity=base.model_release_identity,
+    )
+    ingestor = ProductionIngestor(parser=parser)
+    with pytest.raises(ProductionIngestError) as raised:
+        ingestor.analyse(
+            SourceArtifact.from_text("First. Second.", source_name="source.txt"),
+            cache_directory=tmp_path,
+        )
+    assert raised.value.failure.failed_stage is LifecycleStage.VALIDATION
+    assert raised.value.failure.code == "runtime_identity_contradiction"
+    assert raised.value.failure.completed.kind == "inference"
+
+
 def test_cli_boundary_failure_labels_follow_the_exception_kind() -> None:
     from isanlp_rst.cli import _safe_boundary_failure
 
@@ -289,3 +336,16 @@ def test_cli_boundary_failure_labels_follow_the_exception_kind() -> None:
     )
     assert parse_failure.category is FailureCategory.MALFORMED_INPUT
     assert parse_failure.retryability is Retryability.NOT_RETRYABLE
+
+    from isanlp_rst.ingest.contracts.failure import AcquisitionCompletedEvidence
+
+    source = SourceArtifact.from_text("content", source_name="source.txt")
+    configured_failure = _safe_boundary_failure(
+        ValueError("bad release"),
+        stage=LifecycleStage.INFERENCE,
+        category=FailureCategory.PROVIDER_UNAVAILABLE,
+        code="cli_provider_configuration_failed",
+        message_template="configured_parser_could_not_be_created",
+        completed=AcquisitionCompletedEvidence(source=source.summary()),
+    )
+    assert configured_failure.completed.kind == "acquisition"

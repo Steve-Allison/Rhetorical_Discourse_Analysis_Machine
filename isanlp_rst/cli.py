@@ -31,6 +31,11 @@ from isanlp_rst.ingest import (
     SafeCause,
     serialize_contract,
 )
+from isanlp_rst.ingest.contracts.failure import (
+    AcquisitionCompletedEvidence,
+    CompletedStageEvidence,
+    NoCompletedEvidence,
+)
 from isanlp_rst.ingest.service import DEFAULT_ANALYSIS_POLICY
 
 _LOOPBACK_HOSTS: Final = {"127.0.0.1", "::1", "localhost"}
@@ -83,6 +88,7 @@ def cmd_parse(args: argparse.Namespace) -> int:
                 category=FailureCategory.PROVIDER_UNAVAILABLE,
                 code="cli_provider_configuration_failed",
                 message_template="configured_parser_could_not_be_created",
+                completed=AcquisitionCompletedEvidence(source=source.summary()),
             )
         ) + b"\n"
         _write_payload(payload, args.output, stream=sys.stderr.buffer)
@@ -334,6 +340,7 @@ def _safe_boundary_failure(
     category: FailureCategory,
     code: str,
     message_template: str,
+    completed: CompletedStageEvidence | None = None,
 ) -> ProductionFailure:
     if isinstance(exc, OSError):
         # An I/O error proves neither malformed input nor a permanent condition:
@@ -348,6 +355,7 @@ def _safe_boundary_failure(
         code=code,
         retryability=retryability,
         message_template=message_template,
+        completed=completed if completed is not None else NoCompletedEvidence(),
         cause=SafeCause(
             category=category,
             exception_type=type(exc).__qualname__,

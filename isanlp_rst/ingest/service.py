@@ -37,7 +37,6 @@ from isanlp_rst.ingest.contracts.failure import (
     ProductionIngestError,
     Retryability,
     SafeCause,
-    ValidationCompletedEvidence,
 )
 from isanlp_rst.ingest.contracts.inference import (
     CompositeAnalysisIdentity,
@@ -458,17 +457,16 @@ class ProductionIngestor:
         try:
             analysed_document, anchors = enrich_parser_evidence(preparation, parser_result)
         except Exception as exc:
+            # Inference is the last pipeline stage proven complete here; the
+            # parser-internal receipt is unit-level evidence, not the pipeline
+            # validation stage, so claiming validation-completed would be false.
             failure = ProductionFailure(
                 failed_stage=LifecycleStage.ASSEMBLY,
                 category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
                 code="source_evidence_enrichment_failed",
                 retryability=Retryability.UNKNOWN,
                 message_template="parser_coordinates_could_not_be_mapped_to_source_evidence",
-                completed=ValidationCompletedEvidence(
-                    preparation=preparation,
-                    analysis_draft=parser_result.semantic.analysis,
-                    validation=parser_result.semantic.validation,
-                ),
+                completed=_inference_completed(preparation, (parser_result,)),
                 cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
             )
             raise ProductionIngestError(failure) from exc
@@ -513,7 +511,7 @@ class ProductionIngestor:
                 code="runtime_identity_contradiction",
                 retryability=Retryability.NOT_RETRYABLE,
                 message_template="declared_and_participating_component_identities_differ",
-                completed=PreparationCompletedEvidence(preparation=preparation),
+                completed=_inference_completed(preparation, (parser_result,)),
             )
             raise ProductionIngestError(failure)
         request = request or _analysis_request(
