@@ -15,14 +15,14 @@ Rhetorical_Discourse_Analysis_Machine: the boundary layout and ownership rules, 
 architecture-level data model and contracts every later feature implements against, the
 RST-preservation obligations that make the eventual migration provably safe, and the
 validation scenarios that measure the spec's success criteria. Implementation of
-providers, the aggregate contract, and the physical migration happens in the ten
+providers, the aggregate contract, and the physical migration happens in the eleven
 follow-on features the spec enumerates, gated exactly as FR-024/FR-025 require.
 
 ## Technical Context
 
 **Language/Version**: Python 3.14 (`requires-python = ">=3.14"`; pixi-locked, verified in `pyproject.toml`)
 
-**Primary Dependencies**: hatchling build backend; pixi two-environment topology (`default`/`offline` dev, `production` clean-room); Central_Configs ontology distribution (vendored in feature 007; canonical framework identities registered at Central `9c48ca6`, `coe:artifact/narrative/analytical_frameworks_taxonomy` v1.0.0)
+**Primary Dependencies**: hatchling build backend; pixi two-environment topology (`default`/`offline` dev, `production` clean-room); Central_Configs ontology distribution (vendored in feature 007; canonical framework identities registered at Central `f701df7`, amended at `9c48ca6`, `coe:artifact/narrative/analytical_frameworks_taxonomy` — Central retired per-artifact `version` fields estate-wide at `59283fc`, so the taxonomy is identified by `id` and `last_updated`, not a version number; all three commits verified ancestors of `origin/main`)
 
 **Storage**: repository files only (specs, contracts, vendored ontology data); no database
 

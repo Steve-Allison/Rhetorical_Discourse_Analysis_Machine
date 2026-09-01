@@ -16,6 +16,14 @@
 3. `coe:` identifiers are referenced, never redefined locally (Central consumer
    contract). The vendored distribution under `ontology/vendor/central-configs/` is the
    resolution source.
+4. A boundary and its provider bind to exactly one technique identity. A provider
+   additionally declares one or more **formalisms** — the result-kinds it natively emits
+   — each carrying its own canonical identity from the same scheme and its own capability
+   state. This is how one provider serves a sibling concept without a second boundary:
+   the RST provider binds to `…/rst` and declares `rst_tree → …/rst` and
+   `erst_graph → …/erst` (ruling recorded in [data-model.md](../data-model.md)
+   §Formalism). A formalism is never a stub: an undeclared or unloaded result-kind
+   reports `unavailable` with a stable reason, exactly as a provider does.
 
 ## Capability states (FR-020)
 

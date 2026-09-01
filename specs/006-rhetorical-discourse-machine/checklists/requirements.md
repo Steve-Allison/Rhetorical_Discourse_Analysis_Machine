@@ -41,3 +41,62 @@
 - Validation iteration 5 (2026-09-01, owner ruling): the iteration-4 division-of-labour wording is superseded. The machine is a standalone centre of excellence for discourse/argumentation analysis: sole authority for technique-native structures at every tier, delivering findings downstream through its public contracts to whichever consumers exist, privileging none — no consumer's needs shape its contracts, semantics, or roadmap, and other projects and skills are outside this specification's scope entirely.
 - Validation iteration 6 (2026-09-01, owner-prompted audit): the standardised-patterns register (`contracts/standardised-patterns.md`) maps the twelve shared runtime patterns — failure algebra, retryability/retry, semantic identity and canonical serialization, composite identity and cache eligibility, atomic persistence, validation receipts, execution evidence, capability reporting, safe boundary projections, source acquisition/anchoring, model loading/device handling, and gate evidence records — each with its verified reference authority in the RST provider, a binding adopt-semantics-not-code rule, and its FR-029 extraction trigger. The P10 ingest-reuse question is a named obligation of the SDRT feature. No shared library is created; FR-029 still gates extraction per pattern.
 - The specification is decision-closed and ready for `$speckit-plan`; no clarification pass is required.
+
+---
+
+## Completion note (2026-09-01, T012)
+
+Feature 006 ships governance artifacts, so its acceptance is documentary. This note
+records honestly which success criteria are **demonstrated now** and which are
+**deferred**, with the deferral authority. Evidence lives in
+[`../evidence/`](../evidence/).
+
+### Demonstrated now
+
+| Criterion | Demonstrated by | Result |
+|---|---|---|
+| **SC-001** — every top-level path has exactly one named owner, zero ambiguous | T004, [`evidence/boundary-audit.md`](../evidence/boundary-audit.md) | **MET for the current tree.** Five unowned path classes (`config/`, `dist/`, `examples/`, `graphify-out/`, root files) were found and resolved by extending the roster; the one two-owner candidate (`tests/offline/research`, analysis finding I2) was ruled to `tests/` under FR-007's distinction-within-`tests/` allowance. Note: SC-001's own enumeration names only the techniques, workbench, verification, aggregation, and planning material — narrower than the tree it must cover. The audit was run against the **full** tree, which is the stricter reading. |
+| **SC-007** — zero unavailable techniques represented by stubs or fabricated structures | T004 | **MET.** All nine approved boundary directories (`rst`, `pdtb`, `sdrt`, `toulmin`, `walton`, `dung`, `ibis`, `machine`, `ontology`) are absent. Not one was created speculatively. |
+| **FR-002** — identity binding to the canonical taxonomy | T006, [`evidence/identity-binding-audit.md`](../evidence/identity-binding-audit.md) | **MET.** All eight `coe:` identifiers resolve at Central `origin/main` (`33a1b7c`) with matching ids, labels, and scheme membership. Zero dangling identifiers. |
+| **FR-025** — cross-artifact consistency check for this feature | T011 | **MET.** Six findings (2 HIGH, 3 MEDIUM, 1 LOW), all resolved in the same pass. Zero critical, zero constitution violations. |
+| **FR-027** — existing artifacts assessed, not presumed complete | T007, [`evidence/promotion-gap-audit.md`](../evidence/promotion-gap-audit.md) | **MET, and it bit.** The promotion flow was read in full and found to lack output-quality, calibration, and latency evidence entirely; licensing is a hardcoded constant. Two Feature-005-era defects were found live and fixed forward: the promotion tool fabricated the evidence string `"GUM-12.1.0 Parseval evaluation verified"` when no receipt existed (that literal sits in the promoted `e5ea56cd620f` release), and the contract-named smoke script could not pass against the archived-family `Parser`. |
+
+### Deferred, with authority
+
+Deferral authority throughout is [`../spec.md`](../spec.md) §Scope Boundaries, which
+states that feature 006 does not move files, implement the aggregate contract or
+orchestration runtime, adopt any non-RST provider, or certify features 004/005.
+
+| Criterion | Deferred to | Note |
+|---|---|---|
+| **SC-002** — 100% RST equivalence post-migration | Repository migration feature | The comparison itself needs a migration to compare against. Everything 006 can do is done: the preservation contract is evidence-backed (T002), and every baseline command was **run and is green** (T003): `test-all` 868 passed, `production-api-contract` 244 passed, `smoke-full-mps` PASS on both releases — after fixing the smoke script, which loaded archived families and could never have passed (rst-surface-audit defect 3). FR-026 was checked, not assumed: no training process was live. |
+| **SC-003** — zero workbench imports and zero workbench distributable members | Aggregate-contract feature (007) | The `production-boundary` gate is green today (`valid: true`, zero violations), but the research-D5 extension implementing **both** checks does not exist. The green result certifies the current rule set only. |
+| **SC-004, SC-005, SC-010** — aggregate behaviour and provider independence | Aggregate-contract feature (007) | No aggregate runtime exists to test. |
+| **SC-006** — promotion evidence completeness | Workbench-promotion-system feature | **Not met by the existing flow** — see the T007 gap list. Artifact identity is strong; output quality is absent. |
+| **SC-008** — migration safety state | Repository migration feature | Failing by design today: live workbench runs and unreconciled artifacts exist. This is exactly what FR-026 blocks on. |
+| **SC-009** — eleven decision-closed follow-on features | Each follow-on feature | 006 is the first; the remaining eleven are enumerated in spec Assumptions. |
+| **SC-011** — single-person, single-machine operability | Standing constraint | No feature-006 artifact introduces multi-user, distributed, or enterprise machinery. |
+
+### eRST capability representation — analysis finding U1, **resolved 2026-09-01**
+
+One provider (`isanlp_rst`) serves two canonical identities — `…/rst` and `…/erst` —
+while `Provider.technique_id` was single-valued and one-to-one with its boundary, so the
+data model could not express what the provider actually does. Two options were open:
+a multi-valued `technique_id` (matches Central, which registers `erst` as a sibling
+concept), or eRST as a declared result-kind of the RST capability (matches the running
+code, where `describe_capabilities()` reports `rst_tree` and `erst_graph` as separate
+`formalism_capabilities` under one provider).
+
+**Ruling: one provider, two declared formalisms, each with its own canonical identity
+and capability state.** The boundary and provider bind to `…/rst`; the provider declares
+`rst_tree → …/rst` and `erst_graph → …/erst`. This satisfies both constraints at once —
+it keeps boundary-to-identity one-to-one, references Central's `erst` concept
+canonically without redefining it, and is byte-for-byte what the implementation does
+today (`erst_graph` reports `unavailable` on its own when no completion bundle is
+loaded; the rewritten smoke asserts it is refused, never fabricated). Recorded in
+[`data-model.md`](../data-model.md) §Formalism and
+[`contracts/capability-declaration.md`](../contracts/capability-declaration.md)
+§Identity binding clause 4; feature 007 implements it, it does not re-decide it.
+
+The same undercount had surfaced in [`quickstart.md`](../quickstart.md) V7 ("seven
+curies" against a contract binding eight); corrected.

@@ -4,6 +4,16 @@ The parser is a thin façade over two parallel predictor families. Both families
 
 ## Two parser families, one façade
 
+> **Production status (verified 2026-09-01, `isanlp_rst/parser.py:90-93`)**: the DMRST
+> and UniRST families described below are **archived from production**. `Parser` raises
+> `ValueError("Legacy … has been archived from production. Use family='modernbert'")`
+> for any of their five `hf_model_version` values before loading anything. The sole
+> production family is **ModernBERT** (`isanlp_rst/transformer_parser/`), loaded from an
+> immutable local release via `Parser.from_model_release(store, release_id,
+> family="modernbert")`. The family description below is retained as the record of the
+> archived research parsers; `scripts/smoke_test.py` and `scripts/cuda_smoke.py` exercise
+> only the production family.
+
 `isanlp_rst.parser.Parser` is a thin dispatcher. It picks one of two predictors based on either `hf_model_version` (HF-pulled) or `family=` / auto-detected (`model_dir=` for local checkpoints):
 
 | Family | Versions | Predictor | Source dir |
@@ -105,3 +115,91 @@ Leaves are EDUs; internal nodes are relations. Every node has `start` / `end` in
 `DiscourseUnit` is natively provided in [`isanlp_rst/annotation_rst.py`](../../isanlp_rst/annotation_rst.py) in modern Python 3.14 (Mode A, slotted, strictly typed). The legacy `iinemo/isanlp` Git dependency has been retired, and `isanlp_rst` provides transparent `sys.modules` backward-compatibility aliasing for legacy `from isanlp.annotation_rst import DiscourseUnit` imports.
 
 `DiscourseUnit` fields: `id`, `left`, `right`, `text`, `start`, `end`, `orig_text`, `relation`, `nuclearity`, `proba`, `entropy`. Methods: `clear_textfields()` (recursively sets `.text = ''`), `fill_textfields(full_text)` (re-extracts substring per node), `to_rs3(filename, encoding='utf8')` (writes RS3 XML via internal `Exporter`).
+
+## Machine architecture (feature 006)
+
+`specs/006-rhetorical-discourse-machine/` is the authority for everything in this
+section. The rules below are the bindings a session needs without reading the feature;
+where a rule and the feature disagree, the feature wins. Do not restate its requirements
+here as a competing source — cite and follow.
+
+This repository is the first provider of the **Rhetorical Discourse Analysis Machine**: a
+permanently analysis-only machine that runs several discourse and argumentation
+techniques natively, side by side, without collapsing them into a common formalism.
+`isanlp_rst` is its established RST/eRST provider.
+
+### Boundary roster and ownership
+
+One flat top-level boundary per technique, plus `machine/` (aggregate contract),
+`ontology/` (vendored Central distribution), and the existing `workbench/`, `tests/`,
+`tools/`, `specs/`, `scripts/`, `docs/`, `models/`, `config/`, `dist/`, `graphify-out/`.
+Every top-level path has exactly one owner — roster in
+[`contracts/architecture-boundaries.md`](../../specs/006-rhetorical-discourse-machine/contracts/architecture-boundaries.md),
+verified against the live tree in
+[`evidence/boundary-audit.md`](../../specs/006-rhetorical-discourse-machine/evidence/boundary-audit.md).
+
+- **A technique boundary IS the production boundary.** No `production/` subdirectory
+  inside one, ever (FR-003).
+- **Boundaries appear only on promotion.** A technique's directory is created when that
+  technique first promotes a provider (FR-002) — never speculatively. No technique
+  boundary directory exists today, and creating an empty one is a defect.
+- **Exactly one `workbench/`.** No second experimentation root, no per-boundary scratch
+  area, no "temporary" candidate directory outside it (FR-004).
+
+### No top-level import names
+
+Boundary directories are never importable Python packages. Packages inside them carry
+namespaced import names — `isanlp_rst` lives under `rst/` and keeps its import name
+unchanged. Top-level import names `rst`, `pdtb`, `sdrt`, `toulmin`, `walton`, `dung`,
+`ibis` are never created. (`ibis` is the import name of the PyPI Ibis dataframe library;
+the rule removes the whole class of shadowing hazards.)
+
+### Import and distribution
+
+Production code never imports `workbench.*`, directly or transitively, and no wheel or
+sdist member contains a `workbench/` path (FR-006). Enforcement lives in
+`tools.production_boundary`; both checks are **not yet implemented** — they are feature
+007 acceptance items, so a green `production-boundary` run does not currently certify
+them. Run it as `pixi run -e default production-boundary`; the bare form is ambiguous
+across three environments.
+
+### Identity binding
+
+Each boundary declares exactly one canonical framework identity from
+`coe:artifact/narrative/analytical_frameworks_taxonomy` in Central_Configs. `coe:`
+identifiers are **referenced, never redefined locally**. The binding is identity only —
+native relation inventories, role sets, and result payloads stay provider-owned, and
+Central's simplified vocabulary profiles never constrain a native contract. A provider
+serves a sibling concept through a declared **formalism** with its own identity and
+capability state, not through a second boundary: the RST provider binds to `…/rst` and
+declares `rst_tree → …/rst`, `erst_graph → …/erst` (the eRST ruling, feature 006
+data-model §Formalism). All eight identifiers resolve today:
+[`evidence/identity-binding-audit.md`](../../specs/006-rhetorical-discourse-machine/evidence/identity-binding-audit.md).
+
+### Analysis-only scope, and scale
+
+The machine analyses discourse; it never generates or rewrites it. It serves one person
+on one local machine (FR-028) — no multi-user, distributed, remote-control-plane, or
+enterprise infrastructure without a new explicit requirement.
+
+A shared production abstraction is introduced only when at least two proven production
+callers need the same semantic contract with unambiguous ownership (FR-029). The
+aggregate contract in `machine/` is the single approved instance.
+
+### Preservation and follow-on order
+
+The RST public surface is preserved across migration byte-for-byte where serialized and
+semantically where computed — obligations and the equivalence procedure in
+[`contracts/rst-preservation.md`](../../specs/006-rhetorical-discourse-machine/contracts/rst-preservation.md).
+Migration is **blocked** while protected workbench runs are live or unreconciled
+(FR-026); it starts only from a recorded MigrationSafetyState with the owner's dated
+confirmation.
+
+Feature order (FR-025): three features — **aggregate analysis contract** (with ontology
+vendoring), **workbench promotion system**, and **RST provider adapter** — must be
+specified and cross-artifact consistency checked before repository migration begins.
+**Repository migration** is its own fourth decision-closed feature. Providers follow,
+strictly on workbench evidence, in the order Dung → IBIS → SDRT → Toulmin → Walton →
+PDTB-if-ever, with cross-provider orchestration last. Each technique gets its own
+decision-closed Spec Kit feature, authored only once workbench evidence identifies a
+credible candidate (FR-024, FR-025). Eleven follow-on features in total.

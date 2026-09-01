@@ -44,10 +44,35 @@ An independently callable, promoted implementation for one technique.
 | Field | Type | Rules |
 |---|---|---|
 | `provider_id` | string | Required, stable. |
-| `technique_id` | `coe:` curie | Required; matches its boundary. |
-| `capability` | CapabilityState | Required; see state machine below (FR-020). |
+| `technique_id` | `coe:` curie | Required; matches its boundary. Single-valued: a provider belongs to exactly one boundary. |
+| `formalisms` | set of Formalism | Required, non-empty. Each declared result-kind the provider can emit, with its own `coe:` identity and its own capability state (see below). The eRST ruling lives here. |
+| `capability` | CapabilityState | Required; the provider's standing state (FR-020). Each formalism additionally reports its own state — a provider can be `available` while one of its formalisms is `unavailable(reason)`. |
 | `contract_version` | semver | Required; versions the technique-native result contract (FR-012). |
 | `provenance` | struct | Required: exact code version, configuration, and model identity where applicable (FR-023); licence decision reference (FR-021). |
+
+### Formalism (value type)
+
+One result-kind a provider emits, in the provider's own terms.
+
+| Field | Type | Rules |
+|---|---|---|
+| `formalism_id` | string | Required; provider-owned name (e.g. `rst_tree`, `erst_graph`). |
+| `technique_id` | `coe:` curie | Required; the canonical identity this result-kind carries. May differ from the provider's `technique_id` only for a concept in the same taxonomy scheme that the same provider natively produces. |
+| `capability` | CapabilityState | Required; per-formalism, with the same states and stable reasons as the provider's. |
+
+**Ruling on eRST (analysis finding U1, closed 2026-09-01).** The RST provider serves two
+canonical identities — `…/discourse_structure_framework/rst` and `…/erst` — while
+belonging to one boundary. It is modelled as **one provider with two formalisms**, not
+two providers and not a multi-valued `technique_id`: the `rst/` boundary and its provider
+bind to `…/rst`; the provider declares formalisms `rst_tree → …/rst` and
+`erst_graph → …/erst`, each with its own capability state. This is exactly what the
+running implementation already does — `describe_capabilities()` reports `rst_tree` and
+`erst_graph` as separate `formalism_capabilities` under one provider, and `erst_graph` is
+independently `unavailable` when no validated completion bundle is loaded (verified in
+[evidence/rst-surface-audit.md](evidence/rst-surface-audit.md)) — and it references
+Central's `erst` concept canonically without redefining it (capability contract §Identity
+binding). Boundary-to-`technique_id` stays one-to-one; identity resolution stays
+eight-for-eight.
 
 ### CapabilityState (value type)
 
@@ -68,7 +93,8 @@ One technique's result in its own theory's terms.
 
 | Field | Type | Rules |
 |---|---|---|
-| `technique_id` | `coe:` curie | Required. |
+| `technique_id` | `coe:` curie | Required; the identity of the **formalism** that produced this result (for the RST provider: `…/rst` for `rst_tree`, `…/erst` for `erst_graph`). |
+| `formalism_id` | string | Required; the producing provider's declared formalism. |
 | `contract_version` | semver | Required (FR-012). |
 | `payload` | provider-native | Opaque to the machine layer; retains the semantics of exactly one framework — never renamed, removed, or reinterpreted by aggregation (FR-013, SC-004). |
 | `source_identity` | struct | Required: source anchors surviving from ingest (FR-011 lineage). |
@@ -140,7 +166,7 @@ per-request `failed` outcomes that never alter the standing state of other techn
 ## Relationships
 
 ```text
-TechniqueProductionBoundary 1—0..1 Provider —* NativeTechniqueResult
+TechniqueProductionBoundary 1—0..1 Provider —1..* Formalism —* NativeTechniqueResult
 AggregateAnalysis —* Outcome(result | unavailable | failed)
 AggregateAnalysis —* ProviderDependencyReference —> NativeTechniqueResult (upstream)
 Workbench —* candidate —0..1 PromotionDecision —> Provider (on promote)

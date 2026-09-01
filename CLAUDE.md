@@ -57,7 +57,49 @@ CI (`.github/workflows/ci.yml`) runs on macOS arm64 with the pixi lock (**Python
 
 ## Active roadmap
 
-Production source ingest has one public surface: `isanlp_rst.ingest`. `ProductionIngestor.prepare()` and `.analyse()`, plus the convenience `analyse_source()`, accept five real-world source forms: plain text, Markdown, Docling JSON, DocLang XML, and DocLang archives. The old format-specific parsing functions and result envelopes were removed rather than deprecated; no compatibility route remains.
+### Machine direction (feature 006, planned)
+
+This repository becomes the first provider of the **Rhetorical Discourse Analysis
+Machine** — a permanently analysis-only machine running several discourse and
+argumentation techniques natively, side by side, without collapsing them into a common
+formalism. `isanlp_rst` is its established RST/eRST provider and keeps its import name
+and public contract unchanged across the eventual relocation into `rst/`.
+
+Feature 006 is decision-closed architecture and governance: it ships no code and moves no
+files. Authority is [`specs/006-rhetorical-discourse-machine/`](specs/006-rhetorical-discourse-machine/);
+the working rules are summarised in [`architecture.md`](.claude/rules/architecture.md)
+§"Machine architecture (feature 006)".
+
+Three features must be specified and cross-artifact consistency checked **before
+repository migration begins** (FR-025):
+
+1. **Aggregate analysis contract + ontology vendoring** — `machine/`, `ontology/`, and the
+   `production-boundary` extension enforcing the no-`workbench`-import and
+   no-`workbench`-in-distributable rules (neither is implemented yet).
+2. **Workbench promotion system** — the evidence-gated promotion the current flow does
+   not provide; its truthful gap list is
+   [`evidence/promotion-gap-audit.md`](specs/006-rhetorical-discourse-machine/evidence/promotion-gap-audit.md).
+3. **RST provider adapter** — consumes the supported `isanlp_rst` public contract without
+   duplicating, reinterpreting, or bypassing its authority (FR-010).
+
+**Repository migration** is then its own fourth decision-closed feature, executed under
+the RST-preservation contract and carrying the baseline capture, migration safety state,
+packaging verification, and project-identity adoption (including sibling-repo reference
+updates and per-project memory/settings path migration).
+
+Provider order thereafter: **Dung → IBIS → SDRT → Toulmin/Walton → PDTB-if-ever**. Each
+technique gets its own decision-closed Spec Kit feature, authored only once workbench
+evidence identifies a credible candidate.
+
+**Migration is blocked (FR-026)** while protected workbench runs are live or
+unreconciled. It starts only from a recorded MigrationSafetyState: zero live protected
+processes, the run/checkpoint inventory reconciled, and Steve's dated confirmation. The
+20-epoch ModernBERT convergence run (task-636) is live on this machine's MPS; nothing may
+compete with it.
+
+### Production source ingest
+
+Production source ingest has one public surface: `isanlp_rst.ingest`. `ProductionIngestor.capabilities()`, `.prepare()`, and `.analyse()` accept six declared source forms: plain text, pre-segmented EDUs, Markdown, Docling JSON, DocLang XML, and DocLang archives. The old format-specific parsing functions and result envelopes were removed rather than deprecated; no compatibility route remains.
 
 The optional **`formats` extra** supplies `docling-core`, `doclang`, `markdown-it-py`, and `mdit-py-plugins`: `pip install isanlp_rst[formats]`. Core parser consumers avoid that dependency chain. `pixi install` includes `formats`; keep these dependencies outside `[project.dependencies]`.
 

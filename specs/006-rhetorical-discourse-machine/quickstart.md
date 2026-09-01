@@ -29,8 +29,11 @@ techniques report `unavailable(no_promoted_implementation)`.
 ## V2 — Production never touches the workbench (SC-003)
 
 ```bash
-pixi run production-boundary
+pixi run -e default production-boundary
 ```
+
+The `-e` flag is required: the task is defined in the `default`, `production`, and
+`offline` environments, and the bare form fails as ambiguous.
 
 Expected (after the research-D5 extension lands with feature 007): zero production
 imports of `workbench.*` and zero workbench members in distributable artifacts, reported
@@ -112,5 +115,8 @@ consumer profile validates:
 pixi run linkml validate ontology/schema/rdam.linkml.yaml
 ```
 
-Expected: all seven curies resolve; profile and instances validate; no `coe:` identifier
-is redefined locally.
+Expected: all **eight** curies resolve — the seven technique boundaries plus `erst`,
+which the RST provider serves as a declared formalism (ruling in
+[data-model.md](data-model.md) §Formalism) — profile and instances
+validate; no `coe:` identifier is redefined locally. All eight already resolve against
+the live Central taxonomy: [evidence/identity-binding-audit.md](evidence/identity-binding-audit.md).
