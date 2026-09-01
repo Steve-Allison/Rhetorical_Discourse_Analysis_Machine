@@ -41,6 +41,27 @@ def test_recombination_receipt_accounts_for_every_local_result_and_mapping(
     assert receipt.semantic_digest is not None
 
 
+def test_stitching_decisions_record_every_adjacent_unit_seam(
+    parser_builder: ParserBuilder,
+) -> None:
+    outcome = ProductionIngestor(parser=parser_builder(maximum=2)).analyse(
+        SourceArtifact.from_edus(
+            ("One.", "Two.", "Three.", "Four.", "Five."), source_name="five.edus"
+        )
+    )
+    parser_result = outcome.semantic.parser_result
+    assert parser_result is not None
+    receipt = parser_result.semantic.recombination
+    assert receipt is not None
+    assert len(receipt.unit_identities) == 3
+    assert len(receipt.stitching_decisions) == 2
+    seams = tuple(
+        (decision.predecessor_unit_id, decision.successor_unit_id)
+        for decision in receipt.stitching_decisions
+    )
+    assert seams == (("unit:0000", "unit:0001"), ("unit:0001", "unit:0002"))
+
+
 def test_recombination_receipt_digest_rejects_semantic_mutation_but_not_timing(
     parser_builder: ParserBuilder,
 ) -> None:

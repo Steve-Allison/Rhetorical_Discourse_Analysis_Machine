@@ -1,4 +1,12 @@
-"""Deterministic structure-first analysis planning over prepared segments."""
+"""Deterministic capacity-estimated analysis planning over prepared segments.
+
+Planning never splits a prepared segment; units are greedy contiguous groups
+whose *estimated* demand fits the usable capacity. Estimation is exact when
+segments align with the capacity unit (EDU-form sources under edu_count),
+whitespace-token approximate under token_count, and a one-per-segment
+heuristic otherwise — underestimation surfaces downstream as a typed parser
+capacity failure at inference, never as silent truncation.
+"""
 
 from isanlp_rst.ingest.contracts.preparation import (
     AnalysisPlan,
@@ -11,6 +19,7 @@ from isanlp_rst.ingest.contracts.preparation import (
     RecombinationLink,
     RecombinationPlan,
     SegmentKind,
+    StructureKind,
 )
 
 
@@ -24,7 +33,7 @@ def build_analysis_plan(
     capacity: ParserCapacity | None,
     policy: PlanningPolicy,
 ) -> AnalysisPlan:
-    """Build a complete capacity-safe plan without splitting prepared segments."""
+    """Build a complete capacity-estimated plan without splitting prepared segments."""
 
     if capacity is None:
         return AnalysisPlan(
@@ -108,15 +117,28 @@ def _estimated_demand(
     return 1
 
 
+_KIND_TO_PREFERENCE = {
+    StructureKind.HEADING: BoundaryPreference.HEADING,
+    StructureKind.PARAGRAPH: BoundaryPreference.PARAGRAPH,
+}
+
+
 def _boundary_reason(
     prepared: PreparedRstDocument,
     first_segment_order: int,
     policy: PlanningPolicy,
 ) -> BoundaryPreference:
+    # The recorded reason states the kind of boundary the unit actually starts
+    # on — never a preference the greedy packer did not consult.
     segment = prepared.segments[first_segment_order]
-    if segment.structural_boundary_id is not None:
-        return policy.boundary_preference[0]
-    return policy.boundary_preference[-1]
+    if segment.structural_boundary_id is None:
+        return policy.boundary_preference[-1]
+    kind = next(
+        boundary.kind
+        for boundary in prepared.structural_boundaries
+        if boundary.boundary_id == segment.structural_boundary_id
+    )
+    return _KIND_TO_PREFERENCE.get(kind, BoundaryPreference.STRUCTURAL_CONTAINER)
 
 
 __all__ = ["AnalysisPlanningError", "build_analysis_plan"]

@@ -16,6 +16,7 @@ from isanlp_rst.ingest.contracts.analysis import (
     AnalysedDocument,
     AnalysedEdu,
     AnalysedToken,
+    FidelityClass,
     LocalToGlobalMapping,
     ParserAnalysisExecutionEvidence,
     ParserAnalysisResult,
@@ -383,7 +384,14 @@ def recombine_parser_results(
         ),
         source_anchors=(_document_anchor(document_id, 0, len(text), text),),
         transformations=(),
-        fidelity=results[0].analysed_document.fidelity,
+        fidelity=(
+            FidelityClass.LOSSLESS
+            if all(
+                result.analysed_document.fidelity is FidelityClass.LOSSLESS
+                for result in results
+            )
+            else FidelityClass.LOSSY
+        ),
         character_coverage=ExactCoverage(
             covered_units=len(text),
             total_units=len(text),
@@ -426,14 +434,15 @@ def recombine_parser_results(
             for link in plan.recombination.links
         ),
         nuclear_spine_inputs=tuple(str(root) for root in unit_roots),
-        stitching_decisions=(
+        stitching_decisions=tuple(
             StitchingDecision(
-                decision_id="recombine:decision:0000",
-                predecessor_unit_id=plan.units[0].unit_id,
-                successor_unit_id=plan.units[-1].unit_id,
+                decision_id=f"recombine:stitch:{index:04d}",
+                predecessor_unit_id=link.predecessor_unit_id,
+                successor_unit_id=link.successor_unit_id,
                 relation="same-unit",
                 nuclearity="NN",
-            ),
+            )
+            for index, link in enumerate(plan.recombination.links)
         ),
         warnings=(),
         policy="multinuclear_unit_root_v1",
