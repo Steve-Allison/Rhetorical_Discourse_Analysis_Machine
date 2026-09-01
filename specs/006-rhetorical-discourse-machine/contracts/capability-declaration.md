@@ -49,6 +49,37 @@ standard every provider and the machine layer inherit:
    `retryable` may be claimed only where a provider demonstrates genuine transience —
    no provider does today, and the burden of proof sits with the claimant.
 
+## Transient-boundary retry standard (binding on every future provider)
+
+The current machine contains no transient boundary and therefore no retry executor —
+adding one before a transient boundary exists is forbidden dead machinery. The first
+provider that crosses such a boundary (an LLM API for Toulmin/Walton-class analysis,
+network acquisition, any remote dependency) MUST implement retry exactly as follows,
+at that boundary only:
+
+1. **Scope**: retry wraps only the transient operation, never deterministic
+   computation. The set of errors treated as transient is explicit, enumerated, and
+   tested — never a blanket exception catch.
+2. **Shape**: bounded attempts, exponential backoff with full jitter, and an overall
+   deadline; server-provided signals (e.g. `Retry-After`) are honoured when present.
+3. **Two classes for LLM-backed providers, never conflated**: *transport retries*
+   (rate limits, 5xx, network — the shape above) and *structured-output validation
+   retries* (invalid native structure → bounded re-prompt carrying the validation
+   error). Each class has its own bound and budget.
+4. **Idempotency precondition**: an operation may be retried only if a repeat cannot
+   double-apply or fork semantic identity — satisfied machine-wide by the
+   semantic-identity and cache design, and re-verified per provider at promotion.
+5. **No silent retries**: every attempt is recorded in execution evidence (attempt
+   count, per-attempt cause, delays, total elapsed). A successful result that retried
+   shows its retries; exhaustion yields the typed failure carrying the full attempt
+   trail, with retryability classified per this contract.
+6. **Excluded by scale ruling** (FR-028): circuit breakers, hedged requests, and
+   retry queues — no failure mode in a one-person, one-machine system justifies them.
+
+Promotion evidence for any provider with a transient boundary MUST include tests of
+this policy under simulated transient faults (external systems are the one legitimate
+mock target under the project's test-honesty rules).
+
 ## Aggregate behaviour
 
 1. An aggregate request over N techniques returns N explicit outcomes — successful native

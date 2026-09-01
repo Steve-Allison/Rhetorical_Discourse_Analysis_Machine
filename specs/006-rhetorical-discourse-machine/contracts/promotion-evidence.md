@@ -44,6 +44,11 @@ grammar-closure checks. Corpus metrics are neither available nor required.
 4. LLM-based candidates (expected for Toulmin/Walton, plausible for SDRT — research D7)
    declare their nondeterminism characteristics and calibration evidence explicitly; a
    green run is not reproducibility evidence.
+5. A candidate crossing a transient external boundary (LLM API, network) MUST satisfy
+   the capability contract's transient-boundary retry standard, with promotion
+   evidence covering its enumerated transient-error set, bounded backoff-with-jitter
+   behaviour, both retry classes where applicable, idempotency under repeat, and
+   attempt-trail recording — demonstrated under simulated transient faults.
 
 ## Decision record
 
