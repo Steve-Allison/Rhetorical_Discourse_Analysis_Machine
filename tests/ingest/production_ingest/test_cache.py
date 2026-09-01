@@ -11,6 +11,7 @@ from isanlp_rst.ingest import (
     SourceArtifact,
 )
 from isanlp_rst.ingest.cache import ProductionIngestCache
+from isanlp_rst.ingest.contracts.failure import FailureCategory, LifecycleStage, Retryability
 
 from .conftest import ParserBuilder
 
@@ -47,6 +48,33 @@ def test_cache_corruption_is_typed_and_does_not_fall_back_to_inference(
     with pytest.raises(ProductionIngestError) as raised:
         ingestor.analyse(source, cache_directory=tmp_path)
     assert raised.value.failure.code == "corrupt_cache_entry"
+    assert raised.value.failure.category is FailureCategory.CORRUPT_CACHE_ENTRY
+    assert raised.value.failure.retryability is Retryability.NOT_RETRYABLE
+
+
+def test_cache_read_io_error_is_unknown_not_corrupt(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ingestor = ProductionIngestor()
+    source = SourceArtifact.from_text("  \n", source_name="empty.txt")
+    ingestor.analyse(source, cache_directory=tmp_path)
+
+    original_read_bytes = Path.read_bytes
+
+    def unreadable(self: Path) -> bytes:
+        if tmp_path in self.parents:
+            raise OSError("private operating-system detail")
+        return original_read_bytes(self)
+
+    monkeypatch.setattr(Path, "read_bytes", unreadable)
+    with pytest.raises(ProductionIngestError) as raised:
+        ingestor.analyse(source, cache_directory=tmp_path)
+    assert raised.value.failure.failed_stage is LifecycleStage.CACHE_RETRIEVAL
+    assert raised.value.failure.code == "cache_read_failed"
+    assert raised.value.failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
+    assert raised.value.failure.retryability is Retryability.UNKNOWN
+    assert "private operating-system detail" not in str(raised.value)
 
 
 def test_interrupted_atomic_write_leaves_no_success_or_temporary_entry(

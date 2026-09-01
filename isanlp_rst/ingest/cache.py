@@ -57,8 +57,19 @@ class ProductionIngestCache:
         if not path.exists():
             return None
         try:
-            record = load_contract(path.read_bytes())
-        except (OSError, UnicodeError, ValueError, ValidationError) as exc:
+            payload = path.read_bytes()
+        except OSError as exc:
+            raise _cache_error(
+                request_identity,
+                code="cache_read_failed",
+                category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+                message="cached_record_could_not_be_read_from_storage",
+                retryability=Retryability.UNKNOWN,
+                cause=exc,
+            ) from exc
+        try:
+            record = load_contract(payload)
+        except (UnicodeError, ValueError, ValidationError) as exc:
             raise _cache_error(
                 request_identity,
                 code="corrupt_cache_entry",
@@ -210,13 +221,14 @@ def _cache_error(
     code: str,
     category: FailureCategory,
     message: str,
+    retryability: Retryability = Retryability.NOT_RETRYABLE,
     cause: Exception | None = None,
 ) -> ProductionIngestError:
     failure = ProductionFailure(
         failed_stage=LifecycleStage.CACHE_RETRIEVAL,
         category=category,
         code=code,
-        retryability=Retryability.NOT_RETRYABLE,
+        retryability=retryability,
         message_template=message,
         diagnostic_context=(CacheIdentityContext(cache_identity=identity),),
     )

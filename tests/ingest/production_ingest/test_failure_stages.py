@@ -124,3 +124,27 @@ def test_unexpected_internal_failure_is_classified_unknown(
     assert raised.value.failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
     assert raised.value.failure.retryability is Retryability.UNKNOWN
     assert "PRIVATE" not in str(raised.value)
+
+
+def test_cli_boundary_failure_labels_follow_the_exception_kind() -> None:
+    from isanlp_rst.cli import _safe_boundary_failure
+
+    io_failure = _safe_boundary_failure(
+        OSError("disk momentarily unavailable"),
+        stage=LifecycleStage.ACQUISITION,
+        category=FailureCategory.MALFORMED_INPUT,
+        code="cli_source_acquisition_failed",
+        message_template="cli_source_could_not_be_acquired",
+    )
+    assert io_failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
+    assert io_failure.retryability is Retryability.UNKNOWN
+
+    parse_failure = _safe_boundary_failure(
+        ValueError("bad value"),
+        stage=LifecycleStage.ACQUISITION,
+        category=FailureCategory.MALFORMED_INPUT,
+        code="cli_source_acquisition_failed",
+        message_template="cli_source_could_not_be_acquired",
+    )
+    assert parse_failure.category is FailureCategory.MALFORMED_INPUT
+    assert parse_failure.retryability is Retryability.NOT_RETRYABLE

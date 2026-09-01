@@ -315,11 +315,18 @@ def _safe_boundary_failure(
     code: str,
     message_template: str,
 ) -> ProductionFailure:
+    if isinstance(exc, OSError):
+        # An I/O error proves neither malformed input nor a permanent condition:
+        # the honest labels are internal-processing with unknown retryability.
+        category = FailureCategory.INTERNAL_PROCESSING_FAILURE
+        retryability = Retryability.UNKNOWN
+    else:
+        retryability = Retryability.NOT_RETRYABLE
     return ProductionFailure(
         failed_stage=stage,
         category=category,
         code=code,
-        retryability=Retryability.NOT_RETRYABLE,
+        retryability=retryability,
         message_template=message_template,
         cause=SafeCause(
             category=category,
