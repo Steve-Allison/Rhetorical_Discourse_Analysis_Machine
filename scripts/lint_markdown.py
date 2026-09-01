@@ -1,4 +1,9 @@
-"""Verify and lint the complete repository Markdown manifest."""
+"""Lint every repository Markdown file outside the declared exclusion classes.
+
+The linted set is computed directly from git (tracked plus untracked, unignored
+Markdown) minus the exclusion classes declared below. There is no hand-maintained
+manifest: the computation here is the single authority for what gets linted.
+"""
 
 import json
 import subprocess
@@ -6,7 +11,6 @@ import sys
 from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-MANIFEST_PATH = REPOSITORY_ROOT / "config/markdownlint/tracked-markdown.txt"
 GENERATED_SPEC_KIT_PREFIXES = (
     ".agents/skills/",
     ".claude/skills/",
@@ -49,31 +53,15 @@ def _is_approved_exclusion(path: str) -> bool:
     )
 
 
-def _manifest_paths() -> tuple[str, ...]:
-    paths = tuple(line for line in MANIFEST_PATH.read_text(encoding="utf-8").splitlines() if line)
-    if paths != tuple(sorted(set(paths))):
-        raise RuntimeError("Markdown manifest must be sorted and contain no duplicates")
-    return paths
-
-
-def verify_manifest() -> tuple[str, ...]:
+def linted_markdown() -> tuple[str, ...]:
     repository_paths = _repository_markdown()
-    expected = tuple(path for path in repository_paths if not _is_approved_exclusion(path))
-    manifest = _manifest_paths()
-    if manifest != expected:
-        missing = sorted(set(expected) - set(manifest))
-        stale = sorted(set(manifest) - set(expected))
-        raise RuntimeError(
-            "Markdown manifest is stale: "
-            f"missing={json.dumps(missing, ensure_ascii=True)}, "
-            f"stale={json.dumps(stale, ensure_ascii=True)}"
-        )
+    linted = tuple(path for path in repository_paths if not _is_approved_exclusion(path))
     excluded = tuple(path for path in repository_paths if _is_approved_exclusion(path))
     print(
         json.dumps(
             {
-                "schema_version": "1.0",
-                "linted_count": len(manifest),
+                "schema_version": "2.0",
+                "linted_count": len(linted),
                 "excluded_count": len(excluded),
                 "excluded_classes": {
                     "generated_spec_kit_projection": sum(
@@ -91,15 +79,15 @@ def verify_manifest() -> tuple[str, ...]:
             sort_keys=True,
         )
     )
-    return manifest
+    return linted
 
 
 def main() -> int:
-    manifest = verify_manifest()
+    linted = linted_markdown()
     if "--lint" not in sys.argv[1:]:
         return 0
     completed = subprocess.run(
-        ("markdownlint-cli2", *manifest),
+        ("markdownlint-cli2", *linted),
         cwd=REPOSITORY_ROOT,
         check=False,
     )

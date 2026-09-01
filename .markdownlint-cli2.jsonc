@@ -1,7 +1,13 @@
 {
-  // Repository Markdown is governed by config/markdownlint/tracked-markdown.txt.
-  // Only rules that conflict with durable document semantics are disabled.
+  // The linted set is computed by scripts/lint_markdown.py (all repository
+  // Markdown minus its declared exclusion classes). Only rules that conflict
+  // with durable document semantics are disabled.
   "config": {
+    // Parallel per-command or per-scenario sections legitimately repeat
+    // headings such as "Synopsis" under different parents; only duplicates
+    // among sibling headings are defects.
+    "MD024": { "siblings_only": true },
+
     // Long lines are required for opaque URLs, generated hashes, and wide
     // evidence tables; wrapping them would change or obscure their meaning.
     "MD013": false,
