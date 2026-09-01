@@ -1,6 +1,7 @@
 """Promotion tool for Pure Transformer ModernBERT discourse parser releases."""
 
 import argparse
+import hashlib
 from pathlib import Path, PurePosixPath
 
 from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
@@ -11,6 +12,8 @@ from workbench.promotion.promote import (
     promote_model_release,
     write_candidate_manifest,
 )
+
+EVIDENCE_UNAVAILABLE_REASON = "no training_receipt.json in the candidate and no evaluation evidence supplied"
 
 
 def prepare_and_promote_modernbert(
@@ -53,23 +56,31 @@ def prepare_and_promote_modernbert(
 
     # Derive deterministic release ID if not provided
     if not release_id:
-        import hashlib
-
         weights_hash = hashlib.sha256(weights_path.read_bytes()).hexdigest()[:12]
         release_id = f"modernbert-v1-{weights_hash}"
 
-    # Remove existing manifest if creating fresh candidate
+    # The manifest is derived from the candidate's bytes; regenerate rather than keep a
+    # stale one that would fail the inventory check.
     manifest_path = candidate_dir / MODEL_RELEASE_MANIFEST
     if manifest_path.exists():
         manifest_path.unlink()
 
-    # Read training receipt for evaluation evidence if available
+    # Evaluation evidence is the training receipt verbatim, or an explicit statement that
+    # none was supplied. It is never a fabricated verification claim: a release without
+    # evidence declares `evaluation_unavailable_reason`, which the manifest contract
+    # requires in exactly that case (isanlp_rst.model_loading.release).
     receipt_file = candidate_dir / "training_receipt.json"
-    if receipt_file.is_file() and evaluation_evidence is None:
-        evaluation_evidence = receipt_file.read_text(encoding="utf-8")
-        receipt_file.unlink()
-    elif evaluation_evidence is None:
-        evaluation_evidence = "GUM-12.1.0 Parseval evaluation verified"
+    evaluation_unavailable_reason: str | None = None
+    if evaluation_evidence is None:
+        if receipt_file.is_file():
+            evaluation_evidence = receipt_file.read_text(encoding="utf-8")
+        else:
+            evaluation_unavailable_reason = EVIDENCE_UNAVAILABLE_REASON
+    if receipt_file.is_file():
+        # The receipt is not a runtime member of a ModernBERT release (release.py restricts
+        # roles), so it cannot stay inside the candidate — but it is the only structured
+        # quality record, so it is preserved beside the candidate, never deleted.
+        receipt_file.replace(candidate_dir.with_name(f"{candidate_dir.name}.training_receipt.json"))
 
     write_candidate_manifest(
         candidate=candidate_dir,
@@ -84,6 +95,7 @@ def prepare_and_promote_modernbert(
         use_restrictions=(),
         roles=roles,
         evaluation_evidence=evaluation_evidence,
+        evaluation_unavailable_reason=evaluation_unavailable_reason,
     )
 
     receipt = promote_model_release(
