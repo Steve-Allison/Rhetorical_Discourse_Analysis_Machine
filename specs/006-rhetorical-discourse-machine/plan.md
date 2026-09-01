@@ -70,7 +70,8 @@ specs/006-rhetorical-discourse-machine/
 │   ├── architecture-boundaries.md   # layout, ownership, import rules
 │   ├── capability-declaration.md    # capability states + coe: identity binding
 │   ├── rst-preservation.md          # preserved surface + equivalence obligations
-│   └── promotion-evidence.md        # evidence classes incl. formal techniques
+│   ├── promotion-evidence.md        # evidence classes incl. formal techniques
+│   └── standardised-patterns.md     # shared-pattern register: authority, adoption, FR-029 triggers
 └── tasks.md             # Phase 2 ($speckit-tasks — not created here)
 ```
 
