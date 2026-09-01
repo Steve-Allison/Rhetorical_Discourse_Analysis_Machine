@@ -1,0 +1,40 @@
+{
+  "run_id": "20260830_190321_ModernBERT_base_fe95e0",
+  "timestamp_utc": "2026-08-30T23:10:25.653033+00:00",
+  "git_commit": "ef56bf0744aeceea0368df666bdae1f2e5856111",
+  "model_id": "answerdotai/ModernBERT-base",
+  "model_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "experiment_type": "training",
+  "dataset_name": "GUM-12.1.0",
+  "dataset_digest": "e5ea56cd620f7998",
+  "hyperparameters": {
+    "epochs": 3,
+    "lr": 2e-05,
+    "weight_decay": 0.01,
+    "grad_accum": 16
+  },
+  "eval_metrics": {
+    "dev_span_f1": 0.18110647181628392,
+    "dev_nuc_f1": 0.10908141962421712,
+    "dev_rel_f1": 0.05558455114822547,
+    "dev_full_f1": 0.038100208768267224,
+    "test_span_f1": 0.20000000000000004,
+    "test_nuc_f1": 0.11682368775235531,
+    "test_rel_f1": 0.07644683714670256,
+    "test_full_f1": 0.052759084791386274,
+    "test2_span_f1": 0.19399624765478424,
+    "test2_nuc_f1": 0.10956848030018762,
+    "test2_rel_f1": 0.0799249530956848,
+    "test2_full_f1": 0.049906191369606
+  },
+  "checkpoint_digest": "e5ea56cd620f7998703a368f2141e897c0f60b1c9c166f83709089263c7daff5",
+  "artifact_paths": [
+    "runs/20260830_190321_ModernBERT_base_fe95e0/training_receipt.json"
+  ],
+  "tags": [
+    "modernbert",
+    "gum12",
+    "pure_transformer"
+  ],
+  "notes": ""
+}

@@ -185,8 +185,28 @@ class StandardParsevalScorer:
             if not self.include_root and start == 1 and end == total_edus and total_edus > 1:
                 pass
             else:
-                nuc = str(getattr(node, "nuclearity", "") or "")
-                raw_rel = str(getattr(node, "relation", "") or "")
+                left_nuc = str(getattr(left, "nuclearity", "N") or "N")
+                right_nuc = str(getattr(right, "nuclearity", "N") or "N")
+                if left_nuc in ("N", "S") and right_nuc in ("N", "S"):
+                    nuc = f"{left_nuc}{right_nuc}"
+                else:
+                    nuc = str(getattr(node, "nuclearity", "NN") or "NN")
+
+                left_rel = str(getattr(left, "relation", "") or "")
+                right_rel = str(getattr(right, "relation", "") or "")
+                node_rel = str(getattr(node, "relation", "") or "")
+
+                if left_nuc == "S" and left_rel and left_rel != "span":
+                    raw_rel = left_rel
+                elif right_nuc == "S" and right_rel and right_rel != "span":
+                    raw_rel = right_rel
+                elif left_rel and left_rel != "span":
+                    raw_rel = left_rel
+                elif right_rel and right_rel != "span":
+                    raw_rel = right_rel
+                else:
+                    raw_rel = node_rel or "span"
+
                 rel = self.normalize_label(raw_rel)
                 spans.add(BracketSpan(start_edu=start, end_edu=end, nuclearity=nuc, relation=rel))
 

@@ -57,8 +57,8 @@ def test_discourse_unit_internal_node():
 
 def test_discourse_unit_textfields_manipulation():
     full_text = "Primary sentence. Secondary expansion."
-    left = DiscourseUnit(id=1, text="Primary sentence.", start=0, end=16)
-    right = DiscourseUnit(id=2, text="Secondary expansion.", start=18, end=37)
+    left = DiscourseUnit(id=1, text="Primary sentence.", start=0, end=17)
+    right = DiscourseUnit(id=2, text="Secondary expansion.", start=18, end=38)
     parent = DiscourseUnit(id=3, left=left, right=right, relation="elaboration", nuclearity="NS")
 
     parent.clear_textfields()
@@ -72,8 +72,8 @@ def test_discourse_unit_textfields_manipulation():
 
 
 def test_discourse_unit_to_rs3_export(tmp_path: Path):
-    left = DiscourseUnit(id=1, text="First statement.", start=0, end=15, relation="elementary")
-    right = DiscourseUnit(id=2, text="second statement.", start=17, end=33, relation="elementary")
+    left = DiscourseUnit(id=1, text="First statement.", start=0, end=16, relation="elementary")
+    right = DiscourseUnit(id=2, text="second statement.", start=17, end=34, relation="elementary")
     root = DiscourseUnit(
         id=3,
         left=left,

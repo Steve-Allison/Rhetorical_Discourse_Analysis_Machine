@@ -131,8 +131,12 @@ class Document:
         fileout.write_text(str(self.tree).strip())
 
     def drawTree(self, outpath: str | Path, ext: str, outExt: str, docno: int = -1) -> None:
-        """Draw RST tree into a file"""
-        pass
+        """Draw RST tree into a file."""
+        stem = self.outbasename.replace(".out", "").replace(".txt.lisp", "")
+        if self.datatype:
+            stem = stem.replace("." + self.datatype, "")
+        fileout = Path(outpath) / f"{stem}{outExt}"
+        fileout.write_text(str(self.tree).strip(), encoding="utf-8")
 
     def writeEdu(self, outpath: str | Path) -> None:
         raise NotImplementedError
@@ -140,8 +144,11 @@ class Document:
     def mapRelation(self, mappingRel: str | Path) -> None:
         if self.tree is None:
             return
-        if Path(mappingRel).is_file():
-            sys.exit("Mapping RS3 from file not implemented yet")
+        mapping_path = Path(mappingRel)
+        if mapping_path.is_file():
+            import json
+            mapping_dict = json.loads(mapping_path.read_text(encoding="utf-8"))
+            common.performMapping(self.tree, mapping_dict)
         else:
             if mappingRel == "mapping":  # Default general mapping
                 common.performMapping(self.tree, relation_set.mapping)

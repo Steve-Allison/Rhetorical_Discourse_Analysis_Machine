@@ -38,6 +38,7 @@ class CommandReceipt(BaseModel):
 
 COMMANDS = (
     CommandCategory(name="erst-corpus-authority", category="corpus-preparation", argv=("-m", "scripts.derive_gum_erst_relations", "--help"), timeout_seconds=20),
+    CommandCategory(name="modernbert-parser-training", category="parser-training", argv=("-m", "scripts.train_modernbert_treebank", "--help"), timeout_seconds=20),
     CommandCategory(name="dmrst-parser-training", category="parser-training", argv=("-m", "workbench.training.parsers.dmrst_runs", "--help"), timeout_seconds=20),
     CommandCategory(name="unirst-parser-training", category="parser-training", argv=("-m", "workbench.training.parsers.unirst_runs", "--help"), timeout_seconds=20),
     CommandCategory(name="segmenter-training", category="segmenter-training", argv=("-m", "scripts.train_segmenter", "--help"), timeout_seconds=20),

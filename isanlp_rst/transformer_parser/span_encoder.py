@@ -81,12 +81,11 @@ class TransformerBoundarySpanEncoder(nn.Module):
         scores = self.attn_pool.query(sequence_hidden_states).squeeze(-1).unsqueeze(1)  # (B, 1, Seq_Len)
         scores = scores.expand(-1, num_spans, -1)  # (B, Num_Spans, Seq_Len)
 
-        safe_mask = -1e4 if scores.dtype == torch.float32 else -1e3
-        scores = scores.masked_fill(~span_mask, safe_mask)
+        scores = scores.masked_fill(~span_mask, -1e4 if scores.dtype == torch.float32 else -1e3)
         weights = F.softmax(scores, dim=-1)
-        weights = weights.masked_fill(~span_mask, 0.0)
-        norm_sum = weights.sum(dim=-1, keepdim=True).clamp(min=1e-6)
-        weights = (weights / norm_sum).unsqueeze(-1)  # (B, Num_Spans, Seq_Len, 1)
+        has_tokens = span_mask.any(dim=-1, keepdim=True)
+        weights = torch.where(has_tokens, weights, torch.zeros_like(weights))
+        weights = weights.unsqueeze(-1)  # (B, Num_Spans, Seq_Len, 1)
 
         # Weighted sum: (B, Num_Spans, Seq_Len, 1) * (B, 1, Seq_Len, D) -> (B, Num_Spans, D)
         h_attn = torch.sum(weights * sequence_hidden_states.unsqueeze(1), dim=2)

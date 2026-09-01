@@ -30,6 +30,7 @@ class PureTransformerParsingNet(nn.Module):
         raw_relation_inventory: tuple[str, ...] = (),
         nuclearity_labels: tuple[str, ...] = ("NS", "SN", "NN"),
         proj_dim: int = 512,
+        split_pos_weight: float = 5.0,
         device: str | torch.device = "auto",
         torch_dtype: str | torch.dtype = "auto",
         encoder_config: PretrainedConfig | None = None,
@@ -42,6 +43,7 @@ class PureTransformerParsingNet(nn.Module):
         self.raw_relation_inventory = raw_relation_inventory
         self.nuclearity_labels = nuclearity_labels
         self.proj_dim = proj_dim
+        self.split_pos_weight = split_pos_weight
 
         # 1. Resolve Device
         if device == "auto":
@@ -56,7 +58,7 @@ class PureTransformerParsingNet(nn.Module):
 
         # 2. Resolve Dtype
         if torch_dtype == "auto":
-            if self.dev.type in ("cuda", "mps"):
+            if self.dev.type == "cuda":
                 self.dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
             else:
                 self.dtype = torch.float32
@@ -153,7 +155,7 @@ class PureTransformerParsingNet(nn.Module):
 
         # 4. Joint Multi-Task Loss Computation if supervision is provided
         if gold_splits is not None and gold_nucs is not None and gold_rels is not None:
-            gold_splits = gold_splits.to(device=self.dev)
+            gold_splits = gold_splits.to(device=self.dev, dtype=self.dtype)
             gold_nucs = gold_nucs.to(device=self.dev)
             gold_rels = gold_rels.to(device=self.dev)
 
@@ -161,15 +163,24 @@ class PureTransformerParsingNet(nn.Module):
             mask = torch.triu(torch.ones((num_edus, num_edus), device=self.dev), diagonal=1).bool()
             valid_splits = split_scores[:, mask]
             target_splits = gold_splits[:, mask]
-            loss_split = F.binary_cross_entropy_with_logits(valid_splits, target_splits.to(dtype=self.dtype))
+            pos_weight_t = torch.tensor([self.split_pos_weight], device=self.dev, dtype=self.dtype)
+            loss_split = F.binary_cross_entropy_with_logits(valid_splits, target_splits, pos_weight=pos_weight_t)
 
             valid_nuc_scores = nuc_scores[:, mask].reshape(-1, len(self.nuclearity_labels))
             target_nucs = gold_nucs[:, mask].reshape(-1)
-            loss_nuc = F.cross_entropy(valid_nuc_scores, target_nucs, ignore_index=-100)
+            nuc_mask = target_nucs != -100
+            if nuc_mask.any():
+                loss_nuc = F.cross_entropy(valid_nuc_scores[nuc_mask], target_nucs[nuc_mask])
+            else:
+                loss_nuc = torch.tensor(0.0, device=self.dev, dtype=self.dtype)
 
             valid_rel_scores = rel_scores[:, mask].reshape(-1, len(self.raw_relation_inventory))
             target_rels = gold_rels[:, mask].reshape(-1)
-            loss_rel = F.cross_entropy(valid_rel_scores, target_rels, ignore_index=-100)
+            rel_mask = target_rels != -100
+            if rel_mask.any():
+                loss_rel = F.cross_entropy(valid_rel_scores[rel_mask], target_rels[rel_mask])
+            else:
+                loss_rel = torch.tensor(0.0, device=self.dev, dtype=self.dtype)
 
             loss_total = loss_split + loss_nuc + (1.2 * loss_rel)
             results["loss"] = loss_total

@@ -159,8 +159,18 @@ def quality_check(parser: Parser, path: Path) -> None:
 
 
 def main() -> int:
-    print("Loading Parser(hf_model_version='gumrrg', device='auto') ...")
-    parser = Parser(hf_model_version=HF_MODEL_VERSION, device="auto")
+    import argparse
+    parser_arg = argparse.ArgumentParser(description="Docling RST quality check")
+    parser_arg.add_argument("--release-id", default=None, help="Promoted model release ID")
+    parser_arg.add_argument("--model-store", type=Path, default=Path.home() / ".cache/isanlp_rst/model-releases")
+    parser_arg.add_argument("--device", default="auto")
+    args = parser_arg.parse_args()
+
+    print(f"Loading ModernBERT Parser (release: {args.release_id}, device: {args.device}) ...")
+    if args.release_id:
+        parser = Parser.from_model_release(args.model_store, args.release_id, family="modernbert", device=args.device)
+    else:
+        parser = Parser(family="modernbert", device=args.device)
     print("Parser loaded.")
 
     for path in sorted(FIXTURES_DIR.glob("*.docling.json")):

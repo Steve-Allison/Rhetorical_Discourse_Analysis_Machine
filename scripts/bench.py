@@ -19,6 +19,7 @@ baseline. The benchmark fails if any combination diverges in tree structure.
 """
 
 import argparse
+from pathlib import Path
 import pickle
 import statistics
 import sys
@@ -69,6 +70,9 @@ def _time_parse(parser: Parser, text: str, runs: int) -> tuple[float, tuple]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
+    ap.add_argument("--family", default="modernbert", choices=("modernbert", "unirst", "dmrst"))
+    ap.add_argument("--release-id", default=None, help="Model release ID from model store")
+    ap.add_argument("--model-store", type=Path, default=Path.home() / ".cache/isanlp_rst/model-releases")
     ap.add_argument("--version", default="gumrrg", choices=("gumrrg", "rstdt", "rstreebank", "rrtrrg", "unirst"))
     ap.add_argument("--relinventory", default="eng.erst.gum", help="Only used for unirst.")
     ap.add_argument("--runs", type=int, default=5)
@@ -77,11 +81,9 @@ def main() -> int:
 
     text = SHORT_TEXT if args.text_length == "short" else LONG_TEXT
 
-    print(f"Bench: version={args.version}, runs={args.runs}, text-length={args.text_length} ({len(text)} chars)")
+    print(f"Bench: family={args.family}, release_id={args.release_id}, runs={args.runs}, text-length={args.text_length} ({len(text)} chars)")
     print(f"PyTorch: {torch.__version__}")
     print()
-
-    extras = {"relinventory": args.relinventory} if args.version == "unirst" else {}
 
     configs: list[tuple[str, dict]] = [
         ("CPU fp32", dict(device="cpu")),
@@ -111,12 +113,18 @@ def main() -> int:
     for name, kwargs in configs:
         try:
             t0 = time.perf_counter()
-            parser = Parser(
-                hf_model_name="tchewik/isanlp_rst_v3",
-                hf_model_version=args.version,
-                **extras,
-                **kwargs,
-            )
+            if args.family == "modernbert" and args.release_id:
+                parser = Parser.from_model_release(
+                    args.model_store,
+                    args.release_id,
+                    family=args.family,
+                    **kwargs,
+                )
+            else:
+                parser = Parser(
+                    family=args.family,
+                    **kwargs,
+                )
             load_s = time.perf_counter() - t0
 
             median, shape = _time_parse(parser, text, args.runs)

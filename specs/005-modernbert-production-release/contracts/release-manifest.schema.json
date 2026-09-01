@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ModelReleaseManifest",
+  "description": "JSON Schema contract governing isanlp_rst model release packages",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "release_id",
+    "model_task",
+    "architecture",
+    "runtime_contract",
+    "compatibility_range",
+    "source_model_identity",
+    "source_revision",
+    "licence",
+    "use_restrictions",
+    "created_at",
+    "producer_version",
+    "files"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "isanlp_rst_model_release/v1"
+    },
+    "release_id": {
+      "type": "string",
+      "pattern": "^modernbert-v1-[0-9a-f]{12}$"
+    },
+    "model_task": {
+      "type": "string",
+      "const": "rst_tree_parsing"
+    },
+    "architecture": {
+      "type": "string",
+      "const": "PureTransformerParsingNet"
+    },
+    "runtime_contract": {
+      "type": "string",
+      "const": "isanlp_rst.parser/modernbert-v1"
+    },
+    "compatibility_range": {
+      "type": "string",
+      "pattern": "^>=5\\.[0-9]+\\.[0-9]+,<[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "source_model_identity": {
+      "type": "string",
+      "const": "answerdotai/ModernBERT-base"
+    },
+    "source_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "licence": {
+      "type": "string",
+      "enum": ["Apache-2.0", "CC-BY-NC-4.0", "MIT"]
+    },
+    "use_restrictions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+.*$"
+    },
+    "files": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["path", "role", "size_bytes", "sha256"],
+        "properties": {
+          "path": { "type": "string" },
+          "role": {
+            "type": "string",
+            "enum": ["encoder_config", "parser_state", "relation_inventory", "tokenizer", "model_card"]
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

@@ -69,7 +69,7 @@ class DiscourseUnit:
             self.end = right.end if right is not None else None
 
         if orig_text is not None and self.start is not None and self.end is not None:
-            self.text = orig_text[self.start : self.end + 1].strip()
+            self.text = orig_text[self.start : self.end]
         else:
             self.text = text.strip()
 
@@ -105,7 +105,7 @@ class DiscourseUnit:
     def fill_textfields(self, full_text: str) -> None:
         """Recursively populate the text attribute from full_text using node character spans."""
         if self.start is not None and self.end is not None:
-            self.text = full_text[self.start : self.end + 1].strip()
+            self.text = full_text[self.start : self.end]
         if self.left is not None:
             self.left.fill_textfields(full_text)
         if self.right is not None:

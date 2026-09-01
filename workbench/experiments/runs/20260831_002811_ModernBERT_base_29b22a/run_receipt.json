@@ -1,0 +1,38 @@
+{
+  "run_id": "20260831_002811_ModernBERT_base_29b22a",
+  "timestamp_utc": "2026-08-31T00:28:11.994759+00:00",
+  "git_commit": "ef56bf0744aeceea0368df666bdae1f2e5856111",
+  "model_id": "answerdotai/ModernBERT-base",
+  "model_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "experiment_type": "benchmark",
+  "dataset_name": "GUM-12.1.0-TEST2-HeldOut",
+  "dataset_digest": "dab2ebf43939cbb62a3fdabac8705b003b61af82d7fca6c3c302ed88a04f5468",
+  "hyperparameters": {
+    "device": "auto",
+    "split": "test2",
+    "torch_version": "2.13.0",
+    "num_samples": 26,
+    "release_id": "modernbert-v1-e5ea56cd620f"
+  },
+  "eval_metrics": {
+    "span_f1": 0.19399624765478424,
+    "nuclearity_f1": 0.0,
+    "relation_f1": 0.011257035647279548,
+    "full_f1": 0.0,
+    "gold_spans_count": 2665.0,
+    "pred_spans_count": 2665.0,
+    "elapsed_seconds": 2075.404675166006,
+    "throughput_docs_per_sec": 0.01252767728198373
+  },
+  "checkpoint_digest": "59c67afe0c39359efc0d74a3bd6b947ff96fac0fe88f4c1733e73f7c7ca2f0ec",
+  "artifact_paths": [],
+  "tags": [
+    "modernbert",
+    "gum",
+    "benchmark",
+    "parseval",
+    "held_out",
+    "test2"
+  ],
+  "notes": "Git commit: ef56bf0744aeceea0368df666bdae1f2e5856111"
+}

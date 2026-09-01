@@ -1,0 +1,130 @@
+{
+  "run_id": "20260901_134145_ModernBERT_base_e8cfd4",
+  "timestamp_utc": "2026-09-01T13:41:45.351603+00:00",
+  "git_commit": "06d16d8d9a27719e4d6524db7ff585805ee17fa4",
+  "model_id": "answerdotai/ModernBERT-base",
+  "model_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "experiment_type": "benchmark",
+  "dataset_name": "GUM-12.1.0-TEST-HeldOut",
+  "dataset_digest": "dab2ebf43939cbb62a3fdabac8705b003b61af82d7fca6c3c302ed88a04f5468",
+  "hyperparameters": {
+    "device": "auto",
+    "split": "test",
+    "torch_version": "2.13.0",
+    "num_samples": 32,
+    "release_id": "modernbert-v1-a52b70fbc1a3"
+  },
+  "eval_metrics": {
+    "span_f1": 0.3351278600269179,
+    "nuclearity_f1": 0.26056527590847917,
+    "relation_f1": 0.1730820995962315,
+    "full_f1": 0.16096904441453566,
+    "gold_spans_count": 3715.0,
+    "pred_spans_count": 3715.0,
+    "elapsed_seconds": 1951.8967717920314,
+    "throughput_docs_per_sec": 0.01639430960819761,
+    "per_relation": {
+      "adversative": {
+        "precision": 0.20610687022900764,
+        "recall": 0.10546875,
+        "f1": 0.13953488372093026,
+        "support": 256
+      },
+      "attribution": {
+        "precision": 0.32677165354330706,
+        "recall": 0.3688888888888889,
+        "f1": 0.34655532359081415,
+        "support": 225
+      },
+      "causal": {
+        "precision": 0.11666666666666667,
+        "recall": 0.04861111111111111,
+        "f1": 0.06862745098039216,
+        "support": 144
+      },
+      "context": {
+        "precision": 0.18250950570342206,
+        "recall": 0.14634146341463414,
+        "f1": 0.16243654822335024,
+        "support": 328
+      },
+      "contingency": {
+        "precision": 0.2191780821917808,
+        "recall": 0.3902439024390244,
+        "f1": 0.2807017543859649,
+        "support": 82
+      },
+      "elaboration": {
+        "precision": 0.24047186932849365,
+        "recall": 0.32919254658385094,
+        "f1": 0.2779234399580493,
+        "support": 805
+      },
+      "evaluation": {
+        "precision": 0.045454545454545456,
+        "recall": 0.0070921985815602835,
+        "f1": 0.012269938650306749,
+        "support": 141
+      },
+      "explanation": {
+        "precision": 0.06923076923076923,
+        "recall": 0.03896103896103896,
+        "f1": 0.04986149584487534,
+        "support": 231
+      },
+      "joint": {
+        "precision": 0.17222222222222222,
+        "recall": 0.04240766073871409,
+        "f1": 0.06805708013172337,
+        "support": 731
+      },
+      "mode": {
+        "precision": 0.5,
+        "recall": 0.20253164556962025,
+        "f1": 0.2882882882882883,
+        "support": 79
+      },
+      "organization": {
+        "precision": 0.1623931623931624,
+        "recall": 0.1784037558685446,
+        "f1": 0.17002237136465323,
+        "support": 213
+      },
+      "purpose": {
+        "precision": 0.3694581280788177,
+        "recall": 0.5474452554744526,
+        "f1": 0.4411764705882353,
+        "support": 137
+      },
+      "restatement": {
+        "precision": 0.15625,
+        "recall": 0.0684931506849315,
+        "f1": 0.09523809523809523,
+        "support": 73
+      },
+      "same-unit": {
+        "precision": 0.06666666666666667,
+        "recall": 0.014423076923076924,
+        "f1": 0.023715415019762848,
+        "support": 208
+      },
+      "topic": {
+        "precision": 0.07317073170731707,
+        "recall": 0.04838709677419355,
+        "f1": 0.058252427184466014,
+        "support": 62
+      }
+    }
+  },
+  "checkpoint_digest": "84144c000fdd8f089d03ccfd9dd396640938b7325a085f9b16a3703939c957c8",
+  "artifact_paths": [],
+  "tags": [
+    "modernbert",
+    "gum",
+    "benchmark",
+    "parseval",
+    "held_out",
+    "test"
+  ],
+  "notes": "Git commit: 06d16d8d9a27719e4d6524db7ff585805ee17fa4"
+}

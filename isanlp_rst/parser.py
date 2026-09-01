@@ -271,7 +271,7 @@ class Parser:
             return None
         try:
             return json.loads(path.read_text(encoding="utf-8"))
-        except OSError, json.JSONDecodeError:
+        except (OSError, json.JSONDecodeError):
             return None
 
     def __call__(self, text: str):

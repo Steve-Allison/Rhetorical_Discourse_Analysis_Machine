@@ -49,7 +49,7 @@ class ExperimentRecord:
     dataset_name: str
     dataset_digest: str
     hyperparameters: dict[str, Any]
-    eval_metrics: dict[str, float]
+    eval_metrics: dict[str, Any]
     checkpoint_digest: str | None = None
     artifact_paths: list[str] = field(default_factory=list)
     tags: list[str] = field(default_factory=list)
@@ -98,7 +98,7 @@ class CentralExperimentLedger:
         dataset_name: str,
         dataset_digest: str,
         hyperparameters: dict[str, Any],
-        eval_metrics: dict[str, float],
+        eval_metrics: dict[str, Any],
         checkpoint_digest: str | None = None,
         tags: list[str] | None = None,
         notes: str = "",
