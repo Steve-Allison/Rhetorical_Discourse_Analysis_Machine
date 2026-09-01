@@ -62,7 +62,7 @@ class ProductionIngestCache:
             raise _cache_error(
                 request_identity,
                 code="cache_read_failed",
-                category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+                category=FailureCategory.PERSISTENCE_FAILURE,
                 message="cached_record_could_not_be_read_from_storage",
                 retryability=Retryability.UNKNOWN,
                 cause=exc,

@@ -51,21 +51,16 @@ class _ProductionService(Protocol):
 
 
 def cmd_parse(args: argparse.Namespace) -> int:
-    """Run one canonical production analysis or emit one safe typed failure."""
+    """Run one canonical production analysis or emit one safe typed failure.
+
+    Boundary errors are wrapped per phase so each label stays true: source
+    acquisition, provider construction, and analysis carry distinct failures,
+    and unexpected internal exceptions propagate natively rather than being
+    mislabelled as client errors.
+    """
 
     try:
         source = _source_from_cli(args)
-        ingestor = _configured_ingestor(args)
-        outcome = ingestor.analyse(
-            source,
-            analysis_policy=_analysis_policy(args),
-            cache_directory=Path(args.cache_directory) if args.cache_directory else None,
-        )
-        payload = _render_outcome(outcome, args.format)
-    except ProductionIngestError as exc:
-        payload = serialize_contract(exc.failure) + b"\n"
-        _write_payload(payload, args.output, stream=sys.stderr.buffer)
-        return 2
     except (OSError, UnicodeError, ValueError, TypeError) as exc:
         payload = serialize_contract(
             _safe_boundary_failure(
@@ -78,7 +73,31 @@ def cmd_parse(args: argparse.Namespace) -> int:
         ) + b"\n"
         _write_payload(payload, args.output, stream=sys.stderr.buffer)
         return 2
-    _write_payload(payload, args.output, stream=sys.stdout.buffer)
+    try:
+        ingestor = _configured_ingestor(args)
+    except (OSError, ValueError) as exc:
+        payload = serialize_contract(
+            _safe_boundary_failure(
+                exc,
+                stage=LifecycleStage.INFERENCE,
+                category=FailureCategory.PROVIDER_UNAVAILABLE,
+                code="cli_provider_configuration_failed",
+                message_template="configured_parser_could_not_be_created",
+            )
+        ) + b"\n"
+        _write_payload(payload, args.output, stream=sys.stderr.buffer)
+        return 2
+    try:
+        outcome = ingestor.analyse(
+            source,
+            analysis_policy=_analysis_policy(args),
+            cache_directory=Path(args.cache_directory) if args.cache_directory else None,
+        )
+    except ProductionIngestError as exc:
+        payload = serialize_contract(exc.failure) + b"\n"
+        _write_payload(payload, args.output, stream=sys.stderr.buffer)
+        return 2
+    _write_payload(_render_outcome(outcome, args.format), args.output, stream=sys.stdout.buffer)
     return 0
 
 
@@ -239,18 +258,7 @@ def _handler_type(ingestor: _ProductionService) -> type[BaseHTTPRequestHandler]:
                 data = json.loads(self.rfile.read(length).decode("utf-8", errors="strict"))
                 if not isinstance(data, dict):
                     raise ValueError("request body must be a JSON object")
-                outcome = ingestor.analyse(_source_from_http(data))
-                self._send(HTTPStatus.OK, serialize_contract(outcome))
-            except ProductionIngestError as exc:
-                status = (
-                    HTTPStatus.SERVICE_UNAVAILABLE
-                    if exc.failure.category.value == "provider_unavailable"
-                    else HTTPStatus.UNPROCESSABLE_ENTITY
-                )
-                self._send(
-                    status,
-                    serialize_contract(exc.failure),
-                )
+                source = _source_from_http(data)
             except (ValueError, TypeError, UnicodeError, json.JSONDecodeError) as exc:
                 self._send(
                     HTTPStatus.BAD_REQUEST,
@@ -264,6 +272,18 @@ def _handler_type(ingestor: _ProductionService) -> type[BaseHTTPRequestHandler]:
                         )
                     ),
                 )
+                return
+            try:
+                outcome = ingestor.analyse(source)
+            except ProductionIngestError as exc:
+                status = (
+                    HTTPStatus.SERVICE_UNAVAILABLE
+                    if exc.failure.category.value == "provider_unavailable"
+                    else HTTPStatus.UNPROCESSABLE_ENTITY
+                )
+                self._send(status, serialize_contract(exc.failure))
+                return
+            self._send(HTTPStatus.OK, serialize_contract(outcome))
 
         def _send(self, status: HTTPStatus, payload: bytes) -> None:
             self.send_response(status.value)
@@ -399,10 +419,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             serialize_contract(
                 _safe_boundary_failure(
                     exc,
-                    stage=LifecycleStage.INFERENCE,
-                    category=FailureCategory.PROVIDER_UNAVAILABLE,
-                    code="cli_provider_configuration_failed",
-                    message_template="configured_parser_could_not_be_created",
+                    stage=LifecycleStage.ACQUISITION,
+                    category=FailureCategory.MALFORMED_INPUT,
+                    code="cli_command_failed",
+                    message_template="cli_command_could_not_complete",
                 )
             )
             + b"\n"

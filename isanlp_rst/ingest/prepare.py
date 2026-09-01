@@ -119,7 +119,7 @@ def prepare_source(
         harvested, source_contract = inventory_source(artifact)
     except ModuleNotFoundError:
         raise
-    except (OSError, TypeError, UnicodeError, ValueError) as exc:
+    except (TypeError, UnicodeError, ValueError) as exc:
         raise SourceClassificationError(
             "source failed its declared classification contract"
         ) from exc

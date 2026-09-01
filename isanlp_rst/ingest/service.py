@@ -228,7 +228,7 @@ class ProductionIngestor:
                 cause=_safe_cause(exc, FailureCategory.MALFORMED_INPUT),
             )
             raise ProductionIngestError(failure) from exc
-        except (TypeError, ValueError) as exc:
+        except ValueError as exc:
             failure = ProductionFailure(
                 failed_stage=LifecycleStage.PREPARATION,
                 category=FailureCategory.VALIDATION_FAILURE,
@@ -408,9 +408,15 @@ class ProductionIngestor:
                 raise ProductionIngestError(failure) from exc
             if resolved_policy.output_formalism is OutputFormalism.ERST_GRAPH:
                 if not isinstance(parser, ErstCompletionParser):
-                    raise TypeError(
-                        "subdivided eRST analysis requires document-global completion support"
+                    failure = ProductionFailure(
+                        failed_stage=LifecycleStage.INFERENCE,
+                        category=FailureCategory.PROVIDER_UNAVAILABLE,
+                        code="erst_completion_unsupported",
+                        retryability=Retryability.NOT_RETRYABLE,
+                        message_template="subdivided_erst_requires_document_global_completion_support",
+                        completed=PreparationCompletedEvidence(preparation=preparation),
                     )
+                    raise ProductionIngestError(failure)
                 try:
                     parser_result = parser.complete_erst_document(
                         _rst_document(
@@ -430,7 +436,7 @@ class ProductionIngestor:
                         code="document_global_erst_completion_failed",
                         retryability=Retryability.UNKNOWN,
                         message_template="erst_completion_failed_after_primary_recombination",
-                        completed=_inference_completed(preparation, (parser_result,)),
+                        completed=PreparationCompletedEvidence(preparation=preparation),
                         cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
                     )
                     raise ProductionIngestError(failure) from exc
@@ -477,7 +483,7 @@ class ProductionIngestor:
                 composite=parser_result.semantic.composite_identity,
                 recombination=parser_result.semantic.recombination,
             )
-        except Exception as exc:
+        except (TypeError, ValueError) as exc:
             failure = ProductionFailure(
                 failed_stage=LifecycleStage.VALIDATION,
                 category=FailureCategory.VALIDATION_FAILURE,
@@ -486,6 +492,17 @@ class ProductionIngestor:
                 message_template="analysis_evidence_failed_required_validation",
                 completed=_inference_completed(preparation, (parser_result,)),
                 cause=_safe_cause(exc, FailureCategory.VALIDATION_FAILURE),
+            )
+            raise ProductionIngestError(failure) from exc
+        except Exception as exc:
+            failure = ProductionFailure(
+                failed_stage=LifecycleStage.VALIDATION,
+                category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+                code="analysis_validation_internal_failure",
+                retryability=Retryability.UNKNOWN,
+                message_template="analysis_validation_failed_before_a_verdict",
+                completed=_inference_completed(preparation, (parser_result,)),
+                cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
             )
             raise ProductionIngestError(failure) from exc
         composite_identity = parser_result.semantic.composite_identity

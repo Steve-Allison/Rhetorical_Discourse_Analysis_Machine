@@ -72,7 +72,7 @@ def test_cache_read_io_error_is_unknown_not_corrupt(
         ingestor.analyse(source, cache_directory=tmp_path)
     assert raised.value.failure.failed_stage is LifecycleStage.CACHE_RETRIEVAL
     assert raised.value.failure.code == "cache_read_failed"
-    assert raised.value.failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
+    assert raised.value.failure.category is FailureCategory.PERSISTENCE_FAILURE
     assert raised.value.failure.retryability is Retryability.UNKNOWN
     assert "private operating-system detail" not in str(raised.value)
 

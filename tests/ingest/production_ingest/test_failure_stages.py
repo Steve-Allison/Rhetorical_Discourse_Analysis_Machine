@@ -1,5 +1,7 @@
 """Stable nine-stage production failure taxonomy and causality."""
 
+from typing import Any
+
 import pytest
 from pydantic import ValidationError
 
@@ -8,11 +10,26 @@ from isanlp_rst.ingest.contracts.failure import (
     FailureCategory,
     LifecycleStage,
     NoCompletedEvidence,
+    PreparationCompletedEvidence,
     ProductionFailure,
     Retryability,
 )
 from isanlp_rst.ingest.contracts.base import SemanticVersion
 from isanlp_rst.ingest.contracts.preparation import CapacityUnit, ParserCapacity
+from isanlp_rst.ingest.contracts.analysis import AnalysisPolicy
+from isanlp_rst.ingest.contracts.inference import OutputFormalism
+from isanlp_rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+
+from .conftest import ParserBuilder
+
+
+def _erst_policy() -> AnalysisPolicy:
+    return AnalysisPolicy.model_validate(
+        {
+            **DEFAULT_ANALYSIS_POLICY.model_dump(exclude={"semantic_digest"}),
+            "output_formalism": OutputFormalism.ERST_GRAPH,
+        }
+    )
 
 
 @pytest.mark.parametrize("stage", tuple(LifecycleStage))
@@ -121,6 +138,130 @@ def test_unexpected_internal_failure_is_classified_unknown(
             SourceArtifact.from_text("content", source_name="source.txt")
         )
     assert raised.value.failure.failed_stage is LifecycleStage.PREPARATION
+    assert raised.value.failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
+    assert raised.value.failure.retryability is Retryability.UNKNOWN
+    assert "PRIVATE" not in str(raised.value)
+
+
+def test_harvest_io_error_is_internal_unknown_not_malformed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def unreadable(*_args: object) -> None:
+        raise OSError("PRIVATE io detail")
+
+    monkeypatch.setattr("isanlp_rst.ingest._harvest.inventory_source", unreadable)
+    with pytest.raises(ProductionIngestError) as raised:
+        ProductionIngestor().prepare(
+            SourceArtifact.from_text("content", source_name="source.txt")
+        )
+    assert raised.value.failure.failed_stage is LifecycleStage.PREPARATION
+    assert raised.value.failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
+    assert raised.value.failure.retryability is Retryability.UNKNOWN
+    assert "PRIVATE" not in str(raised.value)
+
+
+def test_preparation_type_error_is_internal_unknown_not_validation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def broken(*_args: object) -> None:
+        raise TypeError("PRIVATE bug detail")
+
+    monkeypatch.setattr("isanlp_rst.ingest.prepare.apply_policy", broken)
+    with pytest.raises(ProductionIngestError) as raised:
+        ProductionIngestor().prepare(
+            SourceArtifact.from_text("content", source_name="source.txt")
+        )
+    assert raised.value.failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
+    assert raised.value.failure.retryability is Retryability.UNKNOWN
+    assert "PRIVATE" not in str(raised.value)
+
+
+def test_completed_evidence_must_precede_the_failed_stage() -> None:
+    preparation = ProductionIngestor().prepare(
+        SourceArtifact.from_text("content", source_name="source.txt")
+    )
+    evidence = PreparationCompletedEvidence(preparation=preparation)
+    with pytest.raises(ValidationError, match="before the failed stage"):
+        ProductionFailure(
+            failed_stage=LifecycleStage.PREPARATION,
+            category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+            code="stage_operation_failed",
+            retryability=Retryability.UNKNOWN,
+            message_template="stage_operation_failed",
+            completed=evidence,
+        )
+    inference_failure = ProductionFailure(
+        failed_stage=LifecycleStage.INFERENCE,
+        category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
+        code="stage_operation_failed",
+        retryability=Retryability.UNKNOWN,
+        message_template="stage_operation_failed",
+        completed=evidence,
+    )
+    assert inference_failure.completed.kind == "preparation"
+
+
+def test_subdivided_erst_without_completion_support_is_typed_provider_unavailable(
+    parser_builder: ParserBuilder,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from isanlp_rst.contracts import RstDocument
+
+    text = "First. Second. Third. Fourth."
+    parser = parser_builder(maximum=2)
+    unit_result = parser.analyse_document(
+        RstDocument.from_text(text, document_id="subdivided.txt")
+    )
+    source = SourceArtifact.from_edus(
+        ("First.", "Second.", "Third.", "Fourth."), source_name="subdivided.txt"
+    )
+    # The deterministic fixture parser has no subdivided-unit support; unit
+    # analysis and recombination are not under test here, only the branch that
+    # fires when the recombined parser lacks document-global eRST completion.
+    monkeypatch.setattr(
+        "isanlp_rst.ingest.service._analyse_parser_unit",
+        lambda *_args, **_kwargs: unit_result,
+    )
+    monkeypatch.setattr(
+        "isanlp_rst.ingest.recombination.recombine_parser_results",
+        lambda **_kwargs: unit_result,
+    )
+    ingestor = ProductionIngestor(parser=parser)
+    with pytest.raises(ProductionIngestError) as raised:
+        ingestor.analyse(source, analysis_policy=_erst_policy())
+    assert raised.value.failure.failed_stage is LifecycleStage.INFERENCE
+    assert raised.value.failure.code == "erst_completion_unsupported"
+    assert raised.value.failure.category is FailureCategory.PROVIDER_UNAVAILABLE
+    assert raised.value.failure.retryability is Retryability.NOT_RETRYABLE
+    assert raised.value.failure.completed.kind == "preparation"
+
+
+def test_validation_internal_failure_is_not_labelled_a_validation_verdict(
+    parser_builder: ParserBuilder,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from isanlp_rst.ingest import validation as validation_module
+
+    original = validation_module.build_analysis_validation_receipt
+    calls = {"count": 0}
+
+    def broken_after_parser_internal_call(*args: Any, **kwargs: Any) -> Any:
+        calls["count"] += 1
+        if calls["count"] > 1:
+            raise RuntimeError("PRIVATE validator bug")
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(
+        "isanlp_rst.ingest.validation.build_analysis_validation_receipt",
+        broken_after_parser_internal_call,
+    )
+    ingestor = ProductionIngestor(parser=parser_builder())
+    with pytest.raises(ProductionIngestError) as raised:
+        ingestor.analyse(
+            SourceArtifact.from_text("First. Second.", source_name="source.txt")
+        )
+    assert raised.value.failure.failed_stage is LifecycleStage.VALIDATION
+    assert raised.value.failure.code == "analysis_validation_internal_failure"
     assert raised.value.failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
     assert raised.value.failure.retryability is Retryability.UNKNOWN
     assert "PRIVATE" not in str(raised.value)
