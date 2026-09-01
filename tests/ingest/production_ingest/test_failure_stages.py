@@ -66,6 +66,7 @@ def test_planning_failure_is_typed_at_the_planning_stage() -> None:
         )
     assert raised.value.failure.failed_stage is LifecycleStage.PLANNING
     assert raised.value.failure.completed.kind == "acquisition"
+    assert raised.value.failure.retryability is Retryability.NOT_RETRYABLE
 
 
 def test_preparation_validation_failure_retains_complete_preparation(
@@ -81,5 +82,45 @@ def test_preparation_validation_failure_retains_complete_preparation(
         )
     assert raised.value.failure.failed_stage is LifecycleStage.VALIDATION
     assert raised.value.failure.completed.kind == "preparation"
+    assert raised.value.failure.retryability is Retryability.NOT_RETRYABLE
     assert "PRIVATE" not in str(raised.value)
     assert isinstance(raised.value.__cause__, Exception)
+
+
+def test_retryability_is_mandatory_on_every_failure() -> None:
+    with pytest.raises(ValidationError, match="retryability"):
+        ProductionFailure.model_validate(
+            {
+                "failed_stage": LifecycleStage.ACQUISITION,
+                "category": FailureCategory.MALFORMED_INPUT,
+                "code": "invalid_source",
+                "message_template": "invalid_source",
+            }
+        )
+
+
+def test_unconfigured_parser_failure_is_not_retryable() -> None:
+    with pytest.raises(ProductionIngestError) as raised:
+        ProductionIngestor().analyse(
+            SourceArtifact.from_text("content", source_name="source.txt")
+        )
+    assert raised.value.failure.failed_stage is LifecycleStage.INFERENCE
+    assert raised.value.failure.category is FailureCategory.PROVIDER_UNAVAILABLE
+    assert raised.value.failure.retryability is Retryability.NOT_RETRYABLE
+
+
+def test_unexpected_internal_failure_is_classified_unknown(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def unexpected(*_args: object, **_kwargs: object) -> None:
+        raise RuntimeError("PRIVATE internal detail")
+
+    monkeypatch.setattr("isanlp_rst.ingest.service.prepare_source", unexpected)
+    with pytest.raises(ProductionIngestError) as raised:
+        ProductionIngestor().prepare(
+            SourceArtifact.from_text("content", source_name="source.txt")
+        )
+    assert raised.value.failure.failed_stage is LifecycleStage.PREPARATION
+    assert raised.value.failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
+    assert raised.value.failure.retryability is Retryability.UNKNOWN
+    assert "PRIVATE" not in str(raised.value)
