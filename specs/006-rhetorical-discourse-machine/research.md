@@ -124,9 +124,10 @@ semantics — rejected by FR-013 and recorded in Central's own registration deci
 
 **Decision**: Feature order: (1) aggregate analysis contract, (2) workbench promotion
 system, (3) RST provider adapter — all three specified and cross-checked before
-migration (FR-025) — then repository migration, then providers strictly on workbench
-evidence in priority order Dung → IBIS → SDRT → Toulmin → Walton → PDTB-if-ever, with
-cross-provider orchestration last.
+migration (FR-025) — then (4) repository migration as its own decision-closed feature
+(spec Assumptions, amended per analysis finding I1), then providers strictly on
+workbench evidence in priority order Dung → IBIS → SDRT → Toulmin → Walton →
+PDTB-if-ever, with cross-provider orchestration last.
 
 **Rationale**: recorded owner rulings in spec Assumptions (2026-08-31/09-01): Dung and
 IBIS are formal and deterministic (proof- and property-testable per FR-022's formal

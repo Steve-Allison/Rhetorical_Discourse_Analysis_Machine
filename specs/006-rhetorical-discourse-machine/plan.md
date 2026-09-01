@@ -36,7 +36,7 @@ follow-on features the spec enumerates, gated exactly as FR-024/FR-025 require.
 
 **Constraints**: `isanlp_rst` import name and public contract preserved across relocation (FR-009); production code never imports `workbench/` (FR-006); boundary directories exist only after first promotion (FR-002); migration blocked while protected workbench runs are live or unreconciled (FR-026 — four untracked ModernBERT run directories and a modified central ledger exist in the working tree today); machine is permanently analysis-only; boundaries bind to canonical `coe:` framework identifiers
 
-**Scale/Scope**: one person, one machine (FR-028, SC-011); seven technique boundaries plus workbench, tests, machine aggregation, and planning material (SC-001); ten follow-on features
+**Scale/Scope**: one person, one machine (FR-028, SC-011); seven technique boundaries plus workbench, tests, machine aggregation, and planning material (SC-001); eleven follow-on features (repository migration named as its own feature per analysis finding I1)
 
 ## Constitution Check
 

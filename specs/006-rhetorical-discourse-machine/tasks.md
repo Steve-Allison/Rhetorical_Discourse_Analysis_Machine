@@ -69,7 +69,7 @@ records the `production-boundary` run output.
 
 ### Implementation for User Story 2
 
-- [ ] T004 [P] [US2] Enumerate every top-level repository path (`ls -d */` plus root files) and assign each to exactly one row of `specs/006-rhetorical-discourse-machine/contracts/architecture-boundaries.md`; flag any path with no owner or two candidate owners as a defect to resolve in the same pass; record the complete table in `specs/006-rhetorical-discourse-machine/evidence/boundary-audit.md`
+- [ ] T004 [P] [US2] Enumerate every top-level repository path (`ls -d */` plus root files) and assign each to exactly one row of `specs/006-rhetorical-discourse-machine/contracts/architecture-boundaries.md`; flag any path with no owner or two candidate owners as a defect to resolve in the same pass — the one known two-owner candidate is `tests/offline/research` (workbench-evaluation suites under `tests/`; analysis finding I2): resolve it under FR-007's distinction-within-`tests/` allowance and record the ruling in the roster's `tests/` row; record the complete table in `specs/006-rhetorical-discourse-machine/evidence/boundary-audit.md`
 - [ ] T005 [P] [US2] Run `pixi run production-boundary` and record its output in `specs/006-rhetorical-discourse-machine/evidence/boundary-audit.md`, together with the explicit statement that the workbench-import and distributable-member checks of research decision D5 are acceptance items of the aggregate-contract feature, not yet implemented
 
 **Checkpoint**: SC-001's "zero ambiguous owners" is demonstrated for the current tree.
@@ -137,7 +137,7 @@ green over the changed docs.
 
 - [ ] T010 [P] Run `pixi run mdlint` and confirm green over all evidence and governance docs added by T001–T009; record the summary line in `specs/006-rhetorical-discourse-machine/evidence/README.md`
 - [ ] T011 Run `$speckit-analyze` for cross-artifact consistency across spec.md, plan.md, and tasks.md; resolve any findings in the same pass (FR-025's consistency-check obligation for this feature)
-- [ ] T012 Append a completion note to `specs/006-rhetorical-discourse-machine/checklists/requirements.md` recording which success criteria are demonstrated now (SC-001, SC-007 via T004; identity binding via T006) and which are deferred to their named follow-on features with the deferral authority (spec §Scope Boundaries)
+- [ ] T012 Append a completion note to `specs/006-rhetorical-discourse-machine/checklists/requirements.md` recording which success criteria are demonstrated now (SC-001, SC-007 via T004; identity binding via T006) and which are deferred to their named follow-on features with the deferral authority (spec §Scope Boundaries); in the same note, log the eRST capability-representation question as a named design input to the aggregate-contract feature (analysis finding U1: one provider serves both `rst` and `erst` identities while the data model's `Provider.technique_id` is single-valued — feature 007 must either allow multiple technique identities per provider or model eRST as a declared result-kind of the `rst` capability)
 
 ---
 
