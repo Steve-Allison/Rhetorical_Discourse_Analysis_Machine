@@ -27,6 +27,28 @@ Every technique the machine knows about reports exactly one of:
 | `unavailable` | stable `reason` | Enumerated reasons, stable across releases: `no_promoted_implementation`, `withheld`, `retired`, `replaced`, `missing_structured_input` (Dung/IBIS requests lacking their required input, FR-016/FR-017). Never a stub, dummy analysis, or fabricated structure (SC-007). |
 | `failed` | typed error | Per-request. Never suppresses another provider's success (FR-014, SC-005). |
 
+## Retryability classification (machine-wide standard)
+
+The RST provider's failure contract (`isanlp_rst/ingest/contracts/failure.py`) sets the
+standard every provider and the machine layer inherit:
+
+1. **No internal retries, ever.** A failure happens exactly once and propagates as a
+   typed result. No provider, and no machine layer, loops, backs off, or re-attempts.
+2. **Every `failed` outcome carries a retryability classification** —
+   `retryable` | `not_retryable` | `unknown` — as a mandatory field with no default.
+   The classification is information for the caller, who alone decides whether to
+   re-invoke; the machine never acts on it.
+3. **`unavailable` is never retryable.** Unavailability changes only through an
+   external state change (installation, configuration, promotion), so re-asking
+   without one is defined to return the same answer — claiming otherwise is a
+   contract validation error, exactly as the RST failure contract already enforces.
+4. **Deterministic failures are `not_retryable`** (validation, malformed or
+   unsupported input, identity contradiction): providers are deterministic by
+   construction, so a retry reproduces the failure. `unknown` is reserved for
+   unexpected internal failures where transience is possible but unproven.
+   `retryable` may be claimed only where a provider demonstrates genuine transience —
+   no provider does today, and the burden of proof sits with the claimant.
+
 ## Aggregate behaviour
 
 1. An aggregate request over N techniques returns N explicit outcomes — successful native

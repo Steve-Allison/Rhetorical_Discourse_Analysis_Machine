@@ -55,7 +55,7 @@ An independently callable, promoted implementation for one technique.
 |---|---|---|
 | `available` | Provider accepts requests | — |
 | `unavailable` | No promoted implementation, or withheld | `reason`: stable, enumerated string (FR-020, SC-010) |
-| `failed` | Provider errored on this request | typed error; never fabricated output (FR-020, SC-007) |
+| `failed` | Provider errored on this request | typed error with a mandatory retryability classification (`retryable` / `not_retryable` / `unknown`; see the capability contract's machine-wide standard); never fabricated output (FR-020, SC-007) |
 
 Transitions: `unavailable → available` only via a PromotionDecision with outcome
 `promote`; `available → unavailable` via `withhold`/`retire`; `failed` is per-request,
