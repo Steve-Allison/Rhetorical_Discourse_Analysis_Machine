@@ -56,6 +56,20 @@ recorded in those documents as the RST provider package and historical source pr
 action (external references in sibling repos update in the same pass); renaming the
 distribution would break every consumer for zero analytical gain.
 
+**Migration-feature notes (recorded 2026-09-01, owner-directed)** — two rename
+consequences the migration feature MUST carry as explicit tasks, not discover:
+
+1. **Sibling-repo references**: every hardcoded `~/AI_Projects+Code/isanlp_rst` path in
+   the workspace estate (workspace scripts, graphify configuration, cross-repo docs)
+   is inventoried by search and updated in the same migration pass; GitHub redirects
+   the old repository URL, but the local git remote and `pyproject.toml`
+   `[project.urls]` are updated explicitly.
+2. **Per-project memory and settings**: the Claude per-project directory under
+   `~/.claude/projects/` is keyed to the filesystem path, so the directory rename
+   orphans project memory, rules, and local settings unless they are migrated to the
+   new path-keyed directory in the same pass — an explicit migration task with a
+   post-rename verification that memory loads in the renamed project.
+
 **Alternatives considered**: renaming the distribution to match the machine (breaks
 FR-009's preserved contract); keeping the repo name `isanlp_rst` and treating the machine
 name as a docs-only alias (fails FR-001's "complete project identity").
