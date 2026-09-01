@@ -4,11 +4,12 @@ from collections import Counter
 from collections.abc import Sequence
 import math
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from uuid import uuid4
 
 from isanlp_rst._provenance import resolve_package_version
 from isanlp_rst.contracts import RstAnalysis, RstDocument
+from isanlp_rst.contracts.erst import DecodeRejectionReason
 from isanlp_rst.english.erst.completer import ErstCompletionTrace
 from isanlp_rst.ingest.contracts.analysis import (
     AnalysedDocument,
@@ -96,8 +97,6 @@ def build_parser_analysis_result(
     erst = (
         _erst_evidence(
             erst_trace,
-            final_analysis,
-            policy,
             composite,
             document_identity=document.document_id,
         )
@@ -165,11 +164,8 @@ def complete_parser_analysis_result_with_erst(
     primary_semantic = primary_result.semantic
     if primary_semantic.policy.output_formalism is not OutputFormalism.RST_TREE:
         raise ValueError("document-global eRST completion requires an RST primary result")
-    segmentation_source = (
-        "presegmented"
-        if primary_semantic.composite_identity.segmenter.component == "segmenter"
-        and isinstance(primary_semantic.composite_identity.segmenter, NotUsedComponentIdentity)
-        else "deterministic_sentence_boundary_v1"
+    segmentation_source = _segmentation_source_from_composite(
+        primary_semantic.composite_identity.segmenter
     )
     composite, loaded = _composite_identity(parser, segmentation_source, policy)
     previous_composite = primary_semantic.composite_identity
@@ -181,8 +177,6 @@ def complete_parser_analysis_result_with_erst(
         raise ValueError("eRST completion runtime differs from primary-analysis components")
     erst = _erst_evidence(
         erst_trace,
-        erst_trace.analysis,
-        policy,
         composite,
         document_identity=document.document_id,
     )
@@ -324,7 +318,7 @@ def _primary_evidence(
             decision_id=f"segmentation:{edu.edu_id:06d}",
             boundary_id=f"boundary:{edu.start:08d}",
             selected_boundary=True,
-            decision_basis=("presegmented" if trace.segmentation_source == "presegmented" else "deterministic_rule"),
+            decision_basis=_decision_basis(trace.segmentation_source),
             confidence=None,
             distribution=None,
             token_ids=tuple(f"token:{token_id:06d}" for token_id in edu.token_ids),
@@ -476,8 +470,6 @@ def _refinements(
 
 def _erst_evidence(
     trace: ErstCompletionTrace,
-    analysis: RstAnalysis,
-    policy: AnalysisPolicy,
     composite: CompositeAnalysisIdentity,
     *,
     document_identity: str,
@@ -485,9 +477,6 @@ def _erst_evidence(
     scorer_digest = _component_digest(composite.erst_scorer)
     calibration_digest = _component_digest(composite.calibration)
     inventory_digest = _component_digest(composite.relation_inventory)
-    relation_labels = tuple(getattr(trace, "relation_inventory", ()))
-    if not relation_labels and trace.relation_logits:
-        relation_labels = tuple(str(index) for index in range(len(trace.relation_logits[0])))
     decisions: list[ErstCandidateDecision] = []
     for decoded in trace.decoded.decisions:
         reason = decoded.rejection_reason
@@ -531,19 +520,42 @@ def _erst_evidence(
             candidate_ids_by_signal.setdefault(signal_id, []).append(decision.candidate_id)
             if decision.secondary_edge_id is not None:
                 edge_ids_by_signal.setdefault(signal_id, []).append(decision.secondary_edge_id)
-    signals = tuple(
-        SupportingSignalEvidence(
-            signal_id=signal.signal_id,
-            signal_type=f"{signal.signal_type}:{signal.signal_subtype}",
-            anchors=tuple(_span_anchor(document_identity, start, end, "") for start, end in signal.char_spans),
-            candidate_ids=tuple(candidate_ids_by_signal.get(signal.signal_id, ())),
-            edge_ids=tuple(edge_ids_by_signal.get(signal.signal_id, ())),
+    # Detected signals with no candidate (single-node analyses, unattached
+    # triggers) stay in analysis.signals; supporting-signal evidence records
+    # only signals that actually support at least one candidate.
+    persisted_signals: list[SupportingSignalEvidence] = []
+    orphan_signal_count = 0
+    for signal in trace.signals:
+        signal_candidate_ids = tuple(candidate_ids_by_signal.get(signal.signal_id, ()))
+        if not signal_candidate_ids:
+            orphan_signal_count += 1
+            continue
+        persisted_signals.append(
+            SupportingSignalEvidence(
+                signal_id=signal.signal_id,
+                signal_type=f"{signal.signal_type}:{signal.signal_subtype}",
+                anchors=tuple(_span_anchor(document_identity, start, end, "") for start, end in signal.char_spans),
+                candidate_ids=signal_candidate_ids,
+                edge_ids=tuple(edge_ids_by_signal.get(signal.signal_id, ())),
+            )
         )
-        for signal in trace.signals
-    )
+    signals = tuple(persisted_signals)
     rejection_counts = Counter(
         decision.decision.value for decision in decisions if decision.decision is not ErstDecision.ACCEPTED
     )
+    # The decoder short-circuits its constraint chain: each constraint is
+    # checked only on candidates that survived every earlier check.
+    decoder_receipt = trace.decoded.receipt
+    checked_sufficient_signal = decoder_receipt.candidate_count - decoder_receipt.below_threshold_count
+    checked_no_self_loop = checked_sufficient_signal - decoder_receipt.formal_rejections[
+        DecodeRejectionReason.INSUFFICIENT_SIGNAL
+    ]
+    checked_existing_endpoints = checked_no_self_loop - decoder_receipt.formal_rejections[
+        DecodeRejectionReason.SELF_LOOP
+    ]
+    checked_unique_directed_pair = checked_existing_endpoints - decoder_receipt.formal_rejections[
+        DecodeRejectionReason.INVENTED_NODE
+    ]
     decode_receipt = ErstDecodeReceipt(
         policy="four_formal_erst_constraints",
         policy_version=SemanticVersion(root="2.0.0"),
@@ -551,20 +563,21 @@ def _erst_evidence(
         input_count=len(decisions),
         accepted_count=sum(decision.decision is ErstDecision.ACCEPTED for decision in decisions),
         rejected_count=sum(decision.decision is not ErstDecision.ACCEPTED for decision in decisions),
-        constraint_checks=tuple(
-            NamedCount(name=name, count=len(decisions))
-            for name in (
-                "sufficient_signal",
-                "no_self_loop",
-                "existing_endpoints",
-                "unique_directed_pair",
-            )
+        constraint_checks=(
+            NamedCount(name="sufficient_signal", count=checked_sufficient_signal),
+            NamedCount(name="no_self_loop", count=checked_no_self_loop),
+            NamedCount(name="existing_endpoints", count=checked_existing_endpoints),
+            NamedCount(name="unique_directed_pair", count=checked_unique_directed_pair),
         ),
         rejection_reasons=tuple(NamedCount(name=name, count=count) for name, count in sorted(rejection_counts.items())),
         ordering_identity=Sha256Identity(
             hex_digest=semantic_sha256(tuple(decision.candidate_id for decision in decisions))
         ),
-        warnings=(),
+        warnings=(
+            (f"orphan_signals_without_candidates:{orphan_signal_count}",)
+            if orphan_signal_count
+            else ()
+        ),
     )
     return ErstCompletionEvidence(
         signals=signals,
@@ -1071,6 +1084,35 @@ def _entropy_score(logits: Sequence[float], component_identity: Sha256Identity) 
         maximum=math.log(len(probabilities)) if len(probabilities) > 1 else 0.0,
         producing_component_identity=component_identity,
     )
+
+
+def _decision_basis(
+    segmentation_source: str,
+) -> Literal["model", "presegmented", "deterministic_rule"]:
+    if segmentation_source == "presegmented":
+        return "presegmented"
+    if segmentation_source == "model":
+        return "model"
+    return "deterministic_rule"
+
+
+def _segmentation_source_from_composite(segmenter: ComponentIdentity) -> str:
+    """Recover the primary run's segmentation source from its recorded identity.
+
+    ``_composite_identity`` builds the segmenter identity from exactly three
+    sources: presegmented input records a not-used identity, the packaged
+    deterministic segmenter records the ``packaged_deterministic_component``
+    architecture, and every other identity is a configured segmentation model.
+    """
+
+    if isinstance(segmenter, NotUsedComponentIdentity):
+        return "presegmented"
+    if (
+        isinstance(segmenter, ImmutableComponentIdentity)
+        and segmenter.architecture == "packaged_deterministic_component"
+    ):
+        return "deterministic_sentence_boundary_v1"
+    return "model"
 
 
 def _candidate_id(candidate: Any) -> str:

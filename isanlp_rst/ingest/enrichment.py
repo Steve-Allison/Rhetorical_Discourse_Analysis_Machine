@@ -117,7 +117,9 @@ def _enrich_analysis_anchor(
         native for token in tokens for native in token.source_anchors
     )
     if not source_anchors:
-        source_anchors = _unique_anchors(anchor.source_anchors)
+        raise ValueError(
+            f"analysis anchor {anchor.target_id!r} has no native source mapping"
+        )
     prepared_segment_ids = tuple(
         dict.fromkeys(
             segment.segment_id
@@ -189,9 +191,13 @@ def _anchors_for_range(
     anchors: list[SourceAnchor] = []
     for segment in segments:
         for anchor in segment.source_anchors:
+            # Offset narrowing is valid only when the prepared text is the
+            # source text verbatim: any recorded transformation may have moved
+            # characters, so the whole-segment anchor is the truthful mapping.
             if (
                 isinstance(anchor, TextSpanAnchor)
                 and segment.kind is SegmentKind.SOURCE
+                and not segment.transformation_ids
                 and segment.prepared_range.start <= start
                 and end <= segment.prepared_range.end
             ):
