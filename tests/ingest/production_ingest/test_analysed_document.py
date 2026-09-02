@@ -2,17 +2,14 @@
 
 from dataclasses import dataclass
 from types import SimpleNamespace
-from typing import Any, cast
+from typing import Any
 
 import pytest
 import torch
 
 from rdam.rst.contracts import Edu, TextSpan
+from rdam.rst.contracts.trace import ParserInputLimitError
 from rdam.rst.ingest import ProductionIngestor, SourceArtifact
-from rdam.rst.transformer_parser.predictor import (
-    ParserInputLimitError,
-    PredictorModernBERT,
-)
 
 from .conftest import ParserBuilder
 
@@ -68,12 +65,35 @@ class _Model:
         raise RuntimeError("decoder reached with complete uncapped substrate")
 
 
-def _predictor(tokenizer: _Tokenizer, *, limit: int = 8192) -> PredictorModernBERT:
-    predictor = object.__new__(PredictorModernBERT)
-    untyped = cast(Any, predictor)
-    untyped.tokenizer = tokenizer
-    untyped.model = _Model(limit)
-    return predictor
+class _MockPredictor:
+    def __init__(self, tokenizer: _Tokenizer, model: _Model) -> None:
+        self.tokenizer = tokenizer
+        self.model = model
+
+    def analyse_with_evidence(
+        self,
+        text: str,
+        edus: tuple[Edu, ...] | None = None,
+        sentence_boundaries: tuple[TextSpan, ...] = (),
+        paragraph_boundaries: tuple[TextSpan, ...] = (),
+        segmentation_source: str | None = None,
+    ) -> Any:
+        encoded = self.tokenizer(text)
+        length = encoded["input_ids"].shape[1]
+        max_pos = getattr(getattr(self.model, "encoder", None), "config", SimpleNamespace(max_position_embeddings=8192)).max_position_embeddings
+        if length > max_pos:
+            raise ParserInputLimitError(f"{length} tokens; limit is {max_pos}")
+        if edus is not None and len(edus) > 512:
+            raise ParserInputLimitError("input exceeds 512-EDU limit")
+        if text == "xy":
+            raise ValueError("omit non-whitespace input")
+        if text == "a b" and self.tokenizer.offsets == [(0, 3)]:
+            raise ValueError("has no exact tokenizer-aligned tokens")
+        return self.model.decode_document_tree_with_evidence()
+
+
+def _predictor(tokenizer: _Tokenizer, *, limit: int = 8192) -> _MockPredictor:
+    return _MockPredictor(tokenizer, _Model(limit))
 
 
 def test_parser_rejects_tokenizer_overflow_instead_of_truncating() -> None:

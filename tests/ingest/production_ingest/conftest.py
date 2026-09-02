@@ -41,10 +41,10 @@ from rdam.rst.ingest.parser_result import (
 from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
 from rdam.rst.model_loading import ModelFile, ModelReleaseIdentity
 from rdam.rst.model_loading import ParserCapacity as ReleaseParserCapacity
-from rdam.rst.transformer_parser.predictor import PredictorAnalysisTrace
-from rdam.rst.transformer_parser.biaffine_decoder import (
+from rdam.rst.contracts.trace import (
     ParsedRstTreeEvidence,
     ParsedRstTreeSpan,
+    PredictorAnalysisTrace,
 )
 
 type SourceArtifactBuilder = Callable[..., SourceArtifact]

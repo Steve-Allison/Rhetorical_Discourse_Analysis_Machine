@@ -167,9 +167,8 @@ class TestDetectFamilyFromModelDir:
 
 
 class TestParserInitValidation:
-    def test_no_args_raises(self):
-        with pytest.raises(ValueError, match="hf_model_version"):
-            Parser()
+    def test_no_args_defaults_family_and_version(self):
+        assert Parser._resolve_family(None, "gumrrg", None) == "dmrst"
 
     def test_family_alone_without_version_or_model_dir_raises(self):
         """``family=`` alone is not enough — need a version or local dir."""
@@ -211,10 +210,8 @@ class TestParserInitValidation:
         """Public class constants documenting valid versions."""
         assert "gumrrg" in Parser.DMRST_PARSERS
         assert "unirst" in Parser.UNIVERSAL_PARSERS
-        assert "modernbert" in Parser.MODERNBERT_PARSERS
         assert "dmrst" in Parser.AVAILABLE_FAMILIES
         assert "unirst" in Parser.AVAILABLE_FAMILIES
-        assert "modernbert" in Parser.AVAILABLE_FAMILIES
         assert set(Parser.AVAILABLE_VERSIONS) == (
-            set(Parser.DMRST_PARSERS) | set(Parser.UNIVERSAL_PARSERS) | set(Parser.MODERNBERT_PARSERS)
+            set(Parser.DMRST_PARSERS) | set(Parser.UNIVERSAL_PARSERS)
         )

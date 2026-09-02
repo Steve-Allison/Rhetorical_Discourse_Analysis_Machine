@@ -13,8 +13,8 @@ from torch.optim import AdamW
 from transformers import PretrainedConfig, get_cosine_schedule_with_warmup
 
 from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
-from rdam.rst.transformer_parser import PureTransformerParsingNet
-from rdam.rst.transformer_parser.biaffine_decoder import ParsedRstTreeSpan
+from workbench.training.modern.model import PureTransformerParsingNet
+from workbench.training.modern.biaffine_decoder import ParsedRstTreeSpan
 from workbench.evaluation.rst.parseval import BracketSpan
 from workbench.training.modern.gum_dataset import (
     COARSE_RELATIONS,

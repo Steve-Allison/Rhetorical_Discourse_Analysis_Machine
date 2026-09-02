@@ -711,7 +711,7 @@ def _analyse_parser_unit(
     policy: AnalysisPolicy,
     preparation: PreparationOutcome,
 ) -> ParserAnalysisResult:
-    from rdam.rst.transformer_parser.predictor import ParserInputLimitError
+    from rdam.rst.contracts.trace import ParserInputLimitError
 
     try:
         return parser.analyse_document(document, analysis_policy=policy)

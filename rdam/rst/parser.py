@@ -4,7 +4,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .annotation_rst import DiscourseUnit
-from .transformer_parser.predictor import PredictorModernBERT
+from .dmrst_parser.predictor import PredictorDMRST
+from .universal_parser.predictor import PredictorUniRST
 from .utils.parse_result import ParseFailedError, extract_root_tree
 
 __all__ = ["ParseFailedError", "Parser", "extract_root_tree"]
@@ -18,19 +19,21 @@ if TYPE_CHECKING:
 
 
 class Parser:
-    """Public façade for Modern pure transformer discourse parsing.
+    """Public façade for the DMRST and UniRST discourse parser families.
 
-    Modern Pure Transformer Parser is the production default:
-        >>> Parser(family="modernbert", device="auto")
-        >>> Parser.from_model_release('/models', 'modernbert-v5', family='modernbert')
+    Examples:
+        >>> Parser()                                                        # DMRST (gumrrg, default)
+        >>> Parser(hf_model_version='gumrrg', device='auto')               # DMRST
+        >>> Parser(hf_model_version='unirst', relinventory='eng.erst.gum') # UniRST
+        >>> Parser.from_model_release('/models', 'gumrrg-v3', family='dmrst')
     """
 
-    MODERNBERT_PARSERS = ("modernbert", "modernbert-base", "modernbert-large")
     DMRST_PARSERS = ("gumrrg", "rstdt", "rstreebank")
     UNIVERSAL_PARSERS = ("rrtrrg", "unirst")
-    AVAILABLE_VERSIONS = MODERNBERT_PARSERS + DMRST_PARSERS + UNIVERSAL_PARSERS
-    AVAILABLE_FAMILIES = ("modernbert", "dmrst", "unirst")
-    _DEFAULT_HF_MODEL_NAME = "answerdotai/ModernBERT-base"
+    AVAILABLE_VERSIONS = DMRST_PARSERS + UNIVERSAL_PARSERS
+    AVAILABLE_FAMILIES = ("dmrst", "unirst")
+    _DEFAULT_HF_MODEL_NAME = "tchewik/isanlp_rst_v3"
+    _DEFAULT_HF_MODEL_VERSION = "gumrrg"
     predictor: Any
 
     def __init__(
@@ -55,6 +58,10 @@ class Parser:
                 "When loading from disk, omit hf_model_name (or leave the default)."
             )
 
+        if model_dir is None and hf_model_version is None and family is None:
+            hf_model_version = self._DEFAULT_HF_MODEL_VERSION
+            family = "dmrst"
+
         resolved_family = self._resolve_family(model_dir, hf_model_version, family)
         if model_dir is not None:
             if _validated_model_release is None:
@@ -73,23 +80,28 @@ class Parser:
         self.relinventory = relinventory
         self._validated_model_release = _validated_model_release
 
+        effective_hf_name = None if model_dir is not None else hf_model_name
+
         match resolved_family:
-            case "modernbert":
-                model_size = (
-                    "large"
-                    if (hf_model_version == "modernbert-large" or (model_dir and "large" in str(model_dir)))
-                    else "base"
-                )
-                self.predictor = PredictorModernBERT(
-                    model_size=model_size,
+            case "dmrst":
+                self.predictor = PredictorDMRST(
                     model_dir=model_dir,
-                    device=device or "auto",
-                    torch_dtype=dtype or "auto",
-                    validated_release=_validated_model_release,
+                    hf_model_name=effective_hf_name,
+                    hf_model_version=hf_model_version,
+                    device=device,
+                    cuda_device=cuda_device,
+                    dtype=dtype,
                 )
-            case "dmrst" | "unirst":
-                raise ValueError(
-                    f"Legacy {resolved_family!r} has been archived from production. Use family='modernbert' for production parsing."
+            case "unirst":
+                self.predictor = PredictorUniRST(
+                    model_dir=model_dir,
+                    hf_model_name=effective_hf_name,
+                    hf_model_version=hf_model_version,
+                    relinventory=relinventory,
+                    relinventory_idx=relinventory_idx,
+                    device=device,
+                    cuda_device=cuda_device,
+                    dtype=dtype,
                 )
             case _:
                 raise ValueError(f"Unknown family {resolved_family!r}.")
@@ -186,8 +198,6 @@ class Parser:
         if family is not None:
             if family not in cls.AVAILABLE_FAMILIES:
                 raise ValueError(f"Unknown family {family!r}. Available: {cls.AVAILABLE_FAMILIES}.")
-            if family == "modernbert":
-                return "modernbert"
             if hf_model_version is None and model_dir is None:
                 raise ValueError(f"family={family!r} requires hf_model_version or model_dir.")
             if hf_model_version is not None:
@@ -208,8 +218,6 @@ class Parser:
             return family
 
         if hf_model_version is not None:
-            if hf_model_version in cls.MODERNBERT_PARSERS:
-                return "modernbert"
             if hf_model_version in cls.DMRST_PARSERS:
                 return "dmrst"
             if hf_model_version in cls.UNIVERSAL_PARSERS:
@@ -221,7 +229,7 @@ class Parser:
             if detected is None:
                 raise ValueError(
                     f"Cannot auto-detect parser family from model_dir={model_dir!r}. "
-                    f"Pass family='dmrst', 'unirst', or 'modernbert' explicitly."
+                    f"Pass family='dmrst' or 'unirst' explicitly."
                 )
             return detected
 

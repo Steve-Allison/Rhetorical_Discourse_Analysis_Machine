@@ -91,18 +91,21 @@ def _leaves(tree: DiscourseUnit) -> list[str]:
 
 
 class TestFacadeRefusals:
-    @pytest.mark.parametrize("version", ARCHIVED_VERSIONS)
-    def test_archived_family_is_refused_before_any_load(self, version: str) -> None:
-        with pytest.raises(ValueError, match="archived from production"):
-            Parser(hf_model_version=version)
+    def test_unknown_version_is_rejected(self) -> None:
+        with pytest.raises(ValueError, match="Unknown hf_model_version"):
+            Parser(hf_model_version="nonexistent-version")
+
+    def test_unknown_family_is_rejected(self) -> None:
+        with pytest.raises(ValueError, match="Unknown family"):
+            Parser(family="nonexistent-family", hf_model_version="gumrrg")
 
     def test_unsafe_release_id_is_rejected(self, tmp_path: Path) -> None:
         with pytest.raises(ModelReleaseError, match="unsafe release_id"):
-            Parser.from_model_release(tmp_path, "../escape", family="modernbert")
+            Parser.from_model_release(tmp_path, "../escape", family="dmrst")
 
     def test_unpromoted_release_id_is_rejected(self, tmp_path: Path) -> None:
         with pytest.raises(ModelReleaseError, match="real local directory"):
-            Parser.from_model_release(tmp_path, "not-a-promoted-release", family="modernbert")
+            Parser.from_model_release(tmp_path, "not-a-promoted-release", family="dmrst")
 
 
 # ---- Release smoke: slow, one load per (release, device) ----

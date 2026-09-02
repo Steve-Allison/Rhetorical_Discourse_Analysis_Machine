@@ -17,6 +17,11 @@ from rdam.rst.contracts.document import (
     SourceReference,
     TextSpan,
 )
+from rdam.rst.contracts.trace import (
+    ParsedRstTreeEvidence,
+    ParsedRstTreeSpan,
+    PredictorAnalysisTrace,
+)
 from rdam.rst.contracts.enums import (
     AnnotationStatusEnum,
     CapabilityStatusEnum,
@@ -135,6 +140,9 @@ __all__ = [
     "NuclearityPatternEnum",
     "NuclearityRoleEnum",
     "OutputFormalismEnum",
+    "ParsedRstTreeEvidence",
+    "ParsedRstTreeSpan",
+    "PredictorAnalysisTrace",
     "PrimaryRelationEdge",
     "PrivateCorpusVerificationReceipt",
     "RawRelationInventory",

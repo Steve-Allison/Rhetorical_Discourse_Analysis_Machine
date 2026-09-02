@@ -55,8 +55,11 @@ from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from rdam.rst.erst.signals import RuleBasedSignalDetector
 from rdam.rst.parser import Parser
 from rdam.rst import __version__
-from rdam.rst.transformer_parser.biaffine_decoder import ParsedRstTreeEvidence, ParsedRstTreeSpan
-from rdam.rst.transformer_parser.predictor import PredictorAnalysisTrace
+from rdam.rst.contracts.trace import (
+    ParsedRstTreeEvidence,
+    ParsedRstTreeSpan,
+    PredictorAnalysisTrace,
+)
 from workbench.promotion.erst import save_erst_checkpoint_bundle
 
 _GIT_REVISION = "a" * 40

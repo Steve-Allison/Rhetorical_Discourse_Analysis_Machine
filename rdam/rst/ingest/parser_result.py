@@ -62,7 +62,7 @@ from rdam.rst.ingest.validation import (
     build_analysis_validation_receipt as build_validation_receipt,
     validate_parser_analysis_result,
 )
-from rdam.rst.transformer_parser.predictor import PredictorAnalysisTrace
+from rdam.rst.contracts.trace import PredictorAnalysisTrace
 
 
 def build_parser_analysis_result(
@@ -82,7 +82,7 @@ def build_parser_analysis_result(
     analysed_document = _analysed_document(document, trace)
     component_digest = _component_digest(composite.primary_parser)
     relation_inventory_identity = Sha256Identity(
-        hex_digest=semantic_sha256(tuple(parser.predictor.model.raw_relation_inventory))
+        hex_digest=semantic_sha256(tuple(trace.relation_inventory))
     )
     primary = _primary_evidence(
         trace,
@@ -237,14 +237,14 @@ def _analysed_document(
     tokens = tuple(
         AnalysedToken(
             token_id=token_ids[token.token_id],
-            order=token.token_id,
+            order=order,
             text=token.text,
             character_range=PreparedRange(start=token.start, end=token.end),
             source_anchors=(_span_anchor(document.document_id, token.start, token.end, document.text),),
             sentence_id=f"sentence:{token.sentence_id or 0:04d}",
             paragraph_id=f"paragraph:{token.paragraph_id or 0:04d}",
         )
-        for token in trace.tokens
+        for order, token in enumerate(trace.tokens)
     )
     edus = tuple(
         AnalysedEdu(
@@ -804,26 +804,31 @@ def _composite_identity(
         )
     elif segmentation_source == "model":
         segmenter_runtime = getattr(parser, "segmenter", None)
-        if segmenter_runtime is None:
-            raise ValueError("model segmentation was declared without a configured segmenter")
-        segmenter_release = getattr(segmenter_runtime, "model_release_identity", None)
-        if segmenter_release is None:
-            segmenter = MutableComponentIdentity(
-                component="segmenter",
-                provider_type=type(segmenter_runtime).__qualname__,
-                reason="segmenter was not loaded from an immutable local model release",
-            )
+        if segmenter_runtime is not None:
+            segmenter_release = getattr(segmenter_runtime, "model_release_identity", None)
+            if segmenter_release is None:
+                segmenter = MutableComponentIdentity(
+                    component="segmenter",
+                    provider_type=type(segmenter_runtime).__qualname__,
+                    reason="segmenter was not loaded from an immutable local model release",
+                )
+            else:
+                segmenter, receipt = _released_runtime_component(
+                    "segmenter",
+                    segmenter_runtime,
+                    segmenter_release,
+                )
+                loaded.append(receipt)
         else:
-            segmenter, receipt = _released_runtime_component(
+            segmenter, receipt = _packaged_component(
                 "segmenter",
-                segmenter_runtime,
-                segmenter_release,
+                ("dmrst_parser/predictor.py",),
             )
             loaded.append(receipt)
     else:
         segmenter, receipt = _packaged_component(
             "segmenter",
-            ("transformer_parser/predictor.py",),
+            ("dmrst_parser/predictor.py",),
         )
         loaded.append(receipt)
     if policy.marker_refinement.value == "disabled":
@@ -873,7 +878,7 @@ def _composite_identity(
         if release is None:
             relation_inventory, receipt = _packaged_component(
                 "relation_inventory",
-                ("transformer_parser/predictor.py",),
+                ("dmrst_parser/predictor.py",),
             )
         else:
             relation_inventory, receipt = _released_runtime_component(

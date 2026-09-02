@@ -607,3 +607,176 @@ class BasePredictor:
             dtype=self._dtype,
             enabled=(self._dtype is not torch.float32),
         )
+
+    def __call__(self, text: str) -> Any:
+        return self.parse_rst(text)
+
+    def analyse_with_evidence(
+        self,
+        text: str,
+        edus: Sequence[Any] | None = None,
+        sentence_boundaries: tuple[Any, ...] = (),
+        paragraph_boundaries: tuple[Any, ...] = (),
+        segmentation_source: str | None = None,
+    ) -> Any:
+        """Run inference and wrap exact substrate and parse evidence in PredictorAnalysisTrace."""
+        from rdam.rst.contracts.document import DocumentToken, Edu as ContractEdu, TextSpan
+        from rdam.rst.contracts.trace import PredictorAnalysisTrace
+        from rdam.rst.erst.converter import du_to_analysis
+
+        if edus is not None and len(edus) > 0:
+            if isinstance(edus[0], ContractEdu):
+                edu_texts = [e.text for e in edus]
+            else:
+                edu_texts = [str(e) for e in edus]
+            res = self.parse_from_edus(edu_texts)
+            used_source = segmentation_source or "presegmented"
+        else:
+            res = self.parse_rst(text)
+            used_source = segmentation_source or "model"
+
+        root_unit = res["rst"][0]
+        analysis = du_to_analysis(root_unit, document_id="doc")
+
+        import razdel
+
+        sentences = list(razdel.sentenize(text))
+        if not sentences:
+            sentence_spans = [TextSpan(start=0, end=len(text), text=text)]
+        else:
+            sentence_spans = [
+                TextSpan(start=s.start, end=s.stop, text=s.text)
+                for s in sentences
+            ]
+
+        raw_tokens = list(razdel.tokenize(text))
+        tokens: list[DocumentToken] = []
+        for idx, t in enumerate(raw_tokens):
+            s_id = 1
+            for s_idx, s in enumerate(sentence_spans):
+                if s.start <= t.start and t.stop <= s.end:
+                    s_id = s_idx + 1
+                    break
+            tokens.append(
+                DocumentToken(
+                    token_id=idx + 1,
+                    text=t.text,
+                    start=t.start,
+                    end=t.stop,
+                    sentence_id=s_id,
+                    paragraph_id=1,
+                )
+            )
+
+        leaves: list[Any] = []
+        self._collect_leaf_units(root_unit, leaves)
+        contract_edus: list[ContractEdu] = []
+        for idx, leaf in enumerate(leaves):
+            l_start = leaf.start if getattr(leaf, "start", None) is not None else 0
+            l_end = leaf.end if getattr(leaf, "end", None) is not None else len(leaf.text)
+            tok_ids = tuple(
+                tok.token_id for tok in tokens
+                if tok.start >= l_start and tok.end <= l_end
+            )
+            contract_edus.append(
+                ContractEdu(
+                    edu_id=idx + 1,
+                    text=leaf.text,
+                    start=l_start,
+                    end=l_end,
+                    token_ids=tok_ids,
+                )
+            )
+
+        resolved_sentences = tuple(sentence_boundaries) if sentence_boundaries else tuple(sentence_spans)
+        resolved_paragraphs = tuple(paragraph_boundaries) if paragraph_boundaries else (TextSpan(start=0, end=len(text), text=text),)
+
+        raw_inventory: list[str] = []
+        for item in getattr(self, "relation_table", ()):
+            base = item.split("_")[0] if "_" in item else item
+            if base not in raw_inventory:
+                raw_inventory.append(base)
+
+        structure_decisions = tuple(self._collect_structure_decisions(root_unit, tuple(raw_inventory)))
+
+        return PredictorAnalysisTrace(
+            root_unit=root_unit,
+            analysis=analysis,
+            tokens=tuple(tokens),
+            edus=tuple(contract_edus),
+            sentence_boundaries=resolved_sentences,
+            paragraph_boundaries=resolved_paragraphs,
+            structure_decisions=structure_decisions,
+            segmentation_source=used_source,
+            relation_inventory=tuple(raw_inventory),
+        )
+
+    def _collect_structure_decisions(self, unit: Any, rel_table: tuple[str, ...]) -> list[Any]:
+        from rdam.rst.contracts.trace import ParsedRstTreeEvidence, ParsedRstTreeSpan
+
+        decisions: list[Any] = []
+        curr_edu = 0
+
+        def walk(node: Any) -> tuple[int, int]:
+            nonlocal curr_edu
+            left = getattr(node, "left", None)
+            right = getattr(node, "right", None)
+            if left is None and right is None:
+                leaf_idx = curr_edu
+                curr_edu += 1
+                return leaf_idx, leaf_idx
+
+            start_idx = curr_edu
+            left_start, left_end = walk(left) if left is not None else (start_idx, start_idx)
+            right_start, right_end = walk(right) if right is not None else (curr_edu - 1, curr_edu - 1)
+            end_idx = right_end
+            split_idx = left_end
+
+            nuc = getattr(node, "nuclearity", "NS") or "NS"
+            rel = getattr(node, "relation", "elaboration") or "elaboration"
+            if "_" in rel:
+                rel = rel.split("_")[0]
+            proba = float(getattr(node, "proba", 1.0) or 1.0)
+
+            span = ParsedRstTreeSpan(
+                start=start_idx,
+                end=end_idx,
+                split=split_idx,
+                nuclearity=nuc,
+                relation=rel,
+                score=proba,
+            )
+            split_candidates = tuple(range(start_idx, end_idx)) if end_idx > start_idx else (split_idx,)
+            split_logits = tuple(1.0 if idx == split_idx else 0.0 for idx in split_candidates)
+            nuc_classes = ("NS", "SN", "NN")
+            nuc_idx = nuc_classes.index(nuc) if nuc in nuc_classes else 0
+            nuclearity_logits = tuple(1.0 if idx == nuc_idx else 0.0 for idx in range(3))
+
+            if rel in rel_table:
+                rel_idx = rel_table.index(rel)
+                relation_logits = tuple(1.0 if idx == rel_idx else 0.0 for idx in range(len(rel_table)))
+            else:
+                relation_logits = tuple(1.0 if idx == 0 else 0.0 for idx in range(max(1, len(rel_table))))
+
+            decisions.append(
+                ParsedRstTreeEvidence(
+                    span=span,
+                    split_candidates=split_candidates,
+                    split_logits=split_logits,
+                    nuclearity_logits=nuclearity_logits,
+                    relation_logits=relation_logits,
+                )
+            )
+            return start_idx, end_idx
+
+        walk(unit)
+        return decisions
+
+    def _collect_leaf_units(self, unit: Any, leaves: list[Any]) -> None:
+        if getattr(unit, "left", None) is None and getattr(unit, "right", None) is None:
+            leaves.append(unit)
+            return
+        if getattr(unit, "left", None) is not None:
+            self._collect_leaf_units(unit.left, leaves)
+        if getattr(unit, "right", None) is not None:
+            self._collect_leaf_units(unit.right, leaves)

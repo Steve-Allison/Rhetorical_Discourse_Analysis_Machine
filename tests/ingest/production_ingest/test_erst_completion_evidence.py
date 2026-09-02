@@ -175,7 +175,7 @@ def test_segmentation_source_recovery_from_composite_identity() -> None:
     )
     assert _segmentation_source_from_composite(presegmented) == "presegmented"
 
-    packaged, _ = _packaged_component("segmenter", ("transformer_parser/predictor.py",))
+    packaged, _ = _packaged_component("segmenter", ("dmrst_parser/predictor.py",))
     assert _segmentation_source_from_composite(packaged) == "deterministic_sentence_boundary_v1"
 
     mutable_model = MutableComponentIdentity(

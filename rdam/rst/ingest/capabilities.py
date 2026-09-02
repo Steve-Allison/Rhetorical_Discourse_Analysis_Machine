@@ -32,8 +32,8 @@ def describe_capabilities(
     immutable = release_identity is not None
     family = getattr(parser, "family", None)
     canonical = callable(getattr(parser, "analyse_document", None)) and family not in {
-        "dmrst",
-        "unirst",
+        "archived",
+        "unsupported",
     }
     identified = hasattr(parser, "model_release_identity")
     rst_available = canonical

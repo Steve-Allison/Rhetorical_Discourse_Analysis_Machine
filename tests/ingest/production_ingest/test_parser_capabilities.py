@@ -27,7 +27,7 @@ def test_immutable_canonical_parser_advertises_only_executable_paths(
 
 
 class _ArchivedParser:
-    family = "dmrst"
+    family = "archived"
     model_release_identity = object()
 
     def analyse_document(self) -> None:
