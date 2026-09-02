@@ -70,12 +70,25 @@ pixi run build-production
 ```
 
 ```bash
-pixi run -e production production-smoke
+pixi run validate-production-artifacts
 ```
 
-Expected: wheel builds with `packages = ["rst/isanlp_rst"]`, clean-room install imports
-`isanlp_rst`, smoke passes. This gate discharges the research-D2 `ASSUMED` marker and
-precedes every other migration completion claim.
+```bash
+pixi run -e production production-clean-install
+```
+
+Expected: wheel and sdist build reproducibly with `packages = ["rst/isanlp_rst"]`
+(`"reproducible": true`, provenance in both); the artifact validator reports
+`valid: true`; the clean-room install pip-installs the **wheel** into fresh `core` and
+`formats` venvs outside the source tree with the network disabled, imports `isanlp_rst`
+from `site-packages`, and passes full installed acceptance including CLI/Python semantic
+parity. This gate discharges the research-D2 `ASSUMED` marker and precedes every other
+migration completion claim.
+
+`production-smoke` is **not** this gate: in the `production` environment it runs against
+the editable source install (`pyproject.toml:110`), never the wheel, so it cannot detect
+a bad artifact — verified 2026-09-02 when it passed against a wheel that
+`validate-production-artifacts` rejected (evidence/rst-surface-audit.md defect 4).
 
 ## V5 — Capability honesty (SC-005, SC-007, SC-010)
 

@@ -34,9 +34,10 @@ unchanged because `pyproject.toml` stays at the repository root. The distributio
 import package, so the public import name survives the physical move with a one-line
 change and no shims. **ASSUMED (2026-09-01, to verify)**: hatchling maps
 `rst/isanlp_rst` → importable `isanlp_rst` exactly as documented. Verification gate: the
-migration feature builds the wheel, installs it in the `production` clean-room
-environment, and runs `production-smoke` plus the SC-002 equivalence suite before any
-other migration step is declared complete.
+migration feature builds the wheel with `build-production`, validates the pair with
+`validate-production-artifacts`, certifies the wheel with `production-clean-install`
+(fresh venvs, network disabled, installed acceptance), and runs the SC-002 equivalence
+suite before any other migration step is declared complete.
 
 **Alternatives considered**: a `src/`-style layout under `rst/src/` (adds a level FR-003's
 spirit rejects); a compatibility shim package re-exporting from a renamed package

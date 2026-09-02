@@ -46,8 +46,9 @@ effect.
    (SC-002). Any diff is a migration defect — fixed forward or the migration is rolled
    back; the baseline is never edited to match.
 4. **Gate ordering**: the packaging verification (research D2 `ASSUMED` gate — wheel
-   built, clean-room `production-smoke` green) precedes every other migration completion
-   claim.
+   built reproducibly, `validate-production-artifacts` valid, clean-room
+   `production-clean-install` green against the wheel) precedes every other migration
+   completion claim.
 
 ## Safety precondition (FR-026, SC-008)
 
