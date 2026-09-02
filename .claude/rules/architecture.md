@@ -4,11 +4,11 @@ The parser is a thin façade over two parallel predictor families. Both families
 
 ## Two parser families, one façade
 
-> **Production status (verified 2026-09-01, `isanlp_rst/parser.py:90-93`)**: the DMRST
+> **Production status (verified 2026-09-01, `rst/isanlp_rst/parser.py:90-93`)**: the DMRST
 > and UniRST families described below are **archived from production**. `Parser` raises
 > `ValueError("Legacy … has been archived from production. Use family='modernbert'")`
 > for any of their five `hf_model_version` values before loading anything. The sole
-> production family is **ModernBERT** (`isanlp_rst/transformer_parser/`), loaded from an
+> production family is **ModernBERT** (`rst/isanlp_rst/transformer_parser/`), loaded from an
 > immutable local release via `Parser.from_model_release(store, release_id,
 > family="modernbert")`. The family description below is retained as the record of the
 > archived research parsers; the production smoke
@@ -19,8 +19,8 @@ The parser is a thin façade over two parallel predictor families. Both families
 
 | Family | Versions | Predictor | Source dir |
 |---|---|---|---|
-| **DMRST** (monolingual / bilingual) | `rstdt`, `gumrrg`, `rstreebank` | `dmrst_parser.predictor.PredictorDMRST` | `isanlp_rst/dmrst_parser/` |
-| **UniRST** (multilingual, 11 languages) | `rrtrrg`, `unirst` | `universal_parser.predictor.PredictorUniRST` | `isanlp_rst/universal_parser/` |
+| **DMRST** (monolingual / bilingual) | `rstdt`, `gumrrg`, `rstreebank` | `dmrst_parser.predictor.PredictorDMRST` | `rst/isanlp_rst/dmrst_parser/` |
+| **UniRST** (multilingual, 11 languages) | `rrtrrg`, `unirst` | `universal_parser.predictor.PredictorUniRST` | `rst/isanlp_rst/universal_parser/` |
 
 Each family has its own `src/parser/` (network: `parsing_net.py`, `segmenters.py`, `modules.py`, `discriminator.py`, `metrics.py`) and `src/corpus/` (dataset I/O, `.rs3` / `.dis` utilities). The two trees evolved in parallel and share patterns but **not** code — do not refactor one to import from the other without explicit instruction.
 
@@ -32,7 +32,7 @@ Both predictors inherit `isanlp_rst.base_predictor.BasePredictor`, which central
 - subword EDU-break recounting (`_recount_spans`)
 - offset remapping from tokenised space back to original-text character offsets (`remap_tree_offsets`) — every leaf and internal node ends up with `start` / `end` / `text` fields aligned to the input string
 - `_collect_leaf_texts` for round-trip validation against pre-segmented EDUs
-- MPS-safe initialisation (orthogonal init routed via CPU on MPS tensors — see [`isanlp_rst/utils/mps_init.py`](../../isanlp_rst/utils/mps_init.py))
+- MPS-safe initialisation (orthogonal init routed via CPU on MPS tensors — see [`rst/isanlp_rst/utils/mps_init.py`](../../rst/isanlp_rst/utils/mps_init.py))
 - mixed-precision dispatch via `torch.autocast` (`dtype=float32 | bf16 | fp16`)
 
 ## Inference flow (DMRST, simplified)
@@ -46,7 +46,7 @@ Both predictors inherit `isanlp_rst.base_predictor.BasePredictor`, which central
 
 ## Device handling
 
-`device=` is the canonical knob (default `"auto"`), resolved by `resolve_device` in [`isanlp_rst/base_predictor.py`](../../isanlp_rst/base_predictor.py):
+`device=` is the canonical knob (default `"auto"`), resolved by `resolve_device` in [`rst/isanlp_rst/base_predictor.py`](../../rst/isanlp_rst/base_predictor.py):
 
 - `"auto"` (default) → CUDA if present, else MPS on Apple Silicon, else CPU
 - `"cpu"` → CPU
@@ -56,7 +56,7 @@ Both predictors inherit `isanlp_rst.base_predictor.BasePredictor`, which central
 
 The resolved device is stored on the predictor as `self._device` (a `torch.device`). The legacy integer `cuda_device=` is a deprecated shim (`-1` → CPU, `>= 0` → best accelerator) that emits a `DeprecationWarning`; both families still pass the resolved device into the inherited `ParsingNet` under its original `cuda_device=` kwarg name (a Mode-B research-network parameter, not renamed).
 
-PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogonal_`). The parser routes this via CPU automatically — see [`isanlp_rst/utils/mps_init.py`](../../isanlp_rst/utils/mps_init.py). No manual env-var hacks required.
+PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogonal_`). The parser routes this via CPU automatically — see [`rst/isanlp_rst/utils/mps_init.py`](../../rst/isanlp_rst/utils/mps_init.py). No manual env-var hacks required.
 
 ## Mixed precision (`dtype=`)
 
@@ -75,9 +75,9 @@ Standalone subpackage ported from `rstviewer`. Public surface lives in the packa
 - `to_png(rs3_path, png_path)` / `to_pdf(rs3_path, pdf_path)` — Playwright / Chromium-driven; both have sync and async paths. They detect a running event loop (e.g. inside Jupyter) and dispatch via a worker thread when needed.
 - `DiscourseUnit.to_rs3(filename, encoding='utf8')` (provided by the `iinemo/isanlp` runtime — verified by reading the pinned commit's `src/isanlp/annotation_rst.py:81`) is the bridge from a parsed tree to the visualiser format.
 
-Chromium launch, the offline navigation guard, viewport JS, graph-bbox JS, and PNG whitespace trim live in [`isanlp_rst/rstviewer/_chromium.py`](../../isanlp_rst/rstviewer/_chromium.py). The viewer is on the same ruff / pyright bar as the rest of `isanlp_rst/`.
+Chromium launch, the offline navigation guard, viewport JS, graph-bbox JS, and PNG whitespace trim live in [`rst/isanlp_rst/rstviewer/_chromium.py`](../../rst/isanlp_rst/rstviewer/_chromium.py). The viewer is on the same ruff / pyright bar as the rest of `rst/isanlp_rst/`.
 
-The async / sync dispatch in `isanlp_rst/__init__.py:_run_coro_sync_result` is load-bearing — don't simplify it without checking notebook compatibility.
+The async / sync dispatch in `rst/isanlp_rst/__init__.py:_run_coro_sync_result` is load-bearing — don't simplify it without checking notebook compatibility.
 
 ## Memory management
 
@@ -113,7 +113,7 @@ Leaves are EDUs; internal nodes are relations. Every node has `start` / `end` in
 
 ## Native RST tree representation (`DiscourseUnit`)
 
-`DiscourseUnit` is natively provided in [`isanlp_rst/annotation_rst.py`](../../isanlp_rst/annotation_rst.py) in modern Python 3.14 (Mode A, slotted, strictly typed). The legacy `iinemo/isanlp` Git dependency has been retired, and `isanlp_rst` provides transparent `sys.modules` backward-compatibility aliasing for legacy `from isanlp.annotation_rst import DiscourseUnit` imports.
+`DiscourseUnit` is natively provided in [`rst/isanlp_rst/annotation_rst.py`](../../rst/isanlp_rst/annotation_rst.py) in modern Python 3.14 (Mode A, slotted, strictly typed). The legacy `iinemo/isanlp` Git dependency has been retired, and `isanlp_rst` provides transparent `sys.modules` backward-compatibility aliasing for legacy `from isanlp.annotation_rst import DiscourseUnit` imports.
 
 `DiscourseUnit` fields: `id`, `left`, `right`, `text`, `start`, `end`, `orig_text`, `relation`, `nuclearity`, `proba`, `entropy`. Methods: `clear_textfields()` (recursively sets `.text = ''`), `fill_textfields(full_text)` (re-extracts substring per node), `to_rs3(filename, encoding='utf8')` (writes RS3 XML via internal `Exporter`).
 

@@ -76,12 +76,14 @@ offline = [
   "tiktoken>=0.13,<0.14",
 ]
 
+# The package lives under the rst/ boundary (feature 010); Hatchling ships the final path
+# component as the import package, so the import name isanlp_rst is unchanged.
 [tool.hatch.build.targets.wheel]
-packages = ["isanlp_rst"]
+packages = ["rst/isanlp_rst"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-  "/isanlp_rst",
+  "/rst/isanlp_rst",
   "/LICENSE",
   "/LICENSE_MODELS",
   "/README.md",
@@ -145,7 +147,6 @@ ignore = [
 
 [tool.pyright]
 include = [
-  "isanlp_rst",
   "machine",
   "rst",
   "workbench",
@@ -176,7 +177,7 @@ test = { cmd = "pytest -m 'not slow and not stress' -q", description = "Fast sui
 test-all = { cmd = "pytest -q", description = "Every test, including slow model-loading tests and the production smoke" }
 test-stress = { cmd = "pytest tests/stress -q", description = "Concurrency, megadoc, and memory-leak stress tests" }
 smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every ModernBERT release in models/model-releases on every available device (CPU, MPS, CUDA) through the public façade; skips visibly when the store is empty" }
-lint = { cmd = "ruff check isanlp_rst machine rst workbench tests scripts tools", description = "Ruff" }
+lint = { cmd = "ruff check machine rst workbench tests scripts tools", description = "Ruff" }
 project-framework-identities = { cmd = "python tools/ontology/project_framework_identities.py", description = "Regenerate machine/rdam/resources/framework-identities.json from the vendored Central taxonomy" }
 ontology-validate = { cmd = "linkml lint --ignore-warnings ontology/schema/rdam.linkml.yaml && linkml validate ontology/schema/rdam.linkml.yaml && linkml validate -s ontology/schema/rdam.linkml.yaml -C ProviderBindings ontology/data/rdam-providers.yaml && python tools/ontology/project_framework_identities.py --check", description = "Validate the rdam LinkML application profile and its provider bindings against the vendored Central distribution, and check the framework projection is current" }
 typecheck = { cmd = "pyright", description = "Pyright, strict" }
@@ -189,6 +190,7 @@ validate-production-artifacts = { cmd = "python -m tools.production_boundary --r
 production-boundary = { cmd = "python -m tools.production_boundary --root .", description = "Ownership and import boundary inspection of the source tree (no artifacts)" }
 production-import-check = { cmd = "python -m tools.production_boundary.import_check", description = "Import the installed distribution without loading weights; here that is the editable source, so it certifies no wheel" }
 production-api-contract = { cmd = "pytest tests/ingest/production_ingest tests/production_boundary -q", description = "Production ingest contract and production-boundary tool suites" }
+rst-baseline = { cmd = "python -m tools.production_boundary.rst_baseline", description = "capture --output DIR | compare --baseline DIR: serialized RST public-contract outputs across all six source forms plus CPU analysis on the named release (006 rst-preservation equivalence procedure)" }
 production-ingest-test = { cmd = "pytest tests/ingest -q", description = "All ingest tests" }
 production-ingest-conformance = { cmd = "pytest tests/ingest -q -k 'conformance or ingest'", description = "Ingest conformance subset" }
 production-ingest-determinism = { cmd = "pytest tests/ingest/production_ingest/test_determinism.py tests/ingest/production_ingest/test_cache.py -q", description = "Ingest determinism and cache tests" }

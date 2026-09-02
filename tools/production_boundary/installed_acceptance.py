@@ -69,9 +69,16 @@ def _archive_bytes(document: bytes) -> bytes:
 </Relationships>'''
     output = io.BytesIO()
     with zipfile.ZipFile(output, mode="w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("[Content_Types].xml", content_types)
-        archive.writestr("_rels/.rels", relationships)
-        archive.writestr("document.xml", document)
+        # Fixed entry timestamps: identical input must give identical archive bytes, so the
+        # source identity — and every digest derived from it — is reproducible across runs.
+        for name, payload in (
+            ("[Content_Types].xml", content_types),
+            ("_rels/.rels", relationships),
+            ("document.xml", document),
+        ):
+            info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(info, payload)
     return output.getvalue()
 
 

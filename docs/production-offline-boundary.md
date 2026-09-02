@@ -80,7 +80,7 @@ point, schemas, public surface, `py.typed`, and packaged provenance.
 
 The release build exports one clean named Git commit, derives
 `SOURCE_DATE_EPOCH` from that commit, and injects canonical
-`isanlp_rst/build-provenance.json` into independent temporary build roots. The
+`isanlp_rst/build-provenance.json` (a package resource; the package source lives at `rst/isanlp_rst/`) into independent temporary build roots. The
 wheel is built through the sdist twice; corresponding SHA-256 hashes must be
 identical.
 

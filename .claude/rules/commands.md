@@ -19,7 +19,7 @@ Tasks defined in more than one environment (`production-boundary`,
 ## When to use what
 
 - **Everyday**: `pixi run test`, `pixi run lint`, `pixi run typecheck`, `pixi run mdlint`.
-- **Editing the predictor stack** (`isanlp_rst/transformer_parser/`, `parser.py`,
+- **Editing the predictor stack** (`rst/isanlp_rst/transformer_parser/`, `parser.py`,
   `model_loading/`): `pixi run test-all`. It includes the dtype-equivalence suite and the
   production smoke, which loads every release in `models/model-releases` on every
   available device. `pixi run smoke` runs the smoke alone.

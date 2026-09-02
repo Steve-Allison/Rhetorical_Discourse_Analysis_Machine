@@ -3,12 +3,16 @@
 from dataclasses import dataclass
 from functools import cache
 import hashlib
+from importlib import resources
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-LOCK_FILE_PATH = Path(__file__).resolve().parent.parent.parent / "config" / "ontology" / "central.lock.yaml"
+# The lock is a package resource, shipped in the wheel beside this module. It was once
+# resolved through a repository path (config/ontology/), which no installed copy of the
+# package ever had; the feature-010 relocation surfaced that and moved it here.
+LOCK_FILE_PATH = Path(str(resources.files("isanlp_rst.ontology").joinpath("central.lock.yaml")))
 
 
 @dataclass(frozen=True, slots=True)

@@ -25,7 +25,7 @@ the file started as research code.
 - `@cache` from `functools`, not `lru_cache(maxsize=None)`
 - Modern stdlib: `itertools.batched`, `pairwise`, `chain.from_iterable`; `operator.attrgetter` / `itemgetter` over lambdas
 - `datetime.now(UTC)`, never `datetime.utcnow()`
-- Native exception propagation; no `Result[T, E]` for internal flow; no defensive returns; no internal retry loops — failures are classified (see the `Retryability` contract in `isanlp_rst/ingest/contracts/failure.py`) and propagated, never silently re-attempted.
+- Native exception propagation; no `Result[T, E]` for internal flow; no defensive returns; no internal retry loops — failures are classified (see the `Retryability` contract in `rst/isanlp_rst/ingest/contracts/failure.py`) and propagated, never silently re-attempted.
 - `type X = ...` (PEP 695, 3.12+), not `TypeAlias`
 - `def f[T](...)`, not `TypeVar` declarations
 - `@override` decorator on subclass overrides
@@ -42,7 +42,7 @@ The old “inherited research, surgical only, no aesthetic sweeps” split is
 
 | Tool | Strict on |
 |---|---|
-| ruff | `isanlp_rst/` (including `rstviewer`), `tests/`, `scripts/` |
+| ruff | `rst/isanlp_rst/` (including `rstviewer`), `tests/`, `scripts/` |
 | pyright | the same set, except both `*/src` research trees stay excluded |
 
 If new code lands outside `tool.pyright.include`, add it to that list.

@@ -10,7 +10,8 @@ import rfc8785
 import isanlp_rst.ingest as ingest
 from tools.production_boundary.schemas import SCHEMA_BASE, generated_schemas
 
-PUBLIC_SURFACE_PATH: Final = Path("isanlp_rst/ingest/public-surface.json")
+# The resource lives inside the package wherever the package lives in the repository.
+PUBLIC_SURFACE_PATH: Final = Path(str(ingest.__file__)).parent / "public-surface.json"
 
 
 def generated_public_surface() -> bytes:

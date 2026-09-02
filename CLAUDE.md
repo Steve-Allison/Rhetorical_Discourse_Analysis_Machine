@@ -94,17 +94,17 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 
 ## Files worth knowing
 
-- [`isanlp_rst/parser.py`](isanlp_rst/parser.py) — public entry point, dispatches to predictor families.
-- [`isanlp_rst/cli.py`](isanlp_rst/cli.py) — unified `isanlp-rst` CLI (parse, view, serve, version).
-- [`isanlp_rst/transformer_parser/`](isanlp_rst/transformer_parser/) — SOTA ModernBERT pure-transformer parsing net, biaffine scorer, and CKY chart decoder.
-- [`isanlp_rst/annotation_rst.py`](isanlp_rst/annotation_rst.py) — native `DiscourseUnit` and RS3 XML serialization.
-- [`isanlp_rst/ingest/`](isanlp_rst/ingest/) — sole production source inventory, preparation, analysis, receipt, subdivision, and cache API.
-- [`isanlp_rst/contracts/`](isanlp_rst/contracts/) — typed contracts: `RstAnalysis`, `RstDocument`, `SecondaryRelationEdge`, `DiscourseSignal`, envelope serializations.
-- [`isanlp_rst/erst/`](isanlp_rst/erst/) — Extended RST (eRST): RS4 reader/writer, typed signals, complete candidates, and formally constrained `ErstSecondaryEdgeDecoder`.
-- [`isanlp_rst/hierarchical/stitcher.py`](isanlp_rst/hierarchical/stitcher.py) — `MacroMicroStitcher`: two-stage hierarchical section/macro tree stitching.
-- [`isanlp_rst/rstviewer/`](isanlp_rst/rstviewer/) — visualizer and HTML/PNG export engine.
-- [`isanlp_rst/doclang/`](isanlp_rst/doclang/) — private DocLang XML/archive decoding helpers used by canonical ingest.
-- [`isanlp_rst/markdown/`](isanlp_rst/markdown/) — private Markdown decoding helper used by canonical ingest.
+- [`rst/isanlp_rst/parser.py`](rst/isanlp_rst/parser.py) — public entry point, dispatches to predictor families.
+- [`rst/isanlp_rst/cli.py`](rst/isanlp_rst/cli.py) — unified `isanlp-rst` CLI (parse, view, serve, version).
+- [`rst/isanlp_rst/transformer_parser/`](rst/isanlp_rst/transformer_parser/) — SOTA ModernBERT pure-transformer parsing net, biaffine scorer, and CKY chart decoder.
+- [`rst/isanlp_rst/annotation_rst.py`](rst/isanlp_rst/annotation_rst.py) — native `DiscourseUnit` and RS3 XML serialization.
+- [`rst/isanlp_rst/ingest/`](rst/isanlp_rst/ingest/) — sole production source inventory, preparation, analysis, receipt, subdivision, and cache API.
+- [`rst/isanlp_rst/contracts/`](rst/isanlp_rst/contracts/) — typed contracts: `RstAnalysis`, `RstDocument`, `SecondaryRelationEdge`, `DiscourseSignal`, envelope serializations.
+- [`rst/isanlp_rst/erst/`](rst/isanlp_rst/erst/) — Extended RST (eRST): RS4 reader/writer, typed signals, complete candidates, and formally constrained `ErstSecondaryEdgeDecoder`.
+- [`rst/isanlp_rst/hierarchical/stitcher.py`](rst/isanlp_rst/hierarchical/stitcher.py) — `MacroMicroStitcher`: two-stage hierarchical section/macro tree stitching.
+- [`rst/isanlp_rst/rstviewer/`](rst/isanlp_rst/rstviewer/) — visualizer and HTML/PNG export engine.
+- [`rst/isanlp_rst/doclang/`](rst/isanlp_rst/doclang/) — private DocLang XML/archive decoding helpers used by canonical ingest.
+- [`rst/isanlp_rst/markdown/`](rst/isanlp_rst/markdown/) — private Markdown decoding helper used by canonical ingest.
 - [`machine/rdam/`](machine/rdam/) — the machine's aggregate analysis contract (import name `rdam`): provider and formalism declarations, capability states, native results, `Machine.analyse()` returning one explicit outcome per technique. Feature 007.
 - [`rst/rdam_rst/`](rst/rdam_rst/) — the machine-facing RST/eRST provider adapter (import name `rdam_rst`): declares capability from the promotion decision published beside the configured release and hands the machine `isanlp_rst`'s outcome envelope verbatim. Feature 009.
 - [`ontology/`](ontology/) — vendored Central distribution (read-only, `vendor/central-configs/`) and the `rdam` LinkML application profile binding boundaries to `coe:` framework identities; `pixi run ontology-validate`.

@@ -100,16 +100,16 @@ def build_experiment_protocol(
     production_sources = tuple(
         repository_root / relative
         for relative in (
-            "isanlp_rst/contracts/analysis.py",
-            "isanlp_rst/contracts/document.py",
-            "isanlp_rst/contracts/enums.py",
-            "isanlp_rst/contracts/erst.py",
-            "isanlp_rst/erst/candidates.py",
-            "isanlp_rst/erst/converter.py",
-            "isanlp_rst/erst/decoder.py",
-            "isanlp_rst/erst/relations.py",
-            "isanlp_rst/erst/rs4.py",
-            "isanlp_rst/erst/neural_scorer.py",
+            "rst/isanlp_rst/contracts/analysis.py",
+            "rst/isanlp_rst/contracts/document.py",
+            "rst/isanlp_rst/contracts/enums.py",
+            "rst/isanlp_rst/contracts/erst.py",
+            "rst/isanlp_rst/erst/candidates.py",
+            "rst/isanlp_rst/erst/converter.py",
+            "rst/isanlp_rst/erst/decoder.py",
+            "rst/isanlp_rst/erst/relations.py",
+            "rst/isanlp_rst/erst/rs4.py",
+            "rst/isanlp_rst/erst/neural_scorer.py",
         )
     )
     decoder = ErstDecoderConfig(

@@ -62,7 +62,7 @@ def validate_import_boundary(root: Path, authority: OwnershipAuthority | None = 
     ownership = authority or OwnershipAuthority(repository)
     # Every production root plus the workbench: the walk from each production module must
     # never reach a workbench module, directly or transitively (FR-006, research D5 check a).
-    source_roots = {"isanlp_rst", "workbench", "workbench.research", *BOUNDARY_ROOTS}
+    source_roots = {"workbench", "workbench.research", *BOUNDARY_ROOTS}
     python_files = [
         path
         for path in ownership.iter_relevant_files()

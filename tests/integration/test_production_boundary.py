@@ -22,7 +22,8 @@ def _write(path: Path, text: str = "") -> None:
 
 def test_authority_classifies_each_surface() -> None:
     authority = OwnershipAuthority(Path.cwd())
-    assert authority.classify("isanlp_rst/parser.py") == OwnershipClass.PRODUCTION
+    assert authority.classify("rst/isanlp_rst/parser.py") == OwnershipClass.PRODUCTION
+    assert authority.classify("rst/rdam_rst/provider.py") == OwnershipClass.PRODUCTION
     assert authority.classify("workbench/evaluation/rst/parseval.py") == OwnershipClass.OFFLINE
     assert authority.classify("workbench/training/run.py") == OwnershipClass.OFFLINE
     assert authority.classify("tests/test_parser.py") == OwnershipClass.REPOSITORY
@@ -40,15 +41,15 @@ def test_unmatched_relevant_path_fails_closed(tmp_path: Path) -> None:
 def test_ambiguous_relevant_path_fails_closed(tmp_path: Path) -> None:
     base = OwnershipAuthority(tmp_path)
     overlapping = OwnershipRule(
-        rule_id="duplicate-production",
-        prefix=PurePosixPath("isanlp_rst"),
+        rule_id="duplicate-rst-boundary",
+        prefix=PurePosixPath("rst"),
         ownership=OwnershipClass.PRODUCTION,
         reason="causal ambiguity fixture",
         publishable=True,
     )
     authority = OwnershipAuthority(tmp_path, rules=(*base.rules, overlapping))
     with pytest.raises(OwnershipClassificationError, match="matched 2 ownership rules"):
-        authority.classify("isanlp_rst/parser.py")
+        authority.classify("rst/isanlp_rst/parser.py")
 
 
 def test_gate_reports_unmatched_and_ambiguous_paths(tmp_path: Path) -> None:
@@ -57,15 +58,15 @@ def test_gate_reports_unmatched_and_ambiguous_paths(tmp_path: Path) -> None:
     assert unmatched[0].kind == ViolationKind.UNMATCHED_OWNERSHIP
     assert unmatched[0].path == ("unowned/member.py",)
 
-    _write(tmp_path / "isanlp_rst/parser.py")
+    _write(tmp_path / "rst/isanlp_rst/parser.py")
     base = OwnershipAuthority(tmp_path)
-    duplicate = OwnershipRule(rule_id="duplicate", prefix=PurePosixPath("isanlp_rst"), ownership=OwnershipClass.PRODUCTION, reason="ambiguity fixture", publishable=True)
+    duplicate = OwnershipRule(rule_id="duplicate", prefix=PurePosixPath("rst"), ownership=OwnershipClass.PRODUCTION, reason="ambiguity fixture", publishable=True)
     ambiguous = validate_ownership(OwnershipAuthority(tmp_path, rules=(*base.rules, duplicate)))
-    assert any(item.kind == ViolationKind.AMBIGUOUS_OWNERSHIP and item.path == ("isanlp_rst/parser.py",) for item in ambiguous)
+    assert any(item.kind == ViolationKind.AMBIGUOUS_OWNERSHIP and item.path == ("rst/isanlp_rst/parser.py",) for item in ambiguous)
 
 
 def test_direct_production_to_offline_import_reports_complete_path(tmp_path: Path) -> None:
-    _write(tmp_path / "isanlp_rst/__init__.py", "from workbench import trainer\n")
+    _write(tmp_path / "rst/isanlp_rst/__init__.py", "from workbench import trainer\n")
     _write(tmp_path / "workbench/__init__.py")
     _write(tmp_path / "workbench/trainer.py")
     report = validate_import_boundary(tmp_path)
@@ -74,8 +75,8 @@ def test_direct_production_to_offline_import_reports_complete_path(tmp_path: Pat
 
 
 def test_indirect_production_to_offline_import_reports_complete_path(tmp_path: Path) -> None:
-    _write(tmp_path / "isanlp_rst/__init__.py", "from isanlp_rst import bridge\n")
-    _write(tmp_path / "isanlp_rst/bridge.py", "from workbench import trainer\n")
+    _write(tmp_path / "rst/isanlp_rst/__init__.py", "from isanlp_rst import bridge\n")
+    _write(tmp_path / "rst/isanlp_rst/bridge.py", "from workbench import trainer\n")
     _write(tmp_path / "workbench/__init__.py")
     _write(tmp_path / "workbench/trainer.py")
     report = validate_import_boundary(tmp_path)
@@ -119,8 +120,8 @@ def test_machine_wheel_members_are_inside_the_boundary_and_workbench_still_is_no
 
 
 def test_new_production_module_needs_no_secondary_allowlist(tmp_path: Path) -> None:
-    _write(tmp_path / "isanlp_rst/__init__.py", "from isanlp_rst import new_runtime\n")
-    _write(tmp_path / "isanlp_rst/new_runtime.py", "VALUE = 1\n")
+    _write(tmp_path / "rst/isanlp_rst/__init__.py", "from isanlp_rst import new_runtime\n")
+    _write(tmp_path / "rst/isanlp_rst/new_runtime.py", "VALUE = 1\n")
     report = validate_import_boundary(tmp_path)
     assert report.valid
     assert report.production_modules == 2

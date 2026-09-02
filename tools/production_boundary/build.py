@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import tomllib
 from typing import Final
 import uuid
 
@@ -137,6 +138,22 @@ def _prepare_package_source(export_root: Path) -> None:
     """Remove build-control files that Hatchling always adds to an sdist."""
 
     (export_root / ".gitignore").unlink(missing_ok=True)
+
+
+def _package_source_dir(export_root: Path) -> Path:
+    """The directory Hatchling ships as the import package, read from the export's pyproject.
+
+    ``[tool.hatch.build.targets.wheel].packages`` names the source directory (``isanlp_rst``
+    before migration, ``rst/isanlp_rst`` after); its final component is the import name.
+    Deriving it here is what lets the provenance resource land inside the package
+    wherever the package lives.
+    """
+
+    pyproject = tomllib.loads((export_root / "pyproject.toml").read_text(encoding="utf-8"))
+    packages = pyproject.get("tool", {}).get("hatch", {}).get("build", {}).get("targets", {}).get("wheel", {}).get("packages")
+    if not isinstance(packages, list) or len(packages) != 1 or not isinstance(packages[0], str):
+        raise RuntimeError("pyproject must declare exactly one wheel package directory")
+    return export_root / packages[0]
 
 
 def _provenance_bytes(
@@ -278,7 +295,7 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> Produ
             if provenance is not None and candidate != provenance:
                 raise RuntimeError("build provenance changed between independent build roots")
             provenance = candidate
-            (export_root / "isanlp_rst/build-provenance.json").write_bytes(candidate)
+            (_package_source_dir(export_root) / "build-provenance.json").write_bytes(candidate)
             runs.append(_run_build(export_root, run_root, environment))
 
         first, second = runs

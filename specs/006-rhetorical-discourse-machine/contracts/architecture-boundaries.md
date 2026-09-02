@@ -18,7 +18,7 @@ below. A violation is a defect, not a style choice.
 | `tools/` | Production boundary inspection and release tooling | now |
 | `specs/` | Planning material | now |
 | `scripts/`, `docs/`, `models/` | Operational scripts, documentation (including `examples/`, the sample `.rs3` inputs and rendered illustrations), local model releases | now |
-| `config/` | Production configuration data read by providers and the ontology lock (`config/erst/`, `config/ontology/`) | now |
+| `config/` | Repository configuration data for workbench and tests (`config/erst/`). The Central ontology lock moved into the package as a resource (`rst/isanlp_rst/ontology/central.lock.yaml`, feature 010) because production code must not resolve repository paths | now |
 | `dist/` | Ignored build output: the release pair rebuilt from a tagged commit by `build-production`, never tracked (the committed record is the evidence JSON under `specs/004-production-api-contract/evidence/`) | now, ignored |
 | `graphify-out/` | Generated knowledge-graph artifacts produced by the `graphify` tooling; neither production code nor workbench experimentation | now |
 | repository root files | Packaging and lock (`pyproject.toml`, `pixi.lock`, `MANIFEST.in`), licensing (`LICENSE`, `LICENSE_MODELS`), documentation and agent instructions (`README.md`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`), and `cleanup.sh` | now |
