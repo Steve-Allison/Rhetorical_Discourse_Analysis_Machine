@@ -1,4 +1,10 @@
-"""Reproducibly build wheel and sdist from one clean, named Git commit."""
+"""Reproducibly build wheel and sdist from one clean, named Git commit.
+
+``dist/`` is ignored build output, never tracked: a release is a tagged commit, and the
+artifacts are rebuilt from it on demand. What is committed is the evidence — the
+source-release record and the reproducible-build report under
+``specs/004-production-api-contract/evidence/``.
+"""
 
 from dataclasses import dataclass
 from importlib.metadata import version
@@ -17,8 +23,11 @@ import uuid
 import rfc8785
 
 from tools.production_boundary.contracts import (
+    BuiltArtifactIdentity,
+    ReproducibleBuildReport,
     SourceReleaseIdentity,
     SourceReleaseRecord,
+    canonical_record_bytes,
     sha256_path,
     write_canonical_record,
 )
@@ -34,6 +43,15 @@ class BuildRun:
     wheel: Path
     sdist: Path
     report: Path
+
+
+@dataclass(frozen=True, slots=True)
+class ProductionBuild:
+    """The published artifact pair and the reproducible-build report describing it."""
+
+    wheel: Path
+    sdist: Path
+    report: ReproducibleBuildReport
 
 
 def _git(*arguments: str, repository_root: Path, capture_output: bool = True) -> str:
@@ -69,6 +87,15 @@ def _require_clean_source(root: Path) -> tuple[str, str, int]:
         _git("show", "-s", "--format=%ct", commit, repository_root=root)
     )
     return commit, tree, source_date_epoch
+
+
+def _source_tag(root: Path) -> str | None:
+    """The tag naming HEAD exactly, if any — a release build is expected to have one."""
+
+    try:
+        return _git("describe", "--tags", "--exact-match", "HEAD", repository_root=root)
+    except subprocess.CalledProcessError:
+        return None
 
 
 def _archive_commit(root: Path, commit: str, destination: Path) -> str:
@@ -117,6 +144,7 @@ def _provenance_bytes(
     *,
     commit: str,
     tree: str,
+    source_tag: str | None,
     archive_sha256: str,
     source_date_epoch: int,
 ) -> bytes:
@@ -141,6 +169,7 @@ def _provenance_bytes(
             "production_contract_version": "2.0.0",
             "source_commit": commit,
             "source_tree": tree,
+            "source_tag": source_tag,
             "source_archive_sha256": archive_sha256,
             "source_date_epoch": source_date_epoch,
             "build_input_sha256": build_input_identity,
@@ -180,9 +209,9 @@ def _run_build(export_root: Path, run_root: Path, environment: dict[str, str]) -
     return BuildRun(wheel=wheel, sdist=sdist, report=report)
 
 
-def _publish_immutable(source: Path, destination: Path) -> Path:
-    if destination.exists():
-        raise FileExistsError(f"promoted artifact already exists: {destination}")
+def _publish_artifact(source: Path, destination: Path) -> Path:
+    """Atomically place one built artifact at its output path."""
+
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_name(f".{destination.name}.{uuid.uuid4().hex}.tmp")
     shutil.copyfile(source, temporary)
@@ -190,14 +219,32 @@ def _publish_immutable(source: Path, destination: Path) -> Path:
     return destination
 
 
-def build_production_artifacts(repository_root: Path, output_dir: Path) -> tuple[Path, Path]:
-    """Double-build exact-commit artifacts via sdist and publish identical bytes."""
+def _reset_output_dir(destination: Path) -> None:
+    """Empty the output directory, refusing to touch anything that is not this release's pair."""
+
+    if destination.exists():
+        unexpected = sorted(path.name for path in destination.iterdir() if path.name not in {WHEEL_NAME, SDIST_NAME})
+        if unexpected:
+            raise RuntimeError(f"output directory holds files that are not this release's artifacts: {unexpected}")
+        shutil.rmtree(destination)
+    destination.mkdir(parents=True)
+
+
+def build_production_artifacts(repository_root: Path, output_dir: Path) -> ProductionBuild:
+    """Double-build exact-commit artifacts via sdist and publish identical bytes.
+
+    The output directory is derived, ignored build output: a previous pair there is
+    replaced. If HEAD carries a tag it must be ``v<PACKAGE_VERSION>``; a tag naming a
+    different version is a real error, not a warning.
+    """
 
     root = repository_root.resolve()
     commit, tree, source_date_epoch = _require_clean_source(root)
+    source_tag = _source_tag(root)
+    if source_tag is not None and source_tag != f"v{PACKAGE_VERSION}":
+        raise RuntimeError(f"HEAD is tagged {source_tag!r} but the package version is {PACKAGE_VERSION}")
     destination = output_dir.resolve()
-    if destination.exists() and any(destination.iterdir()):
-        raise RuntimeError(f"promoted artifact directory is not empty: {destination}")
+    _reset_output_dir(destination)
 
     with tempfile.TemporaryDirectory(prefix="isanlp-rst-production-build-") as temporary:
         workspace = Path(temporary)
@@ -224,6 +271,7 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> tuple
                 export_root,
                 commit=commit,
                 tree=tree,
+                source_tag=source_tag,
                 archive_sha256=archive_sha256,
                 source_date_epoch=source_date_epoch,
             )
@@ -246,37 +294,36 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> tuple
         if mismatches:
             raise RuntimeError(f"independent via-sdist builds were not reproducible: {mismatches}")
 
-        wheel = _publish_immutable(first.wheel, destination / WHEEL_NAME)
-        sdist = _publish_immutable(first.sdist, destination / SDIST_NAME)
-        report = {
-            "schema_name": "isanlp_rst.release_evidence.reproducible_build",
-            "schema_version": "1.0.0",
-            "source_commit": commit,
-            "source_tree": tree,
-            "source_archive_sha256": archive_sha256,
-            "source_date_epoch": source_date_epoch,
-            "build_frontend": f"build {version('build')}",
-            "build_backend": f"hatchling {version('hatchling')}",
-            "build_reports": [sha256_path(run.report) for run in runs],
-            "provenance_sha256": _sha256_bytes(provenance or b""),
-            "artifacts": [
-                {"path": str(path), "sha256": sha256_path(path)}
-                for path in (wheel, sdist)
-            ],
-            "reproducible": True,
-        }
-        print(rfc8785.dumps(report).decode("utf-8"))
-        return wheel, sdist
+        wheel = _publish_artifact(first.wheel, destination / WHEEL_NAME)
+        sdist = _publish_artifact(first.sdist, destination / SDIST_NAME)
+        report = ReproducibleBuildReport(
+            source_commit=commit,
+            source_tree=tree,
+            source_tag=source_tag,
+            source_archive_sha256=archive_sha256,
+            source_date_epoch=source_date_epoch,
+            build_frontend=f"build {version('build')}",
+            build_backend=f"hatchling {version('hatchling')}",
+            build_reports=(sha256_path(first.report), sha256_path(second.report)),
+            provenance_sha256=_sha256_bytes(provenance or b""),
+            artifacts=(
+                BuiltArtifactIdentity(filename=wheel.name, sha256=sha256_path(wheel), size_bytes=wheel.stat().st_size),
+                BuiltArtifactIdentity(filename=sdist.name, sha256=sha256_path(sdist), size_bytes=sdist.stat().st_size),
+            ),
+        )
+        return ProductionBuild(wheel=wheel, sdist=sdist, report=report)
+
+
+EVIDENCE_DIR: Final = Path("specs/004-production-api-contract/evidence")
 
 
 def main() -> int:
     root = Path.cwd()
     source_record = source_release_record(root)
-    build_production_artifacts(root, root / "dist" / PACKAGE_VERSION)
-    write_canonical_record(
-        root / "specs/004-production-api-contract/evidence/source-release.json",
-        source_record,
-    )
+    build = build_production_artifacts(root, root / "dist" / PACKAGE_VERSION)
+    write_canonical_record(root / EVIDENCE_DIR / "source-release.json", source_record)
+    write_canonical_record(root / EVIDENCE_DIR / "reproducible-build.json", build.report)
+    print(canonical_record_bytes(build.report).decode("utf-8"))
     return 0
 
 
@@ -285,7 +332,9 @@ if __name__ == "__main__":
 
 
 __all__ = [
+    "EVIDENCE_DIR",
     "PACKAGE_VERSION",
+    "ProductionBuild",
     "SDIST_NAME",
     "WHEEL_NAME",
     "build_production_artifacts",

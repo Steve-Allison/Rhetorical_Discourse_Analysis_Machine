@@ -63,7 +63,12 @@ results equivalent under the suite's existing definitions. Any diff halts migrat
 
 ## V4 — Packaging identity survives relocation (FR-009; research D2 gate)
 
-Post-relocation only:
+Post-relocation only. `dist/` is ignored build output; tag first so the packaged
+provenance and the build report name the release:
+
+```bash
+git tag v<version>
+```
 
 ```bash
 pixi run build-production

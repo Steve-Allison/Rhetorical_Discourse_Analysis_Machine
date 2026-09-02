@@ -70,7 +70,7 @@ ambiguous" false on its face.
 | Path | What it actually is (verified) | Assigned owner |
 |---|---|---|
 | `config/` | Four tracked files: `config/erst/gum-v12.1.0-raw-relations.json`, `config/erst/tokenizer-compatibility.json`, `config/ontology/central.lock.yaml`, `config/ontology/discourse.linkml.yaml` — production configuration data read by the RST/eRST provider and the ontology lock. | New roster row `config/` |
-| `dist/` | Two tracked files under `dist/5.0.0/`: the 5.0.0 wheel and sdist, referenced by four pixi tasks (`pyproject.toml:115-116`, `:196`). Deliberately committed, deliberately not gitignored. | New roster row `dist/` |
+| `dist/` | At audit time: two tracked files under `dist/5.0.0/`, the 5.0.0 wheel and sdist. *Superseded 2026-09-02*: the tracked pair failed its own validator (rst-surface-audit defect 4) and `dist/` became ignored build output rebuilt from the release tag; the roster row now says so. | New roster row `dist/` |
 | `examples/` | Four tracked files: sample `.rs3` inputs and rendered `.png` outputs used as documentation illustrations. | Folded into the `docs/` row |
 | `graphify-out/` | 486 tracked files: a generated knowledge-graph artifact set (`graph.json`, `graph.html`, `GRAPH_REPORT.md`, `cache/`, `cost.json`) produced by the `graphify` tooling. Not production code, not workbench experimentation. | New roster row `graphify-out/` |
 | Root files | Packaging and lock (`pyproject.toml`, `pixi.lock`, `MANIFEST.in`), licensing (`LICENSE`, `LICENSE_MODELS`), documentation and agent instructions (`README.md`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`), and one operational script (`cleanup.sh`). | New roster row "repository root files" |

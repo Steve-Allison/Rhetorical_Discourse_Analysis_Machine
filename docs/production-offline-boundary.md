@@ -17,7 +17,7 @@ without those distributions installed.
 ## Install boundaries
 
 ```bash
-# Core runtime
+# Core runtime (after `pixi run build-production`; dist/ is ignored build output)
 pip install dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl
 
 # Core plus Markdown, Docling, DocLang XML, and DocLang archive ingest
@@ -102,12 +102,15 @@ requires the exact promoted ModernBERT release and checks canonical parser
 results, loaded-component receipts, validation, and CLI semantic parity.
 
 ```bash
-pixi run -e default build-production
-pixi run -e default validate-production-artifacts
-pixi run -e default production-ingest-clean-install
-pixi run -e production production-boundary
+git tag v5.0.0
+pixi run build-production
+pixi run validate-production-artifacts
+pixi run -e production production-clean-install
 ```
 
-The build command refuses any tracked or untracked worktree change and never
-overwrites an existing promoted artifact. It becomes executable only after the
-source-release commit exists; source-tree tests are not artifact certification.
+The build command refuses any tracked or untracked worktree change, refuses a HEAD tag
+that names a different version, and replaces the previous pair in the ignored `dist/`
+directory. A release is the tagged commit; the artifacts are rebuilt from it on demand
+and the committed record is `source-release.json` and `reproducible-build.json` under
+`specs/004-production-api-contract/evidence/`. Source-tree tests are not artifact
+certification — `production-clean-install` is.

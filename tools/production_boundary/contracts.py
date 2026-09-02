@@ -246,6 +246,39 @@ class SourceReleaseRecord(StrictModel):
     source: SourceReleaseIdentity
 
 
+class BuiltArtifactIdentity(StrictModel):
+    filename: str = Field(min_length=1)
+    sha256: str = Field(pattern=_SHA256_PATTERN)
+    size_bytes: int = Field(gt=0)
+
+
+class ReproducibleBuildReport(StrictModel):
+    """Canonical evidence for one reproducible double build of the release pair."""
+
+    schema_name: Literal["isanlp_rst.release_evidence.reproducible_build"] = (
+        "isanlp_rst.release_evidence.reproducible_build"
+    )
+    schema_version: Literal["1.0.0"] = "1.0.0"
+    source_commit: str = Field(pattern=_GIT_IDENTITY_PATTERN)
+    source_tree: str = Field(pattern=_GIT_IDENTITY_PATTERN)
+    source_tag: str | None
+    source_archive_sha256: str = Field(pattern=_SHA256_PATTERN)
+    source_date_epoch: int = Field(gt=0)
+    build_frontend: str = Field(min_length=1)
+    build_backend: str = Field(min_length=1)
+    build_reports: tuple[str, str]
+    provenance_sha256: str = Field(pattern=_SHA256_PATTERN)
+    artifacts: tuple[BuiltArtifactIdentity, BuiltArtifactIdentity]
+    reproducible: Literal[True] = True
+
+    @field_validator("build_reports")
+    @classmethod
+    def build_reports_are_digests(cls, value: tuple[str, str]) -> tuple[str, str]:
+        if any(len(item) != 64 or set(item) - set("0123456789abcdef") for item in value):
+            raise ValueError("build report identities must be SHA-256 hex digests")
+        return value
+
+
 class BuildIdentity(StrictModel):
     python_implementation: str = Field(min_length=1)
     python_version: str = Field(min_length=1)
@@ -324,6 +357,7 @@ __all__ = [
     "BoundaryReport",
     "BoundaryViolation",
     "BuildIdentity",
+    "BuiltArtifactIdentity",
     "CheckStatus",
     "DependencyRule",
     "EvidenceRecord",
@@ -340,6 +374,7 @@ __all__ = [
     "ReleaseArtifactIdentity",
     "ReleaseContractIdentity",
     "ReleaseReceipt",
+    "ReproducibleBuildReport",
     "SourceReleaseIdentity",
     "SourceReleaseRecord",
     "VerificationCheck",

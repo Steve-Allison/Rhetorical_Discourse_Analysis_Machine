@@ -62,5 +62,5 @@ include = ["/isanlp_rst", "/pyproject.toml"]
     _run("git", "add", ".", cwd=root)
     _run("git", "commit", "-q", "-m", "fixture", cwd=root)
     commit = _run("git", "rev-parse", "HEAD", cwd=root)
-    wheel, sdist = build_production_artifacts(root, tmp_path_factory.mktemp("release-output"))
-    return wheel, sdist, commit
+    build = build_production_artifacts(root, tmp_path_factory.mktemp("release-output"))
+    return build.wheel, build.sdist, commit

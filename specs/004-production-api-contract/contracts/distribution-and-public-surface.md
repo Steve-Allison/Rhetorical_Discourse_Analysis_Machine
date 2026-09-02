@@ -1,8 +1,19 @@
 # Contract: Public Surface and Durable Distribution
 
 **Package release**: `isanlp_rst` 5.0.0  
-**Promoted artifact directory**: `dist/5.0.0/`  
+**Build output directory**: `dist/5.0.0/` (ignored, rebuilt from the release tag)  
 **Scope**: Local cross-machine production use
+
+> **Amended 2026-09-02** (owner ruling, executed under feature 006; authority
+> `AGENTS.md` §"no invented release theatre"). The tracked-artifact layout, the
+> eleven-step two-machine promotion sequence, the release receipt, and the
+> second-machine acceptance below were **never executed** — no `release-receipt.json` or
+> second-machine record has ever existed in git — and are superseded: `dist/` is ignored
+> build output; a release is a commit tagged `v<version>`; `build-production` rebuilds
+> the pair from it reproducibly; `validate-production-artifacts` and
+> `production-clean-install` certify the bytes; and the committed record is
+> `evidence/source-release.json` plus `evidence/reproducible-build.json`. Superseded
+> sections are retained below, marked, as the record of what was specified.
 
 ## Public-surface authority
 
@@ -58,7 +69,7 @@ The 5.0.0 package must:
 Wheel `METADATA`, filename version, runtime version, packaged provenance, and
 release receipt must agree exactly.
 
-## Tracked artifact layout
+## Tracked artifact layout *(superseded 2026-09-02 — see amendment above)*
 
 The repository tracks only promoted release content under versioned
 directories:
@@ -94,19 +105,14 @@ not need to build it.
    runs.
 7. Run artifact, contract, and clean-install verification against the chosen
    artifact bytes.
-8. Add the wheel and sdist to `dist/5.0.0/` in an untagged candidate commit.
-9. On the second development machine, check out that candidate commit and
-   verify the exact committed wheel without rebuilding.
-10. Create the canonical release receipt and detached receipt SHA-256 from the
-    local and second-machine evidence.
-11. Add those two files in a certification commit and tag that commit. The
-    receipt identifies the exact source commit from which the unchanged
-    artifact bytes were built.
-
-This staged sequence avoids both self-reference and a false second-machine
-claim: the artifact must be committed before another machine can verify the
-repository artifact, and the final receipt is created only after that
-verification exists.
+8. *(superseded 2026-09-02)* Tag the source commit `v<version>` before building; the
+   packaged provenance and the build report both record the tag.
+9. *(superseded)* Commit `evidence/source-release.json` and
+   `evidence/reproducible-build.json` after the build; the artifacts themselves stay
+   in ignored `dist/` and are rebuilt from the tag on demand.
+10. *(superseded — no second machine, no release receipt; those steps were never
+    executed and are removed.)*
+11. *(superseded)*
 
 ## Release evidence lifecycle
 
@@ -329,9 +335,11 @@ bytes.
 
 ## Release immutability
 
-After promotion:
+After a release is tagged (amended 2026-09-02: immutability is the tag plus the
+reproducible build, not tracked bytes):
 
-- the bytes under `dist/5.0.0/` do not change;
+- rebuilding the tagged commit yields byte-identical artifacts — the double build
+  proves it on every run;
 - any code or public-contract change uses a new SemVer release;
 - any incompatible change uses a new major package version;
 - an artifact with different bytes never reuses the same filename/version;

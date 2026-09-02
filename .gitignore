@@ -33,3 +33,6 @@ corpora/
 # macOS Finder metadata
 .DS_Store
 **/.DS_Store
+
+# build output — rebuilt from a tagged commit by `pixi run build-production`; evidence is committed under specs/
+dist/
