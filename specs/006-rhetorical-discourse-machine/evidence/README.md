@@ -22,4 +22,4 @@ it stands, with the inspected file, command, or commit cited.
 | `pixi run test` | **green** — includes the three new promotion tests |
 | `pixi run test-all` | **green** — `868 passed` |
 | `pixi run production-api-contract` | **green** — `244 passed` |
-| `pixi run smoke-full-mps` | **PASS** — both releases on MPS (after the smoke-script fix recorded in `rst-surface-audit.md`) |
+| `pixi run smoke` | **43 passed** — every release on CPU and MPS via `tests/integration/test_production_smoke.py` (the former `smoke-full-mps` script fix, then moved into the suite; both recorded in `rst-surface-audit.md`) |

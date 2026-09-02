@@ -16,7 +16,7 @@ Treat **every** module in this repo as Steve Allison's production Python. Elena 
 The repository defines two Pixi environments:
 
 - **`default` (mapped to `offline` feature)**: The primary development environment containing all dependencies (`dev`, `formats`, `offline`). All everyday tasks (`pixi run test`, `pixi run lint`, `pixi run typecheck`, `pixi run bench`, `pixi shell`) execute here by default without `-e` flags.
-- **`production`**: The isolated clean-room consumer environment containing only what `pip install isanlp_rst` provides. Used for release boundary certification (`pixi run -e production production-smoke`, `pixi run build-production`).
+- **`production`**: The isolated clean-room consumer environment containing only what `pip install isanlp_rst` provides (installed as the editable source). Release certification is `pixi run build-production`, `pixi run validate-production-artifacts`, and `pixi run -e production production-clean-install`; `production-import-check` only imports the editable source and certifies no wheel.
 
 Do not break this boundary: production code (`isanlp_rst/`) must never import offline/dev packages (`pytest`, `nltk`, `peft`, `fire`, `jsonnet`, `blake3`).
 

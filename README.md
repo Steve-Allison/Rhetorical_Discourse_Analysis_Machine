@@ -67,7 +67,7 @@ For production analysis in this checkout, use the independently solved productio
 git clone https://github.com/Steve-Allison/isanlp_rst.git
 cd isanlp_rst
 pixi install -e production
-pixi run -e production production-smoke
+pixi run -e production production-import-check
 ```
 
 Alternative (raw venv / pip):
@@ -160,7 +160,13 @@ Forward passes go through `torch.autocast`, so the model runs in `float32`, `flo
 ```python
 import torch
 
-parser = Parser(hf_model_version="gumrrg", device="auto", dtype=torch.bfloat16)  # also accepts 'bf16', 'fp16', 'fp32'
+parser = Parser.from_model_release(
+    "models/model-releases",
+    "modernbert-v1-e5ea56cd620f",
+    family="modernbert",
+    device="auto",
+    dtype=torch.bfloat16,  # also accepts 'bf16', 'fp16', 'fp32'
+)
 ```
 
 Default is `float32` on every device. On Apple Silicon (M-series, PyTorch 2.11) at ~1k-char inputs, `float32` beats `bfloat16` / `float16` for every published model — per-op autocast dispatch overhead dominates the matmul speedup at this scale. On large-batch CUDA workloads with native bf16 (Hopper / Ada Tensor Cores), `bfloat16` is likely faster — measure with `pixi run -e offline bench` before pinning a choice.
@@ -181,13 +187,13 @@ The 18-corpus `unirst` model is faster on CPU than on MPS — multi-corpus class
 
 #### Verifying on NVIDIA CUDA hardware
 
-CI runs on macOS Apple Silicon with **Python 3.14** (pixi lock). Package metadata declares `requires-python >= 3.14`. The CUDA dispatch path isn't exercised in CI. To verify on an NVIDIA host:
+CI runs on macOS Apple Silicon with **Python 3.14** (pixi lock). Package metadata declares `requires-python >= 3.14`. The CUDA dispatch path isn't exercised in CI. On an NVIDIA host with the release store present:
 
 ```bash
-pixi run -e offline cuda-smoke
+pixi run smoke
 ```
 
-The script confirms `torch.cuda.is_available()`, loads DMRST and UniRST on `cuda:0`, parses a sample text, and round-trips a `parse_from_edus` call. Exits non-zero on any failure.
+The production smoke (`tests/integration/test_production_smoke.py`) loads every ModernBERT release in `models/model-releases` on every available device — CPU, MPS, and CUDA when `torch.cuda.is_available()` — asserts the parser landed on the requested device, aligns every parsed node to the input text, and round-trips `from_edus`.
 
 ### 3. Understanding the output
 
@@ -329,8 +335,8 @@ from isanlp_rst.ingest import AUTHORED_PROSE_V1, ProductionIngestor, SourceArtif
 
 parser = Parser.from_model_release(
     Path("/absolute/path/to/model-releases"),
-    "gumrrg-eb1d5745f3a1",
-    family="dmrst",
+    "modernbert-v1-e5ea56cd620f",
+    family="modernbert",
     device="auto",
 )
 ingestor = ProductionIngestor(parser=parser)
@@ -408,10 +414,12 @@ shared parser.
 The causal checks are:
 
 ```bash
-pixi run -e production production-smoke
 pixi run -e offline production-boundary
 pixi run -e offline offline-smoke
+pixi run -e production production-clean-install   # certifies the built wheel
 ```
+
+`pixi run -e production production-import-check` imports the installed distribution without loading weights; in the production environment that is the editable source, so it is a quick sanity check, not wheel certification.
 
 The full ownership and migration map is in [`docs/production-offline-boundary.md`](docs/production-offline-boundary.md). Production source ingest remains production functionality because it prepares real source material for analysis; training-corpus preparation, evaluation, and Gold Set assessment remain offline.
 

@@ -167,6 +167,17 @@ This is the third FR-027 finding against Feature 005's completion in one audit p
 after the fabricated evaluation literal (promotion-gap-audit gap 4) and the smoke script
 that could not pass (defect 3).
 
+**Follow-up (2026-09-02, owner-directed)**: the class of defect was removed rather than
+patched. `dist/` is now ignored build output; a release is a commit tagged `v<version>`,
+`build-production` rebuilds the pair from it (refusing a tag that names another
+version, recording the tag in the packaged provenance and in the committed
+`reproducible-build.json`), and the smoke scripts moved into
+`tests/integration/test_production_smoke.py` so `test-all` runs them. `production-smoke`
+was renamed `production-import-check` because it imports the editable source and
+certifies no wheel. The 004 distribution contract's never-executed two-machine
+sequence is marked superseded; `AGENTS.md` §"no invented release theatre" is the
+authority.
+
 **Release evidence observation**: the promoted release
 `modernbert-v1-e5ea56cd620f` carries `"evaluation_evidence": "GUM-12.1.0 Parseval
 evaluation verified"` — the fabricated fallback literal documented in

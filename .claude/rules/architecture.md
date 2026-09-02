@@ -11,8 +11,9 @@ The parser is a thin façade over two parallel predictor families. Both families
 > production family is **ModernBERT** (`isanlp_rst/transformer_parser/`), loaded from an
 > immutable local release via `Parser.from_model_release(store, release_id,
 > family="modernbert")`. The family description below is retained as the record of the
-> archived research parsers; `scripts/smoke_test.py` and `scripts/cuda_smoke.py` exercise
-> only the production family.
+> archived research parsers; the production smoke
+> (`tests/integration/test_production_smoke.py`, `pixi run smoke`) exercises only the
+> production family, on every available device.
 
 `isanlp_rst.parser.Parser` is a thin dispatcher. It picks one of two predictors based on either `hf_model_version` (HF-pulled) or `family=` / auto-detected (`model_dir=` for local checkpoints):
 

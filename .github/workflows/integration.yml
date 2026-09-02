@@ -7,8 +7,8 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  smoke-full:
-    name: Full smoke (all 5 models, CPU + MPS)
+  slow-suite:
+    name: Slow suite (model-loading tests; production smoke skips without a local release store)
     runs-on: macos-14  # Apple Silicon
     timeout-minutes: 60
     steps:
@@ -24,24 +24,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/huggingface/hub
-          key: hf-cache-isanlp-rst-v3-${{ hashFiles('pyproject.toml') }}
+          key: hf-cache-${{ hashFiles('pyproject.toml') }}
           restore-keys: |
-            hf-cache-isanlp-rst-v3-
+            hf-cache-
 
       - name: Install environment
         run: pixi install
 
-      - name: Smoke (all 5 models on CPU)
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: pixi run smoke-full
-
-      - name: Smoke (all 5 models on MPS)
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: pixi run smoke-full-mps
-
-      - name: Integration tests (cross-dtype × cross-device × multilingual)
+      - name: Slow tests
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: pixi run pytest -m slow -v

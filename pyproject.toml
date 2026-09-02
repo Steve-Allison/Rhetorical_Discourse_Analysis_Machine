@@ -109,11 +109,13 @@ python = "3.14.*"
 [tool.pixi.feature.production.pypi-dependencies]
 isanlp_rst = { path = ".", editable = true }
 
+# Task descriptions are the authority `pixi task list` shows; docs point here rather than
+# restating them.
 [tool.pixi.feature.production.tasks]
-production-boundary = "python -m tools.production_boundary --root ."
-production-smoke = "python -m tools.production_boundary.production_smoke"
-production-artifacts = "python -m tools.production_boundary --root . --artifact dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --artifact dist/5.0.0/isanlp_rst-5.0.0.tar.gz"
-production-clean-install = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store models/model-releases --release-id modernbert-v1-e5ea56cd620f --full"
+production-boundary = { cmd = "python -m tools.production_boundary --root .", description = "Ownership and import boundary inspection of the source tree (no artifacts)" }
+production-import-check = { cmd = "python -m tools.production_boundary.import_check", description = "Import the installed distribution without loading weights; here that is the editable source, so it certifies no wheel" }
+production-artifacts = { cmd = "python -m tools.production_boundary --root . --artifact dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --artifact dist/5.0.0/isanlp_rst-5.0.0.tar.gz", description = "Boundary inspection plus forbidden-member and dependency checks on the built dist/5.0.0 pair" }
+production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store models/model-releases --release-id modernbert-v1-e5ea56cd620f --full", description = "Wheel certification: pip-install the built wheel into fresh core and formats venvs, network disabled, full installed acceptance on the named release" }
 
 [tool.pixi.feature.offline.dependencies]
 python = "3.14.*"
@@ -160,40 +162,37 @@ reportMissingImports = "warning"     # pyright runs against the active env
 # torch.tensor, torch.equal); flagging them as private noise dwarfs real issues.
 reportPrivateImportUsage = "none"
 
+# Task descriptions are the authority `pixi task list` shows; docs point here rather than
+# restating them.
 [tool.pixi.feature.offline.tasks]
-build-production = "python -m tools.production_boundary.build"
-validate-production-artifacts = "python -m tools.production_boundary --root . --release-dir dist/5.0.0"
-test = "pytest -m 'not slow and not stress' -q"
-test-all = "pytest -q"
-test-stress = "pytest tests/stress -q"
-test-deep = "pytest -q"
-smoke = "python scripts/smoke_test.py"
-smoke-full = "python scripts/smoke_test.py --full"
-smoke-mps = "python scripts/smoke_test.py --device mps"
-smoke-full-mps = "python scripts/smoke_test.py --full --device mps"
-cuda-smoke = "python scripts/cuda_smoke.py"
-bench = "python -m scripts.bench"
-rst-diag = "python scripts/rst_diag.py"
-lint = "ruff check isanlp_rst workbench tests scripts tools"
-typecheck = "pyright"
-mdlint = "python scripts/lint_markdown.py --lint"
-cleanup = "python scripts/cleanup.py"
-production-boundary = "python -m tools.production_boundary --root ."
-production-smoke = "python -m tools.production_boundary.production_smoke"
-offline-smoke = "python -m workbench.smoke"
-promote-model = "python -m workbench.promotion.promote"
-research-test = "pytest tests/offline/research -q"
-research-lint = "ruff check workbench/research tests/offline/research"
-production-ingest-test = "pytest tests/ingest -q"
-production-ingest-conformance = "pytest tests/ingest -q -k 'conformance or ingest'"
-production-ingest-determinism = "pytest tests/ingest/production_ingest/test_determinism.py tests/ingest/production_ingest/test_cache.py -q"
-production-ingest-performance = "pytest tests/ingest/production_ingest/test_performance.py -q"
-production-ingest-public-api = "pytest tests/ingest/production_ingest/test_public_api.py -q"
-production-api-contract = "pytest tests/ingest/production_ingest tests/production_boundary -q"
-production-pre-release-quality = "python -m tools.production_boundary.evidence quality --output specs/004-production-api-contract/evidence/pre-release-quality.json"
-production-performance-evidence = "python -m tools.production_boundary.evidence performance --output specs/004-production-api-contract/evidence/performance.json"
-production-source-release-gates = "python -m tools.production_boundary.evidence source-gates --output specs/004-production-api-contract/evidence/source-release-gates.json"
-production-ingest-clean-install = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store /Users/steveallison/.cache/isanlp_rst/model-releases"
+test = { cmd = "pytest -m 'not slow and not stress' -q", description = "Fast suite: no model loads" }
+test-all = { cmd = "pytest -q", description = "Every test, including slow model-loading tests and the production smoke" }
+test-stress = { cmd = "pytest tests/stress -q", description = "Concurrency, megadoc, and memory-leak stress tests" }
+smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every ModernBERT release in models/model-releases on every available device (CPU, MPS, CUDA) through the public façade; skips visibly when the store is empty" }
+lint = { cmd = "ruff check isanlp_rst workbench tests scripts tools", description = "Ruff" }
+typecheck = { cmd = "pyright", description = "Pyright, strict" }
+mdlint = { cmd = "python scripts/lint_markdown.py --lint", description = "markdownlint-cli2 over the tracked Markdown manifest" }
+cleanup = { cmd = "python scripts/cleanup.py", description = "Remove bytecode, tool caches, and dist/ (never .pixi)" }
+bench = { cmd = "python -m scripts.bench", description = "Performance bench across models and dtypes" }
+rst-diag = { cmd = "python scripts/rst_diag.py", description = "RST quality proxy metrics over .md / Docling / DocLang sources; --json for machine output" }
+build-production = { cmd = "python -m tools.production_boundary.build", description = "Reproducibly double-build the wheel and sdist from the clean, tagged HEAD into ignored dist/5.0.0/ and write the release evidence JSON under specs/004-production-api-contract/evidence/" }
+validate-production-artifacts = { cmd = "python -m tools.production_boundary --root . --release-dir dist/5.0.0", description = "Boundary gate plus full validation of the built dist/5.0.0 pair: RECORD, provenance, metadata, forbidden members" }
+production-boundary = { cmd = "python -m tools.production_boundary --root .", description = "Ownership and import boundary inspection of the source tree (no artifacts)" }
+production-import-check = { cmd = "python -m tools.production_boundary.import_check", description = "Import the installed distribution without loading weights; here that is the editable source, so it certifies no wheel" }
+production-api-contract = { cmd = "pytest tests/ingest/production_ingest tests/production_boundary -q", description = "Production ingest contract and production-boundary tool suites" }
+production-ingest-test = { cmd = "pytest tests/ingest -q", description = "All ingest tests" }
+production-ingest-conformance = { cmd = "pytest tests/ingest -q -k 'conformance or ingest'", description = "Ingest conformance subset" }
+production-ingest-determinism = { cmd = "pytest tests/ingest/production_ingest/test_determinism.py tests/ingest/production_ingest/test_cache.py -q", description = "Ingest determinism and cache tests" }
+production-ingest-performance = { cmd = "pytest tests/ingest/production_ingest/test_performance.py -q", description = "Ingest preparation performance thresholds" }
+production-ingest-public-api = { cmd = "pytest tests/ingest/production_ingest/test_public_api.py -q", description = "Ingest public-surface reconciliation" }
+production-ingest-clean-install = { cmd = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store /Users/steveallison/.cache/isanlp_rst/model-releases", description = "Clean-room install of the built wheel with installed acceptance (no inference) against the user-cache model store" }
+production-pre-release-quality = { cmd = "python -m tools.production_boundary.evidence quality --output specs/004-production-api-contract/evidence/pre-release-quality.json", description = "Write the pre-release quality evidence record" }
+production-performance-evidence = { cmd = "python -m tools.production_boundary.evidence performance --output specs/004-production-api-contract/evidence/performance.json", description = "Write the preparation performance evidence record" }
+production-source-release-gates = { cmd = "python -m tools.production_boundary.evidence source-gates --output specs/004-production-api-contract/evidence/source-release-gates.json", description = "Write the aggregate source-gate evidence record" }
+offline-smoke = { cmd = "python -m workbench.smoke", description = "Bounded-start check that every retained offline command (training, evaluation, research, bench) resolves and starts, with receipts" }
+promote-model = { cmd = "python -m workbench.promotion.promote", description = "Promote an already-manifested candidate into the immutable local model store (--candidate, --store)" }
+research-test = { cmd = "pytest tests/offline/research -q", description = "Workbench research suites (not a production gate)" }
+research-lint = { cmd = "ruff check workbench/research tests/offline/research", description = "Ruff over the research code and its tests" }
 
 [tool.pixi.environments]
 default = { features = ["offline"] }
