@@ -5,13 +5,74 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+from datetime import UTC, datetime
+import hashlib
+
 from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID
 from isanlp_rst.model_loading import ModelReleaseError, load_model_release, validate_model_release
 from isanlp_rst.model_loading.release import MODEL_RELEASE_MANIFEST, ModelReleaseManifest, canonical_json_bytes
+from rdam import (
+    BaselineComparison,
+    CalibrationEvidence,
+    CandidateIdentity,
+    CompatibilityEvidence,
+    EmpiricalQualityEvidence,
+    LatencyEvidence,
+    LicensingEvidence,
+    Measurement,
+    PromotionDecision,
+    PromotionOutcome,
+    ProvenanceEvidence,
+    Recommendation,
+    Sha256Identity,
+    Technique,
+    load_decision,
+    load_published_decision,
+)
 from workbench.promotion import promote_model_release, write_candidate_manifest
-from workbench.promotion.modernbert import EVIDENCE_UNAVAILABLE_REASON, prepare_and_promote_modernbert
+from workbench.promotion.decision import latest_decision
+from workbench.promotion.modernbert import prepare_and_promote_modernbert
 
 _RUNTIME_CONTRACT = "isanlp_rst.parser/dmrst-v1"
+_WEIGHTS = b"safe-test-weights"
+_WEIGHTS_SHA = hashlib.sha256(_WEIGHTS).hexdigest()
+_RELEASE_ID = f"modernbert-v1-{_WEIGHTS_SHA[:12]}"
+
+
+def _modernbert_decision(outcome: PromotionOutcome) -> PromotionDecision:
+    baselines = (
+        BaselineComparison(
+            baseline_identity="fixture-baseline",
+            baseline_measurements=(Measurement(name="full_f1", value=0.4, partition="test", unit="f1"),),
+            comparison_basis="same partition and scorer",
+            candidate_exceeds_baseline=True,
+        ),
+    )
+    return PromotionDecision(
+        decision_id=f"{_RELEASE_ID}-{outcome.value}",
+        decided_at=datetime(2026, 9, 2, tzinfo=UTC),
+        decided_by="test",
+        candidate=CandidateIdentity(
+            technique=Technique.RST,
+            candidate_id=_RELEASE_ID,
+            artifact_identity=Sha256Identity(hex_digest=_WEIGHTS_SHA),
+            description="fixture candidate",
+        ),
+        output_quality=EmpiricalQualityEvidence(
+            gold_data="GUM-12.1.0",
+            partitions=("test",),
+            measurements=(Measurement(name="full_f1", value=0.5, partition="test", unit="f1"),),
+            baselines=baselines,
+            uncertainty="bootstrap CI",
+        ),
+        calibration=CalibrationEvidence(state="declared_absent", description="none"),
+        latency=LatencyEvidence(state="measured", platform="fixture", measurements=(Measurement(name="p50_ms", value=1.0, partition="test", unit="ms"),)),
+        compatibility=CompatibilityEvidence(state="verified", environment="fixture", import_time_side_effects=False, packaging_declares_dependencies=True),
+        provenance=ProvenanceEvidence(code_revision="fixture", configuration_identity="fixture", model_asset_identity=Sha256Identity(hex_digest=_WEIGHTS_SHA), corpus_partitions=("test",)),
+        licensing=LicensingEvidence(licence="Apache-2.0", intended_use="local analysis", permits_intended_use=True, decision_note="permits"),
+        outcome=outcome,
+        recommendation=Recommendation(summary="fixture", strengths=("s",), limitations=("l",)),
+    )
 
 
 def _candidate(tmp_path: Path, *, release_id: str = "gumrrg-test-release") -> Path:
@@ -119,7 +180,7 @@ def _modernbert_candidate(tmp_path: Path, *, receipt: str | None) -> Path:
     candidate = tmp_path / "modernbert-candidate"
     candidate.mkdir()
     (candidate / "config.json").write_text('{"architecture":"tiny"}', encoding="utf-8")
-    (candidate / "model.safetensors").write_bytes(b"safe-test-weights")
+    (candidate / "model.safetensors").write_bytes(_WEIGHTS)
     (candidate / "relation_inventory.json").write_text('["elaboration","joint"]', encoding="utf-8")
     (candidate / "tokenizer.json").write_text("{}", encoding="utf-8")
     if receipt is not None:
@@ -131,33 +192,38 @@ def _released_manifest(release_path: Path) -> ModelReleaseManifest:
     return ModelReleaseManifest.model_validate_json((release_path / MODEL_RELEASE_MANIFEST).read_bytes())
 
 
-def test_modernbert_promotion_without_receipt_declares_evidence_unavailable(tmp_path: Path) -> None:
-    """A candidate with no quality record must say so — never claim a verification that never ran."""
+def test_modernbert_promotion_requires_a_promote_decision(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Existence of artifacts is never evidence: a withhold decision cannot admit a candidate."""
 
+    monkeypatch.chdir(tmp_path)
     candidate = _modernbert_candidate(tmp_path, receipt=None)
-    release_path = prepare_and_promote_modernbert(candidate, tmp_path / "store")
-    manifest = _released_manifest(release_path)
-
-    assert manifest.evaluation_evidence is None
-    assert manifest.evaluation_unavailable_reason == EVIDENCE_UNAVAILABLE_REASON
-    assert "verified" not in EVIDENCE_UNAVAILABLE_REASON
-    assert manifest.source_model_identity == MODERNBERT_BASE_MODEL_ID
-    assert manifest.release_id.startswith("modernbert-v1-")
+    with pytest.raises(ValueError, match="only promote or replace admit"):
+        prepare_and_promote_modernbert(candidate, tmp_path / "store", _modernbert_decision(PromotionOutcome.WITHHOLD))
+    assert not (tmp_path / "store").exists()
 
 
-def test_modernbert_promotion_records_receipt_verbatim_and_preserves_it(tmp_path: Path) -> None:
-    """The training receipt becomes the evidence verbatim and survives beside the candidate."""
+def test_modernbert_promotion_embeds_the_decision_and_publishes_it_beside_the_release(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The decision is the evaluation evidence — in the manifest, in the ledger, and beside the release."""
 
-    receipt = '{"run_id": "r1", "eval_metrics": {"test_full_f1": 0.198}}'
+    monkeypatch.chdir(tmp_path)
+    receipt = '{"run_id": "r1", "eval_metrics": {"test_full_f1": 0.5}}'
     candidate = _modernbert_candidate(tmp_path, receipt=receipt)
-    release_path = prepare_and_promote_modernbert(candidate, tmp_path / "store")
+    decision = _modernbert_decision(PromotionOutcome.PROMOTE)
+    release_path = prepare_and_promote_modernbert(candidate, tmp_path / "store", decision)
     manifest = _released_manifest(release_path)
 
-    assert manifest.evaluation_evidence == receipt
+    assert manifest.release_id == _RELEASE_ID
+    assert manifest.evaluation_evidence is not None
+    assert load_decision(manifest.evaluation_evidence) == decision
     assert manifest.evaluation_unavailable_reason is None
+    assert manifest.source_model_identity == MODERNBERT_BASE_MODEL_ID
+    assert manifest.licence == "Apache-2.0"
+    assert load_published_decision(tmp_path / "store", _RELEASE_ID) == decision
+    assert latest_decision(_RELEASE_ID, tmp_path / "workbench/promotions") == decision
     preserved = candidate.with_name("modernbert-candidate.training_receipt.json")
     assert preserved.read_text(encoding="utf-8") == receipt
-    assert not (candidate / "training_receipt.json").exists()
     assert not (release_path / "training_receipt.json").exists()
     assert {item.path.as_posix() for item in manifest.files} == {
         "config.json",
@@ -167,16 +233,12 @@ def test_modernbert_promotion_records_receipt_verbatim_and_preserves_it(tmp_path
     }
 
 
-def test_modernbert_explicit_evidence_wins_over_receipt_without_deleting_it(tmp_path: Path) -> None:
-    receipt = '{"run_id": "r1"}'
-    candidate = _modernbert_candidate(tmp_path, receipt=receipt)
-    release_path = prepare_and_promote_modernbert(
-        candidate, tmp_path / "store", evaluation_evidence="explicit external evaluation"
-    )
-    manifest = _released_manifest(release_path)
-
-    assert manifest.evaluation_evidence == "explicit external evaluation"
-    assert candidate.with_name("modernbert-candidate.training_receipt.json").read_text(encoding="utf-8") == receipt
+def test_modernbert_promotion_refuses_a_decision_about_another_artifact(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    candidate = _modernbert_candidate(tmp_path, receipt=None)
+    (candidate / "model.safetensors").write_bytes(b"different weights")
+    with pytest.raises(ValueError, match="different artifact"):
+        prepare_and_promote_modernbert(candidate, tmp_path / "store", _modernbert_decision(PromotionOutcome.PROMOTE))
 
 
 def test_manifest_is_strict_and_requires_honest_evaluation_evidence(tmp_path: Path) -> None:

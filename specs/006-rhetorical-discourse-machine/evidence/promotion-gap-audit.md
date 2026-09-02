@@ -66,6 +66,16 @@ performs no evidence evaluation of any kind.
    `e5ea56cd620f` release is immutable and keeps its fabricated string; it must be treated
    as **evidence-less** by the promotion-system feature, not re-read as verified.
 
+## Follow-up (2026-09-02): feature 008 closed the gaps
+
+Every gap above is addressed by [feature 008](../../008-promotion-system/spec.md):
+`rdam.promotion.PromotionDecision` records all six classes with per-class verdicts, a
+`promote` is unconstructible without admissible evidence, negative outcomes are
+modelled, candidates are compared like-for-like, and ModernBERT promotion requires a
+decision naming the exact artifact. Applied retroactively, the gate withholds both
+releases in the repository store and retires the one in the user cache — the honest
+state of SC-006 today.
+
 ## SC-006 status
 
 SC-006 requires 100% of promoted providers to carry separate software-compatibility and

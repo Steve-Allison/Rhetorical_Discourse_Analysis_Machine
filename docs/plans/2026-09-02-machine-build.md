@@ -21,8 +21,8 @@ Machine. It is updated at every feature boundary. If a session restarts, resume 
 | # | Feature | Status |
 |---|---|---|
 | 007 | Aggregate contract + ontology vendoring + D5 boundary checks | **done** — `specs/007-aggregate-contract/` |
-| 008 | Workbench promotion system | in progress |
-| 009 | RST provider adapter | pending |
+| 008 | Workbench promotion system | **done** — `specs/008-promotion-system/`. All three ModernBERT releases fail the gate (a52b70 withhold: F1 0.198 vs baseline 0.487; 462d68 withhold: unevaluated; e5ea56 retire: fabricated evidence). **Owner ruling needed**: see 008 spec §Consequence |
+| 009 | RST provider adapter | in progress |
 | 010 | Repository migration + rename (`rst/`, `Rhetorical_Discourse_Analysis_Machine`, memory paths) | pending — runs reconciled |
 | 011 | Dung provider (formal) | pending |
 | 012 | IBIS provider (formal) | pending |
@@ -30,11 +30,16 @@ Machine. It is updated at every feature boundary. If a session restarts, resume 
 
 ## Next step
 
-008: `workbench/promotion/decision.py` — `PromotionDecision` with the six evidence
-classes of the 006 promotion-evidence contract, outcomes `promote | withhold | replace |
-retire`, candidate comparison on identical partitions; wire ModernBERT promotion to
-require a `promote` decision; author retroactive decisions for the two existing releases
-from their real evidence.
+009: `rst/`? No — the RST adapter is machine-facing code that *consumes* `isanlp_rst`'s
+public contract (FR-010). It lives with the machine: `machine/rdam/providers/rst.py`
+(`rdam` depends on `isanlp_rst` optionally? No — the adapter is its own package
+`rdam_rst` under `rst/` at migration; until migration it lives under `machine/rdam_rst/`
+as a separate distribution depending on both `rdam` and `isanlp_rst`). Declaration bound
+to `…/rst` with formalisms `rst_tree`/`erst_graph`; capability derived from
+`describe_capabilities(parser)` plus the published decision beside the configured release
+(`unavailable(withheld|retired)` when no `promote` decision exists); `analyse` runs
+`ProductionIngestor(parser).analyse(SourceArtifact.from_text(...))` and returns the
+serialized outcome as the opaque native payload.
 
 ## Gates that must stay green
 
