@@ -24,8 +24,8 @@ Machine. It is updated at every feature boundary. If a session restarts, resume 
 | 008 | Workbench promotion system | **done** — `specs/008-promotion-system/`. All three ModernBERT releases fail the gate (a52b70 withhold: F1 0.198 vs baseline 0.487; 462d68 withhold: unevaluated; e5ea56 retire: fabricated evidence). **Owner ruling needed**: see 008 spec §Consequence |
 | 009 | RST provider adapter | **done** — `specs/009-rst-provider-adapter/`; `rst/rdam_rst`. Reports RST `unavailable(withheld)` under the 008 verdicts |
 | 010 | Repository migration + rename (`rst/`, `Rhetorical_Discourse_Analysis_Machine`, memory paths) | relocation **done** (baseline equivalent); rename is the final step after the release |
-| 011 | Dung provider (formal) | pending |
-| 012 | IBIS provider (formal) | pending |
+| 011 | Dung provider (formal) | **done** — `specs/011-dung-provider/`; promoted; the machine's first available provider |
+| 012 | IBIS provider (formal) | in progress |
 | — | Release 6.0.0: tag, build, validate, clean-install, evidence | pending |
 
 ## Next step
