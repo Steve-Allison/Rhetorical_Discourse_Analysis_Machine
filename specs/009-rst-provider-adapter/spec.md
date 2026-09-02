@@ -1,6 +1,6 @@
 # Feature 009: RST Provider Adapter
 
-**Status**: implemented 2026-09-02 | **Authority**: [006 spec](../006-rhetorical-discourse-machine/spec.md) FR-008..FR-011, FR-020; [006 capability-declaration contract](../006-rhetorical-discourse-machine/contracts/capability-declaration.md); [006 data model §Provider, §Formalism](../006-rhetorical-discourse-machine/data-model.md); [006 rst-preservation contract](../006-rhetorical-discourse-machine/contracts/rst-preservation.md) | **Owner ruling**: "build it all" (2026-09-02)
+**Status**: implemented 2026-09-02; the `rst/rdam_rst` layout described below was superseded the same day by the owner's single-package ruling — the adapter is `rdam/rst/provider.py`, provider id `rdam.rst/<release_id>` ([010 §Single package](../010-repository-migration/spec.md)) | **Authority**: [006 spec](../006-rhetorical-discourse-machine/spec.md) FR-008..FR-011, FR-020; [006 capability-declaration contract](../006-rhetorical-discourse-machine/contracts/capability-declaration.md); [006 data model §Provider, §Formalism](../006-rhetorical-discourse-machine/data-model.md); [006 rst-preservation contract](../006-rhetorical-discourse-machine/contracts/rst-preservation.md) | **Owner ruling**: "build it all" (2026-09-02)
 
 ## What was built
 

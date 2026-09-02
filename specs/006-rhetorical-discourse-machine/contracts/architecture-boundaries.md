@@ -5,6 +5,18 @@
 Every follow-on feature and every future change to this repository is bound by the rules
 below. A violation is a defect, not a style choice.
 
+> **Superseded in part by the owner rulings of 2026-09-02**, recorded in
+> [010 §Single package and rename](../../010-repository-migration/spec.md): the
+> production boundary is **one package at the repository root, `rdam/`**, and every
+> promoted technique is a sub-package of it (`rdam.rst`, `rdam.dung`, `rdam.ibis`),
+> shipped as one wheel. The roster's per-technique top-level directories (`rst/`,
+> `dung/`, …) and `machine/` no longer exist, and structural rule 2's namespaced
+> per-boundary import names are replaced by sub-packages of `rdam`. Everything else
+> below stands: no `production/` subdirectory, creation only on promotion (now: a
+> sub-package), one framework identity per technique, exactly one `workbench/`, the
+> import and distribution rules (enforced from the `rdam` root), the independence
+> rules, and the scale rule. `ontology/` remains a repository directory as listed.
+
 ## Boundary roster (SC-001 — every owner named, none ambiguous)
 
 | Boundary | Owner of | Exists |

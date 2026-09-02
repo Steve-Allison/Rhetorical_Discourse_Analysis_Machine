@@ -19,18 +19,21 @@ Tasks defined in more than one environment (`production-boundary`,
 ## When to use what
 
 - **Everyday**: `pixi run test`, `pixi run lint`, `pixi run typecheck`, `pixi run mdlint`.
-- **Editing the predictor stack** (`rst/isanlp_rst/transformer_parser/`, `parser.py`,
+- **Editing the predictor stack** (`rdam/rst/transformer_parser/`, `parser.py`,
   `model_loading/`): `pixi run test-all`. It includes the dtype-equivalence suite and the
   production smoke, which loads every release in `models/model-releases` on every
   available device. `pixi run smoke` runs the smoke alone.
 - **Before committing substantive changes**: `pixi run lint && pixi run typecheck && pixi run test`,
   plus `test-all` for predictor-stack changes.
-- **Release**: tag the commit `v<version>`, then `pixi run build-production`,
-  `pixi run validate-production-artifacts`, and
-  `pixi run -e production production-clean-install`. `dist/` is ignored build output;
-  the committed record is the evidence JSON under
-  `specs/004-production-api-contract/evidence/`. `production-import-check` imports the
-  editable source only and certifies no wheel.
+- **Release**: tag the commit `v<version>` (the version declared in `pyproject.toml`),
+  then `pixi run build-production`, `pixi run validate-production-artifacts`, and
+  `pixi run -e production production-clean-install`. `dist/<version>/` is ignored build
+  output; the committed record is the evidence JSON the build task names
+  (`specs/010-repository-migration/evidence/release/` for 6.0.0). `production-import-check`
+  imports the editable source only and certifies no wheel.
+- **A stored release under a new package line**: `pixi run redeclare-compatibility`
+  records a manifest-bound compatibility re-declaration beside the release with its
+  evidence; `pixi run rst-baseline compare` gives the classified equivalence verdict.
 - **Quality diagnostics**: `pixi run rst-diag <paths>`; `--json` for machine output.
 - **CI** (`.github/workflows/`): fast tests on every push, the slow suite nightly. The
   model smoke is local-only because weights are not in git.
@@ -44,7 +47,7 @@ pixi run pytest tests/integration/test_integration.py::test_specific_thing -v
 ## One-off Python with project deps
 
 ```bash
-pixi run python -c 'from isanlp_rst.parser import Parser; print(Parser.__doc__)'
+pixi run python -c 'from rdam.rst.parser import Parser; print(Parser.__doc__)'
 pixi run -- python script.py
 ```
 

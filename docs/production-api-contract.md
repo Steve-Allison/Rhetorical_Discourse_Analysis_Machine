@@ -1,12 +1,13 @@
 # Production API contract
 
-`isanlp_rst` 5.0.0 exposes one provider-owned production source API at
-`isanlp_rst.ingest`, plus the `isanlp_rst.Parser` facade. The serialized family
-is `isanlp_rst.production` 2.0.0. The package does not expose a CSM-specific
-adapter or recreate downstream data models.
+`rdam` 6.0.0 exposes one provider-owned production source API at
+`rdam.rst.ingest`, plus the `rdam.rst.Parser` facade. The serialized family
+is `isanlp_rst.production` 2.0.0 — the contract identifier is unchanged by the package
+rename. The package does not expose a CSM-specific adapter or recreate downstream data
+models.
 
 The exact symbol and resource authority is the packaged
-`isanlp_rst/ingest/public-surface.json`. `isanlp_rst.ingest.__all__`, installed
+`rdam/rst/ingest/public-surface.json`. `rdam.rst.ingest.__all__`, installed
 imports, JSON Schemas, the console command, and the loopback endpoints are
 reconciled against that file by the production-contract tests.
 
@@ -140,7 +141,7 @@ identity or durable semantic-cache eligibility.
 
 ## Installed projections
 
-`isanlp-rst parse` uses `SourceArtifact`, an immutable model release, a closed
+`rdam-rst parse` uses `SourceArtifact`, an immutable model release, a closed
 analysis policy, and `ProductionIngestor`. Canonical JSON is the same serialized
 contract as Python. `summary` is labelled as presentation-only and never claims
 contract completeness.
@@ -159,8 +160,10 @@ does not cross either boundary.
 
 ## Compatibility
 
-Python symbols follow package SemVer. The serialized 2.0.0 contract and schemas
-are version-dispatched independently. The 5.0.0 write version reads 2.0.0 only.
+Python symbols follow package SemVer; 6.0.0 renamed the import path from
+`isanlp_rst` to `rdam.rst` and the command from `isanlp-rst` to `rdam-rst` without
+changing any serialized contract. The serialized 2.0.0 contract and schemas are
+version-dispatched independently. The 6.0.0 write version reads 2.0.0 only.
 Unsupported future versions and unknown discriminators fail before payload use.
 Removed format-specific parse functions and envelopes have no compatibility
 aliases.

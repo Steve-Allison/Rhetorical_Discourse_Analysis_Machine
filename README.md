@@ -1,32 +1,324 @@
-# IsaNLP RST Parser
+# Rhetorical Discourse Analysis Machine (`rdam`)
 
-![Python](https://img.shields.io/badge/python-3.14%2B-blue) ![License](https://img.shields.io/badge/license-MIT_(code)_/_CC_BY--NC_4.0_(weights)-orange) ![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-MPS-blueviolet)
+![Python](https://img.shields.io/badge/python-3.14%2B-blue) ![License](https://img.shields.io/badge/license-MIT_(code)_/_CC_BY--NC_4.0_(archived_weights)-orange) ![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-MPS-blueviolet)
 
-End-to-end Rhetorical Structure Theory (RST) parser. Predicts discourse trees from raw text or pre-segmented EDUs across 11 languages via the `unirst` multilingual model, plus three monolingual / bilingual models (`rstdt`, `gumrrg`, `rstreebank`). Pixi-managed, MPS-aware, with real tests and CI.
+A permanently analysis-only machine that runs several discourse and argumentation
+techniques natively, side by side, without collapsing them into a common formalism. One
+distribution, one package, every technique a sub-package:
+
+| Sub-package | Technique | What it does |
+|---|---|---|
+| `rdam` | the machine | provider and formalism declarations, explicit capability states, one outcome per requested technique, and the evidence-gated `PromotionDecision` every provider is bound by |
+| `rdam.rst` | RST / eRST | the ModernBERT discourse parser (Steve Allison's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest for text, EDUs, Markdown, Docling JSON, and DocLang, eRST completion, the RS3 viewer, and the `rdam-rst` command |
+| `rdam.dung` | Dung abstract argumentation | grounded, complete, preferred, and stable extensions of a supplied argument–attack framework, exact by construction |
+| `rdam.ibis` | IBIS | issue–position–argument structures validated under the gIBIS link grammar and organised into a deliberation map |
+
+Techniques without a promoted provider (SDRT, Toulmin, Walton, PDTB) are reported by the
+machine as `unavailable(no_promoted_implementation)`; there are no stubs. The machine
+serves one person on one local machine. Pixi-managed, MPS-aware, Apple-Silicon-first,
+real test suite, real CI.
 
 ## Table of contents
 
-- [Performance](#performance)
-- [Installation & quick start](#installation--quick-start)
+- [Installation](#installation)
+- [The machine](#the-machine)
+- [Capability comes from evidence](#capability-comes-from-evidence)
+- [RST: command line](#rst-command-line)
+- [RST: Python API](#rst-python-api)
+- [RST: production source ingest](#rst-production-source-ingest)
+- [RST: visualising a tree](#rst-visualising-a-tree)
+- [RST: extended RST, long documents, diagnostics](#rst-extended-rst-long-documents-diagnostics)
 - [Production package and offline workbench](#production-package-and-offline-workbench)
-- [Visualising the RST tree](#visualising-the-rst-tree)
-- [Advanced usage](#advanced-usage)
-- [Extended RST (eRST) graph decoding](#extended-rst-erst-graph-decoding)
-- [Hierarchical long document parsing](#hierarchical-long-document-parsing)
-- [Production source ingest](#production-source-ingest)
-- [Quality diagnostics](#quality-diagnostics)
-- [Evaluation & metrics](#evaluation--metrics)
+- [Archived research parser families](#archived-research-parser-families)
 - [Project status & licence](#project-status--licence)
 - [Citation](#citation)
 
-## Performance
+## Installation
 
-The parser achieves strong end-to-end performance across standard RST corpora.
+In this checkout, use the independently solved production environment:
 
-**Supported languages (`unirst`):** English (eng), Czech (ces), German (deu), Basque (eus), Persian (fas), French (fra), Dutch (nld), Brazilian Portuguese (por), Russian (rus), Spanish (spa), Chinese (zho).
+```bash
+git clone https://github.com/Steve-Allison/isanlp_rst.git
+cd isanlp_rst
+pixi install -e production
+pixi run -e production production-import-check
+```
+
+Or install the distribution into any Python 3.14 environment:
+
+```bash
+pip install "rdam @ git+https://github.com/Steve-Allison/isanlp_rst.git"
+
+# Markdown, Docling JSON, and DocLang source adapters are production capabilities
+# supplied by the optional `formats` extra:
+pip install "rdam[formats] @ git+https://github.com/Steve-Allison/isanlp_rst.git"
+```
+
+No model weight ships in the wheel. RST inference needs an immutable local model release
+(`models/model-releases/<release_id>/` with its manifest); this repository's store holds
+`modernbert-v1-a52b70fbc1a3` and `modernbert-v1-462d68b82eae`.
+
+Corpus preparation, training, evaluation, benchmarking, and research are intentionally
+absent from both production installs. Repository development uses the `default`
+environment:
+
+```bash
+pixi install
+pixi run test
+```
+
+## The machine
+
+```python
+from pathlib import Path
+
+from rdam import AggregateRequest, Machine, ResultOutcome, SourceIdentity, StructuredInput, Technique
+from rdam.dung import DungProvider
+from rdam.ibis import IbisProvider
+from rdam.rst.provider import RstProvider
+
+machine = Machine(
+    [
+        RstProvider(store=Path("models/model-releases"), release_id="modernbert-v1-a52b70fbc1a3"),
+        DungProvider(),
+        IbisProvider(),
+    ]
+)
+
+# One explicit capability state per technique; reporting capability loads nothing.
+for capability in machine.capabilities().techniques:
+    print(capability.technique.value, capability.capability)
+
+# One explicit outcome per requested technique: ResultOutcome, UnavailableOutcome, or FailedOutcome.
+aggregate = machine.analyse(AggregateRequest.for_text("Because it rained, the match stopped.", (Technique.RST,)))
+outcome = aggregate.outcome_for(Technique.RST)
+if isinstance(outcome, ResultOutcome):
+    print(outcome.result.payload["kind"])  # the provider's own outcome envelope, verbatim
+
+# Formal techniques take a supplied structure, never text.
+framework = {"arguments": ["a", "b", "c"], "attacks": [["a", "b"], ["b", "c"]]}
+request = AggregateRequest(
+    source=SourceIdentity.from_bytes(b"framework", media_type="application/json"),
+    text=None,
+    techniques=(Technique.DUNG,),
+    structured_inputs=(StructuredInput(technique=Technique.DUNG, payload=framework),),
+)
+dung = machine.analyse(request).outcome_for(Technique.DUNG)
+if isinstance(dung, ResultOutcome):
+    print(dung.result.payload["extensions"]["grounded"])  # ['a', 'c']
+```
+
+The machine never retries, never suppresses one technique's failure behind another's
+success, and never derives a Dung framework or an IBIS structure from text: a text-only
+request for those techniques is `unavailable(missing_structured_input)`, not a failure.
+
+## Capability comes from evidence
+
+A provider is `available` only under a `PromotionDecision` whose outcome is `promote` or
+`replace`, and such a decision cannot be constructed unless every evidence class —
+output quality (empirical or formal), calibration, latency, compatibility, provenance,
+licensing — is admissible. Decisions are recorded in `workbench/promotions/<technique>/`
+and bound to the exact artifact they evaluated:
+
+- `rdam.dung` and `rdam.ibis` package their decision beside their code, bound to the
+  digest of their own source files. Both are `available` today.
+- `rdam.rst` reads the decision published beside the configured model release
+  (`<store>/<release_id>.promotion.json`) and checks its artifact digest against the
+  release manifest before any inference. Every stored ModernBERT release currently
+  fails the gate (for `modernbert-v1-a52b70fbc1a3`: test full F1 0.198 against the
+  archived `gumrrg` model's 0.487), so the machine reports RST **`unavailable(withheld)`**
+  until the owner rules otherwise. The `rdam.rst` parser façade and command below still
+  load those releases for local use; the gate governs the machine, not the parser.
+
+## RST: command line
+
+```bash
+# Canonical analysis of text, or of a Markdown / Docling JSON / DocLang / plain-text file
+rdam-rst parse --text "Because it rained, the match stopped." \
+    --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3
+rdam-rst parse report.md --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3 \
+    --output analysis.json          # RFC 8785 canonical JSON, the same bytes the Python API serializes
+rdam-rst parse report.md ... --format summary   # presentation-only counts
+
+# Model-free capability discovery (add --model-store/--release-id for the configured parser)
+rdam-rst capabilities
+
+# Loopback-only HTTP projection of the same contract
+rdam-rst serve --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3 --port 8080
+
+rdam-rst version
+```
+
+## RST: Python API
+
+```python
+from pathlib import Path
+
+from rdam.rst import Parser, RstDocument
+from rdam.rst.utils.analysis import tree_stats
+
+parser = Parser.from_model_release(
+    Path("models/model-releases"),
+    "modernbert-v1-a52b70fbc1a3",
+    family="modernbert",
+    device="auto",  # CUDA if present, else MPS on Apple Silicon, else CPU
+)
+
+text = "On Saturday, Team India won against South Africa by seven runs. The final was played in Barbados."
+
+# 1. DiscourseUnit tree, every node in original-text character coordinates
+tree = parser(text)["rst"][0]
+stats = tree_stats(tree)
+print(stats["depth"], stats["n_leaves"])
+
+# 2. Pre-segmented EDUs (the leaves round-trip exactly)
+tree = parser.from_edus(["On Saturday, Team India won against South Africa by seven runs.", "The final was played in Barbados."])["rst"][0]
+
+# 3. Canonical structured analysis (RstAnalysis: nodes, primary edges, optional eRST secondary edges)
+analysis = parser.parse_document(RstDocument.from_text(text, document_id="cricket"), output="rst_tree")
+print(len(analysis.nodes), len(analysis.primary_edges))
+```
+
+### Device and precision
+
+`device=` accepts `"auto"`, `"cpu"`, `"mps"`, `"cuda"`, `"cuda:N"`, or a `torch.device`.
+PyTorch has no MPS kernel for `torch.linalg.qr` (used during weight initialisation);
+the parser routes it through CPU automatically.
+
+`dtype=` (`torch.bfloat16`, `torch.float16`, or the strings `bf16` / `fp16` / `fp32`)
+runs the forward pass under `torch.autocast` without changing the trained weights;
+the default is `float32` on every device. Tree topology and EDU segmentation are
+bit-equivalent across the three dtypes; relation labels on near-tied nodes can flip
+under reduced precision. `tests/integration/test_integration.py` is the equivalence
+suite.
+
+### Understanding the tree
+
+Each `DiscourseUnit` node carries:
+
+```python
+{
+ 'id': 21,
+ 'left':  (id=14, start=1,   end=323),  # child node refs
+ 'right': (id=20, start=324, end=570),
+ 'relation':    'elaboration',           # rhetorical relation
+ 'nuclearity':  'NS',                    # NS / NN / ""
+ 'entropy':     0.92,                    # split entropy
+ 'start':       1,                       # original-text character offset
+ 'end':         570,
+ 'text':        "On Saturday, ... took two wickets."
+}
+```
+
+Leaves are EDUs; internal nodes are relations. When parsing many documents,
+`tree.clear_textfields()` drops the per-node substrings (keep the structure, store it) and
+`tree.fill_textfields(full_text)` restores them; `.to_rs3()` needs the text present.
+
+## RST: production source ingest
+
+`rdam.rst.ingest` is the single production boundary for analysing real source material:
+plain text, exact pre-segmented EDUs, Markdown, DoclingDocument JSON, and DocLang XML or
+`.dclx` archives. There are no separate format parse functions, envelopes, or caches.
+
+```python
+from pathlib import Path
+
+from rdam.rst import Parser
+from rdam.rst.ingest import ProductionIngestor, SourceArtifact, describe_capabilities, serialize_contract
+
+print(describe_capabilities().semantic.source_forms)  # availability of all six forms, model-free
+
+parser = Parser.from_model_release(Path("models/model-releases"), "modernbert-v1-a52b70fbc1a3", family="modernbert")
+ingestor = ProductionIngestor(parser=parser)
+
+outcome = ingestor.analyse(SourceArtifact.from_path(Path("report.md")), cache_directory=Path("cache"))
+print(outcome.semantic.status)                 # analysed | empty_primary_discourse
+analysis = outcome.semantic.analysis           # the RstAnalysis, or None when nothing authored was found
+preparation = outcome.semantic.preparation.semantic
+print(preparation.inventory_coverage.covered_units == preparation.inventory_coverage.total_units)
+assert outcome.semantic.validation is not None and outcome.semantic.validation.passed
+canonical_bytes = serialize_contract(outcome)  # RFC 8785; load_contract() reads it back identically
+```
+
+The source is inventoried completely first; the explicit `AUTHORED_PROSE_V1` policy then
+admits authored headings, prose, meaningful list items, and authored turns to primary RST
+analysis. Tables, code, formulas, raw markup, pictures, metadata, fields, and assets remain
+retained side channels; machine-generated descriptions, notes, navigation, furniture,
+backgrounds, and invisible content are excluded from primary RST but stay in the receipt.
+Every decision is in the preparation outcome, source anchors survive into the analysis,
+long sources are subdivided at structure and parser-capacity boundaries and recombined
+into one anchored result, and cache identity includes the complete analytical pipeline
+fingerprint. Failures are typed, staged, and private by default. The full contract is in
+[`docs/production-api-contract.md`](docs/production-api-contract.md) and
+[`docs/production-source-ingest.md`](docs/production-source-ingest.md).
+
+## RST: visualising a tree
+
+```python
+import rdam.rst as rst
+
+tree.to_rs3("document.rs3")          # RSTTool / rstWeb format
+rst.render("document.rs3")           # inline in Jupyter (colab=True syncs the cell height in Colab)
+rst.to_html("document.rs3", "document.html")
+rst.to_png("document.rs3", "document.png")   # Playwright + Chromium: `playwright install chromium`
+rst.to_pdf("document.rs3", "document.pdf")
+```
+
+<img src="examples/example-image.png" alt="Illustration of a rendered RST tree" width="600">
+
+## RST: extended RST, long documents, diagnostics
+
+**Extended RST (eRST)** — non-projective secondary relations and discourse signals as in
+GUM eRST / RS4: `rdam.rst.erst.rs4` reads and writes RS4 XML (`RS4Reader`, `RS4Writer`,
+`rs4_to_document_and_analysis`); `rdam.rst.erst.neural_scorer.NeuralSecondaryEdgeScorer`
+scores candidate secondary relations; the decoder in `rdam.rst.erst.decoder` applies
+exactly four formal constraints (sufficient signal, no self-loop, both endpoints exist,
+no duplicate directed pair). `parser.parse_document(document, output="erst_graph")`
+requires a validated eRST completion bundle and refuses, rather than fabricates, without
+one.
+
+**Long documents** — `rdam.rst.hierarchical.HierarchicalSectionStitcher(parser).parse_hierarchical(document)`
+parses each section into a local tree, parses the macro relations across section roots,
+and stitches them into one globally consistent `RstAnalysis`.
+
+**Quality diagnostics** — `pixi run rst-diag <paths> --model-store models/model-releases --release-id <id>`
+reports, per source, prepared characters and segments, EDU and relation counts, the
+share of thin relations (joint / same-unit / organization), tree skew, and all coverage
+ratios; `--json` for machine output.
+
+## Production package and offline workbench
+
+`rdam` is the importable production product. Its wheel and source distribution carry only
+the `rdam/` import root and exclude corpus builders, trainers, evaluators, research
+harnesses, tests, scripts, experiment data, model candidates, and the vendored ontology
+(only the projected framework identities ship).
+
+`workbench/` is the one repository-only surface for corpus preparation, training,
+evaluation, research, and promotion. Production never imports it; the check is causal:
+
+```bash
+pixi run -e default production-boundary          # import walk from rdam, ownership, dependencies
+pixi run -e production production-import-check   # imports the installed distribution, loads no weights
+pixi run -e production production-clean-install  # certifies the built wheel in fresh venvs, network off
+```
+
+Release: tag `v<version>` (the version in `pyproject.toml`), `pixi run build-production`
+(reproducible double build into ignored `dist/<version>/`),
+`pixi run validate-production-artifacts`, then the clean install. Every release tool
+derives name and version from `pyproject.toml`. The ownership map is in
+[`docs/production-offline-boundary.md`](docs/production-offline-boundary.md).
+
+## Archived research parser families
+
+The DMRST and UniRST families (`rstdt`, `gumrrg`, `rstreebank`, `rrtrrg`, `unirst`) are
+archived from production: `Parser` refuses their `hf_model_version` values before loading
+anything, and their code lives under `workbench/archive/legacy_2021/`. Their published
+end-to-end results are kept here as the record they are.
 
 <details>
-<summary><b>Click to view detailed end-to-end performance metrics</b></summary>
+<summary>Published metrics of the archived families (Seg / S / N / R / Full)</summary>
+
+**Supported languages (`unirst`):** English (eng), Czech (ces), German (deu), Basque (eus), Persian (fas), French (fra), Dutch (nld), Brazilian Portuguese (por), Russian (rus), Spanish (spa), Chinese (zho).
 
 | Tag / Version | Languages | Train Data | Test Data | Seg | S | N | R | Full |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -54,397 +346,35 @@ The parser achieves strong end-to-end performance across standard RST corpora.
 | | | | zho.rst.sctb | 95.4 | 67.5 | 51.5 | 39.9 | 39.9 |
 
 Full per-corpus UniRST metrics: [`docs/metrics/UniRST_Metrics.md`](docs/metrics/UniRST_Metrics.md).
+Evaluation is offline-only: standard/soft Parseval and the eRST scorer live under
+`workbench.evaluation.rst`.
 
 </details>
 
-## Installation & quick start
-
-### 1. Install
-
-For production analysis in this checkout, use the independently solved production environment:
-
-```bash
-git clone https://github.com/Steve-Allison/isanlp_rst.git
-cd isanlp_rst
-pixi install -e production
-pixi run -e production production-import-check
-```
-
-Alternative (raw venv / pip):
-
-```bash
-pip install git+https://github.com/Steve-Allison/isanlp_rst.git
-
-# DocLang, Docling, and Markdown source adapters are production capabilities
-# supplied by the optional `formats` extra:
-pip install "isanlp_rst[formats] @ git+https://github.com/Steve-Allison/isanlp_rst.git"
-```
-
-Corpus preparation, training, evaluation, benchmarking, and research are intentionally absent from both production installs. Repository development uses the separate offline environment:
-
-```bash
-pixi install -e offline
-pixi run -e offline offline-smoke
-pixi run -e offline test
-```
-
-See [Production package and offline workbench](#production-package-and-offline-workbench) for the ownership contract.
-
-#### 2. Command-line interface (`isanlp-rst`)
-
-The package provides a fast, unified CLI for parsing, visualization, and serving:
-
-```bash
-# Parse text and display a terminal ASCII discourse tree
-isanlp-rst parse --text "ModernBERT provides fast attention. This enables rich discourse parsing." -f tree
-
-# Parse files (Markdown, Docling JSON, DocLang XML, plain text) to structured JSON DAG
-isanlp-rst parse report.md -f json -o analysis.json
-
-# Extract Mann & Thompson structural diagnostics
-isanlp-rst parse report.txt -f stats
-
-# Render an RS3 XML file as an interactive HTML visualisation
-isanlp-rst view document.rs3 --open
-
-# Launch high-throughput local HTTP REST parsing daemon
-isanlp-rst serve --host 127.0.0.1 --port 8080
-
-# Inspect environment and hardware backend capabilities
-isanlp-rst version
-```
-
-### 3. Python API usage
-
-```python
-from isanlp_rst import Parser, RstDocument
-from isanlp_rst.utils.analysis import tree_stats
-
-# Initialise SOTA ModernBERT parser (downloads weights on first call, autodispatches to MPS/CUDA)
-parser = Parser(family="modernbert", device="auto")
-
-text = """
-On Saturday, in the ninth edition of the T20 Men's Cricket World Cup, Team India won against South Africa by seven runs.
-The final match was played at the Kensington Oval Stadium in Barbados. This marks India's second win in the T20 World Cup.
-Virat Kohli top-scored with 76 runs, followed by Axar Patel with 47 runs.
-"""
-
-# 1. Direct RST tree parsing
-tree = parser.parse_tree(text)
-print(tree)
-stats = tree_stats(tree)
-print(f"Tree Depth: {stats['depth']}, Leaves: {stats['n_leaves']}")
-
-# 2. Canonical structured document analysis (RstAnalysis DAG)
-doc = RstDocument.from_text(text, document_id="cricket_match_001")
-analysis = parser.parse_document(doc)
-print(f"Discourse Nodes: {len(analysis.nodes)}")
-print(f"Primary Edges:   {len(analysis.primary_edges)}")
-```
-
-#### Device selection (`device=`)
-
-`device=` chooses the compute backend (default `"auto"`):
-
-- `"auto"` (default) → CUDA if present, else MPS on Apple Silicon, else CPU
-- `"cpu"` → CPU
-- `"mps"` → Apple Silicon Metal backend (accelerated FP32/BF16)
-- `"cuda"` / `"cuda:N"` → specific NVIDIA GPU (raises if CUDA is unavailable)
-
-PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogonal_` during weight init). The parser routes this via CPU automatically — no env-var hacks required.
-
-#### Mixed precision (`dtype=`)
-
-Forward passes go through `torch.autocast`, so the model runs in `float32`, `float16`, or `bfloat16` without changing the trained weights:
-
-```python
-import torch
-
-parser = Parser.from_model_release(
-    "models/model-releases",
-    "modernbert-v1-e5ea56cd620f",
-    family="modernbert",
-    device="auto",
-    dtype=torch.bfloat16,  # also accepts 'bf16', 'fp16', 'fp32'
-)
-```
-
-Default is `float32` on every device. On Apple Silicon (M-series, PyTorch 2.11) at ~1k-char inputs, `float32` beats `bfloat16` / `float16` for every published model — per-op autocast dispatch overhead dominates the matmul speedup at this scale. On large-batch CUDA workloads with native bf16 (Hopper / Ada Tensor Cores), `bfloat16` is likely faster — measure with `pixi run -e offline bench` before pinning a choice.
-
-Tree topology and EDU segmentation are bit-equivalent across all three dtypes for every published model; relation labels are not — on a near-tied node, reduced precision (bf16/fp16) can flip the argmax without any structural change. See [`tests/test_integration.py`](tests/test_integration.py) for the equivalence suite.
-
-##### Apple Silicon perf (M-series, PyTorch 2.11, ~1k char input)
-
-| Model | CPU fp32 | MPS fp32 | MPS bf16 | MPS fp16 |
-|---|---|---|---|---|
-| `gumrrg` | 143 ms | **120 ms** | 156 ms | 157 ms |
-| `rstdt` | 168 ms | **123 ms** | 161 ms | 165 ms |
-| `rstreebank` | 113 ms | **59 ms** | 94 ms | 94 ms |
-| `rrtrrg` | 118 ms | **61 ms** | 104 ms | 95 ms |
-| `unirst` | **127 ms** | 153 ms | 218 ms | 221 ms |
-
-The 18-corpus `unirst` model is faster on CPU than on MPS — multi-corpus classifier dispatch costs more than MPS's matmul speedup recovers. Run `pixi run -e offline bench --version unirst` on your hardware to verify before pinning a device choice for that model.
-
-#### Verifying on NVIDIA CUDA hardware
-
-CI runs on macOS Apple Silicon with **Python 3.14** (pixi lock). Package metadata declares `requires-python >= 3.14`. The CUDA dispatch path isn't exercised in CI. On an NVIDIA host with the release store present:
-
-```bash
-pixi run smoke
-```
-
-The production smoke (`tests/integration/test_production_smoke.py`) loads every ModernBERT release in `models/model-releases` on every available device — CPU, MPS, and CUDA when `torch.cuda.is_available()` — asserts the parser landed on the requested device, aligns every parsed node to the input text, and round-trips `from_edus`.
-
-### 3. Understanding the output
-
-The parser returns an RST tree with a recursive `DiscourseUnit` structure. Each node carries:
-
-```python
-{
- 'id': 21,
- 'left':  (id=14, start=1,   end=323),  # child node refs
- 'right': (id=20, start=324, end=570),
- 'relation':    'elaboration',           # rhetorical relation
- 'nuclearity':  'NS',                    # NS / NN / ""
- 'entropy':     0.92,                    # split entropy
- 'start':       1,                       # original-text character offset
- 'end':         570,
- 'text':        "On Saturday, ... took two wickets."
-}
-```
-
-Leaves are EDUs; internal nodes are relations. Every node has `start` / `end` in **original-text character coordinates**.
-
----
-
-## Visualising the RST tree
-
-### 1. Save to RS3
-
-```python
-res["rst"][0].to_rs3("filename.rs3")
-```
-
-Open `filename.rs3` in external tools like **RSTTool** or **rstWeb** for editing.
-
-### 2. Inline render (Jupyter / Colab)
-
-```python
-import io, contextlib
-import isanlp_rst
-
-buf = io.StringIO()
-with contextlib.redirect_stdout(buf):
-    isanlp_rst.render("filename.rs3")
-
-# For Google Colab, sync the cell height:
-# isanlp_rst.render("filename.rs3", colab=True)
-```
-
-<img src="examples/example-inline.png" alt="Illustration of the parsing visualisation" width="600">
-
-### 3. Export to PNG or PDF
-
-Requires Playwright:
-
-```bash
-pip install playwright
-playwright install chromium
-```
-
-```python
-import isanlp_rst
-
-isanlp_rst.to_png("filename.rs3", "filename.png")
-isanlp_rst.to_pdf("filename.rs3", "filename.pdf")
-```
-
-<img src="examples/example-image.png" alt="Illustration of English parsing" width="600">
-
----
-
-## Advanced usage
-
-### Parsing pre-segmented EDUs
-
-```python
-my_edus = ["On Saturday, Team India won against South Africa.", "The final match was played in Barbados."]
-
-res = parser.from_edus(my_edus)
-```
-
-### Memory management for large datasets
-
-When parsing many documents, the resulting `DiscourseUnit` trees can consume significant memory — each node stores its corresponding text span.
-
-```python
-res["rst"][0].clear_textfields()  # drop .text on every node, keep structure
-# ... pickle / store ...
-res["rst"][0].fill_textfields(full_text)  # repopulate later
-```
-
-**Note:** `.to_rs3()` on a tree with cleared text fields will fail.
-
----
-
-## Extended RST (eRST) graph decoding
-
-Beyond standard hierarchical trees, `isanlp_rst` supports **Extended RST (eRST)** graph structures with non-projective secondary discourse relations and discourse signals (as in GUM eRST / RS4 XML):
-
-- **Faithful RS4 XML Reader & Writer** (`isanlp_rst.erst.rs4`): Native serialization for segments, multinuclear groups, secondary edges (`<secedge>`), and signaling tokens (`<signal>`).
-- **Neural Secondary Edge Scorer** (`isanlp_rst.erst.neural_scorer.NeuralSecondaryEdgeScorer`): Learned bilinear / MLP scorer for candidate secondary discourse relations.
-- **Formally constrained secondary-edge decoder**
-  (`isanlp_rst.erst.decoder.ErstSecondaryEdgeDecoder`): applies sufficient-signal, no-self-loop,
-  no-invented-node, and no-duplicate-directed-pair constraints. Cycles, crossing edges, reverse
-  directions, unrestricted degree, and overlap with primary edges remain valid eRST structures.
-
-```python
-from isanlp_rst.erst import RS4Reader, rs4_to_document_and_analysis
-
-rs4 = RS4Reader.read_file("document.rs4")
-doc, analysis = rs4_to_document_and_analysis(rs4, document_id="document")
-# analysis.formalism: OutputFormalismEnum.ERST_GRAPH
-# analysis.secondary_edges: tuple of SecondaryRelationEdge
-# analysis.signals: tuple of DiscourseSignal
-```
-
----
-
-## Hierarchical long document parsing
-
-For long documents exceeding single-window transformer limits, `isanlp_rst.hierarchical.stitcher.MacroMicroStitcher` provides two-stage macro/micro document stitching:
-
-1. **Micro-Stage**: Parses individual sections / paragraphs into coherent local RST subtrees.
-2. **Macro-Stage**: Predicts high-level discourse relations across section roots.
-3. **Stitching**: Glues local trees into a globally consistent, root-to-leaf discourse tree without recursion limits or offset drifts.
-
----
-
-## Production source ingest
-
-`isanlp_rst.ingest` is the single production boundary for analysing real-world
-source material. It accepts plain text, exact pre-segmented EDUs, Markdown,
-DoclingDocument JSON, and DocLang XML or `.dclx` archives. There are no separate
-format parse functions, result envelopes, policies, or caches.
-
-```python
-from pathlib import Path
-
-from isanlp_rst import Parser
-from isanlp_rst.ingest import AUTHORED_PROSE_V1, ProductionIngestor, SourceArtifact
-
-parser = Parser.from_model_release(
-    Path("/absolute/path/to/model-releases"),
-    "modernbert-v1-e5ea56cd620f",
-    family="modernbert",
-    device="auto",
-)
-ingestor = ProductionIngestor(parser=parser)
-
-artifact = SourceArtifact.from_path(Path("report.md"))
-result = ingestor.analyse(
-    artifact,
-    policy=AUTHORED_PROSE_V1,
-    cache_dir=Path("/absolute/path/to/cache"),
-)
-```
-
-The default policy inventories the complete valid source first, then admits
-authored headings, prose, meaningful list items, and authored turns to primary
-RST analysis. Tables, code, formulas, raw markup, pictures, metadata, fields,
-and assets remain retained side channels. Machine-generated picture
-descriptions, notes, navigation, furniture, backgrounds, and invisible content
-are excluded from primary RST but remain receipted. No caller-supplied format
-switch can silently widen that policy.
-
-`result` is a strict `ProductionAnalysisResult` containing the prepared
-document, complete dispositions and receipts, the coherent `RstAnalysis`, and
-native source anchors. Before consuming the tree, require all four coverage
-measures to be complete:
-
-```python
-assert result.preparation_receipt.inventory_coverage == 1.0
-assert result.preparation_receipt.primary_source_coverage == 1.0
-assert result.preparation_receipt.prepared_text_coverage == 1.0
-assert result.preparation_receipt.analysis_anchor_coverage == 1.0
-```
-
-An input with no eligible authored discourse returns
-`analysis_status == "empty_primary_discourse"`, a complete inventory and
-disposition receipt, and no fabricated RST tree. Long sources are partitioned
-at document structure and parser-capacity boundaries, analysed recursively, and
-stitched into one anchored result; they are not truncated or rejected by a
-format-specific character ceiling.
-
-Ambiguous JSON, XML, text, extensionless, or byte inputs require an explicit
-`SourceForm`. DocLang always runs current XSD and Schematron validation;
-Docling JSON always runs current `docling-core` model validation. Cache identity
-includes the raw source contract, preparation policy and implementation,
-released model bytes, and result schema. Corrupt or contradictory cache entries
-fail closed.
-
-The full contract and examples are in
-[`docs/production-source-ingest.md`](docs/production-source-ingest.md).
-
----
-
-## Quality diagnostics
-
-`pixi run -e offline rst-diag <paths>` analyses any mix of `.md`,
-`*.docling.json`, `*.dclg`, `*.dclg.xml`, and `*.dclx` sources through one
-canonical ingestor and one shared model load. It emits:
-
-- **joint ratio** — share of relations labelled joint / same-unit / organization (high = rhetorically thin chaining)
-- **tree skew** — max depth ÷ log₂(EDUs) (≫ 1 = degenerate chain)
-- **prepared characters and segments** — the exact primary RST material
-- **all four coverage ratios** — inventory, primary source, prepared text, and analysis anchors
-
-Use it to inspect result quality and source-accounting integrity. `--json` gives
-machine-readable output; `--model-version`, `--device`, and `--dtype` select the
-shared parser.
-
----
-
-## Production package and offline workbench
-
-`isanlp_rst` is the importable production product. It contains raw/pre-segmented RST inference, typed contracts, model validation/loading, eRST runtime completion, canonical source ingest, and rendering. Its wheel and source distribution exclude corpus builders, trainers, evaluators, research harnesses, tests, scripts, experiment data, Gold Set content, and model candidates.
-
-`workbench` is the repository-only surface for corpus preparation, training, evaluation, and local model promotion. `workbench.research` remains a repository-only research implementation but runs in the same root `offline` Pixi environment. Production never imports either namespace.
-
-The causal checks are:
-
-```bash
-pixi run -e offline production-boundary
-pixi run -e offline offline-smoke
-pixi run -e production production-clean-install   # certifies the built wheel
-```
-
-`pixi run -e production production-import-check` imports the installed distribution without loading weights; in the production environment that is the editable source, so it is a quick sanity check, not wheel certification.
-
-The full ownership and migration map is in [`docs/production-offline-boundary.md`](docs/production-offline-boundary.md). Production source ingest remains production functionality because it prepares real source material for analysis; training-corpus preparation, evaluation, and Gold Set assessment remain offline.
-
----
-
-## Evaluation & metrics
-
-Evaluation is offline-only. Standard/soft Parseval and the eRST scorer live under `workbench.evaluation.rst`; they are available in `pixi run -e offline ...` workflows and are not installed into consumer projects.
-
----
-
 ## Project status & licence
 
-This repository is Steve Allison's evolution of the IsaNLP RST Parser. The original RST research code and the trained model weights are by Elena Chistova; the MIT-licensed source code carries her copyright. This repository adds pixi-managed builds, a pytest test suite, GitHub Actions CI, MPS / Apple-Silicon support, mixed-precision dispatch, and ongoing roadmap work (see `docs/plans/`).
+This repository is Steve Allison's evolution of the IsaNLP RST Parser into the
+Rhetorical Discourse Analysis Machine. The original RST research code and the archived
+research model weights are by Elena Chistova; the MIT-licensed source carries her
+copyright. This repository adds the machine, the Dung and IBIS providers, the evidence-gated
+promotion system, canonical source ingest, eRST completion, pixi-managed builds, a pytest
+suite, GitHub Actions CI, MPS / Apple-Silicon support, and mixed-precision dispatch.
 
-- **Source code:** MIT — see [`LICENSE`](LICENSE). Copyright Elena Chistova 2020; Steve Allison contributions also under MIT.
-- **Model weights** (downloaded from `tchewik/isanlp_rst_v3` on HuggingFace): **CC BY-NC 4.0 — research and non-commercial use only.** See [`LICENSE_MODELS`](LICENSE_MODELS). Commercial use requires either retraining weights under a permissive licence or replacing the models entirely.
+- **Source code:** MIT — see [`LICENSE`](LICENSE). Copyright Elena Chistova 2020 for the
+  original parser; Steve Allison's contributions also under MIT.
+- **Archived research model weights** (`tchewik/isanlp_rst_v3` on HuggingFace):
+  **CC BY-NC 4.0 — research and non-commercial use only.** See
+  [`LICENSE_MODELS`](LICENSE_MODELS).
+- **ModernBERT releases in `models/model-releases`:** fine-tuned from
+  `answerdotai/ModernBERT-base`; each release manifest records its licence and use
+  restrictions, and the promotion decision beside it records the evidence verdict.
 
-Issues and pull requests: please open them on `Steve-Allison/isanlp_rst`. For questions about the underlying RST research, see Elena Chistova's papers cited below.
-
----
+Issues and pull requests: `Steve-Allison/isanlp_rst`. For questions about the underlying
+RST research, see Elena Chistova's papers cited below.
 
 ## Citation
 
-The published model weights are by Elena Chistova. If you use them in research, please cite:
+The archived research model weights are by Elena Chistova. If you use them in research, please cite:
 
 For `rstdt`, `gumrrg`, and `rstreebank`:
 

@@ -1,6 +1,6 @@
 # Feature 007: Aggregate Analysis Contract, Ontology Vendoring, Boundary Enforcement
 
-**Status**: implemented 2026-09-02 | **Authority**: [006 spec](../006-rhetorical-discourse-machine/spec.md), [006 data model](../006-rhetorical-discourse-machine/data-model.md), [006 contracts](../006-rhetorical-discourse-machine/contracts/) | **Owner ruling**: "build it all" (2026-09-02)
+**Status**: implemented 2026-09-02; the `machine/rdam` layout described below was superseded the same day by the owner's single-package ruling — `rdam/` now sits at the repository root ([010 §Single package](../010-repository-migration/spec.md)) | **Authority**: [006 spec](../006-rhetorical-discourse-machine/spec.md), [006 data model](../006-rhetorical-discourse-machine/data-model.md), [006 contracts](../006-rhetorical-discourse-machine/contracts/) | **Owner ruling**: "build it all" (2026-09-02)
 
 This feature builds what 006 specified and deliberately did not build: the machine layer.
 The requirements are 006's; this record maps each to the artifact that satisfies it and

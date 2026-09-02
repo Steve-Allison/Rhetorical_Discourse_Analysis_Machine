@@ -1,6 +1,6 @@
 # Feature 011: Dung Abstract Argumentation Provider
 
-**Status**: implemented and promoted 2026-09-02 | **Authority**: [006 spec](../006-rhetorical-discourse-machine/spec.md) FR-002, FR-012, FR-016, FR-020, FR-022 (formal clause), FR-024; [006 promotion-evidence contract](../006-rhetorical-discourse-machine/contracts/promotion-evidence.md) §Formal techniques; [008 promotion system](../008-promotion-system/spec.md) | **Owner ruling**: "build it all" (2026-09-02)
+**Status**: implemented and promoted 2026-09-02; relocated to `rdam.dung` and re-promoted the same day (§Promotion decision) | **Authority**: [006 spec](../006-rhetorical-discourse-machine/spec.md) FR-002, FR-012, FR-016, FR-020, FR-022 (formal clause), FR-024; [006 promotion-evidence contract](../006-rhetorical-discourse-machine/contracts/promotion-evidence.md) §Formal techniques; [008 promotion system](../008-promotion-system/spec.md) | **Owner ruling**: "build it all" (2026-09-02)
 
 The first provider after RST, first in the spec's order because it is formal,
 deterministic, and verifiable by proof and property test rather than by corpus.
@@ -24,6 +24,14 @@ arguments and property tests), calibration declared absent (deterministic), late
 measured on this machine, compatibility verified in both pixi environments, provenance
 naming commit `b5e35c5` and the source digest, licensing MIT (own code). This is the
 machine's first `available` provider under the 008 gate.
+
+**Relocation (owner ruling 2026-09-02, [010 §Single package](../010-repository-migration/spec.md))**:
+the provider moved to `rdam/dung` inside the single `rdam` package; its provider id is
+`rdam.dung/exhaustive-subset-v1` and its source digest changed with the import lines.
+The same semantics were re-promoted by
+`workbench/promotions/dung/rdam.dung-exhaustive-subset-v1-replace-2026-09-02.json`,
+outcome **replace** (replaces `rdam_dung/exhaustive-subset-v1`), provenance naming
+commit `6a647b6`; the packaged decision is `rdam/dung/resources/promotion-decision.json`.
 
 ## Limitations recorded in the decision
 
