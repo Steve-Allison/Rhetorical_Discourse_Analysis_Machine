@@ -12,7 +12,7 @@ from isanlp_rst._version import resolve_installed_package_version
 
 resolve_package_version = resolve_installed_package_version
 
-_PROVENANCE_FIELDS = frozenset(
+PROVENANCE_FIELDS = frozenset(
     {
         "schema_name",
         "schema_version",
@@ -38,7 +38,7 @@ def load_build_provenance() -> Mapping[str, str | int] | None:
     if not resource.is_file():
         return None
     payload = json.loads(resource.read_text(encoding="utf-8"))
-    if not isinstance(payload, dict) or set(payload) != _PROVENANCE_FIELDS:
+    if not isinstance(payload, dict) or set(payload) != PROVENANCE_FIELDS:
         raise ValueError("packaged build provenance has an unexpected schema")
     if payload.get("schema_name") != "isanlp_rst.build_provenance":
         raise ValueError("packaged build provenance has the wrong contract")
@@ -86,4 +86,4 @@ def resolve_source_revision() -> str:
     return f"{revision}-dirty" if dirty else revision
 
 
-__all__ = ["load_build_provenance", "resolve_package_version", "resolve_source_revision"]
+__all__ = ["PROVENANCE_FIELDS", "load_build_provenance", "resolve_package_version", "resolve_source_revision"]

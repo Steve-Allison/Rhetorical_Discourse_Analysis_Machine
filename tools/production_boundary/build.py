@@ -144,10 +144,12 @@ def _provenance_bytes(
     *,
     commit: str,
     tree: str,
-    source_tag: str | None,
     archive_sha256: str,
     source_date_epoch: int,
 ) -> bytes:
+    """The packaged runtime provenance resource — schema 1.0.0, read strictly by
+    ``isanlp_rst._provenance``. Its field set is fixed; release-level facts such as the
+    tag live in the committed ``ReproducibleBuildReport``, not here."""
     pyproject_identity = sha256_path(export_root / "pyproject.toml")
     lock_identity = sha256_path(export_root / "pixi.lock")
     build_input_identity = _sha256_bytes(
@@ -169,7 +171,6 @@ def _provenance_bytes(
             "production_contract_version": "2.0.0",
             "source_commit": commit,
             "source_tree": tree,
-            "source_tag": source_tag,
             "source_archive_sha256": archive_sha256,
             "source_date_epoch": source_date_epoch,
             "build_input_sha256": build_input_identity,
@@ -271,7 +272,6 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> Produ
                 export_root,
                 commit=commit,
                 tree=tree,
-                source_tag=source_tag,
                 archive_sha256=archive_sha256,
                 source_date_epoch=source_date_epoch,
             )

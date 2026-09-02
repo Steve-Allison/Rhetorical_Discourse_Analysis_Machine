@@ -13,6 +13,7 @@ import zipfile
 
 import rfc8785
 
+from isanlp_rst._provenance import PROVENANCE_FIELDS
 from tools.production_boundary.contracts import (
     ArtifactReceipt,
 )
@@ -291,6 +292,10 @@ def _validate_provenance(payload: bytes, expected_source_commit: str | None) -> 
     parsed = json.loads(payload.decode("utf-8", errors="strict"))
     if payload != rfc8785.dumps(parsed) + b"\n":
         raise ValueError("build provenance is not canonical RFC 8785 JSON")
+    if not isinstance(parsed, dict) or set(parsed) != PROVENANCE_FIELDS:
+        # Exactly what the installed runtime reader (isanlp_rst._provenance) enforces, so
+        # a schema drift fails this cheap gate rather than the clean install.
+        raise ValueError("artifact build provenance does not carry the exact runtime field set")
     if parsed.get("schema_name") != "isanlp_rst.build_provenance":
         raise ValueError("artifact build provenance names the wrong contract")
     if parsed.get("package_version") != "5.0.0":

@@ -7,6 +7,7 @@ import zipfile
 
 import pytest
 
+from isanlp_rst._provenance import PROVENANCE_FIELDS
 from tools.production_boundary.build import _reset_output_dir, build_production_artifacts, source_release_record
 from tools.production_boundary.contracts import canonical_record_bytes, sha256_path
 
@@ -44,7 +45,9 @@ def test_double_build_publishes_expected_pair(
     with zipfile.ZipFile(wheel) as archive:
         provenance = json.loads(archive.read("isanlp_rst/build-provenance.json"))
     assert provenance["source_commit"] == commit
-    assert provenance["source_tag"] is None
+    # The packaged resource keeps the exact schema-1.0.0 field set the runtime reader
+    # enforces; the tag is recorded in the build report, not here.
+    assert set(provenance) == PROVENANCE_FIELDS
 
 
 def test_rebuild_replaces_a_previous_pair_but_refuses_foreign_files(tmp_path: Path) -> None:
