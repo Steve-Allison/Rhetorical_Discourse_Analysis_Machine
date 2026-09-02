@@ -117,6 +117,56 @@ would fail the same way if revived; regenerating its baseline JSON is a separate
 work for the migration feature's baseline capture, recorded here so it is not
 rediscovered.
 
+### Defect 4 — the published 5.0.0 artifact pair failed its own contract (rebuilt in this pass)
+
+The preservation contract's equivalence procedure step 4 makes the packaging gate — wheel
+built, clean-room install green — precede every other migration completion claim. Run
+against the committed `dist/5.0.0` pair, the repo's own validator failed on its first
+check:
+
+```text
+pixi run validate-production-artifacts
+ValueError: wheel lacks required production contract resources: ['isanlp_rst/build-provenance.json']
+```
+
+Root cause, reconstructed from git and the artifacts' bytes:
+
+| Fact | Evidence |
+|---|---|
+| The original pair was published reproducibly | `cc64f81` (2026-08-31) added both artifacts; the sdist's `build-provenance.json` names `source_commit: eb93565`, `build 1.6.0` |
+| The wheel was then replaced **alone**, ad hoc | `511fb69` (2026-09-01, "complete Feature 005 … operational certification") changed only the wheel (`492368 -> 491997` bytes). Its members match the `511fb69` tree 6/6 on sampled files; every zip entry carries hatchling's default `2020-02-02` timestamp; no provenance file. That is a plain hatchling build, not `tools/production_boundary/build.py`, which writes provenance (`build.py:233`), sets `SOURCE_DATE_EPOCH` to the commit time, double-builds for reproducibility, and refuses to overwrite (`:184`, `:199`). |
+| The pair was split | sdist from `eb93565`, wheel from `511fb69` — `artifacts.py:141` rejects mismatched provenance |
+| Both were stale | six commits after `511fb69` changed 11 package files (`cli.py`, `ingest/service.py`, `parser_result.py`, `subdivision.py`, both failure schemas, …); wheel 11 files behind HEAD, sdist 15 |
+| No source-release evidence ever existed | `build-production` writes `specs/004-production-api-contract/evidence/source-release.json`; `git log --all` for that path is empty |
+| The gate was not re-run | `511fb69`'s message claims *"Certified clean-room wheel installation"*; `production-smoke` never checks provenance, so it passed against a wheel the artifact contract rejects |
+
+**Fix (owner-authorised 2026-09-02, a release action outside 006's scope)**: the pair was
+retired in `3613f53`, then rebuilt by `pixi run build-production` from that clean commit
+— double build, `"reproducible": true`, provenance `source_commit: 3613f53` in both
+artifacts, `source-release.json` written for the first time. `validate-production-artifacts`
+now reports `valid: true`, RECORD verified, zero forbidden members, matching provenance.
+`pixi run -e production production-smoke` is green (note: that task exercises the
+*editable source* in the production environment — 13 distribution members — not the
+wheel; the wheel is certified by `production-clean-install`, recorded below).
+
+`pixi run -e production production-clean-install` — the actual wheel certification:
+pip-installs the rebuilt wheel into two fresh venvs and runs
+`installed_acceptance.py --full` outside the source tree with the network disabled —
+**`valid: true`**:
+
+| Venv | `pip check` | Source forms available | Analysis on `modernbert-v1-e5ea56cd620f` | CLI ≡ Python |
+|---|---|---|---|---|
+| `core` | passed | `text`, `edus` (four format forms correctly `unavailable`, and an unavailable Markdown prepare yields a typed safe failure) | 4 loaded components, 7 validation checks passed | semantic digests equal |
+| `formats` | passed | all six `available`, all six prepared with canonical round-trip | 4 loaded components, 7 validation checks passed | semantic digests equal |
+
+Both venvs: `package_version 5.0.0`, `network_disabled`, offline distributions absent,
+202 public-surface entries resolved, package imported from `site-packages`, not the
+source tree.
+
+This is the third FR-027 finding against Feature 005's completion in one audit pass,
+after the fabricated evaluation literal (promotion-gap-audit gap 4) and the smoke script
+that could not pass (defect 3).
+
 **Release evidence observation**: the promoted release
 `modernbert-v1-e5ea56cd620f` carries `"evaluation_evidence": "GUM-12.1.0 Parseval
 evaluation verified"` — the fabricated fallback literal documented in
