@@ -1,0 +1,14 @@
+# Feature 010 — release 6.0.0 gate results (2026-09-02)
+
+Release commit `d4d59c0`, tag `v6.0.0` (`v5.0.0` at `cc64f81` untouched). Every tool below
+derived the name `rdam` and the version `6.0.0` from `pyproject.toml`.
+
+| Gate | Command | Result |
+|---|---|---|
+| Reproducible double build | `pixi run build-production` | wheel `rdam-6.0.0-py3-none-any.whl` sha256 `76433f57…49b22` (534 949 bytes), sdist `rdam-6.0.0.tar.gz` sha256 `68c32bbb…bb16d` (479 206 bytes); two independent via-sdist builds byte-identical; `source_tag: v6.0.0`; records [release/source-release.json](release/source-release.json), [release/reproducible-build.json](release/reproducible-build.json) |
+| Published pair validation | `pixi run validate-production-artifacts` | `valid: true`: RECORD verified, metadata `rdam 6.0.0`, `Requires-Python >=3.14`, `rdam-rst` entry point, `rdam/py.typed`, packaged provenance (`package_name: rdam`, `source_commit: d4d59c0…`), public surface, schemas; 0 boundary violations, 337 files scanned |
+| Wheel membership | `unzip -l` | 135 members, all under `rdam/` or `rdam-6.0.0.dist-info/`; carries `rdam/dung/resources/promotion-decision.json`, `rdam/ibis/resources/promotion-decision.json`, `rdam/resources/framework-identities.json`, `rdam/rst/ontology/central.lock.yaml`; no `ontology/vendor`, no `workbench`, no bytecode |
+| Production-environment artifact gate | `pixi run -e production production-artifacts` | `valid: true`, `forbidden_members: []` for both artifacts |
+| Clean-install certification | `pixi run -e production production-clean-install` (full, release `modernbert-v1-a52b70fbc1a3`, CPU, network disabled) | `valid: true` in both fresh venvs. **core**: installed `rdam 6.0.0` from the wheel outside the checkout, `pip check` passed, 202 public-surface entries importable, text and EDUs available and the four optional forms typed-unavailable, installed analysis 4 loaded-component receipts, 7 validation checks, CLI/Python semantic parity. **formats**: all six source forms available, same analysis receipts and parity |
+| RST preservation across the rename | `pixi run rst-baseline compare --baseline specs/010-repository-migration/evidence/baseline` | analytically equivalent, zero analytical differences ([release/rename-6.0.0-baseline-comparison.json](release/rename-6.0.0-baseline-comparison.json)) |
+| Source gates at the release commit | `pixi run lint`, `pixi run typecheck`, `pixi run test`, `pixi run mdlint`, `pixi run -e default production-boundary`, `pixi run -e production production-import-check`, `pixi run ontology-validate`, `pixi run smoke` | ruff clean; pyright strict 0 errors; 933 passed; 142 Markdown files 0 issues; boundary `valid: true` (106 production modules) in both environments; import check valid; LinkML profile, bindings, and projection current; smoke 43 passed on CPU and MPS |

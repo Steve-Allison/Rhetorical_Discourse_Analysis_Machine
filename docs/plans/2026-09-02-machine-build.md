@@ -32,23 +32,26 @@ Machine. It is updated at every feature boundary. If a session restarts, resume 
 | 010 | Repository migration + single-package restructure + rename to `rdam` 6.0.0 | relocation **done** (baseline `equivalent: true`); restructure to one package **done** at `6a647b6` (analytically equivalent, zero analytical differences; both stored releases re-declared compatible with 6.0.0); directory rename is the final step after the release |
 | 011 | Dung provider (formal) | **done** — `specs/011-dung-provider/`; re-promoted at `rdam.dung` by decision `rdam.dung-exhaustive-subset-v1-replace-2026-09-02` (outcome replace) |
 | 012 | IBIS provider (formal) | **done** — `specs/012-ibis-provider/`; promoted at `rdam.ibis` by decision `rdam.ibis-gibis-grammar-v1-promote-2026-09-02` |
-| — | Release 6.0.0: tag, build, validate, clean-install, evidence | pending |
-| — | Repository directory rename (`Rhetorical_Discourse_Analysis_Machine`), remote/URL, sibling-repo sweep, memory-path migration | pending, last |
+| — | Release 6.0.0: tag, build, validate, clean-install, evidence | **done** — tag `v6.0.0` on `d4d59c0`; gates in `specs/010-repository-migration/evidence/gates.md` |
+| — | Repository directory rename (`Rhetorical_Discourse_Analysis_Machine`), remote/URL, sibling-repo sweep, memory-path migration | **awaiting Steve's go** (see Next step) |
 
 ## Next step
 
-Release 6.0.0, then identity adoption:
+Identity adoption (010 §Identity adoption) — one decision, then mechanical:
 
-1. `git tag v6.0.0` on the commit carrying the decisions and docs; `pixi run build-production`
-   (writes `dist/6.0.0/` and the evidence JSON under
-   `specs/010-repository-migration/evidence/release/`); `pixi run validate-production-artifacts`;
-   `pixi run -e production production-artifacts`; `pixi run -e production production-clean-install`
-   (full acceptance on `modernbert-v1-a52b70fbc1a3`); commit the evidence.
-2. Identity adoption (010 §Identity adoption): rename the directory, update
-   `[project.urls]` and the git remote once the GitHub repository is renamed, sweep the
-   sibling repositories for path references, migrate
-   `~/.claude/projects/-Users-steveallison-AI-Projects-Code-isanlp-rst/` to the new key,
-   verify memory loads. Requires a fresh session afterwards (tooling paths).
+1. Steve renames the GitHub repository (`Steve-Allison/isanlp_rst` → the new name) and
+   says go. Then: `mv ~/AI_Projects+Code/isanlp_rst ~/AI_Projects+Code/Rhetorical_Discourse_Analysis_Machine`,
+   `git remote set-url origin …`, `[project.urls]` in `pyproject.toml`, `pixi install`
+   in the new location (the environments carry absolute paths), copy
+   `~/.claude/projects/-Users-steveallison-AI-Projects-Code-isanlp-rst/memory/` to the new
+   project key, and resume in a fresh session from the new directory.
+2. Consumers found by the sweep (read-only, 2026-09-02): `Presentation_Performance_Analyser`
+   pins `isanlp_rst = { path = "../isanlp_rst", editable = true }` and imports
+   `isanlp_rst` — already broken by the distribution rename; needs
+   `rdam = { path = "../Rhetorical_Discourse_Analysis_Machine", editable = true }` and
+   `rdam.rst` imports, or a pin to the `v5.0.0` wheel. `Content_Structuring_Machine`
+   vendors the 5.0.0 wheel and is unaffected until it chooses to upgrade. Neither is
+   edited without Steve's ruling.
 
 ## Gates that must stay green
 
