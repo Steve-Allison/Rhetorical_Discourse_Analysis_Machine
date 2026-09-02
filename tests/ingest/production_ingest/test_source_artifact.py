@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from isanlp_rst.ingest.contracts import SourceArtifact, SourceForm
+from rdam.rst.ingest.contracts import SourceArtifact, SourceForm
 
 
 def test_text_and_edus_preserve_exact_payload() -> None:

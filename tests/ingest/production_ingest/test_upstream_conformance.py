@@ -10,9 +10,9 @@ import doclang
 from docling_core.types.doc import ContentLayer, DoclingDocument
 from lxml import etree
 
-from isanlp_rst.ingest import SourceArtifact, SourceForm
-from isanlp_rst.ingest.contracts import ContentClass
-from isanlp_rst.ingest.prepare import inventory_source
+from rdam.rst.ingest import SourceArtifact, SourceForm
+from rdam.rst.ingest.contracts import ContentClass
+from rdam.rst.ingest.prepare import inventory_source
 
 
 DOCLANG_FIXTURES = Path("tests/fixtures/doclang")

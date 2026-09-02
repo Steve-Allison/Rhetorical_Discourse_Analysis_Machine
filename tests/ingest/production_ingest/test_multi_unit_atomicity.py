@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from isanlp_rst.contracts import RstDocument
-from isanlp_rst.ingest import (
+from rdam.rst.contracts import RstDocument
+from rdam.rst.ingest import (
     AnalysisPolicy,
     CompositeAnalysisIdentity,
     ParserAnalysisResult,
@@ -15,7 +15,7 @@ from isanlp_rst.ingest import (
     ProductionIngestor,
     SourceArtifact,
 )
-from isanlp_rst.model_loading import ModelReleaseIdentity
+from rdam.rst.model_loading import ModelReleaseIdentity
 
 from .conftest import DeterministicParser, ParserBuilder
 

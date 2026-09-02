@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 
-from isanlp_rst.contracts import RstDocument
-from isanlp_rst.ingest import AnalysisPolicy, AnalysisStatus, CacheStatus, ParserAnalysisResult, SourceArtifact
-from isanlp_rst.ingest.service import ProductionIngestor
+from rdam.rst.contracts import RstDocument
+from rdam.rst.ingest import AnalysisPolicy, AnalysisStatus, CacheStatus, ParserAnalysisResult, SourceArtifact
+from rdam.rst.ingest.service import ProductionIngestor
 
 from .conftest import DeterministicParser, ParserBuilder
 

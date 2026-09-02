@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 
-from isanlp_rst.base_predictor import resolve_device
+from rdam.rst.base_predictor import resolve_device
 from workbench.archive.legacy_2021.dmrst_parser.predictor import PredictorDMRST
 from workbench.archive.legacy_2021.universal_parser.predictor import PredictorUniRST
 

@@ -6,8 +6,8 @@ from collections.abc import Iterator
 
 import pytest
 
-from isanlp_rst import _version
-from isanlp_rst import _provenance
+from rdam.rst import _version
+from rdam.rst import _provenance
 
 
 @pytest.fixture(autouse=True)
@@ -20,12 +20,12 @@ def _clear_runtime_caches() -> Iterator[None]:
 
 
 def test_tool_version_is_installed_distribution_version() -> None:
-    assert _provenance.resolve_package_version() == version("isanlp_rst") == "5.0.0"
+    assert _provenance.resolve_package_version() == version("rdam") == "6.0.0"
 
 
 def test_unknown_is_only_used_when_distribution_metadata_is_absent(monkeypatch: pytest.MonkeyPatch) -> None:
     def missing(_: str) -> str:
-        raise PackageNotFoundError("isanlp_rst")
+        raise PackageNotFoundError("rdam")
 
     monkeypatch.setattr(_version, "distribution_version", missing)
     assert _provenance.resolve_package_version() == "unknown"

@@ -3,8 +3,8 @@ import hashlib
 import json
 from pathlib import Path
 
-from isanlp_rst.model_loading.release import ParserCapacity, validate_model_release
-from isanlp_rst.model_loading import ParserInput
+from rdam.rst.model_loading.release import ParserCapacity, validate_model_release
+from rdam.rst.model_loading import ParserInput
 
 
 def _release(tmp_path: Path) -> Path:

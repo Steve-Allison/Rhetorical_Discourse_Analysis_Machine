@@ -11,14 +11,14 @@ from typing import TypedDict
 
 import pytest
 import torch
-from isanlp_rst.annotation_rst import DiscourseUnit
+from rdam.rst.annotation_rst import DiscourseUnit
 from tokenizers import Tokenizer
 from tokenizers.models import WordLevel
 from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.processors import TemplateProcessing
 from transformers import BertConfig, PreTrainedTokenizerFast
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     CorpusPartition,
     DocumentToken,
     ErstCalibrationState,
@@ -44,19 +44,19 @@ from isanlp_rst.contracts import (
     TextSpan,
     to_json,
 )
-from isanlp_rst.english.erst.completer import CompleterConfig, ErstCompleter
-from isanlp_rst.erst.converter import du_to_analysis
-from isanlp_rst.erst.checkpoint import (
+from rdam.rst.english.erst.completer import CompleterConfig, ErstCompleter
+from rdam.rst.erst.converter import du_to_analysis
+from rdam.rst.erst.checkpoint import (
     ErstCheckpointError,
     load_erst_checkpoint_bundle,
     validate_erst_checkpoint_bundle,
 )
-from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
-from isanlp_rst.erst.signals import RuleBasedSignalDetector
-from isanlp_rst.parser import Parser
-from isanlp_rst import __version__
-from isanlp_rst.transformer_parser.biaffine_decoder import ParsedRstTreeEvidence, ParsedRstTreeSpan
-from isanlp_rst.transformer_parser.predictor import PredictorAnalysisTrace
+from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+from rdam.rst.erst.signals import RuleBasedSignalDetector
+from rdam.rst.parser import Parser
+from rdam.rst import __version__
+from rdam.rst.transformer_parser.biaffine_decoder import ParsedRstTreeEvidence, ParsedRstTreeSpan
+from rdam.rst.transformer_parser.predictor import PredictorAnalysisTrace
 from workbench.promotion.erst import save_erst_checkpoint_bundle
 
 _GIT_REVISION = "a" * 40
@@ -275,7 +275,7 @@ def _bundle_inputs() -> _BundleInputs:
             private_only=True,
         ),
         provenance=ErstCheckpointProvenance(
-            producer="isanlp_rst.erst.checkpoint",
+            producer="rdam.rst.erst.checkpoint",
             producer_version=__version__,
             source_revision=_GIT_REVISION,
             created_at=datetime.now(UTC),

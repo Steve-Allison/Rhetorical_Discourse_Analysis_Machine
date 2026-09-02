@@ -1,4 +1,4 @@
-from isanlp_rst.ingest.contracts import (
+from rdam.rst.ingest.contracts import (
     AuthorshipRole,
     ContentClass,
     ContentInventoryItem,
@@ -10,7 +10,7 @@ from isanlp_rst.ingest.contracts import (
     SourceOrigin,
     TextRepresentation,
 )
-from isanlp_rst.ingest.policy import DEFAULT_PREPARATION_POLICY, apply_policy
+from rdam.rst.ingest.policy import DEFAULT_PREPARATION_POLICY, apply_policy
 
 
 def _item(

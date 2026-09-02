@@ -3,11 +3,11 @@
 import argparse
 from pathlib import Path
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     ErstCheckpointVerificationReceipt,
     analysis_from_json,
 )
-from isanlp_rst.erst.checkpoint import load_erst_checkpoint_bundle
+from rdam.rst.erst.checkpoint import load_erst_checkpoint_bundle
 
 
 def verify_checkpoint(

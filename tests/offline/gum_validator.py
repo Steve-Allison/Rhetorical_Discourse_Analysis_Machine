@@ -8,20 +8,20 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from isanlp_rst.annotation_rst import DiscourseUnit
+from rdam.rst.annotation_rst import DiscourseUnit
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     NodeKindEnum,
     RstAnalysis,
     RstDocument,
     analysis_from_json,
 )
-from isanlp_rst.erst.converter import du_to_analysis, rs4_to_document_and_analysis
-from isanlp_rst.erst.rs4 import RS4Document, RS4Reader
+from rdam.rst.erst.converter import du_to_analysis, rs4_to_document_and_analysis
+from rdam.rst.erst.rs4 import RS4Document, RS4Reader
 from workbench.evaluation.rst.erst_scorer import ErstScorer, SecondaryEdgeMetrics, SignalMetrics
 from workbench.evaluation.rst.parseval import ParsevalMetrics, SoftParsevalScorer, StandardParsevalScorer
-from isanlp_rst.ontology.adapter import OntologyAdapter
-from isanlp_rst.parser import Parser
+from rdam.rst.ontology.adapter import OntologyAdapter
+from rdam.rst.parser import Parser
 
 GUM_FIXTURES_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "gum"
 

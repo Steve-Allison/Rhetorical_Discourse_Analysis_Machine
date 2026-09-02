@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from isanlp_rst.contracts.erst import (
+from rdam.rst.contracts.erst import (
     CorpusFailureType,
     CorpusLicenseClass,
     CorpusPartition,

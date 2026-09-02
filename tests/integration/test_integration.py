@@ -16,8 +16,8 @@ These tests verify:
 import pytest
 import torch
 
-from isanlp_rst.contracts import InputFidelityEnum, OutputFormalismEnum, RstAnalysis, RstDocument
-from isanlp_rst.parser import Parser
+from rdam.rst.contracts import InputFidelityEnum, OutputFormalismEnum, RstAnalysis, RstDocument
+from rdam.rst.parser import Parser
 
 pytestmark = pytest.mark.slow
 

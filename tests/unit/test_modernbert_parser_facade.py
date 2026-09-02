@@ -1,8 +1,8 @@
 """Integration tests for ModernBERT parser facade integration."""
 
-from isanlp_rst.annotation_rst import DiscourseUnit
-from isanlp_rst.contracts import OutputFormalismEnum, RstAnalysis, RstDocument
-from isanlp_rst.parser import Parser
+from rdam.rst.annotation_rst import DiscourseUnit
+from rdam.rst.contracts import OutputFormalismEnum, RstAnalysis, RstDocument
+from rdam.rst.parser import Parser
 
 
 def test_parser_modernbert_family_resolution() -> None:

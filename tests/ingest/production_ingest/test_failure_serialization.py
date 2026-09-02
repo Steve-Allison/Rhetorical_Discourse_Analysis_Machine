@@ -1,7 +1,7 @@
 """Canonical safe and explicit diagnostic failure persistence."""
 
-from isanlp_rst.ingest import load_contract, serialize_contract
-from isanlp_rst.ingest.contracts.failure import (
+from rdam.rst.ingest import load_contract, serialize_contract
+from rdam.rst.ingest.contracts.failure import (
     DiagnosticProductionFailureRecord,
     DiagnosticPolicy,
     FailureCategory,

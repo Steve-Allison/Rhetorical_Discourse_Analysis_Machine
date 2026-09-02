@@ -4,9 +4,9 @@ from importlib.metadata import PackageNotFoundError
 
 import pytest
 
-from isanlp_rst.ingest import SourceForm, describe_capabilities
-from isanlp_rst.ingest.contracts import capabilities as capability_contracts
-from isanlp_rst.ingest.contracts.capabilities import Availability
+from rdam.rst.ingest import SourceForm, describe_capabilities
+from rdam.rst.ingest.contracts import capabilities as capability_contracts
+from rdam.rst.ingest.contracts.capabilities import Availability
 
 
 def test_every_source_form_has_complete_availability_and_media_type_evidence() -> None:
@@ -40,8 +40,8 @@ def test_markdown_capability_requires_parser_and_plugin_distributions(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def installed_version(distribution: str) -> str:
-        if distribution in {"isanlp_rst", "markdown-it-py"}:
-            return "5.0.0"
+        if distribution in {"rdam", "markdown-it-py"}:
+            return "6.0.0"
         raise PackageNotFoundError(distribution)
 
     monkeypatch.setattr(capability_contracts, "version", installed_version)

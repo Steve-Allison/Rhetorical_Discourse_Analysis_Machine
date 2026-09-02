@@ -2,7 +2,7 @@
 
 import pytest
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     DocumentToken,
     NodeKindEnum,
     NuclearityPatternEnum,
@@ -12,8 +12,8 @@ from isanlp_rst.contracts import (
     RstDocument,
     RstNode,
 )
-from isanlp_rst.english.relations.primer import DiscourseMarkerPrimer
-from isanlp_rst.parser import Parser
+from rdam.rst.english.relations.primer import DiscourseMarkerPrimer
+from rdam.rst.parser import Parser
 
 
 def test_primer_cue_matching() -> None:

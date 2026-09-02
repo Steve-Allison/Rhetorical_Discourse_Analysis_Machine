@@ -2,7 +2,7 @@
 
 import pytest
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     DecodeRejectionReason,
     ErstDecoderConfig,
     NodeKindEnum,
@@ -12,8 +12,8 @@ from isanlp_rst.contracts import (
     RstAnalysis,
     RstNode,
 )
-from isanlp_rst.erst.candidates import SecondaryEdgeCandidate
-from isanlp_rst.erst.decoder import ErstSecondaryEdgeDecoder
+from rdam.rst.erst.candidates import SecondaryEdgeCandidate
+from rdam.rst.erst.decoder import ErstSecondaryEdgeDecoder
 
 
 def _analysis() -> RstAnalysis:

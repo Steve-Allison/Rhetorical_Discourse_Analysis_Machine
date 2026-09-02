@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-import isanlp_rst.cli as cli
-from isanlp_rst.ingest import (
+import rdam.rst.cli as cli
+from rdam.rst.ingest import (
     ProductionAnalysisOutcome,
     SafeProductionFailureRecord,
     SourceArtifact,

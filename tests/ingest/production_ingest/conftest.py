@@ -9,8 +9,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from isanlp_rst.annotation_rst import DiscourseUnit
-from isanlp_rst.contracts import (
+from rdam.rst.annotation_rst import DiscourseUnit
+from rdam.rst.contracts import (
     DocumentToken,
     Edu,
     NodeKindEnum,
@@ -23,7 +23,7 @@ from isanlp_rst.contracts import (
     PrimaryRelationEdge,
     TextSpan,
 )
-from isanlp_rst.ingest.contracts import (
+from rdam.rst.ingest.contracts import (
     AnalysisPolicy,
     CompositeAnalysisIdentity,
     ParserAnalysisResult,
@@ -33,16 +33,16 @@ from isanlp_rst.ingest.contracts import (
     SourceArtifact,
     SourceForm,
 )
-from isanlp_rst.ingest.contracts.preparation import CapacityUnit
-from isanlp_rst.ingest.parser_result import (
+from rdam.rst.ingest.contracts.preparation import CapacityUnit
+from rdam.rst.ingest.parser_result import (
     build_parser_analysis_result,
     describe_analysis_components,
 )
-from isanlp_rst.ingest.service import DEFAULT_ANALYSIS_POLICY
-from isanlp_rst.model_loading import ModelFile, ModelReleaseIdentity
-from isanlp_rst.model_loading import ParserCapacity as ReleaseParserCapacity
-from isanlp_rst.transformer_parser.predictor import PredictorAnalysisTrace
-from isanlp_rst.transformer_parser.biaffine_decoder import (
+from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+from rdam.rst.model_loading import ModelFile, ModelReleaseIdentity
+from rdam.rst.model_loading import ParserCapacity as ReleaseParserCapacity
+from rdam.rst.transformer_parser.predictor import PredictorAnalysisTrace
+from rdam.rst.transformer_parser.biaffine_decoder import (
     ParsedRstTreeEvidence,
     ParsedRstTreeSpan,
 )

@@ -6,7 +6,7 @@ from pathlib import Path
 import fire
 from tqdm import tqdm
 
-from isanlp_rst.model_loading.parser_input import ParserInput
+from rdam.rst.model_loading.parser_input import ParserInput
 from workbench.corpus.dmrst.binary_tree import BinaryTree, Node
 from workbench.corpus.dmrst.data import Rs3Document
 from workbench.archive.legacy_2021.dmrst_parser.src.parser.data import Data

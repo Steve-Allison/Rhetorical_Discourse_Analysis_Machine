@@ -32,7 +32,7 @@ def _tree_payload(tree: object) -> dict[str, object]:
 
 
 def _analysis_payload(parser: Any, model: str) -> tuple[str, str, dict[str, object]]:
-    from isanlp_rst.contracts import RstDocument, analysis_from_json, to_json
+    from rdam.rst.contracts import RstDocument, analysis_from_json, to_json
 
     analysis = parser.parse_document(
         RstDocument.from_text(_TEXT, document_id=f"parity-{model}"),
@@ -64,7 +64,7 @@ def _analysis_payload(parser: Any, model: str) -> tuple[str, str, dict[str, obje
 
 
 def run(device: str) -> dict[str, object]:
-    from isanlp_rst import Parser
+    from rdam.rst import Parser
 
     cases: dict[str, object] = {}
     for version, options in _MODELS:

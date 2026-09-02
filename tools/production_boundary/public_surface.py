@@ -7,11 +7,16 @@ from typing import Any, Final
 
 import rfc8785
 
-import isanlp_rst.ingest as ingest
+from rdam.rst._version import TOOL_NAME
+import rdam.rst.ingest as ingest
 from tools.production_boundary.schemas import SCHEMA_BASE, generated_schemas
 
 # The resource lives inside the package wherever the package lives in the repository.
 PUBLIC_SURFACE_PATH: Final = Path(str(ingest.__file__)).parent / "public-surface.json"
+PACKAGE: Final = "rdam.rst"
+# The release in which these qualified names first shipped under the ``rdam.rst`` import
+# name (owner ruling 2026-09-02: one distribution, one package, the RST provider inside it).
+INTRODUCED: Final = "6.0.0"
 
 
 def generated_public_surface() -> bytes:
@@ -21,54 +26,54 @@ def generated_public_surface() -> bytes:
     entries.extend(
         (
             _special_entry(
-                "isanlp_rst.Parser.analyse_document",
+                f"{PACKAGE}.Parser.analyse_document",
                 "function",
                 documentation_anchor="6-analyse-with-an-immutable-model-release",
             ),
-            _special_entry("isanlp_rst.Parser.complete_erst_document", "function"),
+            _special_entry(f"{PACKAGE}.Parser.complete_erst_document", "function"),
             _special_entry(
-                "isanlp_rst.ingest.ProductionIngestor.prepare",
+                f"{PACKAGE}.ingest.ProductionIngestor.prepare",
                 "function",
-                public_import="isanlp_rst.ingest:ProductionIngestor.prepare",
+                public_import=f"{PACKAGE}.ingest:ProductionIngestor.prepare",
                 documentation_anchor="4-prepare-and-inspect-complete-evidence",
             ),
             _special_entry(
-                "isanlp_rst.ingest.ProductionIngestor.analyse",
+                f"{PACKAGE}.ingest.ProductionIngestor.analyse",
                 "function",
-                public_import="isanlp_rst.ingest:ProductionIngestor.analyse",
+                public_import=f"{PACKAGE}.ingest:ProductionIngestor.analyse",
                 documentation_anchor="6-analyse-with-an-immutable-model-release",
             ),
             _special_entry(
-                "isanlp_rst.ingest.ProductionIngestor.capabilities",
+                f"{PACKAGE}.ingest.ProductionIngestor.capabilities",
                 "function",
-                public_import="isanlp_rst.ingest:ProductionIngestor.capabilities",
+                public_import=f"{PACKAGE}.ingest:ProductionIngestor.capabilities",
             ),
             _special_entry(
-                "isanlp-rst",
+                TOOL_NAME,
                 "console_command",
-                public_import="isanlp_rst.cli:main",
+                public_import=f"{PACKAGE}.cli:main",
                 documentation_anchor="10-verify-installed-command-parity",
             ),
             _special_entry(
-                "isanlp-rst.local-http./analyse",
+                f"{TOOL_NAME}.local-http./analyse",
                 "local_endpoint",
                 compatibility="serialized_contract",
                 documentation_anchor="10-verify-installed-command-parity",
             ),
             _special_entry(
-                "isanlp-rst.local-http./capabilities",
+                f"{TOOL_NAME}.local-http./capabilities",
                 "local_endpoint",
                 compatibility="serialized_contract",
                 documentation_anchor="10-verify-installed-command-parity",
             ),
             _special_entry(
-                "isanlp-rst.local-http./health",
+                f"{TOOL_NAME}.local-http./health",
                 "local_endpoint",
                 compatibility="semver",
                 documentation_anchor="10-verify-installed-command-parity",
             ),
             _special_entry(
-                "isanlp_rst.ingest.public-surface.json",
+                f"{PACKAGE}.ingest.public-surface.json",
                 "resource",
                 compatibility="release_bound",
                 documentation_anchor="9-verify-a-consumer-uses-only-the-public-contract",
@@ -77,7 +82,7 @@ def generated_public_surface() -> bytes:
     )
     entries.extend(
         _special_entry(
-            f"isanlp_rst.ingest.schemas.{filename}",
+            f"{PACKAGE}.ingest.schemas.{filename}",
             "schema",
             schema_id=f"{SCHEMA_BASE}/{filename}",
             compatibility="serialized_contract",
@@ -108,9 +113,9 @@ def public_surface_parity(path: Path = PUBLIC_SURFACE_PATH) -> bool:
 
 def _root_entry(name: str, value: Any) -> dict[str, Any]:
     return _special_entry(
-        f"isanlp_rst.ingest.{name}",
+        f"{PACKAGE}.ingest.{name}",
         _entry_kind(value),
-        public_import=f"isanlp_rst.ingest:{name}",
+        public_import=f"{PACKAGE}.ingest:{name}",
         compatibility=(
             "serialized_contract"
             if name in {
@@ -159,7 +164,7 @@ def _special_entry(
         "public_import": public_import,
         "kind": kind,
         "status": "supported",
-        "introduced": "5.0.0",
+        "introduced": INTRODUCED,
         "deprecated": None,
         "removal": None,
         "schema_id": schema_id,
@@ -173,6 +178,8 @@ if __name__ == "__main__":
 
 
 __all__ = [
+    "INTRODUCED",
+    "PACKAGE",
     "PUBLIC_SURFACE_PATH",
     "generated_public_surface",
     "public_surface_parity",

@@ -3,7 +3,7 @@
 from pydantic import ValidationError
 import pytest
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     AnnotationStatusEnum,
     DiscourseSignal,
     DocumentToken,
@@ -11,7 +11,7 @@ from isanlp_rst.contracts import (
     SignalDetectionMethod,
     SignalDetectorProvenance,
 )
-from isanlp_rst.erst.signals import RuleBasedSignalDetector, SignalPattern
+from rdam.rst.erst.signals import RuleBasedSignalDetector, SignalPattern
 
 
 def _detector() -> SignalDetectorProvenance:

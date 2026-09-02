@@ -6,8 +6,8 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from isanlp_rst.contracts.analysis import DiscourseSignal
-from isanlp_rst.contracts.erst import (
+from rdam.rst.contracts.analysis import DiscourseSignal
+from rdam.rst.contracts.erst import (
     ErstDecoderConfig,
     PrivateCorpusVerificationReceipt,
 )
@@ -100,16 +100,16 @@ def build_experiment_protocol(
     production_sources = tuple(
         repository_root / relative
         for relative in (
-            "rst/isanlp_rst/contracts/analysis.py",
-            "rst/isanlp_rst/contracts/document.py",
-            "rst/isanlp_rst/contracts/enums.py",
-            "rst/isanlp_rst/contracts/erst.py",
-            "rst/isanlp_rst/erst/candidates.py",
-            "rst/isanlp_rst/erst/converter.py",
-            "rst/isanlp_rst/erst/decoder.py",
-            "rst/isanlp_rst/erst/relations.py",
-            "rst/isanlp_rst/erst/rs4.py",
-            "rst/isanlp_rst/erst/neural_scorer.py",
+            "rdam/rst/contracts/analysis.py",
+            "rdam/rst/contracts/document.py",
+            "rdam/rst/contracts/enums.py",
+            "rdam/rst/contracts/erst.py",
+            "rdam/rst/erst/candidates.py",
+            "rdam/rst/erst/converter.py",
+            "rdam/rst/erst/decoder.py",
+            "rdam/rst/erst/relations.py",
+            "rdam/rst/erst/rs4.py",
+            "rdam/rst/erst/neural_scorer.py",
         )
     )
     decoder = ErstDecoderConfig(

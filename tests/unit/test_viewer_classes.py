@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-from isanlp_rst.rstviewer.rstweb_classes import NODE, SEGMENT, get_depth, get_left_right
-from isanlp_rst.rstviewer.rstweb_reader import read_rst
+from rdam.rst.rstviewer.rstweb_classes import NODE, SEGMENT, get_depth, get_left_right
+from rdam.rst.rstviewer.rstweb_reader import read_rst
 
 VIEWER_FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "viewer"
 MINIMAL = VIEWER_FIXTURES / "minimal.rs3"

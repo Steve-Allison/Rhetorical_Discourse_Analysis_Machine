@@ -6,17 +6,17 @@ import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
-from isanlp_rst.contracts import RstAnalysis
-from isanlp_rst.contracts.serialization import analysis_from_dict
-from isanlp_rst.erst.converter import rs4_to_document_and_analysis
-from isanlp_rst.erst.rs4 import RS4Reader
-from isanlp_rst.ingest import (
+from rdam.rst.contracts import RstAnalysis
+from rdam.rst.contracts.serialization import analysis_from_dict
+from rdam.rst.erst.converter import rs4_to_document_and_analysis
+from rdam.rst.erst.rs4 import RS4Reader
+from rdam.rst.ingest import (
     AnalysedOutcome,
     EmptyPrimaryAnalysisOutcome,
     PreparationOutcome,
     load_contract,
 )
-from isanlp_rst.ingest.identity import sha256_bytes
+from rdam.rst.ingest.identity import sha256_bytes
 from workbench.evaluation.rst import StandardParsevalScorer
 from tools.production_ingest.contracts import GoldSetManifest, SourceGateResult
 

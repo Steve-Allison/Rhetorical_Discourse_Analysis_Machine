@@ -1,6 +1,6 @@
 """Promotion assessment protects EDU quality and structural-boundary gains."""
 
-from isanlp_rst.contracts import NodeKindEnum, OutputFormalismEnum, RstAnalysis, RstNode
+from rdam.rst.contracts import NodeKindEnum, OutputFormalismEnum, RstAnalysis, RstNode
 from tools.production_ingest.assessor import (
     _edu_boundary_f1,
     _preparation_identity_matches,

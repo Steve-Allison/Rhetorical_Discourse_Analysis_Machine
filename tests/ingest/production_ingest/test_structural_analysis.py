@@ -1,4 +1,4 @@
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     NodeKindEnum,
     NuclearityPatternEnum,
     OutputFormalismEnum,
@@ -6,7 +6,7 @@ from isanlp_rst.contracts import (
     RstAnalysis,
     RstNode,
 )
-from isanlp_rst.hierarchical.stitcher import nuclear_spine_text
+from rdam.rst.hierarchical.stitcher import nuclear_spine_text
 
 
 def test_macro_representation_uses_exact_nuclear_spine_not_a_fixed_prefix() -> None:

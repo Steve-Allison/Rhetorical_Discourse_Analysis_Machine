@@ -1,6 +1,6 @@
 """Complete preparation outcome construction and canonical persistence."""
 
-from isanlp_rst.ingest import (
+from rdam.rst.ingest import (
     PreparationPolicy,
     PreparationOutcome,
     ProductionIngestor,
@@ -8,7 +8,7 @@ from isanlp_rst.ingest import (
     load_contract,
     serialize_contract,
 )
-from isanlp_rst.ingest.policy import DEFAULT_PREPARATION_POLICY
+from rdam.rst.ingest.policy import DEFAULT_PREPARATION_POLICY
 
 
 def test_preparation_outcome_contains_complete_semantic_and_execution_sections() -> None:

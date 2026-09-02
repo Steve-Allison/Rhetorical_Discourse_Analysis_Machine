@@ -1,7 +1,7 @@
 """Privacy-safe default exception and failure-record rendering."""
 
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
-from isanlp_rst.ingest.contracts.failure import (
+from rdam.rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.rst.ingest.contracts.failure import (
     DiagnosticPolicy,
     FailureCategory,
     LifecycleStage,

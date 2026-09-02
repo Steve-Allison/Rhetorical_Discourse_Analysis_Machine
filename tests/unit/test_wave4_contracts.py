@@ -6,7 +6,7 @@ import textwrap
 
 
 def test_parser_imports_without_docling_core() -> None:
-    """Core ``isanlp_rst.parser`` must not require the formats extra."""
+    """Core ``rdam.rst.parser`` must not require the formats extra."""
     script = textwrap.dedent(
         """\
         import sys
@@ -18,7 +18,7 @@ def test_parser_imports_without_docling_core() -> None:
                 return None
 
         sys.meta_path.insert(0, _BlockDocling())
-        import isanlp_rst.parser as p
+        import rdam.rst.parser as p
         assert p.Parser is not None
         print("OK")
         """

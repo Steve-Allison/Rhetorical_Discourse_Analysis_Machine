@@ -2,7 +2,7 @@
 
 import pytest
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     AnnotationStatusEnum,
     DiscourseSignal,
     DocumentToken,

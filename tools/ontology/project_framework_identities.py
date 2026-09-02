@@ -3,7 +3,7 @@
 Central's consumer contract: reference ``coe:`` identifiers, never redefine them, and
 generate any runtime projection inside the consumer. This tool reads the vendored
 ``ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml`` and
-writes ``machine/rdam/resources/framework-identities.json`` — id, label, broader, and
+writes ``rdam/resources/framework-identities.json`` — id, label, broader, and
 scheme for each of the eight framework concepts the machine binds to. A test asserts the
 committed projection equals a fresh projection of the vendored file, so drift fails.
 
@@ -20,7 +20,7 @@ import yaml
 SCHEME = "coe:artifact/narrative/analytical_frameworks_taxonomy"
 TECHNIQUES = ("rst", "erst", "pdtb", "sdrt", "toulmin", "walton", "dung", "ibis")
 VENDORED_TAXONOMY = Path("ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml")
-PROJECTION = Path("machine/rdam/resources/framework-identities.json")
+PROJECTION = Path("rdam/resources/framework-identities.json")
 
 
 def project(taxonomy_path: Path) -> dict[str, Any]:

@@ -2,7 +2,7 @@
 
 from dataclasses import replace
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     DiscourseSignal,
     DocumentToken,
     NodeKindEnum,
@@ -16,7 +16,7 @@ from isanlp_rst.contracts import (
     SignalDetectionMethod,
     SignalDetectorProvenance,
 )
-from isanlp_rst.erst.candidates import (
+from rdam.rst.erst.candidates import (
     CandidateMode,
     generate_secondary_edge_candidates,
     iter_candidate_batches,

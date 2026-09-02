@@ -9,8 +9,8 @@ import random
 
 import pytest
 
-from rdam_dung import ArgumentationFramework, FrameworkCapacityError, FrameworkError, evaluate, grounded_extension
-from rdam_dung.semantics import acceptable_arguments, is_admissible, is_complete, is_conflict_free, is_stable
+from rdam.dung import ArgumentationFramework, FrameworkCapacityError, FrameworkError, evaluate, grounded_extension
+from rdam.dung.semantics import acceptable_arguments, is_admissible, is_complete, is_conflict_free, is_stable
 
 
 def af(arguments: str, *attacks: str) -> ArgumentationFramework:

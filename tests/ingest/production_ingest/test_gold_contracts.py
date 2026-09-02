@@ -4,7 +4,7 @@ from pathlib import PurePosixPath
 import pytest
 from pydantic import ValidationError
 
-from isanlp_rst.ingest.contracts import SourceForm
+from rdam.rst.ingest.contracts import SourceForm
 from tools.production_ingest.contracts import (
     GoldSetManifest,
     GoldSource,

@@ -1,4 +1,4 @@
-"""Unit tests for ``isanlp_rst.utils.du_converter.DUConverter``.
+"""Unit tests for ``rdam.rst.utils.du_converter.DUConverter``.
 
 Focuses on the review-fix contracts: ``fix_segmented_strings`` must
 not produce ``i=-1`` / empty wrong segments, and ``_get_child`` must
@@ -6,9 +6,9 @@ raise when a constituent span is missing.
 """
 
 import pytest
-from isanlp_rst.annotation_rst import DiscourseUnit
+from rdam.rst.annotation_rst import DiscourseUnit
 
-from isanlp_rst.utils.du_converter import DUConverter
+from rdam.rst.utils.du_converter import DUConverter
 
 
 def test_fix_segmented_strings_first_token_covers_segment() -> None:

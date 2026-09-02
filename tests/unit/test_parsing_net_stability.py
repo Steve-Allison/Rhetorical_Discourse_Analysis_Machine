@@ -3,8 +3,8 @@
 import torch
 from transformers import AutoTokenizer
 
-from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
-from isanlp_rst.transformer_parser import PureTransformerParsingNet
+from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from rdam.rst.transformer_parser import PureTransformerParsingNet
 from workbench.training.modern.gum_dataset import (
     COARSE_RELATIONS,
     NUCLEARITY_CLASSES,

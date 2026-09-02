@@ -22,14 +22,20 @@ def _write(path: Path, text: str = "") -> None:
 
 def test_authority_classifies_each_surface() -> None:
     authority = OwnershipAuthority(Path.cwd())
-    assert authority.classify("rst/isanlp_rst/parser.py") == OwnershipClass.PRODUCTION
-    assert authority.classify("rst/rdam_rst/provider.py") == OwnershipClass.PRODUCTION
+    assert authority.classify("rdam/contracts.py") == OwnershipClass.PRODUCTION
+    assert authority.classify("rdam/resources/framework-identities.json") == OwnershipClass.PRODUCTION
+    assert authority.classify("rdam/rst/parser.py") == OwnershipClass.PRODUCTION
+    assert authority.classify("rdam/rst/provider.py") == OwnershipClass.PRODUCTION
+    assert authority.classify("rdam/dung/provider.py") == OwnershipClass.PRODUCTION
+    assert authority.classify("rdam/ibis/provider.py") == OwnershipClass.PRODUCTION
+    assert authority.classify("ontology/vendor/central-configs/distribution.yaml") == OwnershipClass.REPOSITORY
+    assert authority.classify("ontology/schema/rdam.linkml.yaml") == OwnershipClass.REPOSITORY
     assert authority.classify("workbench/evaluation/rst/parseval.py") == OwnershipClass.OFFLINE
     assert authority.classify("workbench/training/run.py") == OwnershipClass.OFFLINE
     assert authority.classify("tests/test_parser.py") == OwnershipClass.REPOSITORY
     assert authority.classify("models/modernbert_v1/model.safetensors") == OwnershipClass.MODEL
     assert authority.classify("models/model-releases/modernbert-v1-e5ea56cd620f/release-manifest.json") == OwnershipClass.MODEL
-    assert authority.classify("dist/isanlp_rst.whl") == OwnershipClass.GENERATED
+    assert authority.classify("dist/6.0.0/rdam-6.0.0-py3-none-any.whl") == OwnershipClass.GENERATED
 
 
 def test_unmatched_relevant_path_fails_closed(tmp_path: Path) -> None:
@@ -41,15 +47,15 @@ def test_unmatched_relevant_path_fails_closed(tmp_path: Path) -> None:
 def test_ambiguous_relevant_path_fails_closed(tmp_path: Path) -> None:
     base = OwnershipAuthority(tmp_path)
     overlapping = OwnershipRule(
-        rule_id="duplicate-rst-boundary",
-        prefix=PurePosixPath("rst"),
+        rule_id="duplicate-rdam",
+        prefix=PurePosixPath("rdam"),
         ownership=OwnershipClass.PRODUCTION,
         reason="causal ambiguity fixture",
         publishable=True,
     )
     authority = OwnershipAuthority(tmp_path, rules=(*base.rules, overlapping))
     with pytest.raises(OwnershipClassificationError, match="matched 2 ownership rules"):
-        authority.classify("rst/isanlp_rst/parser.py")
+        authority.classify("rdam/rst/parser.py")
 
 
 def test_gate_reports_unmatched_and_ambiguous_paths(tmp_path: Path) -> None:
@@ -58,70 +64,63 @@ def test_gate_reports_unmatched_and_ambiguous_paths(tmp_path: Path) -> None:
     assert unmatched[0].kind == ViolationKind.UNMATCHED_OWNERSHIP
     assert unmatched[0].path == ("unowned/member.py",)
 
-    _write(tmp_path / "rst/isanlp_rst/parser.py")
+    _write(tmp_path / "rdam/rst/parser.py")
     base = OwnershipAuthority(tmp_path)
-    duplicate = OwnershipRule(rule_id="duplicate", prefix=PurePosixPath("rst"), ownership=OwnershipClass.PRODUCTION, reason="ambiguity fixture", publishable=True)
+    duplicate = OwnershipRule(rule_id="duplicate", prefix=PurePosixPath("rdam"), ownership=OwnershipClass.PRODUCTION, reason="ambiguity fixture", publishable=True)
     ambiguous = validate_ownership(OwnershipAuthority(tmp_path, rules=(*base.rules, duplicate)))
-    assert any(item.kind == ViolationKind.AMBIGUOUS_OWNERSHIP and item.path == ("rst/isanlp_rst/parser.py",) for item in ambiguous)
+    assert any(item.kind == ViolationKind.AMBIGUOUS_OWNERSHIP and item.path == ("rdam/rst/parser.py",) for item in ambiguous)
 
 
 def test_direct_production_to_offline_import_reports_complete_path(tmp_path: Path) -> None:
-    _write(tmp_path / "rst/isanlp_rst/__init__.py", "from workbench import trainer\n")
+    _write(tmp_path / "rdam/rst/__init__.py", "from workbench import trainer\n")
     _write(tmp_path / "workbench/__init__.py")
     _write(tmp_path / "workbench/trainer.py")
     report = validate_import_boundary(tmp_path)
     assert report.violations[0].kind == ViolationKind.FORBIDDEN_IMPORT
-    assert report.violations[0].path == ("isanlp_rst", "workbench")
+    assert report.violations[0].path == ("rdam.rst", "workbench")
 
 
 def test_indirect_production_to_offline_import_reports_complete_path(tmp_path: Path) -> None:
-    _write(tmp_path / "rst/isanlp_rst/__init__.py", "from isanlp_rst import bridge\n")
-    _write(tmp_path / "rst/isanlp_rst/bridge.py", "from workbench import trainer\n")
+    _write(tmp_path / "rdam/rst/__init__.py", "from rdam.rst import bridge\n")
+    _write(tmp_path / "rdam/rst/bridge.py", "from workbench import trainer\n")
     _write(tmp_path / "workbench/__init__.py")
     _write(tmp_path / "workbench/trainer.py")
     report = validate_import_boundary(tmp_path)
     paths = {violation.path for violation in report.violations}
-    assert ("isanlp_rst", "isanlp_rst.bridge", "workbench") in paths
+    assert ("rdam.rst", "rdam.rst.bridge", "workbench") in paths
 
 
-def test_machine_boundary_package_imports_by_its_own_name_and_may_not_reach_workbench(tmp_path: Path) -> None:
-    """D5 check (a) for a machine boundary: machine/rdam imports as `rdam`; workbench is forbidden."""
+def test_machine_package_may_not_reach_workbench(tmp_path: Path) -> None:
+    """D5 check (a) for the machine package itself: the walk from ``rdam`` never reaches the workbench."""
 
-    _write(tmp_path / "machine/rdam/__init__.py", "from rdam import core\n")
-    _write(tmp_path / "machine/rdam/core.py", "from workbench import trainer\n")
+    _write(tmp_path / "rdam/__init__.py", "from rdam import core\n")
+    _write(tmp_path / "rdam/core.py", "from workbench import trainer\n")
     _write(tmp_path / "workbench/__init__.py")
     _write(tmp_path / "workbench/trainer.py")
     report = validate_import_boundary(tmp_path)
     paths = {violation.path for violation in report.violations}
     assert ("rdam", "rdam.core", "workbench") in paths
-    assert not any(path[0].startswith("machine") for path in paths), "boundary directories are not packages"
-
-
-def test_machine_boundary_and_ontology_have_exactly_one_owner() -> None:
-    authority = OwnershipAuthority(Path.cwd())
-    assert authority.classify("machine/rdam/contracts.py") == OwnershipClass.PRODUCTION
-    assert authority.classify("machine/pyproject.toml") == OwnershipClass.PRODUCTION
-    assert authority.classify("ontology/vendor/central-configs/distribution.yaml") == OwnershipClass.REPOSITORY
-    assert authority.classify("ontology/schema/rdam.linkml.yaml") == OwnershipClass.REPOSITORY
 
 
 def test_machine_wheel_members_are_inside_the_boundary_and_workbench_still_is_not(tmp_path: Path) -> None:
-    """D5 check (b): production wheels may carry the machine's import roots and nothing else."""
+    """D5 check (b): production wheels may carry the machine's import root and nothing else."""
 
     wheel = tmp_path / "rdam-1-py3-none-any.whl"
     with zipfile.ZipFile(wheel, "w") as archive:
         archive.writestr("rdam/__init__.py", "")
         archive.writestr("rdam/resources/framework-identities.json", "{}")
+        archive.writestr("rdam/rst/__init__.py", "")
         archive.writestr("workbench/promotion/promote.py", "")
         archive.writestr("rdam-1.dist-info/METADATA", "")
     receipt = inspect_artifact(wheel)
     assert receipt.forbidden_members == ("workbench/promotion/promote.py",)
     assert "rdam/__init__.py" in receipt.production_members
+    assert "rdam/rst/__init__.py" in receipt.production_members
 
 
 def test_new_production_module_needs_no_secondary_allowlist(tmp_path: Path) -> None:
-    _write(tmp_path / "rst/isanlp_rst/__init__.py", "from isanlp_rst import new_runtime\n")
-    _write(tmp_path / "rst/isanlp_rst/new_runtime.py", "VALUE = 1\n")
+    _write(tmp_path / "rdam/rst/__init__.py", "from rdam.rst import new_runtime\n")
+    _write(tmp_path / "rdam/rst/new_runtime.py", "VALUE = 1\n")
     report = validate_import_boundary(tmp_path)
     assert report.valid
     assert report.production_modules == 2
@@ -135,47 +134,59 @@ def test_offline_dependency_in_production_set_is_rejected(tmp_path: Path) -> Non
 
 
 def test_forbidden_wheel_member_is_named(tmp_path: Path) -> None:
-    wheel = tmp_path / "isanlp_rst-1-py3-none-any.whl"
+    wheel = tmp_path / "rdam-1-py3-none-any.whl"
     with zipfile.ZipFile(wheel, "w") as archive:
-        archive.writestr("isanlp_rst/__init__.py", "")
+        archive.writestr("rdam/__init__.py", "")
         archive.writestr("workbench/trainer.py", "")
-        archive.writestr("isanlp_rst-1.dist-info/METADATA", "")
+        archive.writestr("rdam-1.dist-info/METADATA", "")
     receipt = inspect_artifact(wheel)
     assert receipt.forbidden_members == ("workbench/trainer.py",)
+
+
+def test_foreign_import_root_in_a_wheel_is_outside_the_boundary(tmp_path: Path) -> None:
+    """Only ``rdam/`` may be shipped; a second top-level import name is a boundary breach."""
+
+    wheel = tmp_path / "rdam-1-py3-none-any.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr("rdam/__init__.py", "")
+        archive.writestr("isanlp_rst/__init__.py", "")
+        archive.writestr("rdam-1.dist-info/METADATA", "")
+    receipt = inspect_artifact(wheel)
+    assert receipt.forbidden_members == ("isanlp_rst/__init__.py",)
 
 
 def test_forbidden_sdist_member_is_named(tmp_path: Path) -> None:
     source = tmp_path / "trainer.py"
     source.write_text("", encoding="utf-8")
-    sdist = tmp_path / "isanlp_rst-1.tar.gz"
+    sdist = tmp_path / "rdam-1.tar.gz"
     with tarfile.open(sdist, "w:gz") as archive:
-        archive.add(source, arcname="isanlp_rst-1/workbench/trainer.py")
+        archive.add(source, arcname="rdam-1/workbench/trainer.py")
         metadata = tmp_path / "PKG-INFO"
-        metadata.write_text("Metadata-Version: 2.4\nName: isanlp-rst\nVersion: 1\n", encoding="utf-8")
-        archive.add(metadata, arcname="isanlp_rst-1/PKG-INFO")
+        metadata.write_text("Metadata-Version: 2.4\nName: rdam\nVersion: 1\n", encoding="utf-8")
+        archive.add(metadata, arcname="rdam-1/PKG-INFO")
     receipt = inspect_artifact(sdist)
-    assert receipt.forbidden_members == ("isanlp_rst-1/workbench/trainer.py",)
+    assert receipt.forbidden_members == ("rdam-1/workbench/trainer.py",)
 
 
 @pytest.mark.parametrize("suffix", (".pt", ".pth", ".safetensors"))
 def test_model_weight_members_are_forbidden_from_wheels(tmp_path: Path, suffix: str) -> None:
-    wheel = tmp_path / "isanlp_rst-1-py3-none-any.whl"
-    member = f"isanlp_rst/models/parser{suffix}"
+    wheel = tmp_path / "rdam-1-py3-none-any.whl"
+    member = f"rdam/models/parser{suffix}"
     with zipfile.ZipFile(wheel, "w") as archive:
-        archive.writestr("isanlp_rst/__init__.py", "")
+        archive.writestr("rdam/__init__.py", "")
         archive.writestr(member, b"weight bytes")
-        archive.writestr("isanlp_rst-1.dist-info/METADATA", "")
+        archive.writestr("rdam-1.dist-info/METADATA", "")
     receipt = inspect_artifact(wheel)
     assert receipt.forbidden_members == (member,)
 
 
 def test_artifact_dependencies_are_read_from_metadata(tmp_path: Path) -> None:
-    wheel = tmp_path / "isanlp_rst-1-py3-none-any.whl"
+    wheel = tmp_path / "rdam-1-py3-none-any.whl"
     with zipfile.ZipFile(wheel, "w") as archive:
-        archive.writestr("isanlp_rst/__init__.py", "")
+        archive.writestr("rdam/__init__.py", "")
         archive.writestr(
-            "isanlp_rst-1.dist-info/METADATA",
-            "Metadata-Version: 2.4\nName: isanlp-rst\nVersion: 1\nRequires-Dist: torch>=2\n",
+            "rdam-1.dist-info/METADATA",
+            "Metadata-Version: 2.4\nName: rdam\nVersion: 1\nRequires-Dist: torch>=2\n",
         )
     assert inspect_artifact(wheel).declared_dependencies == ("torch",)
 

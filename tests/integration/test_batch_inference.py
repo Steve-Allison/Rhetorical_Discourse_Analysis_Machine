@@ -1,8 +1,8 @@
 """Unit tests for batched document inference across Parser and Predictors."""
 
-from isanlp_rst.annotation_rst import DiscourseUnit
-from isanlp_rst.contracts import OutputFormalismEnum, RstDocument
-from isanlp_rst.parser import Parser
+from rdam.rst.annotation_rst import DiscourseUnit
+from rdam.rst.contracts import OutputFormalismEnum, RstDocument
+from rdam.rst.parser import Parser
 
 
 class DummyPredictor:

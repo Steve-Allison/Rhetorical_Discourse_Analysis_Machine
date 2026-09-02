@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from isanlp_rst.model_loading.parser_input import ParserInput
+from rdam.rst.model_loading.parser_input import ParserInput
 from workbench.archive.legacy_2021.universal_parser.inventory import (
     RestrictedUnpickler,
     dump_relation_inventory,
@@ -33,7 +33,7 @@ def _local_shell(model_dir: Path) -> PredictorUniRST:
 
 
 def _write_allowlisted_inventory_pickle(path: Path, labels: list[str]) -> None:
-    """Pickle a ``ParserInput`` (isanlp_rst.*) carrying ``relation_table``."""
+    """Pickle a ``ParserInput`` (rdam.rst.*) carrying ``relation_table``."""
     obj = ParserInput()
     obj.relation_table = labels
     path.parent.mkdir(parents=True, exist_ok=True)

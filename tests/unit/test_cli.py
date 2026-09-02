@@ -4,15 +4,15 @@ import json
 
 import pytest
 
-from isanlp_rst import __version__
-from isanlp_rst.cli import main
-from isanlp_rst.ingest import SafeProductionFailureRecord, load_contract
+from rdam.rst import __version__
+from rdam.rst.cli import main
+from rdam.rst.ingest import SafeProductionFailureRecord, load_contract
 
 
 def test_cli_version_is_stable_json(capsysbinary: pytest.CaptureFixture[bytes]) -> None:
     assert main(["version"]) == 0
     payload = json.loads(capsysbinary.readouterr().out)
-    assert payload == {"package": "isanlp_rst", "version": __version__}
+    assert payload == {"package": "rdam", "version": __version__}
 
 
 def test_cli_parse_requires_an_immutable_release_configuration(

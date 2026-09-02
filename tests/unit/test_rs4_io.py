@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from isanlp_rst.contracts import OutputFormalismEnum
-from isanlp_rst.erst import (
+from rdam.rst.contracts import OutputFormalismEnum
+from rdam.rst.erst import (
     RS4Document,
     RS4Group,
     RS4Reader,

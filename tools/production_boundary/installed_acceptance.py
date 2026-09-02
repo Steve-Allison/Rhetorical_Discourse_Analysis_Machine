@@ -1,4 +1,9 @@
-"""Exercise the installed 5.0.0 contract outside the source checkout."""
+"""Exercise the installed release contract outside the source checkout.
+
+Runs inside a fresh venv where only the built wheel is installed. The expected version is
+passed in by the clean-install driver (read from the wheel's filename), so this script
+carries no version literal of its own.
+"""
 
 import argparse
 from importlib import import_module, resources
@@ -28,7 +33,7 @@ def _required_digest(value: object, label: str) -> str:
 
 
 def _disable_external_network() -> None:
-    if os.environ.get("ISANLP_RST_NETWORK_DISABLED") != "1":
+    if os.environ.get("RDAM_NETWORK_DISABLED") != "1":
         raise AssertionError("installed acceptance requires explicit network-disable mode")
     original_connect = socket.socket.connect
 
@@ -88,7 +93,7 @@ def _prepare_sources(
     doclang: Path | None,
     docling: Path | None,
 ) -> dict[str, object]:
-    from isanlp_rst.ingest import (
+    from rdam.rst.ingest import (
         Availability,
         ProductionIngestError,
         ProductionIngestor,
@@ -190,8 +195,8 @@ def _analyse_with_release(
     erst_checkpoint: Path | None,
     device: str,
 ) -> dict[str, object]:
-    from isanlp_rst import Parser
-    from isanlp_rst.ingest import (
+    from rdam.rst import Parser
+    from rdam.rst.ingest import (
         AnalysedOutcome,
         ParserAnalysisResult,
         ProductionIngestor,
@@ -223,10 +228,12 @@ def _analyse_with_release(
     if serialize_contract(load_contract(encoded)) != encoded:
         raise AssertionError("installed analysis failed canonical round-trip")
 
-    with tempfile.TemporaryDirectory(prefix="isanlp-rst-cli-acceptance-") as directory:
+    from rdam.rst._version import TOOL_NAME
+
+    with tempfile.TemporaryDirectory(prefix="rdam-cli-acceptance-") as directory:
         output = Path(directory) / "result.json"
         command = [
-            str(Path(sys.executable).with_name("isanlp-rst")),
+            str(Path(sys.executable).with_name(TOOL_NAME)),
             "parse",
             "--text",
             _TEXT,
@@ -262,6 +269,7 @@ def _analyse_with_release(
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, required=True)
+    parser.add_argument("--expected-version", required=True, help="the version the installed wheel declares")
     parser.add_argument("--model-store", type=Path, required=True)
     parser.add_argument("--release-id")
     parser.add_argument("--erst-checkpoint", type=Path)
@@ -274,16 +282,21 @@ def main() -> int:
     args = parser.parse_args()
 
     _disable_external_network()
-    import isanlp_rst
+    import rdam.rst as rst_package
+    from rdam.rst._version import PACKAGE_NAME
 
-    package_file = Path(isanlp_rst.__file__ or "").resolve()
+    package_file = Path(rst_package.__file__ or "").resolve()
     if package_file.is_relative_to(args.source_root.resolve()):
         raise AssertionError(f"installed acceptance imported the source tree: {package_file}")
-    if version("isanlp_rst") != "5.0.0" or isanlp_rst.__version__ != "5.0.0":
-        raise AssertionError("installed metadata and runtime version do not agree on 5.0.0")
+    installed_version = version(PACKAGE_NAME)
+    if installed_version != args.expected_version or rst_package.__version__ != args.expected_version:
+        raise AssertionError(
+            f"installed metadata ({installed_version}) and runtime version ({rst_package.__version__}) "
+            f"do not agree on the expected {args.expected_version}"
+        )
     _assert_offline_distributions_absent()
     surface = json.loads(
-        resources.files("isanlp_rst.ingest")
+        resources.files("rdam.rst.ingest")
         .joinpath("public-surface.json")
         .read_text(encoding="utf-8")
     )
@@ -308,7 +321,7 @@ def main() -> int:
         raise ValueError("formats acceptance requires --markdown, --doclang, and --docling")
     result: dict[str, object] = {
         "package_file": str(package_file),
-        "package_version": version("isanlp_rst"),
+        "package_version": installed_version,
         "network_disabled": True,
         "offline_distributions_absent": True,
         "public_surface_entries": len(entries),

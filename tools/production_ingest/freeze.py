@@ -11,8 +11,8 @@ import tarfile
 import tempfile
 from io import BytesIO
 
-from isanlp_rst.ingest.identity import semantic_sha256, sha256_file
-from isanlp_rst.model_loading import ParserCapacity, validate_model_release
+from rdam.rst.ingest.identity import semantic_sha256, sha256_file
+from rdam.rst.model_loading import ParserCapacity, validate_model_release
 from tools.production_ingest.contracts import FreezeAuthority, GoldSetManifest
 from tools.production_ingest.gold import verify_gold_set
 
@@ -152,17 +152,17 @@ for source in control["sources"]:
         elif form == "text":
             text = path.read_text(encoding="utf-8")
         elif form == "markdown":
-            from isanlp_rst.markdown.harvester import harvest_markdown_text
-            from isanlp_rst.markdown.loader import load_markdown
+            from rdam.rst.markdown.harvester import harvest_markdown_text
+            from rdam.rst.markdown.loader import load_markdown
             text = harvest_markdown_text(load_markdown(path.read_text(encoding="utf-8"), gfm=True).tokens).full_text
         elif form == "docling_json":
             from docling_core.types.doc import DoclingDocument
-            from isanlp_rst.docling.harvester import harvest_docling_text
+            from rdam.rst.docling.harvester import harvest_docling_text
             text = harvest_docling_text(DoclingDocument.load_from_json(path)).full_text
         elif form == "doclang_xml":
             from doclang import validate
-            from isanlp_rst.doclang.harvester import harvest_doclang_text
-            from isanlp_rst.doclang.loader import parse_doclang_xml
+            from rdam.rst.doclang.harvester import harvest_doclang_text
+            from rdam.rst.doclang.loader import parse_doclang_xml
             validate(path, allow_empty_namespace=True)
             text = harvest_doclang_text(parse_doclang_xml(path)).full_text
         else:

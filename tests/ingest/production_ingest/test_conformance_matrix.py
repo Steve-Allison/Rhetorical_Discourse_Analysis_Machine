@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from isanlp_rst.ingest import (
+from rdam.rst.ingest import (
     AnalysedOutcome,
     ProductionIngestor,
     SourceArtifact,

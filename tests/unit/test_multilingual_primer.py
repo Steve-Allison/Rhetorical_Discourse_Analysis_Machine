@@ -1,6 +1,6 @@
 """Unit tests for multilingual discourse marker priming and cue detection."""
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     NodeKindEnum,
     NuclearityPatternEnum,
     OutputFormalismEnum,
@@ -9,7 +9,7 @@ from isanlp_rst.contracts import (
     RstDocument,
     RstNode,
 )
-from isanlp_rst.relations.primer import DiscourseMarkerPrimer
+from rdam.rst.relations.primer import DiscourseMarkerPrimer
 
 
 def test_multilingual_marker_cue_detection():

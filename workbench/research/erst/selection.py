@@ -8,7 +8,7 @@ import secrets
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from isanlp_rst.contracts.erst import CorpusPartition
+from rdam.rst.contracts.erst import CorpusPartition
 from workbench.research.erst.contracts import (
     ChampionManifest,
     ExperimentProtocol,

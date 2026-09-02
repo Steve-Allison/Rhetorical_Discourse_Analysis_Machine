@@ -3,8 +3,8 @@
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from isanlp_rst.contracts.analysis import RstAnalysis
-from isanlp_rst.contracts.enums import NodeKindEnum, NuclearityPatternEnum
+from rdam.rst.contracts.analysis import RstAnalysis
+from rdam.rst.contracts.enums import NodeKindEnum, NuclearityPatternEnum
 
 
 @dataclass(frozen=True, slots=True)

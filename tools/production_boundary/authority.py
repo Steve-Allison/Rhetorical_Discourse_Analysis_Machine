@@ -20,11 +20,9 @@ class OwnershipAuthority:
     def __init__(self, root: Path, *, rules: tuple[OwnershipRule, ...] | None = None) -> None:
         self.root = root.resolve()
         default_rules = (
-            # Machine boundaries (006 architecture-boundaries contract): each is the production boundary itself.
-            OwnershipRule(rule_id="machine", prefix=PurePosixPath("machine"), ownership=OwnershipClass.PRODUCTION, reason="aggregate analysis contract boundary (rdam)", publishable=True),
-            OwnershipRule(rule_id="rst-boundary", prefix=PurePosixPath("rst"), ownership=OwnershipClass.PRODUCTION, reason="RST/eRST provider boundary: isanlp_rst (the installable RST analysis product) and its machine adapter rdam_rst", publishable=True),
-            OwnershipRule(rule_id="dung-boundary", prefix=PurePosixPath("dung"), ownership=OwnershipClass.PRODUCTION, reason="Dung abstract argumentation provider boundary", publishable=True),
-            OwnershipRule(rule_id="ibis-boundary", prefix=PurePosixPath("ibis"), ownership=OwnershipClass.PRODUCTION, reason="IBIS provider boundary", publishable=True),
+            # The production boundary (owner ruling 2026-09-02): one package, one wheel, every
+            # technique a sub-package — rdam (machine), rdam.rst, rdam.dung, rdam.ibis, ...
+            OwnershipRule(rule_id="rdam", prefix=PurePosixPath("rdam"), ownership=OwnershipClass.PRODUCTION, reason="the Rhetorical Discourse Analysis Machine and every promoted technique provider", publishable=True),
             OwnershipRule(rule_id="ontology", prefix=PurePosixPath("ontology"), ownership=OwnershipClass.REPOSITORY, reason="vendored Central distribution (read-only) and the rdam application profile"),
             OwnershipRule(rule_id="models", prefix=PurePosixPath("models"), ownership=OwnershipClass.MODEL, reason="governed model candidates and immutable runtime releases"),
             OwnershipRule(rule_id="offline", prefix=PurePosixPath("workbench"), ownership=OwnershipClass.OFFLINE, reason="corpus, training, evaluation, and promotion workbench"),
@@ -36,7 +34,6 @@ class OwnershipAuthority:
         self.rules = rules or default_rules
         self.production_dependencies = frozenset({
             "python", "playwright", "razdel", "lxml", "numpy", "transformers", "torch", "huggingface-hub", "tqdm", "pillow", "networkx", "packaging", "pydantic", "python-dotenv", "rfc8785", "safetensors", "doclang", "isanlp", "docling-core", "markdown-it-py", "mdit-py-plugins",
-            "rdam", "rdam-rst", "isanlp-rst",
         })
         self.offline_dependencies = frozenset({"blake3", "fire", "jsonnet", "nltk", "peft", "pytest", "pytest-cov", "ruff", "pyright", "tiktoken", "types-lxml", "build"})
 

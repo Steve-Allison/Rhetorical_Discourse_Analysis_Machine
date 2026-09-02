@@ -5,12 +5,12 @@ from typing import Any
 
 import torch
 
-from isanlp_rst.contracts.analysis import RstAnalysis, SecondaryRelationEdge
-from isanlp_rst.contracts.enums import OutputFormalismEnum
-from isanlp_rst.contracts.erst import RawRelationInventory
-from isanlp_rst.contracts.serialization import analysis_from_json, to_json
-from isanlp_rst.erst.candidates import SecondaryEdgeCandidate
-from isanlp_rst.erst.relations import resolve_gum_relation_concept
+from rdam.rst.contracts.analysis import RstAnalysis, SecondaryRelationEdge
+from rdam.rst.contracts.enums import OutputFormalismEnum
+from rdam.rst.contracts.erst import RawRelationInventory
+from rdam.rst.contracts.serialization import analysis_from_json, to_json
+from rdam.rst.erst.candidates import SecondaryEdgeCandidate
+from rdam.rst.erst.relations import resolve_gum_relation_concept
 from workbench.corpus.erst.relations import build_raw_relation_inventory
 from workbench.training.erst.dataset import GUMSecondaryEdgeDataset
 

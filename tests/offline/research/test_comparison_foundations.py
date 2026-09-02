@@ -6,9 +6,9 @@ from datetime import UTC, datetime
 import numpy as np
 import pytest
 
-from isanlp_rst.contracts.analysis import PrimaryRelationEdge, RstAnalysis, RstNode
-from isanlp_rst.contracts.enums import NodeKindEnum, NuclearityPatternEnum, OutputFormalismEnum
-from isanlp_rst.contracts.erst import CorpusPartition
+from rdam.rst.contracts.analysis import PrimaryRelationEdge, RstAnalysis, RstNode
+from rdam.rst.contracts.enums import NodeKindEnum, NuclearityPatternEnum, OutputFormalismEnum
+from rdam.rst.contracts.erst import CorpusPartition
 from workbench.research.erst.calibration import apply_temperature, fit_temperature
 from workbench.research.erst.contracts import (
     DocumentScore,

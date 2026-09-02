@@ -5,12 +5,12 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 import pytest
 
-from isanlp_rst.doclang.errors import UnsafeDoclangArchiveError
-from isanlp_rst.doclang.errors import InvalidDoclangError
-from isanlp_rst.doclang.loader import load_doclang_archive
-from isanlp_rst.ingest import SourceArtifact, SourceForm
-from isanlp_rst.ingest.contracts import ContentClass
-from isanlp_rst.ingest.prepare import inventory_source
+from rdam.rst.doclang.errors import UnsafeDoclangArchiveError
+from rdam.rst.doclang.errors import InvalidDoclangError
+from rdam.rst.doclang.loader import load_doclang_archive
+from rdam.rst.ingest import SourceArtifact, SourceForm
+from rdam.rst.ingest.contracts import ContentClass
+from rdam.rst.ingest.prepare import inventory_source
 
 
 FIXTURE = Path("tests/fixtures/doclang/ok_no_namespace.dclg")

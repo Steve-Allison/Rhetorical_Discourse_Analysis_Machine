@@ -2,7 +2,7 @@
 
 import sys
 
-from isanlp_rst.ingest import describe_capabilities
+from rdam.rst.ingest import describe_capabilities
 
 
 def test_capability_discovery_imports_no_optional_adapter_or_model() -> None:

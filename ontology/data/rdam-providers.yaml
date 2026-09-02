@@ -1,7 +1,7 @@
 # The machine's technique-boundary bindings to Central's canonical framework concepts.
 # Identity only (006 capability-declaration §Identity binding). Validated by
 # `pixi run ontology-validate` against ontology/schema/rdam.linkml.yaml; the same eight
-# concepts are projected into machine/rdam/resources/framework-identities.json.
+# concepts are projected into rdam/resources/framework-identities.json.
 scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
 bindings:
 - boundary: rst

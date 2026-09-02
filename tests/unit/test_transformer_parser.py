@@ -3,8 +3,8 @@
 import torch
 from transformers import AutoConfig
 
-from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID
-from isanlp_rst.transformer_parser import (
+from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID
+from rdam.rst.transformer_parser import (
     DeepBiaffineScorer,
     PureTransformerParsingNet,
     TransformerBoundarySpanEncoder,

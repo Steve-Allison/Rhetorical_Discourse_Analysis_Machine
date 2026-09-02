@@ -7,9 +7,9 @@ import math
 from pathlib import Path
 from typing import Any
 
-from isanlp_rst.contracts.erst import HardNegativeSamplingConfig
-from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
-from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from rdam.rst.contracts.erst import HardNegativeSamplingConfig
+from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
 from safetensors import safe_open
 from safetensors.torch import save_model
 import torch

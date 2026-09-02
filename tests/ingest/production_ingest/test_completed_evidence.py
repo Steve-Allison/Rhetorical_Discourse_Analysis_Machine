@@ -3,8 +3,8 @@
 import pytest
 from pydantic import ValidationError
 
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
-from isanlp_rst.ingest.contracts.failure import (
+from rdam.rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.rst.ingest.contracts.failure import (
     FailureCategory,
     LifecycleStage,
     PreparationCompletedEvidence,

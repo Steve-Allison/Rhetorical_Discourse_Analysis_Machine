@@ -1,6 +1,6 @@
-from isanlp_rst.ingest import ContentClass, PreparationPolicy, SourceArtifact
-from isanlp_rst.ingest.policy import DEFAULT_PREPARATION_POLICY
-from isanlp_rst.ingest.service import ProductionIngestor
+from rdam.rst.ingest import ContentClass, PreparationPolicy, SourceArtifact
+from rdam.rst.ingest.policy import DEFAULT_PREPARATION_POLICY
+from rdam.rst.ingest.service import ProductionIngestor
 
 
 def test_plain_text_preparation_preserves_exact_paragraph_text() -> None:

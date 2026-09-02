@@ -9,9 +9,9 @@ import re
 from lxml import etree
 from pydantic import ValidationError
 
-from isanlp_rst.contracts.analysis import RstAnalysis
-from isanlp_rst.contracts.enums import NodeKindEnum
-from isanlp_rst.contracts.erst import (
+from rdam.rst.contracts.analysis import RstAnalysis
+from rdam.rst.contracts.enums import NodeKindEnum
+from rdam.rst.contracts.erst import (
     CorpusAuthorityEntry,
     CorpusDocumentReceipt,
     CorpusFailureType,
@@ -22,9 +22,9 @@ from isanlp_rst.contracts.erst import (
     GumCorpusAuthority,
     SplitManifest,
 )
-from isanlp_rst.erst.candidates import SecondaryEdgeCandidate, generate_secondary_edge_candidates
-from isanlp_rst.erst.converter import rs4_to_document_and_analysis
-from isanlp_rst.erst.rs4 import RS4Reader
+from rdam.rst.erst.candidates import SecondaryEdgeCandidate, generate_secondary_edge_candidates
+from rdam.rst.erst.converter import rs4_to_document_and_analysis
+from rdam.rst.erst.rs4 import RS4Reader
 
 GUM_CORPUS_REVISION = "22fdf87f9c71c96bcc771461d06e689b1f90020d"
 GUM_SPLITS_SHA256 = "7a1b51ab332ae84d9693824ef067ec1dbfad4275111608231eb5e409437ea6d7"

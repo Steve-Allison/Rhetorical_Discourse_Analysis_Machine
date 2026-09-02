@@ -39,8 +39,8 @@ from rdam import (
     serialize_decision,
     technique_curie,
 )
-from rdam_rst import ProviderConfigurationError, RstProvider
-from rdam_rst.provider import ERST_GRAPH, RST_TREE
+from rdam.rst.provider import ProviderConfigurationError, RstProvider
+from rdam.rst.provider import ERST_GRAPH, RST_TREE
 
 ROOT = Path(__file__).resolve().parents[2]
 STORE = ROOT / "models" / "model-releases"
@@ -110,18 +110,18 @@ class TestDeclaration:
 
     def test_promote_decision_makes_rst_tree_available_and_erst_depends_on_a_bundle(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv("ISANLP_RST_ERST_CHECKPOINT", raising=False)
-        monkeypatch.setattr("rdam_rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
+        monkeypatch.setattr("rdam.rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
         _publish(tmp_path, _decision("modernbert-v1-x", PromotionOutcome.PROMOTE, "a" * 64))
         declaration = RstProvider(store=tmp_path, release_id="modernbert-v1-x").declaration
         assert isinstance(declaration.capability, AvailableCapability)
-        assert declaration.capability.provider_id == "isanlp_rst/modernbert-v1-x"
+        assert declaration.capability.provider_id == "rdam.rst/modernbert-v1-x"
         rst_tree = declaration.formalism(RST_TREE)
         erst = declaration.formalism(ERST_GRAPH)
         assert rst_tree is not None and isinstance(rst_tree.capability, AvailableCapability)
         assert erst is not None and erst.technique is Technique.ERST
         assert erst.capability == UnavailableCapability(reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION)
         assert declaration.provenance == ProviderProvenance(
-            package="isanlp_rst", version=declaration.provenance.version, model_identity="modernbert-v1-x", licence_decision="fixture permits"
+            package="rdam.rst", version=declaration.provenance.version, model_identity="modernbert-v1-x", licence_decision="fixture permits"
         )
 
     def test_a_decision_about_another_release_is_refused(self, tmp_path: Path) -> None:
@@ -138,7 +138,7 @@ class TestAnalyseGuards:
         assert caught.value.failure.message_parameters == (("detail", "no_promoted_implementation"),)
 
     def test_text_is_required_before_any_model_load(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr("rdam_rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
+        monkeypatch.setattr("rdam.rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
         _publish(tmp_path, _decision("modernbert-v1-x", PromotionOutcome.PROMOTE, "a" * 64))
         provider = RstProvider(store=tmp_path, release_id="modernbert-v1-x")
         with pytest.raises(ProviderError) as caught:
@@ -175,7 +175,7 @@ class TestRealRelease:
             provider.analyse(ProviderRequest(source=SourceIdentity.from_text("t"), text="t", structured_input=None))
 
     def test_machine_gets_isanlp_rst_outcome_envelope_as_the_native_payload(self, real_artifact_sha256: str, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr("rdam_rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
+        monkeypatch.setattr("rdam.rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
         decision = _decision(REAL_RELEASE, PromotionOutcome.PROMOTE, real_artifact_sha256)
         provider = RstProvider(store=STORE, release_id=REAL_RELEASE, device="cpu", decision=decision)
         machine = Machine([provider])
@@ -185,7 +185,7 @@ class TestRealRelease:
         assert isinstance(rst, ResultOutcome)
         assert rst.result.technique is Technique.RST
         assert rst.result.formalism_id == RST_TREE
-        assert rst.result.provider_id == f"isanlp_rst/{REAL_RELEASE}"
+        assert rst.result.provider_id == f"rdam.rst/{REAL_RELEASE}"
         payload = rst.result.payload
         assert payload["contract"] == "isanlp_rst.production"
         assert payload["kind"] == "analysed_outcome"
@@ -200,7 +200,7 @@ class TestRealRelease:
         assert isinstance(dung, UnavailableOutcome)
 
     def test_asking_for_erst_without_a_bundle_is_unavailable_not_failed(self, real_artifact_sha256: str, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr("rdam_rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
+        monkeypatch.setattr("rdam.rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
         decision = _decision(REAL_RELEASE, PromotionOutcome.PROMOTE, real_artifact_sha256)
         machine = Machine([RstProvider(store=STORE, release_id=REAL_RELEASE, device="cpu", decision=decision)])
         request = AggregateRequest.for_text("The cat sat.", (Technique.RST,), formalisms=(FormalismChoice(technique=Technique.RST, formalism_id=ERST_GRAPH),))

@@ -4,10 +4,10 @@ import argparse
 from collections import Counter
 from pathlib import Path
 
-from isanlp_rst.contracts.erst import CorpusPartition, PrivateCorpusVerificationReceipt
+from rdam.rst.contracts.erst import CorpusPartition, PrivateCorpusVerificationReceipt
 from workbench.corpus.erst.corpus import load_gum_corpus_authority
 from workbench.corpus.erst.relations import build_raw_relation_inventory
-from isanlp_rst.erst.rs4 import RS4Reader
+from rdam.rst.erst.rs4 import RS4Reader
 
 
 def main() -> None:

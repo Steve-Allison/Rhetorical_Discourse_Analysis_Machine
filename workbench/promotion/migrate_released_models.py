@@ -61,7 +61,7 @@ def migrate(cache_root: Path, store: Path) -> dict[str, object]:
                 copy_release_file(source.resolve(strict=True), candidate / relative)
                 roles[relative] = _role(relative)
             weights = candidate / "best_weights.pt"
-            from isanlp_rst.model_loading.release import sha256_file
+            from rdam.rst.model_loading.release import sha256_file
 
             if sha256_file(weights) != release.weights_sha256:
                 raise RuntimeError(f"released weight identity changed for {release.name}")

@@ -8,7 +8,7 @@ from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.processors import TemplateProcessing
 from transformers import BertConfig, PreTrainedTokenizerFast
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     DiscourseSignal,
     NodeKindEnum,
     NuclearityPatternEnum,
@@ -20,11 +20,11 @@ from isanlp_rst.contracts import (
     SignalDetectionMethod,
     SignalDetectorProvenance,
 )
-from isanlp_rst.english.erst.completer import ErstCompleter
+from rdam.rst.english.erst.completer import ErstCompleter
 from workbench.training.erst.dataset import (
     extract_eRST_candidates_from_document,
 )
-from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from scripts.train_erst_scorer import compute_edge_metrics
 
 _RAW_RELATIONS = ("adversative-contrast", "elaboration-additional")

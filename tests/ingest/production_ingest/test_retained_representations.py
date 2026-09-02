@@ -3,8 +3,8 @@
 from pydantic import TypeAdapter
 import pytest
 
-from isanlp_rst.ingest.contracts.base import Sha256Identity
-from isanlp_rst.ingest.contracts.source import (
+from rdam.rst.ingest.contracts.base import Sha256Identity
+from rdam.rst.ingest.contracts.source import (
     AnnotationRepresentation,
     ContentRepresentation,
     CrossReferenceRepresentation,

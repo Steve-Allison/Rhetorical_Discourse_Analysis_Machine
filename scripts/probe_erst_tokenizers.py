@@ -14,8 +14,8 @@ import torch
 import transformers
 from transformers import AutoTokenizer
 
-from isanlp_rst.contracts.erst import TokenizerCompatibilityReceipt, TokenizerProbeResult
-from isanlp_rst.erst.environment import load_repository_environment
+from rdam.rst.contracts.erst import TokenizerCompatibilityReceipt, TokenizerProbeResult
+from rdam.rst.erst.environment import load_repository_environment
 
 
 @dataclass(frozen=True, slots=True)

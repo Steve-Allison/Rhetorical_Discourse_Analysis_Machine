@@ -28,7 +28,7 @@ import time
 import torch
 from huggingface_hub.errors import EntryNotFoundError
 
-from isanlp_rst.parser import Parser
+from rdam.rst.parser import Parser
 
 
 SHORT_TEXT = "The cat sat on the mat. It was a black cat. The mat was red."

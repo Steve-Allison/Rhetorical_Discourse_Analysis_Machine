@@ -8,8 +8,8 @@ import threading
 
 import pytest
 
-from isanlp_rst.cli import _handler_type
-from isanlp_rst.ingest import (
+from rdam.rst.cli import _handler_type
+from rdam.rst.ingest import (
     FailureCategory,
     LifecycleStage,
     ProductionAnalysisOutcome,

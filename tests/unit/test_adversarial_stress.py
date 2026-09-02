@@ -9,8 +9,8 @@ Validates robust fail-closed and non-happy-path behavior across:
 
 import pytest
 
-from isanlp_rst.annotation_rst import DiscourseUnit
-from isanlp_rst.contracts import (
+from rdam.rst.annotation_rst import DiscourseUnit
+from rdam.rst.contracts import (
     NodeKindEnum,
     NuclearityPatternEnum,
     OutputFormalismEnum,
@@ -22,17 +22,17 @@ from isanlp_rst.contracts import (
     RstNode,
     TimingRecord,
 )
-from isanlp_rst.graph.export import (
+from rdam.rst.graph.export import (
     to_graphrag_json,
     to_jsonld,
     to_networkx_graph,
     to_rdf_triples,
     to_turtle,
 )
-from isanlp_rst.ontology.adapter import OntologyAdapter
-from isanlp_rst.parser import Parser
-from isanlp_rst.relations.multilingual_markers import MULTILINGUAL_MARKER_RULES
-from isanlp_rst.relations.primer import DiscourseMarkerPrimer
+from rdam.rst.ontology.adapter import OntologyAdapter
+from rdam.rst.parser import Parser
+from rdam.rst.relations.multilingual_markers import MULTILINGUAL_MARKER_RULES
+from rdam.rst.relations.primer import DiscourseMarkerPrimer
 
 
 # ---------------------------------------------------------------------------

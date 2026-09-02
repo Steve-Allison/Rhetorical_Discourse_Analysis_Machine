@@ -99,8 +99,8 @@ def parse_disrpt_tok_file(file_path: Path | str) -> list[SegmentedSentence]:
 
 def parse_rs4_to_sentences(file_path: Path | str) -> list[SegmentedSentence]:
     """Extract segmented sentences from an .rs4 XML file."""
-    from isanlp_rst.erst.converter import rs4_to_document_and_analysis
-    from isanlp_rst.erst.rs4 import RS4Reader
+    from rdam.rst.erst.converter import rs4_to_document_and_analysis
+    from rdam.rst.erst.rs4 import RS4Reader
 
     rs4 = RS4Reader.read_file(file_path)
     doc, _ = rs4_to_document_and_analysis(rs4)

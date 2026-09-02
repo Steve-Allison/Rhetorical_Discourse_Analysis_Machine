@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-from isanlp_rst.rstviewer import rstweb_sql
-from isanlp_rst.rstviewer.rstweb_sql import (
+from rdam.rst.rstviewer import rstweb_sql
+from rdam.rst.rstviewer.rstweb_sql import (
     NODE,
     count_children,
     get_children,

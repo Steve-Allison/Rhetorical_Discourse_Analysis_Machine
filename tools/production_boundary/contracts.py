@@ -10,7 +10,7 @@ from typing import Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 import rfc8785
 
-from isanlp_rst.model_loading.release import ModelFile, ModelReleaseManifest, PromotionReceipt
+from rdam.rst.model_loading.release import ModelFile, ModelReleaseManifest, PromotionReceipt
 
 
 _SHA256_PATTERN = r"^[0-9a-f]{64}$"
@@ -99,16 +99,6 @@ class BoundaryReport(StrictModel):
         return not self.violations and all(receipt.valid for receipt in self.artifact_receipts)
 
 
-class ParityCase(StrictModel):
-    case_id: str
-    model_identity: str
-    route: str
-    input_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    result_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    device: str
-    tolerance: float = Field(default=0.0, ge=0.0)
-
-
 class EvidenceState(StrEnum):
     PRE_SOURCE = "pre_source"
     SOURCE_SELECTED = "source_selected"
@@ -120,16 +110,6 @@ class EvidenceState(StrEnum):
 class CheckStatus(StrEnum):
     PASSED = "passed"
     FAILED = "failed"
-
-
-class VerificationCheck(StrictModel):
-    check_id: str = Field(pattern=r"^[a-z0-9]+(?:[._-][a-z0-9]+)*$")
-    status: CheckStatus
-    command: tuple[str, ...] = Field(min_length=1)
-    tool_identity: str = Field(min_length=1)
-    evidence_path: str = Field(min_length=1)
-    evidence_sha256: str = Field(pattern=_SHA256_PATTERN)
-    completed_at: datetime
 
 
 class GateResult(StrictModel):
@@ -218,14 +198,6 @@ class EvidenceRecord(StrictModel):
         return self
 
 
-class ReleaseContractIdentity(StrictModel):
-    package_name: Literal["isanlp_rst"] = "isanlp_rst"
-    package_version: Literal["5.0.0"] = "5.0.0"
-    production_contract: Literal["isanlp_rst.production"] = "isanlp_rst.production"
-    write_contract_version: Literal["2.0.0"] = "2.0.0"
-    readable_contract_versions: tuple[Literal["2.0.0"], ...] = ("2.0.0",)
-
-
 class SourceReleaseIdentity(StrictModel):
     vcs: Literal["git"] = "git"
     commit: str = Field(pattern=_GIT_IDENTITY_PATTERN)
@@ -279,52 +251,6 @@ class ReproducibleBuildReport(StrictModel):
         return value
 
 
-class BuildIdentity(StrictModel):
-    python_implementation: str = Field(min_length=1)
-    python_version: str = Field(min_length=1)
-    build_frontend: Literal["build"] = "build"
-    build_frontend_version: str = Field(min_length=1)
-    build_backend: Literal["hatchling.build"] = "hatchling.build"
-    build_backend_version: str = Field(min_length=1)
-    platform: str = Field(min_length=1)
-    lock_sha256: str = Field(pattern=_SHA256_PATTERN)
-    deterministic_environment: tuple[tuple[str, str], ...]
-    provenance_sha256: str = Field(pattern=_SHA256_PATTERN)
-
-
-class ReleaseArtifactIdentity(StrictModel):
-    filename: str = Field(min_length=1)
-    kind: Literal["wheel", "sdist"]
-    size_bytes: int = Field(gt=0)
-    sha256: str = Field(pattern=_SHA256_PATTERN)
-    wheel_tags: tuple[str, ...] = ()
-    build_report_sha256: str = Field(pattern=_SHA256_PATTERN)
-    package_name: Literal["isanlp_rst"] = "isanlp_rst"
-    package_version: Literal["5.0.0"] = "5.0.0"
-
-
-class ReleaseReceipt(StrictModel):
-    schema_name: Literal["isanlp_rst.release_receipt"] = "isanlp_rst.release_receipt"
-    schema_version: Literal["1.0.0"] = "1.0.0"
-    contract: ReleaseContractIdentity
-    source: SourceReleaseIdentity
-    build: BuildIdentity
-    artifacts: tuple[ReleaseArtifactIdentity, ReleaseArtifactIdentity]
-    verification: tuple[VerificationCheck, ...]
-
-    @model_validator(mode="after")
-    def complete_release(self) -> Self:
-        if {artifact.kind for artifact in self.artifacts} != {"wheel", "sdist"}:
-            raise ValueError("release receipt requires exactly one wheel and one sdist")
-        if len({artifact.filename for artifact in self.artifacts}) != 2:
-            raise ValueError("release artifact filenames must be unique")
-        if not self.verification or any(
-            check.status is not CheckStatus.PASSED for check in self.verification
-        ):
-            raise ValueError("every required release verification must be present and passed")
-        return self
-
-
 def canonical_record_bytes(value: BaseModel) -> bytes:
     """Return RFC 8785 bytes for one strict release/evidence record."""
 
@@ -356,7 +282,6 @@ __all__ = [
     "ArtifactReceipt",
     "BoundaryReport",
     "BoundaryViolation",
-    "BuildIdentity",
     "BuiltArtifactIdentity",
     "CheckStatus",
     "DependencyRule",
@@ -367,17 +292,12 @@ __all__ = [
     "ModelReleaseManifest",
     "OwnershipClass",
     "OwnershipRule",
-    "ParityCase",
     "PreparationPerformanceCase",
     "PreparationPerformanceEvidence",
     "PromotionReceipt",
-    "ReleaseArtifactIdentity",
-    "ReleaseContractIdentity",
-    "ReleaseReceipt",
     "ReproducibleBuildReport",
     "SourceReleaseIdentity",
     "SourceReleaseRecord",
-    "VerificationCheck",
     "ViolationKind",
     "canonical_record_bytes",
     "sha256_path",

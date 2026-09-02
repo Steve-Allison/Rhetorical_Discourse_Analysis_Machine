@@ -11,15 +11,15 @@ from typing import Any
 import pytest
 import torch
 
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
-from isanlp_rst.ingest.parser_result import validate_parser_analysis_result
-from isanlp_rst.model_loading.release import (
+from rdam.rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.rst.ingest.parser_result import validate_parser_analysis_result
+from rdam.rst.model_loading.release import (
     ModelFile,
     ModelReleaseError,
     ModelReleaseManifest,
     ValidatedModelRelease,
 )
-from isanlp_rst.transformer_parser.predictor import PredictorModernBERT
+from rdam.rst.transformer_parser.predictor import PredictorModernBERT
 
 from .conftest import ParserBuilder
 
@@ -79,11 +79,11 @@ def test_local_release_path_is_the_runtime_tokenizer_config_and_weight_authority
             calls["evaluated"] = True
 
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.AutoTokenizer.from_pretrained",
+        "rdam.rst.transformer_parser.predictor.AutoTokenizer.from_pretrained",
         load_tokenizer,
     )
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.PureTransformerParsingNet",
+        "rdam.rst.transformer_parser.predictor.PureTransformerParsingNet",
         CapturingNet,
     )
 
@@ -112,11 +112,11 @@ def test_validated_release_strict_loads_full_parser_state_and_records_exact_runt
     encoder_config = SimpleNamespace(hidden_size=8)
 
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.AutoTokenizer.from_pretrained",
+        "rdam.rst.transformer_parser.predictor.AutoTokenizer.from_pretrained",
         lambda path, **kwargs: tokenizer,
     )
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.AutoConfig.from_pretrained",
+        "rdam.rst.transformer_parser.predictor.AutoConfig.from_pretrained",
         lambda path, **kwargs: encoder_config,
     )
 
@@ -141,11 +141,11 @@ def test_validated_release_strict_loads_full_parser_state_and_records_exact_runt
         return [], []
 
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.PureTransformerParsingNet",
+        "rdam.rst.transformer_parser.predictor.PureTransformerParsingNet",
         CapturingNet,
     )
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.load_safetensors_model",
+        "rdam.rst.transformer_parser.predictor.load_safetensors_model",
         load_state,
     )
 
@@ -174,11 +174,11 @@ def test_validated_release_rejects_runtime_member_substitution(
     (release.path / "parser.safetensors").write_bytes(b"substituted")
     tokenizer = SimpleNamespace(is_fast=True)
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.AutoTokenizer.from_pretrained",
+        "rdam.rst.transformer_parser.predictor.AutoTokenizer.from_pretrained",
         lambda path, **kwargs: tokenizer,
     )
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.AutoConfig.from_pretrained",
+        "rdam.rst.transformer_parser.predictor.AutoConfig.from_pretrained",
         lambda path, **kwargs: SimpleNamespace(hidden_size=8),
     )
 
@@ -192,11 +192,11 @@ def test_validated_release_rejects_runtime_member_substitution(
         def eval(self) -> None: ...
 
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.PureTransformerParsingNet",
+        "rdam.rst.transformer_parser.predictor.PureTransformerParsingNet",
         CapturingNet,
     )
     monkeypatch.setattr(
-        "isanlp_rst.transformer_parser.predictor.load_safetensors_model",
+        "rdam.rst.transformer_parser.predictor.load_safetensors_model",
         lambda *args, **kwargs: ([], []),
     )
 
@@ -239,7 +239,7 @@ def _validated_modernbert_release(tmp_path: Path) -> ValidatedModelRelease:
         model_task="rst-parsing",
         architecture="modernbert-base-discourse-parser",
         runtime_contract="isanlp_rst.parser/modernbert-v1",
-        compatibility_range=">=5,<6",
+        compatibility_range=">=5,<7",
         source_model_identity="fixture/modernbert",
         source_revision="a" * 40,
         licence="Apache-2.0",

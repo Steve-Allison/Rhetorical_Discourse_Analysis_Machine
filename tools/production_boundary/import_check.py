@@ -1,11 +1,12 @@
-"""Import-check the ``isanlp_rst`` distribution installed in the current environment.
+"""Import-check the ``rdam`` distribution installed in the current environment.
 
-Imports the public modules, exercises the façade's deterministic no-model failure, and
-checks that no ``workbench`` member or import leaked into the installed distribution.
-It never loads model weights and never touches a built wheel: in the pixi ``production``
-environment the installed distribution is the *editable source*
-(``[tool.pixi.feature.production.pypi-dependencies]`` in ``pyproject.toml``), so a green
-result says nothing about ``dist/``. Wheel certification is ``production-clean-install``.
+Imports the public modules of every technique package, exercises the RST façade's
+deterministic no-model failure, and checks that no ``workbench`` member or import leaked
+into the installed distribution. It never loads model weights and never touches a built
+wheel: in the pixi ``production`` environment the installed distribution is the
+*editable source* (``[tool.pixi.feature.production.pypi-dependencies]`` in
+``pyproject.toml``), so a green result says nothing about ``dist/``. Wheel certification
+is ``production-clean-install``.
 """
 
 import argparse
@@ -15,40 +16,44 @@ import json
 from pathlib import Path
 import sys
 
+from rdam.rst._version import PACKAGE_NAME
 
 _PUBLIC_MODULES = (
-    "isanlp_rst",
-    "isanlp_rst.parser",
-    "isanlp_rst.contracts",
-    "isanlp_rst.erst",
-    "isanlp_rst.model_loading.parser_input",
+    "rdam",
+    "rdam.rst",
+    "rdam.rst.parser",
+    "rdam.rst.contracts",
+    "rdam.rst.erst",
+    "rdam.rst.model_loading.parser_input",
+    "rdam.dung",
+    "rdam.ibis",
 )
 _FORMAT_MODULES = (
-    "isanlp_rst.ingest",
-    "isanlp_rst.doclang",
-    "isanlp_rst.markdown",
+    "rdam.rst.ingest",
+    "rdam.rst.doclang",
+    "rdam.rst.markdown",
 )
 _FORBIDDEN_PREFIXES = ("workbench", "workbench.research")
 
 
 def _distribution_members() -> tuple[str, ...]:
     try:
-        package = distribution("isanlp_rst")
+        package = distribution(PACKAGE_NAME)
     except PackageNotFoundError as exc:
-        raise RuntimeError("isanlp_rst is not installed as a distribution") from exc
+        raise RuntimeError(f"{PACKAGE_NAME} is not installed as a distribution") from exc
     return tuple(sorted(str(path) for path in package.files or ()))
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--formats", action="store_true", help="also import canonical ingest and its private format helpers")
-    parser.add_argument("--outside", type=Path, help="fail if isanlp_rst resolves beneath this source directory")
+    parser.add_argument("--outside", type=Path, help="fail if rdam resolves beneath this source directory")
     args = parser.parse_args()
 
     for module_name in _PUBLIC_MODULES + (_FORMAT_MODULES if args.formats else ()):
         import_module(module_name)
 
-    from isanlp_rst import Parser
+    from rdam.rst import Parser
 
     try:
         Parser()
@@ -58,9 +63,9 @@ def main() -> int:
     else:
         raise AssertionError("Parser() without a model identity must fail deterministically")
 
-    package_file = Path(sys.modules["isanlp_rst"].__file__ or "").resolve()
+    package_file = Path(sys.modules["rdam"].__file__ or "").resolve()
     if args.outside is not None and package_file.is_relative_to(args.outside.resolve()):
-        raise AssertionError(f"isanlp_rst leaked from source tree: {package_file}")
+        raise AssertionError(f"rdam leaked from source tree: {package_file}")
 
     members = _distribution_members()
     forbidden_members = tuple(

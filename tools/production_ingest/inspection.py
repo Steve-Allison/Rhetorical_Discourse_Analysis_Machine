@@ -3,13 +3,13 @@
 import json
 from pathlib import Path
 
-from isanlp_rst.ingest import (
+from rdam.rst.ingest import (
     AnalysedOutcome,
     EmptyPrimaryAnalysisOutcome,
     PreparationOutcome,
     load_contract,
 )
-from isanlp_rst.ingest.identity import sha256_file
+from rdam.rst.ingest.identity import sha256_file
 from tools.production_ingest.contracts import GoldSetManifest
 
 

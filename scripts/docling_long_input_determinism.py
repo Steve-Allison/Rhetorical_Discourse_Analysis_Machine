@@ -23,7 +23,7 @@ from docling_rst_quality_check import (
 )
 from docling_core.types.doc.document import DoclingDocument
 
-from isanlp_rst.parser import Parser
+from rdam.rst.parser import Parser
 
 FIXTURES_DIR = Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "docling"
 SEPARATOR_BETWEEN_FIXTURES = "\n\n---\n\n"

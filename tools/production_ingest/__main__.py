@@ -229,7 +229,7 @@ def _write_json(path: Path, payload: object) -> None:
 
 
 def _only_wheel(directory: Path) -> Path:
-    wheels = tuple(sorted(directory.glob("isanlp_rst-*.whl")))
+    wheels = tuple(sorted(directory.rglob("rdam-*.whl")))
     if len(wheels) != 1:
         raise RuntimeError(f"expected exactly one candidate wheel in {directory}, found {len(wheels)}")
     return wheels[0]

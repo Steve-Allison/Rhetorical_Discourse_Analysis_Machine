@@ -1,6 +1,6 @@
 """Canonical capability persistence and semantic identity."""
 
-from isanlp_rst.ingest import ProductionCapabilities, describe_capabilities, load_contract, serialize_contract
+from rdam.rst.ingest import ProductionCapabilities, describe_capabilities, load_contract, serialize_contract
 
 
 def test_capabilities_round_trip_canonically_without_execution_identity() -> None:

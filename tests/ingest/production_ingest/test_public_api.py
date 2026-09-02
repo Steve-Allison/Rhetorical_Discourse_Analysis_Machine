@@ -2,9 +2,9 @@
 
 from importlib.util import find_spec
 
-import isanlp_rst.doclang as doclang_helpers
-import isanlp_rst.ingest as ingest
-import isanlp_rst.markdown as markdown_helpers
+import rdam.rst.doclang as doclang_helpers
+import rdam.rst.ingest as ingest
+import rdam.rst.markdown as markdown_helpers
 
 
 def _module_exists(module_name: str) -> bool:
@@ -26,16 +26,16 @@ def test_canonical_ingest_exports_complete_public_service() -> None:
 def test_obsolete_public_entry_points_are_absent() -> None:
     assert not hasattr(markdown_helpers, "parse_markdown")
     assert not hasattr(doclang_helpers, "parse_doclang")
-    assert find_spec("isanlp_rst.docling") is None
+    assert find_spec("rdam.rst.docling") is None
 
 
 def test_obsolete_envelopes_and_entry_modules_are_absent() -> None:
     obsolete_modules = (
-        "isanlp_rst.markdown._entry",
-        "isanlp_rst.markdown.schema",
-        "isanlp_rst.doclang._entry",
-        "isanlp_rst.doclang.schema",
-        "isanlp_rst.docling._entry",
-        "isanlp_rst.ingest.compatibility",
+        "rdam.rst.markdown._entry",
+        "rdam.rst.markdown.schema",
+        "rdam.rst.doclang._entry",
+        "rdam.rst.doclang.schema",
+        "rdam.rst.docling._entry",
+        "rdam.rst.ingest.compatibility",
     )
     assert not any(_module_exists(module_name) for module_name in obsolete_modules)

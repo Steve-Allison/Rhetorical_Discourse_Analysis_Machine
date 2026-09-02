@@ -1,4 +1,4 @@
-"""Unit tests for ``isanlp_rst.doclang.loader``.
+"""Unit tests for ``rdam.rst.doclang.loader``.
 
 The local-name canonical XPath is load-bearing — every other module
 addresses elements through it. Tests focus on:
@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 from lxml import etree
 
-from isanlp_rst.doclang.loader import local_name, local_path
+from rdam.rst.doclang.loader import local_name, local_path
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "doclang"
 

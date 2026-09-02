@@ -1,6 +1,6 @@
 """Unit tests for eRST graph completion and candidate filtering."""
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     DocumentToken,
     Edu,
     NodeKindEnum,
@@ -11,7 +11,7 @@ from isanlp_rst.contracts import (
     RstDocument,
     RstNode,
 )
-from isanlp_rst.english.erst import ErstCompleter
+from rdam.rst.english.erst import ErstCompleter
 
 
 def test_completer_delegates_to_complete_signal_sufficient_generator() -> None:

@@ -1,10 +1,10 @@
 """Deterministic public analysis-plan and capacity tests."""
 
-from isanlp_rst.ingest import ParserCapacity, ProductionIngestor, SourceArtifact, SourceForm
-from isanlp_rst.ingest.contracts.base import SemanticVersion
-from isanlp_rst.ingest.contracts.preparation import BoundaryPreference, CapacityUnit
-from isanlp_rst.ingest.subdivision import build_analysis_plan
-from isanlp_rst.ingest.policy import DEFAULT_PLANNING_POLICY
+from rdam.rst.ingest import ParserCapacity, ProductionIngestor, SourceArtifact, SourceForm
+from rdam.rst.ingest.contracts.base import SemanticVersion
+from rdam.rst.ingest.contracts.preparation import BoundaryPreference, CapacityUnit
+from rdam.rst.ingest.subdivision import build_analysis_plan
+from rdam.rst.ingest.policy import DEFAULT_PLANNING_POLICY
 
 
 def _capacity(maximum: int) -> ParserCapacity:

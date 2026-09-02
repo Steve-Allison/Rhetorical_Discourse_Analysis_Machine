@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact, SourceForm
-from isanlp_rst.ingest.contracts.source import (
+from rdam.rst.ingest import ProductionIngestor, SourceArtifact, SourceForm
+from rdam.rst.ingest.contracts.source import (
     AnnotationRepresentation,
     ArchiveMemberAnchor,
     ContentInventoryItem,

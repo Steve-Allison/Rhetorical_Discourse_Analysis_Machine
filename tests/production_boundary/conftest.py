@@ -1,4 +1,9 @@
-"""Deterministic release-tool fixtures."""
+"""Deterministic release-tool fixtures.
+
+The fixture project mirrors the real layout — one distribution, one ``rdam`` package with
+the RST provider as a sub-package — under a version that is deliberately not the
+repository's, so a passing build proves the tools derive names from ``pyproject.toml``.
+"""
 
 from pathlib import Path
 import subprocess
@@ -6,6 +11,9 @@ import subprocess
 import pytest
 
 from tools.production_boundary.build import build_production_artifacts
+from tools.production_boundary.identity import ReleaseIdentity
+
+FIXTURE_IDENTITY = ReleaseIdentity(distribution="rdam", version="7.7.7", package_dir="rdam")
 
 
 def _run(*command: str, cwd: Path) -> str:
@@ -14,45 +22,51 @@ def _run(*command: str, cwd: Path) -> str:
 
 
 @pytest.fixture(scope="session")
+def fixture_identity() -> ReleaseIdentity:
+    return FIXTURE_IDENTITY
+
+
+@pytest.fixture(scope="session")
 def built_release_pair(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path, str]:
     root = tmp_path_factory.mktemp("release-source")
-    (root / "isanlp_rst/ingest/schemas").mkdir(parents=True)
-    (root / "isanlp_rst/__init__.py").write_text('__version__ = "5.0.0"\n', encoding="utf-8")
-    (root / "isanlp_rst/cli.py").write_text(
+    (root / "rdam/rst/ingest/schemas").mkdir(parents=True)
+    (root / "rdam/__init__.py").write_text("", encoding="utf-8")
+    (root / "rdam/py.typed").write_bytes(b"\n")
+    (root / "rdam/rst/__init__.py").write_text(f'__version__ = "{FIXTURE_IDENTITY.version}"\n', encoding="utf-8")
+    (root / "rdam/rst/cli.py").write_text(
         "def main() -> int:\n    return 0\n",
         encoding="utf-8",
     )
-    (root / "isanlp_rst/py.typed").write_bytes(b"\n")
-    (root / "isanlp_rst/ingest/__init__.py").write_text("", encoding="utf-8")
-    (root / "isanlp_rst/ingest/schemas/capabilities.schema.json").write_text(
+    (root / "rdam/rst/ingest/__init__.py").write_text("", encoding="utf-8")
+    (root / "rdam/rst/ingest/schemas/capabilities.schema.json").write_text(
         "{}\n",
         encoding="utf-8",
     )
-    (root / "isanlp_rst/ingest/public-surface.json").write_text(
-        """{"contract":"isanlp_rst.public_surface","contract_version":"2.0.0","entries":[{"qualified_name":"isanlp-rst"},{"qualified_name":"isanlp-rst.local-http./analyse"},{"qualified_name":"isanlp-rst.local-http./capabilities"},{"qualified_name":"isanlp-rst.local-http./health"}]}\n""",
+    (root / "rdam/rst/ingest/public-surface.json").write_text(
+        """{"contract":"isanlp_rst.public_surface","contract_version":"2.0.0","entries":[{"qualified_name":"rdam-rst"},{"qualified_name":"rdam-rst.local-http./analyse"},{"qualified_name":"rdam-rst.local-http./capabilities"},{"qualified_name":"rdam-rst.local-http./health"}]}\n""",
         encoding="utf-8",
     )
     (root / "pixi.lock").write_text("fixture-lock\n", encoding="utf-8")
     (root / ".gitignore").write_text("dist/\n", encoding="utf-8")
     (root / "pyproject.toml").write_text(
-        """[build-system]
+        f"""[build-system]
 requires = ["hatchling>=1.32,<2"]
 build-backend = "hatchling.build"
 
 [project]
-name = "isanlp_rst"
-version = "5.0.0"
+name = "{FIXTURE_IDENTITY.distribution}"
+version = "{FIXTURE_IDENTITY.version}"
 requires-python = ">=3.14"
-import-names = ["isanlp_rst"]
+import-names = ["rdam"]
 
 [project.scripts]
-isanlp-rst = "isanlp_rst.cli:main"
+rdam-rst = "rdam.rst.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["isanlp_rst"]
+packages = ["rdam"]
 
 [tool.hatch.build.targets.sdist]
-include = ["/isanlp_rst", "/pyproject.toml"]
+include = ["/rdam", "/pyproject.toml"]
 """,
         encoding="utf-8",
     )

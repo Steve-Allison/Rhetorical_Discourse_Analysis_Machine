@@ -4,7 +4,7 @@ import argparse
 import hashlib
 from pathlib import Path
 
-from isanlp_rst.contracts.erst import CorpusPartition
+from rdam.rst.contracts.erst import CorpusPartition
 from workbench.research.erst.configuration import ExperimentConfigurationBundle
 from workbench.research.erst.contracts import (
     ChampionManifest,

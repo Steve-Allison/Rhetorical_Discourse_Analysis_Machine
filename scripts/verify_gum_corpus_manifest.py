@@ -4,16 +4,16 @@ import argparse
 import hashlib
 from pathlib import Path
 
-from isanlp_rst.contracts.erst import (
+from rdam.rst.contracts.erst import (
     CandidateIdentityProbe,
     CorpusPartition,
     CorpusSourceIdentity,
     PrivateCorpusVerificationReceipt,
 )
-from isanlp_rst.erst.candidates import SecondaryEdgeCandidate, generate_secondary_edge_candidates
-from isanlp_rst.erst.converter import rs4_to_document_and_analysis
+from rdam.rst.erst.candidates import SecondaryEdgeCandidate, generate_secondary_edge_candidates
+from rdam.rst.erst.converter import rs4_to_document_and_analysis
 from workbench.corpus.erst.corpus import load_gum_corpus_authority
-from isanlp_rst.erst.rs4 import RS4Reader
+from rdam.rst.erst.rs4 import RS4Reader
 from workbench.corpus.erst.sampling import candidate_identity_sha256
 
 

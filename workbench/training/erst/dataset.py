@@ -5,10 +5,10 @@ from typing import Any
 
 import torch
 
-from isanlp_rst.contracts.analysis import RstAnalysis
-from isanlp_rst.contracts.document import RstDocument
-from isanlp_rst.erst.candidates import SecondaryEdgeCandidate, generate_secondary_edge_candidates
-from isanlp_rst.erst.pair_encoding import SecondaryEdgeInferenceDataset
+from rdam.rst.contracts.analysis import RstAnalysis
+from rdam.rst.contracts.document import RstDocument
+from rdam.rst.erst.candidates import SecondaryEdgeCandidate, generate_secondary_edge_candidates
+from rdam.rst.erst.pair_encoding import SecondaryEdgeInferenceDataset
 
 
 class GUMSecondaryEdgeDataset(SecondaryEdgeInferenceDataset):

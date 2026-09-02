@@ -10,8 +10,8 @@ from pathlib import Path
 import pytest
 from lxml import etree
 
-from isanlp_rst.contracts import NodeKindEnum, OutputFormalismEnum, RstAnalysis
-from isanlp_rst.parser import Parser
+from rdam.rst.contracts import NodeKindEnum, OutputFormalismEnum, RstAnalysis
+from rdam.rst.parser import Parser
 from .gum_validator import (
     GOLD_FIXTURE_NAMES,
     GUM_FIXTURES_DIR,

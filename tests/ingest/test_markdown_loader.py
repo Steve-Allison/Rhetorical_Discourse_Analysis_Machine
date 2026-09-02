@@ -1,11 +1,11 @@
-"""Unit tests for ``isanlp_rst.markdown.loader``.
+"""Unit tests for ``rdam.rst.markdown.loader``.
 
 Tests focus on failure modes (malformed input), boundaries (empty,
 front-matter-only), invariants (front-matter stripped from body
 stream), and knob negative-space (gfm=False emits no table tokens).
 """
 
-from isanlp_rst.markdown.loader import build_parser, load_markdown
+from rdam.rst.markdown.loader import build_parser, load_markdown
 
 
 # --- Front-matter handling -------------------------------------------------

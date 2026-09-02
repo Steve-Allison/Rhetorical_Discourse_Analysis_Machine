@@ -9,6 +9,10 @@ import sys
 import tempfile
 from typing import Any
 
+from packaging.utils import parse_wheel_filename
+
+from tools.production_boundary.identity import read_release_identity
+
 
 def _run(
     command: list[str],
@@ -49,8 +53,9 @@ def _install_and_run(
     base_python: Path,
     release_id: str | None,
     erst_checkpoint: Path | None,
+    expected_version: str,
 ) -> dict[str, object]:
-    with tempfile.TemporaryDirectory(prefix=f"isanlp-rst-{name}-") as directory:
+    with tempfile.TemporaryDirectory(prefix=f"rdam-{name}-") as directory:
         root = Path(directory)
         subprocess.run([str(base_python), "-m", "venv", str(root)], check=True)
         python = _venv_python(root)
@@ -63,6 +68,8 @@ def _install_and_run(
             str(acceptance),
             "--source-root",
             str(source_root),
+            "--expected-version",
+            expected_version,
             "--model-store",
             str(model_store),
             "--device",
@@ -90,7 +97,7 @@ def _install_and_run(
         acceptance_environment.update(
             {
                 "HF_HUB_OFFLINE": "1",
-                "ISANLP_RST_NETWORK_DISABLED": "1",
+                "RDAM_NETWORK_DISABLED": "1",
                 "PIP_NO_INDEX": "1",
                 "TRANSFORMERS_OFFLINE": "1",
             }
@@ -123,7 +130,11 @@ def _install_and_run(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--wheel", type=Path, required=True)
+    parser.add_argument(
+        "--wheel",
+        type=Path,
+        help="the built wheel; defaults to dist/<version>/<wheel> for the version declared in pyproject.toml",
+    )
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--model-store", type=Path, required=True)
     parser.add_argument("--full", action="store_true")
@@ -136,6 +147,12 @@ def main() -> int:
     if args.full and args.release_id is None:
         raise ValueError("full clean-install certification requires --release-id")
     root = args.root.resolve()
+    if args.wheel is not None:
+        wheel = args.wheel.resolve()
+    else:
+        identity = read_release_identity(root)
+        wheel = identity.release_dir(root) / identity.wheel_name
+    _, wheel_version, _, _ = parse_wheel_filename(wheel.name)
     fixtures = (
         root / "tests/fixtures/markdown/minimal.md",
         root / "tests/fixtures/doclang/ok_comprehensive.dclg",
@@ -145,7 +162,7 @@ def main() -> int:
     receipts = tuple(
         _install_and_run(
             name=name,
-            wheel=args.wheel.resolve(),
+            wheel=wheel,
             source_root=root,
             acceptance=acceptance,
             model_store=args.model_store.resolve(),
@@ -158,6 +175,7 @@ def main() -> int:
             erst_checkpoint=(
                 args.erst_checkpoint.resolve() if args.erst_checkpoint is not None else None
             ),
+            expected_version=str(wheel_version),
         )
         for name in ("core", "formats")
     )

@@ -8,8 +8,8 @@ import subprocess
 import sys
 import tempfile
 
-from isanlp_rst._version import resolve_installed_package_version
-from isanlp_rst.model_loading.release import (
+from rdam.rst._version import resolve_installed_package_version
+from rdam.rst.model_loading.release import (
     MODEL_RELEASE_MANIFEST,
     ModelFile,
     ModelReleaseError,

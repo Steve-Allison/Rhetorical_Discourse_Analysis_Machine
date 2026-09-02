@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from isanlp_rst.rstviewer.main import rs3tohtml
-from isanlp_rst.rstviewer.rstweb_reader import read_rst
-from isanlp_rst.rstviewer.rstweb_sql import _resolve_dbpath, temporary_db
+from rdam.rst.rstviewer.main import rs3tohtml
+from rdam.rst.rstviewer.rstweb_reader import read_rst
+from rdam.rst.rstviewer.rstweb_sql import _resolve_dbpath, temporary_db
 
 VIEWER_FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "viewer"
 MINIMAL_RS3 = (VIEWER_FIXTURES / "minimal.rs3").read_text(encoding="utf-8")

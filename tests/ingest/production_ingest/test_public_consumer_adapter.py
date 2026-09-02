@@ -1,6 +1,6 @@
 """Representative downstream consumption through public imports only."""
 
-from isanlp_rst.ingest import (
+from rdam.rst.ingest import (
     AnalysedOutcome,
     ProductionIngestor,
     SourceArtifact,

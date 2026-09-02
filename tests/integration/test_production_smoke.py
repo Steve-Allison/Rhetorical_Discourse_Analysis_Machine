@@ -16,11 +16,11 @@ from pathlib import Path
 import pytest
 import torch
 
-from isanlp_rst.annotation_rst import DiscourseUnit
-from isanlp_rst.contracts import OutputFormalismEnum, RstDocument, analysis_from_json, to_json
-from isanlp_rst.erst import ErstCapabilityError
-from isanlp_rst.model_loading.release import MODEL_RELEASE_MANIFEST, ModelReleaseError
-from isanlp_rst.parser import Parser
+from rdam.rst.annotation_rst import DiscourseUnit
+from rdam.rst.contracts import OutputFormalismEnum, RstDocument, analysis_from_json, to_json
+from rdam.rst.erst import ErstCapabilityError
+from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST, ModelReleaseError
+from rdam.rst.parser import Parser
 
 STORE = Path(__file__).resolve().parents[2] / "models" / "model-releases"
 MODERNBERT_RUNTIME_CONTRACT = "isanlp_rst.parser/modernbert-v1"

@@ -1,0 +1,1088 @@
+{
+  "analytical_differences": {},
+  "analytically_equivalent": true,
+  "baseline": "specs/010-repository-migration/evidence/baseline",
+  "comparisons": {
+    "analyse-edus": {
+      "actual_digest": "f618fcfda4968d5276adbb4bee1d02d3b7bf0daaca0436954a62e5971f119bd9",
+      "baseline_digest": "fe5a7a68f79d1c8e64a839a1e2b38f4e1adda6281288a853748a267ef1c7eb22",
+      "differences": [
+        {
+          "actual": 49.72025007009506,
+          "baseline": 46.65358294732869,
+          "classification": "execution",
+          "path": "execution/duration_ms"
+        },
+        {
+          "actual": "434ace74-5484-49ce-8d75-488c285ffff7",
+          "baseline": "a1708c11-77bc-4e5b-b4a6-9e6584d296f8",
+          "classification": "execution",
+          "path": "execution/execution_id"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "execution",
+          "path": "execution/software_version"
+        },
+        {
+          "actual": "bd1527cd2377fe5385ba25d52eb7a938d521aa73-dirty",
+          "baseline": "17fb5ce7ca9bd69003a45214341d43e3a5781192-dirty",
+          "classification": "execution",
+          "path": "execution/source_revision"
+        },
+        {
+          "actual": 28.732832986861467,
+          "baseline": 25.13191697653383,
+          "classification": "execution",
+          "path": "execution/unit_executions/0/duration_ms"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "package_identity",
+          "path": "semantic/analysis/provenance/software_version"
+        },
+        {
+          "actual": "bd1527cd2377fe5385ba25d52eb7a938d521aa73-dirty",
+          "baseline": "17fb5ce7ca9bd69003a45214341d43e3a5781192-dirty",
+          "classification": "execution",
+          "path": "semantic/analysis/provenance/source_revision"
+        },
+        {
+          "actual": "2026-09-02T11:53:07.712732+00:00",
+          "baseline": "2026-09-02T08:24:13.746878+00:00",
+          "classification": "execution",
+          "path": "semantic/analysis/provenance/timestamp"
+        },
+        {
+          "actual": 28.553000069223344,
+          "baseline": 24.94549995753914,
+          "classification": "execution",
+          "path": "semantic/analysis/timing/parsing_ms"
+        },
+        {
+          "actual": 28.553000069223344,
+          "baseline": 24.94549995753914,
+          "classification": "execution",
+          "path": "semantic/analysis/timing/total_ms"
+        },
+        {
+          "actual": "31c037b377a2ad44e4e69f2719c8d7126ccba6bc291afc31fec7e8aee021cea2",
+          "baseline": "a5a9c2881e0fa9b45ed576ebe787de3ab5522b89ba62e3809a3c054950fe9968",
+          "classification": "derived_digest",
+          "path": "semantic/cache_request_identity/hex_digest"
+        },
+        {
+          "actual": "24206f3a11e395fb5f2cf1587b00019dbfd15efeeb5259c344acd661d834cd78",
+          "baseline": "f7697927d4d9cc7e1583a08de0bdae576ac9f83dab63ae16007781568d6ef242",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/files/0/identity/hex_digest"
+        },
+        {
+          "actual": 7205,
+          "baseline": 7213,
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/files/0/size_bytes"
+        },
+        {
+          "actual": "fe68962b2bed189a4faa6acdcb8c1b0b59850fdba284c985abb461f9c4139f67",
+          "baseline": "3c199f42aab7362c6c35bf586e03795972a56a6e8e230757966be8795ad2a940",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/files/1/identity/hex_digest"
+        },
+        {
+          "actual": 18123,
+          "baseline": 18125,
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/files/1/size_bytes"
+        },
+        {
+          "actual": "aa7d35047965576d6587e9659efd70e575d94a43f952dc70ce201884b75ca92d",
+          "baseline": "aaddb07ebb53883a00687eee7f14603785aa391d6660305a1ce4a6e9a1206e8a",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/manifest_identity/hex_digest"
+        },
+        {
+          "actual": "rdam-6.0.0",
+          "baseline": "isanlp_rst-5.0.0",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/release_id"
+        },
+        {
+          "actual": "47c8a5e06f5b41ca986c8234f821aa41d29c14dd87e1a0bc4977c735b3995498",
+          "baseline": "ea23fb9b824fbe1afcbdac75ee3f88177e56c8bb3cb10995cc89aafec8e91a2a",
+          "classification": "derived_digest",
+          "path": "semantic/composite_identity/semantic_digest/hex_digest"
+        },
+        {
+          "actual": 28.732832986861467,
+          "baseline": 25.13191697653383,
+          "classification": "execution",
+          "path": "semantic/parser_result/execution/duration_ms"
+        },
+        {
+          "actual": "5889a237-6096-4434-8e01-d03dc496f8c6",
+          "baseline": "5ae84acc-13c8-4c85-aa82-bca12f2556b8",
+          "classification": "execution",
+          "path": "semantic/parser_result/execution/execution_id"
+        },
+        {
+          "actual": 28.732832986861467,
+          "baseline": 25.13191697653383,
+          "classification": "execution",
+          "path": "semantic/parser_result/execution/unit_executions/0/duration_ms"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "package_identity",
+          "path": "semantic/parser_result/semantic/analysis/provenance/software_version"
+        },
+        {
+          "actual": "bd1527cd2377fe5385ba25d52eb7a938d521aa73-dirty",
+          "baseline": "17fb5ce7ca9bd69003a45214341d43e3a5781192-dirty",
+          "classification": "execution",
+          "path": "semantic/parser_result/semantic/analysis/provenance/source_revision"
+        },
+        {
+          "actual": "2026-09-02T11:53:07.712732+00:00",
+          "baseline": "2026-09-02T08:24:13.746878+00:00",
+          "classification": "execution",
+          "path": "semantic/parser_result/semantic/analysis/provenance/timestamp"
+        },
+        {
+          "actual": 28.553000069223344,
+          "baseline": 24.94549995753914,
+          "classification": "execution",
+          "path": "semantic/parser_result/semantic/analysis/timing/parsing_ms"
+        },
+        {
+          "actual": 28.553000069223344,
+          "baseline": 24.94549995753914,
+          "classification": "execution",
+          "path": "semantic/parser_result/semantic/analysis/timing/total_ms"
+        },
+        {
+          "actual": "24206f3a11e395fb5f2cf1587b00019dbfd15efeeb5259c344acd661d834cd78",
+          "baseline": "f7697927d4d9cc7e1583a08de0bdae576ac9f83dab63ae16007781568d6ef242",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/files/0/identity/hex_digest"
+        },
+        {
+          "actual": 7205,
+          "baseline": 7213,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/files/0/size_bytes"
+        },
+        {
+          "actual": "fe68962b2bed189a4faa6acdcb8c1b0b59850fdba284c985abb461f9c4139f67",
+          "baseline": "3c199f42aab7362c6c35bf586e03795972a56a6e8e230757966be8795ad2a940",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/files/1/identity/hex_digest"
+        },
+        {
+          "actual": 18123,
+          "baseline": 18125,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/files/1/size_bytes"
+        },
+        {
+          "actual": "aa7d35047965576d6587e9659efd70e575d94a43f952dc70ce201884b75ca92d",
+          "baseline": "aaddb07ebb53883a00687eee7f14603785aa391d6660305a1ce4a6e9a1206e8a",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/manifest_identity/hex_digest"
+        },
+        {
+          "actual": "rdam-6.0.0",
+          "baseline": "isanlp_rst-5.0.0",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/release_id"
+        },
+        {
+          "actual": "47c8a5e06f5b41ca986c8234f821aa41d29c14dd87e1a0bc4977c735b3995498",
+          "baseline": "ea23fb9b824fbe1afcbdac75ee3f88177e56c8bb3cb10995cc89aafec8e91a2a",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic/composite_identity/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "ce2d0f2f1c79babc2264c38b1b23c5ee302d77aaf59a7e0ded8d29f235e9e76d",
+          "baseline": "79b0171ec99d21abb83ffd40ad524eec4c02e7434ada49aaa4a27c69f3df2f8f",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic/loaded_components/1/declared_identity/hex_digest"
+        },
+        {
+          "actual": "24206f3a11e395fb5f2cf1587b00019dbfd15efeeb5259c344acd661d834cd78",
+          "baseline": "f7697927d4d9cc7e1583a08de0bdae576ac9f83dab63ae16007781568d6ef242",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/1/resolved_member_identities/0/identity/hex_digest"
+        },
+        {
+          "actual": 7205,
+          "baseline": 7213,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/1/resolved_member_identities/0/size_bytes"
+        },
+        {
+          "actual": "fe68962b2bed189a4faa6acdcb8c1b0b59850fdba284c985abb461f9c4139f67",
+          "baseline": "3c199f42aab7362c6c35bf586e03795972a56a6e8e230757966be8795ad2a940",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/1/resolved_member_identities/1/identity/hex_digest"
+        },
+        {
+          "actual": 18123,
+          "baseline": 18125,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/1/resolved_member_identities/1/size_bytes"
+        },
+        {
+          "actual": "118d1b8df959cb3e77b1d36fc17ba835be40f294cd9308b7a5087afd6c5e587c",
+          "baseline": "1ffb494a8cbbed3aeee96ddbf63e3db6f265b52201e896812d3f343aabbfa822",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "rdam",
+          "baseline": "isanlp-rst",
+          "classification": "execution",
+          "path": "semantic/preparation/execution/adapters/0/distribution"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "execution",
+          "path": "semantic/preparation/execution/adapters/0/version"
+        },
+        {
+          "actual": 1.932542072609067,
+          "baseline": 1.6345829935744405,
+          "classification": "execution",
+          "path": "semantic/preparation/execution/duration_ms"
+        },
+        {
+          "actual": "8a8f7ef1-5c3f-4da0-8a24-2a29ad71ff51",
+          "baseline": "6e3efb7d-2364-4891-a087-065f903db413",
+          "classification": "execution",
+          "path": "semantic/preparation/execution/execution_id"
+        },
+        {
+          "actual": "8563d9b35d77126ade0cebc8994cc5ea4325dcfbc8ab770f8a0dc100979817cc",
+          "baseline": "4ccb9af69240b9c7675973ba8ec1fa718c1ee853eb03ac4ea6b079c186500093",
+          "classification": "derived_digest",
+          "path": "semantic/preparation/semantic/source_contract/schema_identity/hex_digest"
+        },
+        {
+          "actual": "rdam",
+          "baseline": "isanlp-rst",
+          "classification": "package_identity",
+          "path": "semantic/preparation/semantic/source_contract/upstream_format"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "package_identity",
+          "path": "semantic/preparation/semantic/source_contract/upstream_version"
+        },
+        {
+          "actual": "fdea13b1309353031b14a508073d55dfd4ea8113bdaba8bf363d0d6e7ee4788c",
+          "baseline": "03a3dbc1ed76736affcb9a6f663a525e6c3445905adaf674d1770bf019373e0d",
+          "classification": "derived_digest",
+          "path": "semantic/preparation/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "24206f3a11e395fb5f2cf1587b00019dbfd15efeeb5259c344acd661d834cd78",
+          "baseline": "f7697927d4d9cc7e1583a08de0bdae576ac9f83dab63ae16007781568d6ef242",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/files/0/identity/hex_digest"
+        },
+        {
+          "actual": 7205,
+          "baseline": 7213,
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/files/0/size_bytes"
+        },
+        {
+          "actual": "fe68962b2bed189a4faa6acdcb8c1b0b59850fdba284c985abb461f9c4139f67",
+          "baseline": "3c199f42aab7362c6c35bf586e03795972a56a6e8e230757966be8795ad2a940",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/files/1/identity/hex_digest"
+        },
+        {
+          "actual": 18123,
+          "baseline": 18125,
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/files/1/size_bytes"
+        },
+        {
+          "actual": "aa7d35047965576d6587e9659efd70e575d94a43f952dc70ce201884b75ca92d",
+          "baseline": "aaddb07ebb53883a00687eee7f14603785aa391d6660305a1ce4a6e9a1206e8a",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/manifest_identity/hex_digest"
+        },
+        {
+          "actual": "rdam-6.0.0",
+          "baseline": "isanlp_rst-5.0.0",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/release_id"
+        },
+        {
+          "actual": "47c8a5e06f5b41ca986c8234f821aa41d29c14dd87e1a0bc4977c735b3995498",
+          "baseline": "ea23fb9b824fbe1afcbdac75ee3f88177e56c8bb3cb10995cc89aafec8e91a2a",
+          "classification": "derived_digest",
+          "path": "semantic/request/composite_analysis_identity/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "fdea13b1309353031b14a508073d55dfd4ea8113bdaba8bf363d0d6e7ee4788c",
+          "baseline": "03a3dbc1ed76736affcb9a6f663a525e6c3445905adaf674d1770bf019373e0d",
+          "classification": "derived_digest",
+          "path": "semantic/request/preparation_identity/hex_digest"
+        },
+        {
+          "actual": "31c037b377a2ad44e4e69f2719c8d7126ccba6bc291afc31fec7e8aee021cea2",
+          "baseline": "a5a9c2881e0fa9b45ed576ebe787de3ab5522b89ba62e3809a3c054950fe9968",
+          "classification": "derived_digest",
+          "path": "semantic/request/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "f618fcfda4968d5276adbb4bee1d02d3b7bf0daaca0436954a62e5971f119bd9",
+          "baseline": "fe5a7a68f79d1c8e64a839a1e2b38f4e1adda6281288a853748a267ef1c7eb22",
+          "classification": "derived_digest",
+          "path": "semantic_digest/hex_digest"
+        }
+      ]
+    },
+    "analyse-text": {
+      "actual_digest": "d4d6cbf9eefab0f30f02e0de4627761f136ac63ab0dccc1c1663b759e026252a",
+      "baseline_digest": "2ea04e608c6fd7ad1075129d7b86729a2d73ff754d337ab7a85a080b6808039d",
+      "differences": [
+        {
+          "actual": 130.97070902585983,
+          "baseline": 123.01770807243884,
+          "classification": "execution",
+          "path": "execution/duration_ms"
+        },
+        {
+          "actual": "22eaf8b0-31ef-4bed-ad24-f9a77ee3f845",
+          "baseline": "d4370a9d-4ce4-453a-a5d2-1087be59922b",
+          "classification": "execution",
+          "path": "execution/execution_id"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "execution",
+          "path": "execution/software_version"
+        },
+        {
+          "actual": "bd1527cd2377fe5385ba25d52eb7a938d521aa73-dirty",
+          "baseline": "17fb5ce7ca9bd69003a45214341d43e3a5781192-dirty",
+          "classification": "execution",
+          "path": "execution/source_revision"
+        },
+        {
+          "actual": 107.90020902641118,
+          "baseline": 100.14400002546608,
+          "classification": "execution",
+          "path": "execution/unit_executions/0/duration_ms"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "package_identity",
+          "path": "semantic/analysis/provenance/software_version"
+        },
+        {
+          "actual": "bd1527cd2377fe5385ba25d52eb7a938d521aa73-dirty",
+          "baseline": "17fb5ce7ca9bd69003a45214341d43e3a5781192-dirty",
+          "classification": "execution",
+          "path": "semantic/analysis/provenance/source_revision"
+        },
+        {
+          "actual": "2026-09-02T11:53:07.633524+00:00",
+          "baseline": "2026-09-02T08:24:13.675181+00:00",
+          "classification": "execution",
+          "path": "semantic/analysis/provenance/timestamp"
+        },
+        {
+          "actual": 26.511084055528045,
+          "baseline": 27.505666948854923,
+          "classification": "execution",
+          "path": "semantic/analysis/timing/parsing_ms"
+        },
+        {
+          "actual": 26.511084055528045,
+          "baseline": 27.505666948854923,
+          "classification": "execution",
+          "path": "semantic/analysis/timing/total_ms"
+        },
+        {
+          "actual": "f7bb86db0fc6126520d97aaeb17d3c7e9a5ee597a621117c22c9a460deb1559d",
+          "baseline": "6e55fa04d3678eb5a58f0b281d9fe1e1cca08893951c85572e7cb595f274b687",
+          "classification": "derived_digest",
+          "path": "semantic/cache_request_identity/hex_digest"
+        },
+        {
+          "actual": "24206f3a11e395fb5f2cf1587b00019dbfd15efeeb5259c344acd661d834cd78",
+          "baseline": "f7697927d4d9cc7e1583a08de0bdae576ac9f83dab63ae16007781568d6ef242",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/files/0/identity/hex_digest"
+        },
+        {
+          "actual": 7205,
+          "baseline": 7213,
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/files/0/size_bytes"
+        },
+        {
+          "actual": "fe68962b2bed189a4faa6acdcb8c1b0b59850fdba284c985abb461f9c4139f67",
+          "baseline": "3c199f42aab7362c6c35bf586e03795972a56a6e8e230757966be8795ad2a940",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/files/1/identity/hex_digest"
+        },
+        {
+          "actual": 18123,
+          "baseline": 18125,
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/files/1/size_bytes"
+        },
+        {
+          "actual": "aa7d35047965576d6587e9659efd70e575d94a43f952dc70ce201884b75ca92d",
+          "baseline": "aaddb07ebb53883a00687eee7f14603785aa391d6660305a1ce4a6e9a1206e8a",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/manifest_identity/hex_digest"
+        },
+        {
+          "actual": "rdam-6.0.0",
+          "baseline": "isanlp_rst-5.0.0",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/marker_refiner/release_id"
+        },
+        {
+          "actual": "d0dd80ca0cd8c205146d8607504473f251a3b500c420af43e7065791c6ed8f87",
+          "baseline": "d6ff84780867b41a416e97bde231b1c05ae446430f9176acb43719e4c77a290b",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/segmenter/files/0/identity/hex_digest"
+        },
+        {
+          "actual": 20145,
+          "baseline": 20161,
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/segmenter/files/0/size_bytes"
+        },
+        {
+          "actual": "38b39f971b19fd9cd587025c1411b9fccc5d2b9621dd27b7a768c8d90045d808",
+          "baseline": "abeabbfe16701ca0de39bfe246a99f4145c1b32fc0de3cd67be5d2d52ced1b02",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/segmenter/manifest_identity/hex_digest"
+        },
+        {
+          "actual": "rdam-6.0.0",
+          "baseline": "isanlp_rst-5.0.0",
+          "classification": "package_source_identity",
+          "path": "semantic/composite_identity/segmenter/release_id"
+        },
+        {
+          "actual": "96e8422ca783ed35def1d6f41b8deca391ce5d5c6cc5a9df95a7eaf0ef7dd69a",
+          "baseline": "8db0905fd1434ede80adff0289d64fbc86d17843cf09e7c086235d912f73aadc",
+          "classification": "derived_digest",
+          "path": "semantic/composite_identity/semantic_digest/hex_digest"
+        },
+        {
+          "actual": 107.90020902641118,
+          "baseline": 100.14400002546608,
+          "classification": "execution",
+          "path": "semantic/parser_result/execution/duration_ms"
+        },
+        {
+          "actual": "2fd4b164-279c-4045-a74c-4a7d1e1a2529",
+          "baseline": "ad36e49e-bedb-4e75-89ae-669d1b20835d",
+          "classification": "execution",
+          "path": "semantic/parser_result/execution/execution_id"
+        },
+        {
+          "actual": 107.90020902641118,
+          "baseline": 100.14400002546608,
+          "classification": "execution",
+          "path": "semantic/parser_result/execution/unit_executions/0/duration_ms"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "package_identity",
+          "path": "semantic/parser_result/semantic/analysis/provenance/software_version"
+        },
+        {
+          "actual": "bd1527cd2377fe5385ba25d52eb7a938d521aa73-dirty",
+          "baseline": "17fb5ce7ca9bd69003a45214341d43e3a5781192-dirty",
+          "classification": "execution",
+          "path": "semantic/parser_result/semantic/analysis/provenance/source_revision"
+        },
+        {
+          "actual": "2026-09-02T11:53:07.633524+00:00",
+          "baseline": "2026-09-02T08:24:13.675181+00:00",
+          "classification": "execution",
+          "path": "semantic/parser_result/semantic/analysis/provenance/timestamp"
+        },
+        {
+          "actual": 26.511084055528045,
+          "baseline": 27.505666948854923,
+          "classification": "execution",
+          "path": "semantic/parser_result/semantic/analysis/timing/parsing_ms"
+        },
+        {
+          "actual": 26.511084055528045,
+          "baseline": 27.505666948854923,
+          "classification": "execution",
+          "path": "semantic/parser_result/semantic/analysis/timing/total_ms"
+        },
+        {
+          "actual": "24206f3a11e395fb5f2cf1587b00019dbfd15efeeb5259c344acd661d834cd78",
+          "baseline": "f7697927d4d9cc7e1583a08de0bdae576ac9f83dab63ae16007781568d6ef242",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/files/0/identity/hex_digest"
+        },
+        {
+          "actual": 7205,
+          "baseline": 7213,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/files/0/size_bytes"
+        },
+        {
+          "actual": "fe68962b2bed189a4faa6acdcb8c1b0b59850fdba284c985abb461f9c4139f67",
+          "baseline": "3c199f42aab7362c6c35bf586e03795972a56a6e8e230757966be8795ad2a940",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/files/1/identity/hex_digest"
+        },
+        {
+          "actual": 18123,
+          "baseline": 18125,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/files/1/size_bytes"
+        },
+        {
+          "actual": "aa7d35047965576d6587e9659efd70e575d94a43f952dc70ce201884b75ca92d",
+          "baseline": "aaddb07ebb53883a00687eee7f14603785aa391d6660305a1ce4a6e9a1206e8a",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/manifest_identity/hex_digest"
+        },
+        {
+          "actual": "rdam-6.0.0",
+          "baseline": "isanlp_rst-5.0.0",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/marker_refiner/release_id"
+        },
+        {
+          "actual": "d0dd80ca0cd8c205146d8607504473f251a3b500c420af43e7065791c6ed8f87",
+          "baseline": "d6ff84780867b41a416e97bde231b1c05ae446430f9176acb43719e4c77a290b",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/segmenter/files/0/identity/hex_digest"
+        },
+        {
+          "actual": 20145,
+          "baseline": 20161,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/segmenter/files/0/size_bytes"
+        },
+        {
+          "actual": "38b39f971b19fd9cd587025c1411b9fccc5d2b9621dd27b7a768c8d90045d808",
+          "baseline": "abeabbfe16701ca0de39bfe246a99f4145c1b32fc0de3cd67be5d2d52ced1b02",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/segmenter/manifest_identity/hex_digest"
+        },
+        {
+          "actual": "rdam-6.0.0",
+          "baseline": "isanlp_rst-5.0.0",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/composite_identity/segmenter/release_id"
+        },
+        {
+          "actual": "96e8422ca783ed35def1d6f41b8deca391ce5d5c6cc5a9df95a7eaf0ef7dd69a",
+          "baseline": "8db0905fd1434ede80adff0289d64fbc86d17843cf09e7c086235d912f73aadc",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic/composite_identity/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "57f20a00e111870413204b35f31fbe5766ae22ae2f5623f68d4fa373a27b472f",
+          "baseline": "8b931fa0a3c210326be24ae8eaab5209eedb6c274028312756c5dc79fc7cd72a",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic/loaded_components/1/declared_identity/hex_digest"
+        },
+        {
+          "actual": "d0dd80ca0cd8c205146d8607504473f251a3b500c420af43e7065791c6ed8f87",
+          "baseline": "d6ff84780867b41a416e97bde231b1c05ae446430f9176acb43719e4c77a290b",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/1/resolved_member_identities/0/identity/hex_digest"
+        },
+        {
+          "actual": 20145,
+          "baseline": 20161,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/1/resolved_member_identities/0/size_bytes"
+        },
+        {
+          "actual": "ce2d0f2f1c79babc2264c38b1b23c5ee302d77aaf59a7e0ded8d29f235e9e76d",
+          "baseline": "79b0171ec99d21abb83ffd40ad524eec4c02e7434ada49aaa4a27c69f3df2f8f",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic/loaded_components/2/declared_identity/hex_digest"
+        },
+        {
+          "actual": "24206f3a11e395fb5f2cf1587b00019dbfd15efeeb5259c344acd661d834cd78",
+          "baseline": "f7697927d4d9cc7e1583a08de0bdae576ac9f83dab63ae16007781568d6ef242",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/2/resolved_member_identities/0/identity/hex_digest"
+        },
+        {
+          "actual": 7205,
+          "baseline": 7213,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/2/resolved_member_identities/0/size_bytes"
+        },
+        {
+          "actual": "fe68962b2bed189a4faa6acdcb8c1b0b59850fdba284c985abb461f9c4139f67",
+          "baseline": "3c199f42aab7362c6c35bf586e03795972a56a6e8e230757966be8795ad2a940",
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/2/resolved_member_identities/1/identity/hex_digest"
+        },
+        {
+          "actual": 18123,
+          "baseline": 18125,
+          "classification": "package_source_identity",
+          "path": "semantic/parser_result/semantic/loaded_components/2/resolved_member_identities/1/size_bytes"
+        },
+        {
+          "actual": "57f20a00e111870413204b35f31fbe5766ae22ae2f5623f68d4fa373a27b472f",
+          "baseline": "8b931fa0a3c210326be24ae8eaab5209eedb6c274028312756c5dc79fc7cd72a",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic/primary_inference/segmentation_decisions/0/producing_component_identity/hex_digest"
+        },
+        {
+          "actual": "57f20a00e111870413204b35f31fbe5766ae22ae2f5623f68d4fa373a27b472f",
+          "baseline": "8b931fa0a3c210326be24ae8eaab5209eedb6c274028312756c5dc79fc7cd72a",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic/primary_inference/segmentation_decisions/1/producing_component_identity/hex_digest"
+        },
+        {
+          "actual": "57f20a00e111870413204b35f31fbe5766ae22ae2f5623f68d4fa373a27b472f",
+          "baseline": "8b931fa0a3c210326be24ae8eaab5209eedb6c274028312756c5dc79fc7cd72a",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic/primary_inference/segmentation_decisions/2/producing_component_identity/hex_digest"
+        },
+        {
+          "actual": "c417e096356b2b6f7a3143539a6512ab7e3e7193cc43229c1aff5d88f9d21d6b",
+          "baseline": "24e03008a578061a31cbdb7aba1cf1a994cfa7701e45346d9ac7bfd583be533e",
+          "classification": "derived_digest",
+          "path": "semantic/parser_result/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "rdam",
+          "baseline": "isanlp-rst",
+          "classification": "execution",
+          "path": "semantic/preparation/execution/adapters/0/distribution"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "execution",
+          "path": "semantic/preparation/execution/adapters/0/version"
+        },
+        {
+          "actual": 1.4202919555827975,
+          "baseline": 1.471125055104494,
+          "classification": "execution",
+          "path": "semantic/preparation/execution/duration_ms"
+        },
+        {
+          "actual": "6c870cea-9af7-445d-9f0e-a029c649996f",
+          "baseline": "ada5e8c9-8679-482c-a539-5cdc15377045",
+          "classification": "execution",
+          "path": "semantic/preparation/execution/execution_id"
+        },
+        {
+          "actual": "0216c3097b992d052991c0ed57322bc22dcbb6e304dd823be32f6e7ab844d3d6",
+          "baseline": "07ba16cec80b667c93fad66fb25e90e96feffc52dcde9c8426074450b1dde45e",
+          "classification": "derived_digest",
+          "path": "semantic/preparation/semantic/source_contract/schema_identity/hex_digest"
+        },
+        {
+          "actual": "rdam",
+          "baseline": "isanlp-rst",
+          "classification": "package_identity",
+          "path": "semantic/preparation/semantic/source_contract/upstream_format"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "package_identity",
+          "path": "semantic/preparation/semantic/source_contract/upstream_version"
+        },
+        {
+          "actual": "84e52d572cebe33d30b0ab7c1c8ad902033ab88892a8ef9d8508f32f3eb3e65c",
+          "baseline": "22705dc8ff4b357b7bcbc231993825ebb61ff88a65d38066bbcb780714512b6e",
+          "classification": "derived_digest",
+          "path": "semantic/preparation/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "57f20a00e111870413204b35f31fbe5766ae22ae2f5623f68d4fa373a27b472f",
+          "baseline": "8b931fa0a3c210326be24ae8eaab5209eedb6c274028312756c5dc79fc7cd72a",
+          "classification": "derived_digest",
+          "path": "semantic/primary_inference/segmentation_decisions/0/producing_component_identity/hex_digest"
+        },
+        {
+          "actual": "57f20a00e111870413204b35f31fbe5766ae22ae2f5623f68d4fa373a27b472f",
+          "baseline": "8b931fa0a3c210326be24ae8eaab5209eedb6c274028312756c5dc79fc7cd72a",
+          "classification": "derived_digest",
+          "path": "semantic/primary_inference/segmentation_decisions/1/producing_component_identity/hex_digest"
+        },
+        {
+          "actual": "57f20a00e111870413204b35f31fbe5766ae22ae2f5623f68d4fa373a27b472f",
+          "baseline": "8b931fa0a3c210326be24ae8eaab5209eedb6c274028312756c5dc79fc7cd72a",
+          "classification": "derived_digest",
+          "path": "semantic/primary_inference/segmentation_decisions/2/producing_component_identity/hex_digest"
+        },
+        {
+          "actual": "24206f3a11e395fb5f2cf1587b00019dbfd15efeeb5259c344acd661d834cd78",
+          "baseline": "f7697927d4d9cc7e1583a08de0bdae576ac9f83dab63ae16007781568d6ef242",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/files/0/identity/hex_digest"
+        },
+        {
+          "actual": 7205,
+          "baseline": 7213,
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/files/0/size_bytes"
+        },
+        {
+          "actual": "fe68962b2bed189a4faa6acdcb8c1b0b59850fdba284c985abb461f9c4139f67",
+          "baseline": "3c199f42aab7362c6c35bf586e03795972a56a6e8e230757966be8795ad2a940",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/files/1/identity/hex_digest"
+        },
+        {
+          "actual": 18123,
+          "baseline": 18125,
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/files/1/size_bytes"
+        },
+        {
+          "actual": "aa7d35047965576d6587e9659efd70e575d94a43f952dc70ce201884b75ca92d",
+          "baseline": "aaddb07ebb53883a00687eee7f14603785aa391d6660305a1ce4a6e9a1206e8a",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/manifest_identity/hex_digest"
+        },
+        {
+          "actual": "rdam-6.0.0",
+          "baseline": "isanlp_rst-5.0.0",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/marker_refiner/release_id"
+        },
+        {
+          "actual": "d0dd80ca0cd8c205146d8607504473f251a3b500c420af43e7065791c6ed8f87",
+          "baseline": "d6ff84780867b41a416e97bde231b1c05ae446430f9176acb43719e4c77a290b",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/segmenter/files/0/identity/hex_digest"
+        },
+        {
+          "actual": 20145,
+          "baseline": 20161,
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/segmenter/files/0/size_bytes"
+        },
+        {
+          "actual": "38b39f971b19fd9cd587025c1411b9fccc5d2b9621dd27b7a768c8d90045d808",
+          "baseline": "abeabbfe16701ca0de39bfe246a99f4145c1b32fc0de3cd67be5d2d52ced1b02",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/segmenter/manifest_identity/hex_digest"
+        },
+        {
+          "actual": "rdam-6.0.0",
+          "baseline": "isanlp_rst-5.0.0",
+          "classification": "package_source_identity",
+          "path": "semantic/request/composite_analysis_identity/segmenter/release_id"
+        },
+        {
+          "actual": "96e8422ca783ed35def1d6f41b8deca391ce5d5c6cc5a9df95a7eaf0ef7dd69a",
+          "baseline": "8db0905fd1434ede80adff0289d64fbc86d17843cf09e7c086235d912f73aadc",
+          "classification": "derived_digest",
+          "path": "semantic/request/composite_analysis_identity/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "84e52d572cebe33d30b0ab7c1c8ad902033ab88892a8ef9d8508f32f3eb3e65c",
+          "baseline": "22705dc8ff4b357b7bcbc231993825ebb61ff88a65d38066bbcb780714512b6e",
+          "classification": "derived_digest",
+          "path": "semantic/request/preparation_identity/hex_digest"
+        },
+        {
+          "actual": "f7bb86db0fc6126520d97aaeb17d3c7e9a5ee597a621117c22c9a460deb1559d",
+          "baseline": "6e55fa04d3678eb5a58f0b281d9fe1e1cca08893951c85572e7cb595f274b687",
+          "classification": "derived_digest",
+          "path": "semantic/request/semantic_digest/hex_digest"
+        },
+        {
+          "actual": "d4d6cbf9eefab0f30f02e0de4627761f136ac63ab0dccc1c1663b759e026252a",
+          "baseline": "2ea04e608c6fd7ad1075129d7b86729a2d73ff754d337ab7a85a080b6808039d",
+          "classification": "derived_digest",
+          "path": "semantic_digest/hex_digest"
+        }
+      ]
+    },
+    "capabilities": {
+      "actual_digest": "a517c13d58c7a6739fedf6ccf786c38c961464112b53e42b5b42ddab90225ac5",
+      "baseline_digest": "c9ed51937ed519e14037bd08dc56f4a799776605171997499193a78fd2f91e13",
+      "differences": [
+        {
+          "actual": "7bb525ae-58cd-4de0-ad1f-14c956fdb3e0",
+          "baseline": "12f9ce13-6d2c-48c3-ad4f-fa2deee05561",
+          "classification": "execution",
+          "path": "execution/execution_id"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "package_identity",
+          "path": "semantic/package_version"
+        },
+        {
+          "actual": "a517c13d58c7a6739fedf6ccf786c38c961464112b53e42b5b42ddab90225ac5",
+          "baseline": "c9ed51937ed519e14037bd08dc56f4a799776605171997499193a78fd2f91e13",
+          "classification": "derived_digest",
+          "path": "semantic_digest/hex_digest"
+        }
+      ]
+    },
+    "prepare-doclang_archive": {
+      "actual_digest": "5fa732309bc86e49061cf4803111b79c97eec53d43ecbe84a0e236e222e1ed25",
+      "baseline_digest": "9b78e2da80d269589495244bc0d1b9fa2071167c67d0c4660d13b634847b2b6c",
+      "differences": [
+        {
+          "actual": 36.23354190494865,
+          "baseline": 39.22558401245624,
+          "classification": "execution",
+          "path": "execution/duration_ms"
+        },
+        {
+          "actual": "ca477b11-2ef4-4396-9b4b-13574e66d6c2",
+          "baseline": "a1fde093-2a52-4b36-ba3e-6629b1b198c1",
+          "classification": "execution",
+          "path": "execution/execution_id"
+        },
+        {
+          "actual": "4a3eecda634b532cc2b690848f3da73e45826c63d4de3bd0a7b149dbd519a34e",
+          "baseline": "287cd5b789f1a3f5e405b8f798d3ecce379bb462c9301324d56dc056a95fdebe",
+          "classification": "derived_digest",
+          "path": "semantic/source_contract/schema_identity/hex_digest"
+        },
+        {
+          "actual": "5fa732309bc86e49061cf4803111b79c97eec53d43ecbe84a0e236e222e1ed25",
+          "baseline": "9b78e2da80d269589495244bc0d1b9fa2071167c67d0c4660d13b634847b2b6c",
+          "classification": "derived_digest",
+          "path": "semantic_digest/hex_digest"
+        }
+      ]
+    },
+    "prepare-doclang_xml": {
+      "actual_digest": "e6f7e6fd197a516e6038f3bcc39855d827c7bb8a81ff08cff55e73b43d976c95",
+      "baseline_digest": "5ce5de46b79a11dfee05f6efbe75a92f292f8d916f728b656f063810b3a71275",
+      "differences": [
+        {
+          "actual": 82.88479095790535,
+          "baseline": 83.1858329474926,
+          "classification": "execution",
+          "path": "execution/duration_ms"
+        },
+        {
+          "actual": "0c855ae0-8ae2-4db9-a198-6f638c63dab6",
+          "baseline": "4c02d1fc-f2b9-4715-90fd-39d0226cd9d6",
+          "classification": "execution",
+          "path": "execution/execution_id"
+        },
+        {
+          "actual": "4a3eecda634b532cc2b690848f3da73e45826c63d4de3bd0a7b149dbd519a34e",
+          "baseline": "287cd5b789f1a3f5e405b8f798d3ecce379bb462c9301324d56dc056a95fdebe",
+          "classification": "derived_digest",
+          "path": "semantic/source_contract/schema_identity/hex_digest"
+        },
+        {
+          "actual": "e6f7e6fd197a516e6038f3bcc39855d827c7bb8a81ff08cff55e73b43d976c95",
+          "baseline": "5ce5de46b79a11dfee05f6efbe75a92f292f8d916f728b656f063810b3a71275",
+          "classification": "derived_digest",
+          "path": "semantic_digest/hex_digest"
+        }
+      ]
+    },
+    "prepare-docling_json": {
+      "actual_digest": "9887bfc8c505453947b84766a95a239e79c32f698b6aa17e83c53d3b07b7cf95",
+      "baseline_digest": "319c74e2e26b90f84da2a74d866dd66a57d7b03d8b8f496a4a2fb43e052f74dc",
+      "differences": [
+        {
+          "actual": 298.9310419652611,
+          "baseline": 312.8475419944152,
+          "classification": "execution",
+          "path": "execution/duration_ms"
+        },
+        {
+          "actual": "c91d71a0-05ff-4ae9-a029-da4a82026728",
+          "baseline": "207b8e82-af75-40d0-a2d5-16e72fc54e85",
+          "classification": "execution",
+          "path": "execution/execution_id"
+        },
+        {
+          "actual": "f8b5b6fe6d2bc712d04ffe70278af62ab4959fadb36eb0f0b8232abe0b0489a8",
+          "baseline": "ea4acde8b695e70b8e917ae37ac996ac8af1251116cd8483a13ce5ee1629e1e3",
+          "classification": "derived_digest",
+          "path": "semantic/source_contract/schema_identity/hex_digest"
+        },
+        {
+          "actual": "9887bfc8c505453947b84766a95a239e79c32f698b6aa17e83c53d3b07b7cf95",
+          "baseline": "319c74e2e26b90f84da2a74d866dd66a57d7b03d8b8f496a4a2fb43e052f74dc",
+          "classification": "derived_digest",
+          "path": "semantic_digest/hex_digest"
+        }
+      ]
+    },
+    "prepare-edus": {
+      "actual_digest": "4032b5acec4ec44b9073d34ccb74fab005994c34951e745c02097d3ffe375dd1",
+      "baseline_digest": "7c48a891f44b955979fdf2b281c09d4620c967fc32c14fe6704c60a17974fca5",
+      "differences": [
+        {
+          "actual": "rdam",
+          "baseline": "isanlp-rst",
+          "classification": "execution",
+          "path": "execution/adapters/0/distribution"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "execution",
+          "path": "execution/adapters/0/version"
+        },
+        {
+          "actual": 1.4589170459657907,
+          "baseline": 1.4487080043181777,
+          "classification": "execution",
+          "path": "execution/duration_ms"
+        },
+        {
+          "actual": "c51f0d4b-05df-4e41-a66c-6c8b236010f7",
+          "baseline": "e7451842-d822-47ba-8020-2a86e7f6e225",
+          "classification": "execution",
+          "path": "execution/execution_id"
+        },
+        {
+          "actual": "8563d9b35d77126ade0cebc8994cc5ea4325dcfbc8ab770f8a0dc100979817cc",
+          "baseline": "4ccb9af69240b9c7675973ba8ec1fa718c1ee853eb03ac4ea6b079c186500093",
+          "classification": "derived_digest",
+          "path": "semantic/source_contract/schema_identity/hex_digest"
+        },
+        {
+          "actual": "rdam",
+          "baseline": "isanlp-rst",
+          "classification": "package_identity",
+          "path": "semantic/source_contract/upstream_format"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "package_identity",
+          "path": "semantic/source_contract/upstream_version"
+        },
+        {
+          "actual": "4032b5acec4ec44b9073d34ccb74fab005994c34951e745c02097d3ffe375dd1",
+          "baseline": "7c48a891f44b955979fdf2b281c09d4620c967fc32c14fe6704c60a17974fca5",
+          "classification": "derived_digest",
+          "path": "semantic_digest/hex_digest"
+        }
+      ]
+    },
+    "prepare-markdown": {
+      "actual_digest": "b6c291e0b9f1aadb333810cd3bd00fcbe4f25fa092d63d3b06fa4487e03f3bd2",
+      "baseline_digest": "e14b8303381adc484e04ee926115fedb2f88fb57d1b0c4b12b9f042afe391787",
+      "differences": [
+        {
+          "actual": 14.902957947924733,
+          "baseline": 15.607374953106046,
+          "classification": "execution",
+          "path": "execution/duration_ms"
+        },
+        {
+          "actual": "b5befdce-2f38-4f3b-836d-2ac6aee109f0",
+          "baseline": "0c806395-94c6-45b5-a8bb-40801e323ff3",
+          "classification": "execution",
+          "path": "execution/execution_id"
+        },
+        {
+          "actual": "5e5fa7fd5f476c632e6e44aa9841995448e3359d88739db749bd65e4df086cb8",
+          "baseline": "96ba1964f5867620242a4d462b962b05a5270bb6e0356b97f29a71dc3219ff83",
+          "classification": "derived_digest",
+          "path": "semantic/source_contract/schema_identity/hex_digest"
+        },
+        {
+          "actual": "b6c291e0b9f1aadb333810cd3bd00fcbe4f25fa092d63d3b06fa4487e03f3bd2",
+          "baseline": "e14b8303381adc484e04ee926115fedb2f88fb57d1b0c4b12b9f042afe391787",
+          "classification": "derived_digest",
+          "path": "semantic_digest/hex_digest"
+        }
+      ]
+    },
+    "prepare-text": {
+      "actual_digest": "4e16d99de41dbb8f1caf758b792f0432c9ecaefc4e3b1feb1ec39ca4d097930a",
+      "baseline_digest": "4a8111a58016505a0a6762c63b52b4473a978398f5970fe967d7a5f76e0640c0",
+      "differences": [
+        {
+          "actual": "rdam",
+          "baseline": "isanlp-rst",
+          "classification": "execution",
+          "path": "execution/adapters/0/distribution"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "execution",
+          "path": "execution/adapters/0/version"
+        },
+        {
+          "actual": 0.9443749440833926,
+          "baseline": 1.065958058461547,
+          "classification": "execution",
+          "path": "execution/duration_ms"
+        },
+        {
+          "actual": "8dd87844-386f-4b6e-a4c3-e7eacf6ca861",
+          "baseline": "8e32e71d-ee63-4ce7-8d5c-095e1c2922b7",
+          "classification": "execution",
+          "path": "execution/execution_id"
+        },
+        {
+          "actual": "0216c3097b992d052991c0ed57322bc22dcbb6e304dd823be32f6e7ab844d3d6",
+          "baseline": "07ba16cec80b667c93fad66fb25e90e96feffc52dcde9c8426074450b1dde45e",
+          "classification": "derived_digest",
+          "path": "semantic/source_contract/schema_identity/hex_digest"
+        },
+        {
+          "actual": "rdam",
+          "baseline": "isanlp-rst",
+          "classification": "package_identity",
+          "path": "semantic/source_contract/upstream_format"
+        },
+        {
+          "actual": "6.0.0",
+          "baseline": "5.0.0",
+          "classification": "package_identity",
+          "path": "semantic/source_contract/upstream_version"
+        },
+        {
+          "actual": "4e16d99de41dbb8f1caf758b792f0432c9ecaefc4e3b1feb1ec39ca4d097930a",
+          "baseline": "4a8111a58016505a0a6762c63b52b4473a978398f5970fe967d7a5f76e0640c0",
+          "classification": "derived_digest",
+          "path": "semantic_digest/hex_digest"
+        }
+      ]
+    }
+  },
+  "difference_counts_by_class": {
+    "derived_digest": 42,
+    "execution": 57,
+    "package_identity": 13,
+    "package_source_identity": 58
+  },
+  "equivalent": false
+}

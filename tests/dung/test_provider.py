@@ -30,7 +30,7 @@ from rdam import (
     UnavailableOutcome,
     UnavailableReason,
 )
-from rdam_dung import PROVIDER_ID, DungProvider, packaged_decision, source_identity
+from rdam.dung import PROVIDER_ID, DungProvider, packaged_decision, source_identity
 
 
 def _decision(outcome: PromotionOutcome, artifact: Sha256Identity | None = None) -> PromotionDecision:

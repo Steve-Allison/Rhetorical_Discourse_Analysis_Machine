@@ -13,7 +13,7 @@ from workbench.archive.legacy_2021.universal_parser.inventory import (
     ensure_unirst_module_aliases,
     import_relation_table_from_legacy_pickle,
 )
-from isanlp_rst.model_loading.parser_input import ParserInput
+from rdam.rst.model_loading.parser_input import ParserInput
 from workbench.corpus.unirst.binary_tree import BinaryTree, Node
 from workbench.corpus.unirst.data import Rs3Document
 from workbench.archive.legacy_2021.universal_parser.src.parser.data import Data

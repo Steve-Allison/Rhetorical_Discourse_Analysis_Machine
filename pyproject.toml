@@ -3,10 +3,10 @@ requires = ["hatchling>=1.32,<2"]
 build-backend = "hatchling.build"
 
 [project]
-name = "isanlp_rst"
-version = "5.0.0"
-import-names = ["isanlp_rst"]
-description = "End-to-end RST parser across 11 languages (Steve Allison's evolution of the IsaNLP RST Parser by Elena Chistova)."
+name = "rdam"
+version = "6.0.0"
+import-names = ["rdam"]
+description = "Rhetorical Discourse Analysis Machine: RST/eRST (Steve Allison's evolution of the IsaNLP RST Parser by Elena Chistova), Dung, and IBIS discourse analysis side by side, analysis-only."
 readme = "README.md"
 requires-python = ">=3.14"
 license = "MIT"
@@ -38,7 +38,7 @@ dependencies = [
 ]
 
 [project.scripts]
-isanlp-rst = "isanlp_rst.cli:main"
+rdam-rst = "rdam.rst.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/Steve-Allison/isanlp_rst"
@@ -76,14 +76,15 @@ offline = [
   "tiktoken>=0.13,<0.14",
 ]
 
-# The package lives under the rst/ boundary (feature 010); Hatchling ships the final path
-# component as the import package, so the import name isanlp_rst is unchanged.
+# One distribution, one package (owner ruling 2026-09-02): `rdam` is the machine, and every
+# promoted technique is a sub-package — rdam.rst, rdam.dung, rdam.ibis, ... — shipped in one
+# wheel. Release tooling reads this table; it never restates the name or the version.
 [tool.hatch.build.targets.wheel]
-packages = ["rst/isanlp_rst"]
+packages = ["rdam"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-  "/rst/isanlp_rst",
+  "/rdam",
   "/LICENSE",
   "/LICENSE_MODELS",
   "/README.md",
@@ -109,28 +110,22 @@ platforms = [{ platform = "osx-arm64", macos = "14.0" }]
 python = "3.14.*"
 
 [tool.pixi.feature.production.pypi-dependencies]
-isanlp_rst = { path = ".", editable = true }
-rdam = { path = "machine", editable = true }
-rdam-rst = { path = "rst", editable = true }
-rdam-dung = { path = "dung", editable = true }
+rdam = { path = ".", editable = true }
 
 # Task descriptions are the authority `pixi task list` shows; docs point here rather than
 # restating them.
 [tool.pixi.feature.production.tasks]
 production-boundary = { cmd = "python -m tools.production_boundary --root .", description = "Ownership and import boundary inspection of the source tree (no artifacts)" }
 production-import-check = { cmd = "python -m tools.production_boundary.import_check", description = "Import the installed distribution without loading weights; here that is the editable source, so it certifies no wheel" }
-production-artifacts = { cmd = "python -m tools.production_boundary --root . --artifact dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --artifact dist/5.0.0/isanlp_rst-5.0.0.tar.gz", description = "Boundary inspection plus forbidden-member and dependency checks on the built dist/5.0.0 pair" }
-production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3 --full", description = "Wheel certification: pip-install the built wheel into fresh core and formats venvs, network disabled, full installed acceptance on the named release" }
+production-artifacts = { cmd = "python -m tools.production_boundary --root . --release", description = "Boundary inspection plus full validation of the built dist/<version> pair (version from pyproject.toml)" }
+production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --root . --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3 --full", description = "Wheel certification: pip-install the built dist/<version> wheel into fresh core and formats venvs, network disabled, full installed acceptance on the named release" }
 
 [tool.pixi.feature.offline.dependencies]
 python = "3.14.*"
 markdownlint-cli2 = ">=0.14"
 
 [tool.pixi.feature.offline.pypi-dependencies]
-isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats", "offline"] }
-rdam = { path = "machine", editable = true }
-rdam-rst = { path = "rst", editable = true }
-rdam-dung = { path = "dung", editable = true }
+rdam = { path = ".", editable = true, extras = ["dev", "formats", "offline"] }
 linkml = ">=1.11.1, <2"
 
 [tool.ruff]
@@ -149,9 +144,7 @@ ignore = [
 
 [tool.pyright]
 include = [
-  "machine",
-  "rst",
-  "dung",
+  "rdam",
   "workbench",
   "tools",
   "tests",
@@ -180,16 +173,16 @@ test = { cmd = "pytest -m 'not slow and not stress' -q", description = "Fast sui
 test-all = { cmd = "pytest -q", description = "Every test, including slow model-loading tests and the production smoke" }
 test-stress = { cmd = "pytest tests/stress -q", description = "Concurrency, megadoc, and memory-leak stress tests" }
 smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every ModernBERT release in models/model-releases on every available device (CPU, MPS, CUDA) through the public façade; skips visibly when the store is empty" }
-lint = { cmd = "ruff check machine rst dung workbench tests scripts tools", description = "Ruff" }
-project-framework-identities = { cmd = "python tools/ontology/project_framework_identities.py", description = "Regenerate machine/rdam/resources/framework-identities.json from the vendored Central taxonomy" }
+lint = { cmd = "ruff check rdam workbench tests scripts tools", description = "Ruff" }
+project-framework-identities = { cmd = "python tools/ontology/project_framework_identities.py", description = "Regenerate rdam/resources/framework-identities.json from the vendored Central taxonomy" }
 ontology-validate = { cmd = "linkml lint --ignore-warnings ontology/schema/rdam.linkml.yaml && linkml validate ontology/schema/rdam.linkml.yaml && linkml validate -s ontology/schema/rdam.linkml.yaml -C ProviderBindings ontology/data/rdam-providers.yaml && python tools/ontology/project_framework_identities.py --check", description = "Validate the rdam LinkML application profile and its provider bindings against the vendored Central distribution, and check the framework projection is current" }
 typecheck = { cmd = "pyright", description = "Pyright, strict" }
 mdlint = { cmd = "python scripts/lint_markdown.py --lint", description = "markdownlint-cli2 over the tracked Markdown manifest" }
 cleanup = { cmd = "python scripts/cleanup.py", description = "Remove bytecode, tool caches, and dist/ (never .pixi)" }
 bench = { cmd = "python -m scripts.bench", description = "Performance bench across models and dtypes" }
 rst-diag = { cmd = "python scripts/rst_diag.py", description = "RST quality proxy metrics over .md / Docling / DocLang sources; --json for machine output" }
-build-production = { cmd = "python -m tools.production_boundary.build", description = "Reproducibly double-build the wheel and sdist from the clean, tagged HEAD into ignored dist/5.0.0/ and write the release evidence JSON under specs/004-production-api-contract/evidence/" }
-validate-production-artifacts = { cmd = "python -m tools.production_boundary --root . --release-dir dist/5.0.0", description = "Boundary gate plus full validation of the built dist/5.0.0 pair: RECORD, provenance, metadata, forbidden members" }
+build-production = { cmd = "python -m tools.production_boundary.build --evidence-dir specs/010-repository-migration/evidence/release", description = "Reproducibly double-build the wheel and sdist from the clean, tagged HEAD into ignored dist/<version>/ (name and version from pyproject.toml) and write the release evidence JSON under specs/010-repository-migration/evidence/release/" }
+validate-production-artifacts = { cmd = "python -m tools.production_boundary --root . --release", description = "Boundary gate plus full validation of the built dist/<version> pair: RECORD, provenance, metadata, forbidden members" }
 production-boundary = { cmd = "python -m tools.production_boundary --root .", description = "Ownership and import boundary inspection of the source tree (no artifacts)" }
 production-import-check = { cmd = "python -m tools.production_boundary.import_check", description = "Import the installed distribution without loading weights; here that is the editable source, so it certifies no wheel" }
 production-api-contract = { cmd = "pytest tests/ingest/production_ingest tests/production_boundary -q", description = "Production ingest contract and production-boundary tool suites" }
@@ -199,7 +192,7 @@ production-ingest-conformance = { cmd = "pytest tests/ingest -q -k 'conformance 
 production-ingest-determinism = { cmd = "pytest tests/ingest/production_ingest/test_determinism.py tests/ingest/production_ingest/test_cache.py -q", description = "Ingest determinism and cache tests" }
 production-ingest-performance = { cmd = "pytest tests/ingest/production_ingest/test_performance.py -q", description = "Ingest preparation performance thresholds" }
 production-ingest-public-api = { cmd = "pytest tests/ingest/production_ingest/test_public_api.py -q", description = "Ingest public-surface reconciliation" }
-production-ingest-clean-install = { cmd = "python tools/production_boundary/clean_install.py --wheel dist/5.0.0/isanlp_rst-5.0.0-py3-none-any.whl --root . --model-store /Users/steveallison/.cache/isanlp_rst/model-releases", description = "Clean-room install of the built wheel with installed acceptance (no inference) against the user-cache model store" }
+production-ingest-clean-install = { cmd = "python tools/production_boundary/clean_install.py --root . --model-store /Users/steveallison/.cache/isanlp_rst/model-releases", description = "Clean-room install of the built dist/<version> wheel with installed acceptance (no inference) against the user-cache model store" }
 production-pre-release-quality = { cmd = "python -m tools.production_boundary.evidence quality --output specs/004-production-api-contract/evidence/pre-release-quality.json", description = "Write the pre-release quality evidence record" }
 production-performance-evidence = { cmd = "python -m tools.production_boundary.evidence performance --output specs/004-production-api-contract/evidence/performance.json", description = "Write the preparation performance evidence record" }
 production-source-release-gates = { cmd = "python -m tools.production_boundary.evidence source-gates --output specs/004-production-api-contract/evidence/source-release-gates.json", description = "Write the aggregate source-gate evidence record" }
@@ -207,6 +200,7 @@ offline-smoke = { cmd = "python -m workbench.smoke", description = "Bounded-star
 promote-model = { cmd = "python -m workbench.promotion.promote", description = "Promote an already-manifested candidate into the immutable local model store (--candidate, --store)" }
 promote-modernbert = { cmd = "python -m workbench.promotion.modernbert", description = "Manifest and promote a ModernBERT candidate under a PromotionDecision (--decision <json>); the decision becomes the release's evaluation evidence and is published beside it" }
 promotion-record = { cmd = "python -m workbench.promotion.decision", description = "Record a PromotionDecision in workbench/promotions/<technique>/ and optionally publish it beside a model-store release (--file, --publish-to)" }
+redeclare-compatibility = { cmd = "python -m workbench.promotion.compatibility", description = "Record, beside an immutable stored release, an evidence-backed re-declaration of the package versions it runs under (--release-id, --range, --declared-by, --reason, --basis); proves the release loads before returning" }
 research-test = { cmd = "pytest tests/offline/research -q", description = "Workbench research suites (not a production gate)" }
 research-lint = { cmd = "ruff check workbench/research tests/offline/research", description = "Ruff over the research code and its tests" }
 

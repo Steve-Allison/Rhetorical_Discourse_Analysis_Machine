@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from isanlp_rst.rstviewer.main import (
+from rdam.rst.rstviewer.main import (
     RenderedRST,
     _html_to_fragment,
     cli,
@@ -84,7 +84,7 @@ def test_render_unlinks_temp_file_for_string_source() -> None:
         created.append(handle.name)
         return handle
 
-    with patch("isanlp_rst.rstviewer.main.tempfile.NamedTemporaryFile", _recording_named_temporary_file):
+    with patch("rdam.rst.rstviewer.main.tempfile.NamedTemporaryFile", _recording_named_temporary_file):
         render(CLASSIC_TEXT, display_inline=False)
 
     assert created

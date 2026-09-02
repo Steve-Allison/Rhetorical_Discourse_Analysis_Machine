@@ -1,6 +1,6 @@
 """RST quality diagnostics over production sources without gold labels.
 
-Every supported source is routed through :mod:`isanlp_rst.ingest`; this tool
+Every supported source is routed through :mod:`rdam.rst.ingest`; this tool
 does not own format-specific preparation policy or result envelopes.
 """
 
@@ -13,14 +13,14 @@ from pathlib import Path
 from statistics import mean, median
 import sys
 
-from isanlp_rst.contracts import NodeKindEnum
-from isanlp_rst.ingest import (
+from rdam.rst.contracts import NodeKindEnum
+from rdam.rst.ingest import (
     ProductionAnalysisOutcome,
     ProductionIngestor,
     SourceArtifact,
     SourceForm,
 )
-from isanlp_rst.parser import Parser
+from rdam.rst.parser import Parser
 
 _THIN_PREFIXES = ("joint", "same-unit", "same_unit", "organization")
 

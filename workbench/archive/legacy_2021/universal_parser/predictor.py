@@ -12,8 +12,8 @@ from huggingface_hub.errors import EntryNotFoundError
 from tqdm import tqdm
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
-from isanlp_rst.base_predictor import BasePredictor, resolve_device, str2bool
-from isanlp_rst.utils.du_converter import DUConverter
+from rdam.rst.base_predictor import BasePredictor, resolve_device, str2bool
+from rdam.rst.utils.du_converter import DUConverter
 
 from .inventory import (
     ensure_unirst_module_aliases,

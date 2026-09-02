@@ -4,9 +4,9 @@ from pathlib import Path
 
 from docling_core.types.doc import ContentLayer, DoclingDocument
 
-from isanlp_rst.ingest import SourceArtifact, SourceForm
-from isanlp_rst.ingest.contracts import ContentClass, DispositionDecision, TableCoordinateAnchor
-from isanlp_rst.ingest.prepare import inventory_source, prepare_source
+from rdam.rst.ingest import SourceArtifact, SourceForm
+from rdam.rst.ingest.contracts import ContentClass, DispositionDecision, TableCoordinateAnchor
+from rdam.rst.ingest.prepare import inventory_source, prepare_source
 
 
 PDF = Path("tests/fixtures/docling/pdf.docling.json")

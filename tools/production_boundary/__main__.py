@@ -8,6 +8,7 @@ from tools.production_boundary.artifacts import inspect_artifact, validate_relea
 from tools.production_boundary.authority import OwnershipAuthority, validate_ownership
 from tools.production_boundary.contracts import BoundaryReport, BoundaryViolation, OwnershipClass, ViolationKind
 from tools.production_boundary.dependencies import validate_declared_dependencies
+from tools.production_boundary.identity import read_release_identity
 from tools.production_boundary.imports import validate_import_boundary
 
 
@@ -15,8 +16,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--artifact", action="append", type=Path, default=[])
-    parser.add_argument("--release-dir", type=Path)
+    parser.add_argument("--release-dir", type=Path, help="validate the published wheel/sdist pair in this directory")
+    parser.add_argument(
+        "--release",
+        action="store_true",
+        help="validate the published pair in dist/<version>/, the version read from pyproject.toml",
+    )
     args = parser.parse_args()
+    root = args.root.resolve()
+    identity = read_release_identity(root)
+    release_dir = args.release_dir if args.release_dir is not None else identity.release_dir(root) if args.release else None
     authority = OwnershipAuthority(args.root)
     imports = validate_import_boundary(args.root, authority)
     ownership_violations = validate_ownership(authority)
@@ -56,8 +65,8 @@ def main() -> int:
     )
     payload = report.model_dump(mode="json")
     payload["valid"] = report.valid
-    if args.release_dir is not None:
-        payload["promoted_release"] = validate_release_directory(args.release_dir)
+    if release_dir is not None:
+        payload["promoted_release"] = validate_release_directory(release_dir, identity)
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0 if report.valid else 1
 

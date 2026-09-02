@@ -7,9 +7,10 @@ import zipfile
 
 import pytest
 
-from isanlp_rst._provenance import PROVENANCE_FIELDS
+from rdam.rst._provenance import PROVENANCE_FIELDS
 from tools.production_boundary.build import _reset_output_dir, build_production_artifacts, source_release_record
 from tools.production_boundary.contracts import canonical_record_bytes, sha256_path
+from tools.production_boundary.identity import ReleaseIdentity
 
 
 def _run(*command: str, cwd: Path) -> str:
@@ -37,36 +38,44 @@ def test_source_release_record_identifies_exact_clean_commit(tmp_path: Path) -> 
 
 def test_double_build_publishes_expected_pair(
     built_release_pair: tuple[Path, Path, str],
+    fixture_identity: ReleaseIdentity,
 ) -> None:
     wheel, sdist, commit = built_release_pair
-    assert wheel.name == "isanlp_rst-5.0.0-py3-none-any.whl"
-    assert sdist.name == "isanlp_rst-5.0.0.tar.gz"
+    assert wheel.name == fixture_identity.wheel_name == "rdam-7.7.7-py3-none-any.whl"
+    assert sdist.name == fixture_identity.sdist_name == "rdam-7.7.7.tar.gz"
     assert sha256_path(wheel) != sha256_path(sdist)
     with zipfile.ZipFile(wheel) as archive:
-        provenance = json.loads(archive.read("isanlp_rst/build-provenance.json"))
+        provenance = json.loads(archive.read("rdam/build-provenance.json"))
     assert provenance["source_commit"] == commit
+    assert provenance["package_name"] == fixture_identity.distribution
+    assert provenance["package_version"] == fixture_identity.version
     # The packaged resource keeps the exact schema-1.0.0 field set the runtime reader
     # enforces; the tag is recorded in the build report, not here.
     assert set(provenance) == PROVENANCE_FIELDS
 
 
-def test_rebuild_replaces_a_previous_pair_but_refuses_foreign_files(tmp_path: Path) -> None:
+def test_rebuild_replaces_a_previous_pair_but_refuses_foreign_files(
+    tmp_path: Path, fixture_identity: ReleaseIdentity
+) -> None:
     output = tmp_path / "out"
     output.mkdir()
-    (output / "isanlp_rst-5.0.0-py3-none-any.whl").write_bytes(b"stale")
+    (output / fixture_identity.wheel_name).write_bytes(b"stale")
     (output / "unrelated.txt").write_text("keep me", encoding="utf-8")
     with pytest.raises(RuntimeError, match="not this release's artifacts"):
-        _reset_output_dir(output)
+        _reset_output_dir(output, fixture_identity)
     assert (output / "unrelated.txt").read_text(encoding="utf-8") == "keep me"
 
     (output / "unrelated.txt").unlink()
-    _reset_output_dir(output)
+    _reset_output_dir(output, fixture_identity)
     assert output.is_dir()
     assert not any(output.iterdir())
 
 
 def test_tag_naming_another_version_is_an_error(tmp_path: Path) -> None:
-    (tmp_path / "pyproject.toml").write_text('[project]\nname = "x"\nversion = "5.0.0"\n', encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "x"\nversion = "5.0.0"\n\n[tool.hatch.build.targets.wheel]\npackages = ["x"]\n',
+        encoding="utf-8",
+    )
     _run("git", "init", "-q", cwd=tmp_path)
     _run("git", "config", "user.name", "Release Test", cwd=tmp_path)
     _run("git", "config", "user.email", "release@example.invalid", cwd=tmp_path)

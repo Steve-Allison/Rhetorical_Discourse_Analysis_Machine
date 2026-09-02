@@ -23,7 +23,7 @@ from lxml import etree
 
 import pytest
 
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact, SourceForm
+from rdam.rst.ingest import ProductionIngestor, SourceArtifact, SourceForm
 
 DOCLING_FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "docling"
 DOCLANG_FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "doclang"

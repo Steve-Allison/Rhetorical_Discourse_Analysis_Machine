@@ -2,8 +2,8 @@
 
 import pytest
 
-from isanlp_rst.contracts import RstDocument
-from isanlp_rst.ingest import (
+from rdam.rst.contracts import RstDocument
+from rdam.rst.ingest import (
     AnalysedOutcome,
     Availability,
     CapacityUnit,
@@ -24,7 +24,7 @@ from .conftest import ParserBuilder
 
 def test_model_free_capability_and_preparation_quickstart() -> None:
     capabilities = describe_capabilities()
-    assert capabilities.semantic.package_version == "5.0.0"
+    assert capabilities.semantic.package_version == "6.0.0"
     assert capabilities.contract_version == "2.0.0"
     assert capabilities.semantic.parser_identity_state is ModelIdentityState.NOT_CONFIGURED
     assert all(

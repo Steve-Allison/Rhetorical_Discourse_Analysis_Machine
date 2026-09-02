@@ -3,8 +3,8 @@
 import tracemalloc
 import pytest
 
-from isanlp_rst.ingest.contracts import SourceArtifact, SourceForm
-from isanlp_rst.ingest.service import ProductionIngestor
+from rdam.rst.ingest.contracts import SourceArtifact, SourceForm
+from rdam.rst.ingest.service import ProductionIngestor
 
 pytestmark = pytest.mark.stress
 

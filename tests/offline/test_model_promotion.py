@@ -8,9 +8,15 @@ import pytest
 from datetime import UTC, datetime
 import hashlib
 
-from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID
-from isanlp_rst.model_loading import ModelReleaseError, load_model_release, validate_model_release
-from isanlp_rst.model_loading.release import MODEL_RELEASE_MANIFEST, ModelReleaseManifest, canonical_json_bytes
+from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID
+from rdam.rst.model_loading import ModelReleaseError, load_model_release, validate_model_release
+from rdam.rst.model_loading.release import (
+    MODEL_RELEASE_MANIFEST,
+    CompatibilityRedeclaration,
+    ModelReleaseManifest,
+    canonical_json_bytes,
+    compatibility_redeclaration_path,
+)
 from rdam import (
     BaselineComparison,
     CalibrationEvidence,
@@ -30,6 +36,7 @@ from rdam import (
     load_published_decision,
 )
 from workbench.promotion import promote_model_release, write_candidate_manifest
+from workbench.promotion.compatibility import redeclare_compatibility
 from workbench.promotion.decision import latest_decision
 from workbench.promotion.modernbert import prepare_and_promote_modernbert
 
@@ -86,7 +93,7 @@ def _candidate(tmp_path: Path, *, release_id: str = "gumrrg-test-release") -> Pa
         model_task="rst-parsing",
         architecture="tiny-test-parser",
         runtime_contract=_RUNTIME_CONTRACT,
-        compatibility_range=">=5,<6",
+        compatibility_range=">=5,<7",
         source_model_identity="fixture/tiny-test-parser",
         source_revision="a" * 40,
         licence="CC-BY-NC-4.0",
@@ -158,7 +165,7 @@ def test_incompatible_contract_version_and_symlink_are_rejected(tmp_path: Path) 
 
     incompatible = manifest.model_copy(update={"compatibility_range": ">=99"})
     manifest_path.write_bytes(canonical_json_bytes(incompatible))
-    with pytest.raises(ModelReleaseError, match="outside model compatibility range"):
+    with pytest.raises(ModelReleaseError, match="outside the declared model compatibility range"):
         validate_model_release(candidate, require_release_name=False)
 
     manifest_path.write_bytes(canonical_json_bytes(manifest))
@@ -174,6 +181,61 @@ def test_promotion_never_overwrites_an_existing_release(tmp_path: Path) -> None:
     assert first.succeeded
     with pytest.raises(FileExistsError, match="immutable model release already exists"):
         promote_model_release(candidate, store)
+
+
+def test_compatibility_redeclaration_widens_the_range_for_this_exact_manifest(tmp_path: Path) -> None:
+    """An immutable release stays loadable under a later package line only through an explicit,
+    manifest-bound re-declaration beside it — the manifest bytes never change."""
+
+    candidate = _candidate(tmp_path)
+    store = tmp_path / "production-store"
+    promote_model_release(candidate, store)
+    release = store / "gumrrg-test-release"
+    manifest_before = (release / MODEL_RELEASE_MANIFEST).read_bytes()
+    with pytest.raises(ModelReleaseError, match="outside the declared model compatibility range"):
+        validate_model_release(release, package_version="7.5.0")
+
+    redeclaration = redeclare_compatibility(
+        store,
+        "gumrrg-test-release",
+        compatibility_range=">=5,<8",
+        declared_by="test",
+        reason="fixture runtime contract unchanged across the 7.x line",
+        basis=("tests/offline/test_model_promotion.py",),
+    )
+    validated = validate_model_release(release, package_version="7.5.0")
+    assert validated.redeclaration == redeclaration
+    assert validated.compatibility_range == ">=5,<8"
+    assert validated.manifest.compatibility_range == ">=5,<7"
+    assert (release / MODEL_RELEASE_MANIFEST).read_bytes() == manifest_before
+    assert compatibility_redeclaration_path(release).parent == store
+    with pytest.raises(ModelReleaseError, match="outside the re-declared model compatibility range"):
+        validate_model_release(release, package_version="8.0.0")
+    with pytest.raises(FileExistsError, match="different compatibility re-declaration"):
+        redeclare_compatibility(
+            store, "gumrrg-test-release", compatibility_range=">=5,<9", declared_by="test", reason="other", basis=("x",)
+        )
+
+
+def test_compatibility_redeclaration_for_another_manifest_is_refused(tmp_path: Path) -> None:
+    candidate = _candidate(tmp_path)
+    store = tmp_path / "production-store"
+    promote_model_release(candidate, store)
+    release = store / "gumrrg-test-release"
+    stale = CompatibilityRedeclaration(
+        release_id="gumrrg-test-release",
+        manifest_sha256="0" * 64,
+        compatibility_range=">=5,<8",
+        declared_at=datetime(2026, 9, 2, tzinfo=UTC),
+        declared_by="test",
+        reason="names a manifest that is not this one",
+        basis=("fixture",),
+    )
+    compatibility_redeclaration_path(release).write_bytes(canonical_json_bytes(stale))
+    with pytest.raises(ModelReleaseError, match="does not name this release's manifest"):
+        validate_model_release(release)
+    with pytest.raises(ModelReleaseError, match="does not name this release's manifest"):
+        load_model_release(store, "gumrrg-test-release", expected_runtime_contract=_RUNTIME_CONTRACT)
 
 
 def _modernbert_candidate(tmp_path: Path, *, receipt: str | None) -> Path:
@@ -252,7 +314,7 @@ def test_manifest_is_strict_and_requires_honest_evaluation_evidence(tmp_path: Pa
             model_task="rst-parsing",
             architecture="tiny",
             runtime_contract=_RUNTIME_CONTRACT,
-            compatibility_range=">=5,<6",
+            compatibility_range=">=5,<7",
             source_model_identity="fixture/tiny",
             source_revision="a" * 40,
             licence="MIT",

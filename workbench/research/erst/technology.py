@@ -8,8 +8,8 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from isanlp_rst._version import PACKAGE_VERSION
-from isanlp_rst.contracts.erst import TokenizerCompatibilityReceipt
+from rdam.rst._version import PACKAGE_VERSION
+from rdam.rst.contracts.erst import TokenizerCompatibilityReceipt
 from workbench.research.erst.contracts import MandatoryExperimentSystem
 
 TECHNOLOGY_MATRIX_SCHEMA_VERSION = "1.0"

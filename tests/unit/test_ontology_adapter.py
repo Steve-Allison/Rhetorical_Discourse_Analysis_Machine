@@ -2,8 +2,8 @@
 
 import pytest
 
-from isanlp_rst.contracts import NuclearityPatternEnum, RelationSchemeEnum
-from isanlp_rst.ontology import OntologyAdapter, load_ontology_lock
+from rdam.rst.contracts import NuclearityPatternEnum, RelationSchemeEnum
+from rdam.rst.ontology import OntologyAdapter, load_ontology_lock
 
 
 def test_load_ontology_lock() -> None:
@@ -103,7 +103,7 @@ def test_unmapped_label_fails_closed() -> None:
 
 def test_missing_lockfile_raises() -> None:
     from pathlib import Path
-    from isanlp_rst.ontology import load_ontology_lock
+    from rdam.rst.ontology import load_ontology_lock
 
     with pytest.raises(FileNotFoundError):
         load_ontology_lock(Path("/non_existent_path/central.lock.yaml"))

@@ -2,10 +2,13 @@
 
 ``dist/`` is ignored build output, never tracked: a release is a tagged commit, and the
 artifacts are rebuilt from it on demand. What is committed is the evidence — the
-source-release record and the reproducible-build report under
-``specs/004-production-api-contract/evidence/``.
+source-release record and the reproducible-build report — written to the evidence
+directory named on the command line. Distribution name, version, and package directory
+come from ``pyproject.toml`` (``tools.production_boundary.identity``); nothing here
+restates them.
 """
 
+import argparse
 from dataclasses import dataclass
 from importlib.metadata import version
 import hashlib
@@ -17,8 +20,6 @@ import subprocess
 import sys
 import tarfile
 import tempfile
-import tomllib
-from typing import Final
 import uuid
 
 import rfc8785
@@ -32,11 +33,7 @@ from tools.production_boundary.contracts import (
     sha256_path,
     write_canonical_record,
 )
-
-
-PACKAGE_VERSION: Final = "5.0.0"
-WHEEL_NAME: Final = f"isanlp_rst-{PACKAGE_VERSION}-py3-none-any.whl"
-SDIST_NAME: Final = f"isanlp_rst-{PACKAGE_VERSION}.tar.gz"
+from tools.production_boundary.identity import ReleaseIdentity, read_release_identity
 
 
 @dataclass(frozen=True, slots=True)
@@ -116,7 +113,7 @@ def source_release_record(repository_root: Path) -> SourceReleaseRecord:
 
     root = repository_root.resolve()
     commit, tree, source_date_epoch = _require_clean_source(root)
-    with tempfile.TemporaryDirectory(prefix="isanlp-rst-source-release-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="rdam-source-release-") as temporary:
         archive_sha256 = _archive_commit(root, commit, Path(temporary) / "source.tar")
     return SourceReleaseRecord(
         source=SourceReleaseIdentity(
@@ -140,24 +137,9 @@ def _prepare_package_source(export_root: Path) -> None:
     (export_root / ".gitignore").unlink(missing_ok=True)
 
 
-def _package_source_dir(export_root: Path) -> Path:
-    """The directory Hatchling ships as the import package, read from the export's pyproject.
-
-    ``[tool.hatch.build.targets.wheel].packages`` names the source directory (``isanlp_rst``
-    before migration, ``rst/isanlp_rst`` after); its final component is the import name.
-    Deriving it here is what lets the provenance resource land inside the package
-    wherever the package lives.
-    """
-
-    pyproject = tomllib.loads((export_root / "pyproject.toml").read_text(encoding="utf-8"))
-    packages = pyproject.get("tool", {}).get("hatch", {}).get("build", {}).get("targets", {}).get("wheel", {}).get("packages")
-    if not isinstance(packages, list) or len(packages) != 1 or not isinstance(packages[0], str):
-        raise RuntimeError("pyproject must declare exactly one wheel package directory")
-    return export_root / packages[0]
-
-
 def _provenance_bytes(
     export_root: Path,
+    identity: ReleaseIdentity,
     *,
     commit: str,
     tree: str,
@@ -165,7 +147,7 @@ def _provenance_bytes(
     source_date_epoch: int,
 ) -> bytes:
     """The packaged runtime provenance resource — schema 1.0.0, read strictly by
-    ``isanlp_rst._provenance``. Its field set is fixed; release-level facts such as the
+    ``rdam.rst._provenance``. Its field set is fixed; release-level facts such as the
     tag live in the committed ``ReproducibleBuildReport``, not here."""
     pyproject_identity = sha256_path(export_root / "pyproject.toml")
     lock_identity = sha256_path(export_root / "pixi.lock")
@@ -182,8 +164,8 @@ def _provenance_bytes(
         {
             "schema_name": "isanlp_rst.build_provenance",
             "schema_version": "1.0.0",
-            "package_name": "isanlp_rst",
-            "package_version": PACKAGE_VERSION,
+            "package_name": identity.distribution,
+            "package_version": identity.version,
             "production_contract": "isanlp_rst.production",
             "production_contract_version": "2.0.0",
             "source_commit": commit,
@@ -196,7 +178,7 @@ def _provenance_bytes(
     ) + b"\n"
 
 
-def _run_build(export_root: Path, run_root: Path, environment: dict[str, str]) -> BuildRun:
+def _run_build(export_root: Path, run_root: Path, environment: dict[str, str], identity: ReleaseIdentity) -> BuildRun:
     output = run_root / "artifacts"
     report = run_root / "build-report.json"
     output.mkdir(parents=True)
@@ -216,12 +198,12 @@ def _run_build(export_root: Path, run_root: Path, environment: dict[str, str]) -
         check=True,
         env=environment,
     )
-    wheel = output / WHEEL_NAME
-    sdist = output / SDIST_NAME
+    wheel = output / identity.wheel_name
+    sdist = output / identity.sdist_name
     if not wheel.is_file() or not sdist.is_file():
         found = tuple(sorted(path.name for path in output.iterdir()))
         raise RuntimeError(f"build produced unexpected artifacts: {found}")
-    if set(path.name for path in output.iterdir()) != {WHEEL_NAME, SDIST_NAME}:
+    if set(path.name for path in output.iterdir()) != {identity.wheel_name, identity.sdist_name}:
         raise RuntimeError("build output contains files outside the exact wheel/sdist pair")
     json.loads(report.read_text(encoding="utf-8"))
     return BuildRun(wheel=wheel, sdist=sdist, report=report)
@@ -237,34 +219,41 @@ def _publish_artifact(source: Path, destination: Path) -> Path:
     return destination
 
 
-def _reset_output_dir(destination: Path) -> None:
+def _reset_output_dir(destination: Path, identity: ReleaseIdentity) -> None:
     """Empty the output directory, refusing to touch anything that is not this release's pair."""
 
     if destination.exists():
-        unexpected = sorted(path.name for path in destination.iterdir() if path.name not in {WHEEL_NAME, SDIST_NAME})
+        unexpected = sorted(
+            path.name for path in destination.iterdir() if path.name not in {identity.wheel_name, identity.sdist_name}
+        )
         if unexpected:
             raise RuntimeError(f"output directory holds files that are not this release's artifacts: {unexpected}")
         shutil.rmtree(destination)
     destination.mkdir(parents=True)
 
 
-def build_production_artifacts(repository_root: Path, output_dir: Path) -> ProductionBuild:
+def build_production_artifacts(
+    repository_root: Path,
+    output_dir: Path,
+    identity: ReleaseIdentity | None = None,
+) -> ProductionBuild:
     """Double-build exact-commit artifacts via sdist and publish identical bytes.
 
     The output directory is derived, ignored build output: a previous pair there is
-    replaced. If HEAD carries a tag it must be ``v<PACKAGE_VERSION>``; a tag naming a
-    different version is a real error, not a warning.
+    replaced. If HEAD carries a tag it must be ``v<version>``; a tag naming a different
+    version is a real error, not a warning.
     """
 
     root = repository_root.resolve()
+    release = identity or read_release_identity(root)
     commit, tree, source_date_epoch = _require_clean_source(root)
     source_tag = _source_tag(root)
-    if source_tag is not None and source_tag != f"v{PACKAGE_VERSION}":
-        raise RuntimeError(f"HEAD is tagged {source_tag!r} but the package version is {PACKAGE_VERSION}")
+    if source_tag is not None and source_tag != release.tag:
+        raise RuntimeError(f"HEAD is tagged {source_tag!r} but the package version is {release.version}")
     destination = output_dir.resolve()
-    _reset_output_dir(destination)
+    _reset_output_dir(destination, release)
 
-    with tempfile.TemporaryDirectory(prefix="isanlp-rst-production-build-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="rdam-production-build-") as temporary:
         workspace = Path(temporary)
         archive_path = workspace / "source.tar"
         archive_sha256 = _archive_commit(root, commit, archive_path)
@@ -287,6 +276,7 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> Produ
             _prepare_package_source(export_root)
             candidate = _provenance_bytes(
                 export_root,
+                release,
                 commit=commit,
                 tree=tree,
                 archive_sha256=archive_sha256,
@@ -295,13 +285,13 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> Produ
             if provenance is not None and candidate != provenance:
                 raise RuntimeError("build provenance changed between independent build roots")
             provenance = candidate
-            (_package_source_dir(export_root) / "build-provenance.json").write_bytes(candidate)
-            runs.append(_run_build(export_root, run_root, environment))
+            (export_root / release.package_dir / "build-provenance.json").write_bytes(candidate)
+            runs.append(_run_build(export_root, run_root, environment, release))
 
         first, second = runs
         comparisons = {
-            WHEEL_NAME: (sha256_path(first.wheel), sha256_path(second.wheel)),
-            SDIST_NAME: (sha256_path(first.sdist), sha256_path(second.sdist)),
+            release.wheel_name: (sha256_path(first.wheel), sha256_path(second.wheel)),
+            release.sdist_name: (sha256_path(first.sdist), sha256_path(second.sdist)),
         }
         mismatches = {
             name: identities
@@ -311,8 +301,8 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> Produ
         if mismatches:
             raise RuntimeError(f"independent via-sdist builds were not reproducible: {mismatches}")
 
-        wheel = _publish_artifact(first.wheel, destination / WHEEL_NAME)
-        sdist = _publish_artifact(first.sdist, destination / SDIST_NAME)
+        wheel = _publish_artifact(first.wheel, destination / release.wheel_name)
+        sdist = _publish_artifact(first.sdist, destination / release.sdist_name)
         report = ReproducibleBuildReport(
             source_commit=commit,
             source_tree=tree,
@@ -331,15 +321,23 @@ def build_production_artifacts(repository_root: Path, output_dir: Path) -> Produ
         return ProductionBuild(wheel=wheel, sdist=sdist, report=report)
 
 
-EVIDENCE_DIR: Final = Path("specs/004-production-api-contract/evidence")
-
-
 def main() -> int:
-    root = Path.cwd()
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument(
+        "--evidence-dir",
+        type=Path,
+        required=True,
+        help="directory receiving source-release.json and reproducible-build.json",
+    )
+    args = parser.parse_args()
+    root = args.root.resolve()
+    identity = read_release_identity(root)
     source_record = source_release_record(root)
-    build = build_production_artifacts(root, root / "dist" / PACKAGE_VERSION)
-    write_canonical_record(root / EVIDENCE_DIR / "source-release.json", source_record)
-    write_canonical_record(root / EVIDENCE_DIR / "reproducible-build.json", build.report)
+    build = build_production_artifacts(root, identity.release_dir(root), identity)
+    evidence_dir = args.evidence_dir if args.evidence_dir.is_absolute() else root / args.evidence_dir
+    write_canonical_record(evidence_dir / "source-release.json", source_record)
+    write_canonical_record(evidence_dir / "reproducible-build.json", build.report)
     print(canonical_record_bytes(build.report).decode("utf-8"))
     return 0
 
@@ -349,11 +347,7 @@ if __name__ == "__main__":
 
 
 __all__ = [
-    "EVIDENCE_DIR",
-    "PACKAGE_VERSION",
     "ProductionBuild",
-    "SDIST_NAME",
-    "WHEEL_NAME",
     "build_production_artifacts",
     "source_release_record",
 ]

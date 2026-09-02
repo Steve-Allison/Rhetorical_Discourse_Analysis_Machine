@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import sys
 
-from isanlp_rst.erst.rs4 import RS4Reader
+from rdam.rst.erst.rs4 import RS4Reader
 
 
 def extract_headers_from_path(path: Path) -> dict[str, dict[str, list[str]]]:

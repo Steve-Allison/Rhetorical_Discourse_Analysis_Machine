@@ -1,7 +1,7 @@
 import pytest
 
-from isanlp_rst.ingest import SegmentKind, SourceArtifact, TextSpanAnchor
-from isanlp_rst.ingest.service import ProductionIngestor
+from rdam.rst.ingest import SegmentKind, SourceArtifact, TextSpanAnchor
+from rdam.rst.ingest.service import ProductionIngestor
 
 
 @pytest.mark.parametrize(

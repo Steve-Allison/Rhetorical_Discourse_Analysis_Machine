@@ -16,7 +16,7 @@ import types
 from importlib import import_module
 from pathlib import Path
 
-from isanlp_rst.model_loading.parser_input import ParserInput
+from rdam.rst.model_loading.parser_input import ParserInput
 
 INVENTORY_FORMAT = "isanlp_rst_relation_inventory"
 INVENTORY_VERSION = 1
@@ -25,7 +25,7 @@ INVENTORY_VERSION = 1
 class RestrictedUnpickler(pickle.Unpickler):
     """Unpickler that only reconstructs inventory leaf types + containers.
 
-    Deliberately does **not** allow arbitrary ``isanlp_rst.*`` callables:
+    Deliberately does **not** allow arbitrary ``rdam.rst.*`` callables:
     REDUCE gadgets targeting ``data_manager.collect``,
     ``DataManager.from_pickle``, or ``load_cached`` must be refused.
     ``DataManager`` itself is excluded so ATTR-based ``from_pickle`` gadgets
@@ -54,6 +54,7 @@ class RestrictedUnpickler(pickle.Unpickler):
     _ALLOWED_PATHLIB = frozenset({"Path", "PosixPath", "WindowsPath"})
     _ALLOWED_CLASSES = frozenset(
         {
+            ("rdam.rst.model_loading.parser_input", "ParserInput"),
             ("isanlp_rst.model_loading.parser_input", "ParserInput"),
             ("isanlp_rst.universal_parser.data_manager", "ParserInput"),
             ("src.universal_parser.data_manager", "ParserInput"),
@@ -122,7 +123,7 @@ def import_relation_table_from_legacy_pickle(path: Path) -> list[str]:
 def ensure_unirst_module_aliases() -> None:
     """Register Elena-era module paths so legacy pickles can unpickle ParserInput."""
     aliases = {
-        "src.universal_parser.du_converter": "isanlp_rst.utils.du_converter",
+        "src.universal_parser.du_converter": "rdam.rst.utils.du_converter",
         "src.universal_parser.src.parser.data": "workbench.archive.legacy_2021.universal_parser.src.parser.data",
         "src.universal_parser.src.parser.modules": "workbench.archive.legacy_2021.universal_parser.src.parser.modules",
         "src.universal_parser.src.parser.segmenters": "workbench.archive.legacy_2021.universal_parser.src.parser.segmenters",

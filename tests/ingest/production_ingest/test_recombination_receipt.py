@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.rst.ingest import ProductionIngestor, SourceArtifact
 
 from .conftest import ParserBuilder
 

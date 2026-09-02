@@ -1,8 +1,8 @@
 """Preparation source mapping, transformation, anchor, boundary, and coverage tests."""
 
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
-from isanlp_rst.ingest.contracts.source import DispositionDecision
-from isanlp_rst.ingest.validation import validate_preparation_outcome
+from rdam.rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.rst.ingest.contracts.source import DispositionDecision
+from rdam.rst.ingest.validation import validate_preparation_outcome
 
 
 def test_segments_reconstruct_text_and_source_anchors_exactly() -> None:

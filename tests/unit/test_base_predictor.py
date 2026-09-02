@@ -5,7 +5,7 @@ from collections import OrderedDict
 import pytest
 import torch
 
-from isanlp_rst.base_predictor import (
+from rdam.rst.base_predictor import (
     BasePredictor,
     DeviceProbe,
     resolve_device,

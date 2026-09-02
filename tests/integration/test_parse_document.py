@@ -1,16 +1,16 @@
 """Unit tests for Parser.parse_document integration."""
 
-from isanlp_rst.annotation_rst import DiscourseUnit
+from rdam.rst.annotation_rst import DiscourseUnit
 import pytest
 
-from isanlp_rst import (
+from rdam.rst import (
     ErstCapabilityError,
     OutputFormalismEnum,
     Parser,
     RstAnalysis,
     RstDocument,
 )
-from isanlp_rst.erst.converter import du_to_analysis
+from rdam.rst.erst.converter import du_to_analysis
 
 
 class DummyPredictor:
@@ -68,8 +68,8 @@ def test_parse_document_from_edus_requires_validated_erst_bundle(monkeypatch: py
 
 
 def test_du_to_analysis_nuclearity_and_relations() -> None:
-    from isanlp_rst.contracts import NuclearityPatternEnum
-    from isanlp_rst.erst.converter import du_to_analysis
+    from rdam.rst.contracts import NuclearityPatternEnum
+    from rdam.rst.erst.converter import du_to_analysis
     from workbench.evaluation.rst import SoftParsevalScorer
 
     # 1. NS relation: left is Nucleus (span), right is Satellite (elaboration)

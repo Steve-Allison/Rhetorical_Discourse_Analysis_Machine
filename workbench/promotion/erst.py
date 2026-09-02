@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from safetensors.torch import save_model
 import torch
 
-from isanlp_rst.contracts.erst import (
+from rdam.rst.contracts.erst import (
     ErstCalibrationState,
     ErstCheckpointBuildSpec,
     ErstCheckpointComponent,
@@ -23,14 +23,14 @@ from isanlp_rst.contracts.erst import (
     ErstScorerConfig,
     RawRelationInventory,
 )
-from isanlp_rst.erst.checkpoint import (
+from rdam.rst.erst.checkpoint import (
     ErstCheckpointError,
     _role_for,
     _sha256_file,
     validate_erst_checkpoint_bundle,
 )
-from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
-from isanlp_rst.erst.signals import RuleBasedSignalDetector
+from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+from rdam.rst.erst.signals import RuleBasedSignalDetector
 
 _MANIFEST_NAME = "manifest.json"
 

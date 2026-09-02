@@ -5,7 +5,7 @@ from pathlib import Path
 from pydantic import SecretStr
 import pytest
 
-from isanlp_rst.erst.environment import HfTokenSource, load_repository_environment
+from rdam.rst.erst.environment import HfTokenSource, load_repository_environment
 
 
 def _clear_hf_tokens(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -7,7 +7,7 @@ import sys
 
 import pytest
 
-from isanlp_rst.doclang.loader import load_doclang_archive
+from rdam.rst.doclang.loader import load_doclang_archive
 from tools.production_boundary import clean_install
 from tools.production_boundary.installed_acceptance import _archive_bytes
 
@@ -39,8 +39,8 @@ def test_fixture_wheel_installs_without_checkout_or_system_site_packages(
                 "-I",
                 "-c",
                 (
-                    "import json, pathlib, site, isanlp_rst; "
-                    "print(json.dumps({'package': str(pathlib.Path(isanlp_rst.__file__).resolve()), "
+                    "import json, pathlib, site, rdam.rst; "
+                    "print(json.dumps({'package': str(pathlib.Path(rdam.rst.__file__).resolve()), "
                     "'site': site.getsitepackages()}))"
                 ),
             ),
@@ -84,7 +84,7 @@ def test_full_clean_install_runs_inference_in_core_and_formats(
         [
             "clean_install.py",
             "--wheel",
-            str(tmp_path / "isanlp_rst-5.0.0-py3-none-any.whl"),
+            str(tmp_path / "rdam-7.7.7-py3-none-any.whl"),
             "--root",
             str(tmp_path),
             "--model-store",
@@ -113,7 +113,7 @@ def test_full_clean_install_requires_explicit_release_id(
         [
             "clean_install.py",
             "--wheel",
-            str(tmp_path / "isanlp_rst-5.0.0-py3-none-any.whl"),
+            str(tmp_path / "rdam-7.7.7-py3-none-any.whl"),
             "--model-store",
             str(tmp_path / "model-releases"),
             "--full",

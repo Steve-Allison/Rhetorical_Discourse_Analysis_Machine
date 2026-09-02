@@ -5,7 +5,7 @@ from math import inf, nan
 from pydantic import ValidationError
 import pytest
 
-from isanlp_rst.ingest.contracts.base import (
+from rdam.rst.ingest.contracts.base import (
     CoverageUnit,
     ExactCoverage,
     SemanticVersion,

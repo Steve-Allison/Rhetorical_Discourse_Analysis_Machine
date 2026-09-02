@@ -7,13 +7,13 @@ from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.processors import TemplateProcessing
 from transformers import BertConfig, BertForTokenClassification, PreTrainedTokenizerFast
 
-from isanlp_rst.contracts import RstDocument
-from isanlp_rst.parser import Parser
+from rdam.rst.contracts import RstDocument
+from rdam.rst.parser import Parser
 from workbench.training.segmentation.dataset import (
     parse_disrpt_tok_file,
     parse_rs4_to_sentences,
 )
-from isanlp_rst.segmentation.transformer_segmenter import (
+from rdam.rst.segmentation.transformer_segmenter import (
     InvalidSegmenterCheckpointError,
     SegmenterInputLimitError,
     TransformerEduSegmenter,

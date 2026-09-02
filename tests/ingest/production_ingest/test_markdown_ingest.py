@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from isanlp_rst.ingest import SourceArtifact
-from isanlp_rst.ingest.contracts import ContentClass, DispositionDecision
-from isanlp_rst.ingest.prepare import inventory_source
-from isanlp_rst.ingest.service import ProductionIngestor
+from rdam.rst.ingest import SourceArtifact
+from rdam.rst.ingest.contracts import ContentClass, DispositionDecision
+from rdam.rst.ingest.prepare import inventory_source
+from rdam.rst.ingest.service import ProductionIngestor
 
 
 FIXTURE = Path("tests/fixtures/markdown/gfm-rich.md")

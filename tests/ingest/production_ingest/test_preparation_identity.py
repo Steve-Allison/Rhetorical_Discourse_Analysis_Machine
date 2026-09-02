@@ -1,9 +1,9 @@
 """Preparation semantic-identity mutation coverage."""
 
-from isanlp_rst.ingest import ParserCapacity, ProductionIngestor, SourceArtifact
-from isanlp_rst.ingest.contracts.base import SemanticVersion
-from isanlp_rst.ingest.contracts.preparation import CapacityUnit
-from isanlp_rst.ingest.policy import DEFAULT_PLANNING_POLICY, DEFAULT_PREPARATION_POLICY
+from rdam.rst.ingest import ParserCapacity, ProductionIngestor, SourceArtifact
+from rdam.rst.ingest.contracts.base import SemanticVersion
+from rdam.rst.ingest.contracts.preparation import CapacityUnit
+from rdam.rst.ingest.policy import DEFAULT_PLANNING_POLICY, DEFAULT_PREPARATION_POLICY
 
 
 def test_every_semantic_preparation_dimension_changes_identity() -> None:

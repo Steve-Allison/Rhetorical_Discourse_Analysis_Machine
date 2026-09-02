@@ -4,7 +4,7 @@ import pytest
 import torch
 from torch import nn
 
-from isanlp_rst.erst.neural_scorer import BoundaryAwareSpanEncoder
+from rdam.rst.erst.neural_scorer import BoundaryAwareSpanEncoder
 
 
 def _encoder() -> BoundaryAwareSpanEncoder:

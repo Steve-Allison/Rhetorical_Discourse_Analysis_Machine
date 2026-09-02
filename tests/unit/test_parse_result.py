@@ -3,9 +3,9 @@
 from pathlib import Path
 
 import pytest
-from isanlp_rst.annotation_rst import DiscourseUnit
-from isanlp_rst.parser import Parser
-from isanlp_rst.utils.parse_result import ParseFailedError, extract_root_tree
+from rdam.rst.annotation_rst import DiscourseUnit
+from rdam.rst.parser import Parser
+from rdam.rst.utils.parse_result import ParseFailedError, extract_root_tree
 from workbench.archive.legacy_2021.dmrst_parser.predictor import PredictorDMRST
 
 

@@ -6,7 +6,7 @@ from pathlib import Path
 from pydantic import ValidationError
 import pytest
 
-from isanlp_rst.contracts.erst import CorpusPartition
+from rdam.rst.contracts.erst import CorpusPartition
 from workbench.research.erst.contracts import (
     ChampionManifest,
     DocumentScore,
@@ -51,7 +51,7 @@ def _protocol() -> ExperimentProtocol:
         systems=tuple(
             ExperimentSystemSpec(
                 system=system,
-                implementation=f"isanlp_rst.erst.systems.{system.value}",
+                implementation=f"rdam.rst.erst.systems.{system.value}",
                 model_license="MIT" if system == MandatoryExperimentSystem.SIGNAL_RULE else "model-card",
                 config_sha256=f"{index:x}" * 64,
             )
@@ -243,7 +243,7 @@ def test_signal_marked_serialization_is_model_neutral() -> None:
 
 
 def test_production_package_does_not_import_research_harness() -> None:
-    production_root = Path(__file__).resolve().parents[3] / "isanlp_rst"
+    production_root = Path(__file__).resolve().parents[3] / "rdam" / "rst"
     importers = tuple(
         path.relative_to(production_root)
         for path in production_root.rglob("*.py")

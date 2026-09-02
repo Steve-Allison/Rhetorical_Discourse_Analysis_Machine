@@ -4,9 +4,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import pytest
 import torch
 
-from isanlp_rst.ingest.contracts import SourceArtifact, SourceForm
-from isanlp_rst.ingest.service import ProductionIngestor
-from isanlp_rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+from rdam.rst.ingest.contracts import SourceArtifact, SourceForm
+from rdam.rst.ingest.service import ProductionIngestor
+from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from workbench.hashing import (
     blake3_digest,
     canonical_json_digest,

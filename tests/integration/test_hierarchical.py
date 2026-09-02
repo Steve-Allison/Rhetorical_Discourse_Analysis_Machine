@@ -2,7 +2,7 @@
 
 import pytest
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     NodeKindEnum,
     NuclearityPatternEnum,
     OutputFormalismEnum,
@@ -12,8 +12,8 @@ from isanlp_rst.contracts import (
     RstNode,
     TextSpan,
 )
-from isanlp_rst.hierarchical.stitcher import HierarchicalSectionStitcher
-from isanlp_rst.parser import Parser
+from rdam.rst.hierarchical.stitcher import HierarchicalSectionStitcher
+from rdam.rst.parser import Parser
 
 
 def test_detect_sections_double_newline() -> None:

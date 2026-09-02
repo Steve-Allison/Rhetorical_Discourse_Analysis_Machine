@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from isanlp_rst.utils.mps_init import orthogonal_ as mps_safe_orthogonal_
+from rdam.rst.utils.mps_init import orthogonal_ as mps_safe_orthogonal_
 
 from . import modules
 

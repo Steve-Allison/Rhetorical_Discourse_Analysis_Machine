@@ -50,7 +50,7 @@ def test_absent_or_empty_checkpoint_is_an_error(tmp_path: Path) -> None:
 
 
 def test_resolve_default_erst_checkpoint(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from isanlp_rst.erst.checkpoint import ErstCheckpointError, resolve_default_erst_checkpoint
+    from rdam.rst.erst.checkpoint import ErstCheckpointError, resolve_default_erst_checkpoint
 
     bundle_dir = tmp_path / "valid_bundle"
     bundle_dir.mkdir()

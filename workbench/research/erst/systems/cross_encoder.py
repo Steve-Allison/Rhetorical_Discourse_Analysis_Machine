@@ -12,7 +12,7 @@ from torch import nn
 import torch.nn.functional as functional
 from transformers import AutoModel, AutoTokenizer, PreTrainedModel, PreTrainedTokenizerBase
 
-from isanlp_rst.erst.environment import load_repository_environment
+from rdam.rst.erst.environment import load_repository_environment
 from workbench.research.erst.contracts import AblationName, MandatoryExperimentSystem
 from workbench.research.erst.data import HarnessCandidate, ScreeningCorpusPayload
 from workbench.research.erst.runner import (

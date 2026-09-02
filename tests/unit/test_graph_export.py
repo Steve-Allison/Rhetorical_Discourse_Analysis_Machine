@@ -4,7 +4,7 @@ import json
 import networkx as nx
 import pytest
 
-from isanlp_rst.contracts import (
+from rdam.rst.contracts import (
     AnnotationStatusEnum,
     DiscourseSignal,
     NodeKindEnum,
@@ -18,7 +18,7 @@ from isanlp_rst.contracts import (
     SignalDetectionMethod,
     SignalDetectorProvenance,
 )
-from isanlp_rst.graph import (
+from rdam.rst.graph import (
     to_graphrag_json,
     to_jsonld,
     to_networkx_graph,

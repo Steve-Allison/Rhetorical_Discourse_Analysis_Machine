@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import TypeAlias
 
-from isanlp_rst.contracts.analysis import DiscourseSignal, RstAnalysis
+from rdam.rst.contracts.analysis import DiscourseSignal, RstAnalysis
 
 ERST_SCORER_AUTHORITY = "https://aclanthology.org/2025.cl-1.3.pdf#page=30"
 EndpointYield: TypeAlias = tuple[int, int]

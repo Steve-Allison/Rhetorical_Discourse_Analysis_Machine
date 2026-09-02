@@ -7,9 +7,9 @@ from typing import Any, cast
 import pytest
 import torch
 
-from isanlp_rst.contracts import Edu, TextSpan
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
-from isanlp_rst.transformer_parser.predictor import (
+from rdam.rst.contracts import Edu, TextSpan
+from rdam.rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.rst.transformer_parser.predictor import (
     ParserInputLimitError,
     PredictorModernBERT,
 )

@@ -11,8 +11,8 @@ import argparse
 import hashlib
 from pathlib import Path, PurePosixPath
 
-from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
-from isanlp_rst.model_loading.release import MODEL_RELEASE_MANIFEST
+from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST
 from rdam.frameworks import Technique
 from rdam.promotion import PromotionDecision, PromotionOutcome, load_decision, serialize_decision
 from workbench.promotion.decision import publish_decision, record_decision

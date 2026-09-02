@@ -2,10 +2,10 @@
 
 from collections.abc import Mapping
 
-from isanlp_rst.contracts.enums import RelationSchemeEnum
-from isanlp_rst.contracts.erst import CorpusPartition, RawRelationInventory
+from rdam.rst.contracts.enums import RelationSchemeEnum
+from rdam.rst.contracts.erst import CorpusPartition, RawRelationInventory
 from workbench.corpus.erst.corpus import LoadedGumCorpus
-from isanlp_rst.ontology.adapter import OntologyAdapter
+from rdam.rst.ontology.adapter import OntologyAdapter
 
 
 def build_raw_relation_inventory(

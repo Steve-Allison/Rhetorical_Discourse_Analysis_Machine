@@ -1,7 +1,7 @@
-from isanlp_rst.ingest import SourceArtifact, SourceForm
-from isanlp_rst.ingest.contracts import ContentClass
-from isanlp_rst.ingest.prepare import inventory_source
-from isanlp_rst.ingest.service import ProductionIngestor
+from rdam.rst.ingest import SourceArtifact, SourceForm
+from rdam.rst.ingest.contracts import ContentClass
+from rdam.rst.ingest.prepare import inventory_source
+from rdam.rst.ingest.service import ProductionIngestor
 
 
 def test_raw_html_is_structurally_inventoried_without_script_navigation_or_style_contamination() -> None:

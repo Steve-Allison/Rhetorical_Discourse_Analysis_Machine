@@ -16,7 +16,7 @@ from transformers import (
     get_cosine_schedule_with_warmup,
 )
 
-from isanlp_rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
 from workbench.training.segmentation.dataset import (
     EduSegmentationDataset,
     SegmentedSentence,

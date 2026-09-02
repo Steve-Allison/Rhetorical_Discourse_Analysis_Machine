@@ -3,14 +3,14 @@
 import pytest
 from pydantic import ValidationError
 
-from isanlp_rst.contracts.analysis import DiscourseSignal, RstAnalysis, RstNode, SignalDetectorProvenance
-from isanlp_rst.contracts.enums import NodeKindEnum, OutputFormalismEnum, SignalDetectionMethod
-from isanlp_rst.contracts.erst import ErstDecoderConfig
-from isanlp_rst.english.erst.completer import ErstCompletionTrace
-from isanlp_rst.erst.candidates import SecondaryEdgeCandidate
-from isanlp_rst.erst.decoder import ErstSecondaryEdgeDecoder
-from isanlp_rst.ingest import SemanticVersion, Sha256Identity
-from isanlp_rst.ingest.contracts.inference import (
+from rdam.rst.contracts.analysis import DiscourseSignal, RstAnalysis, RstNode, SignalDetectorProvenance
+from rdam.rst.contracts.enums import NodeKindEnum, OutputFormalismEnum, SignalDetectionMethod
+from rdam.rst.contracts.erst import ErstDecoderConfig
+from rdam.rst.english.erst.completer import ErstCompletionTrace
+from rdam.rst.erst.candidates import SecondaryEdgeCandidate
+from rdam.rst.erst.decoder import ErstSecondaryEdgeDecoder
+from rdam.rst.ingest import SemanticVersion, Sha256Identity
+from rdam.rst.ingest.contracts.inference import (
     ComponentFileIdentity,
     CompositeAnalysisIdentity,
     ConfidenceKind,
@@ -27,8 +27,8 @@ from isanlp_rst.ingest.contracts.inference import (
     ScoreValue,
     SupportingSignalEvidence,
 )
-from isanlp_rst.ingest.contracts.source import TextSpanAnchor
-from isanlp_rst.ingest.parser_result import (
+from rdam.rst.ingest.contracts.source import TextSpanAnchor
+from rdam.rst.ingest.parser_result import (
     _decision_basis,
     _erst_evidence,
     _packaged_component,

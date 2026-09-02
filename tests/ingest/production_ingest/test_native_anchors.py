@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from isanlp_rst.ingest import (
+from rdam.rst.ingest import (
     CoordinateBoxAnchor,
     PageAnchor,
     PageBoxAnchor,
@@ -10,7 +10,7 @@ from isanlp_rst.ingest import (
     TableCoordinateAnchor,
     TextSpanAnchor,
 )
-from isanlp_rst.ingest.prepare import inventory_source
+from rdam.rst.ingest.prepare import inventory_source
 
 
 def test_docling_inventory_retains_page_bbox_and_table_coordinates() -> None:

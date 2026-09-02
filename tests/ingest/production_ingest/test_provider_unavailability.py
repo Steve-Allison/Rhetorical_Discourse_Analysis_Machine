@@ -2,7 +2,7 @@
 
 import pytest
 
-from isanlp_rst.ingest import (
+from rdam.rst.ingest import (
     LifecycleStage,
     ProductionIngestError,
     ProductionIngestor,
@@ -36,7 +36,7 @@ def test_missing_optional_format_distribution_is_typed_unavailable(
         # and now classifies as an internal failure instead.
         raise ModuleNotFoundError("PRIVATE module import detail", name="markdown_it")
 
-    monkeypatch.setattr("isanlp_rst.ingest.prepare.inventory_source", unavailable)
+    monkeypatch.setattr("rdam.rst.ingest.prepare.inventory_source", unavailable)
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor().prepare(source)
     assert raised.value.failure.failed_stage is LifecycleStage.CLASSIFICATION

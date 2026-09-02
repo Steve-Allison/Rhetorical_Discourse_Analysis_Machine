@@ -17,7 +17,7 @@ from typing import Any
 
 from docling_core.types.doc.document import ContentLayer, DoclingDocument, PictureItem, TextItem
 
-from isanlp_rst.parser import Parser
+from rdam.rst.parser import Parser
 
 FIXTURES_DIR = Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "docling"
 SEPARATOR = "\n\n"

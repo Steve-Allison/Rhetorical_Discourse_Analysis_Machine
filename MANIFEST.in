@@ -2,5 +2,5 @@ include LICENSE
 include LICENSE_MODELS
 include README.md
 include pyproject.toml
-recursive-include rst/isanlp_rst *.css *.html *.js *.py
+recursive-include rdam *.css *.html *.js *.py
 prune tests

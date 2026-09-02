@@ -1,4 +1,4 @@
-"""Tests for ``isanlp_rst.parser.Parser`` dispatch and auto-detection.
+"""Tests for ``rdam.rst.parser.Parser`` dispatch and auto-detection.
 
 These exercise the façade WITHOUT loading models — every test fails fast on
 argument validation or runs ``_resolve_family`` / ``_detect_family_from_model_dir``
@@ -9,7 +9,7 @@ import json
 
 import pytest
 
-from isanlp_rst.parser import Parser
+from rdam.rst.parser import Parser
 
 
 # ---------- _resolve_family logic ----------

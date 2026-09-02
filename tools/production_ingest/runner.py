@@ -185,7 +185,7 @@ def module_exists(name):
 if module_exists("workbench") or module_exists("tools.production_ingest"):
     raise RuntimeError("production environment exposes repository-only evaluation modules")
 
-from isanlp_rst.ingest import (
+from rdam.rst.ingest import (
     DispositionDecision,
     ProductionIngestor,
     SourceArtifact,
@@ -199,7 +199,7 @@ repetitions = control["repetitions"]
 if model_store is None:
     ingestor = None
 else:
-    from isanlp_rst import Parser
+    from rdam.rst import Parser
     parser = Parser.from_model_release(
         model_store,
         control["model_release_id"],
@@ -317,9 +317,9 @@ def module_exists(name):
 if module_exists("workbench") or module_exists("tools.production_ingest"):
     raise RuntimeError("baseline production environment exposes repository-only evaluation modules")
 
-from isanlp_rst import Parser
-from isanlp_rst.contracts import RstDocument
-from isanlp_rst.contracts.serialization import to_dict
+from rdam.rst import Parser
+from rdam.rst.contracts import RstDocument
+from rdam.rst.contracts.serialization import to_dict
 
 parser = Parser.from_model_release(
     control["model_store"],

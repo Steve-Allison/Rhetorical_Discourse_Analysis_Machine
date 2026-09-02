@@ -4,10 +4,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 import subprocess
 
-from isanlp_rst.ingest import WRITE_CONTRACT_VERSION
-from isanlp_rst.ingest.policy import DEFAULT_PREPARATION_POLICY
-from isanlp_rst.ingest.identity import semantic_sha256, sha256_file
-from isanlp_rst.model_loading import ParserCapacity, validate_model_release
+from rdam.rst.ingest import WRITE_CONTRACT_VERSION
+from rdam.rst.ingest.policy import DEFAULT_PREPARATION_POLICY
+from rdam.rst.ingest.identity import semantic_sha256, sha256_file
+from rdam.rst.model_loading import ParserCapacity, validate_model_release
 from tools.production_ingest.contracts import CandidateIdentity, PromotionDecision, SourceGateResult
 
 

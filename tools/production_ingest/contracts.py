@@ -8,8 +8,8 @@ from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from isanlp_rst.ingest.contracts import SourceForm
-from isanlp_rst.ingest.identity import semantic_sha256
+from rdam.rst.ingest.contracts import SourceForm
+from rdam.rst.ingest.identity import semantic_sha256
 
 REQUIRED_RISKS = frozenset(
     {

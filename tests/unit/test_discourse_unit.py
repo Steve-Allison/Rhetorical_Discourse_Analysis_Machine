@@ -3,7 +3,7 @@
 import importlib
 from pathlib import Path
 
-from isanlp_rst.annotation_rst import (
+from rdam.rst.annotation_rst import (
     DiscourseUnit,
     Exporter,
     ForestExporter,
@@ -12,7 +12,7 @@ from isanlp_rst.annotation_rst import (
     Segment,
     register_isanlp_compat,
 )
-from isanlp_rst.utils.serialization import tree_from_dict, tree_to_dict
+from rdam.rst.utils.serialization import tree_from_dict, tree_to_dict
 
 
 def test_discourse_unit_leaf_creation():

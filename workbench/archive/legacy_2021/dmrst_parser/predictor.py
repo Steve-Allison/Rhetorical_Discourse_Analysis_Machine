@@ -9,8 +9,8 @@ from huggingface_hub import hf_hub_download
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel, AutoConfig
 
-from isanlp_rst.base_predictor import BasePredictor, resolve_device, str2bool
-from isanlp_rst.utils.du_converter import DUConverter
+from rdam.rst.base_predictor import BasePredictor, resolve_device, str2bool
+from rdam.rst.utils.du_converter import DUConverter
 from .src.parser.data import Data
 from .src.parser.parsing_net import ParsingNet
 

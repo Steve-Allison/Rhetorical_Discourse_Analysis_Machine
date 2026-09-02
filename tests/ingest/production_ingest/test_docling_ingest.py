@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from isanlp_rst.ingest import SourceArtifact, SourceForm
-from isanlp_rst.ingest.contracts import ContentClass, PreparationPolicy
-from isanlp_rst.ingest.contracts.source import DispositionDecision
-from isanlp_rst.ingest.policy import DEFAULT_PREPARATION_POLICY
-from isanlp_rst.ingest.service import ProductionIngestor
+from rdam.rst.ingest import SourceArtifact, SourceForm
+from rdam.rst.ingest.contracts import ContentClass, PreparationPolicy
+from rdam.rst.ingest.contracts.source import DispositionDecision
+from rdam.rst.ingest.policy import DEFAULT_PREPARATION_POLICY
+from rdam.rst.ingest.service import ProductionIngestor
 
 
 FIXTURE = Path("tests/fixtures/docling/pptx.docling.json")
