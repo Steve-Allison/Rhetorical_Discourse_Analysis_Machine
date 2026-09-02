@@ -52,9 +52,8 @@ Parser identity has four explicit states:
 | `unidentified` | a parser-like object cannot state its identity | ineligible |
 | `not_configured` | preparation is available but analysis is not | ineligible |
 
-The active production parser family is ModernBERT. Historical DMRST and UniRST
-releases remain repository/runtime history but are not advertised as active
-canonical-result capability. No model weight is packaged in the wheel.
+The active production parser families are DMRST and UniRST. Candidate architectures
+(such as ModernBERT) reside strictly in the workbench. No model weight is packaged in the wheel.
 
 A stored release's manifest declares `compatibility_range` as of promotion time and is
 immutable. When a later package line runs a release unchanged, that finding is recorded

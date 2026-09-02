@@ -188,7 +188,6 @@ def main(argv: list[str] | None = None) -> int:
     parser = Parser.from_model_release(
         args.model_store,
         args.release_id,
-        family="modernbert",
         relinventory=args.relinventory,
         device=args.device,
         dtype=args.dtype,

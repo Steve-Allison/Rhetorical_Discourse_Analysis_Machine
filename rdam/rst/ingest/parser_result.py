@@ -259,10 +259,18 @@ def _analysed_document(
         )
         for order, edu in enumerate(trace.edus)
     )
+    def _edu_id_for_token(tok: Any) -> str:
+        if tok.token_id in token_to_edu:
+            return edu_ids[token_to_edu[tok.token_id].edu_id]
+        if trace.edus:
+            closest = min(trace.edus, key=lambda e: min(abs(e.start - tok.start), abs(e.end - tok.end)))
+            return edu_ids[closest.edu_id]
+        return "edu:000001"
+
     mappings = tuple(
         TokenMapping(
             token_id=token_ids[token.token_id],
-            edu_id=edu_ids[token_to_edu[token.token_id].edu_id],
+            edu_id=_edu_id_for_token(token),
             sentence_id=f"sentence:{token.sentence_id or 0:04d}",
             paragraph_id=f"paragraph:{token.paragraph_id or 0:04d}",
         )

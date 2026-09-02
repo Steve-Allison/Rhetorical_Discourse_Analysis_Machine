@@ -682,21 +682,39 @@ class BasePredictor:
 
         leaves: list[Any] = []
         self._collect_leaf_units(root_unit, leaves)
+        leaf_tok_ids: list[list[int]] = [[] for _ in leaves]
+        for tok in tokens:
+            assigned = False
+            for idx, leaf in enumerate(leaves):
+                l_start = leaf.start if getattr(leaf, "start", None) is not None else 0
+                l_end = leaf.end if getattr(leaf, "end", None) is not None else len(leaf.text)
+                if tok.start >= l_start and tok.end <= l_end:
+                    leaf_tok_ids[idx].append(tok.token_id)
+                    assigned = True
+                    break
+            if not assigned and leaves:
+                best_idx = 0
+                best_dist = float("inf")
+                for idx, leaf in enumerate(leaves):
+                    l_start = leaf.start if getattr(leaf, "start", None) is not None else 0
+                    l_end = leaf.end if getattr(leaf, "end", None) is not None else len(leaf.text)
+                    dist = min(abs(tok.start - l_start), abs(tok.end - l_end), abs(tok.start - l_end))
+                    if dist < best_dist:
+                        best_dist = dist
+                        best_idx = idx
+                leaf_tok_ids[best_idx].append(tok.token_id)
+
         contract_edus: list[ContractEdu] = []
         for idx, leaf in enumerate(leaves):
             l_start = leaf.start if getattr(leaf, "start", None) is not None else 0
             l_end = leaf.end if getattr(leaf, "end", None) is not None else len(leaf.text)
-            tok_ids = tuple(
-                tok.token_id for tok in tokens
-                if tok.start >= l_start and tok.end <= l_end
-            )
             contract_edus.append(
                 ContractEdu(
                     edu_id=idx + 1,
                     text=leaf.text,
                     start=l_start,
                     end=l_end,
-                    token_ids=tok_ids,
+                    token_ids=tuple(sorted(leaf_tok_ids[idx])),
                 )
             )
 

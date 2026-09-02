@@ -76,7 +76,7 @@ capacity = ParserCapacity(
     maximum=8192,
     estimation_algorithm="provider_declared",
     estimation_version=SemanticVersion(root="2.0.0"),
-    source="modernbert_release_manifest",
+    source="release_manifest",
 )
 planned = ProductionIngestor().prepare(source, parser_capacity=capacity)
 print(planned.semantic.analysis_plan.status)
@@ -90,13 +90,12 @@ planning failure.
 ## Analyse with the provider result
 
 ```python
-from isanlp_rst import Parser
-from isanlp_rst.ingest import ProductionIngestor
+from rdam.rst import Parser
+from rdam.rst.ingest import ProductionIngestor
 
 parser = Parser.from_model_release(
     Path("/absolute/model-releases"),
-    "the-promoted-modernbert-release-id",
-    family="modernbert",
+    "gumrrg-eb1d5745f3a1",
     device="auto",
 )
 result = ProductionIngestor(parser=parser).analyse(source)
@@ -106,11 +105,10 @@ print(result.semantic.composite_identity.primary_parser.state)
 print(result.semantic.validation.passed if result.semantic.validation else None)
 ```
 
-The active ModernBERT release is valid only when its manifest names exactly one
-encoder configuration, one full parser-state safetensors file, one relation
-inventory, and at least one tokenizer file. The runtime builds the network from
-the release configuration, strict-loads the complete parser state, rehashes all
-loaded files, and refuses an immutable identity claim if runtime bytes differ.
+An active release is valid only when its manifest names participating runtime
+configuration, weights, and relation inventory files. The runtime loads the complete
+parser state, rehashes all loaded files, and refuses an immutable identity claim if
+runtime bytes differ.
 
 The neural segmenter and parser never truncate silently. Context overflow,
 unaligned tokenizer offsets, boundary-crossing tokens, capped EDUs, or a

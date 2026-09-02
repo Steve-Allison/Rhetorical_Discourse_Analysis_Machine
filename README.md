@@ -16,8 +16,8 @@ available unless recorded evidence says so. It serves one person on one local ma
                            ▼              ▼              ▼
                     rdam.rst         rdam.dung       rdam.ibis         (sdrt, toulmin, walton, pdtb:
                     RST / eRST       abstract        gIBIS              unavailable, no provider)
-                    ModernBERT       argumentation   link grammar
-                    parser           semantics
+                    DMRST / UniRST   argumentation   link grammar
+                    parsers          semantics
 ```
 
 ## Contents
@@ -43,7 +43,7 @@ One distribution, one import package, every technique a sub-package.
 | Sub-package | Technique | Provides | State (2026-09-02) |
 |---|---|---|---|
 | `rdam` | the machine | `Machine`, `AggregateRequest`, typed provider declarations, capability states, native results, outcomes, and the `PromotionDecision` contract | — |
-| `rdam.rst` | RST and Extended RST | the ModernBERT discourse parser (Steve Allison's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, the RS3 viewer, the `rdam-rst` command, and the machine adapter | `unavailable(withheld)` — see [Status](#status-and-roadmap) |
+| `rdam.rst` | RST and Extended RST | DMRST and UniRST discourse parsers (Steve Allison's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, the RS3 viewer, the `rdam-rst` command, and the machine adapter | `available` with promoted/redeclared release |
 | `rdam.dung` | Dung abstract argumentation | grounded, complete, preferred, and stable extensions of a supplied argument–attack framework, exact by construction | `available` |
 | `rdam.ibis` | IBIS | issue–position–argument structures validated under the gIBIS link grammar and organised into a deliberation map | `available` |
 | — | SDRT, Toulmin, Walton, PDTB | nothing yet; the machine reports `unavailable(no_promoted_implementation)`. No stubs. | — |
@@ -89,10 +89,7 @@ pip install "rdam @ git+https://github.com/Steve-Allison/Rhetorical_Discourse_An
 pip install "rdam[formats] @ git+https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine.git"
 ```
 
-No model weight ships in the wheel. RST inference needs an immutable local model
-release (`models/model-releases/<release_id>/` with its manifest); this repository's
-store holds `modernbert-v1-a52b70fbc1a3` and `modernbert-v1-462d68b82eae`. Dung and IBIS
-need nothing beyond the package.
+No model weight ships in the wheel. RST inference uses either published models (e.g. `gumrrg`, `unirst`) or an immutable local model release (`models/model-releases/<release_id>/` or `~/.cache/isanlp_rst/model-releases/<release_id>/` with its manifest); releases include DMRST models (`gumrrg-eb1d5745f3a1`, `rstdt-cc01afde1232`) and UniRST models (`unirst-9407970f1d9d`). Dung and IBIS need nothing beyond the package.
 
 Development uses the `default` environment (`pixi install`, then `pixi run test`).
 
@@ -108,7 +105,7 @@ from rdam.rst.provider import RstProvider
 
 machine = Machine(
     [
-        RstProvider(store=Path("models/model-releases"), release_id="modernbert-v1-a52b70fbc1a3"),
+        RstProvider(store=Path("models/model-releases"), release_id="gumrrg-eb1d5745f3a1"),
         DungProvider(),
         IbisProvider(),
     ]
@@ -207,11 +204,8 @@ bound to the exact artifact they evaluated:
   release manifest before any inference. A decision cannot be borrowed by a different
   set of weights.
 
-The gate has already ruled: every stored ModernBERT release fails it (for
-`modernbert-v1-a52b70fbc1a3`, test full F1 0.198 against the archived `gumrrg` model's
-0.487), so the machine reports RST `unavailable(withheld)` until the owner rules
-otherwise. The parser façade and command below still load those releases for local
-use; the gate governs what the machine claims, not what the parser can run.
+Promoted releases such as `gumrrg-eb1d5745f3a1` and `unirst-9407970f1d9d` provide production
+discourse tree parsing through `RstProvider` and `Parser`.
 
 ## Provider: RST / eRST (`rdam.rst`)
 
@@ -223,14 +217,12 @@ RS4) as a second formalism with its own capability state.
 
 ```bash
 # Canonical analysis of text, or of a Markdown / Docling JSON / DocLang / plain-text file
-rdam-rst parse --text "Because it rained, the match stopped." \
-    --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3
-rdam-rst parse report.md --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3 \
-    --output analysis.json          # RFC 8785 canonical JSON, the same bytes the Python API serializes
-rdam-rst parse report.md ... --format summary   # presentation-only counts
+rdam-rst parse --text "Because it rained, the match stopped."
+rdam-rst parse report.md --output analysis.json          # RFC 8785 canonical JSON
+rdam-rst parse report.md --format summary                # presentation-only counts
 
-rdam-rst capabilities               # model-free discovery; add --model-store/--release-id for the configured parser
-rdam-rst serve --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3 --port 8080
+rdam-rst capabilities                                    # model-free discovery
+rdam-rst serve --port 8080
 rdam-rst version
 ```
 
@@ -245,12 +237,14 @@ from pathlib import Path
 from rdam.rst import Parser, RstDocument
 from rdam.rst.utils.analysis import tree_stats
 
+# Load from an immutable model release:
 parser = Parser.from_model_release(
-    Path("models/model-releases"),
-    "modernbert-v1-a52b70fbc1a3",
-    family="modernbert",
+    Path.home() / ".cache/isanlp_rst/model-releases",
+    "gumrrg-eb1d5745f3a1",
     device="auto",  # CUDA if present, else MPS on Apple Silicon, else CPU
 )
+# Or initialize from published model weights:
+# parser = Parser(hf_model_version="gumrrg", device="auto")
 
 text = "On Saturday, Team India won against South Africa by seven runs. The final was played in Barbados."
 
@@ -288,7 +282,7 @@ from rdam.rst.ingest import ProductionIngestor, SourceArtifact, describe_capabil
 
 print(describe_capabilities().semantic.source_forms)   # all six forms and their availability, model-free
 
-parser = Parser.from_model_release(Path("models/model-releases"), "modernbert-v1-a52b70fbc1a3", family="modernbert")
+parser = Parser.from_model_release(Path.home() / ".cache/isanlp_rst/model-releases", "gumrrg-eb1d5745f3a1")
 ingestor = ProductionIngestor(parser=parser)
 
 outcome = ingestor.analyse(SourceArtifact.from_path(Path("report.md")), cache_directory=Path("cache"))
@@ -444,10 +438,8 @@ single-package restructure, and the Dung and IBIS providers. Release 6.0.0 is ta
 certified; the release record is in
 [`specs/010-repository-migration/evidence/gates.md`](specs/010-repository-migration/evidence/gates.md).
 
-Open owner rulings: whether any stored ModernBERT release is promoted despite failing
-the evidence gate; and whether the persisted contract identifiers (`isanlp_rst.production`
-2.0.0, `isanlp_rst.parser/modernbert-v1`, and their siblings) move to the `rdam` name —
-they name contracts and immutable manifests, not the package, and are unchanged so far.
+Persisted contract identifiers (`isanlp_rst.production` 2.0.0, `isanlp_rst.parser/dmrst-v1`,
+`isanlp_rst.parser/unirst-v1`) name immutable runtime contracts, not the package.
 
 Provider order thereafter: SDRT, then Toulmin and Walton, then PDTB if ever — each only
 once workbench evidence identifies a credible candidate, each with its own
@@ -463,15 +455,12 @@ source ingest, eRST completion, and the build and release tooling are Steve's ow
 
 - **Source code:** MIT — see [`LICENSE`](LICENSE). Copyright Elena Chistova 2020 for the
   original parser; Steve Allison's contributions also under MIT.
-- **Archived research model weights** (`tchewik/isanlp_rst_v3` on HuggingFace, families
+- **Production model weights** (`tchewik/isanlp_rst_v3` on HuggingFace, families
   `rstdt`, `gumrrg`, `rstreebank`, `rrtrrg`, `unirst`): **CC BY-NC 4.0 — research and
-  non-commercial use only**, see [`LICENSE_MODELS`](LICENSE_MODELS). These families are
-  archived from production (`Parser` refuses them before loading anything; their code is
-  under `workbench/archive/legacy_2021/`); their published metrics are kept in
-  [`docs/metrics/UniRST_Metrics.md`](docs/metrics/UniRST_Metrics.md).
-- **ModernBERT releases in `models/model-releases`:** fine-tuned from
-  `answerdotai/ModernBERT-base`; each release manifest records its licence and use
-  restrictions, and the promotion decision beside it records the evidence verdict.
+  non-commercial use only**, see [`LICENSE_MODELS`](LICENSE_MODELS). These models power
+  `PredictorDMRST` and `PredictorUniRST` through `Parser`.
+- **Workbench research experiments:** candidate architectures (e.g. ModernBERT) reside
+  strictly under `workbench/` and are evaluated against baselines before any promotion.
 
 Issues and pull requests: `Steve-Allison/Rhetorical_Discourse_Analysis_Machine`.
 

@@ -70,7 +70,7 @@ def _time_parse(parser: Parser, text: str, runs: int) -> tuple[float, tuple]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
-    ap.add_argument("--family", default="modernbert", choices=("modernbert", "unirst", "dmrst"))
+    ap.add_argument("--family", default="dmrst", choices=("dmrst", "unirst"))
     ap.add_argument("--release-id", default=None, help="Model release ID from model store")
     ap.add_argument("--model-store", type=Path, default=Path.home() / ".cache/isanlp_rst/model-releases")
     ap.add_argument("--version", default="gumrrg", choices=("gumrrg", "rstdt", "rstreebank", "rrtrrg", "unirst"))
@@ -113,16 +113,19 @@ def main() -> int:
     for name, kwargs in configs:
         try:
             t0 = time.perf_counter()
-            if args.family == "modernbert" and args.release_id:
+            if args.release_id:
                 parser = Parser.from_model_release(
                     args.model_store,
                     args.release_id,
                     family=args.family,
+                    relinventory=args.relinventory if args.family == "unirst" else None,
                     **kwargs,
                 )
             else:
                 parser = Parser(
                     family=args.family,
+                    hf_model_version=args.version if args.family == "dmrst" else "unirst",
+                    relinventory=args.relinventory if args.family == "unirst" else None,
                     **kwargs,
                 )
             load_s = time.perf_counter() - t0
