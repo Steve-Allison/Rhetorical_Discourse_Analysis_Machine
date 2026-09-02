@@ -8,7 +8,7 @@ import pytest
 from datetime import UTC, datetime
 import hashlib
 
-from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID
+from workbench.training.modern.authority import MODERNBERT_BASE_MODEL_ID
 from rdam.rst.model_loading import ModelReleaseError, load_model_release, validate_model_release
 from rdam.rst.model_loading.release import (
     MODEL_RELEASE_MANIFEST,

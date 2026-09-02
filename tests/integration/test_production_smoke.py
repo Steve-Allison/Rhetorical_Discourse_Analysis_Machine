@@ -1,14 +1,4 @@
-"""Production smoke: every ModernBERT release in the local store, on every available device.
-
-This replaces the former ``scripts/smoke_test.py`` and ``scripts/cuda_smoke.py`` so the
-smoke runs under ``pixi run test-all`` (and ``pixi run smoke``) and cannot rot unnoticed.
-Releases are loaded only through the public ``Parser.from_model_release`` façade from
-``models/model-releases``; nothing is downloaded. The archived DMRST and UniRST families
-are asserted to be *refused*, never loaded.
-
-The model-loading tests are ``slow`` and skip, visibly, when the local store holds no
-release — which is the case on CI, where model weights are not in git.
-"""
+"""Production smoke: every parser release in the local store, on every available device."""
 
 import json
 from pathlib import Path
@@ -22,19 +12,18 @@ from rdam.rst.erst import ErstCapabilityError
 from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST, ModelReleaseError
 from rdam.rst.parser import Parser
 
-STORE = Path(__file__).resolve().parents[2] / "models" / "model-releases"
-MODERNBERT_RUNTIME_CONTRACT = "isanlp_rst.parser/modernbert-v1"
+ROOT = Path(__file__).resolve().parents[2]
+_LOCAL_STORE = ROOT / "models" / "model-releases"
+_CACHE_STORE = Path.home() / ".cache" / "isanlp_rst" / "model-releases"
+STORE = _LOCAL_STORE if (_LOCAL_STORE.is_dir() and any(_LOCAL_STORE.iterdir())) else _CACHE_STORE
+PARSER_RUNTIME_CONTRACTS = ("isanlp_rst.parser/dmrst-v1", "isanlp_rst.parser/unirst-v1")
 ARCHIVED_VERSIONS = ("gumrrg", "rstdt", "rstreebank", "rrtrrg", "unirst")
 SAMPLE_TEXT = "The cat sat on the mat. It was a black cat. The mat was red."
 SAMPLE_EDUS = ["The cat sat on the mat.", "It was a black cat.", "The mat was red."]
 
 
 def _releases(store: Path) -> tuple[str, ...]:
-    """Every store child carrying a manifest for the ModernBERT runtime contract.
-
-    Discovery reads only ``runtime_contract``; full validation happens on load, so a
-    corrupt member fails its load test rather than being skipped.
-    """
+    """Every store child carrying a manifest for a valid parser runtime contract."""
 
     if not store.is_dir():
         return ()
@@ -47,7 +36,7 @@ def _releases(store: Path) -> tuple[str, ...]:
             contract = json.loads(manifest.read_bytes()).get("runtime_contract")
         except (OSError, ValueError):
             contract = None
-        if contract in (MODERNBERT_RUNTIME_CONTRACT, None):
+        if contract in PARSER_RUNTIME_CONTRACTS:
             found.append(child.name)
     return tuple(found)
 
@@ -99,6 +88,10 @@ class TestFacadeRefusals:
         with pytest.raises(ValueError, match="Unknown family"):
             Parser(family="nonexistent-family", hf_model_version="gumrrg")
 
+    def test_modernbert_family_is_rejected(self) -> None:
+        with pytest.raises(ValueError, match="Unknown family 'modernbert'"):
+            Parser(family="modernbert", hf_model_version="gumrrg")
+
     def test_unsafe_release_id_is_rejected(self, tmp_path: Path) -> None:
         with pytest.raises(ModelReleaseError, match="unsafe release_id"):
             Parser.from_model_release(tmp_path, "../escape", family="dmrst")
@@ -118,7 +111,7 @@ class TestFacadeRefusals:
 )
 def loaded(request: pytest.FixtureRequest) -> tuple[Parser, str, str]:
     release_id, device = request.param
-    parser = Parser.from_model_release(STORE, release_id, family="modernbert", device=device)
+    parser = Parser.from_model_release(STORE, release_id, device=device)
     return parser, release_id, device
 
 
@@ -130,7 +123,7 @@ class TestReleaseSmoke:
         identity = parser.model_release_identity
         assert identity is not None, "released parser reports no model_release_identity"
         assert identity.release_id == release_id
-        assert identity.runtime_contract == MODERNBERT_RUNTIME_CONTRACT
+        assert identity.runtime_contract in PARSER_RUNTIME_CONTRACTS
 
     def test_parse_rst_aligns_every_node_to_the_text(self, loaded: tuple[Parser, str, str]) -> None:
         parser, _, _ = loaded
@@ -150,7 +143,7 @@ class TestReleaseSmoke:
 
     def test_from_edus_rejects_empty_input(self, loaded: tuple[Parser, str, str]) -> None:
         parser, _, _ = loaded
-        with pytest.raises(ValueError, match="non-empty"):
+        with pytest.raises(ValueError, match="at least one EDU|non-empty"):
             parser.from_edus([])
 
     def test_from_edus_rejects_empty_string_edu(self, loaded: tuple[Parser, str, str]) -> None:

@@ -1,18 +1,15 @@
 """The RST provider: ``rdam.rst`` presented to the machine through its own declaration.
 
-Capability is derived from the **published promotion decision** beside the configured
-release (``<store>/<release_id>.promotion.json``, feature 008) — never from whether a
-model happens to load. No decision → ``unavailable(no_promoted_implementation)``;
-``withhold`` → ``unavailable(withheld)``; ``retire`` → ``unavailable(retired)``;
-``promote``/``replace`` → ``available``. Reporting capability loads nothing (capability
-contract §Aggregate behaviour 2). The parser is loaded on the first ``analyse`` and the
-decision's artifact digest is checked against the release's manifest before any
-inference, so a decision cannot be borrowed by a different artifact.
+Capability means the provider can run. Configured with a published parser version it is
+available, because that version is one the façade knows how to load. Configured with a
+local model release it is available when that release is present. Neither check loads a
+model or touches the network: reporting capability is cheap by contract, and the parser
+is constructed on the first ``analyse``.
 
 Formalisms (006 data-model §Formalism): ``rst_tree`` carries ``…/rst``; ``erst_graph``
 carries ``…/erst`` and is available only when a validated eRST completion bundle
-resolves. Failures are ``rdam.rst``'s typed failures mapped one-to-one — same code, same
-retryability — onto the machine's ``ProviderFailure``; the machine never retries.
+resolves. Failures are ``rdam.rst``'s typed failures mapped one-to-one, same code and
+same retryability, onto the machine's ``ProviderFailure``; the machine never retries.
 """
 
 from collections.abc import Mapping
@@ -33,13 +30,11 @@ from rdam.rst.ingest import (
     serialize_contract,
 )
 from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
-from rdam.rst.model_loading import load_model_release
+from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST
 from rdam import (
     AvailableCapability,
     FormalismDeclaration,
     NativeTechniqueResult,
-    PromotionDecision,
-    PromotionOutcome,
     ProviderDeclaration,
     ProviderError,
     ProviderFailure,
@@ -50,7 +45,6 @@ from rdam import (
     Technique,
     UnavailableCapability,
     UnavailableReason,
-    load_published_decision,
     technique_curie,
 )
 from rdam._strict import JsonValue
@@ -58,63 +52,79 @@ from rdam._strict import JsonValue
 PACKAGE: Final = "rdam.rst"
 RST_TREE: Final = "rst_tree"
 ERST_GRAPH: Final = "erst_graph"
+# The weights published under tchewik/isanlp_rst_v3, which every hf_model_version pulls.
+PUBLISHED_WEIGHTS_LICENCE: Final = "CC BY-NC 4.0 — research and non-commercial use only (LICENSE_MODELS)"
 _FORMALISM_OUTPUT: Final[Mapping[str, OutputFormalism]] = {
     RST_TREE: OutputFormalism.RST_TREE,
     ERST_GRAPH: OutputFormalism.ERST_GRAPH,
 }
 _FORMALISM_TECHNIQUE: Final[Mapping[str, Technique]] = {RST_TREE: Technique.RST, ERST_GRAPH: Technique.ERST}
-_DECISION_STATE: Final[Mapping[PromotionOutcome, UnavailableReason | None]] = {
-    PromotionOutcome.PROMOTE: None,
-    PromotionOutcome.REPLACE: None,
-    PromotionOutcome.WITHHOLD: UnavailableReason.WITHHELD,
-    PromotionOutcome.RETIRE: UnavailableReason.RETIRED,
-}
 
 
 class ProviderConfigurationError(ValueError):
-    """The provider was configured with a decision that does not match its release."""
+    """The provider was configured with neither a parser version nor a local release."""
 
 
 class RstProvider:
-    """One configured ``rdam.rst`` release, declared to the machine (006 data-model §Provider)."""
+    """One configured ``rdam.rst`` parser, declared to the machine (006 data-model §Provider).
+
+    Configure it either with a published parser version, which the façade fetches on
+    first use, or with a local immutable model release:
+
+        RstProvider()                                             # the default family
+        RstProvider(hf_model_version="unirst", relinventory="eng.erst.gum")
+        RstProvider(store=Path("models/model-releases"), release_id="gumrrg-eb1d5745f3a1")
+    """
 
     def __init__(
         self,
         *,
-        store: Path,
-        release_id: str,
+        hf_model_version: str | None = None,
+        store: Path | None = None,
+        release_id: str | None = None,
+        relinventory: str | None = None,
         device: str = "auto",
         erst_scorer_checkpoint: Path | None = None,
         cache_directory: Path | None = None,
-        decision: PromotionDecision | None = None,
     ) -> None:
-        self._store = Path(store)
+        if (store is None) != (release_id is None):
+            raise ProviderConfigurationError("a local release needs both store and release_id")
+        if store is not None and hf_model_version is not None:
+            raise ProviderConfigurationError("configure either a published version or a local release, not both")
+        if store is None and hf_model_version is None:
+            hf_model_version = Parser._DEFAULT_HF_MODEL_VERSION
+        self._hf_model_version = hf_model_version
+        self._store = Path(store) if store is not None else None
         self._release_id = release_id
+        self._relinventory = relinventory
         self._device = device
         self._erst_checkpoint = erst_scorer_checkpoint
         self._cache_directory = cache_directory
-        self._decision = decision if decision is not None else load_published_decision(self._store, release_id)
-        if self._decision is not None and self._decision.candidate.candidate_id != release_id:
-            raise ProviderConfigurationError(
-                f"decision is about {self._decision.candidate.candidate_id!r}, not release {release_id!r}"
-            )
         self._parser: Parser | None = None
 
     @property
-    def release_id(self) -> str:
-        return self._release_id
-
-    @property
-    def decision(self) -> PromotionDecision | None:
-        return self._decision
+    def model_identity(self) -> str:
+        return self._release_id if self._release_id is not None else str(self._hf_model_version)
 
     @property
     def provider_id(self) -> str:
-        return f"{PACKAGE}/{self._release_id}"
+        return f"{PACKAGE}/{self.model_identity}"
+
+    def _unavailable_reason(self) -> UnavailableReason | None:
+        """Can this configuration produce a parser? Checked without loading one."""
+
+        if self._hf_model_version is not None:
+            if self._hf_model_version not in Parser.AVAILABLE_VERSIONS:
+                return UnavailableReason.MODEL_UNAVAILABLE
+            return None
+        if self._store is None or self._release_id is None:
+            return UnavailableReason.MODEL_UNAVAILABLE
+        manifest = self._store / self._release_id / MODEL_RELEASE_MANIFEST
+        return None if manifest.is_file() else UnavailableReason.MODEL_UNAVAILABLE
 
     @property
     def declaration(self) -> ProviderDeclaration:
-        """Side-effect-free: reads the decision and checks for a bundle path; loads no model."""
+        """Side-effect-free: resolves configuration and looks for a bundle; loads no model."""
 
         contract_version = SemanticVersion(root=WRITE_CONTRACT_VERSION)
         reason = self._unavailable_reason()
@@ -124,9 +134,8 @@ class RstProvider:
         erst_capability = (
             available
             if reason is None and erst_bundle
-            else UnavailableCapability(reason=reason or UnavailableReason.NO_PROMOTED_IMPLEMENTATION)
+            else UnavailableCapability(reason=reason or UnavailableReason.MODEL_UNAVAILABLE)
         )
-        decision = self._decision
         return ProviderDeclaration(
             provider_id=self.provider_id,
             technique=Technique.RST,
@@ -149,19 +158,23 @@ class RstProvider:
             provenance=ProviderProvenance(
                 package=PACKAGE,
                 version=rdam.rst.__version__,
-                model_identity=self._release_id,
-                licence_decision=(
-                    decision.licensing.decision_note if decision is not None else "no promotion decision published for this release"
-                ),
+                model_identity=self.model_identity,
+                licence_decision=self._licence(),
             ),
             capability=capability,
             requires_structured_input=False,
         )
 
-    def _unavailable_reason(self) -> UnavailableReason | None:
-        if self._decision is None:
-            return UnavailableReason.NO_PROMOTED_IMPLEMENTATION
-        return _DECISION_STATE[self._decision.outcome]
+    def _licence(self) -> str:
+        """The terms the loaded weights carry, read from the release manifest when there is one."""
+
+        if self._store is None or self._release_id is None:
+            return PUBLISHED_WEIGHTS_LICENCE
+        manifest = self._store / self._release_id / MODEL_RELEASE_MANIFEST
+        if not manifest.is_file():
+            return PUBLISHED_WEIGHTS_LICENCE
+        declared = json.loads(manifest.read_text(encoding="utf-8")).get("licence")
+        return declared if isinstance(declared, str) and declared else PUBLISHED_WEIGHTS_LICENCE
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:
         declaration = self.declaration
@@ -214,20 +227,23 @@ class RstProvider:
     def _load_parser(self) -> Parser:
         if self._parser is not None:
             return self._parser
-        release = load_model_release(self._store, self._release_id, expected_runtime_contract="isanlp_rst.parser/modernbert-v1")
-        decision = self._decision
-        if decision is None:
-            raise ProviderConfigurationError("cannot analyse without a promotion decision")
-        actual = release.one_file_for_role("parser_state").sha256
-        if decision.candidate.artifact_identity.hex_digest != actual:
-            raise ProviderConfigurationError(
-                f"promotion decision names artifact {decision.candidate.artifact_identity.hex_digest[:12]}…; "
-                f"release {self._release_id} carries {actual[:12]}…"
+        if self._store is not None and self._release_id is not None:
+            from rdam.rst.model_loading import peek_runtime_contract
+
+            contract = peek_runtime_contract(self._store / self._release_id)
+            family = Parser.family_for_runtime_contract(contract)
+            self._parser = Parser.from_model_release(
+                self._store,
+                self._release_id,
+                family=family,
+                relinventory=self._relinventory,
+                device=self._device,
+                erst_scorer_checkpoint=self._erst_checkpoint,
             )
-        self._parser = Parser.from_model_release(
-            self._store,
-            self._release_id,
-            family="modernbert",
+            return self._parser
+        self._parser = Parser(
+            hf_model_version=self._hf_model_version,
+            relinventory=self._relinventory,
             device=self._device,
             erst_scorer_checkpoint=self._erst_checkpoint,
         )
@@ -253,4 +269,4 @@ class RstProvider:
         )
 
 
-__all__ = ["ERST_GRAPH", "RST_TREE", "ProviderConfigurationError", "RstProvider"]
+__all__ = ["ERST_GRAPH", "PUBLISHED_WEIGHTS_LICENCE", "RST_TREE", "ProviderConfigurationError", "RstProvider"]

@@ -9,7 +9,14 @@ from typing import Any
 
 from rdam.rst.contracts.erst import HardNegativeSamplingConfig
 from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
-from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from rdam.rst.model_authority import (
+    DEFAULT_ENCODER_MODEL_ID,
+    DEFAULT_ENCODER_REVISION,
+)
+from workbench.training.modern.authority import (
+    MODERNBERT_BASE_MODEL_ID,
+    MODERNBERT_BASE_REVISION,
+)
 from safetensors import safe_open
 from safetensors.torch import save_model
 import torch
@@ -282,8 +289,8 @@ def train_erst_scorer(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fine-tune Neural Secondary Edge Scorer on GUM eRST")
-    parser.add_argument("--model_name", default=MODERNBERT_BASE_MODEL_ID, type=str)
-    parser.add_argument("--model_revision", default=MODERNBERT_BASE_REVISION, type=str)
+    parser.add_argument("--model_name", default=DEFAULT_ENCODER_MODEL_ID, type=str)
+    parser.add_argument("--model_revision", default=DEFAULT_ENCODER_REVISION, type=str)
     parser.add_argument("--data_dir", default="tests/fixtures/gum", type=str)
     parser.add_argument("--output_dir", default="models/erst_scorer", type=str)
     parser.add_argument("--batch_size", default=16, type=int)

@@ -1,13 +1,11 @@
-"""Immutable upstream model revisions selected by the v4 research protocol."""
+"""Immutable upstream model revisions for production parsers."""
 
-MODERNBERT_BASE_MODEL_ID = "answerdotai/ModernBERT-base"
-MODERNBERT_BASE_REVISION = "8949b909ec900327062f0ebf497f51aef5e6f0c8"
-MODERNBERT_LARGE_MODEL_ID = "answerdotai/ModernBERT-large"
-MODERNBERT_LARGE_REVISION = "45bb4654a4d5aaff24dd11d4781fa46d39bf8c13"
+DEFAULT_ENCODER_MODEL_ID = "roberta-base"
+DEFAULT_ENCODER_REVISION = "e4da7003d63a830e25832e3fe1502476b7e01e2c"
+XLM_ROBERTA_LARGE_MODEL_ID = "xlm-roberta-large"
 
 __all__ = [
-    "MODERNBERT_BASE_MODEL_ID",
-    "MODERNBERT_BASE_REVISION",
-    "MODERNBERT_LARGE_MODEL_ID",
-    "MODERNBERT_LARGE_REVISION",
+    "DEFAULT_ENCODER_MODEL_ID",
+    "DEFAULT_ENCODER_REVISION",
+    "XLM_ROBERTA_LARGE_MODEL_ID",
 ]

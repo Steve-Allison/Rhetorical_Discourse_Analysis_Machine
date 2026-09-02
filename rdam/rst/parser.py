@@ -106,6 +106,9 @@ class Parser:
             case _:
                 raise ValueError(f"Unknown family {resolved_family!r}.")
 
+        if _validated_model_release is not None:
+            self.predictor.loaded_release_files = _validated_model_release.manifest.files
+
         if segmenter is not None:
             self.segmenter = segmenter
         elif segmenter_model is not None:
@@ -147,12 +150,26 @@ class Parser:
         return release.analysis_identity(self.analysis_capacity)
 
     @classmethod
+    def family_for_runtime_contract(cls, runtime_contract: str) -> str:
+        """Resolve canonical parser family from runtime contract string."""
+        prefix = "isanlp_rst.parser/"
+        if not runtime_contract.startswith(prefix):
+            raise ValueError(f"Invalid parser runtime contract prefix: {runtime_contract!r}")
+        suffix = runtime_contract[len(prefix):]
+        family = suffix.split("-v", 1)[0]
+        if family not in cls.AVAILABLE_FAMILIES:
+            raise ValueError(
+                f"Unknown parser family {family!r} for contract {runtime_contract!r}. Available: {cls.AVAILABLE_FAMILIES}"
+            )
+        return family
+
+    @classmethod
     def from_model_release(
         cls,
         store: str | Path,
         release_id: str,
         *,
-        family: str,
+        family: str | None = None,
         relinventory: str | None = None,
         relinventory_idx: int = 0,
         device: str | torch.device | None = None,
@@ -164,9 +181,13 @@ class Parser:
     ) -> "Parser":
         """Validate and load one immutable child of the production model store."""
 
-        if family not in cls.AVAILABLE_FAMILIES:
+        from rdam.rst.model_loading import load_model_release, peek_runtime_contract
+
+        if family is None:
+            contract = peek_runtime_contract(Path(store) / release_id)
+            family = cls.family_for_runtime_contract(contract)
+        elif family not in cls.AVAILABLE_FAMILIES:
             raise ValueError(f"Unknown family {family!r}. Available: {cls.AVAILABLE_FAMILIES}.")
-        from rdam.rst.model_loading import load_model_release
 
         release = load_model_release(
             store,

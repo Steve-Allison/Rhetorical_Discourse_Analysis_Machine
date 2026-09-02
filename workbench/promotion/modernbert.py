@@ -11,7 +11,7 @@ import argparse
 import hashlib
 from pathlib import Path, PurePosixPath
 
-from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from workbench.training.modern.authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
 from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST
 from rdam.frameworks import Technique
 from rdam.promotion import PromotionDecision, PromotionOutcome, load_decision, serialize_decision
@@ -103,8 +103,8 @@ def prepare_and_promote_modernbert(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--candidate-dir", type=Path, default=Path("models/modernbert_v1"))
-    parser.add_argument("--store-dir", type=Path, default=Path("models/model-releases"))
+    parser.add_argument("--candidate-dir", type=Path, default=Path("workbench/experiments/modernbert_v1"))
+    parser.add_argument("--store-dir", type=Path, default=Path("workbench/experiments/model-releases"))
     parser.add_argument("--decision", type=Path, required=True, help="PromotionDecision JSON with outcome promote or replace")
     parser.add_argument("--release-id", default=None)
     args = parser.parse_args()

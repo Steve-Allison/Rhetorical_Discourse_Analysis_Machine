@@ -10,7 +10,7 @@ import torch
 
 from rdam.rst import Parser
 from rdam.rst.contracts import Edu
-from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from workbench.training.modern.authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
 from workbench.evaluation.rst.parseval import StandardParsevalScorer
 from workbench.experiments.central_ledger import CentralExperimentLedger, get_current_git_commit
 from workbench.hashing import blake3_digest

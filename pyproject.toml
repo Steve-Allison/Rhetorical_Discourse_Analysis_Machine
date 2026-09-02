@@ -172,7 +172,7 @@ reportPrivateImportUsage = "none"
 test = { cmd = "pytest -m 'not slow and not stress' -q", description = "Fast suite: no model loads" }
 test-all = { cmd = "pytest -q", description = "Every test, including slow model-loading tests and the production smoke" }
 test-stress = { cmd = "pytest tests/stress -q", description = "Concurrency, megadoc, and memory-leak stress tests" }
-smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every ModernBERT release in models/model-releases on every available device (CPU, MPS, CUDA) through the public façade; skips visibly when the store is empty" }
+smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every parser release in the configured model releases store on every available device through the public façade" }
 lint = { cmd = "ruff check rdam workbench tests scripts tools", description = "Ruff" }
 project-framework-identities = { cmd = "python tools/ontology/project_framework_identities.py", description = "Regenerate rdam/resources/framework-identities.json from the vendored Central taxonomy" }
 ontology-validate = { cmd = "linkml lint --ignore-warnings ontology/schema/rdam.linkml.yaml && linkml validate ontology/schema/rdam.linkml.yaml && linkml validate -s ontology/schema/rdam.linkml.yaml -C ProviderBindings ontology/data/rdam-providers.yaml && python tools/ontology/project_framework_identities.py --check", description = "Validate the rdam LinkML application profile and its provider bindings against the vendored Central distribution, and check the framework projection is current" }
@@ -198,9 +198,6 @@ production-performance-evidence = { cmd = "python -m tools.production_boundary.e
 production-source-release-gates = { cmd = "python -m tools.production_boundary.evidence source-gates --output specs/004-production-api-contract/evidence/source-release-gates.json", description = "Write the aggregate source-gate evidence record" }
 offline-smoke = { cmd = "python -m workbench.smoke", description = "Bounded-start check that every retained offline command (training, evaluation, research, bench) resolves and starts, with receipts" }
 promote-model = { cmd = "python -m workbench.promotion.promote", description = "Promote an already-manifested candidate into the immutable local model store (--candidate, --store)" }
-promote-modernbert = { cmd = "python -m workbench.promotion.modernbert", description = "Manifest and promote a ModernBERT candidate under a PromotionDecision (--decision <json>); the decision becomes the release's evaluation evidence and is published beside it" }
-promotion-record = { cmd = "python -m workbench.promotion.decision", description = "Record a PromotionDecision in workbench/promotions/<technique>/ and optionally publish it beside a model-store release (--file, --publish-to)" }
-redeclare-compatibility = { cmd = "python -m workbench.promotion.compatibility", description = "Record, beside an immutable stored release, an evidence-backed re-declaration of the package versions it runs under (--release-id, --range, --declared-by, --reason, --basis); proves the release loads before returning" }
 research-test = { cmd = "pytest tests/offline/research -q", description = "Workbench research suites (not a production gate)" }
 research-lint = { cmd = "ruff check workbench/research tests/offline/research", description = "Ruff over the research code and its tests" }
 

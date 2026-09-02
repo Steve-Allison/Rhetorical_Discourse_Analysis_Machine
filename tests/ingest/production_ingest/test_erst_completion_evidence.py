@@ -189,7 +189,7 @@ def test_segmentation_source_recovery_from_composite_identity() -> None:
         component="segmenter",
         release_id="segmenter-release",
         manifest_identity=Sha256Identity(hex_digest="c" * 64),
-        architecture="modernbert_segmenter",
+        architecture="transformer_segmenter",
         files=(
             ComponentFileIdentity(
                 path="model.safetensors",

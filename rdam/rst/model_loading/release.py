@@ -18,12 +18,18 @@ COMPATIBILITY_REDECLARATION_SUFFIX = ".compatibility.json"
 COMPATIBILITY_REDECLARATION_SCHEMA = "rdam.rst.model_release_compatibility/v1"
 _MAX_MANIFEST_BYTES = 4 * 1024 * 1024
 _RELEASE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
-_MODERNBERT_RUNTIME_CONTRACT = "isanlp_rst.parser/modernbert-v1"
-_MODERNBERT_FILE_ROLES = {
+_PARSER_RUNTIME_CONTRACT_PREFIX = "isanlp_rst.parser/"
+_PARSER_FILE_ROLES = {
+    "configuration",
+    "runtime-configuration",
+    "model-weights",
+    "legacy-model-weights",
     "encoder_config",
     "parser_state",
     "relation_inventory",
+    "relation-inventory",
     "tokenizer",
+    "weights",
 }
 
 
@@ -83,8 +89,8 @@ class ModelReleaseManifest(_StrictModel):
             SpecifierSet(self.compatibility_range)
         except InvalidSpecifier as exc:
             raise ValueError("compatibility_range must be a valid Python version specifier") from exc
-        if self.runtime_contract == _MODERNBERT_RUNTIME_CONTRACT:
-            _validate_modernbert_files(self.files)
+        if self.runtime_contract.startswith(_PARSER_RUNTIME_CONTRACT_PREFIX):
+            _validate_parser_files(self.files)
         return self
 
     @property
@@ -324,7 +330,7 @@ def load_model_release(
     store: Path | str,
     release_id: str,
     *,
-    expected_runtime_contract: str,
+    expected_runtime_contract: str | None = None,
 ) -> ValidatedModelRelease:
     """Resolve and validate one promoted child of the configured production store."""
 
@@ -337,23 +343,28 @@ def load_model_release(
     return validate_model_release(release, expected_runtime_contract=expected_runtime_contract)
 
 
-def _validate_modernbert_files(files: tuple[ModelFile, ...]) -> None:
+def peek_runtime_contract(release_dir: Path | str) -> str:
+    """Safely inspect a release directory to read its runtime_contract without full validation."""
+    manifest_path = Path(release_dir) / MODEL_RELEASE_MANIFEST
+    if not manifest_path.is_file():
+        raise ModelReleaseError(f"Missing {MODEL_RELEASE_MANIFEST} in {release_dir}")
+    try:
+        data = json.loads(manifest_path.read_bytes())
+        contract = data.get("runtime_contract")
+        if not isinstance(contract, str):
+            raise ModelReleaseError(f"Invalid or missing runtime_contract in {manifest_path}")
+        return contract
+    except (OSError, ValueError) as exc:
+        raise ModelReleaseError(f"Failed to read runtime contract from {manifest_path}") from exc
+
+
+def _validate_parser_files(files: tuple[ModelFile, ...]) -> None:
     roles = [item.role for item in files]
-    unknown = set(roles) - _MODERNBERT_FILE_ROLES
+    unknown = set(roles) - _PARSER_FILE_ROLES
     if unknown:
-        raise ValueError(f"ModernBERT release contains unsupported runtime roles: {sorted(unknown)}")
-    for role in ("encoder_config", "parser_state", "relation_inventory"):
-        if roles.count(role) != 1:
-            raise ValueError(f"ModernBERT release requires exactly one {role} file")
-    if roles.count("tokenizer") < 1:
-        raise ValueError("ModernBERT release requires at least one tokenizer file")
-    by_role = {role: tuple(item for item in files if item.role == role) for role in set(roles)}
-    if by_role["encoder_config"][0].path.as_posix() != "config.json":
-        raise ValueError("ModernBERT encoder_config must be config.json")
-    if by_role["parser_state"][0].path.suffix != ".safetensors":
-        raise ValueError("ModernBERT parser_state must use safetensors")
-    if by_role["relation_inventory"][0].path.suffix != ".json":
-        raise ValueError("ModernBERT relation_inventory must be JSON")
+        raise ValueError(f"Parser release contains unsupported runtime roles: {sorted(unknown)}")
+    if not any(r in roles for r in ("parser_state", "weights", "model-weights", "legacy-model-weights")):
+        raise ValueError("Parser release requires at least one parser_state, weights, or model-weights file")
 
 
 __all__ = [
@@ -372,6 +383,7 @@ __all__ = [
     "compatibility_redeclaration_path",
     "load_compatibility_redeclaration",
     "load_model_release",
+    "peek_runtime_contract",
     "sha256_file",
     "validate_model_release",
 ]

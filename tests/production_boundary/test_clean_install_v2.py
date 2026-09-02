@@ -90,15 +90,15 @@ def test_full_clean_install_runs_inference_in_core_and_formats(
             "--model-store",
             str(tmp_path / "model-releases"),
             "--release-id",
-            "modernbert-v1-e5ea56cd620f",
+            "dmrst-v1-gumrrg",
             "--full",
         ],
     )
 
     assert clean_install.main() == 0
     assert observed == [
-        ("core", True, "modernbert-v1-e5ea56cd620f"),
-        ("formats", True, "modernbert-v1-e5ea56cd620f"),
+        ("core", True, "dmrst-v1-gumrrg"),
+        ("formats", True, "dmrst-v1-gumrrg"),
     ]
     assert json.loads(capsys.readouterr().out)["valid"] is True
 

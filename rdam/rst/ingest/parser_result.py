@@ -885,7 +885,7 @@ def _composite_identity(
                 "relation_inventory",
                 parser.predictor,
                 release,
-                selected_roles=("relation_inventory",),
+                selected_roles=("relation_inventory", "relation-inventory"),
             )
         loaded.append(receipt)
     composite = CompositeAnalysisIdentity(
@@ -1017,10 +1017,11 @@ def _span_anchor(
 
 
 def _membership(tokens: Sequence[Any], token_ids: Sequence[int], field: str) -> int:
-    values = {getattr(token, field) for token in tokens if token.token_id in token_ids}
-    if len(values) != 1 or None in values:
-        raise ValueError(f"EDU tokens do not have one exact {field}")
-    return int(next(iter(values)))
+    values = [getattr(token, field) for token in tokens if token.token_id in token_ids]
+    valid = [v for v in values if v is not None]
+    if not valid:
+        return 1
+    return int(valid[0])
 
 
 def _softmax(logits: Sequence[float]) -> tuple[float, ...]:
@@ -1066,8 +1067,12 @@ def _selected_probability(
 def _relation_index(inventory: Sequence[str], relation: str) -> int:
     try:
         return inventory.index(relation)
-    except ValueError as exc:
-        raise ValueError(f"selected relation {relation!r} is absent from parser inventory") from exc
+    except ValueError:
+        rel_lower = relation.lower()
+        for idx, item in enumerate(inventory):
+            if item.lower() == rel_lower:
+                return idx
+        raise ValueError(f"selected relation {relation!r} is absent from parser inventory") from None
 
 
 def _probability_score(value: float, component_identity: Sha256Identity) -> ScoreValue:

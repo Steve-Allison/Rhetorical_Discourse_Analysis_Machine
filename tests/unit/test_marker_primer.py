@@ -161,7 +161,7 @@ def test_primer_respects_high_confidence_predictions() -> None:
 
 @pytest.mark.slow
 def test_parser_parse_document_with_marker_priming() -> None:
-    parser = Parser(family="modernbert", device="cpu")
+    parser = Parser(device="cpu")
     doc = RstDocument.from_text(
         "The algorithm ran efficiently. Because the dataset was pre-cached, latency stayed low."
     )

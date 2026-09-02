@@ -128,8 +128,8 @@ def _assert_aligned(unit, text: str, path: str = "root") -> None:
 
 
 @pytest.fixture(scope="session")
-def modernbert_cpu() -> Parser:
-    return Parser(family="modernbert", device="cpu")
+def dmrst_cpu() -> Parser:
+    return Parser(device="cpu")
 
 
 _mps_available = hasattr(torch.backends, "mps") and torch.backends.mps.is_available() and torch.backends.mps.is_built()
@@ -144,9 +144,9 @@ _mps_available = hasattr(torch.backends, "mps") and torch.backends.mps.is_availa
         ("LONG_EN", LONG_EN),
     ],
 )
-def test_modernbert_dtype_equivalence_on_mps(modernbert_cpu: Parser, text_name, text, dtype):
+def test_dmrst_dtype_equivalence_on_mps(dmrst_cpu: Parser, text_name, text, dtype):
     """fp16/bf16 on MPS must produce valid aligned trees."""
-    mps_parser = Parser(family="modernbert", device="mps", dtype=dtype)
+    mps_parser = Parser(device="mps", dtype=dtype)
     res = mps_parser(text)
     tree = res["rst"][0]
     _assert_aligned(tree, text)
@@ -154,48 +154,48 @@ def test_modernbert_dtype_equivalence_on_mps(modernbert_cpu: Parser, text_name, 
     assert len(leaves) >= 2
 
 
-def test_long_text_alignment(modernbert_cpu: Parser):
-    res = modernbert_cpu(LONG_EN)
+def test_long_text_alignment(dmrst_cpu: Parser):
+    res = dmrst_cpu(LONG_EN)
     _assert_aligned(res["rst"][0], LONG_EN)
 
 
-def test_round_trip_modernbert(modernbert_cpu: Parser):
-    res = modernbert_cpu(LONG_EN)
+def test_round_trip_dmrst(dmrst_cpu: Parser):
+    res = dmrst_cpu(LONG_EN)
     leaves = _collect_leaves(res["rst"][0])
-    res2 = modernbert_cpu.from_edus(leaves)
+    res2 = dmrst_cpu.from_edus(leaves)
     leaves2 = _collect_leaves(res2["rst"][0])
     assert leaves2 == leaves, "round-trip leaves diverged"
 
 
-def test_edge_single_sentence(modernbert_cpu: Parser):
-    res = modernbert_cpu(EDGE_CASES["single_sentence"])
+def test_edge_single_sentence(dmrst_cpu: Parser):
+    res = dmrst_cpu(EDGE_CASES["single_sentence"])
     _assert_aligned(res["rst"][0], EDGE_CASES["single_sentence"])
 
 
-def test_edge_multi_paragraph(modernbert_cpu: Parser):
+def test_edge_multi_paragraph(dmrst_cpu: Parser):
     text = EDGE_CASES["multi_paragraph"]
-    res = modernbert_cpu(text)
+    res = dmrst_cpu(text)
     _assert_aligned(res["rst"][0], text)
 
 
-def test_edge_unicode_punctuation(modernbert_cpu: Parser):
+def test_edge_unicode_punctuation(dmrst_cpu: Parser):
     text = EDGE_CASES["with_unicode"]
-    res = modernbert_cpu(text)
+    res = dmrst_cpu(text)
     _assert_aligned(res["rst"][0], text)
 
 
 @pytest.mark.parametrize("empty", EMPTY_INPUTS)
-def test_edge_empty_or_whitespace_raises(modernbert_cpu: Parser, empty: str):
+def test_edge_empty_or_whitespace_raises(dmrst_cpu: Parser, empty: str):
     with pytest.raises(ValueError, match="non-empty"):
-        modernbert_cpu(empty)
+        dmrst_cpu(empty)
 
 
-def test_parse_document_modernbert_e2e(modernbert_cpu: Parser):
-    doc = RstDocument.from_text(LONG_EN, document_id="e2e-modernbert-1")
-    analysis = modernbert_cpu.parse_document(doc, output="rst_tree")
+def test_parse_document_dmrst_e2e(dmrst_cpu: Parser):
+    doc = RstDocument.from_text(LONG_EN, document_id="e2e-dmrst-1")
+    analysis = dmrst_cpu.parse_document(doc, output="rst_tree")
 
     assert isinstance(analysis, RstAnalysis)
-    assert analysis.document_id == "e2e-modernbert-1"
+    assert analysis.document_id == "e2e-dmrst-1"
     assert analysis.formalism == OutputFormalismEnum.RST_TREE
     assert len(analysis.nodes) > 1
     assert analysis.timing.total_ms >= 0.0
@@ -205,21 +205,21 @@ def test_parse_document_modernbert_e2e(modernbert_cpu: Parser):
         assert LONG_EN[start:end] == node.text
 
 
-def test_parse_document_with_edus_e2e(modernbert_cpu: Parser):
-    res = modernbert_cpu(SHORT_EN)
+def test_parse_document_with_edus_e2e(dmrst_cpu: Parser):
+    res = dmrst_cpu(SHORT_EN)
     leaves = _collect_leaves(res["rst"][0])
 
     doc = RstDocument.from_edus(leaves, document_id="e2e-edus-1")
     assert doc.fidelity == InputFidelityEnum.RECONSTRUCTED
 
-    analysis = modernbert_cpu.parse_document(doc, output="rst_tree")
+    analysis = dmrst_cpu.parse_document(doc, output="rst_tree")
     assert isinstance(analysis, RstAnalysis)
     assert len(analysis.nodes) >= len(leaves)
 
 
-def test_parse_document_edge_cases_e2e(modernbert_cpu: Parser):
+def test_parse_document_edge_cases_e2e(dmrst_cpu: Parser):
     unicode_doc = RstDocument.from_text(EDGE_CASES["with_unicode"], document_id="e2e-unicode")
-    analysis_uni = modernbert_cpu.parse_document(unicode_doc)
+    analysis_uni = dmrst_cpu.parse_document(unicode_doc)
     for node in analysis_uni.nodes:
         start, end = node.char_span
         assert EDGE_CASES["with_unicode"][start:end] == node.text
@@ -227,4 +227,4 @@ def test_parse_document_edge_cases_e2e(modernbert_cpu: Parser):
     for empty in EMPTY_INPUTS:
         empty_doc = RstDocument.from_text(empty)
         with pytest.raises(ValueError, match="non-empty"):
-            modernbert_cpu.parse_document(empty_doc)
+            dmrst_cpu.parse_document(empty_doc)

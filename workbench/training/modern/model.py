@@ -6,7 +6,7 @@ from torch import nn
 import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer, PretrainedConfig, PreTrainedTokenizerBase
 
-from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from workbench.training.modern.authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
 from workbench.training.modern.span_encoder import TransformerBoundarySpanEncoder
 from workbench.training.modern.biaffine_decoder import (
     DeepBiaffineScorer,

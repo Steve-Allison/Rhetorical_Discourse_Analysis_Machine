@@ -16,7 +16,7 @@ from transformers import (
     get_cosine_schedule_with_warmup,
 )
 
-from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from rdam.rst.model_authority import DEFAULT_ENCODER_MODEL_ID, DEFAULT_ENCODER_REVISION
 from workbench.training.segmentation.dataset import (
     EduSegmentationDataset,
     SegmentedSentence,
@@ -50,10 +50,10 @@ def compute_metrics(preds: list[int], targets: list[int]) -> dict[str, float]:
 
 
 def train_segmenter(
-    model_name: str = MODERNBERT_BASE_MODEL_ID,
-    model_revision: str | None = MODERNBERT_BASE_REVISION,
+    model_name: str = DEFAULT_ENCODER_MODEL_ID,
+    model_revision: str | None = DEFAULT_ENCODER_REVISION,
     data_dir: Path | str = "data/disrpt",
-    output_dir: Path | str = "models/segmenter_modernbert_base",
+    output_dir: Path | str = "models/segmenter_roberta_base",
     batch_size: int = 16,
     learning_rate: float = 2e-5,
     epochs: int = 4,
@@ -221,8 +221,8 @@ def train_segmenter(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fine-tune Transformer EDU Segmenter")
-    parser.add_argument("--model_name", default=MODERNBERT_BASE_MODEL_ID, type=str)
-    parser.add_argument("--model_revision", default=MODERNBERT_BASE_REVISION, type=str)
+    parser.add_argument("--model_name", default=DEFAULT_ENCODER_MODEL_ID, type=str)
+    parser.add_argument("--model_revision", default=DEFAULT_ENCODER_REVISION, type=str)
     parser.add_argument("--data_dir", default="data/disrpt", type=str)
     parser.add_argument("--output_dir", default="models/segmenter_deberta_large", type=str)
     parser.add_argument("--batch_size", default=16, type=int)

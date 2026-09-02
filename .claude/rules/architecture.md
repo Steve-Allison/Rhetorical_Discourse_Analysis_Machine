@@ -100,18 +100,14 @@ by `pixi run redeclare-compatibility` with its evidence), never by editing the m
 The parser is a thin façade over predictor families that share a `BasePredictor`
 (tokenisation, batching, offset remapping, MPS-safe init, mixed-precision dispatch).
 
-> **Production status (verified 2026-09-01, `rdam/rst/parser.py:90-93`)**: the DMRST
-> and UniRST families described below are **archived from production**. `Parser` raises
-> `ValueError("Legacy … has been archived from production. Use family='modernbert'")`
-> for any of their five `hf_model_version` values before loading anything. The sole
-> production family is **ModernBERT** (`rdam/rst/transformer_parser/`), loaded from an
-> immutable local release via `Parser.from_model_release(store, release_id,
-> family="modernbert")`. The family description below is retained as the record of the
-> archived research parsers (their code lives under `workbench/archive/legacy_2021/`);
-> the production smoke (`tests/integration/test_production_smoke.py`, `pixi run smoke`)
-> exercises only the production family, on every available device.
+> **Production status**: The active production families are **DMRST** and **UniRST**
+> (`rdam.rst.parser_annotator.PredictorDMRST` and `rdam.rst.universal_parser.PredictorUniRST`),
+> loaded either via `hf_model_version` or from an immutable local release via
+> `Parser.from_model_release(store, release_id)`. Experimental pure-transformer
+> research architectures reside strictly under `workbench/training/modern/` and are not
+> in production code.
 
-### Archived research families
+### Production families
 
 `rdam.rst.parser.Parser` dispatched on either `hf_model_version` (HF-pulled) or `family=` / auto-detection (`model_dir=` for local checkpoints):
 

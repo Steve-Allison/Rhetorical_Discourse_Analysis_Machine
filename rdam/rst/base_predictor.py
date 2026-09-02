@@ -176,9 +176,13 @@ def resolve_device(
 class BasePredictor:
     """Mixin-style base with shared tokenization, batching and offset utils.
 
-    Not abstract: the ABC inheritance was dropped because no methods are
-    abstract. Predictors compose this base by inheritance and override
-    ``parse_rst`` / ``parse_from_edus`` / ``tokenize`` directly.
+    Predictors compose this base by inheritance and override ``parse_rst`` /
+    ``parse_from_edus`` / ``tokenize`` directly. The two parse methods are
+    declared here because the base itself calls them — ``__call__`` and
+    ``analyse_with_evidence`` dispatch to the subclass implementation — so the
+    requirement is part of the base's contract rather than an implicit
+    convention. A subclass that omits one fails loudly at the call, not with an
+    ``AttributeError`` from somewhere deeper.
     """
 
     tokenizer = None
@@ -608,6 +612,14 @@ class BasePredictor:
             enabled=(self._dtype is not torch.float32),
         )
 
+    def parse_rst(self, text: str) -> Any:
+        """Parse raw text into an RST tree. Required override."""
+        raise NotImplementedError(f"{type(self).__name__} must implement parse_rst")
+
+    def parse_from_edus(self, edus: Sequence[str]) -> Any:
+        """Parse pre-segmented EDUs into an RST tree. Required override."""
+        raise NotImplementedError(f"{type(self).__name__} must implement parse_from_edus")
+
     def __call__(self, text: str) -> Any:
         return self.parse_rst(text)
 
@@ -736,6 +748,11 @@ class BasePredictor:
             rel = getattr(node, "relation", "elaboration") or "elaboration"
             if "_" in rel:
                 rel = rel.split("_")[0]
+            canonical_rel = rel
+            for candidate in rel_table:
+                if candidate.lower() == rel.lower():
+                    canonical_rel = candidate
+                    break
             proba = float(getattr(node, "proba", 1.0) or 1.0)
 
             span = ParsedRstTreeSpan(
@@ -743,7 +760,7 @@ class BasePredictor:
                 end=end_idx,
                 split=split_idx,
                 nuclearity=nuc,
-                relation=rel,
+                relation=canonical_rel,
                 score=proba,
             )
             split_candidates = tuple(range(start_idx, end_idx)) if end_idx > start_idx else (split_idx,)
@@ -752,8 +769,8 @@ class BasePredictor:
             nuc_idx = nuc_classes.index(nuc) if nuc in nuc_classes else 0
             nuclearity_logits = tuple(1.0 if idx == nuc_idx else 0.0 for idx in range(3))
 
-            if rel in rel_table:
-                rel_idx = rel_table.index(rel)
+            if canonical_rel in rel_table:
+                rel_idx = rel_table.index(canonical_rel)
                 relation_logits = tuple(1.0 if idx == rel_idx else 0.0 for idx in range(len(rel_table)))
             else:
                 relation_logits = tuple(1.0 if idx == 0 else 0.0 for idx in range(max(1, len(rel_table))))

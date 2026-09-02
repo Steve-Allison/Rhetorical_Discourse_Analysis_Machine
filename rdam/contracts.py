@@ -40,6 +40,8 @@ class UnavailableReason(StrEnum):
     RETIRED = "retired"
     REPLACED = "replaced"
     MISSING_STRUCTURED_INPUT = "missing_structured_input"
+    MODEL_UNAVAILABLE = "model_unavailable"
+    NOT_IMPLEMENTED = "not_implemented"
 
 
 class AvailableCapability(StrictModel):

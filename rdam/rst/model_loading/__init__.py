@@ -10,6 +10,7 @@ from rdam.rst.model_loading.release import (
     PromotionReceipt,
     ValidatedModelRelease,
     load_model_release,
+    peek_runtime_contract,
     validate_model_release,
 )
 
@@ -23,5 +24,6 @@ __all__ = [
     "PromotionReceipt",
     "ValidatedModelRelease",
     "load_model_release",
+    "peek_runtime_contract",
     "validate_model_release",
 ]

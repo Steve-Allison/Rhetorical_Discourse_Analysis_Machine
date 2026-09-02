@@ -8,7 +8,7 @@ package, every technique a sub-package:
 | Sub-package | Technique | State (2026-09-02) |
 |---|---|---|
 | `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.analyse()` returning one explicit outcome per technique, the `PromotionDecision` contract | feature 007 / 008 |
-| `rdam.rst` | RST / eRST — the ModernBERT discourse parser (Steve's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, viewer, the `rdam-rst` command, and the machine adapter `rdam.rst.provider.RstProvider` | `unavailable(withheld)` under the 008 verdicts until the owner rules on the model releases |
+| `rdam.rst` | RST / eRST — DMRST and UniRST discourse parsers (Steve's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, viewer, the `rdam-rst` command, and the machine adapter `rdam.rst.provider.RstProvider` | `available` with promoted/redeclared release |
 | `rdam.dung` | Dung abstract argumentation: grounded, complete, preferred, stable semantics over a supplied or explicitly derived framework | `available` (decision `rdam.dung-exhaustive-subset-v1-replace-lineage-2026-09-02`) |
 | `rdam.ibis` | IBIS: issue–position–argument structures validated under the gIBIS link grammar | `available` (decision `rdam.ibis-gibis-grammar-v1-replace-lineage-2026-09-02`) |
 | SDRT, Toulmin, Walton, PDTB | no provider — the machine reports `unavailable(no_promoted_implementation)`; no stubs | on workbench evidence only (006 FR-024) |
@@ -82,10 +82,10 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 ## Files worth knowing
 
 - [`rdam/machine.py`](rdam/machine.py), [`rdam/contracts.py`](rdam/contracts.py), [`rdam/promotion.py`](rdam/promotion.py) — the machine, its typed contracts, and the evidence-gated `PromotionDecision`.
-- [`rdam/rst/parser.py`](rdam/rst/parser.py) — RST public entry point; the sole production family is ModernBERT, loaded from an immutable local release.
+- [`rdam/rst/parser.py`](rdam/rst/parser.py) — RST public entry point; production families are DMRST and UniRST, loaded from an immutable local release or HF version.
 - [`rdam/rst/provider.py`](rdam/rst/provider.py) — the machine-facing RST/eRST adapter: capability from the promotion decision published beside the release; the ingest outcome envelope is handed to the machine verbatim.
 - [`rdam/rst/cli.py`](rdam/rst/cli.py) — the `rdam-rst` command (parse, capabilities, serve, version).
-- [`rdam/rst/transformer_parser/`](rdam/rst/transformer_parser/) — ModernBERT pure-transformer parsing net, biaffine scorer, and CKY chart decoder.
+- [`rdam/rst/parser_annotator.py`](rdam/rst/parser_annotator.py), [`rdam/rst/universal_parser/`](rdam/rst/universal_parser/) — DMRST and UniRST production parser implementations.
 - [`rdam/rst/annotation_rst.py`](rdam/rst/annotation_rst.py) — native `DiscourseUnit` and RS3 XML serialization.
 - [`rdam/rst/ingest/`](rdam/rst/ingest/) — sole production source inventory, preparation, analysis, receipt, subdivision, and cache API.
 - [`rdam/rst/contracts/`](rdam/rst/contracts/) — typed contracts: `RstAnalysis`, `RstDocument`, `SecondaryRelationEdge`, `DiscourseSignal`, envelope serializations.

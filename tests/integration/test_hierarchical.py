@@ -215,7 +215,7 @@ def test_stitch_trees_synthetic() -> None:
 
 @pytest.fixture(scope="module")
 def parser_cpu() -> Parser:
-    return Parser(family="modernbert", device="cpu")
+    return Parser(device="cpu")
 
 
 @pytest.mark.slow

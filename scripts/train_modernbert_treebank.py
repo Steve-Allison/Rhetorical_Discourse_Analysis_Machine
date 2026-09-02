@@ -9,7 +9,7 @@ import time
 
 from transformers import AutoTokenizer
 
-from rdam.rst.model_authority import (
+from workbench.training.modern.authority import (
     MODERNBERT_BASE_MODEL_ID,
     MODERNBERT_BASE_REVISION,
     MODERNBERT_LARGE_MODEL_ID,

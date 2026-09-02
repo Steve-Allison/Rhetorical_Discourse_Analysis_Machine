@@ -151,10 +151,14 @@ def cmd_version(args: argparse.Namespace) -> int:
 def _configured_ingestor(args: argparse.Namespace) -> ProductionIngestor:
     if not args.model_store or not args.release_id:
         raise ValueError("analysis requires --model-store and --release-id")
+    from rdam.rst.model_loading import peek_runtime_contract
+
+    contract = peek_runtime_contract(Path(args.model_store) / args.release_id)
+    family = Parser.family_for_runtime_contract(contract)
     parser = Parser.from_model_release(
         args.model_store,
         args.release_id,
-        family="modernbert",
+        family=family,
         device=args.device,
         erst_scorer_checkpoint=args.erst_checkpoint,
     )

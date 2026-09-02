@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer, PretrainedConfig, PreTrainedTokenizerBase
 
-from rdam.rst.model_authority import MODERNBERT_BASE_MODEL_ID, MODERNBERT_BASE_REVISION
+from rdam.rst.model_authority import DEFAULT_ENCODER_MODEL_ID, DEFAULT_ENCODER_REVISION
 
 
 class AttentionPooling(nn.Module):
@@ -88,7 +88,7 @@ class NeuralSecondaryEdgeScorer(nn.Module):
 
     def __init__(
         self,
-        model_name_or_path: str = MODERNBERT_BASE_MODEL_ID,
+        model_name_or_path: str = DEFAULT_ENCODER_MODEL_ID,
         model_revision: str | None = None,
         num_struct_features: int = 9,
         proj_dim: int = 256,
@@ -103,8 +103,8 @@ class NeuralSecondaryEdgeScorer(nn.Module):
         super().__init__()
         self.model_name_or_path = model_name_or_path
         self.model_revision = (
-            MODERNBERT_BASE_REVISION
-            if model_revision is None and model_name_or_path == MODERNBERT_BASE_MODEL_ID
+            DEFAULT_ENCODER_REVISION
+            if model_revision is None and model_name_or_path == DEFAULT_ENCODER_MODEL_ID
             else model_revision
         )
         self.num_struct_features = num_struct_features

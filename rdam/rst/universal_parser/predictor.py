@@ -109,6 +109,13 @@ class PredictorUniRST(BasePredictor):
 
         self._load_model()
 
+    @property
+    def relation_table(self) -> Sequence[str]:
+        """Active relation table corresponding to relinventory_idx."""
+        if self.relation_tables and 0 <= self.relinventory_idx < len(self.relation_tables):
+            return self.relation_tables[self.relinventory_idx]
+        return ()
+
     @staticmethod
     def _ensure_module_aliases() -> None:
         ensure_unirst_module_aliases()
