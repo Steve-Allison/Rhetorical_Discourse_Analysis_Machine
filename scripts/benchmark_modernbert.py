@@ -38,7 +38,6 @@ def run_benchmark(
     parser = Parser.from_model_release(
         store_dir,
         release_id,
-        family="modernbert",
         device=device,
     )
     scorer = StandardParsevalScorer()
