@@ -39,10 +39,10 @@ Machine. It is updated at every feature boundary. If a session restarts, resume 
 
 Identity adoption (010 §Identity adoption) — one decision, then mechanical:
 
-1. Steve renames the GitHub repository (`Steve-Allison/isanlp_rst` → the new name) and
-   says go. Then: `mv ~/AI_Projects+Code/isanlp_rst ~/AI_Projects+Code/Rhetorical_Discourse_Analysis_Machine`,
-   `git remote set-url origin …`, `[project.urls]` in `pyproject.toml`, `pixi install`
-   in the new location (the environments carry absolute paths), copy
+1. GitHub renamed to `Steve-Allison/Rhetorical_Discourse_Analysis_Machine` (Steve,
+   2026-09-02); remote and `[project.urls]` updated. Then:
+   `mv ~/AI_Projects+Code/isanlp_rst ~/AI_Projects+Code/Rhetorical_Discourse_Analysis_Machine`,
+   `pixi install` in the new location (the environments carry absolute paths), copy
    `~/.claude/projects/-Users-steveallison-AI-Projects-Code-isanlp-rst/memory/` to the new
    project key, and resume in a fresh session from the new directory.
 2. Consumers found by the sweep (read-only, 2026-09-02): `Presentation_Performance_Analyser`

@@ -23,7 +23,7 @@ Commercial use requires either retraining new weights under a permissive licence
 
 ## Git remotes
 
-Single remote: `origin` → `Steve-Allison/isanlp_rst`. No upstream tracking. All pushes go to `origin`. Verify: `git remote -v`.
+Single remote: `origin` → `Steve-Allison/Rhetorical_Discourse_Analysis_Machine` (GitHub renamed from `isanlp_rst` on 2026-09-02; the old name redirects). No upstream tracking. All pushes go to `origin`. Verify: `git remote -v`.
 
 ## Pixi commands
 

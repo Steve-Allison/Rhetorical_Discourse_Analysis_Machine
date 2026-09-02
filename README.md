@@ -2,72 +2,101 @@
 
 ![Python](https://img.shields.io/badge/python-3.14%2B-blue) ![License](https://img.shields.io/badge/license-MIT_(code)_/_CC_BY--NC_4.0_(archived_weights)-orange) ![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-MPS-blueviolet)
 
-A permanently analysis-only machine that runs several discourse and argumentation
-techniques natively, side by side, without collapsing them into a common formalism. One
-distribution, one package, every technique a sub-package:
+`rdam` runs several discourse and argumentation techniques on one text, natively and
+side by side, and reports one explicit outcome per technique. It never collapses them
+into a common formalism, never generates or rewrites text, and never says a technique is
+available unless recorded evidence says so. It serves one person on one local machine.
 
-| Sub-package | Technique | What it does |
-|---|---|---|
-| `rdam` | the machine | provider and formalism declarations, explicit capability states, one outcome per requested technique, and the evidence-gated `PromotionDecision` every provider is bound by |
-| `rdam.rst` | RST / eRST | the ModernBERT discourse parser (Steve Allison's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest for text, EDUs, Markdown, Docling JSON, and DocLang, eRST completion, the RS3 viewer, and the `rdam-rst` command |
-| `rdam.dung` | Dung abstract argumentation | grounded, complete, preferred, and stable extensions of a supplied argument–attack framework, exact by construction |
-| `rdam.ibis` | IBIS | issue–position–argument structures validated under the gIBIS link grammar and organised into a deliberation map |
+```text
+                       ┌────────────────────────────────────────────────┐
+  text ───────────────▶│  rdam.Machine                                  │
+  supplied structures ▶│   capabilities()  one state per technique      │
+                       │   analyse()       one outcome per technique    │
+                       └───┬──────────────┬──────────────┬─────────────┘
+                           ▼              ▼              ▼
+                    rdam.rst         rdam.dung       rdam.ibis         (sdrt, toulmin, walton, pdtb:
+                    RST / eRST       abstract        gIBIS              unavailable, no provider)
+                    ModernBERT       argumentation   link grammar
+                    parser           semantics
+```
 
-Techniques without a promoted provider (SDRT, Toulmin, Walton, PDTB) are reported by the
-machine as `unavailable(no_promoted_implementation)`; there are no stubs. The machine
-serves one person on one local machine. Pixi-managed, MPS-aware, Apple-Silicon-first,
-real test suite, real CI.
+## Contents
 
-## Table of contents
-
+- [What is in the package](#what-is-in-the-package)
+- [Design principles](#design-principles)
 - [Installation](#installation)
-- [The machine](#the-machine)
+- [Using the machine](#using-the-machine)
 - [Capability comes from evidence](#capability-comes-from-evidence)
-- [RST: command line](#rst-command-line)
-- [RST: Python API](#rst-python-api)
-- [RST: production source ingest](#rst-production-source-ingest)
-- [RST: visualising a tree](#rst-visualising-a-tree)
-- [RST: extended RST, long documents, diagnostics](#rst-extended-rst-long-documents-diagnostics)
-- [Production package and offline workbench](#production-package-and-offline-workbench)
-- [Archived research parser families](#archived-research-parser-families)
-- [Project status & licence](#project-status--licence)
+- [Provider: RST / eRST (`rdam.rst`)](#provider-rst--erst-rdamrst)
+- [Provider: Dung abstract argumentation (`rdam.dung`)](#provider-dung-abstract-argumentation-rdamdung)
+- [Provider: IBIS (`rdam.ibis`)](#provider-ibis-rdamibis)
+- [Repository layout](#repository-layout)
+- [Development, gates, and release](#development-gates-and-release)
+- [Status and roadmap](#status-and-roadmap)
+- [Provenance and licence](#provenance-and-licence)
 - [Citation](#citation)
+
+## What is in the package
+
+One distribution, one import package, every technique a sub-package.
+
+| Sub-package | Technique | Provides | State (2026-09-02) |
+|---|---|---|---|
+| `rdam` | the machine | `Machine`, `AggregateRequest`, typed provider declarations, capability states, native results, outcomes, and the `PromotionDecision` contract | — |
+| `rdam.rst` | RST and Extended RST | the ModernBERT discourse parser (Steve Allison's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, the RS3 viewer, the `rdam-rst` command, and the machine adapter | `unavailable(withheld)` — see [Status](#status-and-roadmap) |
+| `rdam.dung` | Dung abstract argumentation | grounded, complete, preferred, and stable extensions of a supplied argument–attack framework, exact by construction | `available` |
+| `rdam.ibis` | IBIS | issue–position–argument structures validated under the gIBIS link grammar and organised into a deliberation map | `available` |
+| — | SDRT, Toulmin, Walton, PDTB | nothing yet; the machine reports `unavailable(no_promoted_implementation)`. No stubs. | — |
+
+## Design principles
+
+- **Native, side by side.** Each technique keeps its own formalism, relation inventory,
+  and result payload. The machine hands a provider's own outcome envelope back verbatim;
+  it does not translate RST trees into argument graphs or vice versa.
+- **Analysis only.** The machine describes discourse. It has no generation or rewriting
+  path, by design and by contract.
+- **One outcome per technique, always.** `analyse()` returns exactly one of
+  `ResultOutcome`, `UnavailableOutcome(reason)`, or `FailedOutcome(failure)` for every
+  requested technique. A failure in one technique never hides a result in another; the
+  machine never retries; internal bugs propagate instead of being relabelled.
+- **Capability is evidence.** A provider is `available` only under a recorded
+  `PromotionDecision` whose evidence is admissible and which names the exact artifact.
+  No decision, a withheld decision, or a source change the decision did not evaluate
+  all mean `unavailable`, with a stable reason.
+- **Structure in, structure out.** Formal techniques (Dung, IBIS) take a supplied
+  structure and never extract one from text. A text-only request for them is
+  `unavailable(missing_structured_input)`, not a guess.
+- **One person, one machine.** No multi-user, distributed, or enterprise machinery.
+  Pixi-managed, Apple-Silicon-first, MPS-aware, with a real test suite and CI.
 
 ## Installation
 
-In this checkout, use the independently solved production environment:
+In this checkout:
 
 ```bash
-git clone https://github.com/Steve-Allison/isanlp_rst.git
-cd isanlp_rst
+git clone https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine.git
+cd Rhetorical_Discourse_Analysis_Machine
 pixi install -e production
 pixi run -e production production-import-check
 ```
 
-Or install the distribution into any Python 3.14 environment:
+Into any Python 3.14 environment:
 
 ```bash
-pip install "rdam @ git+https://github.com/Steve-Allison/isanlp_rst.git"
+pip install "rdam @ git+https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine.git"
 
-# Markdown, Docling JSON, and DocLang source adapters are production capabilities
-# supplied by the optional `formats` extra:
-pip install "rdam[formats] @ git+https://github.com/Steve-Allison/isanlp_rst.git"
+# Markdown, Docling JSON, and DocLang source adapters are supplied by the `formats` extra
+pip install "rdam[formats] @ git+https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine.git"
 ```
 
-No model weight ships in the wheel. RST inference needs an immutable local model release
-(`models/model-releases/<release_id>/` with its manifest); this repository's store holds
-`modernbert-v1-a52b70fbc1a3` and `modernbert-v1-462d68b82eae`.
+No model weight ships in the wheel. RST inference needs an immutable local model
+release (`models/model-releases/<release_id>/` with its manifest); this repository's
+store holds `modernbert-v1-a52b70fbc1a3` and `modernbert-v1-462d68b82eae`. Dung and IBIS
+need nothing beyond the package.
 
-Corpus preparation, training, evaluation, benchmarking, and research are intentionally
-absent from both production installs. Repository development uses the `default`
-environment:
+Development uses the `default` environment (`pixi install`, then `pixi run test`).
 
-```bash
-pixi install
-pixi run test
-```
-
-## The machine
+## Using the machine
 
 ```python
 from pathlib import Path
@@ -84,18 +113,35 @@ machine = Machine(
         IbisProvider(),
     ]
 )
+```
 
-# One explicit capability state per technique; reporting capability loads nothing.
-for capability in machine.capabilities().techniques:
-    print(capability.technique.value, capability.capability)
+**Capabilities** are reported without loading anything — one state per technique,
+including the techniques that have no provider:
 
-# One explicit outcome per requested technique: ResultOutcome, UnavailableOutcome, or FailedOutcome.
-aggregate = machine.analyse(AggregateRequest.for_text("Because it rained, the match stopped.", (Technique.RST,)))
-outcome = aggregate.outcome_for(Technique.RST)
-if isinstance(outcome, ResultOutcome):
-    print(outcome.result.payload["kind"])  # the provider's own outcome envelope, verbatim
+```python
+for item in machine.capabilities().techniques:
+    print(item.technique.value, item.capability)
+# rst    UnavailableCapability(reason='withheld')
+# pdtb   UnavailableCapability(reason='no_promoted_implementation')
+# ...
+# dung   AvailableCapability(provider_id='rdam.dung/exhaustive-subset-v1', ...)
+# ibis   AvailableCapability(provider_id='rdam.ibis/gibis-grammar-v1', ...)
+```
 
-# Formal techniques take a supplied structure, never text.
+**Text in, one outcome per technique out:**
+
+```python
+aggregate = machine.analyse(AggregateRequest.for_text("Because it rained, the match stopped.", (Technique.RST, Technique.SDRT)))
+for outcome in aggregate.outcomes:
+    print(outcome)                      # ResultOutcome | UnavailableOutcome | FailedOutcome
+rst = aggregate.outcome_for(Technique.RST)
+if isinstance(rst, ResultOutcome):
+    print(rst.result.payload["kind"])  # the RST provider's own outcome envelope, verbatim
+```
+
+**Structure in, for the formal techniques:**
+
+```python
 framework = {"arguments": ["a", "b", "c"], "attacks": [["a", "b"], ["b", "c"]]}
 request = AggregateRequest(
     source=SourceIdentity.from_bytes(b"framework", media_type="application/json"),
@@ -108,29 +154,46 @@ if isinstance(dung, ResultOutcome):
     print(dung.result.payload["extensions"]["grounded"])  # ['a', 'c']
 ```
 
-The machine never retries, never suppresses one technique's failure behind another's
-success, and never derives a Dung framework or an IBIS structure from text: a text-only
-request for those techniques is `unavailable(missing_structured_input)`, not a failure.
+A malformed structure is a `FailedOutcome` with a stable code and a declared
+retryability (`invalid_argumentation_framework`, `not_retryable`); a text-only request
+for Dung or IBIS is `UnavailableOutcome(reason='missing_structured_input')`. Every
+`AggregateAnalysis` serializes to RFC 8785 canonical JSON with a self-checking
+`semantic_digest`.
 
 ## Capability comes from evidence
 
-A provider is `available` only under a `PromotionDecision` whose outcome is `promote` or
-`replace`, and such a decision cannot be constructed unless every evidence class —
-output quality (empirical or formal), calibration, latency, compatibility, provenance,
-licensing — is admissible. Decisions are recorded in `workbench/promotions/<technique>/`
-and bound to the exact artifact they evaluated:
+A `PromotionDecision` (`rdam.promotion`) records six evidence classes — output quality
+(empirical, with gold data and baselines, or formal, with correctness arguments and
+property tests), calibration, latency and resources, compatibility, provenance, and
+licensing — and one of four outcomes: `promote`, `withhold`, `replace`, `retire`. A
+`promote` or `replace` decision cannot be constructed unless every class is admissible;
+installation success, a green test run, or the existence of an artifact is never
+evidence, because there is no field for it.
+
+Decisions live in the workbench ledger `workbench/promotions/<technique>/` and are
+bound to the exact artifact they evaluated:
 
 - `rdam.dung` and `rdam.ibis` package their decision beside their code, bound to the
-  digest of their own source files. Both are `available` today.
+  digest of their own source files. Changing the source without a new decision makes the
+  provider `unavailable(no_promoted_implementation)`.
 - `rdam.rst` reads the decision published beside the configured model release
   (`<store>/<release_id>.promotion.json`) and checks its artifact digest against the
-  release manifest before any inference. Every stored ModernBERT release currently
-  fails the gate (for `modernbert-v1-a52b70fbc1a3`: test full F1 0.198 against the
-  archived `gumrrg` model's 0.487), so the machine reports RST **`unavailable(withheld)`**
-  until the owner rules otherwise. The `rdam.rst` parser façade and command below still
-  load those releases for local use; the gate governs the machine, not the parser.
+  release manifest before any inference. A decision cannot be borrowed by a different
+  set of weights.
 
-## RST: command line
+The gate has already ruled: every stored ModernBERT release fails it (for
+`modernbert-v1-a52b70fbc1a3`, test full F1 0.198 against the archived `gumrrg` model's
+0.487), so the machine reports RST `unavailable(withheld)` until the owner rules
+otherwise. The parser façade and command below still load those releases for local
+use; the gate governs what the machine claims, not what the parser can run.
+
+## Provider: RST / eRST (`rdam.rst`)
+
+Rhetorical Structure Theory parsing from raw text or exact pre-segmented EDUs, with
+Extended RST (non-projective secondary relations and discourse signals, as in GUM eRST /
+RS4) as a second formalism with its own capability state.
+
+### Command line
 
 ```bash
 # Canonical analysis of text, or of a Markdown / Docling JSON / DocLang / plain-text file
@@ -140,16 +203,15 @@ rdam-rst parse report.md --model-store models/model-releases --release-id modern
     --output analysis.json          # RFC 8785 canonical JSON, the same bytes the Python API serializes
 rdam-rst parse report.md ... --format summary   # presentation-only counts
 
-# Model-free capability discovery (add --model-store/--release-id for the configured parser)
-rdam-rst capabilities
-
-# Loopback-only HTTP projection of the same contract
+rdam-rst capabilities               # model-free discovery; add --model-store/--release-id for the configured parser
 rdam-rst serve --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3 --port 8080
-
 rdam-rst version
 ```
 
-## RST: Python API
+`serve` binds only to a loopback host and exposes `POST /analyse`, `GET /capabilities`,
+and `GET /health` with the same canonical contract as the command.
+
+### Python
 
 ```python
 from pathlib import Path
@@ -166,59 +228,31 @@ parser = Parser.from_model_release(
 
 text = "On Saturday, Team India won against South Africa by seven runs. The final was played in Barbados."
 
-# 1. DiscourseUnit tree, every node in original-text character coordinates
-tree = parser(text)["rst"][0]
-stats = tree_stats(tree)
-print(stats["depth"], stats["n_leaves"])
+tree = parser(text)["rst"][0]                      # DiscourseUnit tree, original-text character offsets
+print(tree_stats(tree)["depth"], tree_stats(tree)["n_leaves"])
 
-# 2. Pre-segmented EDUs (the leaves round-trip exactly)
 tree = parser.from_edus(["On Saturday, Team India won against South Africa by seven runs.", "The final was played in Barbados."])["rst"][0]
 
-# 3. Canonical structured analysis (RstAnalysis: nodes, primary edges, optional eRST secondary edges)
 analysis = parser.parse_document(RstDocument.from_text(text, document_id="cricket"), output="rst_tree")
-print(len(analysis.nodes), len(analysis.primary_edges))
+print(len(analysis.nodes), len(analysis.primary_edges))   # canonical RstAnalysis graph
 ```
 
-### Device and precision
+Each `DiscourseUnit` node carries `id`, `left`, `right`, `relation`, `nuclearity`
+(`NS` / `SN` / `NN`), `entropy`, `start`, `end`, and `text`; leaves are EDUs. When
+holding many trees, `tree.clear_textfields()` drops the substrings and
+`tree.fill_textfields(full_text)` restores them.
 
 `device=` accepts `"auto"`, `"cpu"`, `"mps"`, `"cuda"`, `"cuda:N"`, or a `torch.device`.
-PyTorch has no MPS kernel for `torch.linalg.qr` (used during weight initialisation);
-the parser routes it through CPU automatically.
+`dtype=` (`bf16` / `fp16` / `fp32`, or a `torch.dtype`) runs the forward pass under
+`torch.autocast`; the default is `float32` everywhere. Tree topology and segmentation are
+bit-equivalent across dtypes; relation labels on near-tied nodes can flip under reduced
+precision (`tests/integration/test_integration.py` is the equivalence suite).
 
-`dtype=` (`torch.bfloat16`, `torch.float16`, or the strings `bf16` / `fp16` / `fp32`)
-runs the forward pass under `torch.autocast` without changing the trained weights;
-the default is `float32` on every device. Tree topology and EDU segmentation are
-bit-equivalent across the three dtypes; relation labels on near-tied nodes can flip
-under reduced precision. `tests/integration/test_integration.py` is the equivalence
-suite.
+### Production source ingest
 
-### Understanding the tree
-
-Each `DiscourseUnit` node carries:
-
-```python
-{
- 'id': 21,
- 'left':  (id=14, start=1,   end=323),  # child node refs
- 'right': (id=20, start=324, end=570),
- 'relation':    'elaboration',           # rhetorical relation
- 'nuclearity':  'NS',                    # NS / NN / ""
- 'entropy':     0.92,                    # split entropy
- 'start':       1,                       # original-text character offset
- 'end':         570,
- 'text':        "On Saturday, ... took two wickets."
-}
-```
-
-Leaves are EDUs; internal nodes are relations. When parsing many documents,
-`tree.clear_textfields()` drops the per-node substrings (keep the structure, store it) and
-`tree.fill_textfields(full_text)` restores them; `.to_rs3()` needs the text present.
-
-## RST: production source ingest
-
-`rdam.rst.ingest` is the single production boundary for analysing real source material:
-plain text, exact pre-segmented EDUs, Markdown, DoclingDocument JSON, and DocLang XML or
-`.dclx` archives. There are no separate format parse functions, envelopes, or caches.
+`rdam.rst.ingest` is the one production boundary for real source material: plain text,
+exact pre-segmented EDUs, Markdown, DoclingDocument JSON, and DocLang XML or `.dclx`
+archives.
 
 ```python
 from pathlib import Path
@@ -226,155 +260,199 @@ from pathlib import Path
 from rdam.rst import Parser
 from rdam.rst.ingest import ProductionIngestor, SourceArtifact, describe_capabilities, serialize_contract
 
-print(describe_capabilities().semantic.source_forms)  # availability of all six forms, model-free
+print(describe_capabilities().semantic.source_forms)   # all six forms and their availability, model-free
 
 parser = Parser.from_model_release(Path("models/model-releases"), "modernbert-v1-a52b70fbc1a3", family="modernbert")
 ingestor = ProductionIngestor(parser=parser)
 
 outcome = ingestor.analyse(SourceArtifact.from_path(Path("report.md")), cache_directory=Path("cache"))
 print(outcome.semantic.status)                 # analysed | empty_primary_discourse
-analysis = outcome.semantic.analysis           # the RstAnalysis, or None when nothing authored was found
+analysis = outcome.semantic.analysis           # RstAnalysis, or None when nothing authored was found
 preparation = outcome.semantic.preparation.semantic
 print(preparation.inventory_coverage.covered_units == preparation.inventory_coverage.total_units)
 assert outcome.semantic.validation is not None and outcome.semantic.validation.passed
-canonical_bytes = serialize_contract(outcome)  # RFC 8785; load_contract() reads it back identically
+canonical_bytes = serialize_contract(outcome)  # load_contract() reads it back identically
 ```
 
-The source is inventoried completely first; the explicit `AUTHORED_PROSE_V1` policy then
-admits authored headings, prose, meaningful list items, and authored turns to primary RST
-analysis. Tables, code, formulas, raw markup, pictures, metadata, fields, and assets remain
-retained side channels; machine-generated descriptions, notes, navigation, furniture,
-backgrounds, and invisible content are excluded from primary RST but stay in the receipt.
-Every decision is in the preparation outcome, source anchors survive into the analysis,
-long sources are subdivided at structure and parser-capacity boundaries and recombined
-into one anchored result, and cache identity includes the complete analytical pipeline
-fingerprint. Failures are typed, staged, and private by default. The full contract is in
-[`docs/production-api-contract.md`](docs/production-api-contract.md) and
+The source is inventoried completely first; the `AUTHORED_PROSE_V1` policy then admits
+authored headings, prose, meaningful list items, and authored turns to primary RST
+analysis, and keeps tables, code, formulas, raw markup, pictures, metadata, fields,
+assets, machine-generated descriptions, notes, navigation, and furniture as receipted
+side channels. Source anchors survive into the analysis; long sources are subdivided at
+structure and parser-capacity boundaries and recombined into one anchored result; cache
+identity includes the complete pipeline fingerprint; failures are typed, staged, and
+private by default. Contract: [`docs/production-api-contract.md`](docs/production-api-contract.md),
 [`docs/production-source-ingest.md`](docs/production-source-ingest.md).
 
-## RST: visualising a tree
+### Viewer, eRST, long documents, diagnostics
 
 ```python
 import rdam.rst as rst
 
-tree.to_rs3("document.rs3")          # RSTTool / rstWeb format
-rst.render("document.rs3")           # inline in Jupyter (colab=True syncs the cell height in Colab)
+tree.to_rs3("document.rs3")                 # RSTTool / rstWeb format
+rst.render("document.rs3")                  # inline in Jupyter (colab=True in Colab)
 rst.to_html("document.rs3", "document.html")
-rst.to_png("document.rs3", "document.png")   # Playwright + Chromium: `playwright install chromium`
+rst.to_png("document.rs3", "document.png")  # Playwright + Chromium: `playwright install chromium`
 rst.to_pdf("document.rs3", "document.pdf")
 ```
 
-<img src="examples/example-image.png" alt="Illustration of a rendered RST tree" width="600">
+<img src="examples/example-image.png" alt="A rendered RST tree" width="600">
 
-## RST: extended RST, long documents, diagnostics
+- **eRST**: `rdam.rst.erst.rs4` reads and writes RS4 XML (`RS4Reader`, `RS4Writer`,
+  `rs4_to_document_and_analysis`); `rdam.rst.erst.neural_scorer.NeuralSecondaryEdgeScorer`
+  scores candidate secondary relations; the decoder in `rdam.rst.erst.decoder` applies
+  exactly four formal constraints (sufficient signal, no self-loop, both endpoints exist,
+  no duplicate directed pair). `parser.parse_document(document, output="erst_graph")`
+  requires a validated eRST completion bundle and refuses without one rather than
+  fabricating edges.
+- **Long documents**: `rdam.rst.hierarchical.HierarchicalSectionStitcher(parser).parse_hierarchical(document)`
+  parses each section, parses the macro relations across section roots, and stitches one
+  globally consistent `RstAnalysis`.
+- **Diagnostics**: `pixi run rst-diag <paths> --model-store models/model-releases --release-id <id>`
+  reports prepared characters and segments, EDU and relation counts, the share of thin
+  relations, tree skew, and every coverage ratio per source (`--json` for machine output).
 
-**Extended RST (eRST)** — non-projective secondary relations and discourse signals as in
-GUM eRST / RS4: `rdam.rst.erst.rs4` reads and writes RS4 XML (`RS4Reader`, `RS4Writer`,
-`rs4_to_document_and_analysis`); `rdam.rst.erst.neural_scorer.NeuralSecondaryEdgeScorer`
-scores candidate secondary relations; the decoder in `rdam.rst.erst.decoder` applies
-exactly four formal constraints (sufficient signal, no self-loop, both endpoints exist,
-no duplicate directed pair). `parser.parse_document(document, output="erst_graph")`
-requires a validated eRST completion bundle and refuses, rather than fabricates, without
-one.
+## Provider: Dung abstract argumentation (`rdam.dung`)
 
-**Long documents** — `rdam.rst.hierarchical.HierarchicalSectionStitcher(parser).parse_hierarchical(document)`
-parses each section into a local tree, parses the macro relations across section roots,
-and stitches them into one globally consistent `RstAnalysis`.
+Formal evaluation of a supplied argumentation framework under the semantics Dung (1995)
+defines. Input is `{"arguments": [...], "attacks": [[attacker, attacked], ...]}`; the
+payload returned carries the framework as accepted, `input_origin: supplied`, the
+extensions under `grounded`, `complete`, `preferred`, and `stable` semantics, and the
+algorithm identity (`exhaustive-subset` v1, capacity 14 arguments).
 
-**Quality diagnostics** — `pixi run rst-diag <paths> --model-store models/model-releases --release-id <id>`
-reports, per source, prepared characters and segments, EDU and relation counts, the
-share of thin relations (joint / same-unit / organization), tree skew, and all coverage
-ratios; `--json` for machine output.
+Complete extensions are found by exhaustive enumeration of every candidate set under the
+declared capacity, so the result is exact by construction; grounded is computed
+independently by fixed-point iteration and checked against the enumerated complete
+extensions. A framework beyond capacity is refused with a typed failure
+(`framework_exceeds_declared_capacity`), never approximated. Invariants are tested
+exhaustively over all 512 three-argument frameworks and over seeded random frameworks
+(`tests/dung`). Semi-stable, ideal, and stage semantics, and larger frameworks, would be a
+new candidate with its own decision.
 
-## Production package and offline workbench
+## Provider: IBIS (`rdam.ibis`)
 
-`rdam` is the importable production product. Its wheel and source distribution carry only
-the `rdam/` import root and exclude corpus builders, trainers, evaluators, research
-harnesses, tests, scripts, experiment data, model candidates, and the vendored ontology
-(only the projected framework identities ship).
+IBIS (Kunz & Rittel 1970) records deliberation as *issues*, *positions*, and
+*arguments*. The provider validates a supplied structure under the gIBIS link grammar
+(Conklin & Begeman 1988) and returns it organised, judging nothing:
 
-`workbench/` is the one repository-only surface for corpus preparation, training,
-evaluation, research, and promotion. Production never imports it; the check is causal:
+| relation | from | to |
+|---|---|---|
+| `responds_to` | position | issue |
+| `supports`, `objects_to` | argument | position |
+| `generalizes`, `specializes`, `replaces` | issue | issue |
+| `questions`, `is_suggested_by` | issue | issue, position, argument |
 
-```bash
-pixi run -e default production-boundary          # import walk from rdam, ownership, dependencies
-pixi run -e production production-import-check   # imports the installed distribution, loads no weights
-pixi run -e production production-clean-install  # certifies the built wheel in fresh venvs, network off
+Every position responds to exactly one issue; every argument supports or objects to
+exactly one position; ids are unique; self-links are refused. Input is
+`{"nodes": [{"id", "kind", "text"}], "links": [{"from", "relation", "to"}]}`; the payload
+carries the structure as accepted, `input_origin: supplied`, `extraction: None`, the
+grammar id, and a `map` of each issue with its positions and their supporting and
+objecting arguments, plus the gaps (issues without positions, positions without
+arguments, isolated nodes). The type table is checked exhaustively for all
+3 × 3 × 8 kind–kind–relation combinations (`tests/ibis`). Argument strength or
+acceptability is the Dung provider's job, not this one's.
+
+## Repository layout
+
+```text
+rdam/                        the distribution and import package — the machine
+├── contracts.py, machine.py, promotion.py, frameworks.py, serialization.py
+├── resources/framework-identities.json   coe: identities projected from the vendored taxonomy
+├── rst/                     RST/eRST provider: parser, ingest, erst, rstviewer, cli, provider.py
+├── dung/                    semantics.py, provider.py, resources/promotion-decision.json
+└── ibis/                    grammar.py, provider.py, resources/promotion-decision.json
+ontology/                    vendored Central distribution + the rdam LinkML profile (not shipped)
+workbench/                   the one experimentation root: corpora, training, evaluation, research,
+                             promotion tooling, and the decision ledger workbench/promotions/
+models/model-releases/       immutable local releases, each with its manifest, promotion decision
+                             sidecar, and compatibility re-declaration sidecar
+tools/production_boundary/   boundary inspection, reproducible build, artifact validation,
+                             clean install, classified baseline comparison
+tests/  specs/  docs/        verification, decision-closed feature records, documentation
 ```
 
-Release: tag `v<version>` (the version in `pyproject.toml`), `pixi run build-production`
-(reproducible double build into ignored `dist/<version>/`),
-`pixi run validate-production-artifacts`, then the clean install. Every release tool
-derives name and version from `pyproject.toml`. The ownership map is in
-[`docs/production-offline-boundary.md`](docs/production-offline-boundary.md).
+Production code never imports `workbench`, and no wheel or sdist member carries anything
+outside `rdam/`; `pixi run -e default production-boundary` proves both. Each technique
+declares exactly one canonical framework identity from Central's
+`coe:artifact/narrative/analytical_frameworks_taxonomy`, referenced and never redefined
+(`pixi run ontology-validate`).
 
-## Archived research parser families
+## Development, gates, and release
 
-The DMRST and UniRST families (`rstdt`, `gumrrg`, `rstreebank`, `rrtrrg`, `unirst`) are
-archived from production: `Parser` refuses their `hf_model_version` values before loading
-anything, and their code lives under `workbench/archive/legacy_2021/`. Their published
-end-to-end results are kept here as the record they are.
+Every Python invocation goes through pixi; the task table in `pyproject.toml` is the
+authority (`pixi task list`).
 
-<details>
-<summary>Published metrics of the archived families (Seg / S / N / R / Full)</summary>
+```bash
+pixi run lint && pixi run typecheck && pixi run test    # ruff, pyright strict, fast suite
+pixi run mdlint                                         # markdownlint over the tracked Markdown
+pixi run -e default production-boundary                 # import walk from rdam, ownership, dependencies
+pixi run ontology-validate                              # LinkML profile, bindings, projection currency
+pixi run smoke                                          # every stored release on every available device
+pixi run test-all                                       # everything, including the slow model suites
+```
 
-**Supported languages (`unirst`):** English (eng), Czech (ces), German (deu), Basque (eus), Persian (fas), French (fra), Dutch (nld), Brazilian Portuguese (por), Russian (rus), Spanish (spa), Chinese (zho).
+Release: tag the commit `v<version>` (the version declared once in `pyproject.toml`),
+then
 
-| Tag / Version | Languages | Train Data | Test Data | Seg | S | N | R | Full |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `rstdt` | eng | eng.rst.rstdt | eng.rst.rstdt | 97.8 | 75.6 | 65.0 | 55.6 | 53.9 |
-| `gumrrg` | eng, rus | eng.erst.gum, rus.rst.rrg | eng.erst.gum | 95.5 | 67.4 | 56.2 | 49.6 | 48.7 |
-| | | | rus.rst.rrg | 97.0 | 67.1 | 54.6 | 46.5 | 45.4 |
-| `rstreebank` | rus | rus.rrt | rus.rst.rrt | 92.1 | 66.2 | 53.1 | 46.1 | 46.2 |
-| `unirst` | all | all | ces.rst.crdt | 94.5 | 59.1 | 41.2 | 28.6 | 28.0 |
-| | | | deu.rst.pcc | 96.5 | 67.3 | 47.4 | 34.1 | 32.1 |
-| | | | eng.erst.gum | 95.3 | 67.3 | 55.6 | 48.5 | 47.4 |
-| | | | eng.rst.oll | 92.5 | 55.7 | 39.0 | 27.5 | 26.3 |
-| | | | eng.rst.rstdt | 98.1 | 76.7 | 65.5 | 55.2 | 53.6 |
-| | | | eng.rst.sts | 91.2 | 43.3 | 31.3 | 19.4 | 18.7 |
-| | | | eng.rst.umuc | 88.8 | 52.6 | 40.6 | 26.2 | 25.8 |
-| | | | eus.rst.ert | 92.5 | 66.0 | 50.3 | 34.9 | 34.7 |
-| | | | fas.rst.prstc | 94.7 | 63.0 | 50.2 | 40.8 | 40.7 |
-| | | | fra.sdrt.annodis | 91.3 | 58.6 | 48.9 | 30.6 | 30.3 |
-| | | | nld.rst.nldt | 98.0 | 61.8 | 49.8 | 36.8 | 35.8 |
-| | | | por.rst.cstn | 93.9 | 68.4 | 52.8 | 44.9 | 44.5 |
-| | | | rus.rst.rrg | 96.4 | 67.4 | 54.0 | 46.3 | 45.1 |
-| | | | rus.rst.rrt | 90.7 | 63.0 | 49.0 | 42.3 | 42.2 |
-| | | | spa.rst.rststb | 93.4 | 63.5 | 50.3 | 36.0 | 36.0 |
-| | | | spa.rst.sctb | 85.5 | 55.1 | 46.8 | 39.1 | 39.1 |
-| | | | zho.rst.gcdt | 93.0 | 64.5 | 50.7 | 45.9 | 44.6 |
-| | | | zho.rst.sctb | 95.4 | 67.5 | 51.5 | 39.9 | 39.9 |
+```bash
+pixi run build-production                    # reproducible double build into ignored dist/<version>/
+pixi run validate-production-artifacts       # RECORD, metadata, provenance, entry point, public surface
+pixi run -e production production-clean-install   # fresh venvs, network off, full acceptance on a release
+```
 
-Full per-corpus UniRST metrics: [`docs/metrics/UniRST_Metrics.md`](docs/metrics/UniRST_Metrics.md).
-Evaluation is offline-only: standard/soft Parseval and the eRST scorer live under
-`workbench.evaluation.rst`.
+Every release tool derives the distribution name and version from `pyproject.toml`;
+`dist/` is never tracked, and the committed record is the evidence JSON under the feature
+that made the release. A stored model release runs under a later package line only
+through an evidence-backed, manifest-bound compatibility re-declaration
+(`pixi run redeclare-compatibility`), never by editing the immutable manifest.
+`pixi run rst-baseline compare` proves the RST public contract analytically equivalent
+across such changes, classifying every field-level difference before giving a verdict.
 
-</details>
+## Status and roadmap
 
-## Project status & licence
+Built on 2026-09-02 against the decision-closed architecture in
+`specs/006-rhetorical-discourse-machine/`, feature by feature (`specs/007-…` to
+`specs/012-…`): the aggregate contract and ontology vendoring, the evidence-gated
+promotion system, the RST provider adapter, the repository migration and the
+single-package restructure, and the Dung and IBIS providers. Release 6.0.0 is tagged and
+certified; the release record is in
+[`specs/010-repository-migration/evidence/gates.md`](specs/010-repository-migration/evidence/gates.md).
+
+Open owner rulings: whether any stored ModernBERT release is promoted despite failing
+the evidence gate; and whether the persisted contract identifiers (`isanlp_rst.production`
+2.0.0, `isanlp_rst.parser/modernbert-v1`, and their siblings) move to the `rdam` name —
+they name contracts and immutable manifests, not the package, and are unchanged so far.
+
+Provider order thereafter: SDRT, then Toulmin and Walton, then PDTB if ever — each only
+once workbench evidence identifies a credible candidate, each with its own
+decision-closed feature and its own decision.
+
+## Provenance and licence
 
 This repository is Steve Allison's evolution of the IsaNLP RST Parser into the
 Rhetorical Discourse Analysis Machine. The original RST research code and the archived
 research model weights are by Elena Chistova; the MIT-licensed source carries her
-copyright. This repository adds the machine, the Dung and IBIS providers, the evidence-gated
-promotion system, canonical source ingest, eRST completion, pixi-managed builds, a pytest
-suite, GitHub Actions CI, MPS / Apple-Silicon support, and mixed-precision dispatch.
+copyright. The machine, the Dung and IBIS providers, the promotion system, canonical
+source ingest, eRST completion, and the build and release tooling are Steve's own code.
 
 - **Source code:** MIT — see [`LICENSE`](LICENSE). Copyright Elena Chistova 2020 for the
   original parser; Steve Allison's contributions also under MIT.
-- **Archived research model weights** (`tchewik/isanlp_rst_v3` on HuggingFace):
-  **CC BY-NC 4.0 — research and non-commercial use only.** See
-  [`LICENSE_MODELS`](LICENSE_MODELS).
+- **Archived research model weights** (`tchewik/isanlp_rst_v3` on HuggingFace, families
+  `rstdt`, `gumrrg`, `rstreebank`, `rrtrrg`, `unirst`): **CC BY-NC 4.0 — research and
+  non-commercial use only**, see [`LICENSE_MODELS`](LICENSE_MODELS). These families are
+  archived from production (`Parser` refuses them before loading anything; their code is
+  under `workbench/archive/legacy_2021/`); their published metrics are kept in
+  [`docs/metrics/UniRST_Metrics.md`](docs/metrics/UniRST_Metrics.md).
 - **ModernBERT releases in `models/model-releases`:** fine-tuned from
   `answerdotai/ModernBERT-base`; each release manifest records its licence and use
   restrictions, and the promotion decision beside it records the evidence verdict.
 
-Issues and pull requests: `Steve-Allison/isanlp_rst`. For questions about the underlying
-RST research, see Elena Chistova's papers cited below.
+Issues and pull requests: `Steve-Allison/Rhetorical_Discourse_Analysis_Machine`.
 
 ## Citation
 
-The archived research model weights are by Elena Chistova. If you use them in research, please cite:
+The archived research model weights are by Elena Chistova. If you use them in research,
+please cite:
 
 For `rstdt`, `gumrrg`, and `rstreebank`:
 

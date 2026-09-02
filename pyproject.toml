@@ -41,9 +41,9 @@ dependencies = [
 rdam-rst = "rdam.rst.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/Steve-Allison/isanlp_rst"
-Repository = "https://github.com/Steve-Allison/isanlp_rst"
-Issues = "https://github.com/Steve-Allison/isanlp_rst/issues"
+Homepage = "https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine"
+Repository = "https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine"
+Issues = "https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine/issues"
 
 [project.optional-dependencies]
 dev = [
