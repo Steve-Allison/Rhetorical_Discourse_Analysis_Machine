@@ -9,8 +9,8 @@ package, every technique a sub-package:
 |---|---|---|
 | `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.analyse()` returning one explicit outcome per technique, the `PromotionDecision` contract | feature 007 / 008 |
 | `rdam.rst` | RST / eRST — the ModernBERT discourse parser (Steve's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, viewer, the `rdam-rst` command, and the machine adapter `rdam.rst.provider.RstProvider` | `unavailable(withheld)` under the 008 verdicts until the owner rules on the model releases |
-| `rdam.dung` | Dung abstract argumentation: grounded, complete, preferred, stable semantics over a supplied framework | `available` (decision `rdam.dung-exhaustive-subset-v1-replace-2026-09-02`) |
-| `rdam.ibis` | IBIS: issue–position–argument structures validated under the gIBIS link grammar | `available` (decision `rdam.ibis-gibis-grammar-v1-promote-2026-09-02`) |
+| `rdam.dung` | Dung abstract argumentation: grounded, complete, preferred, stable semantics over a supplied or explicitly derived framework | `available` (decision `rdam.dung-exhaustive-subset-v1-replace-lineage-2026-09-02`) |
+| `rdam.ibis` | IBIS: issue–position–argument structures validated under the gIBIS link grammar | `available` (decision `rdam.ibis-gibis-grammar-v1-replace-lineage-2026-09-02`) |
 | SDRT, Toulmin, Walton, PDTB | no provider — the machine reports `unavailable(no_promoted_implementation)`; no stubs | on workbench evidence only (006 FR-024) |
 
 Pixi-managed, MPS-aware, Apple-Silicon-first, real test suite, real CI.

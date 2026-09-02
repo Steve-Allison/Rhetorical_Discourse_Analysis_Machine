@@ -28,6 +28,11 @@ measured on this machine, compatibility verified in both pixi environments, prov
 naming commit `6a647b6` and the source digest, licensing MIT (own code). Packaged as
 `rdam/ibis/resources/promotion-decision.json`; provider id `rdam.ibis/gibis-grammar-v1`.
 
+**Lineage (FR-015/FR-017, [007 §Lineage](../007-aggregate-contract/spec.md))**: the
+provider now records `input_origin: supplied | explicitly_derived` and, when derived,
+the caller's named upstream result; `extraction` stays `None`. Re-promoted by
+`rdam.ibis-gibis-grammar-v1-replace-lineage-2026-09-02` (replace) at commit `c878619`.
+
 ## Limitations recorded in the decision
 
 Supplied structures only (no extraction from text — by design, FR-017); the gIBIS

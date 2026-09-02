@@ -33,6 +33,11 @@ The same semantics were re-promoted by
 outcome **replace** (replaces `rdam_dung/exhaustive-subset-v1`), provenance naming
 commit `6a647b6`; the packaged decision is `rdam/dung/resources/promotion-decision.json`.
 
+**Lineage (FR-015/FR-016, [007 §Lineage](../007-aggregate-contract/spec.md))**: the
+provider now records `input_origin: supplied | explicitly_derived` and, when derived,
+the caller's named upstream result. Re-promoted by
+`rdam.dung-exhaustive-subset-v1-replace-lineage-2026-09-02` (replace) at commit `c878619`.
+
 ## Limitations recorded in the decision
 
 Capacity 14 arguments (exhaustive); grounded/complete/preferred/stable only; supplied
