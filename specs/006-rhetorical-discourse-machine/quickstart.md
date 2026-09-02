@@ -54,12 +54,15 @@ pixi run production-api-contract
 ```
 
 ```bash
-pixi run smoke-full-mps
+pixi run smoke
 ```
 
 Expected: all green pre-migration (baseline capture persists serialized outputs);
 identical commands green post-migration with serialized contracts byte-equal and parse
 results equivalent under the suite's existing definitions. Any diff halts migration.
+(`smoke-full-mps` was folded into `tests/integration/test_production_smoke.py` as the
+`smoke` task on 2026-09-02; `pixi run rst-baseline capture|compare` is the capture and
+comparison tool feature 010 built for this procedure.)
 
 ## V4 — Packaging identity survives relocation (FR-009; research D2 gate)
 
@@ -82,13 +85,14 @@ pixi run validate-production-artifacts
 pixi run -e production production-clean-install
 ```
 
-Expected: wheel and sdist build reproducibly with `packages = ["rst/isanlp_rst"]`
-(`"reproducible": true`, provenance in both); the artifact validator reports
-`valid: true`; the clean-room install pip-installs the **wheel** into fresh `core` and
-`formats` venvs outside the source tree with the network disabled, imports `isanlp_rst`
-from `site-packages`, and passes full installed acceptance including CLI/Python semantic
-parity. This gate discharges the research-D2 `ASSUMED` marker and precedes every other
-migration completion claim.
+Expected: wheel and sdist build reproducibly from the one wheel package directory
+`pyproject.toml` declares (`packages = ["rdam"]` since the owner's single-package ruling
+of 2026-09-02; `"reproducible": true`, provenance in both); the artifact validator
+reports `valid: true`; the clean-room install pip-installs the **wheel** into fresh
+`core` and `formats` venvs outside the source tree with the network disabled, imports the
+package from `site-packages`, and passes full installed acceptance including CLI/Python
+semantic parity. This gate discharges the research-D2 `ASSUMED` marker and precedes every
+other migration completion claim.
 
 `production-smoke` is **not** this gate: in the `production` environment it runs against
 the editable source install (`pyproject.toml:110`), never the wheel, so it cannot detect

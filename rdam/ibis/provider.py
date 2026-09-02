@@ -130,11 +130,19 @@ class IbisProvider:
             raise ProviderError(self._failure("invalid_ibis_structure", "StructureError", str(error))) from error
         payload: dict[str, JsonValue] = {
             "structure": structure.to_payload(),
-            "input_origin": "supplied",
+            "input_origin": "explicitly_derived" if request.derived_from is not None else "supplied",
             "extraction": None,
             "grammar": "gibis-v1",
             "map": deliberation_map(structure),
         }
+        if request.derived_from is not None:
+            # FR-017: a structure the caller explicitly derived from another technique's
+            # result names that exact result; ``extraction`` stays None — nothing here
+            # extracted anything, the derivation was the caller's.
+            payload["derived_from"] = {
+                "technique": request.derived_from.technique.value,
+                "result_identity": request.derived_from.result_identity.hex_digest,
+            }
         return NativeTechniqueResult(
             technique=Technique.IBIS,
             formalism_id=FORMALISM_ID,

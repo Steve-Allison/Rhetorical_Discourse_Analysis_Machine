@@ -33,6 +33,7 @@ from rdam.contracts import (
     UnavailableCapability,
     UnavailableOutcome,
     UnavailableReason,
+    UpstreamResultReference,
     outcome_technique,
 )
 from rdam.frameworks import (
@@ -132,6 +133,7 @@ __all__ = [
     "UnavailableReason",
     "UnmeasuredQuality",
     "UnsupportedRecordError",
+    "UpstreamResultReference",
     "__version__",
     "canonical_json_bytes",
     "compare_candidates",

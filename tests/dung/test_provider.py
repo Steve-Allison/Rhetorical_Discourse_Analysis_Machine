@@ -125,6 +125,23 @@ class TestThroughTheMachine:
         assert isinstance(outcome, FailedOutcome)
         assert outcome.failure.code == "framework_exceeds_declared_capacity"
 
+    def test_an_explicitly_derived_framework_names_its_upstream_result(self) -> None:
+        """FR-016: supplied vs explicitly derived is recorded in the payload, with the exact upstream identity."""
+
+        from rdam import ProviderRequest, Sha256Identity, UpstreamResultReference
+
+        reference = UpstreamResultReference(technique=Technique.RST, result_identity=Sha256Identity(hex_digest="a" * 64))
+        result = DungProvider(decision=_decision(PromotionOutcome.PROMOTE)).analyse(
+            ProviderRequest(source=SourceIdentity.from_bytes(b"f"), text=None, structured_input=FRAMEWORK, derived_from=reference)
+        )
+        assert result.payload["input_origin"] == "explicitly_derived"
+        assert result.payload["derived_from"] == {"technique": "rst", "result_identity": "a" * 64}
+        supplied = DungProvider(decision=_decision(PromotionOutcome.PROMOTE)).analyse(
+            ProviderRequest(source=SourceIdentity.from_bytes(b"f"), text=None, structured_input=FRAMEWORK)
+        )
+        assert supplied.payload["input_origin"] == "supplied"
+        assert "derived_from" not in supplied.payload
+
     def test_direct_call_on_unavailable_provider_is_typed(self) -> None:
         provider = DungProvider(decision=_decision(PromotionOutcome.WITHHOLD))
         with pytest.raises(ProviderError) as caught:

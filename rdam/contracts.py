@@ -290,11 +290,29 @@ class MachineCapabilities(StrictModel):
         return next(item for item in self.techniques if item.technique is technique)
 
 
+class UpstreamResultReference(StrictModel):
+    """The exact native result a caller derived a structured input from (FR-015).
+
+    The reference names the artifact by its semantic digest; the aggregate request must
+    carry that result in ``upstream_results`` so the aggregate records the exact upstream
+    artifact and provider identity, with both native outputs kept separate.
+    """
+
+    technique: Technique
+    result_identity: Sha256Identity
+
+
 class StructuredInput(StrictModel):
-    """A caller-supplied structure for a formal technique (FR-016, FR-017)."""
+    """A caller-supplied structure for a formal technique (FR-016, FR-017).
+
+    ``derived_from`` declares, explicitly, that the caller built this structure from an
+    earlier native result of another technique. The machine never derives a structure
+    itself; it records the declared consumption as lineage.
+    """
 
     technique: Technique
     payload: Mapping[str, JsonValue]
+    derived_from: UpstreamResultReference | None = None
 
 
 class FormalismChoice(StrictModel):
@@ -305,11 +323,20 @@ class FormalismChoice(StrictModel):
 
 
 class AggregateRequest(StrictModel):
+    """One source, the techniques to run on it, and — for formal techniques — their inputs.
+
+    ``upstream_results`` carries the exact native results (from earlier analyses of the
+    same source) that structured inputs declare they were derived from. The machine
+    re-emits them as outcomes of the aggregate and records each declared consumption in
+    the aggregate's ``lineage`` (FR-015).
+    """
+
     source: SourceIdentity
     text: str | None
     techniques: tuple[Technique, ...] = Field(min_length=1)
     structured_inputs: tuple[StructuredInput, ...] = ()
     formalisms: tuple[FormalismChoice, ...] = ()
+    upstream_results: tuple[NativeTechniqueResult, ...] = ()
 
     @model_validator(mode="after")
     def coherent_request(self) -> Self:
@@ -331,6 +358,19 @@ class AggregateRequest(StrictModel):
             raise ValueError("at most one formalism choice per technique")
         if any(technique not in self.techniques for technique in chosen):
             raise ValueError("formalism chosen for a technique that was not requested")
+        upstream_techniques = [item.technique for item in self.upstream_results]
+        if len(upstream_techniques) != len(set(upstream_techniques)):
+            raise ValueError("at most one upstream result per technique")
+        if any(technique in self.techniques for technique in upstream_techniques):
+            raise ValueError("an upstream result's technique cannot also be requested in the same aggregate")
+        if any(item.source != self.source for item in self.upstream_results):
+            raise ValueError("every upstream result must be about this request's source")
+        for item in self.structured_inputs:
+            if item.derived_from is not None and self.upstream_result(item.derived_from) is None:
+                raise ValueError(
+                    f"{item.technique.value} input is declared derived from a result this request does not carry "
+                    "in upstream_results"
+                )
         return self
 
     @classmethod
@@ -342,6 +382,7 @@ class AggregateRequest(StrictModel):
         source_name: str | None = None,
         structured_inputs: tuple[StructuredInput, ...] = (),
         formalisms: tuple[FormalismChoice, ...] = (),
+        upstream_results: tuple[NativeTechniqueResult, ...] = (),
     ) -> Self:
         return cls(
             source=SourceIdentity.from_text(text, source_name=source_name),
@@ -349,13 +390,29 @@ class AggregateRequest(StrictModel):
             techniques=techniques,
             structured_inputs=structured_inputs,
             formalisms=formalisms,
+            upstream_results=upstream_results,
         )
 
     def structured_input_for(self, technique: Technique) -> Mapping[str, JsonValue] | None:
         return next((item.payload for item in self.structured_inputs if item.technique is technique), None)
 
+    def derivation_for(self, technique: Technique) -> UpstreamResultReference | None:
+        return next((item.derived_from for item in self.structured_inputs if item.technique is technique), None)
+
     def formalism_for(self, technique: Technique) -> str | None:
         return next((item.formalism_id for item in self.formalisms if item.technique is technique), None)
+
+    def upstream_result(self, reference: UpstreamResultReference) -> NativeTechniqueResult | None:
+        """The carried upstream result a reference names: same technique, same semantic digest."""
+
+        return next(
+            (
+                item
+                for item in self.upstream_results
+                if item.technique is reference.technique and item.semantic_digest == reference.result_identity
+            ),
+            None,
+        )
 
 
 class ProviderRequest(StrictModel):
@@ -365,6 +422,7 @@ class ProviderRequest(StrictModel):
     text: str | None
     structured_input: Mapping[str, JsonValue] | None
     formalism_id: str | None = Field(default=None, pattern=_SNAKE)
+    derived_from: UpstreamResultReference | None = None
 
 
 __all__ = [
@@ -396,5 +454,6 @@ __all__ = [
     "UnavailableCapability",
     "UnavailableOutcome",
     "UnavailableReason",
+    "UpstreamResultReference",
     "outcome_technique",
 ]

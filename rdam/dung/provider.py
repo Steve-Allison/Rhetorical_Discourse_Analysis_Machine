@@ -72,6 +72,12 @@ def _package_version() -> str:
         return "unknown"
 
 
+def input_origin(request: ProviderRequest) -> str:
+    """``supplied`` by the caller as-is, or ``explicitly_derived`` from a named upstream result (FR-016)."""
+
+    return "explicitly_derived" if request.derived_from is not None else "supplied"
+
+
 class DungProvider:
     """One promoted Dung semantics implementation, declared to the machine."""
 
@@ -147,10 +153,17 @@ class DungProvider:
         algorithm: dict[str, JsonValue] = {"name": "exhaustive-subset", "version": "1", "capacity": self._capacity}
         payload: dict[str, JsonValue] = {
             "framework": framework.to_payload(),
-            "input_origin": "supplied",
+            "input_origin": input_origin(request),
             "extensions": semantics.to_payload(framework),
             "algorithm": algorithm,
         }
+        if request.derived_from is not None:
+            # FR-016: a framework explicitly derived from another technique's result names
+            # that exact result; the machine records the same consumption as lineage.
+            payload["derived_from"] = {
+                "technique": request.derived_from.technique.value,
+                "result_identity": request.derived_from.result_identity.hex_digest,
+            }
         return NativeTechniqueResult(
             technique=Technique.DUNG,
             formalism_id=FORMALISM_ID,
@@ -174,4 +187,12 @@ class DungProvider:
         )
 
 
-__all__ = ["CONTRACT_VERSION", "FORMALISM_ID", "PROVIDER_ID", "DungProvider", "packaged_decision", "source_identity"]
+__all__ = [
+    "CONTRACT_VERSION",
+    "FORMALISM_ID",
+    "PROVIDER_ID",
+    "DungProvider",
+    "input_origin",
+    "packaged_decision",
+    "source_identity",
+]

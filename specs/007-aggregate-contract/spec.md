@@ -28,11 +28,29 @@ environments. Contract identifiers: `rdam.aggregate`, `rdam.capabilities`,
 `rdam.native_result`, all at contract version `1.0.0`; records serialize as RFC 8785
 canonical JSON with a self-checking `semantic_digest` (`rdam.serialization`).
 
+## Lineage (FR-015, US3 scenario 3) — completed 2026-09-02
+
+The spec audit after release 6.0.0 found `lineage` validated but unproducible: a caller
+who derived a Dung framework or an IBIS structure from an earlier native result had no
+way to declare it, and `Machine.analyse` never populated the field. Now:
+
+| Requirement | Artifact | Proof |
+|---|---|---|
+| The consumer result identifies the exact upstream artifact and provider identity while both native outputs stay separate (FR-015) | `StructuredInput.derived_from: UpstreamResultReference` (technique + semantic digest); `AggregateRequest.upstream_results` carries the exact upstream `NativeTechniqueResult`s (same source; their techniques cannot also be requested; every derivation must name a carried result); the machine re-emits each upstream result verbatim and records one `ProviderDependencyReference` per derivation whose consumer produced a result | `tests/machine/test_machine.py::TestLineage` |
+| Supplied vs explicitly derived input is recorded, never inferred (FR-016, FR-017) | `ProviderRequest.derived_from` reaches the provider; `rdam.dung` and `rdam.ibis` record `input_origin: explicitly_derived` and the upstream identity in their payload; IBIS `extraction` stays `None` | `tests/dung/test_provider.py::…explicitly_derived…`, `tests/ibis/test_provider.py::…explicitly_derived…` |
+| The machine never derives a structure itself | no extraction path exists; a derivation is always the caller's declaration | by construction (the only producer of `derived_from` is the request) |
+
+Both providers' source digests changed and were re-promoted by `replace` decisions
+(`…-replace-lineage-2026-09-02`).
+
 ## Not in this feature
 
-Cross-provider orchestration (lineage is a validated field the machine does not yet
-populate; 006 orders it last) and the shared analysis store ruling named in the 006
-standardised-patterns register — both remain future features.
+Cross-provider orchestration — the machine itself deriving one technique's input from
+another's output — remains the last follow-on feature (006 orders it after every
+provider, and any extractor is a candidate needing its own evidence). The shared analysis
+store ruling named in the 006 standardised-patterns register also remains open: until an
+owner ruling, per-consumer `cache_directory` (`RstProvider(cache_directory=…)`) is the
+supported mechanism, exactly as the register states.
 
 ## Gates
 

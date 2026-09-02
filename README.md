@@ -160,6 +160,32 @@ for Dung or IBIS is `UnavailableOutcome(reason='missing_structured_input')`. Eve
 `AggregateAnalysis` serializes to RFC 8785 canonical JSON with a self-checking
 `semantic_digest`.
 
+**Lineage, declared not inferred.** If you built a framework from an earlier RST result,
+say so: carry that exact result in the request and name it from the structured input.
+The machine re-emits the upstream result untouched, the Dung payload records
+`input_origin: explicitly_derived` with the upstream identity, and the aggregate's
+`lineage` names both provider identities and the upstream artifact's digest. The
+machine never derives one technique's input from another's output itself.
+
+```python
+from rdam import UpstreamResultReference
+
+request = AggregateRequest(
+    source=rst.result.source,
+    text=None,
+    techniques=(Technique.DUNG,),
+    structured_inputs=(
+        StructuredInput(
+            technique=Technique.DUNG,
+            payload=framework,
+            derived_from=UpstreamResultReference(technique=Technique.RST, result_identity=rst.result.semantic_digest),
+        ),
+    ),
+    upstream_results=(rst.result,),
+)
+print(machine.analyse(request).lineage)
+```
+
 ## Capability comes from evidence
 
 A `PromotionDecision` (`rdam.promotion`) records six evidence classes — output quality

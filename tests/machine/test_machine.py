@@ -1,6 +1,7 @@
 """The machine: N explicit outcomes, no suppression, no stubs, no retries (FR-014, FR-020, SC-005, SC-007, SC-010)."""
 
 import pytest
+from pydantic import ValidationError
 
 from rdam import (
     BOUNDARY_TECHNIQUES,
@@ -19,6 +20,7 @@ from rdam import (
     UnavailableCapability,
     UnavailableOutcome,
     UnavailableReason,
+    UpstreamResultReference,
     canonical_json_bytes,
     load,
     serialize,
@@ -144,6 +146,90 @@ class TestAnalyse:
         provider = FakeProvider(rst_declaration(), broken)
         with pytest.raises(KeyError):
             Machine([provider]).analyse(AggregateRequest.for_text("t", (Technique.RST,)))
+
+
+class TestLineage:
+    """FR-015: a consumer of another technique's result names the exact upstream artifact and provider."""
+
+    def _rst_result(self, rst_provider: FakeProvider, text: str) -> NativeTechniqueResult:
+        outcome = Machine([rst_provider]).analyse(AggregateRequest.for_text(text, (Technique.RST,))).outcome_for(Technique.RST)
+        assert isinstance(outcome, ResultOutcome)
+        return outcome.result
+
+    def _derived_request(self, upstream: NativeTechniqueResult) -> AggregateRequest:
+        assert upstream.semantic_digest is not None
+        return AggregateRequest(
+            source=upstream.source,
+            text=None,
+            techniques=(Technique.DUNG,),
+            structured_inputs=(
+                StructuredInput(
+                    technique=Technique.DUNG,
+                    payload={"arguments": ["a", "b"], "attacks": [["a", "b"]]},
+                    derived_from=UpstreamResultReference(technique=Technique.RST, result_identity=upstream.semantic_digest),
+                ),
+            ),
+            upstream_results=(upstream,),
+        )
+
+    def test_declared_derivation_becomes_lineage_naming_the_exact_upstream_result(
+        self, rst_provider: FakeProvider, dung_provider: FakeProvider
+    ) -> None:
+        upstream = self._rst_result(rst_provider, "The cat sat.")
+        assert upstream.semantic_digest is not None
+        aggregate = Machine([dung_provider]).analyse(self._derived_request(upstream))
+
+        re_emitted = aggregate.outcome_for(Technique.RST)
+        assert isinstance(re_emitted, ResultOutcome) and re_emitted.result == upstream, "the upstream artifact is carried verbatim"
+        consumer = aggregate.outcome_for(Technique.DUNG)
+        assert isinstance(consumer, ResultOutcome)
+        assert consumer.result.payload["structured"] == {"arguments": ["a", "b"], "attacks": [["a", "b"]]}
+        assert len(aggregate.lineage) == 1
+        reference = aggregate.lineage[0]
+        assert reference.consumer_technique is Technique.DUNG and reference.consumer_provider_id == "fake-dung"
+        assert reference.upstream_technique is Technique.RST and reference.upstream_provider_id == "fake-rst"
+        assert reference.upstream_result_identity == upstream.semantic_digest
+        assert reference.upstream_contract_version == upstream.provider_contract_version
+        assert dung_provider.calls[0].derived_from == UpstreamResultReference(
+            technique=Technique.RST, result_identity=upstream.semantic_digest
+        ), "the consumer is told the input was explicitly derived, and from what"
+        assert serialize(load(serialize(aggregate))) == serialize(aggregate)
+
+    def test_a_failed_consumer_records_no_lineage(self, rst_provider: FakeProvider) -> None:
+        upstream = self._rst_result(rst_provider, "The cat sat.")
+        failing_dung = FakeProvider(dung_declaration(), typed_failure())
+        aggregate = Machine([failing_dung]).analyse(self._derived_request(upstream))
+        assert isinstance(aggregate.outcome_for(Technique.DUNG), FailedOutcome)
+        assert aggregate.lineage == ()
+
+    def test_a_derivation_from_a_result_the_request_does_not_carry_is_rejected(self, rst_provider: FakeProvider) -> None:
+        upstream = self._rst_result(rst_provider, "The cat sat.")
+        other = self._rst_result(rst_provider, "A different text.")
+        assert other.semantic_digest is not None
+        with pytest.raises(ValidationError, match="does not carry"):
+            AggregateRequest(
+                source=upstream.source,
+                text=None,
+                techniques=(Technique.DUNG,),
+                structured_inputs=(
+                    StructuredInput(
+                        technique=Technique.DUNG,
+                        payload={"arguments": [], "attacks": []},
+                        derived_from=UpstreamResultReference(technique=Technique.RST, result_identity=other.semantic_digest),
+                    ),
+                ),
+                upstream_results=(upstream,),
+            )
+
+    def test_an_upstream_result_about_another_source_is_rejected(self, rst_provider: FakeProvider) -> None:
+        other = self._rst_result(rst_provider, "A different text.")
+        with pytest.raises(ValidationError, match="about this request's source"):
+            AggregateRequest.for_text("The cat sat.", (Technique.DUNG,), upstream_results=(other,))
+
+    def test_an_upstream_technique_cannot_also_be_requested(self, rst_provider: FakeProvider) -> None:
+        upstream = self._rst_result(rst_provider, "The cat sat.")
+        with pytest.raises(ValidationError, match="cannot also be requested"):
+            AggregateRequest.for_text("The cat sat.", (Technique.RST, Technique.DUNG), upstream_results=(upstream,))
 
 
 class TestSerialization:

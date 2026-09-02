@@ -113,6 +113,19 @@ class TestThroughTheMachine:
         assert isinstance(outcome, FailedOutcome)
         assert outcome.failure.code == "invalid_ibis_structure"
 
+    def test_an_explicitly_derived_structure_names_its_upstream_result_and_still_extracts_nothing(self) -> None:
+        """FR-017: the caller's derivation is recorded; ``extraction`` stays None because the provider extracted nothing."""
+
+        from rdam import ProviderRequest, Sha256Identity, UpstreamResultReference
+
+        reference = UpstreamResultReference(technique=Technique.RST, result_identity=Sha256Identity(hex_digest="b" * 64))
+        result = IbisProvider(decision=_decision(PromotionOutcome.PROMOTE)).analyse(
+            ProviderRequest(source=SourceIdentity.from_bytes(b"s"), text=None, structured_input=STRUCTURE, derived_from=reference)
+        )
+        assert result.payload["input_origin"] == "explicitly_derived"
+        assert result.payload["extraction"] is None
+        assert result.payload["derived_from"] == {"technique": "rst", "result_identity": "b" * 64}
+
     def test_text_only_request_is_unavailable_not_failed(self) -> None:
         machine = Machine([IbisProvider(decision=_decision(PromotionOutcome.PROMOTE))])
         outcome = machine.analyse(AggregateRequest.for_text("a transcript", (Technique.IBIS,))).outcome_for(Technique.IBIS)

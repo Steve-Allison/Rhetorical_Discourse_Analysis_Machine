@@ -13,6 +13,12 @@ Rules implemented here, from the 006 contracts:
 - The machine never retries (§Retryability). A provider may raise only ``ProviderError``;
   anything else is a bug and propagates natively rather than being relabelled as a
   provider failure (standardised pattern P9).
+- Lineage is recorded, never invented (FR-015). When a request carries an earlier native
+  result and a structured input declares it was derived from that result, the machine
+  re-emits the upstream result untouched, hands the consumer the declared derivation, and
+  records a ``ProviderDependencyReference`` naming the exact upstream artifact and both
+  provider identities. The machine never derives one technique's input from another's
+  output itself.
 """
 
 from collections.abc import Iterable, Mapping
@@ -26,6 +32,7 @@ from rdam.contracts import (
     MachineCapabilities,
     NativeTechniqueResult,
     ProviderDeclaration,
+    ProviderDependencyReference,
     ProviderError,
     ProviderFailure,
     ProviderRequest,
@@ -95,12 +102,38 @@ class Machine:
         return MachineCapabilities(techniques=tuple(techniques))
 
     def analyse(self, request: AggregateRequest) -> AggregateAnalysis:
-        """One explicit outcome per requested technique; successes are preserved untouched."""
+        """One explicit outcome per requested technique; successes are preserved untouched.
 
-        outcomes: list[ResultOutcome | UnavailableOutcome | FailedOutcome] = []
+        Upstream results the request carries are re-emitted verbatim, and every declared
+        derivation whose consumer produced a result becomes one lineage reference.
+        """
+
+        outcomes: list[ResultOutcome | UnavailableOutcome | FailedOutcome] = [
+            ResultOutcome(result=upstream) for upstream in request.upstream_results
+        ]
+        lineage: list[ProviderDependencyReference] = []
         for technique in request.techniques:
-            outcomes.append(self._analyse_one(technique, request))
-        return AggregateAnalysis(source=request.source, outcomes=tuple(outcomes))
+            outcome = self._analyse_one(technique, request)
+            outcomes.append(outcome)
+            derivation = request.derivation_for(technique)
+            if derivation is None or not isinstance(outcome, ResultOutcome):
+                continue
+            upstream = request.upstream_result(derivation)
+            if upstream is None or upstream.semantic_digest is None:
+                raise ValueError("a validated request carries every upstream result its derivations name")
+            lineage.append(
+                ProviderDependencyReference(
+                    consumer_technique=technique,
+                    consumer_provider_id=outcome.result.provider_id,
+                    consumer_contract_version=outcome.result.provider_contract_version,
+                    upstream_technique=upstream.technique,
+                    upstream_provider_id=upstream.provider_id,
+                    upstream_contract_version=upstream.provider_contract_version,
+                    upstream_result_identity=upstream.semantic_digest,
+                    upstream_model_identity=upstream.provenance.model_identity,
+                )
+            )
+        return AggregateAnalysis(source=request.source, outcomes=tuple(outcomes), lineage=tuple(lineage))
 
     def _analyse_one(
         self,
@@ -124,7 +157,11 @@ class Machine:
             if isinstance(formalism.capability, UnavailableCapability):
                 return UnavailableOutcome(technique=technique, reason=formalism.capability.reason)
         provider_request = ProviderRequest(
-            source=request.source, text=request.text, structured_input=structured_input, formalism_id=chosen
+            source=request.source,
+            text=request.text,
+            structured_input=structured_input,
+            formalism_id=chosen,
+            derived_from=request.derivation_for(technique),
         )
         try:
             result = provider.analyse(provider_request)
