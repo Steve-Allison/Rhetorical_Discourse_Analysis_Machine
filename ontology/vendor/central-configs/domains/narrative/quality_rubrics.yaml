@@ -1,0 +1,110 @@
+_meta:
+  file_id: coe:file/domain/narrative/quality_rubrics
+  title: Narrative — Quality Rubrics
+  last_updated: '2026-09-01'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: narrative
+  governing_class: coe:DomainModule
+module_id: coe:module/narrative/quality_rubrics
+domain: narrative
+scoring_models:
+- dimensions:
+  - id: coe:artifact/narrative/narrative_quality_rubric/dimension/coverage
+    label: Coverage
+    description: SOAR framework completeness - all narrative elements present
+    home_domain: narrative
+    status: canonical
+    evidence_ids: &id001
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/narrative/quality_rubrics
+    - coe:source/legacy-file/e7718e47042f199b
+  - id: coe:artifact/narrative/narrative_quality_rubric/dimension/coherence
+    label: Coherence
+    description: Logical flow, transitions, and narrative structure
+    home_domain: narrative
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/narrative/narrative_quality_rubric/dimension/clarity
+    label: Clarity
+    description: Plain language, one idea per section, readability
+    home_domain: narrative
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/narrative/narrative_quality_rubric/dimension/audience_fit
+    label: Audience Fit
+    description: WIIFM focus and persona relevance
+    home_domain: narrative
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/narrative/narrative_quality_rubric/dimension/evidence
+    label: Evidence
+    description: Proof points, metrics, and credibility
+    home_domain: narrative
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/narrative/narrative_quality_rubric/dimension/reusability
+    label: Reusability
+    description: Template compliance and lexicon adherence
+    home_domain: narrative
+    status: canonical
+    evidence_ids: *id001
+  thresholds:
+  - key: min_soar_confidence
+    label: SOAR Confidence Floor
+    description: Minimum classifier confidence that the narrative realises the SOAR structure before SOAR-based scoring applies.
+    unit: confidence (0-1)
+    minimum_value: 0.55
+  - key: min_outline_sections
+    label: Outline Section Floor
+    description: Minimum top-level sections a narrative outline must carry to support a complete SOAR arc.
+    unit: sections
+    minimum_value: 4
+  - key: max_jargon_ratio
+    label: Jargon Ratio Ceiling
+    description: Maximum share of words that are jargon before clarity scoring penalises the narrative.
+    unit: ratio
+    maximum_value: 0.18
+  - key: result_evidence_late_stage
+    label: Late-Stage Result Evidence
+    description: Minimum share of late-stage content (sales stage 4 onward) that must be results evidence — metrics, outcomes,
+      or proof — rather than vision.
+    unit: ratio
+    minimum_value: 0.25
+  - key: results_metric_count
+    label: Results Metric Count
+    description: Number of quantified metrics in the Results element; two is optimal for retention and more than three is
+      metric overload.
+    unit: metrics
+    target_value: 2
+    maximum_value: 3
+  - key: approach_step_count
+    label: Approach Step Count
+    description: Number of steps in the Approach element; fewer than two is not a path, more than four is not memorable.
+    unit: steps
+    minimum_value: 2
+    maximum_value: 4
+  - key: loop_closure_confidence
+    label: Loop Closure Confidence
+    description: Minimum confidence that the narrative closes its opening loop — the resolution answers the tension the opening
+      raised.
+    unit: confidence (0-1)
+    minimum_value: 0.7
+  - key: emotional_arc_minimum_signals
+    label: Emotional Arc Signal Floor
+    description: Minimum count of detectable emotional-arc signals; a narrative with none is emotionally flat and reduces
+      audience openness to the call to action.
+    unit: signals
+    minimum_value: 1
+  last_updated: '2026-09-01'
+  id: coe:artifact/narrative/narrative_quality_rubric
+  label: Narrative Quality Rubric
+  description: Rubric for narrative quality assessment covering SOAR coverage, coherence, clarity, audience fit, evidence,
+    and reusability
+  home_domain: narrative
+  status: canonical
+  evidence_ids:
+  - coe:source/central-configs-legacy-f6eb98ff
+  - coe:decision/v4-migration/narrative/quality_rubrics
+  - coe:source/legacy-file/e7718e47042f199b
+  - coe:decision/curation/2026-09-01/threshold-typing

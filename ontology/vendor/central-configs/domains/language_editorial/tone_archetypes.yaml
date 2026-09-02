@@ -1,0 +1,777 @@
+_meta:
+  file_id: coe:file/domain/language_editorial/tone_archetypes
+  title: Language Editorial — Tone Archetypes
+  last_updated: '2026-09-01'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: language_editorial
+  governing_class: coe:DomainModule
+module_id: coe:module/language_editorial/tone_archetypes
+domain: language_editorial
+taxonomies:
+- last_updated: '2026-09-01'
+  id: coe:artifact/language_editorial/corpus_glossary
+  label: Corpus Glossary
+  description: Canonical cross-corpus terminology.
+  home_domain: language_editorial
+  status: canonical
+  concepts:
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/presenter
+    label: presenter
+    description: The persuader delivering a business deck — seller, executive, or subject expert.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: &id001
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/language_editorial/tone_archetypes
+    - coe:source/legacy-file/a1d3787594ccdaff
+    - coe:source/legacy-file/67abbe1fdac683c1
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/facilitator
+    label: facilitator
+    description: The instructor / coach delivering training.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/hook
+    label: hook
+    description: A business opening that builds rhetorical tension (SCQA Situation, provocative claim).
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/gain_attention
+    label: gain_attention
+    description: A training opening that activates prior knowledge and primes cognitive load (Gagné Event 1).
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/action_title
+    label: action_title
+    description: A declarative slide header asserting a claim of value (Minto).
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/instructional_event
+    label: instructional_event
+    description: A slide header naming a cognitive scaffold step (Gagné event, e.g. _Recall Prior Learning_).
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/proof_point
+    label: proof_point
+    description: Business body content that proves the action-title claim (data, charts, evidence).
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/scaffolding
+    label: scaffolding
+    description: Training body content that facilitates cognitive processing (worked examples, practice items).
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/imperative_verb
+    label: imperative_verb
+    description: A commitment-requesting verb for business CTAs — _approve_, _invest_, _commit_.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/bloom_verb
+    label: bloom_verb
+    description: An observable-capability verb for learning objectives — _apply_, _evaluate_, _create_.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/seller_notes
+    label: seller_notes
+    description: Speaker notes giving delivery tips and objection handling for a business deck.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/facilitator_guide
+    label: facilitator_guide
+    description: Speaker notes giving step-by-step instructions, activity debriefs, and timing for training.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/objections
+    label: objections
+    description: Financial, technical, or strategic barriers to buying.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/learner_resistance
+    label: learner_resistance
+    description: Cognitive barriers, prior misconceptions, or motivation gaps that impede learning.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/objection_handling
+    label: objection_handling
+    description: Live response that defuses purchase risk.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/check_for_understanding
+    label: check_for_understanding
+    description: Formative assessment that surfaces misconceptions and triggers correction.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/commercial_ask
+    label: commercial_ask
+    description: A close that requests a resource commitment (budget, sign-off, next meeting).
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/transfer_plan
+    label: transfer_plan
+    description: A close that prompts the learner to integrate the skill into daily workflow.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/red_team_critique
+    label: red_team_critique
+    description: A review simulating hostile or sceptical buyers checking for logical leaks.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/facilitator_critique
+    label: facilitator_critique
+    description: A review checking scaffolding clarity and cognitive load.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/pacing_mode
+    label: pacing_mode
+    description: 'The pacing configuration (business: `one_shot_decision_moment`; training: `iterative_practice_loop`).'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/repetition_stance
+    label: repetition_stance
+    description: 'The repetition policy (business: `avoid`; training: `require`, spaced retrieval).'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/corpus_glossary
+    id: coe:concept/corpus_glossary/scene
+    label: scene
+    description: The atomic visual unit of a `storyboard`. ONE narration slice + ONE cinematography decision + ONE frame image.
+      **Distinct from `segment`**, which is the script-level narration unit in the upstream `video-script` wireframe — a `segment`
+      may split into multiple `scenes` when visual flow demands a cut inside a narration block (but never inside the words;
+      the script is inviolate). The cross-skill contract is `scene_index ≠ segment_index`; one or more scenes share an `upstream_segment_index`
+      when split occurred. Bare.
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  top_concepts:
+  - coe:concept/corpus_glossary/presenter
+  - coe:concept/corpus_glossary/facilitator
+  - coe:concept/corpus_glossary/hook
+  - coe:concept/corpus_glossary/gain_attention
+  - coe:concept/corpus_glossary/action_title
+  - coe:concept/corpus_glossary/instructional_event
+  - coe:concept/corpus_glossary/proof_point
+  - coe:concept/corpus_glossary/scaffolding
+  - coe:concept/corpus_glossary/imperative_verb
+  - coe:concept/corpus_glossary/bloom_verb
+  - coe:concept/corpus_glossary/seller_notes
+  - coe:concept/corpus_glossary/facilitator_guide
+  - coe:concept/corpus_glossary/objections
+  - coe:concept/corpus_glossary/learner_resistance
+  - coe:concept/corpus_glossary/objection_handling
+  - coe:concept/corpus_glossary/check_for_understanding
+  - coe:concept/corpus_glossary/commercial_ask
+  - coe:concept/corpus_glossary/transfer_plan
+  - coe:concept/corpus_glossary/red_team_critique
+  - coe:concept/corpus_glossary/facilitator_critique
+  - coe:concept/corpus_glossary/pacing_mode
+  - coe:concept/corpus_glossary/repetition_stance
+  - coe:concept/corpus_glossary/scene
+  evidence_ids: *id001
+- last_updated: '2026-09-01'
+  id: coe:artifact/language_editorial/writing_taxonomy
+  label: Writing Taxonomy
+  description: Classification of content writing types by writing mode, tone register, content structure, editorial quality
+    dimension, and script format
+  home_domain: language_editorial
+  status: canonical
+  concepts:
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    id: coe:concept/writing_taxonomy/writing_mode
+    label: Writing Mode
+    description: The primary purpose and context of the writing
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/writing_mode
+    id: coe:concept/writing_taxonomy/writing_mode/instructional
+    label: Instructional
+    description: 'Content whose primary purpose is to teach, explain, or guide a learner through a process; produces course modules, learning guides, how-to and knowledge-base articles, and practice prompts.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/writing_mode
+    id: coe:concept/writing_taxonomy/writing_mode/editorial
+    label: Editorial
+    description: 'Content expressing a perspective, analysis, or informed opinion rather than instruction or specification; produces thought-leadership articles, executive summaries, white papers, blog posts, and newsletters.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/writing_mode
+    id: coe:concept/writing_taxonomy/writing_mode/scriptwriting
+    label: Scriptwriting
+    description: 'Content written for spoken delivery or multimedia production, where the words are heard rather than read; produces video narration, podcast scripts, speaker notes, and voiceover copy.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/writing_mode
+    id: coe:concept/writing_taxonomy/writing_mode/copywriting
+    label: Copywriting
+    description: 'Persuasive content designed to drive action or conversion, including product-focused writing that translates features into benefits in precise, specific language rather than generic marketing claims.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/writing_mode
+    id: coe:concept/writing_taxonomy/writing_mode/technical
+    label: Technical
+    description: 'Precise documentation of systems, processes, or specifications, where accuracy and completeness outrank persuasion; produces API documentation, technical specs, release notes, and configuration guides.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/writing_mode
+    id: coe:concept/writing_taxonomy/writing_mode/assessment
+    label: Assessment
+    description: 'Content designed to evaluate knowledge, understanding, or skill; produces quiz and multiple-choice items, scenario and reflection prompts, rubric descriptors, and formative feedback text.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    id: coe:concept/writing_taxonomy/tone_register
+    label: Tone Register
+    description: The voice and formality level of the writing
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/tone_register
+    id: coe:concept/writing_taxonomy/tone_register/formal
+    label: Formal
+    description: 'Professional, objective, impersonal voice that avoids contractions, colloquialisms, and first person; suited to executive audiences and regulatory content.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/tone_register
+    id: coe:concept/writing_taxonomy/tone_register/professional
+    label: Professional
+    description: 'Clear, direct, authoritative but approachable voice — the default register for corporate learning; avoids slang, hedging, superlatives, and marketing framing without specifics.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/tone_register
+    id: coe:concept/writing_taxonomy/tone_register/conversational
+    label: Conversational
+    description: 'Warm, relatable voice using contractions and direct address; suited to eLearning and video, avoiding passive voice, abstract nouns, and bureaucratic language.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/tone_register
+    id: coe:concept/writing_taxonomy/tone_register/inspirational
+    label: Inspirational
+    description: 'Motivating, visionary, aspirational voice; suited to keynotes and change communication, avoiding negativity, hedging, and bureaucratic framing.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/tone_register
+    id: coe:concept/writing_taxonomy/tone_register/empathetic
+    label: Empathetic
+    description: 'Supportive, understanding voice that acknowledges challenges; suited to change management and onboarding, never dismissive, trivialising, or jargon-laden.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    id: coe:concept/writing_taxonomy/content_structure
+    label: Content Structure
+    description: The organisational pattern of the written content
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/content_structure
+    id: coe:concept/writing_taxonomy/content_structure/linear
+    label: Linear
+    description: 'Sequential progression from start to finish; suits tutorials, procedures, and narratives.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/content_structure
+    id: coe:concept/writing_taxonomy/content_structure/modular
+    label: Modular
+    description: 'Self-contained sections that can be consumed in any order; suits reference guides, knowledge bases, and FAQs.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/content_structure
+    id: coe:concept/writing_taxonomy/content_structure/hierarchical
+    label: Hierarchical
+    description: 'Top-down organisation moving from general to specific; suits executive summaries, course syllabi, and documentation.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/content_structure
+    id: coe:concept/writing_taxonomy/content_structure/problem_solution
+    label: Problem Solution
+    description: 'Establishes a challenge before presenting its resolution; suits case studies, sales content, and thought leadership.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/content_structure
+    id: coe:concept/writing_taxonomy/content_structure/inverted_pyramid
+    label: Inverted Pyramid
+    description: 'Leads with the most important information and lets supporting detail follow in descending significance; the journalistic pattern suited to news articles, executive briefs, and abstracts.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/content_structure
+    id: coe:concept/writing_taxonomy/content_structure/comparative
+    label: Comparative
+    description: 'Side-by-side analysis of options or approaches; suits product comparisons, framework evaluations, and decision guides.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/content_structure
+    id: coe:concept/writing_taxonomy/content_structure/definition_then_benefit
+    label: Definition Then Benefit
+    description: 'Opens with a precise factual definition of the product or concept, then translates each feature into a concrete audience benefit; avoids opening with marketing claims. Suits product descriptions and knowledge-base entries.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    id: coe:concept/writing_taxonomy/readability_target
+    label: Readability Target
+    description: The target reading level for the audience
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/readability_target
+    id: coe:concept/writing_taxonomy/readability_target/grade_6_8
+    label: Grade 6-8
+    description: 'Plain-language band (Flesch-Kincaid grade 6-8): short sentences and common words for broad general audiences and must-read operational content.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/readability_target
+    id: coe:concept/writing_taxonomy/readability_target/grade_9_12
+    label: Grade 9-12
+    description: 'High-school band (Flesch-Kincaid grade 9-12): standard business prose for general professional audiences, admitting moderate sentence complexity and everyday business vocabulary.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/readability_target
+    id: coe:concept/writing_taxonomy/readability_target/undergraduate
+    label: Undergraduate
+    description: 'College-level band (roughly Flesch-Kincaid grade 13-16): sustained argument and discipline-general terminology for educated readers outside the specialism.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/readability_target
+    id: coe:concept/writing_taxonomy/readability_target/graduate_professional
+    label: Graduate Professional
+    description: 'Advanced band (Flesch-Kincaid grade 17 and above): dense, abstraction-heavy prose for expert professional readers, as in white papers and scholarly analysis.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/readability_target
+    id: coe:concept/writing_taxonomy/readability_target/technical_specialist
+    label: Technical Specialist
+    description: 'Level defined by domain expertise rather than a grade band: unglossed specialist terminology for practitioners in the field, as in API references and technical specifications.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    id: coe:concept/writing_taxonomy/editorial_quality
+    label: Editorial Quality
+    description: Key quality dimensions evaluated in editorial review
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/clarity
+    label: Clarity
+    description: 'The degree to which meaning is grasped on first reading: unambiguous wording, concrete referents, and one idea per sentence.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/concision
+    label: Concision
+    description: 'Economy of expression: every word earns its place, with redundancy, filler, and throat-clearing removed without loss of meaning.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/consistency
+    label: Consistency
+    description: 'Uniform terminology, style, formatting, and voice across a piece and its sibling artifacts, so the same thing is always named the same way.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/accuracy
+    label: Accuracy
+    description: 'Factual and technical correctness: claims, figures, names, and procedures verified against their sources.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/tone_alignment
+    label: Tone Alignment
+    description: 'Fit between the writing''s actual voice and the tone register specified for the piece and its audience.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/accessibility
+    label: Accessibility
+    description: 'Usability of the content by readers with disabilities and by assistive technology — navigable structure, meaningful headings, alt text — measured against WCAG 2.1 AA practice.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/specificity
+    label: Specificity
+    description: 'Preference for precise, concrete detail — named mechanisms, numbers, examples — over vague buzzwords and generic marketing claims.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/memorability
+    label: Memorability
+    description: 'The likelihood that key messages are retained after reading, aided by vivid phrasing, strong structure, and deliberate repetition of core ideas.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/inclusivity
+    label: Inclusivity
+    description: 'Use of bias-free, culturally aware language that excludes no reader and lets every member of the audience see themselves addressed.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/benefit_clarity
+    label: Benefit Clarity
+    description: 'How plainly features are translated into concrete audience benefits, so the reader sees what they gain rather than what the product does.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/diagnostic_precision
+    label: Diagnostic Precision
+    description: 'In assessment writing, how sharply an item isolates the specific knowledge or misconception it is meant to test, so a wrong answer reveals why the learner erred.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/distractor_plausibility
+    label: Distractor Plausibility
+    description: 'In assessment writing, how credibly the incorrect options reflect real misconceptions, so items discriminate understanding rather than test-taking skill.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  - in_scheme: coe:artifact/language_editorial/writing_taxonomy
+    broader:
+    - coe:concept/writing_taxonomy/editorial_quality
+    id: coe:concept/writing_taxonomy/editorial_quality/feedback_quality
+    label: Feedback Quality
+    description: 'In assessment writing, how well formative feedback explains why a response is right or wrong and directs the learner''s next step, beyond a bare correct/incorrect verdict.'
+    home_domain: language_editorial
+    status: canonical
+    evidence_ids: *id001
+  top_concepts:
+  - coe:concept/writing_taxonomy/writing_mode
+  - coe:concept/writing_taxonomy/tone_register
+  - coe:concept/writing_taxonomy/content_structure
+  - coe:concept/writing_taxonomy/readability_target
+  - coe:concept/writing_taxonomy/editorial_quality
+  evidence_ids: *id001
+entity_collections:
+- id: coe:artifact/language_editorial/tone_archetypes
+  label: Authoritative Tone Archetypes & Voice Registers
+  description: Governed brand stances, registers, and verbal identity archetypes.
+  last_updated: '2026-08-15'
+  entities:
+  - id: coe:entity/language_editorial/stance__frame
+    label: 'Voice Stance: _Frame'
+    description: 'Brand stance: _Frame'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_STANCE
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/stance_relationship_posture
+    label: 'Voice Stance: Relationship Posture'
+    description: 'Brand stance: Relationship Posture'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_STANCE
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/stance_address_identity
+    label: 'Voice Stance: Address Identity'
+    description: 'Brand stance: Address Identity'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_STANCE
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/stance_understanding_worldview
+    label: 'Voice Stance: Understanding Worldview'
+    description: 'Brand stance: Understanding Worldview'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_STANCE
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/stance_curiosity_forward
+    label: 'Voice Stance: Curiosity Forward'
+    description: 'Brand stance: Curiosity Forward'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_STANCE
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/stance_brand_refusals
+    label: 'Voice Stance: Brand Refusals'
+    description: 'Brand stance: Brand Refusals'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_STANCE
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_spine_language
+    label: 'Register: Spine Language'
+    description: 'Voice register: Spine Language'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_assertion_lines
+    label: 'Register: Assertion Lines'
+    description: 'Voice register: Assertion Lines'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_visible_copy
+    label: 'Register: Visible Copy'
+    description: 'Voice register: Visible Copy'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_speaker_notes
+    label: 'Register: Speaker Notes'
+    description: 'Voice register: Speaker Notes'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_learning_and_assessment
+    label: 'Register: Learning And Assessment'
+    description: 'Voice register: Learning And Assessment'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_infographics
+    label: 'Register: Infographics'
+    description: 'Voice register: Infographics'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_podcasts
+    label: 'Register: Podcasts'
+    description: 'Voice register: Podcasts'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_website_and_marketing_copy
+    label: 'Register: Website And Marketing Copy'
+    description: 'Voice register: Website And Marketing Copy'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_long_form_written
+    label: 'Register: Long Form Written'
+    description: 'Voice register: Long Form Written'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_email_and_newsletter
+    label: 'Register: Email And Newsletter'
+    description: 'Voice register: Email And Newsletter'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_education_audience
+    label: 'Register: Education Audience'
+    description: 'Voice register: Education Audience'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_video_scripts
+    label: 'Register: Video Scripts'
+    description: 'Voice register: Video Scripts'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_quizzes_and_surveys
+    label: 'Register: Quizzes And Surveys'
+    description: 'Voice register: Quizzes And Surveys'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_hints_and_scaffolding
+    label: 'Register: Hints And Scaffolding'
+    description: 'Voice register: Hints And Scaffolding'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_accessibility_alt_text
+    label: 'Register: Accessibility Alt Text'
+    description: 'Voice register: Accessibility Alt Text'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_dramatic_dialogue
+    label: 'Register: Dramatic Dialogue'
+    description: 'Voice register: Dramatic Dialogue'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_worksheets_and_handouts
+    label: 'Register: Worksheets And Handouts'
+    description: 'Voice register: Worksheets And Handouts'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_branching_scenarios
+    label: 'Register: Branching Scenarios'
+    description: 'Voice register: Branching Scenarios'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_puzzles
+    label: 'Register: Puzzles'
+    description: 'Voice register: Puzzles'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  - id: coe:entity/language_editorial/register_multimedia_prompts
+    label: 'Register: Multimedia Prompts'
+    description: 'Voice register: Multimedia Prompts'
+    home_domain: language_editorial
+    status: canonical
+    ner_label: VOICE_REGISTER
+    evidence_ids: *id001
+  home_domain: language_editorial
+  status: canonical
+  evidence_ids: *id001

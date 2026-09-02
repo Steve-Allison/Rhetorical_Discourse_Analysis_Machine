@@ -1,0 +1,368 @@
+_meta:
+  file_id: coe:file/domain/visual_communication/design_quality_gates
+  title: Visual Communication — Design Quality Gates
+  last_updated: '2026-09-01'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: visual_communication
+  governing_class: coe:DomainModule
+module_id: coe:module/visual_communication/design_quality_gates
+domain: visual_communication
+scoring_models:
+- dimensions:
+  - weight: 0.25
+    id: coe:artifact/visual_communication/data_visualisation_rubric/dimension/chart_type_appropriateness
+    label: Chart Type Appropriateness
+    description: 'Degree to which the selected chart type matches the analytical task (lookup, comparison, trend, composition,
+      correlation, distribution). Based on Vessey''s Cognitive Fit Theory: performance is maximised only when the visual representation
+      aligns with the task the viewer must perform.'
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: &id001
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/visual_communication/design_quality_gates
+    - coe:source/legacy-file/b1d39aa30588112c
+    - coe:source/legacy-file/c74fa337caf6512b
+  - weight: 0.2
+    id: coe:artifact/visual_communication/data_visualisation_rubric/dimension/data_ink_ratio
+    label: Data-Ink Ratio
+    description: 'Proportion of visual ink actually encoding data versus total ink in the graphic. Target ratio >= 0.85. Chartjunk
+      (3D effects, decorative fills, heavy gridlines, moiré patterns, redundant tick marks, background fills) is extraneous
+      cognitive load and must be eliminated. Formula: Data-Ink / Total Ink used to print the graphic.'
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - weight: 0.2
+    id: coe:artifact/visual_communication/data_visualisation_rubric/dimension/labelling_clarity
+    label: Labelling Clarity
+    description: Quality of axis labels, data labels, title informativeness, and absence of separate legends requiring lookup.
+      Direct labelling eliminates the split-attention effect where the viewer must split gaze between a legend and the data
+      series to decode colour mapping. Titles must state the analytical conclusion (action caption), not merely describe the
+      subject.
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - weight: 0.15
+    id: coe:artifact/visual_communication/data_visualisation_rubric/dimension/colour_accessibility
+    label: Colour Accessibility
+    description: 'Use of colorblind-safe palettes, adequate contrast ratios for chart elements (WCAG 2.1 AA: 3:1 for non-text
+      graphics), and avoidance of colour as the sole encoding channel. Approximately 8% of males have colour vision deficiency;
+      red-green combinations are the most common failure mode. Redundant encoding (colour + shape/pattern/label) is required
+      for accessible charts.'
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - weight: 0.2
+    id: coe:artifact/visual_communication/data_visualisation_rubric/dimension/insight_communication
+    label: Insight Communication
+    description: Degree to which the chart's title and annotations communicate the key analytical conclusion rather than merely
+      labelling the subject matter. A Topic Title ('Q4 Revenue') forces the viewer to analyse and conclude. An Action Caption
+      ('Q4 Revenue Grew 15%, Driven by the Premium Segment') transfers the conclusion instantly, reducing cognitive load and
+      increasing decision-making speed. Annotation quality and key takeaway visibility are also assessed.
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  thresholds:
+  - key: data_ink_ratio
+    label: Data-Ink Ratio
+    description: Proportion of ink encoding data versus total ink in the graphic (Tufte 1983). Below the minimum the chart
+      carries moderate-to-severe chartjunk; at or above the target all non-data ink is eliminated.
+    unit: ratio
+    minimum_value: 0.6
+    target_value: 0.85
+  - key: data_ink_ratio_critical_fail
+    label: Data-Ink Ratio Critical Floor
+    description: Hard floor for estimated data-ink ratio. Below this value multiple chartjunk categories dominate the visual
+      field and the composite score is capped at the severe-chartjunk level.
+    unit: ratio
+    minimum_value: 0.4
+  - key: colour_contrast_normal_text
+    label: Colour Contrast — Normal Text
+    description: Minimum contrast ratio for chart text below 18pt (or 14pt bold) against its background, per WCAG 2.1 AA 1.4.3.
+    unit: contrast ratio (x:1)
+    minimum_value: 4.5
+  - key: colour_contrast_large_text
+    label: Colour Contrast — Large Text
+    description: Minimum contrast ratio for chart text at or above 18pt (or 14pt bold) against its background, per WCAG 2.1
+      AA 1.4.3.
+    unit: contrast ratio (x:1)
+    minimum_value: 3.0
+  - key: colour_contrast_chart_elements
+    label: Colour Contrast — Chart Elements
+    description: Minimum contrast ratio for non-text chart elements against adjacent colours, per WCAG 2.1 AA 1.4.11.
+    unit: contrast ratio (x:1)
+    minimum_value: 3.0
+  - key: legend_items_direct_label_max
+    label: Series Count Requiring Direct Labels
+    description: Maximum number of data series for which direct labelling must replace a separate legend. A chart with this
+      many series or fewer must label each series on the chart; a separate legend is the split-attention anti-pattern.
+    unit: data series
+    maximum_value: 8
+  - key: max_series_before_small_multiples
+    label: Series Count Before Small Multiples
+    description: Maximum number of series a single multi-series chart may carry before it must be split into small multiples
+      with a shared axis scale; colour discrimination degrades rapidly beyond five distinct hues.
+    unit: data series
+    maximum_value: 5
+  - key: bar_chart_max_categories
+    label: Bar Chart Maximum Categories
+    description: Maximum number of categories a single bar chart may display before decoding fails and the data belongs in
+      a table or split view.
+    unit: categories
+    maximum_value: 15
+  - key: bar_chart_axis_origin
+    label: Bar Chart Value-Axis Origin
+    description: Required origin of a bar chart's value axis. Bars encode magnitude by length, so a truncated axis is deceptive
+      encoding; the axis must start at zero.
+    unit: value-axis origin
+    target_value: 0
+  - key: pie_chart_max_segments
+    label: Pie Chart Maximum Segments
+    description: Maximum number of segments a pie chart may carry; angle and area comparison fails beyond four segments and
+      a sorted horizontal bar chart is the preferred alternative.
+    unit: segments
+    maximum_value: 4
+  - key: max_decimal_places_percentage
+    label: Percentage Label Precision
+    description: Maximum decimal places on percentage data labels; more is false precision that consumes working memory without
+      conveying information.
+    unit: decimal places
+    maximum_value: 1
+  - key: max_decimal_places_currency
+    label: Currency Label Precision
+    description: Maximum decimal places on rounded currency data labels (for example £1.4M); more is false precision.
+    unit: decimal places
+    maximum_value: 1
+  - key: max_decimal_places_ratio
+    label: Ratio Label Precision
+    description: Maximum decimal places on ratio data labels; more is false precision.
+    unit: decimal places
+    maximum_value: 2
+  - key: max_decimal_places_count
+    label: Count Label Precision
+    description: Maximum decimal places on whole-number count labels; counts are integers and carry no decimals.
+    unit: decimal places
+    maximum_value: 0
+  - key: max_title_characters
+    label: Chart Title Length
+    description: Maximum length of a chart's action-caption title; a caption longer than this stops functioning as an instantly
+      readable conclusion.
+    unit: characters
+    maximum_value: 100
+  - key: chart_label_font_size
+    label: Chart Label Font Size
+    description: Font size for data and axis labels inside charts; below the minimum, labels fail decoding at display size.
+    unit: points
+    minimum_value: 8
+    target_value: 10
+  - key: chart_title_font_size
+    label: Chart Title Font Size
+    description: Font size for chart titles; below the minimum, the action caption is not reliably legible at display size.
+    unit: points
+    minimum_value: 11
+    target_value: 13
+  - key: redundant_encoding_min_channels
+    label: Redundant Encoding Channels
+    description: Minimum number of encoding channels (colour plus direct label, shape, pattern, or line style) whenever colour
+      distinguishes data series, so the chart survives greyscale and colour-vision deficiency.
+    unit: encoding channels
+    minimum_value: 2
+  last_updated: '2026-09-01'
+  id: coe:artifact/visual_communication/data_visualisation_rubric
+  label: Data Visualisation Rubric
+  description: Scoring rubric for data visualisation quality covering chart type appropriateness, data-ink ratio, labelling
+    clarity, colour accessibility, and insight communication
+  home_domain: visual_communication
+  status: canonical
+  evidence_ids:
+  - coe:source/central-configs-legacy-f6eb98ff
+  - coe:decision/v4-migration/visual_communication/design_quality_gates
+  - coe:source/legacy-file/b1d39aa30588112c
+  - coe:source/legacy-file/c74fa337caf6512b
+  - coe:decision/curation/2026-09-01/threshold-typing
+- dimensions:
+  - weight: 0.25
+    id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/audio_clarity
+    label: Audio Clarity
+    description: Evaluates voice quality, background noise floor, volume consistency, articulation clarity, and compression/EQ
+      treatment. Crisp audio is the single highest-leverage production variable for learner engagement.
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - weight: 0.2
+    id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/visual_narration_sync
+    label: Visual-Narration Synchronisation
+    description: Evaluates temporal alignment of visuals with speech, spatial placement of on-screen text relative to corresponding
+      graphics, verbal-visual channel balance, and signalling cues that direct learner attention. Directly maps to Mayer's
+      temporal contiguity (effect size 1.30) and spatial contiguity (effect size 0.82) principles.
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - weight: 0.2
+    id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/segment_pacing
+    label: Segment Pacing
+    description: Evaluates video segment lengths against engagement research, information density per minute, learner cognitive
+      load management, and presence of reflection pause cues. Guo et al. (2014) found median engagement time is 6 minutes;
+      Brame (2016) recommends ≤6 min for concept videos.
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - weight: 0.15
+    id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/transition_quality
+    label: Transition Quality
+    description: Evaluates scene-to-scene cut quality, topic transition signposting, visual continuity across angles and backgrounds,
+      and use of B-roll or cutaways to maintain coherence. Research shows establishing shots before transitions reduce cognitive
+      load; consistent transition style creates predictable mental checkpoints.
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - weight: 0.2
+    id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/production_value
+    label: Production Value
+    description: 'Evaluates technical output quality: video resolution, camera framing, lighting quality, graphics fidelity,
+      and brand consistency. High production value signals credibility and maintains learner attention.'
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  thresholds:
+  - key: audio_integrated_lufs
+    label: Integrated Loudness
+    description: Integrated programme loudness of the finished video's audio; the streaming-platform standard band, with the
+      target at the centre of it.
+    unit: LUFS
+    minimum_value: -18
+    target_value: -16
+    maximum_value: -14
+  - key: audio_noise_floor_dbfs
+    label: Audio Noise Floor
+    description: Background noise level of the narration bed. The target is broadcast-quality; anything above the maximum
+      stops qualifying as acceptable room tone.
+    unit: dBFS
+    target_value: -60
+    maximum_value: -50
+  - key: audio_noise_floor_failure_dbfs
+    label: Audio Noise Floor Failure Ceiling
+    description: Hard ceiling for background noise; above this level the audio_noise_unacceptable penalty applies and the
+      audio must be re-recorded or denoised.
+    unit: dBFS
+    maximum_value: -40
+  - key: narration_words_per_minute
+    label: Narration Pace
+    description: Speaking rate of recorded narration; the band in which comprehension and engagement are both maintained for
+      instructional video.
+    unit: words per minute
+    minimum_value: 120
+    maximum_value: 150
+  - key: narration_words_per_minute_warning
+    label: Narration Pace Warning Band
+    description: Outer warning band for narration pace; outside these bounds the narration is flagged as too slow or too fast
+      even before hard failure.
+    unit: words per minute
+    minimum_value: 90
+    maximum_value: 165
+  - key: concept_segment_max_minutes
+    label: Concept Segment Length
+    description: Maximum length of a single-concept video segment; concept videos hold engagement only when kept this short.
+    unit: minutes
+    maximum_value: 3
+  - key: module_segment_max_minutes
+    label: Module Segment Length
+    description: Maximum length of a module-level video segment, per Guo et al. (2014) median engagement of six minutes and
+      Brame (2016).
+    unit: minutes
+    maximum_value: 6
+  - key: walkthrough_segment_max_minutes
+    label: Walkthrough Segment Length
+    description: Maximum length of a hands-on walkthrough segment, where task-following sustains engagement longer than concept
+      exposition.
+    unit: minutes
+    maximum_value: 10
+  - key: cut_frequency_seconds
+    label: Cut Frequency
+    description: Interval between visual cuts or camera changes; cuts faster than the minimum feel frantic, slower than the
+      maximum reads as static single-camera footage.
+    unit: seconds
+    minimum_value: 8
+    maximum_value: 15
+  - key: bullet_hold_duration_seconds
+    label: Bullet Hold Duration
+    description: Time an on-screen bullet remains visible after its reveal; long enough to read, short enough not to stall
+      the narration.
+    unit: seconds
+    minimum_value: 3
+    maximum_value: 6
+  - key: caption_accuracy_min_percent
+    label: Caption Accuracy
+    description: Minimum word-level accuracy of closed captions against the spoken narration.
+    unit: percent
+    minimum_value: 99
+  - key: caption_sync_tolerance_seconds
+    label: Caption Sync Tolerance
+    description: Maximum offset between caption display and the corresponding speech.
+    unit: seconds
+    maximum_value: 0.5
+  - key: caption_max_characters_per_line
+    label: Caption Line Length
+    description: Maximum characters per caption line, following broadcast captioning practice.
+    unit: characters
+    maximum_value: 42
+  - key: caption_max_lines_on_screen
+    label: Caption Lines On Screen
+    description: Maximum simultaneous caption lines; more occludes the picture and slows reading.
+    unit: lines
+    maximum_value: 2
+  - key: visual_sync_tolerance_seconds
+    label: Visual-Narration Sync Tolerance
+    description: Maximum acceptable offset between narration and the visual it references, per Mayer's temporal contiguity
+      principle.
+    unit: seconds
+    maximum_value: 1.0
+  - key: visual_sync_failure_seconds
+    label: Visual-Narration Sync Failure
+    description: Hard ceiling for narration-visual offset; beyond this the audio_visual_mismatch penalty applies.
+    unit: seconds
+    maximum_value: 2.0
+  - key: resolution_min_pixels_height
+    label: Minimum Resolution
+    description: Minimum vertical resolution of the delivered video; below 1080 lines the sub_1080p_resolution penalty applies.
+    unit: pixels
+    minimum_value: 1080
+  - key: b_roll_min_percent_of_runtime
+    label: B-Roll Share of Runtime
+    description: Minimum share of runtime covered by B-roll or cutaways, maintaining visual continuity and masking edits.
+    unit: percent
+    minimum_value: 15
+  - key: lower_third_duration_seconds
+    label: Lower-Third Duration
+    description: Display time for lower-third name or title graphics; long enough to read twice.
+    unit: seconds
+    target_value: 4
+  - key: mayer_critical_principles_required
+    label: Mayer Critical Principles Required
+    description: Minimum count of Mayer's critical multimedia principles (coherence, signalling, redundancy, contiguity) that
+      must be demonstrably met.
+    unit: principles
+    minimum_value: 4
+  - key: on_screen_text_max_words_per_overlay
+    label: On-Screen Text Per Overlay
+    description: Maximum words in a single on-screen text overlay; more re-creates the redundancy effect against narration.
+    unit: words
+    maximum_value: 8
+  - key: max_animated_elements_simultaneous
+    label: Simultaneous Animated Elements
+    description: Maximum elements animating at once; more splits attention and exceeds working-memory capacity.
+    unit: elements
+    maximum_value: 3
+  last_updated: '2026-09-01'
+  id: coe:artifact/visual_communication/video_multimedia_rubric
+  label: Video and Multimedia Rubric
+  description: Scoring rubric for video and multimedia production quality covering audio clarity, visual-narration synchronisation,
+    segment pacing, transition quality, and production value
+  home_domain: visual_communication
+  status: canonical
+  evidence_ids:
+  - coe:source/central-configs-legacy-f6eb98ff
+  - coe:decision/v4-migration/visual_communication/design_quality_gates
+  - coe:source/legacy-file/b1d39aa30588112c
+  - coe:source/legacy-file/c74fa337caf6512b
+  - coe:decision/curation/2026-09-01/threshold-typing

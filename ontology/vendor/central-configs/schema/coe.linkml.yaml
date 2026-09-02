@@ -1,0 +1,41 @@
+id: https://steve-allison.github.io/Central_Configs/ontology/schema/coe
+name: coe
+title: Central Configs Canonical Ontology
+description: Sole shared semantic authority for Central Configs consumers. All authored instances validate against this LinkML
+  import closure; consumer application profiles import the complete distribution and never redefine coe identifiers.
+version: 4.0.0
+default_prefix: coe
+default_range: string
+default_curi_maps:
+- semweb_context
+prefixes:
+  coe: https://steve-allison.github.io/Central_Configs/ontology/
+  dcterms: http://purl.org/dc/terms/
+  linkml: https://w3id.org/linkml/
+  owl: http://www.w3.org/2002/07/owl#
+  prov: http://www.w3.org/ns/prov#
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  skos: http://www.w3.org/2004/02/skos/core#
+  skosxl: http://www.w3.org/2008/05/skos-xl#
+  sh: http://www.w3.org/ns/shacl#
+  xsd: http://www.w3.org/2001/XMLSchema#
+emit_prefixes:
+- coe
+- dcterms
+- owl
+- prov
+- rdf
+- rdfs
+- skos
+- skosxl
+- sh
+- xsd
+imports:
+- linkml:types
+- ./modules/core.linkml
+- ./modules/evidence.linkml
+- ./modules/relations.linkml
+- ./modules/terminology.linkml
+- ./modules/knowledge.linkml
+- ./modules/distribution.linkml

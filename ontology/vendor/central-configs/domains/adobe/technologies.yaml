@@ -1,0 +1,248 @@
+_meta:
+  file_id: coe:file/domain/adobe/technologies
+  title: Adobe — Technologies
+  last_updated: '2026-09-01'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: adobe
+  governing_class: coe:DomainModule
+module_id: coe:module/adobe/technologies
+domain: adobe
+entity_collections:
+- id: coe:artifact/adobe/technologies
+  label: Adobe Technologies & Platform Components
+  description: Sensei, Firefly, XDM, Edge Network, and platform SDK capabilities.
+  last_updated: '2026-09-01'
+  entities:
+  - id: coe:entity/adobe/sensei
+    label: Adobe Sensei
+    description: Adobe's machine-intelligence framework powering AI features across Creative Cloud, Document Cloud, and
+      Experience Cloud — auto-tagging, subject selection, personalisation scoring, anomaly detection — as embedded product
+      intelligence rather than a standalone product.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: &id001
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/adobe/technologies
+  - id: coe:entity/adobe/sensei_genai
+    label: Sensei GenAI
+    description: The generative AI services layer of Experience Cloud, built on large language models — it powers marketing
+      copy generation, conversational assistance, and content variants inside applications such as Journey Optimizer and
+      Experience Manager.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/audience_ai
+    label: Audience AI
+    description: The AI capability family for audiences on Adobe Experience Platform — conversational audience creation,
+      size estimation, fluctuation insight, significant-change monitoring, and growth forecasting, surfaced through AI
+      Assistant and the Audience Agent.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/ai_assistant
+    label: AI Assistant
+    description: The conversational assistant embedded across Experience Platform applications — Experience Platform,
+      Real-Time CDP, Journey Optimizer, Customer Journey Analytics, and Experience Manager — answering product and
+      operational questions in natural language and hosting the purpose-built agents.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/generative_fill
+    label: Generative Fill
+    description: Firefly-powered Photoshop feature that generates new image content inside a selected region from a text
+      prompt, matching the lighting and perspective of the surrounding image.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/generative_expand
+    label: Generative Expand
+    description: Firefly-powered Photoshop feature that extends an image beyond its original borders, generating matching
+      new content to fill the enlarged canvas.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/content_aware_fill
+    label: Content Aware Fill
+    description: Photoshop and After Effects feature that fills a removed region by synthesising from the surrounding
+      pixels of the same image — a pre-generative technique that samples the image itself rather than a model.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/firefly_video_model
+    label: Firefly Video Model
+    description: The video-generation model in the Firefly family — commercially safe text-to-video and image-to-video
+      generation trained on licensed content.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/i_o
+    label: Adobe I/O
+    description: Adobe's developer platform (now branded Adobe Developer) — the APIs, events, and runtime through which
+      external code integrates with and extends Adobe products.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/developer_console
+    label: Adobe Developer Console
+    description: The console where developers create projects, manage API credentials and OAuth flows, and administer
+      integrations against Adobe APIs.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/exchange
+    label: Adobe Exchange
+    description: Adobe's marketplace for third-party apps, plugins, and integrations that extend Creative Cloud, Document
+      Cloud, and Experience Cloud products.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/creative_cloud_libraries
+    label: Creative Cloud Libraries
+    description: The shared-library service that syncs colours, character styles, logos, and components across Creative
+      Cloud applications and teams so design elements stay consistent wherever they are used.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/genstudio_services
+    label: GenStudio Services
+    description: The public REST API surface for GenStudio for Performance Marketing — retrieving approved experiences,
+      listing and filtering experience summaries, and downloading assets with OAuth server-to-server authentication, so
+      GenStudio content flows into external workflows and integrations.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/experience_platform_edge_network
+    label: Adobe Experience Platform Edge Network
+    description: The globally distributed edge-server network that receives data from websites and apps through the Web and
+      Mobile SDKs and returns segment qualifications and personalised offers within milliseconds; it serves all Experience
+      Cloud solutions and hosts Tags and event forwarding at the edge.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/experience_platform_data_collection
+    label: Adobe Experience Platform Data Collection
+    description: The suite of Experience Platform technologies — Web and Mobile SDKs, datastreams, Tags, and event
+      forwarding — for capturing customer-experience data client- and server-side and routing it to Adobe and non-Adobe
+      destinations.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/tags
+    label: Tags
+    description: Experience Platform's tag-management capability (formerly Launch) — client-side rules, data elements, and
+      extensions with development, staging, and production environments and a publishing workflow for deploying
+      data-collection and marketing technologies.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/event_forwarding
+    label: Event Forwarding
+    description: The server-side counterpart to Tags — it sends event data collected through the Edge Network on to
+      non-Adobe destinations for server-side processing and enrichment, without adding client-side weight.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/datastreams
+    label: Datastreams
+    description: Server-side Edge Network configuration records that route collected event data to the configured services
+      — Analytics, Target, Experience Platform, Journey Optimizer — and to event-forwarding destinations.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/experience_data_model
+    label: Experience Data Model
+    description: Adobe's open standard framework for describing customer-experience data — schemas composed of classes and
+      field groups that make data from different systems consistent so profiles, segmentation, and applications
+      interoperate across Adobe and third-party systems.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/xdm
+    label: XDM
+    description: Initialism for Experience Data Model — the open schema standard underpinning all Experience Platform
+      data.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/edge_network
+    label: Edge Network
+    description: Short name for the Experience Platform Edge Network — the low-latency, globally distributed collection
+      and personalisation edge shared by the Experience Cloud applications.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/data_collection
+    label: Data Collection
+    description: Short name for Experience Platform Data Collection — the ingestion layer capturing event data through the
+      SDKs, datastreams, and Tags into the Edge Network.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/offer_decisioning
+    label: Offer Decisioning
+    description: The Experience Platform decisioning engine that selects which offer each customer sees, using profile
+      attributes and omni-channel event data; its decisions are written back to the Real-Time Customer Profile so any
+      channel can reuse them.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/content_fragments
+    label: Content Fragments
+    description: Structured, presentation-independent content in Experience Manager, authored against a content model and
+      delivered through APIs (including GraphQL) to any channel — the unit of AEM headless content.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/experience_fragments
+    label: Experience Fragments
+    description: Reusable groups of Experience Manager components with layout — a complete fragment of an experience that
+      can be placed across pages and channels so the same composed content is maintained once.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/web_sdk
+    label: Web SDK
+    description: The client-side JavaScript library that sends website data to the Edge Network and receives segment
+      qualifications and personalised content back within milliseconds — the single tag replacing the older per-solution
+      libraries.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  - id: coe:entity/adobe/mobile_sdk
+    label: Mobile SDK
+    description: The mobile-application counterpart to the Web SDK — it collects app events into the Edge Network and
+      returns segment qualifications and personalised content in-session.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_TECHNOLOGY
+    evidence_ids: *id001
+  home_domain: adobe
+  status: canonical
+  evidence_ids: *id001

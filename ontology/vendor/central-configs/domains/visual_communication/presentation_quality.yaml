@@ -1,0 +1,445 @@
+_meta:
+  file_id: coe:file/domain/visual_communication/presentation_quality
+  title: Visual Communication — Presentation Quality
+  last_updated: '2026-09-01'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: visual_communication
+  governing_class: coe:DomainModule
+module_id: coe:module/visual_communication/presentation_quality
+domain: visual_communication
+scoring_models:
+- dimensions:
+  - id: coe:artifact/visual_communication/accessibility_visual_rubric/dimension/wcag_level_compliance
+    label: wcag_level_compliance
+    description: Compliance with WCAG 2.2 conformance levels (A, AA, AAA) for presentation accessibility
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: non_compliant
+      criteria: Fails WCAG Level A requirements — fundamental accessibility barriers present
+    - score: 1
+      level_label: partial
+      criteria: Meets Level A but fails Level AA — minimum compliance only
+    - score: 2
+      level_label: compliant
+      criteria: Meets Level AA — industry-standard accessibility for professional presentations
+    - score: 3
+      level_label: exemplary
+      criteria: Meets Level AAA — gold standard inclusive design
+    evidence_ids: &id001
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/visual_communication/presentation_quality
+    - coe:source/legacy-file/c8f5023c88869d33
+    - coe:source/legacy-file/1b0a207b98ccffb7
+  - id: coe:artifact/visual_communication/accessibility_visual_rubric/dimension/color_contrast
+    label: color_contrast
+    description: Color contrast ratios for text and non-text elements per WCAG 2.2 success criteria
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: failing
+      criteria: Contrast ratios below 3:1 for large text or 4.5:1 for normal text
+    - score: 1
+      level_label: borderline
+      criteria: Meets minimum ratios but inconsistently across slide elements
+    - score: 2
+      level_label: passing
+      criteria: All text and non-text elements meet WCAG AA contrast requirements
+    - score: 3
+      level_label: optimal
+      criteria: Exceeds AA requirements; contrast supports low-vision and colour-blind users
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/accessibility_visual_rubric/dimension/violation_severity
+    label: violation_severity
+    description: Severity classification of detected accessibility violations
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: critical
+      criteria: Critical violations that block access for users with disabilities
+    - score: 1
+      level_label: serious
+      criteria: Serious violations that significantly impair usability
+    - score: 2
+      level_label: moderate
+      criteria: Moderate violations that create friction but do not block access
+    - score: 3
+      level_label: minor_or_none
+      criteria: Minor or no violations — best practice adherence throughout
+    evidence_ids: *id001
+  thresholds:
+  - key: min_contrast_small_text
+    label: Contrast — Normal Text
+    description: Minimum contrast ratio for slide text below 18pt (or 14pt bold) against its background, per WCAG 2.2 AA.
+    unit: contrast ratio (x:1)
+    minimum_value: 4.5
+  - key: min_contrast_large_text
+    label: Contrast — Large Text
+    description: Minimum contrast ratio for slide text at or above 18pt (or 14pt bold) against its background, per WCAG 2.2
+      AA.
+    unit: contrast ratio (x:1)
+    minimum_value: 3.0
+  - key: min_contrast_ui
+    label: Contrast — Graphics and UI
+    description: Minimum contrast ratio for non-text graphics and interface elements against adjacent colours, per WCAG 2.2
+      AA.
+    unit: contrast ratio (x:1)
+    minimum_value: 3.0
+  - key: min_font_size
+    label: Presentation Font Size Floor
+    description: Minimum font size for projected slide text; smaller text fails audience legibility at viewing distance.
+    unit: points
+    minimum_value: 18
+  - key: max_flash_per_second
+    label: Flash Frequency Ceiling
+    description: Maximum flashes per second in any animated content; above three flashes per second risks photosensitive seizures
+      (WCAG 2.3.1).
+    unit: flashes per second
+    maximum_value: 3
+  last_updated: '2026-09-01'
+  id: coe:artifact/visual_communication/accessibility_visual_rubric
+  label: Visual Accessibility Rubric
+  description: Accessibility standards for presentations (WCAG 2.2 Level AA) and cognitive accessibility criteria derived
+    from UX design research
+  home_domain: visual_communication
+  status: canonical
+  evidence_ids: &id002
+  - coe:source/central-configs-legacy-f6eb98ff
+  - coe:decision/v4-migration/visual_communication/presentation_quality
+  - coe:source/legacy-file/c8f5023c88869d33
+  - coe:source/legacy-file/1b0a207b98ccffb7
+  - coe:decision/curation/2026-09-01/threshold-typing
+- dimensions:
+  - id: coe:artifact/visual_communication/presentation_profiles_rubric/dimension/structure
+    label: Structure
+    description: Presentation framework and narrative architecture
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/presentation_profiles_rubric/dimension/content
+    label: Content
+    description: Message clarity, evidence quality, and audience alignment
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/presentation_profiles_rubric/dimension/visual
+    label: Visual
+    description: Visual design effectiveness and cognitive load management
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/presentation_profiles_rubric/dimension/delivery
+    label: Delivery
+    description: Facilitation readiness and pacing
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/presentation_profiles_rubric/dimension/credibility
+    label: Credibility
+    description: Authority, proof points, and trust signals
+    home_domain: visual_communication
+    status: canonical
+    evidence_ids: *id001
+  thresholds:
+  - key: min_transformation_confidence
+    label: Transformation Statement Confidence
+    description: Minimum confidence that the deck states an audience transformation — what the audience should think or do
+      differently afterwards.
+    unit: confidence (0-1)
+    minimum_value: 0.7
+  - key: min_vertical_flow_score
+    label: Vertical Flow Floor
+    description: Minimum vertical-flow score — each slide's title, evidence, and takeaway forming one coherent argument column.
+    unit: score (0-1)
+    minimum_value: 0.75
+  - key: min_action_title_percentage
+    label: Action Title Share
+    description: Minimum share of slides whose titles are action titles stating the insight rather than naming the topic.
+    unit: ratio
+    minimum_value: 0.8
+  - key: max_topic_label_percentage
+    label: Topic Label Ceiling
+    description: Maximum share of slides allowed to carry bare topic-label titles.
+    unit: ratio
+    maximum_value: 0.2
+  - key: min_framework_completeness
+    label: Framework Completeness
+    description: Required completeness of the declared presentation framework (SCQA, SOAR, or equivalent); every element must
+      be present.
+    unit: ratio
+    minimum_value: 1.0
+  - key: min_timing_feasibility
+    label: Timing Feasibility Floor
+    description: Minimum feasibility score that the deck is deliverable in its allotted time at a calibrated pace.
+    unit: score (0-1)
+    minimum_value: 0.8
+  - key: min_accessibility_score
+    label: Accessibility Score Floor
+    description: Minimum composite accessibility score from the visual accessibility rubric.
+    unit: score (0-1)
+    minimum_value: 0.9
+  - key: bluf_max_slide_position
+    label: BLUF Slide Position
+    description: Latest slide position at which the bottom-line message must have appeared; executives disengage before a
+      buried lead.
+    unit: slide position
+    maximum_value: 5
+  - key: live_sales_deck_slide_max
+    label: Live Sales Deck Length
+    description: Maximum slides in a live-presented sales deck.
+    unit: slides
+    maximum_value: 15
+  - key: leave_behind_slide_target
+    label: Leave-Behind Deck Length
+    description: Target slide count for a standalone leave-behind (slidument) deck, which carries the narration the presenter
+      would otherwise supply.
+    unit: slides
+    target_value: 30
+  - key: calibrated_pace_seconds_per_slide
+    label: Calibrated Pace
+    description: Seconds of speaking time per content slide at a calibrated delivery pace.
+    unit: seconds per slide
+    minimum_value: 90
+    maximum_value: 120
+  - key: whitespace_percent
+    label: Whitespace Share
+    description: Share of slide area left as whitespace; the band balances breathing room against sparseness.
+    unit: percent
+    minimum_value: 40
+    maximum_value: 60
+  - key: cognitive_intent_max_seconds
+    label: Cognitive Intent Recognition Time
+    description: Maximum seconds a viewer may need to grasp a slide's intent; beyond this the slide fails the glance test.
+    unit: seconds
+    maximum_value: 2
+  - key: recall_after_5min_target_pct
+    label: Five-Minute Recall Target
+    description: Target share of key messages an audience can recall five minutes after the presentation.
+    unit: percent
+    target_value: 90
+  last_updated: '2026-09-01'
+  id: coe:artifact/visual_communication/presentation_profiles_rubric
+  label: Presentation Profiles Rubric
+  description: Presentation type-specific rubric weights for executive, training, sales, thought leadership, and slidument
+    contexts
+  home_domain: visual_communication
+  status: canonical
+  evidence_ids: *id002
+- dimensions:
+  - id: coe:artifact/visual_communication/visual_design_rubric/dimension/visual_hierarchy
+    label: visual_hierarchy
+    description: Use of size, weight, color, and position to guide viewer attention and establish information priority
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: absent
+      criteria: No visual hierarchy; all elements appear equal in weight
+    - score: 1
+      level_label: partial
+      criteria: Some hierarchy elements present but inconsistent or weak
+    - score: 2
+      level_label: clear
+      criteria: Clear size and weight hierarchy with consistent scanning pattern
+    - score: 3
+      level_label: exemplary
+      criteria: Optimal hierarchy with three-second scan rule met; information priority crystal clear. Passes the Squint Test
+        — when squinting until text blurs, the focal point remains obvious. If the slide becomes a grey wash with no clear
+        emphasis, it fails contrast requirements.
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/visual_design_rubric/dimension/contrast_and_accessibility
+    label: contrast_and_accessibility
+    description: Color contrast ratios and accessibility compliance for inclusive visual design
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: failing
+      criteria: Contrast ratios below WCAG AA minimum; multiple accessibility failures
+    - score: 1
+      level_label: partial
+      criteria: Some contrast issues; AA compliance inconsistent
+    - score: 2
+      level_label: compliant
+      criteria: WCAG AA contrast requirements met throughout
+    - score: 3
+      level_label: exemplary
+      criteria: Exceeds AA requirements; colour-blind safe palette; alt text on all images
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/visual_design_rubric/dimension/gestalt_and_layout
+    label: gestalt_and_layout
+    description: Application of gestalt principles and grid-based layout for perceptual organisation
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: disorganised
+      criteria: No gestalt grouping; arbitrary element placement
+    - score: 1
+      level_label: partial
+      criteria: Some proximity and alignment applied inconsistently
+    - score: 2
+      level_label: organised
+      criteria: Consistent gestalt grouping with grid alignment
+    - score: 3
+      level_label: exemplary
+      criteria: Expert gestalt application with figure-ground and continuity perfectly balanced. 12-column grid applied to
+        16:9 aspect ratio — all elements snap to grid lines. Supports 2-column (50/50), 3-column (33/33/33), 4-column (25/25/25/25),
+        and asymmetric (1/3 vs 2/3) layouts. This invisible structure creates visual harmony, reducing subconscious anxiety
+        caused by misalignment.
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/visual_design_rubric/dimension/typography_quality
+    label: typography_quality
+    description: 'Font selection, hierarchy, line length, and readability adherence. Text readability scoring factors: font
+      count (max 3), text colour (black on white preferred), text placement (never on patterned backgrounds), justification
+      (left-justified body), case (no all-caps body), animation (no animated text), column width, block size, and spatial
+      contiguity (Clark LxD).'
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: poor
+      criteria: Typography violates readability standards; multiple font families (4+); no hierarchy; text on patterned backgrounds;
+        all-caps body text; animated text present
+    - score: 1
+      level_label: basic
+      criteria: Single font family used; hierarchy partially defined; some text readability issues (centre-justified body,
+        low-contrast text colour)
+    - score: 2
+      level_label: good
+      criteria: Clear typographic hierarchy meeting size and weight standards; left-justified body text; max 3 fonts; black
+        on white or high-contrast text
+    - score: 3
+      level_label: exemplary
+      criteria: Optimal typography with correct line length, leading, and heading hierarchy; all text readability criteria
+        met; no animated text; spatial contiguity between labels and referents
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/visual_design_rubric/dimension/visual_simplicity_and_purpose
+    label: visual_simplicity_and_purpose
+    description: Every visual element serves a learning purpose; no decorative distractions
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: absent
+      criteria: Multiple decorative elements with no learning purpose; cluttered layouts
+    - score: 1
+      level_label: partial
+      criteria: Some purposeful elements but decorative distractions remain
+    - score: 2
+      level_label: purposeful
+      criteria: Every element serves a clear purpose; minimal extraneous material
+    - score: 3
+      level_label: exemplary
+      criteria: Optimal simplicity — every element purposeful; accessibility-compliant; culturally appropriate
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/visual_design_rubric/dimension/data_visualisation_quality
+    label: data_visualisation_quality
+    description: Chart type appropriateness, labeling standards, action captions, and data-ink ratio
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: poor
+      criteria: Inappropriate chart types; no direct labeling; labels missing
+    - score: 1
+      level_label: basic
+      criteria: Appropriate chart types but legends used instead of direct labels
+    - score: 2
+      level_label: good
+      criteria: Direct labeling applied; action captions present on key charts
+    - score: 3
+      level_label: exemplary
+      criteria: Optimal data-ink ratio; all charts directly labeled with insight-driven action captions
+    evidence_ids: *id001
+  - id: coe:artifact/visual_communication/visual_design_rubric/dimension/semiotic_effectiveness
+    label: semiotic_effectiveness
+    description: Semiotic metafunction alignment (representational, interpersonal, compositional) and narrative architecture
+      coherence
+    home_domain: visual_communication
+    status: canonical
+    score_levels:
+    - score: 0
+      level_label: absent
+      criteria: No coherent visual rhetoric; images decorative only
+    - score: 1
+      level_label: partial
+      criteria: Some semiotic intentionality but metafunctions misaligned
+    - score: 2
+      level_label: structured
+      criteria: Clear representational and compositional metafunctions applied
+    - score: 3
+      level_label: exemplary
+      criteria: All three metafunctions optimised with narrative architecture supporting the story arc
+    evidence_ids: *id001
+  thresholds:
+  - key: min_headline_size
+    label: Headline Size Floor
+    description: Minimum font size for slide headlines.
+    unit: points
+    minimum_value: 32
+  - key: min_body_size
+    label: Body Text Size Floor
+    description: Minimum font size for slide body text.
+    unit: points
+    minimum_value: 18
+  - key: min_white_space
+    label: Whitespace Floor
+    description: Minimum share of slide area left as whitespace.
+    unit: ratio
+    minimum_value: 0.3
+  - key: max_colors_per_slide
+    label: Colour Count Ceiling
+    description: Maximum distinct colours on one slide before the palette stops reading as designed.
+    unit: colours
+    maximum_value: 5
+  - key: min_contrast_ratio
+    label: Text Contrast Floor
+    description: Minimum contrast ratio for slide text against its background, per WCAG AA.
+    unit: contrast ratio (x:1)
+    minimum_value: 4.5
+  - key: max_fonts
+    label: Font Family Ceiling
+    description: Maximum font families on one slide deck; more breaks typographic repetition.
+    unit: font families
+    maximum_value: 2
+  - key: max_chart_categories
+    label: Chart Category Ceiling
+    description: Maximum categories one on-slide chart may display before it must be simplified or split.
+    unit: categories
+    maximum_value: 6
+  - key: max_annotation_levels
+    label: Annotation Level Ceiling
+    description: Maximum simultaneous annotation layers on one chart; more creates annotation noise competing with the data
+      signal.
+    unit: annotation layers
+    maximum_value: 3
+  - key: salience_check_threshold_sec
+    label: Salience Check Time
+    description: Maximum seconds a viewer may need to locate a slide's focal point; beyond this the slide fails the three-second
+      scan rule.
+    unit: seconds
+    maximum_value: 3
+  - key: given_new_compliance
+    label: Given-New Compliance
+    description: Required share of slide layouts placing known (given) information before new information in reading order.
+    unit: ratio
+    target_value: 1.0
+  - key: color_semantic_uniqueness
+    label: Colour Semantic Uniqueness
+    description: Share of palette colours that carry exactly one semantic meaning across the deck; recast of the legacy boolean
+      color_semantic_uniqueness — reusing one colour for different meanings triggers the color_semantic_overload penalty.
+    unit: ratio
+    target_value: 1.0
+  last_updated: '2026-09-01'
+  id: coe:artifact/visual_communication/visual_design_rubric
+  label: Visual Design Rubric
+  description: Visual design quality assessment for presentation slides, incorporating semiotic metafunctions, narrative architecture,
+    cognitive accessibility, and advanced data visualization standards
+  home_domain: visual_communication
+  status: canonical
+  evidence_ids: *id002

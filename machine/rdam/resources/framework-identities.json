@@ -1,0 +1,55 @@
+{
+  "concepts": {
+    "dung": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/dung",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Dung Abstract Argumentation"
+    },
+    "erst": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/erst",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Enhanced Rhetorical Structure Theory"
+    },
+    "ibis": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/ibis",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Issue-Based Information System"
+    },
+    "pdtb": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/pdtb",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Penn Discourse Treebank"
+    },
+    "rst": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/rst",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Rhetorical Structure Theory"
+    },
+    "sdrt": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/sdrt",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Segmented Discourse Representation Theory"
+    },
+    "toulmin": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/toulmin",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Toulmin Model"
+    },
+    "walton": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/walton",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Walton Argumentation Schemes"
+    }
+  },
+  "last_updated": "2026-08-31",
+  "scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+  "source": "ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml"
+}

@@ -1,0 +1,406 @@
+id: https://steve-allison.github.io/Central_Configs/ontology/schema/knowledge
+name: coe_knowledge
+title: Central Configs Knowledge Model
+version: 4.0.0
+default_prefix: coe
+default_range: string
+prefixes:
+  coe: https://steve-allison.github.io/Central_Configs/ontology/
+  dcterms: http://purl.org/dc/terms/
+  linkml: https://w3id.org/linkml/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  skos: http://www.w3.org/2004/02/skos/core#
+imports:
+- linkml:types
+- ./core.linkml
+- ./evidence.linkml
+- ./terminology.linkml
+slots:
+  in_scheme:
+    domain: Concept
+    range: Taxonomy
+    inlined: false
+    slot_uri: skos:inScheme
+    description: Taxonomy that owns this concept membership.
+  broader:
+    domain: Concept
+    range: Concept
+    multivalued: true
+    inlined: false
+    inverse: narrower
+    slot_uri: skos:broader
+    description: Concept whose meaning properly includes this concept's meaning (skos:broader).
+      Genuinely broader-than only — part-of and mere association are not broader and belong
+      on typed SemanticEdges instead.
+  narrower:
+    domain: Concept
+    range: Concept
+    multivalued: true
+    inlined: false
+    inverse: broader
+    slot_uri: skos:narrower
+    description: Concept whose meaning is properly included in this concept's meaning
+      (skos:narrower); the inverse of broader under the same broader-than test.
+classes:
+  KnowledgeArtifact:
+    abstract: true
+    is_a: SemanticResource
+    description: Independently identifiable, reviewable, and reusable authored knowledge artifact.
+    attributes:
+      last_updated:
+        required: true
+        range: Date
+        slot_uri: dcterms:modified
+        description: Calendar date of the most recent authored change to this artifact.
+  EntityCollection:
+    is_a: KnowledgeArtifact
+    class_uri: coe:EntityCollection
+    attributes:
+      entities:
+        required: true
+        range: OntologyEntity
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: dcterms:hasPart
+        description: Complete authored membership of this collection.
+    description: One reviewable set of a domain's entities, published and cited as a unit.
+  Concept:
+    is_a: SemanticResource
+    class_uri: coe:Concept
+    exact_mappings:
+    - skos:Concept
+    slots:
+    - in_scheme
+    - broader
+    - narrower
+    slot_usage:
+      in_scheme:
+        required: true
+    description: One unit of meaning within a governed taxonomy (skos:Concept). Every concept
+      declares its owning scheme and resolves without application context; hierarchy is
+      expressed only through broader and narrower.
+  Taxonomy:
+    is_a: KnowledgeArtifact
+    class_uri: skos:ConceptScheme
+    description: One governed SKOS concept scheme; all concepts are members and only roots are top concepts.
+    attributes:
+      concepts:
+        required: true
+        range: Concept
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: dcterms:hasPart
+        description: Complete authored membership; RDF top-concept semantics are emitted only from top_concepts.
+      top_concepts:
+        required: true
+        minimum_cardinality: 1
+        range: Concept
+        multivalued: true
+        inlined: false
+        slot_uri: skos:hasTopConcept
+        description: Concepts at the roots of this scheme's broader/narrower hierarchy
+          (skos:hasTopConcept).
+  Rule:
+    is_a: SemanticResource
+    class_uri: coe:Rule
+    attributes:
+      statement:
+        required: true
+        slot_uri: coe:statement
+        description: The prescription itself, phrased so conformance is checkable.
+      rationale:
+        slot_uri: coe:rationale
+        description: Why the prescription holds — the failure or cost that violating it incurs.
+    description: One normative, evidence-grounded prescription — a statement of what must
+      or must not hold, with the rationale that justifies enforcing it.
+  Pattern:
+    is_a: Rule
+    class_uri: coe:Pattern
+    description: One named, reusable solution form — a rule whose prescription is applying
+      a recurring structure when its conditions hold, rather than a single constraint.
+  MethodologyStage:
+    is_a: SemanticResource
+    class_uri: coe:MethodologyStage
+    attributes:
+      sequence:
+        range: integer
+        minimum_value: 0
+        slot_uri: coe:sequence
+        description: Zero-based position of this stage in its methodology's order.
+      rules:
+        range: Rule
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:rule
+        description: Rules enforced while executing this stage.
+    description: One ordered step of a methodology, carrying the rules that govern work
+      performed at that step.
+  Methodology:
+    is_a: KnowledgeArtifact
+    class_uri: coe:Methodology
+    attributes:
+      stages:
+        range: MethodologyStage
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:stage
+        description: Ordered stages this methodology moves through.
+      rules:
+        range: Rule
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:rule
+        description: Rules that apply across the whole methodology rather than to one stage.
+      patterns:
+        range: Pattern
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:pattern
+        description: Reusable solution forms the methodology draws on.
+    description: One complete, staged way of working — it orders its stages and gathers
+      the rules and patterns they enforce.
+  CreationRule:
+    is_a: Rule
+    class_uri: coe:CreationRule
+    description: A rule governing how artifacts are authored or produced, as opposed to
+      how finished work is judged.
+  CreationGuide:
+    is_a: KnowledgeArtifact
+    class_uri: coe:CreationGuide
+    attributes:
+      rules:
+        range: CreationRule
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:rule
+        description: Creation rules this guide gathers.
+    description: One authored guide gathering the creation rules for producing a class
+      of artifact.
+  Criterion:
+    is_a: SemanticResource
+    class_uri: coe:Criterion
+    attributes:
+      weight:
+        range: float
+        minimum_value: 0
+        slot_uri: coe:weight
+        description: Relative importance of this criterion in its parent's weighting scheme;
+          non-negative, conventionally summing to 1 across siblings.
+      minimum_score:
+        range: float
+        slot_uri: coe:minimumScore
+        description: Lowest score this criterion can be awarded.
+      maximum_score:
+        range: float
+        slot_uri: coe:maximumScore
+        description: Highest score this criterion can be awarded.
+    description: One judgeable quality property, optionally weighted and score-bounded
+      for use inside a scoring model.
+  ScoreLevel:
+    class_uri: coe:ScoreLevel
+    description: Locally scoped scoring value; it inherits meaning and ownership from its dimension.
+    attributes:
+      score:
+        required: true
+        range: integer
+        slot_uri: coe:scoreValue
+        description: Numeric value awarded at this level.
+      level_label:
+        required: true
+        slot_uri: rdfs:label
+        description: Short name of this level, for example exemplary.
+      criteria:
+        required: true
+        slot_uri: dcterms:description
+        description: Observable conditions an artifact must meet to be scored at this level.
+  ScoringDimension:
+    is_a: Criterion
+    class_uri: coe:ScoringDimension
+    attributes:
+      score_levels:
+        range: ScoreLevel
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:scoreLevel
+        description: Ordered levels defining what each score means on this dimension.
+      criteria:
+        range: Criterion
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:criterion
+        description: Nested criteria refining this dimension.
+    description: One weighted dimension of a scoring model, judged against ordered score
+      levels or nested criteria.
+  Threshold:
+    class_uri: coe:Threshold
+    description: One numeric quality bound owned by its scoring model; locally scoped, it
+      inherits domain and evidence from the model that declares it. Every threshold measures
+      exactly one quantity, names that quantity's unit, and declares at least one numeric
+      bound — a target, a minimum, a maximum, or any combination.
+    attributes:
+      key:
+        required: true
+        slot_uri: coe:key
+        description: Stable machine key naming the measured quantity within this scoring model.
+      label:
+        required: true
+        slot_uri: rdfs:label
+        description: Human-readable name of the measured quantity.
+      description:
+        required: true
+        slot_uri: dcterms:description
+        description: What the threshold measures, why the bound holds, and how a consumer
+          applies it; never a restatement of the key.
+      unit:
+        required: true
+        slot_uri: coe:unit
+        description: Unit of measure the bounds are expressed in, for example LUFS, words
+          per minute, ratio, contrast ratio, or points.
+      target_value:
+        range: float
+        slot_uri: coe:targetValue
+        description: Preferred value of the measured quantity when quality is fully met.
+      minimum_value:
+        range: float
+        slot_uri: coe:minimumValue
+        description: Lowest acceptable value of the measured quantity.
+      maximum_value:
+        range: float
+        slot_uri: coe:maximumValue
+        description: Highest acceptable value of the measured quantity.
+    any_of:
+    - slot_conditions:
+        target_value:
+          required: true
+    - slot_conditions:
+        minimum_value:
+          required: true
+    - slot_conditions:
+        maximum_value:
+          required: true
+  ScoringModel:
+    is_a: KnowledgeArtifact
+    class_uri: coe:ScoringModel
+    attributes:
+      dimensions:
+        range: ScoringDimension
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:dimension
+        description: Weighted dimensions this model judges quality on.
+      thresholds:
+        range: Threshold
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:threshold
+        description: Numeric quality bounds this model's judgements apply.
+    description: One weighted, evidence-grounded instrument for judging artifact quality;
+      it gathers scoring dimensions and the numeric thresholds those judgements apply.
+  ReferenceRecord:
+    is_a: KnowledgeArtifact
+    class_uri: coe:ReferenceRecord
+    description: One authored reference work — stable factual or explanatory content cited
+      by other resources, prescribing and scoring nothing itself.
+  CorpusRecord:
+    is_a: KnowledgeArtifact
+    class_uri: coe:CorpusRecord
+    description: One curated corpus of worked examples or annotated source material used
+      as evidence and calibration for its domain.
+  DomainModule:
+    tree_root: true
+    class_uri: coe:DomainModule
+    slots:
+    - _meta
+    slot_usage:
+      _meta:
+        required: true
+    description: Focused authored module belonging to exactly one canonical domain bundle.
+    attributes:
+      module_id:
+        identifier: true
+        required: true
+        range: uriorcurie
+        slot_uri: dcterms:identifier
+        description: Stable identifier of this module, referenced by exactly one domain bundle.
+      domain:
+        required: true
+        range: OntologyDomainEnum
+        slot_uri: coe:homeDomain
+        description: Canonical domain that owns every resource authored in this module.
+      entity_collections:
+        range: EntityCollection
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:entity_collections
+        description: Entity collections authored in this module.
+      taxonomies:
+        range: Taxonomy
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:taxonomies
+        description: Concept schemes authored in this module.
+      methodologies:
+        range: Methodology
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:methodologies
+        description: Methodologies authored in this module.
+      creation_guides:
+        range: CreationGuide
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:creation_guides
+        description: Creation guides authored in this module.
+      scoring_models:
+        range: ScoringModel
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:scoring_models
+        description: Scoring models authored in this module.
+      references:
+        range: ReferenceRecord
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:references
+        description: Reference records authored in this module.
+      corpora:
+        range: CorpusRecord
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:corpora
+        description: Corpus records authored in this module.
+      terms:
+        range: Term
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:terms
+        description: Vocabulary terms authored in this module.
+  DomainBundle:
+    tree_root: true
+    class_uri: coe:DomainBundle
+    slots:
+    - _meta
+    slot_usage:
+      _meta:
+        required: true
+    description: Complete manifest for exactly one canonical domain.
+    attributes:
+      bundle_id:
+        identifier: true
+        required: true
+        range: uriorcurie
+        slot_uri: dcterms:identifier
+        description: Stable identifier of this bundle.
+      domain:
+        required: true
+        range: OntologyDomainEnum
+        slot_uri: coe:homeDomain
+        description: Canonical domain this bundle is the complete manifest for.
+      modules:
+        required: true
+        minimum_cardinality: 1
+        range: DomainModule
+        multivalued: true
+        inlined: false
+        slot_uri: dcterms:hasPart
+        description: Every focused module belonging to this domain; at least one.

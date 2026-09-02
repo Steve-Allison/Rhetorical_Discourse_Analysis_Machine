@@ -1,0 +1,73 @@
+_meta:
+  file_id: coe:file/domain/language_editorial/accessibility
+  title: Language Editorial — Accessibility
+  last_updated: '2026-09-01'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: language_editorial
+  governing_class: coe:DomainModule
+module_id: coe:module/language_editorial/accessibility
+domain: language_editorial
+scoring_models:
+- dimensions: []
+  thresholds:
+  - key: min_line_spacing
+    label: Line Spacing Floor
+    description: Minimum line-height multiple for body text; tighter spacing degrades readability and fails cognitive-accessibility
+      guidance.
+    unit: line-height multiple
+    minimum_value: 1.2
+  - key: line_length_characters
+    label: Line Length
+    description: Characters per line of body text; the 50-75 band supports comfortable saccade return, with 66 the classic
+      typographic sweet spot.
+    unit: characters per line
+    minimum_value: 50
+    target_value: 66
+    maximum_value: 75
+  - key: line_length_failure_characters
+    label: Line Length Failure Ceiling
+    description: Hard ceiling for characters per line; beyond this the return sweep reliably loses the reader's place.
+    unit: characters per line
+    maximum_value: 80
+  - key: max_paragraph_lines
+    label: Paragraph Length Ceiling
+    description: Maximum lines in one paragraph of long-form text before it must be broken; longer blocks read as walls of
+      text.
+    unit: lines
+    maximum_value: 10
+  - key: heading_density_words
+    label: Heading Density
+    description: Words between successive subheadings in long-form text; fewer fragments the argument, more leaves readers
+      without scanning anchors.
+    unit: words between subheadings
+    minimum_value: 200
+    maximum_value: 300
+  - key: max_heading_depth
+    label: Heading Depth Ceiling
+    description: Maximum heading nesting depth; deeper hierarchies stop being navigable structure.
+    unit: heading levels
+    maximum_value: 3
+  - key: readability_grade_general
+    label: Readability Grade — General Audience
+    description: Flesch-Kincaid grade band for general-audience prose; below the band reads as oversimplified, above it excludes
+      part of the audience.
+    unit: Flesch-Kincaid grade
+    minimum_value: 8
+    maximum_value: 10
+  - key: readability_grade_technical
+    label: Readability Grade — Technical Audience
+    description: Maximum Flesch-Kincaid grade for technical-audience prose; even specialist material must not exceed this.
+    unit: Flesch-Kincaid grade
+    maximum_value: 12
+  last_updated: '2026-09-01'
+  id: coe:artifact/language_editorial/accessibility_language_rubric
+  label: Language and Readability Accessibility Rubric
+  description: Accessibility standards for presentations (WCAG 2.2 Level AA) and cognitive accessibility criteria derived
+    from UX design research
+  home_domain: language_editorial
+  status: canonical
+  evidence_ids:
+  - coe:source/central-configs-legacy-f6eb98ff
+  - coe:decision/v4-migration/language_editorial/accessibility
+  - coe:decision/curation/2026-09-01/threshold-typing

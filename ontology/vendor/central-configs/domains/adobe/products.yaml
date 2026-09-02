@@ -1,0 +1,1294 @@
+_meta:
+  file_id: coe:file/domain/adobe/products
+  title: Adobe — Products
+  last_updated: '2026-09-01'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: adobe
+  governing_class: coe:DomainModule
+module_id: coe:module/adobe/products
+domain: adobe
+entity_collections:
+- id: coe:artifact/adobe/products
+  label: Adobe Product Portfolio
+  description: Comprehensive catalogue of Adobe Experience Cloud, Creative Cloud, and Document Cloud solutions.
+  last_updated: '2026-09-01'
+  entities:
+  - id: coe:entity/adobe/experience_manager
+    label: Adobe Experience Manager
+    description: Adobe's enterprise content management platform, combining web content management (Sites) and digital
+      asset management (Assets) to build, manage, and deliver web, mobile, and headless experiences.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/experience_manager
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Experience Manager integrates natively with Adobe Experience Platform.
+      statement_id: coe:edge/8df8630b3981f49ff3efc988
+      home_domain: adobe
+      evidence_ids: &id001
+      - coe:source/central-configs-legacy-f6eb98ff
+      - coe:decision/v4-migration/adobe/products
+    - subject_id: coe:entity/adobe/experience_manager
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Experience Manager serves as the core activation engine in the Adobe Content Supply Chain.
+      statement_id: coe:edge/642d11029b02ef2d644399b3
+      home_domain: adobe
+      evidence_ids: *id001
+    exact_match:
+    - https://www.wikidata.org/wiki/Q4684074
+    evidence_ids: &id002
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/adobe/products
+  - id: coe:entity/adobe/experience_manager_sites
+    label: Adobe Experience Manager Sites
+    description: Experience Manager's web content management application for authoring, managing, and delivering websites —
+      including headless delivery and Edge Delivery Services for high-performance pages.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/experience_manager_sites
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Experience Manager Sites integrates natively with Adobe Experience Platform.
+      statement_id: coe:edge/431a18cf7f4ca04712f4ece5
+      home_domain: adobe
+      evidence_ids: *id001
+    - subject_id: coe:entity/adobe/experience_manager_sites
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Experience Manager Sites serves as the core activation engine in the Adobe Content Supply Chain.
+      statement_id: coe:edge/af043f86ca1972e9784261bb
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/experience_manager_assets
+    label: Adobe Experience Manager Assets
+    description: Experience Manager's digital asset management application — storing, tagging, governing, and distributing
+      approved assets at enterprise scale, with Dynamic Media renditions for channel-ready delivery.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/experience_manager_assets
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Experience Manager Assets integrates natively with Adobe Experience Platform.
+      statement_id: coe:edge/29e2d44cf9aa5b612a50a543
+      home_domain: adobe
+      evidence_ids: *id001
+    - subject_id: coe:entity/adobe/experience_manager_assets
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Experience Manager Assets serves as the core activation engine in the Adobe Content Supply Chain.
+      statement_id: coe:edge/c3a5d986f6c3fc33e537ebe7
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/experience_manager_forms
+    label: Adobe Experience Manager Forms
+    description: Experience Manager's application for digital enrolment — building adaptive forms and automated document
+      communications connected to backend workflows and e-signature.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/experience_manager_forms
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Experience Manager Forms integrates natively with Adobe Experience Platform.
+      statement_id: coe:edge/583782b64bb161f3a02ba5ad
+      home_domain: adobe
+      evidence_ids: *id001
+    - subject_id: coe:entity/adobe/experience_manager_forms
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Experience Manager Forms serves as the core activation engine in the Adobe Content Supply Chain.
+      statement_id: coe:edge/d20d9a71ed0f339f6357f698
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/experience_manager_screens
+    label: Adobe Experience Manager Screens
+    description: Experience Manager's application for digital signage — authoring and operating in-venue screen experiences
+      from the same content platform as web channels.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/experience_manager_screens
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Experience Manager Screens integrates natively with Adobe Experience Platform.
+      statement_id: coe:edge/8762a3cdef40c6cd315ce4e8
+      home_domain: adobe
+      evidence_ids: *id001
+    - subject_id: coe:entity/adobe/experience_manager_screens
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Experience Manager Screens serves as the core activation engine in the Adobe Content Supply Chain.
+      statement_id: coe:edge/ddf7e58ab56bae25901afb87
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/analytics
+    label: Adobe Analytics
+    description: Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such
+      as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/target
+    label: Adobe Target
+    description: Adobe's testing and personalisation solution — A/B and multivariate testing plus rules-based and AI-driven
+      personalisation of digital experiences.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/campaign
+    label: Adobe Campaign
+    description: Adobe's cross-channel campaign management solution for planning, executing, and measuring outbound
+      campaigns — email at the core, with direct mail, SMS, and push.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/audience_manager
+    label: Adobe Audience Manager
+    description: Adobe's data management platform (DMP) — building audience segments from anonymous and third-party data
+      for advertising activation.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/experience_platform
+    label: Adobe Experience Platform
+    description: The foundation layer of Experience Cloud — real-time customer data infrastructure (XDM schemas, Real-Time
+      Customer Profile, segmentation, governance) on which the native applications Real-Time CDP, Journey Optimizer, and
+      Customer Journey Analytics run.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/journey_optimizer
+    label: Adobe Journey Optimizer
+    description: Experience Platform's native journey application — orchestrating and delivering individual customer
+      journeys, triggered messages, campaigns, and offers across email, mobile, and web from the Real-Time Customer
+      Profile.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/journey_optimizer
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Journey Optimizer is built natively on Adobe Experience Platform.
+      statement_id: coe:edge/d2c38ed80225b15765a24419
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/real_time_cdp
+    label: Adobe Real-Time CDP
+    description: Experience Platform's native customer data platform application — unifying known and pseudonymous data
+      into actionable Real-Time Customer Profiles and activating audiences to destinations under governance controls.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/real_time_cdp
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Real-Time CDP is built natively on Adobe Experience Platform.
+      statement_id: coe:edge/95397f15d092534843db3cb8
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/customer_journey_analytics
+    label: Adobe Customer Journey Analytics
+    description: Experience Platform's native cross-channel analytics application — joining online and offline event data
+      into a single journey view queryable in Analysis Workspace, without the schema limits of traditional Analytics.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/customer_journey_analytics
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Customer Journey Analytics is built natively on Adobe Experience Platform.
+      statement_id: coe:edge/d249ef5fb971ff0426fae44f
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/workfront
+    label: Adobe Workfront
+    description: Adobe's enterprise work management platform connecting marketing strategy to execution — planning, project
+      management, workflows, approvals, and resource management with real-time visibility.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/workfront
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Workfront manages the planning and workflow orchestration phase of Content Supply Chain.
+      statement_id: coe:edge/534c30a35c777d76cf573750
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/marketo_engage
+    label: Adobe Marketo Engage
+    description: Adobe's B2B marketing automation solution — lead management, nurturing, scoring, email marketing, and
+      account-based marketing tied to CRM.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/commerce
+    label: Adobe Commerce
+    description: Adobe's commerce platform (formerly Magento) for building B2C and B2B storefronts — catalogue, checkout,
+      and deep extensibility.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/advertising_cloud
+    label: Adobe Advertising Cloud
+    description: Former name of Adobe's demand-side advertising platform for planning, buying, and optimising paid media
+      across search, display, and connected TV — continued as Adobe Advertising.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/genstudio
+    label: Adobe GenStudio
+    description: 'Adobe GenStudio: Umbrella generative AI content supply chain solution connecting Workfront, Firefly, AEM,
+      and Content Analytics.'
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/genstudio
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: required
+      description: Adobe GenStudio leverages Adobe Firefly generative services for on-brand asset variant generation.
+      statement_id: coe:edge/dc71b1da54ed17eb4ea2d1a4
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/genstudio_for_performance_marketing
+    label: Adobe GenStudio for Performance Marketing
+    description: 'Adobe GenStudio for Performance Marketing: Native AI-first application for planning, creating, and optimizing
+      campaign assets across paid media, email, and display ads.'
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/genstudio_for_performance_marketing
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: required
+      description: Adobe GenStudio for Performance Marketing leverages Adobe Firefly generative services for on-brand asset
+        variant generation.
+      statement_id: coe:edge/700ac1fdef62400d34c4f206
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/genstudio_foundation
+    label: Adobe GenStudio Foundation
+    description: The unified GenStudio interface that integrates data from the content-supply-chain applications — campaign
+      plans, projects, assets, and performance — into one view with actionable insights across the chain.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/genstudio_foundation
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: required
+      description: Adobe GenStudio Foundation leverages Adobe Firefly generative services for on-brand asset variant generation.
+      statement_id: coe:edge/1064ce4fcd565b9c2e5272ec
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/frame_io
+    label: Adobe Frame.io
+    description: Adobe's cloud video review and collaboration platform — frame-accurate comments, version management, and
+      camera-to-cloud uploads connecting production to post.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/express
+    label: Adobe Express
+    description: Adobe Express content-creation product used across creative-production and digital-experience contexts.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/express
+      predicate: coe:specialises
+      object_id: coe:entity/adobe/creation_production
+      relationship_weight: expected
+      description: Adobe Express is classified as an Adobe creation and production capability.
+      statement_id: coe:edge/adobe-express-creation-production
+      home_domain: adobe
+      evidence_ids: *id001
+    - subject_id: coe:entity/adobe/express
+      predicate: coe:specialises
+      object_id: coe:entity/adobe/digital_experience
+      relationship_weight: expected
+      description: Adobe Express is also classified as a digital-experience content capability.
+      statement_id: coe:edge/adobe-express-digital-experience
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/stock
+    label: Adobe Stock
+    description: Adobe's licensed stock-content marketplace — photos, video, vectors, templates, and 3D, searchable and
+      licensable directly inside Creative Cloud applications.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/success_studio
+    label: Success Studio
+    description: Pre-GA project name (Project Success Studio) for the offering released as Adobe Experience Manager Sites
+      Optimizer; the name persists in field materials as an alias for that product.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/federated_search
+    label: Federated Search
+    description: Experience Cloud's cross-solution search service — one permission-aware search surface over business
+      objects (audiences, journeys, datasets, assets) across the Experience Platform applications, built on a unified
+      search index.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/mix_modeler
+    label: Adobe Mix Modeler
+    description: Adobe's marketing measurement and planning application, combining media mix modelling with multi-touch
+      attribution — measuring and optimising spend holistically across paid, earned, and owned channels using
+      aggregate-level data.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/product_analytics
+    label: Adobe Product Analytics
+    description: Experience Platform-based analytics application focused on product usage — user journeys, retention and
+      cohort analysis, and funnels — for optimising digital product experience rather than marketing traffic.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/learning_manager
+    label: Adobe Learning Manager
+    description: Adobe's cloud learning management system for delivering and tracking training for customers, partners, and
+      employees.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/journey_optimizer_b2b_edition
+    label: Adobe Journey Optimizer B2B Edition
+    description: The buying-group edition of Journey Optimizer — orchestrating account and buying-group journeys for B2B in
+      coordination with Marketo Engage, and hosting the B2B agents including the Sales Qualifier add-on.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/journey_optimizer_b2b_edition
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Journey Optimizer B2B Edition is built natively on Adobe Experience Platform.
+      statement_id: coe:edge/b7c3ae3ed4ed15d27775a79b
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/real_time_cdp_b2b_edition
+    label: Adobe Real-Time CDP B2B Edition
+    description: The B2B edition of Real-Time CDP — unifying person and account profiles, linking leads to accounts and
+      opportunities for account-based segmentation and activation.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/real_time_cdp_b2b_edition
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Real-Time CDP B2B Edition is built natively on Adobe Experience Platform.
+      statement_id: coe:edge/cf3301cb7b0d259df641bc95
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/marketo_measure
+    label: Adobe Marketo Measure
+    description: Adobe's B2B marketing attribution product (formerly Bizible) — multi-touch attribution and ROI measurement
+      tied into CRM and the marketing platform.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/experience_manager_guides
+    label: Adobe Experience Manager Guides
+    description: Experience Manager's structured-content application — a DITA-based component content management system for
+      authoring, reviewing, and publishing technical documentation.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/experience_manager_guides
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Experience Manager Guides integrates natively with Adobe Experience Platform.
+      statement_id: coe:edge/b5a21a6a4e8b9bf39696c366
+      home_domain: adobe
+      evidence_ids: *id001
+    - subject_id: coe:entity/adobe/experience_manager_guides
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Experience Manager Guides serves as the core activation engine in the Adobe Content Supply Chain.
+      statement_id: coe:edge/4537fa76b2f8ad055f764926
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/experience_manager_sites_optimizer
+    label: Adobe Experience Manager Sites Optimizer
+    description: The AI-first companion to Experience Manager Sites (incubated as Project Success Studio) that identifies
+      improvement areas in page loading, component usage, and content delivery, and recommends concrete fixes across
+      performance, accessibility, SEO, and engagement.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/experience_manager_sites_optimizer
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Experience Manager Sites Optimizer integrates natively with Adobe Experience Platform.
+      statement_id: coe:edge/34764b74e0a32fd53963a9ae
+      home_domain: adobe
+      evidence_ids: *id001
+    - subject_id: coe:entity/adobe/experience_manager_sites_optimizer
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Experience Manager Sites Optimizer serves as the core activation engine in the Adobe Content Supply
+        Chain.
+      statement_id: coe:edge/4acaa375251c30108642a0ca
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/llm_optimizer
+    label: Adobe LLM Optimizer
+    description: Adobe's generative-engine-optimisation product — a standalone application that improves how a brand's
+      content is surfaced and cited by AI assistants and LLM-powered search, with an auto-identify, auto-suggest,
+      auto-optimize workflow and dashboards for brand presence, agentic traffic, and LLM referral traffic.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/experience_manager_edge_delivery_services
+    label: Adobe Experience Manager Edge Delivery Services
+    description: Experience Manager's high-performance delivery architecture — document-based or code-based authoring
+      compiled to pre-rendered pages served from the edge for maximum Core Web Vitals scores.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/experience_manager_edge_delivery_services
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Experience Manager Edge Delivery Services integrates natively with Adobe Experience Platform.
+      statement_id: coe:edge/90e971078e755363e112b754
+      home_domain: adobe
+      evidence_ids: *id001
+    - subject_id: coe:entity/adobe/experience_manager_edge_delivery_services
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Experience Manager Edge Delivery Services serves as the core activation engine in the Adobe Content
+        Supply Chain.
+      statement_id: coe:edge/abad1c19f7003e59c3ec805f
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/workfront_planning
+    label: Adobe Workfront Planning
+    description: Workfront's planning layer — connected workspaces that organise campaigns, budgets, and tasks into linked
+      records for end-to-end marketing-operations visibility.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/workfront_planning
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Workfront Planning manages the planning and workflow orchestration phase of Content Supply Chain.
+      statement_id: coe:edge/e3051afddf1446e780899960
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/advertising
+    label: Adobe Advertising
+    description: Adobe's advertising platform — cross-channel paid-media planning, buying, and optimisation spanning
+      search, display, and connected TV.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/customer_journey_analytics_b2b_edition
+    label: Adobe Customer Journey Analytics B2B Edition
+    description: The B2B edition of Customer Journey Analytics — account-level journey analysis that rolls person activity
+      up to buying groups and accounts.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/customer_journey_analytics_b2b_edition
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Customer Journey Analytics B2B Edition is built natively on Adobe Experience Platform.
+      statement_id: coe:edge/c392870b83c9429ab9d12fc8
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/workfront_workflow
+    label: Adobe Workfront Workflow
+    description: Workfront's execution layer — projects, tasks, multi-stage reviews and approvals, and workflow automation
+      across teams.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/workfront_workflow
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Adobe Workfront Workflow manages the planning and workflow orchestration phase of Content Supply Chain.
+      statement_id: coe:edge/0d17bc40455b8303ea5a4058
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/brand_concierge
+    label: Adobe Brand Concierge
+    description: Adobe's agentic conversational-experience application — brand-governed conversations tailored to each
+      visitor's intent, helping customers discover products, compare options, get instant answers, and receive guided
+      recommendations in real time.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/content_analytics
+    label: Adobe Content Analytics
+    description: The Experience Platform application (formerly Project Condor) that joins AI-derived attributes of content
+      — people present, tones, keywords — with Customer Journey Analytics data to show which content drives engagement and
+      revenue, and which characteristics explain why.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/real_time_cdp_collaboration
+    label: Adobe Real-Time CDP Collaboration
+    description: Real-Time CDP's data-collaboration application — two organisations discover audience overlap and measure
+      campaign outcomes without exchanging their underlying customer databases.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/real_time_cdp_collaboration
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Real-Time CDP Collaboration is built natively on Adobe Experience Platform.
+      statement_id: coe:edge/afed90f2c3ca74d742da113c
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/journey_optimizer_experimentation_accelerator
+    label: Adobe Journey Optimizer Experimentation Accelerator
+    description: Journey Optimizer's experimentation application — centralising past and active experiments, analysing
+      results by audience, and accelerating the design of new tests; home of the Experimentation Agent.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/journey_optimizer_experimentation_accelerator
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Journey Optimizer Experimentation Accelerator is built natively on Adobe Experience Platform.
+      statement_id: coe:edge/67e1dd3d4df764888f048094
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/commerce_as_a_cloud_service
+    label: Adobe Commerce as a Cloud Service
+    description: The fully managed, multi-tenant SaaS edition of Adobe Commerce (GA 2025) — Adobe owns hosting and
+      continuous updates; composable and API-first, with the storefront built on Edge Delivery Services.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/genstudio_for_content_marketing
+    label: Adobe GenStudio for Content Marketing
+    description: The AI-first GenStudio application that applies the GenStudio creation-and-activation pipeline to
+      content-marketing assets — briefs to on-brand marketing content — rather than to paid-media ads.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/genstudio_for_content_marketing
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: required
+      description: Adobe GenStudio for Content Marketing leverages Adobe Firefly generative services for on-brand asset variant
+        generation.
+      statement_id: coe:edge/bd2c927aa5811090411c74f2
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/dynamic_chat
+    label: Adobe Dynamic Chat
+    description: Marketo Engage's conversational marketing application — AI-driven chat that replaces static forms with
+      real-time visitor dialogues, qualifying leads, booking meetings, and syncing scores and routing back to Marketo.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/commerce_optimizer
+    label: Adobe Commerce Optimizer
+    description: SaaS merchandising and optimisation offering in the Adobe Commerce family, built on Commerce microservices
+      — AI-driven personalisation, testing, and real-time analytics layered onto a commerce backend.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/photoshop
+    label: Adobe Photoshop
+    description: The professional raster image editing and compositing application — layers, masking, retouching, and
+      Firefly generative editing.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/photoshop
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: expected
+      description: Adobe Photoshop incorporates Adobe Firefly generative AI tools natively.
+      statement_id: coe:edge/958ce4623a6e2815280afe76
+      home_domain: adobe
+      evidence_ids: *id001
+    exact_match:
+    - https://www.wikidata.org/wiki/Q11246
+    evidence_ids: *id002
+  - id: coe:entity/adobe/illustrator
+    label: Adobe Illustrator
+    description: The professional vector graphics application — logos, icons, illustration, and type built from scalable
+      paths rather than pixels.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/illustrator
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: expected
+      description: Adobe Illustrator incorporates Adobe Firefly generative AI tools natively.
+      statement_id: coe:edge/223772703e769fcc0e299fb8
+      home_domain: adobe
+      evidence_ids: *id001
+    exact_match:
+    - https://www.wikidata.org/wiki/Q214290
+    evidence_ids: *id002
+  - id: coe:entity/adobe/indesign
+    label: Adobe InDesign
+    description: The professional page layout and desktop publishing application for print and digital documents — books,
+      magazines, brochures, and interactive PDFs.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/indesign
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: expected
+      description: Adobe InDesign incorporates Adobe Firefly generative AI tools natively.
+      statement_id: coe:edge/723d440e7b50a3cdc472de5f
+      home_domain: adobe
+      evidence_ids: *id001
+    exact_match:
+    - https://www.wikidata.org/wiki/Q214309
+    evidence_ids: *id002
+  - id: coe:entity/adobe/premiere_pro
+    label: Adobe Premiere Pro
+    description: The professional non-linear video editing application — timeline editing, colour, audio, and delivery for
+      film, broadcast, and online video.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/premiere_pro
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: expected
+      description: Adobe Premiere Pro incorporates Adobe Firefly generative AI tools natively.
+      statement_id: coe:edge/35580894f79565a1485a8a31
+      home_domain: adobe
+      evidence_ids: *id001
+    exact_match:
+    - https://www.wikidata.org/wiki/Q246067
+    evidence_ids: *id002
+  - id: coe:entity/adobe/premiere_mobile
+    label: Adobe Premiere (Mobile)
+    description: The mobile Premiere application for editing and publishing video on phones and tablets, sharing the
+      Premiere family's editing model in a touch-first form.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/premiere_mobile
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: expected
+      description: Adobe Premiere (Mobile) incorporates Adobe Firefly generative AI tools natively.
+      statement_id: coe:edge/7ae7fc32881405416fd2a5fd
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/after_effects
+    label: Adobe After Effects
+    description: The motion graphics, compositing, and visual-effects application — animated titles, effects, and
+      composited scenes for video.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    exact_match:
+    - https://www.wikidata.org/wiki/Q246104
+    evidence_ids: *id002
+  - id: coe:entity/adobe/xd
+    label: Adobe XD
+    description: The UI and UX design and prototyping application for screen experiences — artboards, components, and
+      interactive prototypes.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/lightroom
+    label: Adobe Lightroom
+    description: The cloud-centric photo editing and organisation application, syncing originals and edits across desktop,
+      web, and mobile.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/lightroom_classic
+    label: Adobe Lightroom Classic
+    description: The desktop-centric, file-based photo workflow application — local cataloguing, batch editing, and print
+      output for photographers who keep originals on disk.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_pro
+    label: Adobe Acrobat Pro
+    description: The full Acrobat edition — creating, editing, converting, protecting, signing, and exporting PDFs, with AI
+      Assistant and e-sign features included.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/animate
+    label: Adobe Animate
+    description: The 2D animation and interactive content application (formerly Flash Professional) — frame-based animation
+      for web, games, and broadcast.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/audition
+    label: Adobe Audition
+    description: The audio recording, editing, mixing, and restoration application — waveform and multitrack workflows for
+      podcast, video, and broadcast sound.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/dimension
+    label: Adobe Dimension
+    description: The 3D scene composition application for product mockups and brand visualisation — staging models,
+      materials, and lighting without a full 3D pipeline.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/dreamweaver
+    label: Adobe Dreamweaver
+    description: The web design and development application combining visual authoring with a code editor for HTML, CSS,
+      and JavaScript.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/character_animator
+    label: Adobe Character Animator
+    description: The performance-capture animation application — 2D puppets animated live from camera and microphone input,
+      lip-sync included.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/fresco
+    label: Adobe Fresco
+    description: The drawing and painting application for stylus and touch devices, with live watercolour and oil brushes
+      that behave like physical media.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/substance_3d_designer
+    label: Adobe Substance 3D Designer
+    description: The procedural material-authoring application in the Substance 3D family — node-based creation of tileable,
+      parametric materials.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/substance_3d_painter
+    label: Adobe Substance 3D Painter
+    description: The 3D texture-painting application in the Substance 3D family — painting materials and details directly
+      onto 3D models.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/substance_3d_sampler
+    label: Adobe Substance 3D Sampler
+    description: The Substance 3D application for converting photographs and captures into usable 3D materials.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/substance_3d_stager
+    label: Adobe Substance 3D Stager
+    description: The Substance 3D scene staging and rendering application — assembling models, materials, lighting, and
+      cameras into finished product shots.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/firefly
+    label: Adobe Firefly
+    description: Adobe's generative AI family and creative studio — commercially safe models that generate and edit images,
+      video, vectors, and audio, integrated across Creative Cloud and available as a web application and APIs with access
+      to partner models.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/incopy
+    label: Adobe InCopy
+    description: The editorial writing and copy-fitting application that lets writers work inside InDesign layouts in
+      parallel with designers.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/bridge
+    label: Adobe Bridge
+    description: The desktop asset browser for organising, previewing, and batch-processing creative files across the
+      Creative Cloud applications.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/media_encoder
+    label: Adobe Media Encoder
+    description: The batch transcoding and rendering companion that outputs Premiere Pro and After Effects work to delivery
+      formats in the background.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/capture
+    label: Adobe Capture
+    description: The mobile application that turns photographs into reusable creative elements — colour themes, brushes,
+      shapes, and patterns synced to Creative Cloud Libraries.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/photoshop_express
+    label: Adobe Photoshop Express
+    description: The lightweight mobile photo-editing application for quick corrections, filters, and social-ready output.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/photoshop_express
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: expected
+      description: Adobe Photoshop Express incorporates Adobe Firefly generative AI tools natively.
+      statement_id: coe:edge/ee5c8d155c4b6509760f7c67
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/portfolio
+    label: Adobe Portfolio
+    description: The website builder for personal creative portfolios, included with Creative Cloud membership.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/fonts
+    label: Adobe Fonts
+    description: Adobe's font service — a library of licensed typefaces activated directly in Creative Cloud applications
+      and on the web.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/color
+    label: Adobe Color
+    description: The colour tool for creating, exploring, and saving palettes and themes usable across Creative Cloud
+      applications.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/photoshop_web
+    label: Adobe Photoshop (web)
+    description: The browser edition of Photoshop — editing PSDs and quick generative edits without a desktop install.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/photoshop_web
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: expected
+      description: Adobe Photoshop (web) incorporates Adobe Firefly generative AI tools natively.
+      statement_id: coe:edge/6ec2e943fb81f6b94aef7fda
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/illustrator_web
+    label: Adobe Illustrator (web)
+    description: The browser edition of Illustrator — vector editing for lightweight and collaborative workflows.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges:
+    - subject_id: coe:entity/adobe/illustrator_web
+      predicate: coe:enables
+      object_id: coe:entity/adobe/firefly
+      relationship_weight: expected
+      description: Adobe Illustrator (web) incorporates Adobe Firefly generative AI tools natively.
+      statement_id: coe:edge/a51adf954272679fbd1ccaeb
+      home_domain: adobe
+      evidence_ids: *id001
+    evidence_ids: *id002
+  - id: coe:entity/adobe/lightroom_web
+    label: Adobe Lightroom (web)
+    description: The browser edition of Lightroom — viewing, culling, and editing synced photos from any machine.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/firefly_services
+    label: Adobe Firefly Services
+    description: Enterprise APIs exposing Firefly and Creative Cloud automation for high-volume content production —
+      generating variants, localising, and refreshing assets programmatically at scale.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/firefly_custom_models
+    label: Adobe Firefly Custom Models
+    description: Fine-tuned Firefly models trained on an organisation's own brand assets — styles, products, characters —
+      that generate on-brand imagery usable in Firefly, Express, and GenStudio.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/firefly_foundry
+    label: Adobe Firefly Foundry
+    description: Adobe's managed service for building proprietary, IP-protected generative models deeply tuned on a
+      business's own content across image, video, audio, vector, and 3D — the step beyond self-serve custom models.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/firefly_creative_production
+    label: Adobe Firefly Creative Production
+    description: Firefly's governed production workflow layer for enterprises — creative actions, orchestration, and
+      integrations that automate repetitive production and generate consistent on-brand variations at scale.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/firefly_design_intelligence
+    label: Adobe Firefly Design Intelligence
+    description: Firefly's enterprise design-system offering — design teams codify brand guidelines as trained StyleIDs
+      that global creators then apply to produce design-compliant, contextually adapted assets.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_desktop
+    label: Adobe Acrobat (Desktop)
+    description: The desktop surface of Acrobat — the installed application for PDF creation, editing, signing, and review
+      on Windows and macOS.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_web
+    label: Adobe Acrobat (Web)
+    description: The browser surface of Acrobat — PDF viewing, editing, conversion, and signing at acrobat.adobe.com
+      without an install.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_mobile
+    label: Adobe Acrobat (Mobile)
+    description: The mobile surface of Acrobat — reading, annotating, filling, and signing PDFs on phones and tablets.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_reader
+    label: Adobe Acrobat Reader
+    description: The free PDF viewer and annotator — reading, commenting, filling, and signing documents without paid
+      Acrobat features.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_sign
+    label: Adobe Acrobat Sign
+    description: Adobe's e-signature service — sending, signing, tracking, and managing legally binding agreements as a
+      cloud workflow.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/scan
+    label: Adobe Scan
+    description: The mobile scanning application that captures paper documents as searchable, OCR-processed PDFs.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/document_cloud
+    label: Adobe Document Cloud
+    description: Adobe's document-productivity cloud — the umbrella spanning Acrobat, Acrobat Sign, Scan, and their shared
+      cloud services.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/pdf_services_api
+    label: Adobe PDF Services API
+    description: Developer APIs for programmatic PDF operations — create, convert, OCR, extract, and manipulate documents
+      inside applications and pipelines.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_standard
+    label: Adobe Acrobat Standard
+    description: The essentials Acrobat edition — creating, editing, converting, and signing PDFs without the Pro-only
+      features.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_studio
+    label: Adobe Acrobat Studio
+    description: The next-generation Acrobat workspace uniting PDF productivity, AI Assistant insights, and Adobe Express
+      creation — users build PDF Spaces from their documents and turn document insight into shareable content.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_ai_assistant
+    label: Adobe Acrobat AI Assistant
+    description: Acrobat's document AI — attributed, conversational answers over a single document or a PDF Space, with
+      selectable personas and natural-language PDF actions.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/pdf_spaces
+    label: PDF Spaces
+    description: Acrobat Studio's collaborative knowledge hubs — multi-document collections (up to 100 documents) with AI
+      question-answering grounded in the sources, auto-generated overviews, and insight cards.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_services
+    label: Adobe Acrobat Services
+    description: The developer brand for Acrobat's cloud APIs — PDF Services, Sign, and embedding — for building document
+      workflows into applications.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_pdf_spaces
+    label: Acrobat PDF Spaces
+    description: The Acrobat-branded surface of PDF Spaces — the same multi-document AI knowledge hubs addressed from
+      within Acrobat.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_generate_presentation
+    label: Acrobat Generate Presentation
+    description: Acrobat Studio's presentation-generation capability — producing a complete multi-slide presentation from a
+      prompt and source documents, fitted to Adobe Express templates.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/pdf_spaces_sharing
+    label: PDF Spaces Sharing
+    description: The sharing capability of PDF Spaces — inviting collaborators into a space so a common set of sources and
+      AI insights is worked on together.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/audio_overview
+    label: Audio Overview
+    description: Acrobat's generative audio capability that turns a document into a narrated single-host audio overview,
+      for listening instead of reading.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/generate_podcast
+    label: Generate Podcast
+    description: Acrobat's generative audio capability that converts document content into a two-host conversational
+      podcast, with condensed and deep-dive script styles.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  - id: coe:entity/adobe/acrobat_express
+    label: Acrobat Express
+    description: The Adobe Express-powered creation surface within the Acrobat ecosystem — turning document content into
+      designed, shareable graphics and social posts.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_PRODUCT
+    edges: []
+    evidence_ids: *id002
+  home_domain: adobe
+  status: canonical
+  evidence_ids: *id002

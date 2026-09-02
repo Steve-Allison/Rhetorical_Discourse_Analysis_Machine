@@ -1,0 +1,35 @@
+_meta:
+  file_id: coe:file/domain/delivery/vocal_pacing
+  title: Delivery — Vocal Pacing
+  last_updated: '2026-08-22'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: delivery
+  governing_class: coe:DomainModule
+module_id: coe:module/delivery/vocal_pacing
+domain: delivery
+entity_collections:
+- id: coe:artifact/delivery/vocal_pacing
+  label: Vocal Pacing & Delivery Metrics
+  description: Speaking rate, strategic pause, acoustic pitch standards.
+  last_updated: '2026-08-15'
+  entities:
+  - id: coe:entity/target_speaking_rate
+    label: Target Speaking Rate
+    description: Optimal speech velocity calibrated between 130 and 160 words per minute for maximum cognitive absorption.
+    home_domain: delivery
+    edges: []
+    status: canonical
+    evidence_ids: &id001
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/delivery/vocal_pacing
+  - id: coe:entity/strategic_pause
+    label: Strategic Pause
+    description: Deliberate 1.5-3 second silence following key assertions to allow audience cognitive consolidation.
+    home_domain: delivery
+    edges: []
+    status: canonical
+    evidence_ids: *id001
+  home_domain: delivery
+  status: canonical
+  evidence_ids: *id001

@@ -1,0 +1,357 @@
+_meta:
+  file_id: coe:file/domain/adobe/brand_concepts
+  title: Adobe — Brand Concepts
+  last_updated: '2026-09-01'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: adobe
+  governing_class: coe:DomainModule
+module_id: coe:module/adobe/brand_concepts
+domain: adobe
+entity_collections:
+- id: coe:artifact/adobe/brand_concepts
+  label: Adobe Strategic Concepts & Architectures
+  description: Content Supply Chain, Experience Platform, and digital experience architecture concepts.
+  last_updated: '2026-09-01'
+  entities:
+  - id: coe:entity/adobe/content_supply_chain
+    label: Content Supply Chain
+    description: End-to-end enterprise process model spanning Workflow & Planning, Creation & Production, Asset Management,
+      Delivery & Activation, and Reporting & Insights.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: &id001
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/adobe/brand_concepts
+  - id: coe:entity/adobe/csc
+    label: CSC
+    description: Initialism for the Content Supply Chain — Adobe's end-to-end process model for planning, producing,
+      managing, activating, and measuring marketing content at enterprise scale.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/workflows_planning_metadata
+    label: Workflows, Planning & Metadata
+    description: The Content Supply Chain phase covering campaign and work planning, workflow orchestration, and the
+      metadata standards that keep content findable and traceable downstream — the phase Adobe Workfront serves.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/creation_production
+    label: Creation & Production
+    description: The Content Supply Chain phase in which creative assets are authored and produced at scale — served by
+      the Creative Cloud applications, Adobe Express, and Firefly generative AI.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/delivery_activation
+    label: Delivery & Activation
+    description: The Content Supply Chain phase in which approved content is published and activated across channels and
+      campaigns — served by Adobe Experience Manager and the Experience Cloud delivery applications.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/reporting_insights
+    label: Reporting & Insights
+    description: The Content Supply Chain phase in which content and campaign performance is measured and fed back into
+      planning — served by Adobe Analytics, Customer Journey Analytics, and Content Analytics.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/digital_experience
+    label: Digital Experience
+    description: Adobe's business-category term for the Experience Cloud side of the company — the products and practices
+      for delivering, personalising, and optimising customer-facing digital experiences, as distinct from creative
+      production and document workflows.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/dxp
+    label: DXP
+    description: Initialism for Digital Experience Platform — the industry category of integrated platforms for building,
+      managing, personalising, and optimising digital experiences across channels; Adobe Experience Cloud is Adobe's DXP.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/customer_data_platform
+    label: Customer Data Platform
+    description: A system that unifies customer data from many sources into persistent, addressable individual profiles
+      available for segmentation and activation; realised in Adobe's portfolio by Real-Time CDP.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/cdp
+    label: CDP
+    description: Initialism for Customer Data Platform — the system category that unifies customer data into persistent,
+      activatable profiles; realised in Adobe's portfolio by Real-Time CDP.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/real_time_customer_profile
+    label: Real-Time Customer Profile
+    description: Adobe Experience Platform's unified view of each customer — streaming and batch data from all connected
+      sources merge into a single profile that updates in real time and powers segmentation, journeys, and personalisation.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/identity_graph
+    label: Identity Graph
+    description: The map of relationships between a person's identifiers — device IDs, email hashes, CRM IDs — that Adobe
+      Experience Platform Identity Service maintains so fragmented records across channels resolve to one individual.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/data_governance
+    label: Data Governance
+    description: The Adobe Experience Platform framework of usage labels, policies, and enforcement that controls how
+      customer data may be used — classifying sensitivity at field level and blocking activations that would violate
+      policy.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/headless_cms
+    label: Headless CMS
+    description: A content-management architecture that stores and serves content through APIs without prescribing the
+      presentation layer, leaving rendering to any front end; in Adobe's portfolio, Experience Manager delivers headless
+      content through Content Fragments and GraphQL.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/digital_asset_management
+    label: Digital Asset Management
+    description: The discipline and system category for storing, tagging, governing, and distributing digital assets at
+      enterprise scale so approved assets are findable and reusable; realised in Adobe's portfolio by Experience Manager
+      Assets.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/dam
+    label: DAM
+    description: Initialism for Digital Asset Management — the system category for storing, governing, and distributing
+      digital assets; realised in Adobe's portfolio by Experience Manager Assets.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/marketing_automation
+    label: Marketing Automation
+    description: The software category that automates repeatable marketing work — email sequences, lead nurturing, scoring,
+      and campaign triggers — across the funnel; realised in Adobe's portfolio by Marketo Engage and Adobe Campaign.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/omnichannel_marketing
+    label: Omnichannel Marketing
+    description: The practice of coordinating consistent, connected customer messaging across every channel — email, web,
+      mobile, paid media, in-person — as one continuous experience rather than running channels in isolation.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/personalization_engine
+    label: Personalization Engine
+    description: A decisioning system that selects the content, offer, or experience each individual receives, using
+      profile and behavioural data; realised in Adobe's portfolio by Adobe Target and Journey Optimizer decisioning.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/a_b_testing
+    label: A/B Testing
+    description: The controlled-experiment method that splits traffic between two experience variants and measures which
+      performs better against a defined goal metric before rolling the winner out; a core Adobe Target capability.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/multivariate_testing
+    label: Multivariate Testing
+    description: The experiment method that varies several page or experience elements simultaneously to find the
+      best-performing combination and each element's contribution — the higher-traffic complement to A/B testing in Adobe
+      Target.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/journey_orchestration
+    label: Journey Orchestration
+    description: Coordinating each individual customer's next interaction across channels in response to their real-time
+      behaviour and state, rather than broadcasting the same campaign to a whole segment; realised by Adobe Journey
+      Optimizer.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/campaign_management
+    label: Campaign Management
+    description: Planning, executing, and measuring outbound marketing campaigns across segments and channels — audience
+      selection, scheduling, delivery, and response tracking; realised in Adobe's portfolio by Adobe Campaign and Marketo
+      Engage.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/lead_scoring
+    label: Lead Scoring
+    description: Ranking prospects by fit and engagement signals so sales effort concentrates on the leads most likely to
+      convert; a core Marketo Engage capability feeding sales-and-marketing alignment.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/attribution_modeling
+    label: Attribution Modeling
+    description: Assigning conversion credit across the marketing touchpoints that preceded an outcome — first-touch,
+      last-touch, or multi-touch models — to reveal which activity actually drove results; served in Adobe's portfolio by
+      Customer Journey Analytics, Marketo Measure, and Mix Modeler.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/customer_journey_mapping
+    label: Customer Journey Mapping
+    description: Charting the end-to-end sequence of interactions a customer has with a brand across channels and time to
+      expose gaps, friction, and the moments that decide the relationship.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/audience_segmentation
+    label: Audience Segmentation
+    description: Dividing a customer base into groups that share attributes or behaviours so each group can be targeted
+      with relevant experiences; in Adobe Experience Platform, performed over Real-Time Customer Profile data.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/predictive_analytics
+    label: Predictive Analytics
+    description: Using statistical and machine-learning models over historical data to forecast future customer behaviour —
+      churn risk, conversion propensity, lifetime value — so action can be taken before the outcome occurs.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/customer_experience
+    label: Customer Experience
+    description: The customer's cumulative perception of a brand, formed across every interaction from first touch to
+      support — the outcome quantity the Experience Cloud portfolio exists to improve.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/cx
+    label: CX
+    description: Initialism for Customer Experience — the cumulative perception of a brand a customer forms across every
+      interaction.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/customer_engagement_platform
+    label: Customer Engagement Platform
+    description: The system category for managing ongoing, two-way customer interactions across channels — messages,
+      offers, and journeys responding to individual behaviour; realised in Adobe's portfolio by Adobe Journey Optimizer.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/cep
+    label: CEP
+    description: Initialism for Customer Engagement Platform — the two-way customer-interaction system category realised
+      in Adobe's portfolio by Adobe Journey Optimizer.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/cdn
+    label: CDN
+    description: Initialism for Content Delivery Network — the geographically distributed edge-server network that caches
+      and serves content close to users for speed and resilience; Experience Manager sites ship through a built-in CDN
+      and the Experience Platform Edge Network follows the same distribution principle.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/spa
+    label: SPA
+    description: Initialism for Single-Page Application — a web-application architecture in which one initial page load is
+      updated dynamically by JavaScript instead of full page reloads; relevant to Adobe delivery because Experience
+      Manager provides dedicated SPA authoring and rendering support.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/pwa
+    label: PWA
+    description: Initialism for Progressive Web App — a web application that uses service workers and an app manifest to
+      offer app-like behaviour (offline use, installability, push notifications) from the browser; relevant to Adobe
+      Commerce storefront architecture.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/api_first
+    label: API-First
+    description: The architecture principle of exposing every capability through APIs before, or instead of, a bundled
+      user interface, so services can be composed into custom stacks — the design stance of Adobe Experience Platform and
+      of headless Experience Manager delivery.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/cloud_native
+    label: Cloud-Native
+    description: The architecture principle of building software as containerised, elastically scalable, continuously
+      updated services designed for cloud operation rather than ported to it — the basis of Experience Manager as a Cloud
+      Service and Adobe Experience Platform.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_CONCEPT
+    evidence_ids: *id001
+  - id: coe:entity/adobe/cxo
+    label: Customer Experience Orchestration (CXO)
+    description: Adobe's enterprise portfolio framing (formerly Digital Experience/DX) covering Brand Visibility, Customer
+      Engagement, and Content Supply Chain.
+    home_domain: adobe
+    status: canonical
+    ner_label: ADOBE_STRATEGY_PILLAR
+    edges:
+    - subject_id: coe:entity/adobe/cxo
+      predicate: coe:contains
+      object_id: coe:entity/adobe/experience_platform
+      relationship_weight: required
+      description: Adobe Experience Platform serves as the foundational data and AI layer for CXO.
+      statement_id: coe:edge/b7ba0c9630f33fd58a4d5e89
+      home_domain: adobe
+      evidence_ids: &id002
+      - coe:source/central-configs-legacy-f6eb98ff
+      - coe:decision/v4-migration/adobe/brand_concepts
+    - subject_id: coe:entity/adobe/cxo
+      predicate: coe:enables
+      object_id: coe:entity/adobe/content_supply_chain
+      relationship_weight: required
+      description: Content Supply Chain is one of the three core pillars of Customer Experience Orchestration.
+      statement_id: coe:edge/9561bdcda89b8c0e6eec0d5c
+      home_domain: adobe
+      evidence_ids: *id002
+    evidence_ids: *id001
+  home_domain: adobe
+  status: canonical
+  evidence_ids: *id001

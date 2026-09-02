@@ -83,6 +83,41 @@ def test_indirect_production_to_offline_import_reports_complete_path(tmp_path: P
     assert ("isanlp_rst", "isanlp_rst.bridge", "workbench") in paths
 
 
+def test_machine_boundary_package_imports_by_its_own_name_and_may_not_reach_workbench(tmp_path: Path) -> None:
+    """D5 check (a) for a machine boundary: machine/rdam imports as `rdam`; workbench is forbidden."""
+
+    _write(tmp_path / "machine/rdam/__init__.py", "from rdam import core\n")
+    _write(tmp_path / "machine/rdam/core.py", "from workbench import trainer\n")
+    _write(tmp_path / "workbench/__init__.py")
+    _write(tmp_path / "workbench/trainer.py")
+    report = validate_import_boundary(tmp_path)
+    paths = {violation.path for violation in report.violations}
+    assert ("rdam", "rdam.core", "workbench") in paths
+    assert not any(path[0].startswith("machine") for path in paths), "boundary directories are not packages"
+
+
+def test_machine_boundary_and_ontology_have_exactly_one_owner() -> None:
+    authority = OwnershipAuthority(Path.cwd())
+    assert authority.classify("machine/rdam/contracts.py") == OwnershipClass.PRODUCTION
+    assert authority.classify("machine/pyproject.toml") == OwnershipClass.PRODUCTION
+    assert authority.classify("ontology/vendor/central-configs/distribution.yaml") == OwnershipClass.REPOSITORY
+    assert authority.classify("ontology/schema/rdam.linkml.yaml") == OwnershipClass.REPOSITORY
+
+
+def test_machine_wheel_members_are_inside_the_boundary_and_workbench_still_is_not(tmp_path: Path) -> None:
+    """D5 check (b): production wheels may carry the machine's import roots and nothing else."""
+
+    wheel = tmp_path / "rdam-1-py3-none-any.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr("rdam/__init__.py", "")
+        archive.writestr("rdam/resources/framework-identities.json", "{}")
+        archive.writestr("workbench/promotion/promote.py", "")
+        archive.writestr("rdam-1.dist-info/METADATA", "")
+    receipt = inspect_artifact(wheel)
+    assert receipt.forbidden_members == ("workbench/promotion/promote.py",)
+    assert "rdam/__init__.py" in receipt.production_members
+
+
 def test_new_production_module_needs_no_secondary_allowlist(tmp_path: Path) -> None:
     _write(tmp_path / "isanlp_rst/__init__.py", "from isanlp_rst import new_runtime\n")
     _write(tmp_path / "isanlp_rst/new_runtime.py", "VALUE = 1\n")

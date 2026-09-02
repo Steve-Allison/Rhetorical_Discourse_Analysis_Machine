@@ -1,0 +1,15 @@
+_meta:
+  file_id: coe:file/manifest/adobe
+  title: Adobe Domain Manifest
+  last_updated: '2026-08-22'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: adobe
+  governing_class: coe:DomainBundle
+bundle_id: coe:domain/adobe
+domain: adobe
+modules:
+- coe:module/adobe/agents
+- coe:module/adobe/brand_concepts
+- coe:module/adobe/products
+- coe:module/adobe/technologies

@@ -1,0 +1,33 @@
+_meta:
+  file_id: coe:file/domain/business/terminology
+  title: Business — Terminology
+  last_updated: '2026-08-22'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: business
+  governing_class: coe:DomainModule
+module_id: coe:module/business/terminology
+domain: business
+entity_collections:
+- id: coe:artifact/business/terminology_term_referents
+  label: Terminology Term Referents
+  description: Semantic resources denoted by governed terminology senses.
+  last_updated: '2026-08-22'
+  home_domain: business
+  status: canonical
+  evidence_ids: &id001
+  - coe:source/central-configs-legacy-f6eb98ff
+  - coe:decision/v4-migration/business/terminology
+  entities:
+  - id: coe:entity/business/term/resolution
+    label: Resolution
+    description: The agreed commercial settlement or formal decision resolving a corporate dispute or bottleneck.
+    home_domain: business
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:entity/business/term/cadence
+    label: Cadence
+    description: The regular, scheduled operating rhythm of business reviews, standups, and executive checkpoints.
+    home_domain: business
+    status: canonical
+    evidence_ids: *id001

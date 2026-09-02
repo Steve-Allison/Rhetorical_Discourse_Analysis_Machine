@@ -24,6 +24,10 @@ _FORBIDDEN_SUFFIXES = frozenset(
     {".pem", ".key", ".p12", ".pfx", ".pickle", ".pkl", ".pyc", ".pt", ".pth", ".safetensors"}
 )
 _METADATA_MARKERS = (".dist-info/", ".egg-info/")
+# Import roots a production wheel may carry (006: boundary directories are never packages;
+# these are the packages inside them). Anything else in a wheel is outside the boundary
+# (FR-006, research D5 check b).
+_PRODUCTION_IMPORT_ROOTS = ("isanlp_rst/", "rdam/", "rdam_dung/", "rdam_ibis/")
 _REQUIREMENT_NAME = re.compile(rb"^\s*([A-Za-z0-9][A-Za-z0-9._-]*)")
 _EXTRA_MARKER = re.compile(r"\bextra\s*==\s*['\"]([^'\"]+)['\"]")
 
@@ -97,7 +101,7 @@ def _forbidden(kind: str, name: str) -> bool:
     if re.search(r"(^|/)(\.env|id_rsa|credentials|secrets?)(\.|/|$)", lower):
         return True
     if kind == "wheel":
-        return not (lower.startswith("isanlp_rst/") or any(marker in lower for marker in _METADATA_MARKERS))
+        return not (lower.startswith(_PRODUCTION_IMPORT_ROOTS) or any(marker in lower for marker in _METADATA_MARKERS))
     allowed_root = {
         "pyproject.toml",
         "pixi.lock",
@@ -111,7 +115,7 @@ def _forbidden(kind: str, name: str) -> bool:
         "pkg-info",
         "setup.cfg",
     }
-    return not (lower.startswith("isanlp_rst/") or lower in allowed_root or any(marker in lower for marker in _METADATA_MARKERS))
+    return not (lower.startswith(_PRODUCTION_IMPORT_ROOTS) or lower in allowed_root or any(marker in lower for marker in _METADATA_MARKERS))
 
 
 def inspect_artifact(path: Path, declared_dependencies: tuple[str, ...] = ()) -> ArtifactReceipt:

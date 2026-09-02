@@ -8,11 +8,19 @@ import time
 from tools.production_boundary.authority import OwnershipAuthority
 from tools.production_boundary.contracts import BoundaryReport, BoundaryViolation, OwnershipClass, ViolationKind
 
+BOUNDARY_ROOTS = frozenset({"machine", "rst", "dung", "ibis"})
+"""Machine boundary directories. They are never importable packages: the packages inside
+carry their own import names (``machine/rdam`` imports as ``rdam``), so the boundary
+segment is dropped when naming modules (006 architecture-boundaries §Structural rules 2)."""
+
 
 def module_name(root: Path, path: Path) -> str:
-    relative = path.relative_to(root).with_suffix("")
-    parts = relative.parts
-    return ".".join(parts[:-1] if parts[-1] == "__init__" else parts)
+    parts = list(path.relative_to(root).with_suffix("").parts)
+    if len(parts) > 1 and parts[0] in BOUNDARY_ROOTS:
+        del parts[0]
+    if parts and parts[-1] == "__init__":
+        parts.pop()
+    return ".".join(parts)
 
 
 def _resolve_relative(current: str, level: int, target: str | None) -> str:
@@ -52,7 +60,9 @@ def validate_import_boundary(root: Path, authority: OwnershipAuthority | None = 
     started = time.perf_counter()
     repository = root.resolve()
     ownership = authority or OwnershipAuthority(repository)
-    source_roots = {"isanlp_rst", "workbench", "workbench.research"}
+    # Every production root plus the workbench: the walk from each production module must
+    # never reach a workbench module, directly or transitively (FR-006, research D5 check a).
+    source_roots = {"isanlp_rst", "workbench", "workbench.research", *BOUNDARY_ROOTS}
     python_files = [
         path
         for path in ownership.iter_relevant_files()

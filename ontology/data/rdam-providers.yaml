@@ -1,0 +1,32 @@
+# The machine's technique-boundary bindings to Central's canonical framework concepts.
+# Identity only (006 capability-declaration §Identity binding). Validated by
+# `pixi run ontology-validate` against ontology/schema/rdam.linkml.yaml; the same eight
+# concepts are projected into machine/rdam/resources/framework-identities.json.
+scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
+bindings:
+- boundary: rst
+  framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/rst
+  requires_structured_input: false
+  formalisms:
+  - formalism_id: rst_tree
+    framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/rst
+  - formalism_id: erst_graph
+    framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/erst
+- boundary: pdtb
+  framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/pdtb
+  requires_structured_input: false
+- boundary: sdrt
+  framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/sdrt
+  requires_structured_input: false
+- boundary: toulmin
+  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/toulmin
+  requires_structured_input: false
+- boundary: walton
+  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/walton
+  requires_structured_input: false
+- boundary: dung
+  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/dung
+  requires_structured_input: true
+- boundary: ibis
+  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/ibis
+  requires_structured_input: true

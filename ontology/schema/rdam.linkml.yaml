@@ -1,0 +1,75 @@
+id: https://steve-allison.github.io/Rhetorical_Discourse_Analysis_Machine/ontology/schema/rdam
+name: rdam_application
+title: Rhetorical Discourse Analysis Machine Application Profile
+description: >-
+  Consumer-owned application profile binding each technique boundary of the machine to
+  its framework concept in Central's analytical_frameworks_taxonomy. Identity only:
+  native relation inventories, role sets, and result payloads are provider-owned
+  (006 capability-declaration contract, Identity binding). coe identifiers are
+  referenced here, never redefined.
+version: 1.0.0
+default_prefix: rdmachine
+default_range: string
+prefixes:
+  rdmachine: https://steve-allison.github.io/Rhetorical_Discourse_Analysis_Machine/ontology/
+  coe: https://steve-allison.github.io/Central_Configs/ontology/
+  linkml: https://w3id.org/linkml/
+imports:
+- linkml:types
+- ../vendor/central-configs/schema/coe.linkml
+
+classes:
+  FormalismBinding:
+    class_uri: rdmachine:FormalismBinding
+    description: One result-kind a provider emits, bound to its own framework concept.
+    attributes:
+      formalism_id:
+        identifier: true
+        required: true
+        range: string
+        pattern: "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+        description: Provider-owned name of the result-kind, for example rst_tree or erst_graph.
+      framework:
+        required: true
+        range: uriorcurie
+        description: "The coe concept in analytical_frameworks_taxonomy this formalism carries."
+
+  ProviderBinding:
+    class_uri: rdmachine:ProviderBinding
+    description: One technique boundary bound to exactly one framework concept.
+    attributes:
+      boundary:
+        identifier: true
+        required: true
+        range: string
+        pattern: "^(rst|pdtb|sdrt|toulmin|walton|dung|ibis)$"
+        description: The boundary directory name (FR-002); never an importable package name.
+      framework:
+        required: true
+        range: uriorcurie
+        description: "The coe concept in analytical_frameworks_taxonomy this boundary binds to."
+      requires_structured_input:
+        required: true
+        range: boolean
+        description: True for techniques that analyse a supplied structure rather than raw text (FR-016, FR-017).
+      formalisms:
+        multivalued: true
+        range: FormalismBinding
+        inlined_as_list: true
+        description: The result-kinds the boundary's provider emits, each with its own identity.
+
+  ProviderBindings:
+    class_uri: rdmachine:ProviderBindings
+    description: The machine's complete binding set, every technique boundary exactly once.
+    tree_root: true
+    attributes:
+      scheme:
+        required: true
+        range: uriorcurie
+        description: The Central taxonomy every framework identifier below belongs to.
+      bindings:
+        multivalued: true
+        required: true
+        range: ProviderBinding
+        inlined_as_list: true
+        description: One binding per technique boundary.

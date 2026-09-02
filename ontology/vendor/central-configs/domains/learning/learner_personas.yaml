@@ -1,0 +1,165 @@
+_meta:
+  file_id: coe:file/domain/learning/learner_personas
+  title: Learning — Learner Personas
+  last_updated: '2026-08-22'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: learning
+  governing_class: coe:DomainModule
+module_id: coe:module/learning/learner_personas
+domain: learning
+entity_collections:
+- id: coe:artifact/learning/learner_personas
+  label: Authoritative Learner Personas & Cognitive Ladders
+  description: Comprehensive UK K-12, adult professional, executive profiles and depth target ladders.
+  last_updated: '2026-08-15'
+  entities:
+  - id: coe:entity/learning/learner_audience
+    label: Learner Audience
+    description: People participating in learning, represented by explicit learner profiles rather than commercial buying
+      roles.
+    home_domain: learning
+    status: canonical
+    evidence_ids:
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/learning/learner_personas
+    ner_label: LEARNER_AUDIENCE
+  - id: coe:entity/learning/learner_ks3_foundation_explorer
+    label: KS3 Foundation Explorer
+    description: UK Learner Profile for KS3 Foundation Explorer.
+    home_domain: learning
+    status: canonical
+    ner_label: LEARNER_PERSONA
+    edges: []
+    evidence_ids: &id001
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/learning/learner_personas
+  - id: coe:entity/learning/learner_ks4_gcse_academic_achiever
+    label: KS4 GCSE Academic Achiever
+    description: UK Learner Profile for KS4 GCSE Academic Achiever.
+    home_domain: learning
+    status: canonical
+    ner_label: LEARNER_PERSONA
+    edges: []
+    evidence_ids: *id001
+  - id: coe:entity/learning/learner_ks4_5_applied_vocational_learner
+    label: Applied & Vocational Learner
+    description: UK Learner Profile for Applied & Vocational Learner.
+    home_domain: learning
+    status: canonical
+    ner_label: LEARNER_PERSONA
+    edges: []
+    evidence_ids: *id001
+  - id: coe:entity/learning/learner_ks5_academic_specialist
+    label: KS5 Academic Specialist
+    description: UK Learner Profile for KS5 Academic Specialist.
+    home_domain: learning
+    status: canonical
+    ner_label: LEARNER_PERSONA
+    edges: []
+    evidence_ids: *id001
+  - id: coe:entity/learning/learner_supported_diverse_learner
+    label: Supported Diverse Learner
+    description: UK Learner Profile for Supported Diverse Learner.
+    home_domain: learning
+    status: canonical
+    ner_label: LEARNER_PERSONA
+    edges: []
+    evidence_ids: *id001
+  - id: coe:entity/learning/learner_ks2_lower_primary_explorer
+    label: KS2 Lower Primary Explorer
+    description: UK Learner Profile for KS2 Lower Primary Explorer.
+    home_domain: learning
+    status: canonical
+    ner_label: LEARNER_PERSONA
+    edges: []
+    evidence_ids: *id001
+  - id: coe:entity/learning/learner_ks2_upper_primary_achiever
+    label: KS2 Upper Primary Achiever
+    description: UK Learner Profile for KS2 Upper Primary Achiever.
+    home_domain: learning
+    status: canonical
+    ner_label: LEARNER_PERSONA
+    edges: []
+    evidence_ids: *id001
+  - id: coe:entity/adult_professional_learner
+    label: Adult Professional Learner
+    description: Adult professional with self-directed learning preferences.
+    examples:
+    - adult learner
+    - working professional
+    - corporate employee
+    - self-directed learner
+    - busy professional
+    confidence_threshold: 0.7
+    ner_label: ADULT_LEARNER
+    home_domain: learning
+    status: canonical
+    evidence_ids: *id001
+  home_domain: learning
+  status: canonical
+  evidence_ids: *id001
+taxonomies:
+- id: coe:artifact/learning/cognitive_depth_taxonomy
+  label: Cognitive Depth Taxonomy
+  description: Ordered cognitive-depth classifications kept separate from learner personas.
+  last_updated: '2026-08-22'
+  home_domain: learning
+  status: canonical
+  concepts:
+  - id: coe:entity/learning/depth_none
+    label: 'Cognitive Depth: None'
+    description: 'Target cognitive depth capability attainment level: None.'
+    home_domain: learning
+    status: canonical
+    edges: []
+    in_scheme: coe:artifact/learning/cognitive_depth_taxonomy
+    evidence_ids: *id001
+  - id: coe:entity/learning/depth_awareness
+    label: 'Cognitive Depth: Awareness'
+    description: 'Target cognitive depth capability attainment level: Awareness.'
+    home_domain: learning
+    status: canonical
+    edges: []
+    in_scheme: coe:artifact/learning/cognitive_depth_taxonomy
+    evidence_ids: *id001
+  - id: coe:entity/learning/depth_comprehension
+    label: 'Cognitive Depth: Comprehension'
+    description: 'Target cognitive depth capability attainment level: Comprehension.'
+    home_domain: learning
+    status: canonical
+    edges: []
+    in_scheme: coe:artifact/learning/cognitive_depth_taxonomy
+    evidence_ids: *id001
+  - id: coe:entity/learning/depth_application
+    label: 'Cognitive Depth: Application'
+    description: 'Target cognitive depth capability attainment level: Application.'
+    home_domain: learning
+    status: canonical
+    edges: []
+    in_scheme: coe:artifact/learning/cognitive_depth_taxonomy
+    evidence_ids: *id001
+  - id: coe:entity/learning/depth_fluency
+    label: 'Cognitive Depth: Fluency'
+    description: 'Target cognitive depth capability attainment level: Fluency.'
+    home_domain: learning
+    status: canonical
+    edges: []
+    in_scheme: coe:artifact/learning/cognitive_depth_taxonomy
+    evidence_ids: *id001
+  - id: coe:entity/learning/depth_mastery
+    label: 'Cognitive Depth: Mastery'
+    description: 'Target cognitive depth capability attainment level: Mastery.'
+    home_domain: learning
+    status: canonical
+    edges: []
+    in_scheme: coe:artifact/learning/cognitive_depth_taxonomy
+    evidence_ids: *id001
+  top_concepts:
+  - coe:entity/learning/depth_none
+  - coe:entity/learning/depth_awareness
+  - coe:entity/learning/depth_comprehension
+  - coe:entity/learning/depth_application
+  - coe:entity/learning/depth_fluency
+  - coe:entity/learning/depth_mastery
+  evidence_ids: *id001

@@ -11,8 +11,8 @@ below. A violation is a defect, not a style choice.
 |---|---|---|
 | `rst/` | The canonical `isanlp_rst` RST/eRST provider package | at migration |
 | `pdtb/`, `sdrt/`, `toulmin/`, `walton/`, `dung/`, `ibis/` | One technique's promoted provider, native contract, runtime assets, capability declaration | only on that technique's first promotion (FR-002) |
-| `machine/` | Aggregate analysis contract; cross-provider orchestration | feature 007+ |
-| `ontology/` | Vendored Central distribution (read-only) + the `rdam` application profile | feature 007+ |
+| `machine/` | Aggregate analysis contract (`machine/rdam`, import name `rdam`); cross-provider orchestration later | now (feature 007, 2026-09-02) |
+| `ontology/` | Vendored Central distribution (read-only, `ontology/vendor/central-configs/`) + the `rdam` application profile (`ontology/schema/rdam.linkml.yaml`, bindings in `ontology/data/`) | now (feature 007, 2026-09-02) |
 | `workbench/` | All candidates, corpora, experiments, training, evaluation, benchmarks, checkpoints, runs, promotion evidence (FR-004) | now |
 | `tests/` | Production verification, kept distinct from workbench evaluation (FR-007). Owns `tests/offline/research` too: that subtree is workbench-evaluation material located under `tests/`, and FR-007's distinction is satisfied within `tests/` by the subtree split and the separate `research-test` / `research-lint` tasks. One owner, no ambiguity — ruling recorded in [evidence/boundary-audit.md](../evidence/boundary-audit.md) | now |
 | `tools/` | Production boundary inspection and release tooling | now |

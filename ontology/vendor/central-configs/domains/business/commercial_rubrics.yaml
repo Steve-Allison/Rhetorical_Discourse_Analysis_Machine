@@ -1,0 +1,146 @@
+_meta:
+  file_id: coe:file/domain/business/commercial_rubrics
+  title: Business — Commercial Rubrics
+  last_updated: '2026-09-01'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: business
+  governing_class: coe:DomainModule
+module_id: coe:module/business/commercial_rubrics
+domain: business
+scoring_models:
+- dimensions:
+  - id: coe:artifact/business/elevator_pitch_rubric/dimension/time_to_value
+    label: Time to Value
+    description: 'Measures how quickly the pitch communicates its core value proposition. The best pitches follow BLUF (Bottom
+      Line Up Front): the listener should understand what the product does and why it matters within the first two sentences.
+      Source: Best-Practice Elevator Pitches.md'
+    home_domain: business
+    status: canonical
+    evidence_ids: &id001
+    - coe:source/central-configs-legacy-f6eb98ff
+    - coe:decision/v4-migration/business/commercial_rubrics
+    - coe:source/legacy-file/8cf7089f27ca2966
+  - id: coe:artifact/business/elevator_pitch_rubric/dimension/core_message_clarity
+    label: Core Message Clarity
+    description: 'Evaluates whether the pitch communicates a single, coherent message in plain language tailored to the audience.
+      Cognitive load theory requires one core idea per elevator pitch; multiple ideas compete and all lose. Source: Best-Practice
+      Elevator Pitches.md; Best-Practice Product Descriptions.md'
+    home_domain: business
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/business/elevator_pitch_rubric/dimension/differentiation
+    label: Differentiation
+    description: 'Assesses whether the pitch clearly establishes what makes the offering distinct from alternatives. Generic
+      pitches that apply equally to any competitor provide no reason to choose. Differentiation must be specific, benefit-tied,
+      and credible. Source: Best-Practice Elevator Pitches.md; Best-Practice Product Descriptions.md'
+    home_domain: business
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/business/elevator_pitch_rubric/dimension/cta_quality
+    label: Call-to-Action Quality
+    description: 'Evaluates whether the pitch closes with a clear, specific, low-friction next step appropriate to the pitch
+      context. The CTA should feel logically implied by the pitch — earned, not bolted on. Nudge theory applies: present a
+      choice architecture where the easy option is to agree to a follow-up. Source: Best-Practice Elevator Pitches.md; Research
+      - Using SOAR Storytelling most effectively.md'
+    home_domain: business
+    status: canonical
+    evidence_ids: *id001
+  - id: coe:artifact/business/elevator_pitch_rubric/dimension/memorability
+    label: Memorability
+    description: 'Assesses whether the pitch uses language, structure, and story elements that make it stick after the conversation
+      ends. Based on Heath & Heath (2007) SUCCESs framework: Simple, Unexpected, Concrete, Credible, Emotional, Stories. A
+      pitch that is forgotten fails regardless of quality. Source: Best-Practice Elevator Pitches.md; Research - Using SOAR
+      Storytelling most effectively.md'
+    home_domain: business
+    status: canonical
+    evidence_ids: *id001
+  thresholds:
+  - key: pitch_word_count_30_second
+    label: 30-Second Pitch Word Count
+    description: Spoken word count of a 30-second pitch; the band fits the delivery window at a natural speaking pace, with
+      the target at the pace listeners retain best.
+    unit: words
+    minimum_value: 60
+    target_value: 80
+    maximum_value: 100
+  - key: pitch_word_count_60_second
+    label: 60-Second Pitch Word Count
+    description: Spoken word count of a 60-second pitch; the band fits the delivery window at a natural speaking pace.
+    unit: words
+    minimum_value: 120
+    target_value: 150
+    maximum_value: 175
+  - key: pitch_word_count_2_minute
+    label: Two-Minute Pitch Word Count
+    description: Spoken word count of a two-minute pitch; the band fits the delivery window at a natural speaking pace.
+    unit: words
+    minimum_value: 240
+    target_value: 280
+    maximum_value: 320
+  - key: bluf_position
+    label: BLUF Position
+    description: Maximum words that may precede the value proposition or primary benefit; the bottom line must arrive up front,
+      inside the listener's opening attention window.
+    unit: words
+    maximum_value: 30
+  - key: jargon_ratio
+    label: Jargon Ratio
+    description: Maximum share of pitch words that are jargon; above this the pitch stops being plain language for a mixed
+      audience.
+    unit: ratio
+    maximum_value: 0.08
+  - key: unexplained_acronyms
+    label: Unexplained Acronyms
+    description: Maximum acronyms used without expansion or explanation in one pitch.
+    unit: acronyms
+    maximum_value: 2
+  - key: proof_points_30_second
+    label: Proof Points — 30-Second Pitch
+    description: Proof points in a 30-second pitch; at least one is required for credibility, and exceeding the maximum creates
+      data overload and buries the CTA.
+    unit: proof points
+    minimum_value: 1
+    maximum_value: 1
+  - key: proof_points_60_second
+    label: Proof Points — 60-Second Pitch
+    description: Proof points in a 60-second pitch; at least one is required, and exceeding the maximum creates data overload
+      and buries the CTA.
+    unit: proof points
+    minimum_value: 1
+    maximum_value: 2
+  - key: proof_points_2_minute
+    label: Proof Points — Two-Minute Pitch
+    description: Proof points in a two-minute pitch; at least one is required, and exceeding the maximum creates data overload
+      and buries the CTA.
+    unit: proof points
+    minimum_value: 1
+    maximum_value: 3
+  - key: value_prop_sentence_words
+    label: Value Proposition Sentence Length
+    description: Maximum words in the core value proposition sentence; it must be instantly comprehensible in one hearing.
+    unit: words
+    maximum_value: 25
+  - key: cta_specificity_words
+    label: CTA Specificity
+    description: Minimum count of concrete, specific words in the closing call to action (a named next step, time, or artefact);
+      the legacy standard also caps the asked-for commitment at a meeting, which stays a qualitative check.
+    unit: words
+    minimum_value: 1
+  - key: success_criteria_minimum
+    label: Success Criteria Minimum
+    description: Minimum number of scoring success criteria a pitch must satisfy to pass review.
+    unit: criteria
+    minimum_value: 2
+  last_updated: '2026-09-01'
+  id: coe:artifact/business/elevator_pitch_rubric
+  label: Elevator Pitch Rubric
+  description: Scoring rubric for elevator pitch and value proposition quality covering time-to-value, core message clarity,
+    differentiation, call-to-action quality, and memorability
+  home_domain: business
+  status: canonical
+  evidence_ids:
+  - coe:source/central-configs-legacy-f6eb98ff
+  - coe:decision/v4-migration/business/commercial_rubrics
+  - coe:source/legacy-file/8cf7089f27ca2966
+  - coe:decision/curation/2026-09-01/threshold-typing

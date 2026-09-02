@@ -1,0 +1,170 @@
+id: https://steve-allison.github.io/Central_Configs/ontology/schema/evidence
+name: coe_evidence
+title: Central Configs Evidence and Provenance Model
+version: 4.0.0
+default_prefix: coe
+default_range: string
+prefixes:
+  coe: https://steve-allison.github.io/Central_Configs/ontology/
+  dcterms: http://purl.org/dc/terms/
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+imports:
+- linkml:types
+- ./core.linkml
+classes:
+  SourceRecord:
+    is_a: EvidenceRecord
+    class_uri: coe:SourceRecord
+    exact_mappings:
+    - prov:Entity
+    description: Content-addressed record of an externally managed or historically versioned source.
+    attributes:
+      source_kind:
+        required: true
+        range: SourceKindEnum
+        slot_uri: coe:source_kind
+        description: Which kind of source this record is; determines which locator fields
+          are meaningful.
+      repository_url:
+        range: uri
+        slot_uri: coe:repositoryUrl
+        description: URL of the repository that owns the source object.
+      repository_revision:
+        slot_uri: coe:repositoryRevision
+        description: Immutable revision at which the source object is addressed.
+      original_location:
+        slot_uri: coe:originalLocation
+        description: Path of the source object within its repository or original filing location.
+      content_uri:
+        required: true
+        range: uriorcurie
+        slot_uri: coe:contentUri
+        description: Content-addressed URI — a git blob or SHA-256 URN — permanently naming
+          the source bytes.
+      canonical_blob_url:
+        range: uri
+        slot_uri: coe:canonicalBlobUrl
+        description: Stable browser URL resolving to the exact source bytes.
+      content_sha256:
+        required: true
+        pattern: ^[a-f0-9]{64}$
+        slot_uri: coe:contentSha256
+        description: SHA-256 of the source bytes as 64 lowercase hex characters.
+      media_type:
+        slot_uri: dcterms:format
+        description: IANA media type of the source bytes.
+      citation:
+        required: true
+        slot_uri: dcterms:bibliographicCitation
+        description: Complete human-readable citation sufficient to relocate the source
+          without this catalogue.
+  EvidenceSpan:
+    is_a: EvidenceRecord
+    class_uri: coe:EvidenceSpan
+    exact_mappings:
+    - prov:Entity
+    attributes:
+      source_id:
+        required: true
+        range: SourceRecord
+        inlined: false
+        slot_uri: prov:wasDerivedFrom
+        description: Source record this span is extracted from.
+      locator:
+        required: true
+        slot_uri: coe:locator
+        description: Position of the span within the source — page, section, line range,
+          or equivalent.
+      quotation:
+        slot_uri: coe:quotation
+        description: Verbatim text of the span, quoted so the claim can be verified without
+          opening the source.
+    description: One located extract of a source record — the span a claim actually rests
+      on, addressed by locator and optionally quoted.
+  GovernanceDecision:
+    is_a: EvidenceRecord
+    class_uri: coe:GovernanceDecision
+    exact_mappings:
+    - prov:Entity
+    description: Reviewable internal decision used as evidence for normative classification or curation.
+    attributes:
+      decision_date:
+        required: true
+        range: Date
+        slot_uri: dcterms:date
+        description: Calendar date the decision was taken.
+      authority:
+        required: true
+        slot_uri: coe:authority
+        description: Repository or role that took the decision.
+      decision_status:
+        required: true
+        range: GovernanceDecisionStatusEnum
+        slot_uri: coe:decision_status
+        description: Standing of the decision — working, ratified, or superseded.
+      statement:
+        required: true
+        slot_uri: coe:statement
+        description: The decision itself, phrased so its effect is checkable.
+      rationale:
+        required: true
+        slot_uri: coe:rationale
+        description: Why the decision was taken, including the evidence weighed.
+  SourceCatalog:
+    tree_root: true
+    class_uri: coe:SourceCatalog
+    description: Complete evidence catalogue included in the ontology distribution.
+    slots:
+    - _meta
+    slot_usage:
+      _meta:
+        required: true
+    attributes:
+      catalog_id:
+        identifier: true
+        required: true
+        range: uriorcurie
+        slot_uri: dcterms:identifier
+        description: Stable identifier of this catalogue.
+      sources:
+        range: SourceRecord
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:sourceRecord
+        description: Source records available as evidence.
+      spans:
+        range: EvidenceSpan
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:evidenceSpan
+        description: Evidence spans extracted from the sources.
+      governance_decisions:
+        range: GovernanceDecision
+        multivalued: true
+        inlined_as_list: true
+        slot_uri: coe:governanceDecision
+        description: Internal decisions usable as evidence.
+enums:
+  SourceKindEnum:
+    permissible_values:
+      versioned_repository_object:
+        description: Object addressed by an immutable Git revision in a named repository.
+      content_addressed_local_source:
+        description: Local file addressed by the SHA-256 of its bytes rather than a repository
+          revision.
+      published_external_source:
+        description: Externally published work addressed by citation; its bytes are not
+          under this catalogue's control.
+    description: Kinds of evidence source, distinguished by how their bytes are addressed
+      and retrieved.
+  GovernanceDecisionStatusEnum:
+    permissible_values:
+      working:
+        description: Taken and in effect but still open to revision without a superseding
+          decision.
+      ratified:
+        description: Confirmed as settled; changed only by a superseding decision.
+      superseded:
+        description: Replaced by a later decision and retained for the record.
+    description: Standing of a governance decision over time.

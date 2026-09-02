@@ -142,8 +142,9 @@ verified against the live tree in
 - **A technique boundary IS the production boundary.** No `production/` subdirectory
   inside one, ever (FR-003).
 - **Boundaries appear only on promotion.** A technique's directory is created when that
-  technique first promotes a provider (FR-002) — never speculatively. No technique
-  boundary directory exists today, and creating an empty one is a defect.
+  technique first promotes a provider (FR-002) — never speculatively. `machine/` and
+  `ontology/` exist (feature 007); a technique boundary directory exists only once its
+  provider is promoted, and creating an empty one is a defect.
 - **Exactly one `workbench/`.** No second experimentation root, no per-boundary scratch
   area, no "temporary" candidate directory outside it (FR-004).
 
@@ -159,10 +160,11 @@ the rule removes the whole class of shadowing hazards.)
 
 Production code never imports `workbench.*`, directly or transitively, and no wheel or
 sdist member contains a `workbench/` path (FR-006). Enforcement lives in
-`tools.production_boundary`; both checks are **not yet implemented** — they are feature
-007 acceptance items, so a green `production-boundary` run does not currently certify
-them. Run it as `pixi run -e default production-boundary`; the bare form is ambiguous
-across three environments.
+`tools.production_boundary` (feature 007, 2026-09-02): the import walk starts from every
+production root — `isanlp_rst` and the boundary packages under `machine/`, `rst/`,
+`dung/`, `ibis/` — and the artifact inspector admits only those import roots in a wheel.
+Run it as `pixi run -e default production-boundary`; the bare form is ambiguous across
+three environments.
 
 ### Identity binding
 
