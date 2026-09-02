@@ -297,11 +297,19 @@ class StructuredInput(StrictModel):
     payload: Mapping[str, JsonValue]
 
 
+class FormalismChoice(StrictModel):
+    """Ask one requested technique for a specific declared formalism (e.g. RST's ``erst_graph``)."""
+
+    technique: Technique
+    formalism_id: str = Field(pattern=_SNAKE)
+
+
 class AggregateRequest(StrictModel):
     source: SourceIdentity
     text: str | None
     techniques: tuple[Technique, ...] = Field(min_length=1)
     structured_inputs: tuple[StructuredInput, ...] = ()
+    formalisms: tuple[FormalismChoice, ...] = ()
 
     @model_validator(mode="after")
     def coherent_request(self) -> Self:
@@ -318,6 +326,11 @@ class AggregateRequest(StrictModel):
             raise ValueError("at most one structured input per technique")
         if any(technique not in self.techniques for technique in structured):
             raise ValueError("structured input supplied for a technique that was not requested")
+        chosen = [item.technique for item in self.formalisms]
+        if len(chosen) != len(set(chosen)):
+            raise ValueError("at most one formalism choice per technique")
+        if any(technique not in self.techniques for technique in chosen):
+            raise ValueError("formalism chosen for a technique that was not requested")
         return self
 
     @classmethod
@@ -328,16 +341,21 @@ class AggregateRequest(StrictModel):
         *,
         source_name: str | None = None,
         structured_inputs: tuple[StructuredInput, ...] = (),
+        formalisms: tuple[FormalismChoice, ...] = (),
     ) -> Self:
         return cls(
             source=SourceIdentity.from_text(text, source_name=source_name),
             text=text,
             techniques=techniques,
             structured_inputs=structured_inputs,
+            formalisms=formalisms,
         )
 
     def structured_input_for(self, technique: Technique) -> Mapping[str, JsonValue] | None:
         return next((item.payload for item in self.structured_inputs if item.technique is technique), None)
+
+    def formalism_for(self, technique: Technique) -> str | None:
+        return next((item.formalism_id for item in self.formalisms if item.technique is technique), None)
 
 
 class ProviderRequest(StrictModel):
@@ -359,6 +377,7 @@ __all__ = [
     "AvailableCapability",
     "CapabilityState",
     "FailedOutcome",
+    "FormalismChoice",
     "FormalismDeclaration",
     "MachineCapabilities",
     "NativeTechniqueResult",

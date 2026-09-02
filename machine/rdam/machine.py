@@ -116,7 +116,16 @@ class Machine:
         structured_input = request.structured_input_for(technique)
         if declaration.requires_structured_input and structured_input is None:
             return UnavailableOutcome(technique=technique, reason=UnavailableReason.MISSING_STRUCTURED_INPUT)
-        provider_request = ProviderRequest(source=request.source, text=request.text, structured_input=structured_input)
+        chosen = request.formalism_for(technique)
+        if chosen is not None:
+            formalism = declaration.formalism(chosen)
+            if formalism is None:
+                return UnavailableOutcome(technique=technique, reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION)
+            if isinstance(formalism.capability, UnavailableCapability):
+                return UnavailableOutcome(technique=technique, reason=formalism.capability.reason)
+        provider_request = ProviderRequest(
+            source=request.source, text=request.text, structured_input=structured_input, formalism_id=chosen
+        )
         try:
             result = provider.analyse(provider_request)
         except ProviderError as error:

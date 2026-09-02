@@ -22,24 +22,28 @@ Machine. It is updated at every feature boundary. If a session restarts, resume 
 |---|---|---|
 | 007 | Aggregate contract + ontology vendoring + D5 boundary checks | **done** — `specs/007-aggregate-contract/` |
 | 008 | Workbench promotion system | **done** — `specs/008-promotion-system/`. All three ModernBERT releases fail the gate (a52b70 withhold: F1 0.198 vs baseline 0.487; 462d68 withhold: unevaluated; e5ea56 retire: fabricated evidence). **Owner ruling needed**: see 008 spec §Consequence |
-| 009 | RST provider adapter | in progress |
-| 010 | Repository migration + rename (`rst/`, `Rhetorical_Discourse_Analysis_Machine`, memory paths) | pending — runs reconciled |
+| 009 | RST provider adapter | **done** — `specs/009-rst-provider-adapter/`; `rst/rdam_rst`. Reports RST `unavailable(withheld)` under the 008 verdicts |
+| 010 | Repository migration + rename (`rst/`, `Rhetorical_Discourse_Analysis_Machine`, memory paths) | in progress — runs reconciled |
 | 011 | Dung provider (formal) | pending |
 | 012 | IBIS provider (formal) | pending |
 | — | Release 6.0.0: tag, build, validate, clean-install, evidence | pending |
 
 ## Next step
 
-009: `rst/`? No — the RST adapter is machine-facing code that *consumes* `isanlp_rst`'s
-public contract (FR-010). It lives with the machine: `machine/rdam/providers/rst.py`
-(`rdam` depends on `isanlp_rst` optionally? No — the adapter is its own package
-`rdam_rst` under `rst/` at migration; until migration it lives under `machine/rdam_rst/`
-as a separate distribution depending on both `rdam` and `isanlp_rst`). Declaration bound
-to `…/rst` with formalisms `rst_tree`/`erst_graph`; capability derived from
-`describe_capabilities(parser)` plus the published decision beside the configured release
-(`unavailable(withheld|retired)` when no `promote` decision exists); `analyse` runs
-`ProductionIngestor(parser).analyse(SourceArtifact.from_text(...))` and returns the
-serialized outcome as the opaque native payload.
+010 — repository migration, under the rst-preservation contract:
+
+1. Baseline capture: `test-all`, `production-api-contract`, `smoke` already green today;
+   persist serialized outcomes for representative inputs across the six source forms
+   into `specs/010-repository-migration/evidence/baseline/`.
+2. `git mv isanlp_rst rst/isanlp_rst`; root `pyproject.toml` `packages = ["rst/isanlp_rst"]`
+   and sdist include; pixi editable installs unchanged (root pyproject stays); pyright,
+   ruff, ownership authority, import walker (`rst/isanlp_rst/x.py` → module `isanlp_rst.x`).
+3. Post-migration comparison: identical commands, byte-equal serialized contracts.
+4. Packaging gate (D2 `ASSUMED`): `build-production`, `validate-production-artifacts`,
+   `production-clean-install`.
+5. Identity adoption (D3): rename directory to `Rhetorical_Discourse_Analysis_Machine`,
+   git remote and `[project.urls]`, sibling-repo path sweep, `~/.claude/projects/` memory
+   migration, verify memory loads.
 
 ## Gates that must stay green
 

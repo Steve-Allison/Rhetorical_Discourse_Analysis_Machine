@@ -106,6 +106,7 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 - [`isanlp_rst/doclang/`](isanlp_rst/doclang/) — private DocLang XML/archive decoding helpers used by canonical ingest.
 - [`isanlp_rst/markdown/`](isanlp_rst/markdown/) — private Markdown decoding helper used by canonical ingest.
 - [`machine/rdam/`](machine/rdam/) — the machine's aggregate analysis contract (import name `rdam`): provider and formalism declarations, capability states, native results, `Machine.analyse()` returning one explicit outcome per technique. Feature 007.
+- [`rst/rdam_rst/`](rst/rdam_rst/) — the machine-facing RST/eRST provider adapter (import name `rdam_rst`): declares capability from the promotion decision published beside the configured release and hands the machine `isanlp_rst`'s outcome envelope verbatim. Feature 009.
 - [`ontology/`](ontology/) — vendored Central distribution (read-only, `vendor/central-configs/`) and the `rdam` LinkML application profile binding boundaries to `coe:` framework identities; `pixi run ontology-validate`.
 - [`workbench/`](workbench/) — offline workbench: corpus ingestion, training recipes, Parseval evaluation, and central audit ledger (`workbench/experiments/central_ledger.jsonl`).
 - [`docs/metrics/UniRST_Metrics.md`](docs/metrics/UniRST_Metrics.md) — per-corpus metrics for the multilingual model.

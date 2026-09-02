@@ -109,6 +109,7 @@ python = "3.14.*"
 [tool.pixi.feature.production.pypi-dependencies]
 isanlp_rst = { path = ".", editable = true }
 rdam = { path = "machine", editable = true }
+rdam-rst = { path = "rst", editable = true }
 
 # Task descriptions are the authority `pixi task list` shows; docs point here rather than
 # restating them.
@@ -125,6 +126,7 @@ markdownlint-cli2 = ">=0.14"
 [tool.pixi.feature.offline.pypi-dependencies]
 isanlp_rst = { path = ".", editable = true, extras = ["dev", "formats", "offline"] }
 rdam = { path = "machine", editable = true }
+rdam-rst = { path = "rst", editable = true }
 linkml = ">=1.11.1, <2"
 
 [tool.ruff]
@@ -145,6 +147,7 @@ ignore = [
 include = [
   "isanlp_rst",
   "machine",
+  "rst",
   "workbench",
   "tools",
   "tests",
@@ -173,7 +176,7 @@ test = { cmd = "pytest -m 'not slow and not stress' -q", description = "Fast sui
 test-all = { cmd = "pytest -q", description = "Every test, including slow model-loading tests and the production smoke" }
 test-stress = { cmd = "pytest tests/stress -q", description = "Concurrency, megadoc, and memory-leak stress tests" }
 smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every ModernBERT release in models/model-releases on every available device (CPU, MPS, CUDA) through the public façade; skips visibly when the store is empty" }
-lint = { cmd = "ruff check isanlp_rst machine workbench tests scripts tools", description = "Ruff" }
+lint = { cmd = "ruff check isanlp_rst machine rst workbench tests scripts tools", description = "Ruff" }
 project-framework-identities = { cmd = "python tools/ontology/project_framework_identities.py", description = "Regenerate machine/rdam/resources/framework-identities.json from the vendored Central taxonomy" }
 ontology-validate = { cmd = "linkml lint --ignore-warnings ontology/schema/rdam.linkml.yaml && linkml validate ontology/schema/rdam.linkml.yaml && linkml validate -s ontology/schema/rdam.linkml.yaml -C ProviderBindings ontology/data/rdam-providers.yaml && python tools/ontology/project_framework_identities.py --check", description = "Validate the rdam LinkML application profile and its provider bindings against the vendored Central distribution, and check the framework projection is current" }
 typecheck = { cmd = "pyright", description = "Pyright, strict" }

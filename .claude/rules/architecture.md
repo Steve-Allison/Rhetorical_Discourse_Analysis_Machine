@@ -143,8 +143,10 @@ verified against the live tree in
   inside one, ever (FR-003).
 - **Boundaries appear only on promotion.** A technique's directory is created when that
   technique first promotes a provider (FR-002) — never speculatively. `machine/` and
-  `ontology/` exist (feature 007); a technique boundary directory exists only once its
-  provider is promoted, and creating an empty one is a defect.
+  `ontology/` exist (feature 007); `rst/` exists because RST is the established provider
+  (its adapter `rdam_rst` is there, feature 009; `isanlp_rst` moves in at migration). Any
+  other technique boundary directory exists only once its provider is promoted, and
+  creating an empty one is a defect.
 - **Exactly one `workbench/`.** No second experimentation root, no per-boundary scratch
   area, no "temporary" candidate directory outside it (FR-004).
 

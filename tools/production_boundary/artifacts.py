@@ -27,7 +27,7 @@ _METADATA_MARKERS = (".dist-info/", ".egg-info/")
 # Import roots a production wheel may carry (006: boundary directories are never packages;
 # these are the packages inside them). Anything else in a wheel is outside the boundary
 # (FR-006, research D5 check b).
-_PRODUCTION_IMPORT_ROOTS = ("isanlp_rst/", "rdam/", "rdam_dung/", "rdam_ibis/")
+_PRODUCTION_IMPORT_ROOTS = ("isanlp_rst/", "rdam/", "rdam_rst/", "rdam_dung/", "rdam_ibis/")
 _REQUIREMENT_NAME = re.compile(rb"^\s*([A-Za-z0-9][A-Za-z0-9._-]*)")
 _EXTRA_MARKER = re.compile(r"\bextra\s*==\s*['\"]([^'\"]+)['\"]")
 

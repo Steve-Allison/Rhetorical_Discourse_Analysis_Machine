@@ -9,7 +9,7 @@ below. A violation is a defect, not a style choice.
 
 | Boundary | Owner of | Exists |
 |---|---|---|
-| `rst/` | The canonical `isanlp_rst` RST/eRST provider package | at migration |
+| `rst/` | The RST/eRST boundary: the canonical `isanlp_rst` provider package (moves in at migration, feature 010) and the machine-facing adapter `rst/rdam_rst` (import name `rdam_rst`, feature 009) | now (adapter, 2026-09-02); `isanlp_rst` at migration |
 | `pdtb/`, `sdrt/`, `toulmin/`, `walton/`, `dung/`, `ibis/` | One technique's promoted provider, native contract, runtime assets, capability declaration | only on that technique's first promotion (FR-002) |
 | `machine/` | Aggregate analysis contract (`machine/rdam`, import name `rdam`); cross-provider orchestration later | now (feature 007, 2026-09-02) |
 | `ontology/` | Vendored Central distribution (read-only, `ontology/vendor/central-configs/`) + the `rdam` application profile (`ontology/schema/rdam.linkml.yaml`, bindings in `ontology/data/`) | now (feature 007, 2026-09-02) |
