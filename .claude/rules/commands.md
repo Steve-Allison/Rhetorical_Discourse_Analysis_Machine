@@ -2,38 +2,53 @@
 
 Every Python invocation goes through pixi. Never `pip`, `pip3`, `conda`, `poetry`, `venv`, or `virtualenv` for project work. System `python3` lacks the project dependencies and will fail with import errors.
 
-## Daily-use commands
+## The task table is the authority
 
-The `default` environment is active by default:
-
-```bash
-pixi install                            # provision default dev environment from pixi.lock
-pixi run test                           # unit and offline test battery (excludes slow/stress)
-pixi run test-deep                      # full integration test suite
-pixi run test-stress                    # multithreaded and megadoc stress tests
-pixi run lint                           # ruff check on isanlp_rst, tests, scripts, tools
-pixi run typecheck                      # pyright Strict Mode A
-pixi run mdlint                         # markdownlint-cli2 across all tracked markdown
-pixi run cleanup                        # remove bytecode, tool caches, temp files (not .pixi)
-pixi run -e production production-smoke # verify clean-room production wheel boundary
-pixi run build-production               # build reproducible production wheel and sdist
-```
-
-`./cleanup.sh` is the same cleaner without going through the pixi task table; it still prefers `pixi run python` when `.pixi` exists.
-
-## Performance and verification commands
+Task names, commands, and their one-line descriptions live in `pyproject.toml` under
+`[tool.pixi.feature.offline.tasks]` (the `default` environment) and
+`[tool.pixi.feature.production.tasks]`. This file does not copy them — a copied
+description is a description that drifts. List them with:
 
 ```bash
-pixi run smoke-full     # full smoke: every ModernBERT release in models/model-releases, CPU
-pixi run smoke-full-mps # full smoke on MPS
-pixi run bench          # performance bench across models / dtypes
-pixi run cuda-smoke     # CUDA verification (for NVIDIA hosts only)
-pixi run rst-diag <paths>  # RST quality proxy metrics over .md / docling / doclang sources
+pixi task list
 ```
 
-`rst-diag` loads the model once and dispatches by suffix; use it to A/B
-any harvest-policy change (joint ratio, tree skew, cross-boundary ratio,
-note ratio, table-analysis count). `--json` for machine output.
+Tasks defined in more than one environment (`production-boundary`,
+`production-import-check`) need an explicit `-e`; the bare form fails as ambiguous.
+
+## When to use what
+
+- **Everyday**: `pixi run test`, `pixi run lint`, `pixi run typecheck`, `pixi run mdlint`.
+- **Editing the predictor stack** (`isanlp_rst/transformer_parser/`, `parser.py`,
+  `model_loading/`): `pixi run test-all`. It includes the dtype-equivalence suite and the
+  production smoke, which loads every release in `models/model-releases` on every
+  available device. `pixi run smoke` runs the smoke alone.
+- **Before committing substantive changes**: `pixi run lint && pixi run typecheck && pixi run test`,
+  plus `test-all` for predictor-stack changes.
+- **Release**: tag the commit `v<version>`, then `pixi run build-production`,
+  `pixi run validate-production-artifacts`, and
+  `pixi run -e production production-clean-install`. `dist/` is ignored build output;
+  the committed record is the evidence JSON under
+  `specs/004-production-api-contract/evidence/`. `production-import-check` imports the
+  editable source only and certifies no wheel.
+- **Quality diagnostics**: `pixi run rst-diag <paths>`; `--json` for machine output.
+- **CI** (`.github/workflows/`): fast tests on every push, the slow suite nightly. The
+  model smoke is local-only because weights are not in git.
+
+## Single-test invocation
+
+```bash
+pixi run pytest tests/integration/test_integration.py::test_specific_thing -v
+```
+
+## One-off Python with project deps
+
+```bash
+pixi run python -c 'from isanlp_rst.parser import Parser; print(Parser.__doc__)'
+pixi run -- python script.py
+```
+
+Never `python script.py` directly — the system interpreter doesn't see the project deps.
 
 ## Dependency management
 
@@ -44,31 +59,6 @@ pixi remove <package>        # remove a dependency
 ```
 
 Never edit `pixi.lock` manually — it's generated.
-
-## When to use each test command
-
-- **Refactoring or editing inherited research code:** `pixi run test-all` to catch dtype-equivalence regressions.
-- **Editing tests, scripts, or new modules:** `pixi run test` is usually enough; integration tests are slow and require model downloads.
-- **Before commit on substantive changes:** `pixi run lint && pixi run typecheck && pixi run test`.
-- **Before commit on changes to the predictor stack:** add `pixi run smoke` or `pixi run smoke-mps` to the above.
-- **CI:** GitHub Actions runs fast tests on every push and integration tests nightly. See [`.github/workflows/`](../../.github/workflows/).
-
-## Single-test invocation
-
-```bash
-pixi run pytest tests/test_integration.py::test_specific_thing -v
-```
-
-Use this when iterating on one test rather than running the whole suite.
-
-## One-off Python with project deps
-
-```bash
-pixi run python -c 'from isanlp_rst.parser import Parser; print(Parser.__doc__)'
-pixi run -- python script.py
-```
-
-Never `python script.py` directly — the system interpreter doesn't see the project deps.
 
 ## Forbidden
 

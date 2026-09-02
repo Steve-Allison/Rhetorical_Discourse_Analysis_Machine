@@ -14,28 +14,9 @@ Single remote: `origin` → `Steve-Allison/isanlp_rst`. No upstream tracking. Al
 
 ## Pixi commands
 
-The repository uses two environments:
+Two environments: **`default`** (everything for daily work; active without `-e`) and **`production`** (isolated clean-room environment; its installed distribution is the editable source). The task table in `pyproject.toml` is the authority — `pixi task list` shows every task with its description, and [`commands.md`](.claude/rules/commands.md) says when to use which. Adding dependencies: `pixi add <package>`. Never `pip install`.
 
-- **`default` (mapped to `offline`)**: Active by default. Contains all dependencies (`dev`, `formats`, `offline`) for friction-free everyday development.
-- **`production`**: Isolated clean-room environment simulating a pip consumer install.
-
-```bash
-pixi install                            # provision default environment
-pixi run test                           # fast unit tests (excludes slow/stress)
-pixi run test-deep                      # full integration test battery
-pixi run test-stress                    # multithreaded and megadoc stress tests
-pixi run lint                           # ruff check
-pixi run typecheck                      # pyright (Strict Mode A)
-pixi run bench                          # benchmark harness across models/dtypes
-pixi run mdlint                         # markdownlint over tracked files manifest
-pixi run cleanup                        # remove bytecode, tool caches, dist (or ./cleanup.sh)
-pixi run -e production production-smoke # verify clean-room production wheel
-pixi run build-production               # build reproducible wheel and sdist
-```
-
-Adding dependencies: `pixi add <package>`. Never `pip install`.
-
-CI (`.github/workflows/ci.yml`) runs on macOS arm64 with the pixi lock (**Python 3.14**). `requires-python` is `>=3.14`. PRs also run a short CPU smoke (`--quick`: gumrrg + unirst) with an HF hub cache, plus `mdlint`.
+CI (`.github/workflows/ci.yml`) runs lint, typecheck, mdlint, and the fast tests on macOS arm64 with the pixi lock (**Python 3.14**; `requires-python` is `>=3.14`); the slow suite runs nightly. The model smoke is local-only because weights are not in git: `pixi run smoke`.
 
 ## Project-specific overrides of global rules
 
@@ -99,7 +80,7 @@ compete with it.
 
 ### Production source ingest
 
-Production source ingest has one public surface: `isanlp_rst.ingest`. `ProductionIngestor.capabilities()`, `.prepare()`, and `.analyse()` accept six declared source forms: plain text, pre-segmented EDUs, Markdown, Docling JSON, DocLang XML, and DocLang archives. The old format-specific parsing functions and result envelopes were removed rather than deprecated; no compatibility route remains.
+Production source ingest has one public surface: `isanlp_rst.ingest` — `ProductionIngestor.capabilities()`, `.prepare()`, and `.analyse()`. The accepted source forms and their availability are whatever `describe_capabilities()` reports; that call is the authority, not this file. The old format-specific parsing functions and result envelopes were removed rather than deprecated; no compatibility route remains.
 
 The optional **`formats` extra** supplies `docling-core`, `doclang`, `markdown-it-py`, and `mdit-py-plugins`: `pip install isanlp_rst[formats]`. Core parser consumers avoid that dependency chain. `pixi install` includes `formats`; keep these dependencies outside `[project.dependencies]`.
 
