@@ -75,6 +75,18 @@ class Scheme:
     premise_roles: tuple[str, ...]
     critical_questions: tuple[str, ...]
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.scheme_id, SchemeId):
+            raise SchemeError(f"unknown scheme id: {self.scheme_id!r}")
+        if not isinstance(self.name, str) or not self.name.strip():
+            raise SchemeError("a scheme requires a non-empty name")
+        if not self.premise_roles or any(not role.strip() for role in self.premise_roles):
+            raise SchemeError("a scheme requires non-empty premise roles")
+        if len(set(self.premise_roles)) != len(self.premise_roles):
+            raise SchemeError("a scheme's premise roles must be unique")
+        if not self.critical_questions or any(not question.strip() for question in self.critical_questions):
+            raise SchemeError("a scheme requires non-empty critical questions")
+
 
 def _scheme(
     scheme_id: SchemeId, name: str, roles: tuple[str, ...], questions: tuple[str, ...]
@@ -233,6 +245,8 @@ class CriticalQuestion(BaseModel):
     def addressed_questions_say_how(self) -> Self:
         if self.status is CriticalQuestionStatus.ADDRESSED and not self.note:
             raise SchemeError("a critical question marked addressed must say how the passage addresses it")
+        if self.status is CriticalQuestionStatus.OPEN and self.note is not None:
+            raise SchemeError("an open critical question cannot carry a provider-authored note")
         return self
 
 

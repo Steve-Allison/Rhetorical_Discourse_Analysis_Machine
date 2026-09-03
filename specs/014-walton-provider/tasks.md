@@ -43,10 +43,19 @@ unavailable, and exhausted attempts without a live request.
 - [X] T008 Run the feature quickstart, `pixi run lint`, `pixi run typecheck`, and `pixi run -e default production-boundary`; record exact results in `specs/014-walton-provider/evidence.md`
 - [X] T009 Run `$speckit-analyze` over Feature 014 and resolve every finding before completion
 
+## Phase 7: Current Convergence and Delivery
+
+- [X] T010 Add failing direct-catalogue and open-question-note counterexamples in `tests/walton/test_schemes.py`
+- [X] T011 Enforce native `Scheme` invariants and forbid notes on open critical questions in `rdam/walton/schemes.py`
+- [X] T012 Re-run focused, static, boundary, Markdown, ontology, fast, and complete gates; append exact current results to `specs/014-walton-provider/evidence.md`
+- [X] T013 Re-run cross-artifact analysis and resolve all findings
+- [X] T014 Stage all Feature 014 files, commit, push, and verify local HEAD equals upstream
+
 ## Dependencies
 
-T001 precedes audit edits. T002 precedes provider evidence work. T003 precedes T004;
-T005 follows the catalogue contract; T006 precedes T007. T008–T009 run last.
+T001 precedes the original audit. T002 precedes provider evidence work. T003 precedes
+T004; T005 follows the catalogue contract; T006 precedes T007. T010–T014 are the
+current sequential convergence pass.
 
 ## Implementation Strategy
 

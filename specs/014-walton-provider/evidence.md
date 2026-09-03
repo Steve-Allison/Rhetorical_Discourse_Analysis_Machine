@@ -27,3 +27,20 @@ attempt evidence.
 
 The opt-in live-model test is skipped unless `RDAM_RUN_LIVE_MODEL_TESTS=1`; live
 service execution was not performed and is not claimed.
+
+## Current convergence verification
+
+- Native-catalogue/open-note red phase: **5 failed, 98 passed** before implementation.
+- `pixi run pytest tests/walton -q`: **118 passed, 1 skipped in 1.37s** after enforcing
+  `Scheme` invariants and forbidding notes on open critical questions.
+- Focused Ruff and strict Pyright: clean; **0 errors, 0 warnings, 0 informations**.
+- Repository Ruff: **All checks passed**.
+- Repository strict Pyright: **0 errors, 0 warnings, 0 informations**.
+- Markdown: **206 files linted, 43 governed exclusions, 0 issues**.
+- Ontology: exit 0; schema and bindings validated and the framework projection matched
+  its vendored authority. The configured ignored `_meta` naming warning remained visible.
+- Source boundary: default and production environments each reported **valid: true**,
+  137 production modules/files, and zero violations.
+- Fast suite: **1,339 passed, 134 deselected in 35.52s**.
+- Complete suite: **1,417 passed, 56 skipped in 238.33s**.
+- Live external-model execution remains opt-in and was not run or claimed.

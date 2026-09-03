@@ -8,6 +8,8 @@ from rdam.walton import (
     SCHEME_SET_ID,
     CriticalQuestion,
     CriticalQuestionStatus,
+    Scheme,
+    SchemeError,
     SchemeId,
     SchemeInstance,
     WaltonAnalysis,
@@ -41,6 +43,29 @@ def _filled(scheme_id: SchemeId) -> dict[str, object]:
 
 
 class TestTheSchemeTable:
+    @pytest.mark.parametrize(
+        ("name", "roles", "questions"),
+        (
+            ("", ("finding",), ("A question?",)),
+            ("Sign", (), ("A question?",)),
+            ("Sign", ("finding", "finding"), ("A question?",)),
+            ("Sign", ("finding",), ()),
+        ),
+    )
+    def test_direct_scheme_construction_enforces_catalogue_invariants(
+        self,
+        name: str,
+        roles: tuple[str, ...],
+        questions: tuple[str, ...],
+    ) -> None:
+        with pytest.raises(SchemeError):
+            Scheme(
+                scheme_id=SchemeId.SIGN,
+                name=name,
+                premise_roles=roles,
+                critical_questions=questions,
+            )
+
     def test_every_declared_scheme_is_in_the_table(self) -> None:
         assert set(SCHEMES) == set(SchemeId), "every SchemeId must have a Scheme"
 
@@ -119,6 +144,15 @@ class TestCriticalQuestions:
 
     def test_an_open_question_needs_no_note(self) -> None:
         assert CriticalQuestion(index=0, status=CriticalQuestionStatus.OPEN).note is None
+
+    def test_an_open_question_refuses_a_provider_authored_note(self) -> None:
+        with pytest.raises(ValidationError) as caught:
+            CriticalQuestion(
+                index=0,
+                status=CriticalQuestionStatus.OPEN,
+                note="The source should have answered yes.",
+            )
+        assert "open critical question" in str(caught.value)
 
     def test_an_out_of_range_question_index_is_refused(self) -> None:
         count = len(SCHEMES[SchemeId.EXPERT_OPINION].critical_questions)
