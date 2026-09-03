@@ -181,6 +181,59 @@ class DeterministicParser:
         return composite
 
 
+def build_model_identity(
+    *,
+    release_id: str = "fixture-release",
+    maximum: int = 512,
+    manifest_sha256: str = "a" * 64,
+    weight_sha256: str = "b" * 64,
+) -> ModelReleaseIdentity:
+    """Build a complete immutable identity without requiring pytest fixture discovery."""
+
+    capacity = ReleaseParserCapacity(unit="edu_count", maximum=maximum, source="fixture-parser-v1")
+    return ModelReleaseIdentity(
+        release_id=release_id,
+        manifest_sha256=manifest_sha256,
+        runtime_contract="isanlp_rst.parser/fixture-v1",
+        architecture="deterministic-fixture",
+        files=(
+            ModelFile(
+                path=PurePosixPath("model.safetensors"),
+                role="weights",
+                size_bytes=1,
+                sha256=weight_sha256,
+            ),
+            ModelFile(
+                path=PurePosixPath("relation_inventory.json"),
+                role="relation_inventory",
+                size_bytes=1,
+                sha256="c" * 64,
+            ),
+        ),
+        capacity=capacity,
+    )
+
+
+def build_deterministic_parser(
+    *,
+    release_id: str = "fixture-release",
+    maximum: int = 512,
+) -> DeterministicParser:
+    """Build the shared no-model parser double for tests outside this fixture package."""
+
+    identity = build_model_identity(release_id=release_id, maximum=maximum)
+    return DeterministicParser(
+        analysis_capacity=ParserCapacity(
+            unit=CapacityUnit.EDU_COUNT,
+            maximum=identity.capacity.maximum,
+            estimation_algorithm="provider_declared",
+            estimation_version=SemanticVersion(root="2.0.0"),
+            source=identity.capacity.source,
+        ),
+        model_release_identity=identity,
+    )
+
+
 @pytest.fixture
 def source_artifact_builder() -> SourceArtifactBuilder:
     """Build exact, stable sources without filesystem or clock dependence."""
@@ -224,54 +277,21 @@ def model_identity_builder() -> ModelIdentityBuilder:
         manifest_sha256: str = "a" * 64,
         weight_sha256: str = "b" * 64,
     ) -> ModelReleaseIdentity:
-        capacity = ReleaseParserCapacity(unit="edu_count", maximum=maximum, source="fixture-parser-v1")
-        return ModelReleaseIdentity(
+        return build_model_identity(
             release_id=release_id,
+            maximum=maximum,
             manifest_sha256=manifest_sha256,
-            runtime_contract="isanlp_rst.parser/fixture-v1",
-            architecture="deterministic-fixture",
-            files=(
-                ModelFile(
-                    path=PurePosixPath("model.safetensors"),
-                    role="weights",
-                    size_bytes=1,
-                    sha256=weight_sha256,
-                ),
-                ModelFile(
-                    path=PurePosixPath("relation_inventory.json"),
-                    role="relation_inventory",
-                    size_bytes=1,
-                    sha256="c" * 64,
-                ),
-            ),
-            capacity=capacity,
+            weight_sha256=weight_sha256,
         )
 
     return build
 
 
 @pytest.fixture
-def parser_builder(model_identity_builder: ModelIdentityBuilder) -> ParserBuilder:
+def parser_builder() -> ParserBuilder:
     """Build a parser double aligned with the requested immutable model identity."""
 
-    def build(
-        *,
-        release_id: str = "fixture-release",
-        maximum: int = 512,
-    ) -> DeterministicParser:
-        identity = model_identity_builder(release_id=release_id, maximum=maximum)
-        return DeterministicParser(
-            analysis_capacity=ParserCapacity(
-                unit=CapacityUnit.EDU_COUNT,
-                maximum=identity.capacity.maximum,
-                estimation_algorithm="provider_declared",
-                estimation_version=SemanticVersion(root="2.0.0"),
-                source=identity.capacity.source,
-            ),
-            model_release_identity=identity,
-        )
-
-    return build
+    return build_deterministic_parser
 
 
 @pytest.fixture

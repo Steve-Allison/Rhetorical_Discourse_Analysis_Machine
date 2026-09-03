@@ -239,19 +239,32 @@ class AggregateAnalysis(StrictModel):
         techniques = [outcome_technique(item) for item in self.outcomes]
         if len(techniques) != len(set(techniques)):
             raise ValueError("an aggregate carries at most one outcome per technique")
-        result_digests: dict[Sha256Identity, Technique] = {}
+        results_by_technique: dict[Technique, NativeTechniqueResult] = {}
+        results_by_digest: dict[Sha256Identity, NativeTechniqueResult] = {}
         for item in self.outcomes:
             if isinstance(item, ResultOutcome):
                 if item.result.source != self.source:
                     raise ValueError("every native result must be about the aggregate's source")
+                results_by_technique[item.result.technique] = item.result
                 if item.result.semantic_digest is not None:
-                    result_digests[item.result.semantic_digest] = item.result.technique
+                    results_by_digest[item.result.semantic_digest] = item.result
         for reference in self.lineage:
-            if reference.consumer_technique not in techniques:
-                raise ValueError("lineage consumer is not an outcome of this aggregate")
-            upstream = result_digests.get(reference.upstream_result_identity)
-            if upstream is None or upstream is not reference.upstream_technique:
+            consumer = results_by_technique.get(reference.consumer_technique)
+            if consumer is None:
+                raise ValueError("lineage consumer is not a successful result of this aggregate")
+            if reference.consumer_provider_id != consumer.provider_id:
+                raise ValueError("lineage consumer provider does not match the consumer result")
+            if reference.consumer_contract_version != consumer.provider_contract_version:
+                raise ValueError("lineage consumer contract does not match the consumer result")
+            upstream = results_by_digest.get(reference.upstream_result_identity)
+            if upstream is None or upstream.technique is not reference.upstream_technique:
                 raise ValueError("lineage names an upstream result that is not a result of this aggregate")
+            if reference.upstream_provider_id != upstream.provider_id:
+                raise ValueError("lineage upstream provider does not match the upstream result")
+            if reference.upstream_contract_version != upstream.provider_contract_version:
+                raise ValueError("lineage upstream contract does not match the upstream result")
+            if reference.upstream_model_identity != upstream.provenance.model_identity:
+                raise ValueError("lineage upstream model does not match the upstream result")
         expected = Sha256Identity(hex_digest=semantic_sha256(self.model_dump(exclude={"semantic_digest"})))
         if self.semantic_digest is not None and self.semantic_digest != expected:
             raise ValueError("aggregate semantic digest mismatch")
@@ -268,6 +281,15 @@ class TechniqueCapability(StrictModel):
     capability: CapabilityState
     formalisms: tuple[FormalismDeclaration, ...] = ()
     requires_structured_input: bool
+
+    @model_validator(mode="after")
+    def canonical_identity_and_input_mode(self) -> Self:
+        if self.technique_curie != technique_curie(self.technique):
+            raise ValueError("technique capability must carry its canonical identity")
+        expected_structured = self.technique in STRUCTURED_INPUT_TECHNIQUES
+        if self.requires_structured_input != expected_structured:
+            raise ValueError("technique capability has the wrong structured-input mode")
+        return self
 
 
 class MachineCapabilities(StrictModel):
@@ -316,6 +338,12 @@ class StructuredInput(StrictModel):
     technique: Technique
     payload: Mapping[str, JsonValue]
     derived_from: UpstreamResultReference | None = None
+
+    @model_validator(mode="after")
+    def only_for_structured_input_techniques(self) -> Self:
+        if self.technique not in STRUCTURED_INPUT_TECHNIQUES:
+            raise ValueError(f"{self.technique.value} does not accept structured input")
+        return self
 
 
 class FormalismChoice(StrictModel):

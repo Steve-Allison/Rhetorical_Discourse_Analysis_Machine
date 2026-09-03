@@ -2,9 +2,10 @@
 
 Capability means the provider can run. Configured with a published parser version it is
 available, because that version is one the façade knows how to load. Configured with a
-local model release it is available when that release is present. Neither check loads a
-model or touches the network: reporting capability is cheap by contract, and the parser
-is constructed on the first ``analyse``.
+local model release it is available only after the immutable manifest, compatibility,
+membership, sizes, and hashes validate. That local validation is cached per provider;
+neither path constructs a parser or touches the network, and the parser is constructed
+only by the first ``analyse``.
 
 Formalisms (006 data-model §Formalism): ``rst_tree`` carries ``…/rst``; ``erst_graph``
 carries ``…/erst`` and is available only when a validated eRST completion bundle
@@ -30,7 +31,7 @@ from rdam.rst.ingest import (
     serialize_contract,
 )
 from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
-from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST
+from rdam.rst.model_loading import ModelReleaseError, ValidatedModelRelease, load_model_release
 from rdam import (
     AvailableCapability,
     FormalismDeclaration,
@@ -54,6 +55,7 @@ RST_TREE: Final = "rst_tree"
 ERST_GRAPH: Final = "erst_graph"
 # The weights published under tchewik/isanlp_rst_v3, which every hf_model_version pulls.
 PUBLISHED_WEIGHTS_LICENCE: Final = "CC BY-NC 4.0 — research and non-commercial use only (LICENSE_MODELS)"
+INVALID_LOCAL_RELEASE_LICENCE: Final = "Unknown — configured local model release is unavailable or invalid"
 _FORMALISM_OUTPUT: Final[Mapping[str, OutputFormalism]] = {
     RST_TREE: OutputFormalism.RST_TREE,
     ERST_GRAPH: OutputFormalism.ERST_GRAPH,
@@ -101,6 +103,9 @@ class RstProvider:
         self._erst_checkpoint = erst_scorer_checkpoint
         self._cache_directory = cache_directory
         self._parser: Parser | None = None
+        self._local_release_checked = False
+        self._validated_local_release: ValidatedModelRelease | None = None
+        self._validated_local_family: str | None = None
 
     @property
     def model_identity(self) -> str:
@@ -117,10 +122,24 @@ class RstProvider:
             if self._hf_model_version not in Parser.AVAILABLE_VERSIONS:
                 return UnavailableReason.MODEL_UNAVAILABLE
             return None
+        return None if self._inspect_local_release() is not None else UnavailableReason.MODEL_UNAVAILABLE
+
+    def _inspect_local_release(self) -> ValidatedModelRelease | None:
+        """Validate the configured immutable release once without constructing a parser."""
+
+        if self._local_release_checked:
+            return self._validated_local_release
+        self._local_release_checked = True
         if self._store is None or self._release_id is None:
-            return UnavailableReason.MODEL_UNAVAILABLE
-        manifest = self._store / self._release_id / MODEL_RELEASE_MANIFEST
-        return None if manifest.is_file() else UnavailableReason.MODEL_UNAVAILABLE
+            return None
+        try:
+            release = load_model_release(self._store, self._release_id)
+            family = Parser.family_for_runtime_contract(release.manifest.runtime_contract)
+        except (ModelReleaseError, ValueError):
+            return None
+        self._validated_local_release = release
+        self._validated_local_family = family
+        return release
 
     @property
     def declaration(self) -> ProviderDeclaration:
@@ -170,11 +189,8 @@ class RstProvider:
 
         if self._store is None or self._release_id is None:
             return PUBLISHED_WEIGHTS_LICENCE
-        manifest = self._store / self._release_id / MODEL_RELEASE_MANIFEST
-        if not manifest.is_file():
-            return PUBLISHED_WEIGHTS_LICENCE
-        declared = json.loads(manifest.read_text(encoding="utf-8")).get("licence")
-        return declared if isinstance(declared, str) and declared else PUBLISHED_WEIGHTS_LICENCE
+        release = self._inspect_local_release()
+        return release.manifest.licence if release is not None else INVALID_LOCAL_RELEASE_LICENCE
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:
         declaration = self.declaration
@@ -188,7 +204,18 @@ class RstProvider:
             )
         if request.text is None:
             raise ProviderError(self._failure("analyse", Retryability.NOT_RETRYABLE, "text_required", "ValueError"))
-        parser = self._load_parser()
+        try:
+            parser = self._load_parser()
+        except ModelReleaseError as error:
+            raise ProviderError(
+                self._failure(
+                    "analyse",
+                    Retryability.NOT_RETRYABLE,
+                    "model_release_invalid",
+                    "ModelReleaseError",
+                    str(error),
+                )
+            ) from error
         policy = AnalysisPolicy.model_validate(
             {
                 **DEFAULT_ANALYSIS_POLICY.model_dump(exclude={"semantic_digest"}),
@@ -228,14 +255,13 @@ class RstProvider:
         if self._parser is not None:
             return self._parser
         if self._store is not None and self._release_id is not None:
-            from rdam.rst.model_loading import peek_runtime_contract
-
-            contract = peek_runtime_contract(self._store / self._release_id)
-            family = Parser.family_for_runtime_contract(contract)
+            release = self._inspect_local_release()
+            if release is None or self._validated_local_family is None:
+                raise ModelReleaseError("configured local model release is unavailable or invalid")
             self._parser = Parser.from_model_release(
                 self._store,
                 self._release_id,
-                family=family,
+                family=self._validated_local_family,
                 relinventory=self._relinventory,
                 device=self._device,
                 erst_scorer_checkpoint=self._erst_checkpoint,

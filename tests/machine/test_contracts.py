@@ -11,6 +11,7 @@ from rdam import (
     ProviderDeclaration,
     ProviderDependencyReference,
     ResultOutcome,
+    SemanticVersion,
     Sha256Identity,
     SourceIdentity,
     StructuredInput,
@@ -185,6 +186,44 @@ class TestAggregateAnalysis:
                 ),
             )
 
+    @pytest.mark.parametrize(
+        ("field", "value", "message"),
+        (
+            ("consumer_provider_id", "wrong-consumer", "consumer provider"),
+            ("consumer_contract_version", SemanticVersion(root="2.0.0"), "consumer contract"),
+            ("upstream_provider_id", "wrong-upstream", "upstream provider"),
+            ("upstream_contract_version", SemanticVersion(root="2.0.0"), "upstream contract"),
+            ("upstream_model_identity", "wrong-model", "upstream model"),
+        ),
+    )
+    def test_lineage_metadata_must_exactly_match_both_results(
+        self,
+        field: str,
+        value: object,
+        message: str,
+    ) -> None:
+        source = SourceIdentity.from_text("x")
+        rst = _result(rst_declaration(), "rst_tree", source)
+        dung = _result(dung_declaration(), "dung_extensions", source)
+        assert rst.semantic_digest is not None
+        reference = ProviderDependencyReference(
+            consumer_technique=Technique.DUNG,
+            consumer_provider_id=dung.provider_id,
+            consumer_contract_version=dung.provider_contract_version,
+            upstream_technique=Technique.RST,
+            upstream_provider_id=rst.provider_id,
+            upstream_contract_version=rst.provider_contract_version,
+            upstream_result_identity=rst.semantic_digest,
+            upstream_model_identity=rst.provenance.model_identity,
+        )
+        mutated = reference.model_copy(update={field: value})
+        with pytest.raises(ValidationError, match=message):
+            AggregateAnalysis(
+                source=source,
+                outcomes=(ResultOutcome(result=rst), ResultOutcome(result=dung)),
+                lineage=(mutated,),
+            )
+
 
 class TestAggregateRequest:
     def test_text_required_for_text_techniques(self) -> None:
@@ -216,6 +255,10 @@ class TestAggregateRequest:
                 structured_inputs=(StructuredInput(technique=Technique.DUNG, payload={}),),
             )
 
+    def test_text_technique_cannot_receive_structured_input(self) -> None:
+        with pytest.raises(ValidationError, match="does not accept structured input"):
+            StructuredInput(technique=Technique.RST, payload={"invented": "tree"})
+
 
 class TestMachineCapabilities:
     def test_must_list_every_boundary_once_in_spec_order(self) -> None:
@@ -229,4 +272,20 @@ class TestMachineCapabilities:
                         requires_structured_input=False,
                     ),
                 )
+            )
+
+    def test_capability_entry_requires_canonical_identity_and_input_mode(self) -> None:
+        with pytest.raises(ValidationError, match="canonical identity"):
+            TechniqueCapability(
+                technique=Technique.RST,
+                technique_curie=technique_curie(Technique.PDTB),
+                capability=UnavailableCapability(reason=UnavailableReason.NOT_IMPLEMENTED),
+                requires_structured_input=False,
+            )
+        with pytest.raises(ValidationError, match="structured-input mode"):
+            TechniqueCapability(
+                technique=Technique.DUNG,
+                technique_curie=technique_curie(Technique.DUNG),
+                capability=UnavailableCapability(reason=UnavailableReason.NOT_IMPLEMENTED),
+                requires_structured_input=False,
             )

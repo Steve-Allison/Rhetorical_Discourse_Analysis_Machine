@@ -166,18 +166,25 @@ class Machine:
         try:
             result = provider.analyse(provider_request)
         except ProviderError as error:
-            return FailedOutcome(failure=error.failure)
+            violation = _failure_contract_violation(declaration, error.failure)
+            if violation is None:
+                return FailedOutcome(failure=error.failure)
+            return FailedOutcome(
+                failure=_contract_failure(
+                    technique,
+                    declaration,
+                    code="provider_failure_contract_violation",
+                    violation=violation,
+                )
+            )
         violation = _result_contract_violation(declaration, request, result)
         if violation is not None:
             return FailedOutcome(
-                failure=ProviderFailure(
-                    technique=technique,
-                    provider_id=declaration.provider_id,
-                    failed_operation="analyse",
-                    retryability=Retryability.NOT_RETRYABLE,
+                failure=_contract_failure(
+                    technique,
+                    declaration,
                     code="provider_result_contract_violation",
-                    exception_type="ContractViolation",
-                    message_template=violation,
+                    violation=violation,
                 )
             )
         return ResultOutcome(result=result)
@@ -221,6 +228,10 @@ def _result_contract_violation(
 
     if result.provider_id != declaration.provider_id:
         return "result_names_a_different_provider"
+    if result.provider_contract_version != declaration.contract_version:
+        return "result_contract_version_differs_from_declaration"
+    if result.provenance != declaration.provenance:
+        return "result_provenance_differs_from_declaration"
     if result.source != request.source:
         return "result_is_about_a_different_source"
     formalism = declaration.formalism(result.formalism_id)
@@ -231,6 +242,37 @@ def _result_contract_violation(
     if not isinstance(formalism.capability, AvailableCapability):
         return "result_formalism_is_declared_unavailable"
     return None
+
+
+def _failure_contract_violation(
+    declaration: ProviderDeclaration,
+    failure: ProviderFailure,
+) -> str | None:
+    if failure.technique is not declaration.technique:
+        return "failure_technique_differs_from_declaration"
+    if failure.provider_id != declaration.provider_id:
+        return "failure_names_a_different_provider"
+    if failure.failed_operation != "analyse":
+        return "failure_operation_is_not_analyse"
+    return None
+
+
+def _contract_failure(
+    technique: Technique,
+    declaration: ProviderDeclaration,
+    *,
+    code: str,
+    violation: str,
+) -> ProviderFailure:
+    return ProviderFailure(
+        technique=technique,
+        provider_id=declaration.provider_id,
+        failed_operation="analyse",
+        retryability=Retryability.NOT_RETRYABLE,
+        code=code,
+        exception_type="ContractViolation",
+        message_template=violation,
+    )
 
 
 __all__ = ["Machine", "Provider", "production_machine"]

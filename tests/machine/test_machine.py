@@ -12,15 +12,20 @@ from rdam import (
     MachineCapabilities,
     NativeTechniqueResult,
     ProviderDeclaration,
+    ProviderError,
+    ProviderFailure,
+    ProviderProvenance,
     ProviderRequest,
     ResultOutcome,
     Retryability,
+    SemanticVersion,
     SourceIdentity,
     StructuredInput,
     Technique,
     UnavailableCapability,
     UnavailableOutcome,
     UnavailableReason,
+    UnsupportedRecordError,
     UpstreamResultReference,
     canonical_json_bytes,
     load,
@@ -154,6 +159,80 @@ class TestAnalyse:
         assert outcome.failure.message_template == "result_formalism_is_declared_unavailable"
         assert outcome.failure.retryability is Retryability.NOT_RETRYABLE
 
+    @pytest.mark.parametrize("defect", ("contract_version", "provenance"))
+    def test_a_result_with_false_provider_identity_is_a_deterministic_failure(self, defect: str) -> None:
+        declaration = rst_declaration()
+
+        def false_identity(
+            _declaration: ProviderDeclaration,
+            request: ProviderRequest,
+        ) -> NativeTechniqueResult:
+            values: dict[str, object] = {
+                "technique": Technique.RST,
+                "formalism_id": "rst_tree",
+                "provider_id": declaration.provider_id,
+                "provider_contract_version": declaration.contract_version,
+                "source": request.source,
+                "payload": {},
+                "provenance": declaration.provenance,
+            }
+            if defect == "contract_version":
+                values["provider_contract_version"] = SemanticVersion(root="2.0.0")
+            else:
+                values["provenance"] = ProviderProvenance(
+                    package="impostor",
+                    version="9.9.9",
+                    licence="unknown",
+                )
+            return NativeTechniqueResult.model_validate(values)
+
+        aggregate = Machine([FakeProvider(declaration, false_identity)]).analyse(
+            AggregateRequest.for_text("t", (Technique.RST,))
+        )
+        outcome = aggregate.outcome_for(Technique.RST)
+        assert isinstance(outcome, FailedOutcome)
+        assert outcome.failure.code == "provider_result_contract_violation"
+        assert outcome.failure.message_template == f"result_{defect}_differs_from_declaration"
+
+    @pytest.mark.parametrize(
+        ("field", "value", "message"),
+        (
+            ("technique", Technique.PDTB, "failure_technique_differs_from_declaration"),
+            ("provider_id", "another-provider", "failure_names_a_different_provider"),
+            ("failed_operation", "load", "failure_operation_is_not_analyse"),
+        ),
+    )
+    def test_a_misidentified_typed_failure_becomes_a_contract_failure(
+        self,
+        field: str,
+        value: object,
+        message: str,
+    ) -> None:
+        declaration = rst_declaration()
+
+        def false_failure(
+            _declaration: ProviderDeclaration,
+            _request: ProviderRequest,
+        ) -> NativeTechniqueResult:
+            failure = ProviderFailure(
+                technique=Technique.RST,
+                provider_id=declaration.provider_id,
+                failed_operation="analyse",
+                retryability=Retryability.NOT_RETRYABLE,
+                code="fixture_failure",
+                exception_type="FixtureError",
+                message_template="the_fixture_was_told_to_fail",
+            ).model_copy(update={field: value})
+            raise ProviderError(failure)
+
+        aggregate = Machine([FakeProvider(declaration, false_failure)]).analyse(
+            AggregateRequest.for_text("t", (Technique.RST,))
+        )
+        outcome = aggregate.outcome_for(Technique.RST)
+        assert isinstance(outcome, FailedOutcome)
+        assert outcome.failure.code == "provider_failure_contract_violation"
+        assert outcome.failure.message_template == message
+
     def test_an_unexpected_exception_is_a_bug_and_propagates(self) -> None:
         def broken(declaration: ProviderDeclaration, request: ProviderRequest) -> NativeTechniqueResult:
             raise KeyError("bug")
@@ -257,7 +336,31 @@ class TestSerialization:
 
     def test_tampered_payload_is_rejected(self, rst_provider: FakeProvider) -> None:
         payload = serialize(Machine([rst_provider]).capabilities()).decode("utf-8")
-        tampered = payload.replace('"requires_structured_input":false', '"requires_structured_input":true', 1)
+        tampered = payload.replace('"reason":"not_implemented"', '"reason":"model_unavailable"', 1)
         assert tampered != payload
         with pytest.raises(ValueError, match="digest mismatch"):
             load(tampered)
+
+    def test_duplicate_keys_are_rejected_before_dispatch(self, rst_provider: FakeProvider) -> None:
+        payload = serialize(Machine([rst_provider]).capabilities()).decode("utf-8")
+        duplicate = payload.replace("{", '{"contract":"rdam.capabilities",', 1)
+        with pytest.raises(ValueError, match="duplicate JSON object key"):
+            load(duplicate)
+
+    @pytest.mark.parametrize(
+        "mutation",
+        (
+            ('"contract":"rdam.capabilities"', '"contract":"rdam.unknown"'),
+            ('"contract_version":"1.0.0"', '"contract_version":"2.0.0"'),
+        ),
+    )
+    def test_unknown_contract_or_version_is_rejected_before_digest_validation(
+        self,
+        rst_provider: FakeProvider,
+        mutation: tuple[str, str],
+    ) -> None:
+        payload = serialize(Machine([rst_provider]).capabilities()).decode("utf-8")
+        unknown = payload.replace(*mutation, 1)
+        assert unknown != payload
+        with pytest.raises(UnsupportedRecordError, match="unsupported"):
+            load(unknown)
