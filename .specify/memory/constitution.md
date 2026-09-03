@@ -1,15 +1,19 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 -> 1.1.0
+- Version change: 1.1.0 -> 2.0.0
 - Modified principles: none (core principles I-V remain inviolate)
-- Added sections / clauses:
-  - Technical and Distribution Constraints: codified two-tier Pixi environment topology (`default` dev workbench vs `production` clean-room boundary)
-  - SOTA Architecture: codified pure-transformer ModernBERT architecture and unified `isanlp-rst` CLI
-- Removed sections: none
+- Modified constraints:
+  - Project identity: `isanlp_rst` -> Rhetorical Discourse Analysis Machine (`rdam`)
+  - Production RST architecture: ModernBERT mandate -> DMRST and UniRST families;
+    experimental ModernBERT remains workbench-only
+  - Product surface: single-parser CLI framing -> one package containing seven native
+    discourse and argumentation technique boundaries
+- Added sections: none
+- Removed sections: obsolete production ModernBERT mandate
 - Follow-up TODOs: none
 -->
 
-# isanlp_rst Constitution
+# Rhetorical Discourse Analysis Machine Constitution
 
 ## Core Principles
 
@@ -79,9 +83,13 @@ reliably expose.
 - The repository MUST maintain a two-environment topology: `default` (containing all developer, format,
   and offline tools for daily work) and `production` (isolated clean-room consumer environment for release
   certification). Production code MUST NOT import offline or dev dependencies.
-- The flagship parser MUST use pure-transformer architecture (`ModernBERT-base`, 8k context window, RoPE,
-  SDPA, vectorized span representations) with zero legacy model debt in production codelines.
-- The parser MUST preserve its Apple-Silicon-first, MPS-aware behaviour, CPU fallback, and explicit
+- The production distribution and import root MUST remain `rdam`, with RST, PDTB, SDRT,
+  Toulmin, Walton, Dung, and IBIS kept as separate native technique boundaries beneath
+  that one package. Technique results MUST NOT be collapsed into a shared formalism.
+- Production RST inference MUST use the DMRST and UniRST families. Experimental
+  ModernBERT architectures MUST remain under `workbench/` unless a separately specified,
+  evidence-backed promotion changes that boundary.
+- The RST parser MUST preserve its Apple-Silicon-first, MPS-aware behaviour, CPU fallback, and explicit
   CUDA paths unless an approved feature changes those supported targets.
 - Original source licensing MUST remain attributed. Published model weights are CC BY-NC 4.0 and
   MUST NOT be represented as commercially usable; commercial distribution requires permissively
@@ -126,4 +134,4 @@ Specifications, plans, tasks, implementations, and completion reviews MUST check
 this constitution. Any deviation MUST be identified before implementation and justified explicitly;
 unjustified complexity or an unverified exception is non-compliant.
 
-**Version**: 1.1.0 | **Ratified**: 2026-08-24 | **Last Amended**: 2026-08-29
+**Version**: 2.0.0 | **Ratified**: 2026-08-24 | **Last Amended**: 2026-09-03

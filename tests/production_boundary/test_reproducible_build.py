@@ -73,7 +73,8 @@ def test_rebuild_replaces_a_previous_pair_but_refuses_foreign_files(
 
 def test_tag_naming_another_version_is_an_error(tmp_path: Path) -> None:
     (tmp_path / "pyproject.toml").write_text(
-        '[project]\nname = "x"\nversion = "5.0.0"\n\n[tool.hatch.build.targets.wheel]\npackages = ["x"]\n',
+        '[project]\nname = "x"\nversion = "5.0.0"\nimport-names = ["x"]\n\n'
+        '[tool.hatch.build.targets.wheel]\npackages = ["x"]\n',
         encoding="utf-8",
     )
     _run("git", "init", "-q", cwd=tmp_path)

@@ -6,9 +6,11 @@ restates a name or a version literal that could drift from the declaration.
 """
 
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import tomllib
+
+from packaging.version import InvalidVersion, Version
 
 _FILENAME_NORMALIZER = re.compile(r"[-_.]+")
 
@@ -54,12 +56,32 @@ def read_release_identity(root: Path) -> ReleaseIdentity:
     project = pyproject.get("project", {})
     name = project.get("name")
     version = project.get("version")
+    import_names = project.get("import-names")
     packages = pyproject.get("tool", {}).get("hatch", {}).get("build", {}).get("targets", {}).get("wheel", {}).get("packages")
-    if not isinstance(name, str) or not isinstance(version, str):
+    if not isinstance(name, str) or not name or not isinstance(version, str):
         raise RuntimeError("pyproject must declare a static project name and version")
+    try:
+        Version(version)
+    except InvalidVersion as error:
+        raise RuntimeError("pyproject project.version must be valid PEP 440") from error
     if not isinstance(packages, list) or len(packages) != 1 or not isinstance(packages[0], str):
         raise RuntimeError("pyproject must declare exactly one wheel package directory")
-    return ReleaseIdentity(distribution=name, version=version, package_dir=packages[0])
+    package_dir = packages[0]
+    package_path = PurePosixPath(package_dir)
+    if (
+        "\\" in package_dir
+        or package_path.is_absolute()
+        or not package_path.parts
+        or ".." in package_path.parts
+        or package_path.as_posix() != package_dir
+    ):
+        raise RuntimeError("pyproject wheel package must be a safe relative path")
+    import_package = package_path.name
+    if import_names != [import_package]:
+        raise RuntimeError(
+            "pyproject project.import-names must exactly match the sole wheel package"
+        )
+    return ReleaseIdentity(distribution=name, version=version, package_dir=package_dir)
 
 
 __all__ = ["ReleaseIdentity", "read_release_identity"]
