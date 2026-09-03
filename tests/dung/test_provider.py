@@ -35,6 +35,11 @@ def _request(payload: Mapping[str, JsonValue] = FRAMEWORK) -> AggregateRequest:
 
 
 class TestDeclaration:
+    @pytest.mark.parametrize("capacity", (True, 0, -1))
+    def test_invalid_capacity_is_rejected_at_provider_construction(self, capacity: int) -> None:
+        with pytest.raises(ValueError, match="positive integer"):
+            DungProvider(capacity=capacity)
+
     def test_the_provider_is_available_and_names_its_own_source(self) -> None:
         declaration = DungProvider().declaration
         assert declaration.technique is Technique.DUNG

@@ -47,6 +47,28 @@ class ArgumentationFramework:
     arguments: tuple[str, ...]
     attacks: frozenset[tuple[str, str]]
 
+    def __post_init__(self) -> None:
+        """Keep the public constructor as strict as :meth:`from_payload`."""
+
+        if not self.arguments:
+            raise FrameworkError("arguments must be a non-empty tuple")
+        known: set[str] = set()
+        for argument in self.arguments:
+            if not isinstance(argument, str) or not argument:
+                raise FrameworkError("every argument must be a non-empty string")
+            if argument in known:
+                raise FrameworkError(f"duplicate argument: {argument!r}")
+            known.add(argument)
+        for attack in self.attacks:
+            if (
+                not isinstance(attack, tuple)
+                or len(attack) != 2
+                or not all(isinstance(endpoint, str) for endpoint in attack)
+            ):
+                raise FrameworkError("every attack must be a two-element tuple of argument names")
+            if attack[0] not in known or attack[1] not in known:
+                raise FrameworkError(f"attack references an unknown argument: {attack!r}")
+
     @classmethod
     def from_payload(cls, payload: Mapping[str, object]) -> Self:
         """Validate ``{"arguments": [...], "attacks": [[from, to], ...]}``."""
@@ -155,9 +177,18 @@ def _ordered(framework: ArgumentationFramework, extensions: Iterable[frozenset[s
     return tuple(sorted(extensions, key=lambda item: (len(item), sorted(order[argument] for argument in item))))
 
 
+def validate_capacity(capacity: int) -> int:
+    """Return a valid exhaustive-enumeration capacity or reject invalid configuration."""
+
+    if isinstance(capacity, bool) or not isinstance(capacity, int) or capacity <= 0:
+        raise ValueError("exhaustive capacity must be a positive integer")
+    return capacity
+
+
 def complete_extensions(framework: ArgumentationFramework, *, capacity: int = DEFAULT_CAPACITY) -> tuple[frozenset[str], ...]:
     """Every complete extension, by exhaustive enumeration of the ``2^|Ar|`` candidate sets."""
 
+    capacity = validate_capacity(capacity)
     count = len(framework.arguments)
     if count > capacity:
         raise FrameworkCapacityError(f"framework has {count} arguments; exhaustive capacity is {capacity}")
@@ -196,4 +227,5 @@ __all__ = [
     "is_complete",
     "is_conflict_free",
     "is_stable",
+    "validate_capacity",
 ]

@@ -33,6 +33,7 @@ from rdam.dung.semantics import (
     FrameworkCapacityError,
     FrameworkError,
     evaluate,
+    validate_capacity,
 )
 
 PROVIDER_ID: Final = "rdam.dung/exhaustive-subset-v1"
@@ -69,7 +70,7 @@ class DungProvider:
     """Dung abstract argumentation semantics, declared to the machine."""
 
     def __init__(self, *, capacity: int = DEFAULT_CAPACITY) -> None:
-        self._capacity = capacity
+        self._capacity = validate_capacity(capacity)
 
     @property
     def capacity(self) -> int:

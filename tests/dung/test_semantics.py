@@ -10,7 +10,14 @@ import random
 import pytest
 
 from rdam.dung import ArgumentationFramework, FrameworkCapacityError, FrameworkError, evaluate, grounded_extension
-from rdam.dung.semantics import acceptable_arguments, is_admissible, is_complete, is_conflict_free, is_stable
+from rdam.dung.semantics import (
+    acceptable_arguments,
+    complete_extensions,
+    is_admissible,
+    is_complete,
+    is_conflict_free,
+    is_stable,
+)
 
 
 def af(arguments: str, *attacks: str) -> ArgumentationFramework:
@@ -67,6 +74,22 @@ class TestKnownFrameworks:
 
 
 class TestValidation:
+    @pytest.mark.parametrize(
+        ("arguments", "attacks"),
+        (
+            ((), frozenset()),
+            (("a", "a"), frozenset()),
+            (("a",), frozenset({("a", "missing")})),
+        ),
+    )
+    def test_direct_construction_enforces_the_same_framework_invariants(
+        self,
+        arguments: tuple[str, ...],
+        attacks: frozenset[tuple[str, str]],
+    ) -> None:
+        with pytest.raises(FrameworkError):
+            ArgumentationFramework(arguments=arguments, attacks=attacks)
+
     def test_unknown_argument_in_attack_is_rejected(self) -> None:
         with pytest.raises(FrameworkError, match="unknown argument"):
             ArgumentationFramework.from_payload({"arguments": ["a"], "attacks": [["a", "b"]]})
@@ -81,6 +104,11 @@ class TestValidation:
         big = ArgumentationFramework.from_payload({"arguments": [f"a{i}" for i in range(15)], "attacks": []})
         with pytest.raises(FrameworkCapacityError, match="capacity is 14"):
             evaluate(big)
+
+    @pytest.mark.parametrize("capacity", (True, 0, -1))
+    def test_capacity_must_be_a_positive_non_boolean_integer(self, capacity: int) -> None:
+        with pytest.raises(ValueError, match="positive integer"):
+            complete_extensions(af("a"), capacity=capacity)
 
 
 def _invariants(framework: ArgumentationFramework) -> None:
