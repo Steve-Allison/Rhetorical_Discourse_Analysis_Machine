@@ -2,11 +2,14 @@
 
 from collections.abc import Mapping
 
+import pytest
+
 from rdam import (
     AggregateRequest,
     AvailableCapability,
     FailedOutcome,
     Machine,
+    ProviderError,
     ProviderRequest,
     ResultOutcome,
     Sha256Identity,
@@ -55,6 +58,18 @@ class TestDeclaration:
 
 
 class TestThroughTheMachine:
+    def test_undeclared_formalism_is_a_typed_failure(self) -> None:
+        with pytest.raises(ProviderError) as caught:
+            IbisProvider().analyse(
+                ProviderRequest(
+                    source=SourceIdentity.from_bytes(b"s"),
+                    text=None,
+                    structured_input=STRUCTURE,
+                    formalism_id="not_ibis",
+                )
+            )
+        assert caught.value.failure.code == "formalism_not_declared"
+
     def test_supplied_structure_is_validated_and_mapped_with_no_extraction(self) -> None:
         outcome = Machine([IbisProvider()]).analyse(_request()).outcome_for(Technique.IBIS)
         assert isinstance(outcome, ResultOutcome)

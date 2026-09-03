@@ -82,6 +82,14 @@ class Node:
     kind: NodeKind
     text: str
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.node_id, str) or not self.node_id:
+            raise StructureError("every node needs a non-empty string id")
+        if not isinstance(self.kind, NodeKind):
+            raise StructureError(f"node {self.node_id!r} has an unknown kind: {self.kind!r}")
+        if not isinstance(self.text, str) or not self.text.strip():
+            raise StructureError(f"node {self.node_id!r} needs non-empty text")
+
 
 @dataclass(frozen=True, slots=True)
 class Link:
@@ -89,11 +97,48 @@ class Link:
     relation: Relation
     target: str
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.source, str) or not self.source:
+            raise StructureError("every link needs a non-empty source id")
+        if not isinstance(self.target, str) or not self.target:
+            raise StructureError("every link needs a non-empty target id")
+        if not isinstance(self.relation, Relation):
+            raise StructureError(f"unknown relation: {self.relation!r}")
+        if self.source == self.target:
+            raise StructureError(f"self-link on {self.source!r} is not permitted")
+
 
 @dataclass(frozen=True, slots=True)
 class IbisStructure:
     nodes: tuple[Node, ...]
     links: tuple[Link, ...]
+
+    def __post_init__(self) -> None:
+        """Enforce the complete grammar for every public construction path."""
+
+        if not self.nodes:
+            raise StructureError("nodes must be a non-empty tuple")
+        if not all(isinstance(node, Node) for node in self.nodes):
+            raise StructureError("every native node must be a Node")
+        kinds: dict[str, NodeKind] = {}
+        for node in self.nodes:
+            if node.node_id in kinds:
+                raise StructureError(f"duplicate node id: {node.node_id!r}")
+            kinds[node.node_id] = node.kind
+        if not all(isinstance(link, Link) for link in self.links):
+            raise StructureError("every native link must be a Link")
+        if len(set(self.links)) != len(self.links):
+            raise StructureError("duplicate links are not permitted")
+        for link in self.links:
+            if link.source not in kinds or link.target not in kinds:
+                raise StructureError(f"link references an unknown node: {link.source!r} -> {link.target!r}")
+            from_kind, to_kinds = GRAMMAR[link.relation]
+            if kinds[link.source] is not from_kind or kinds[link.target] not in to_kinds:
+                raise StructureError(
+                    f"{kinds[link.source].value} {link.source!r} --{link.relation.value}--> "
+                    f"{kinds[link.target].value} {link.target!r} is not permitted by the grammar"
+                )
+        self._check_attachment()
 
     @classmethod
     def from_payload(cls, payload: Mapping[str, object]) -> Self:

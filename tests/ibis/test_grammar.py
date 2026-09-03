@@ -8,7 +8,7 @@ from itertools import product
 
 import pytest
 
-from rdam.ibis import GRAMMAR, IbisStructure, NodeKind, Relation, StructureError, deliberation_map
+from rdam.ibis import GRAMMAR, IbisStructure, Link, Node, NodeKind, Relation, StructureError, deliberation_map
 
 
 def structure(nodes: dict[str, str], *links: tuple[str, str, str]) -> IbisStructure:
@@ -23,6 +23,52 @@ def structure(nodes: dict[str, str], *links: tuple[str, str, str]) -> IbisStruct
 
 
 class TestLinkTyping:
+    @pytest.mark.parametrize(
+        "node",
+        (
+            ("", NodeKind.ISSUE, "text"),
+            ("i1", NodeKind.ISSUE, "   "),
+        ),
+    )
+    def test_direct_node_construction_enforces_native_invariants(
+        self,
+        node: tuple[str, NodeKind, str],
+    ) -> None:
+        with pytest.raises(StructureError):
+            Node(node_id=node[0], kind=node[1], text=node[2])
+
+    def test_direct_link_construction_refuses_self_links(self) -> None:
+        with pytest.raises(StructureError, match="self-link"):
+            Link(source="i1", relation=Relation.QUESTIONS, target="i1")
+
+    @pytest.mark.parametrize(
+        "nodes, links",
+        (
+            (
+                (Node("i1", NodeKind.ISSUE, "one"), Node("i1", NodeKind.ISSUE, "two")),
+                (),
+            ),
+            (
+                (Node("i1", NodeKind.ISSUE, "one"),),
+                (Link("i1", Relation.QUESTIONS, "missing"),),
+            ),
+            (
+                (Node("i1", NodeKind.ISSUE, "one"), Node("p1", NodeKind.POSITION, "position")),
+                (
+                    Link("p1", Relation.RESPONDS_TO, "i1"),
+                    Link("p1", Relation.RESPONDS_TO, "i1"),
+                ),
+            ),
+        ),
+    )
+    def test_direct_structure_construction_enforces_graph_invariants(
+        self,
+        nodes: tuple[Node, ...],
+        links: tuple[Link, ...],
+    ) -> None:
+        with pytest.raises(StructureError):
+            IbisStructure(nodes=nodes, links=links)
+
     def test_every_relation_by_kind_pair_is_accepted_exactly_when_the_grammar_permits_it(self) -> None:
         """All 3 × 3 × 8 combinations: the validator's verdict equals the grammar table."""
 
