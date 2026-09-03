@@ -27,3 +27,21 @@ transport budgets separate, and propagates attempt counts into successes and fai
 
 The opt-in live-model test is skipped unless `RDAM_RUN_LIVE_MODEL_TESTS=1`; live
 service execution was not performed and is not claimed.
+
+## Current convergence verification
+
+- Nested rebuttal strictness red phase: **1 failed, 13 passed** before the fix; the
+  unknown nested field was silently discarded.
+- `pixi run pytest tests/toulmin -q`: **32 passed, 1 skipped in 1.25s** after making
+  `Rebuttal` reject unknown fields.
+- Focused Ruff and strict Pyright: clean; **0 errors, 0 warnings, 0 informations**.
+- Repository Ruff: **All checks passed**.
+- Repository strict Pyright: **0 errors, 0 warnings, 0 informations**.
+- Markdown: **206 files linted, 43 governed exclusions, 0 issues**.
+- Ontology: exit 0; schema and bindings validated and the framework projection matched
+  its vendored authority. The configured ignored `_meta` naming warning remained visible.
+- Source boundary: default and production environments each reported **valid: true**,
+  137 production modules/files, and zero violations.
+- Fast suite: **1,334 passed, 134 deselected in 31.75s**.
+- Complete suite: **1,412 passed, 56 skipped in 229.77s**.
+- Live external-model execution remains opt-in and was not run or claimed.

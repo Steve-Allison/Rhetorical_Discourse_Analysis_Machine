@@ -44,10 +44,19 @@ changes no unrelated serialized capability.
 - [X] T009 Run the feature quickstart, `pixi run lint`, `pixi run typecheck`, and `pixi run -e default production-boundary`; record exact results in `specs/013-toulmin-provider/evidence.md`
 - [X] T010 Run `$speckit-analyze` over Feature 013 and resolve every finding before marking the feature complete
 
+## Phase 7: Current Convergence and Delivery
+
+- [X] T011 Add a failing nested-unknown-field counterexample in `tests/toulmin/test_argument.py`
+- [X] T012 Make nested rebuttals strictly reject unknown fields in `rdam/toulmin/argument.py` and correct retry ownership documentation in `rdam/_llm.py`
+- [X] T013 Re-run focused, static, boundary, Markdown, ontology, fast, and complete gates; append exact current results to `specs/013-toulmin-provider/evidence.md`
+- [X] T014 Re-run cross-artifact analysis and resolve all findings
+- [X] T015 Stage all Feature 013 files, commit, push, and verify local HEAD equals upstream
+
 ## Dependencies
 
-T001 precedes all edits. T002–T004 are foundational and precede T006–T007. T005 is
-independent after T001. T008 follows the provider contract. T009–T010 run last.
+T001 precedes the original implementation. T002–T004 are foundational and precede
+T006–T007. T005 is independent after T001. T008 follows the provider contract.
+T011–T015 are the current sequential convergence pass.
 
 ## Implementation Strategy
 

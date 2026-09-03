@@ -63,6 +63,20 @@ class TestWarrantIsNotRestatement:
 
 
 class TestPayload:
+    def test_unknown_nested_rebuttal_fields_are_refused_not_discarded(self) -> None:
+        with pytest.raises(ValidationError, match="extra_forbidden"):
+            ToulminLayout.model_validate(
+                {
+                    **FULL,
+                    "rebuttals": [
+                        {
+                            "condition": "Unless funding is found.",
+                            "invented_status": "accepted",
+                        }
+                    ],
+                }
+            )
+
     def test_payload_round_trips_every_element(self) -> None:
         payload = ToulminLayout.model_validate(FULL).to_payload()
         assert payload["claim"] == FULL["claim"]

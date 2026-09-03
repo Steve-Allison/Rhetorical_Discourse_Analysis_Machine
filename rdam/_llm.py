@@ -22,7 +22,8 @@ two retry classes are kept separate and are never conflated:
   valid instance of the technique's contract. Bounded by ``output_retries``; Pydantic AI
   carries the validation error back to the model.
 - *transport retries* — rate limits, 5xx, network. Bounded by ``transport_retries`` and
-  delegated to the OpenAI client's own bounded backoff.
+  owned by this boundary's explicit backoff/deadline loop; provider SDK retries are
+  disabled so every HTTP attempt remains observable.
 
 Every attempt count reaches the caller in the returned :class:`Extraction`, so a result
 that retried shows its retries and an exhausted budget yields a typed failure carrying

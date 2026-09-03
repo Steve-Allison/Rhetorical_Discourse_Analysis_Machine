@@ -49,6 +49,8 @@ class IncompleteLayoutError(LayoutError):
 class Rebuttal(BaseModel):
     """A condition under which the warrant would not license the claim."""
 
+    model_config = {"extra": "forbid"}
+
     condition: NonEmpty = Field(description="The circumstance in which the step from grounds to claim fails.")
     source_text: NonEmpty | None = Field(default=None, description="The span of the source stating it, if it is stated.")
 
