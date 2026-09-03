@@ -3,6 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
+from rdam.rst.provider import RstProvider
 from rdam import (
     BOUNDARY_TECHNIQUES,
     AggregateRequest,
@@ -24,6 +25,7 @@ from rdam import (
     canonical_json_bytes,
     load,
     serialize,
+    production_machine,
 )
 from tests.machine.conftest import FakeProvider, dung_declaration, echo_result, rst_declaration, typed_failure
 
@@ -58,6 +60,19 @@ class TestCapabilities:
     def test_two_providers_for_one_boundary_are_rejected(self, rst_provider: FakeProvider) -> None:
         with pytest.raises(ValueError, match="exactly one provider"):
             Machine([rst_provider, FakeProvider(rst_declaration(), echo_result("rst_tree"))])
+
+    def test_supported_production_composition_declares_all_seven_providers_without_loading_models(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-used")
+        machine = production_machine(model="openai:gpt-5.6-sol")
+        assert tuple(machine.providers) == BOUNDARY_TECHNIQUES
+        for item in machine.capabilities().techniques:
+            assert item.capability.state == "available"
+        assert all(getattr(provider, "_analyst", None) is None for provider in machine.providers.values())
+        rst = machine.providers[Technique.RST]
+        assert isinstance(rst, RstProvider)
+        assert rst._parser is None
 
 
 def serialize_capability(capabilities: MachineCapabilities, technique: Technique) -> bytes:

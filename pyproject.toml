@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "rdam"
 version = "6.0.0"
 import-names = ["rdam"]
-description = "Rhetorical Discourse Analysis Machine: RST/eRST (Steve Allison's evolution of the IsaNLP RST Parser by Elena Chistova), Dung, and IBIS discourse analysis side by side, analysis-only."
+description = "Rhetorical Discourse Analysis Machine: native RST/eRST, PDTB, SDRT, Toulmin, Walton, Dung, and IBIS analysis side by side."
 readme = "README.md"
 requires-python = ">=3.14"
 license = "MIT"
@@ -99,6 +99,7 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 markers = [
   "quality: model-backed RST quality gates against human gold trees",
+  "live: explicitly opted-in tests against a paid external model service",
   "slow: integration tests that download models from HF (~2 GB each)",
   "stress: concurrency, megadoc, and memory-leak stress tests",
 ]
@@ -182,6 +183,7 @@ reportPrivateImportUsage = "none"
 [tool.pixi.feature.offline.tasks]
 test = { cmd = "pytest -m 'not slow and not stress' -q", description = "Fast suite: no model loads" }
 test-all = { cmd = "pytest -q", description = "Every test, including slow model-loading tests and the production smoke" }
+test-live-models = { cmd = "pytest -m live -q", description = "Opt-in live LLM checks; requires RDAM_RUN_LIVE_MODEL_TESTS=1 and valid configured credentials" }
 test-stress = { cmd = "pytest tests/stress -q", description = "Concurrency, megadoc, and memory-leak stress tests" }
 smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every parser release in the configured model releases store on every available device through the public façade" }
 lint = { cmd = "ruff check rdam workbench tests scripts tools", description = "Ruff" }

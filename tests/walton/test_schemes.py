@@ -5,6 +5,7 @@ from pydantic import ValidationError
 
 from rdam.walton import (
     SCHEMES,
+    SCHEME_SET_ID,
     CriticalQuestion,
     CriticalQuestionStatus,
     SchemeId,
@@ -76,10 +77,12 @@ class TestPremiseRoles:
             SchemeInstance.model_validate({**_filled(scheme_id), "premises": premises})
         assert "not_a_role" in str(caught.value)
 
-    def test_an_empty_premise_is_refused(self) -> None:
+    @pytest.mark.parametrize("scheme_id", list(SchemeId))
+    def test_an_empty_premise_is_refused_for_every_scheme(self, scheme_id: SchemeId) -> None:
+        first_role = SCHEMES[scheme_id].premise_roles[0]
         with pytest.raises(ValidationError):
             SchemeInstance.model_validate(
-                {**EXPERT, "premises": {**_premises(SchemeId.EXPERT_OPINION), "source": "  "}}
+                {**_filled(scheme_id), "premises": {**_premises(scheme_id), first_role: "  "}}
             )
 
     def test_an_unknown_scheme_id_is_refused(self) -> None:
@@ -98,6 +101,17 @@ class TestCriticalQuestions:
         )
         total = len(SCHEMES[SchemeId.EXPERT_OPINION].critical_questions)
         assert len(instance.open_questions) == total - 1
+
+    @pytest.mark.parametrize("scheme_id", list(SchemeId))
+    def test_one_addressed_question_leaves_the_exact_complement_open(self, scheme_id: SchemeId) -> None:
+        instance = SchemeInstance.model_validate(
+            {
+                **_filled(scheme_id),
+                "critical_questions": [{"index": 0, "status": "addressed", "note": "the source addresses it"}],
+            }
+        )
+        scheme = SCHEMES[scheme_id]
+        assert instance.open_questions == scheme.critical_questions[1:]
 
     def test_an_addressed_question_must_say_how(self) -> None:
         with pytest.raises(ValidationError):
@@ -170,7 +184,7 @@ class TestPayload:
         assert payload["total_open_questions"] == 0
 
     def test_the_analysis_names_the_scheme_set_it_used(self) -> None:
-        assert WaltonAnalysis().to_payload()["scheme_set"] == "walton-reed-macagno-2008-subset-v1"
+        assert WaltonAnalysis().to_payload()["scheme_set"] == SCHEME_SET_ID
 
     def test_open_questions_total_across_instances(self) -> None:
         analysis = WaltonAnalysis(

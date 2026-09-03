@@ -58,18 +58,21 @@ def validate_import_boundary(root: Path, authority: OwnershipAuthority | None = 
     started = time.perf_counter()
     repository = root.resolve()
     ownership = authority or OwnershipAuthority(repository)
-    # The production package plus the workbench: the walk from each production module must
-    # never reach a workbench module, directly or transitively (FR-006, research D5 check a).
-    source_roots = {PRODUCTION_ROOT, "workbench", "workbench.research"}
+    # Parse production only. A production import whose name starts with ``workbench`` is
+    # already the boundary violation; parsing an entire corpus or vendored workbench tree
+    # cannot add evidence and lets unrelated research syntax affect this production gate.
     python_files = [
         path
         for path in ownership.iter_relevant_files()
-        if path.suffix == ".py" and ownership.relative(path).parts[0] in source_roots
+        if path.suffix == ".py" and ownership.relative(path).parts[0] == PRODUCTION_ROOT
     ]
     modules = {module_name(repository, path): path for path in python_files}
     graph: dict[str, tuple[str, ...]] = {}
+    forbidden: dict[str, tuple[str, ...]] = {}
     for name, path in modules.items():
-        graph[name] = tuple(target for imported in imported_modules(path, name) if (target := _local_target(imported, modules)))
+        imports = imported_modules(path, name)
+        graph[name] = tuple(target for imported in imports if (target := _local_target(imported, modules)))
+        forbidden[name] = tuple(sorted({"workbench" for imported in imports if imported == "workbench" or imported.startswith("workbench.")}))
 
     production = {name for name, path in modules.items() if ownership.classify(ownership.relative(path)) == OwnershipClass.PRODUCTION}
     violations: list[BoundaryViolation] = []
@@ -78,6 +81,15 @@ def validate_import_boundary(root: Path, authority: OwnershipAuthority | None = 
         visited = {root_module}
         while queue:
             current, chain = queue.popleft()
+            for target in forbidden.get(current, ()):
+                violations.append(
+                    BoundaryViolation(
+                        kind=ViolationKind.FORBIDDEN_IMPORT,
+                        root=root_module,
+                        path=(*chain, target),
+                        detail=f"production reaches offline module {target}",
+                    )
+                )
             for target in graph.get(current, ()):
                 target_owner = ownership.classify(ownership.relative(modules[target]))
                 next_chain = (*chain, target)

@@ -20,7 +20,8 @@ from rdam import (
     UnavailableReason,
     technique_curie,
 )
-from rdam.walton import SCHEMES, PROVIDER_ID_PREFIX, SchemeId, WaltonProvider, source_identity
+from rdam.toulmin import ToulminProvider
+from rdam.walton import SCHEMES, SCHEME_SET_ID, PROVIDER_ID_PREFIX, SchemeId, WaltonProvider, source_identity
 
 MODEL = "openai:gpt-5.6-sol"
 
@@ -146,6 +147,11 @@ class TestThroughTheMachine:
         first = instances[0]
         assert isinstance(first, dict)
         assert first["scheme_id"] == SchemeId.EXPERT_OPINION.value
+        assert payload["scheme_set"] == SCHEME_SET_ID
+        extraction = payload["extraction"]
+        assert isinstance(extraction, dict)
+        assert extraction["output_attempts"] == 1
+        assert extraction["transport_attempts"] == 1
         expected_open = len(SCHEMES[SchemeId.EXPERT_OPINION].critical_questions) - 1
         assert first["open_question_count"] == expected_open
 
@@ -170,6 +176,8 @@ class TestThroughTheMachine:
         assert isinstance(outcome, FailedOutcome)
         assert outcome.failure.code == "llm_output_failed_validation"
         assert outcome.failure.retryability.value == "not_retryable"
+        assert ("output_attempts", "3") in outcome.failure.message_parameters
+        assert ("transport_attempts", "3") in outcome.failure.message_parameters
 
     def test_an_unreachable_model_is_unavailable_not_failed(self, no_credentials: None) -> None:
         outcome = Machine([WaltonProvider(model=MODEL)]).analyse(
@@ -178,10 +186,17 @@ class TestThroughTheMachine:
         assert isinstance(outcome, UnavailableOutcome)
         assert outcome.reason is UnavailableReason.MODEL_UNAVAILABLE
 
+    def test_withholding_walton_does_not_change_toulmin_capability(self, with_credentials: None) -> None:
+        toulmin = ToulminProvider(model=MODEL)
+        with_walton = Machine([toulmin, WaltonProvider(model=MODEL)]).capabilities().capability_for(Technique.TOULMIN)
+        without_walton = Machine([toulmin]).capabilities().capability_for(Technique.TOULMIN)
+        assert with_walton.model_dump_json() == without_walton.model_dump_json()
 
+
+@pytest.mark.live
 @pytest.mark.slow
 class TestAgainstTheRealModel:
-    def test_the_machine_returns_validated_scheme_instances(self) -> None:
+    def test_the_machine_returns_validated_scheme_instances(self, live_model_requests: None) -> None:
         models.ALLOW_MODEL_REQUESTS = True
         text = (
             "We should not widen the road. Professor Lindqvist, who studies urban traffic, says that widening "

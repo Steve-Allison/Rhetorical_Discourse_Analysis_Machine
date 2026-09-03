@@ -46,7 +46,7 @@ from rdam.frameworks import (
     framework_identities,
     technique_curie,
 )
-from rdam.machine import Machine, Provider
+from rdam.machine import Machine, Provider, production_machine
 from rdam.serialization import PersistedRecord, UnsupportedRecordError, load, serialize
 
 try:
@@ -101,4 +101,5 @@ __all__ = [
     "semantic_sha256",
     "serialize",
     "technique_curie",
+    "production_machine",
 ]

@@ -44,7 +44,7 @@ concepts in the same scheme are deliberately unbound by feature 006:
 
 | Concept | Why unbound |
 |---|---|
-| `…/argumentation_framework/argument_mining` | A *technique for producing* argument structure, not one of the seven technique boundaries. FR-019's truth-in-labelling rule and [promotion-evidence.md](../contracts/promotion-evidence.md) §Output-quality rules already treat argument-mining candidates as inputs to Toulmin/Walton evidence, never as a boundary of their own. |
+| `…/argumentation_framework/argument_mining` | A *technique for producing* argument structure, not one of the seven technique boundaries. FR-019's truth-in-labelling rule requires the Toulmin and Walton native validators to refuse a generic claim/premise extraction rather than relabel it. |
 | `…/communication_framework` and `…/communication_framework/pyramid_principle` | Prescriptive communication frameworks — the taxonomy's own description contrasts them with "the analytical frameworks that represent what an existing text or argument is". The machine is permanently analysis-only (spec §Scope Boundaries), so these are correctly outside it. |
 
 ## Resolved: the taxonomy carries no `version` field

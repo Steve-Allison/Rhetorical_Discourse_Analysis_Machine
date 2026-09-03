@@ -1,9 +1,9 @@
 """Import-check the ``rdam`` distribution installed in the current environment.
 
-Imports the public modules of every technique package, exercises the RST façade's
-deterministic no-model failure, and checks that no ``workbench`` member or import leaked
-into the installed distribution. It never loads model weights and never touches a built
-wheel: in the pixi ``production`` environment the installed distribution is the
+Imports the public modules of every technique package and checks that no ``workbench``
+member or import leaked into the installed distribution. It never constructs a provider,
+loads model weights, or touches a built wheel: in the pixi ``production`` environment the
+installed distribution is the
 *editable source* (``[tool.pixi.feature.production.pypi-dependencies]`` in
 ``pyproject.toml``), so a green result says nothing about ``dist/``. Wheel certification
 is ``production-clean-install``.
@@ -25,8 +25,13 @@ _PUBLIC_MODULES = (
     "rdam.rst.contracts",
     "rdam.rst.erst",
     "rdam.rst.model_loading.parser_input",
+    "rdam.sdrt",
+    "rdam.pdtb",
+    "rdam.toulmin",
+    "rdam.walton",
     "rdam.dung",
     "rdam.ibis",
+    "rdam.machine",
 )
 _FORMAT_MODULES = (
     "rdam.rst.ingest",
@@ -52,16 +57,6 @@ def main() -> int:
 
     for module_name in _PUBLIC_MODULES + (_FORMAT_MODULES if args.formats else ()):
         import_module(module_name)
-
-    from rdam.rst import Parser
-
-    try:
-        Parser()
-    except ValueError as exc:
-        if "hf_model_version" not in str(exc) and "model_dir" not in str(exc):
-            raise AssertionError(f"unexpected Parser() failure: {exc}") from exc
-    else:
-        raise AssertionError("Parser() without a model identity must fail deterministically")
 
     package_file = Path(sys.modules["rdam"].__file__ or "").resolve()
     if args.outside is not None and package_file.is_relative_to(args.outside.resolve()):

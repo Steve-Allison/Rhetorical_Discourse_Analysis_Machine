@@ -183,6 +183,35 @@ class Machine:
         return ResultOutcome(result=result)
 
 
+def production_machine(*, model: str | None = None) -> Machine:
+    """Construct the supported seven-technique production composition.
+
+    Provider imports stay local so importing :mod:`rdam` remains cheap. Construction
+    reads declarations only; RST models and LLM clients remain lazy until invocation.
+    ``model`` selects one explicit identity for every LLM-backed technique.
+    """
+
+    from rdam.dung import DungProvider
+    from rdam.ibis import IbisProvider
+    from rdam.pdtb import PdtbProvider
+    from rdam.rst.provider import RstProvider
+    from rdam.sdrt import SdrtProvider
+    from rdam.toulmin import ToulminProvider
+    from rdam.walton import WaltonProvider
+
+    return Machine(
+        (
+            RstProvider(),
+            PdtbProvider(model=model),
+            SdrtProvider(model=model),
+            ToulminProvider(model=model),
+            WaltonProvider(model=model),
+            DungProvider(),
+            IbisProvider(),
+        )
+    )
+
+
 def _result_contract_violation(
     declaration: ProviderDeclaration,
     request: AggregateRequest,
@@ -204,4 +233,4 @@ def _result_contract_violation(
     return None
 
 
-__all__ = ["Machine", "Provider"]
+__all__ = ["Machine", "Provider", "production_machine"]

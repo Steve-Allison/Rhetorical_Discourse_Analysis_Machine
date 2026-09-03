@@ -1,9 +1,9 @@
 # Architecture
 
-## The machine (features 006–012; owner rulings 2026-09-02)
+## The machine (features 006–016; owner rulings 2026-09-02)
 
 `specs/006-rhetorical-discourse-machine/` is the decision-closed authority for the
-machine's rules; `specs/007-…` to `specs/012-…` record what was built against them; the
+machine's rules; `specs/007-…` to `specs/016-…` record what was built against them; the
 owner rulings of 2026-09-02 on layout are recorded in
 [`specs/010-repository-migration/spec.md`](../../specs/010-repository-migration/spec.md)
 and supersede the 006 boundary roster. Where a rule here and a feature disagree, the
@@ -17,6 +17,10 @@ rdam/                  the distribution `rdam` and the import package `rdam` —
 ├── machine.py         Machine.capabilities() (side-effect-free), Machine.analyse() (N outcomes)
 ├── frameworks.py      Technique, coe: identities from resources/framework-identities.json
 ├── rst/               RST/eRST provider: parser, ingest, eRST, viewer, cli (`rdam-rst`), provider.py
+├── pdtb/              PDTB-3 native relations and LLM-backed provider
+├── sdrt/              native SDRS graphs and LLM-backed provider
+├── toulmin/           native Toulmin layouts and LLM-backed provider
+├── walton/            native Walton scheme instances and LLM-backed provider
 ├── dung/              Dung provider: semantics.py, provider.py
 └── ibis/              IBIS provider: grammar.py, provider.py
 ontology/              vendored Central distribution + rdam LinkML profile (repository, not shipped)
@@ -24,9 +28,8 @@ workbench/             the one experimentation root; never imported by rdam
 tools/production_boundary/   boundary inspection, reproducible build, validation, clean install
 ```
 
-- A technique is a sub-package of `rdam`; it is created when that technique is first
-  implemented (006 FR-002), never speculatively. SDRT, Toulmin, Walton, and PDTB have no
-  sub-package and the machine reports them `unavailable(not_implemented)`.
+- Every technique is a real sub-package of `rdam`, created with its provider. The
+  supported `production_machine()` composition registers exactly all seven.
 - No top-level import name other than `rdam` is ever created (`rst`, `dung`, `ibis`, … are
   never packages; `ibis` would shadow the PyPI Ibis dataframe library).
 - Exactly one `workbench/`. Production code never imports `workbench.*`, directly or
@@ -49,6 +52,9 @@ tools/production_boundary/   boundary inspection, reproducible build, validation
 - `rdam.dung` and `rdam.ibis` are exact and deterministic, so they are `available`
   whenever imported. Each still reports the digest of its own source files as
   `provenance.source_revision`.
+- `rdam.pdtb`, `rdam.sdrt`, `rdam.toulmin`, and `rdam.walton` are available when their
+  configured LLM model resolves. Declarations do not construct an LLM client; model
+  proposals pass each technique's deterministic native validator before becoming results.
 - The three unavailability reasons are `not_implemented`, `model_unavailable`, and
   `missing_structured_input`. None of them is retryable.
 

@@ -5,19 +5,22 @@ analysis-only machine that runs several discourse and argumentation techniques n
 side by side, without collapsing them into a common formalism. One distribution, one
 package, every technique a sub-package:
 
-| Sub-package | Technique | State (2026-09-02) |
+| Sub-package | Technique | State (2026-09-03) |
 |---|---|---|
 | `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.analyse()` returning one explicit outcome per technique | feature 007 |
 | `rdam.rst` | RST / eRST — DMRST and UniRST discourse parsers (Steve's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, viewer, the `rdam-rst` command, and the machine adapter `rdam.rst.provider.RstProvider` | `available` |
+| `rdam.pdtb` | PDTB-3 binary relations with exact source spans, all seven relation types, signal evidence, and canonical senses | `available` with a resolvable configured LLM model |
+| `rdam.sdrt` | SDRS graphs with EDUs, CDUs, coordinating/subordinating relations, and deterministic graph/right-frontier validation | `available` with a resolvable configured LLM model |
+| `rdam.toulmin` | Complete Toulmin layouts with claim, grounds, warrant, and optional qualifiers | `available` with a resolvable configured LLM model |
+| `rdam.walton` | Walton scheme instances with exact premise roles and critical-question states | `available` with a resolvable configured LLM model |
 | `rdam.dung` | Dung abstract argumentation: grounded, complete, preferred, stable semantics over a supplied or explicitly derived framework | `available` |
 | `rdam.ibis` | IBIS: issue–position–argument structures validated under the gIBIS link grammar | `available` |
-| SDRT, Toulmin, Walton, PDTB | no provider — the machine reports `unavailable(not_implemented)`; no stubs | not yet built (006 FR-024) |
 
 Pixi-managed, MPS-aware, Apple-Silicon-first, real test suite, real CI.
 
 ## Provenance & licence
 
-The original RST research code and the trained model weights are by Elena Chistova (`tchewik/isanlp_rst`). The MIT-licensed source carries her copyright (see [`LICENSE`](LICENSE)). Model weights are **CC BY-NC 4.0 — research and non-commercial use only** (see [`LICENSE_MODELS`](LICENSE_MODELS)). This repository is Steve's evolution of that code: own design direction, own infrastructure (pixi, tests, CI, MPS), own roadmap. Not a tracking fork. The Dung and IBIS providers and the machine are Steve's own code under MIT.
+The original RST research code and the trained model weights are by Elena Chistova (`tchewik/isanlp_rst`). The MIT-licensed source carries her copyright (see [`LICENSE`](LICENSE)). Model weights are **CC BY-NC 4.0 — research and non-commercial use only** (see [`LICENSE_MODELS`](LICENSE_MODELS)). This repository is Steve's evolution of that code: own design direction, own infrastructure (pixi, tests, CI, MPS), own roadmap. Not a tracking fork. The machine and all non-RST provider implementations are Steve's own code under MIT; LLM-produced analyses also remain subject to the configured model provider's terms.
 
 Commercial use requires either retraining new weights under a permissive licence or replacing the models entirely.
 
@@ -59,13 +62,14 @@ CI (`.github/workflows/ci.yml`) runs lint, typecheck, mdlint, and the fast tests
 
 ## Active roadmap
 
-The build ordered by the owner on 2026-09-02 ("Go — archive the runs, version 6.0.0, build it all") is recorded feature by feature under `specs/007-…` to `specs/012-…`, with the running handoff in [`docs/plans/2026-09-02-machine-build.md`](docs/plans/2026-09-02-machine-build.md). Remaining: release 6.0.0 (tag, build, validate, clean-install, evidence) and, last, the repository directory rename to `Rhetorical_Discourse_Analysis_Machine` with the sibling-repo and memory-path sweep.
+Features 006–012 delivered the aggregate contract, RST adapter, Dung/IBIS providers,
+single-package migration, and repository rename. Features 013–016 decision-close and
+verify Toulmin, Walton, SDRT, and PDTB. `rdam.production_machine()` is the supported
+composition of all seven provider boundaries; each provider remains directly callable.
 
 The promotion-evidence system (feature 008) was removed on 2026-09-02 by owner ruling: it was never requested, and it made the machine report `unavailable` for parsers that ran correctly. Capability now means one thing — the provider can run.
 
 **Owner ruling outstanding**: whether the persisted contract identifiers above should also move to the `rdam` name.
-
-Provider order thereafter: **SDRT → Toulmin/Walton → PDTB-if-ever**, each on workbench evidence with its own decision-closed Spec Kit feature.
 
 ### Production source ingest
 
@@ -95,6 +99,10 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 - [`rdam/rst/model_loading/release.py`](rdam/rst/model_loading/release.py) — immutable release manifests, and the manifest-bound `CompatibilityRedeclaration` sidecar by which a stored release is shown to run under a later package line.
 - [`rdam/rst/hierarchical/stitcher.py`](rdam/rst/hierarchical/stitcher.py) — `HierarchicalSectionStitcher`: two-stage hierarchical section/macro tree stitching for long documents.
 - [`rdam/rst/rstviewer/`](rdam/rst/rstviewer/) — visualizer and HTML/PNG export engine.
+- [`rdam/pdtb/`](rdam/pdtb/) — PDTB-3 sense/type contract, exact spans, and provider.
+- [`rdam/sdrt/`](rdam/sdrt/) — SDRS graph contract, right-frontier validation, and provider.
+- [`rdam/toulmin/`](rdam/toulmin/) — Toulmin layout contract and provider.
+- [`rdam/walton/`](rdam/walton/) — Walton scheme catalogue, native contract, and provider.
 - [`rdam/dung/`](rdam/dung/) — Dung semantics (`semantics.py`) and provider; exact and deterministic, so available whenever imported.
 - [`rdam/ibis/`](rdam/ibis/) — gIBIS link grammar (`grammar.py`) and provider; same.
 - [`ontology/`](ontology/) — vendored Central distribution (read-only, `vendor/central-configs/`) and the `rdam` LinkML application profile binding techniques to `coe:` framework identities; `pixi run ontology-validate`.

@@ -4,11 +4,20 @@
 
 **Created**: 2026-08-31
 
-**Status**: Draft
+**Status**: Complete
 
 **Amended 2026-09-02**: the promotion-evidence system was removed by owner ruling. It was never requested and it gated working analysers behind an evaluation ceremony, making the machine report `unavailable` for techniques that ran correctly. User Story 4, FR-022, FR-023, the `PromotionDecision` entity, and `contracts/promotion-evidence.md` are deleted; FR-021 is reduced to provider provenance. Capability now means one thing: the provider can run. Specs 002-005 keep their original wording as a dated historical record.
 
 **Amended 2026-09-02 (second ruling)**: the LLM-based techniques are not optional. As originally written every success criterion could be satisfied with four of the seven techniques absent — Scope Boundaries excluded the providers, FR-018 let PDTB and SDRT sit in the workbench indefinitely, and the provider-order assumption made PDTB conditional on "a concrete need". That let *not building them* score as a pass. FR-031 and FR-032 now require all seven, SC-012 makes 7/7 the bar, and the escapes are closed.
+
+**Amended 2026-09-03 (single-package reconciliation)**: the completed repository
+migration adopted one installed package, `rdam`, with each technique under its own
+sub-package. The earlier proposed top-level technique directories, `machine/` package,
+`isanlp_rst` import, and `isanlp-rst` command were superseded by the owner ruling already
+recorded in Feature 010. FR-001..FR-010 and SC-001..SC-003 now describe the live
+single-package architecture; `rdam.rst` is the canonical RST provider and `rdam-rst` is
+its command. Historical `isanlp_rst` strings retained inside model/runtime contract
+identities are data compatibility identifiers, not import promises.
 
 **Input**: User description: "Transform the complete project into the Rhetorical_Discourse_Analysis_Machine. Preserve the current isanlp_rst implementation as the independent RST production provider, keep all experimentation and training in one protected top-level workbench, give every discourse technique its own pure production boundary and native output, and expose the independent analyses downstream without flattening their theories."
 
@@ -24,8 +33,8 @@ As the machine owner, I can reorganize the project around multiple discourse-ana
 
 **Acceptance Scenarios**:
 
-1. **Given** a supported RST production request before the transition, **When** the same request is submitted after the transition, **Then** the caller receives an equivalent native RST or eRST result through the same supported public import surface.
-2. **Given** an existing RST consumer, **When** the project is reorganized, **Then** the consumer does not need to import an experimental module or adopt a new theory-neutral result in place of its native RST result.
+1. **Given** a supported `rdam.rst` production request, **When** the package is changed, **Then** the caller receives an equivalent native RST or eRST result through the supported public import surface.
+2. **Given** an RST consumer using `rdam.rst`, **When** the wider machine evolves, **Then** the consumer does not need to import an experimental module or adopt a new theory-neutral result in place of its native RST result.
 3. **Given** an RST parser or model with established inference behaviour, **When** the repository architecture changes, **Then** its trained architecture, inference mathematics, relation meanings, and evidence semantics remain unchanged unless a separately approved feature explicitly changes and validates them.
 
 ---
@@ -87,24 +96,24 @@ As the machine owner, I can add, replace, or withhold one discourse technique wi
 - A Dung or IBIS request lacks the structured input required by that framework.
 - A result depends on an upstream provider whose version, model identity, or source anchors are missing.
 - A provider's licence permits experimentation but not the intended production distribution.
-- An existing RST consumer imports the canonical `isanlp_rst` package while the physical source location changes.
+- An existing RST consumer imports `rdam.rst` while another technique or the aggregate machine changes.
 - A production directory exists for a technique that has no implementation.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: The project MUST adopt `Rhetorical_Discourse_Analysis_Machine` as its complete project identity while retaining an explicit record of `isanlp_rst` as the RST provider package and historical source project.
-- **FR-002**: The target architecture MUST define distinct top-level production boundaries named `rst/`, `pdtb/`, `sdrt/`, `toulmin/`, `walton/`, `dung/`, and `ibis/`, each corresponding one-to-one with a canonical framework concept in the Central_Configs ontology (`coe:artifact/narrative/analytical_frameworks_taxonomy`); each boundary's capability declaration MUST reference its canonical `coe:` framework identifier. A boundary directory is created only when its technique first gains a provider; until then the boundary exists as an approved name, not a directory.
-- **FR-003**: A technique boundary MUST be the production boundary itself and MUST NOT contain a redundant `production/` subdirectory.
+- **FR-001**: The project MUST use `Rhetorical_Discourse_Analysis_Machine` as its complete project identity and `rdam` as its single Python distribution and import package, while retaining an explicit historical-provenance record of the source project `isanlp_rst`.
+- **FR-002**: The production architecture MUST define distinct technique sub-package boundaries named `rdam.rst`, `rdam.pdtb`, `rdam.sdrt`, `rdam.toulmin`, `rdam.walton`, `rdam.dung`, and `rdam.ibis`, each corresponding one-to-one with a canonical framework concept in the Central_Configs ontology (`coe:artifact/narrative/analytical_frameworks_taxonomy`); each provider declaration MUST reference its canonical `coe:` framework identifier. A technique sub-package is created only with its provider.
+- **FR-003**: A technique sub-package MUST be the production boundary itself and MUST NOT contain a redundant `production/` subdirectory.
 - **FR-004**: The project MUST retain exactly one top-level `workbench/` as the canonical home for all development experiments, candidate implementations, corpora, training, evaluation, benchmarks, checkpoints, and runs across every technique.
-- **FR-005**: Production technique boundaries MUST contain only production runtime code, native contracts, required runtime assets, and directly applicable production documentation or tests.
+- **FR-005**: Production technique sub-packages MUST contain only production runtime code, native contracts, required runtime assets, and directly applicable production documentation.
 - **FR-006**: Production code and production distributions MUST NOT import, execute, or package workbench material.
 - **FR-007**: Production verification MUST remain under a separate top-level `tests/` boundary and MUST distinguish production-contract tests from workbench evaluation.
-- **FR-008**: The current `isanlp_rst` implementation MUST remain the canonical RST and eRST provider package under the `rst/` production boundary.
-- **FR-009**: The supported public import name `isanlp_rst` and its canonical production-ingest contract MUST remain available after physical relocation.
-- **FR-010**: The machine-facing RST adapter MUST consume the supported `isanlp_rst` public contract and MUST NOT duplicate, reinterpret, or bypass the provider's preparation, analysis, capability, serialization, validation, failure, or provenance authority.
-- **FR-011**: Repository migration MUST preserve existing RST/eRST result semantics, validation rules, failure algebra, source anchors, model identity, and serialized-contract compatibility.
+- **FR-008**: `rdam.rst` MUST remain the canonical RST and eRST provider sub-package inside the `rdam` production package.
+- **FR-009**: The supported public imports `rdam` and `rdam.rst`, the `rdam-rst` command, and the canonical `rdam.rst.ingest` production contract MUST remain available across subsequent changes.
+- **FR-010**: `rdam.rst.provider.RstProvider` MUST consume the supported `rdam.rst` public contract and MUST NOT duplicate, reinterpret, or bypass the provider's preparation, analysis, capability, serialization, validation, failure, or provenance authority.
+- **FR-011**: Subsequent changes MUST preserve RST/eRST result semantics, validation rules, failure algebra, source anchors, model identity, and serialized-contract compatibility unless a separately approved feature explicitly changes and validates them.
 - **FR-012**: Each discourse technique MUST be independently callable when available and MUST own a separately versioned native result contract.
 - **FR-013**: The aggregate machine result MUST preserve each native technique result without flattening distinct theories into a universal node-and-edge vocabulary.
 - **FR-014**: An aggregate request MUST preserve successful provider results when another requested provider is unavailable or fails, and MUST represent each unavailable or failed provider explicitly.
@@ -153,9 +162,9 @@ This feature defines the complete machine architecture, ownership rules, migrati
 
 ### Measurable Outcomes
 
-- **SC-001**: The approved target layout assigns all seven discourse techniques, the shared workbench, production verification, machine aggregation, and planning material to exactly one named top-level boundary with zero ambiguous owners.
-- **SC-002**: After eventual migration, 100% of the supported pre-migration RST public operations and persisted contract kinds pass equivalence checks against the captured pre-migration baseline.
-- **SC-003**: After eventual migration, automated boundary inspection reports zero production imports from `workbench/` and zero workbench members in production distributions.
+- **SC-001**: The approved layout assigns all seven discourse techniques to exactly one `rdam.<technique>` sub-package and assigns the shared workbench, production verification, aggregate machine, and planning material to exactly one named owner with zero ambiguity.
+- **SC-002**: 100% of the supported `rdam.rst` public operations and persisted contract kinds pass their regression and serialization-equivalence checks after a change.
+- **SC-003**: Automated boundary inspection reports zero production imports from `workbench/` and zero workbench members in production distributions.
 - **SC-004**: For every multi-technique request exercised in acceptance testing, 100% of successful native outputs survive aggregation without lost fields or changed semantic values.
 - **SC-005**: Acceptance testing demonstrates every combination of provider success, unavailability, and failure without one provider suppressing another provider's successful result.
 - **SC-006**: 100% of available providers report their own provenance — package, version, source identity, model identity where applicable, and licence.
@@ -169,12 +178,12 @@ This feature defines the complete machine architecture, ownership rules, migrati
 ## Assumptions
 
 - The project remains one repository operated by one person on one local machine.
-- The current production RST/eRST authority remains the supported `isanlp_rst` public contract unless a separate approved feature changes it.
+- The current production RST/eRST authority remains the supported `rdam.rst` public contract unless a separate approved feature changes it.
 - Feature 006 is an architecture feature; provider implementation begins in later technique-specific features. Those features are obligations created by FR-031, not options: 006 is not satisfied while any of them is unwritten or unbuilt.
 - The follow-on feature family is: aggregate analysis contract, RST provider adapter, repository migration, Dung provider, IBIS provider, SDRT provider, Toulmin provider, Walton provider, PDTB provider, and cross-provider orchestration. Repository migration is its own decision-closed feature carrying the RST baseline capture, migration safety state, packaging verification, and project identity adoption obligations — the last including sibling-repo reference updates and per-project memory/settings path migration (research D3 migration-feature notes).
 - Provider order — not provider optionality (FR-031). All seven are required; the order reflects owner need and build sequence: Dung and IBIS first (formal, deterministic, verifiable by proof and property test), then SDRT (meeting and talk transcripts are multi-party dialogue — SDRT's native object), then Toulmin and Walton (LLM-based), then PDTB last. Last means last, not conditional.
 - Canonical framework identities live in the Central_Configs ontology (`coe:artifact/narrative/analytical_frameworks_taxonomy`, registered 2026-08-31 by `coe:decision/rdam-006/narrative/analytical_frameworks`). The machine vendors the Central distribution and references `coe:` identifiers for framework identity only; native technique inventories and result semantics are provider-owned and are never constrained to Central's simplified vocabulary profiles.
-- Technique boundary directories are not importable Python packages. Packages inside a boundary carry namespaced import names (`isanlp_rst` under `rst/`); top-level import names such as `ibis` or `rst` are never created, so established PyPI import names are never shadowed.
+- Technique boundaries are sub-packages of `rdam`; top-level import names such as `ibis` or `rst` are never created, so established PyPI import names are never shadowed.
 - Native contracts for structured-input techniques (Dung, IBIS) accept constructed instances per FR-016/FR-017; this is an analytical requirement and does not reintroduce generation into scope.
 - Standalone analytical authority (owner ruling 2026-09-01, superseding the same-day division-of-labour wording): the machine is the estate's standalone centre of excellence for discourse and argumentation analysis. It is the sole authority for technique-native structures — RST/eRST trees, Dung argumentation frameworks, IBIS structures, SDRT graphs, and any future technique result, at every capability tier including heavy LLM-assisted analysis — and it delivers findings downstream through its supported public contracts to whichever consumers exist, without privileging any of them. No consumer's needs shape the machine's contracts, semantics, or feature roadmap: contracts derive from each technique's native theory and this specification. Consumers own their own integration against the public contracts.
 - Existing Features 004 and 005 remain separate authorities whose current completion state requires independent convergence evidence.

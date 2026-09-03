@@ -18,6 +18,7 @@ from rdam.walton.provider import (
 )
 from rdam.walton.schemes import (
     SCHEMES,
+    SCHEME_SET_ID,
     CriticalQuestion,
     CriticalQuestionStatus,
     Scheme,
@@ -39,6 +40,7 @@ __all__ = [
     "LICENCE",
     "PROVIDER_ID_PREFIX",
     "SCHEMES",
+    "SCHEME_SET_ID",
     "CriticalQuestion",
     "CriticalQuestionStatus",
     "Scheme",

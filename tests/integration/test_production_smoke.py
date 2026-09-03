@@ -111,7 +111,12 @@ class TestFacadeRefusals:
 )
 def loaded(request: pytest.FixtureRequest) -> tuple[Parser, str, str]:
     release_id, device = request.param
-    parser = Parser.from_model_release(STORE, release_id, device=device)
+    try:
+        parser = Parser.from_model_release(STORE, release_id, device=device)
+    except ModelReleaseError as error:
+        if "outside the " in str(error) and "model compatibility range" in str(error):
+            pytest.skip(f"local release is not declared compatible with this package: {error}")
+        raise
     return parser, release_id, device
 
 

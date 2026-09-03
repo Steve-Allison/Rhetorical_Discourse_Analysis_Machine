@@ -2,10 +2,9 @@
 
 **Feature**: 006 | **Date**: 2026-09-01 | **Contracts**: [contracts/](contracts/)
 
-Runnable validation per success criterion. Feature 006 itself ships governance
-artifacts, so its own acceptance is documentary (V1); the remaining scenarios are the
-standing validation each follow-on feature must keep green, stated here so the
-architecture's success criteria are checkable from day one.
+Runnable validation per success criterion for the live `rdam` package. Documentary
+inspection is necessary for ownership and identity, but executable criteria require
+observed tests; no checked historical task substitutes for a current result.
 
 ## Prerequisites
 
@@ -16,15 +15,15 @@ pixi install          # provision the default environment (pixi.lock)
 ## V1 — Boundary assignment is total and unambiguous (SC-001)
 
 Review [contracts/architecture-boundaries.md](contracts/architecture-boundaries.md)
-against the repository root: every top-level path resolves to exactly one boundary row;
-no technique directory exists without a provider.
+against the repository root and `rdam/`: every repository path has one owner and every
+technique sub-package contains a real provider.
 
 ```bash
-ls -d */ | sort        # every entry must appear in the boundary roster
+find rdam -maxdepth 1 -type d -print | sort
 ```
 
-Expected: zero unlisted top-level directories; zero technique directories while their
-techniques report `unavailable(not_implemented)`.
+Expected: exactly seven technique sub-packages after T015, plus the shared package
+modules/resources; no `production/` child and no top-level technique import package.
 
 ## V2 — Production never touches the workbench (SC-003)
 
@@ -32,17 +31,12 @@ techniques report `unavailable(not_implemented)`.
 pixi run -e default production-boundary
 ```
 
-The `-e` flag is required: the task is defined in the `default`, `production`, and
-`offline` environments, and the bare form fails as ambiguous.
-
-Expected (after the research-D5 extension lands with feature 007): zero production
-imports of `workbench.*` and zero workbench members in distributable artifacts, reported
-by the inspection with exit 0. Until the extension lands, the existing inspection must
-stay green and the extension is a feature-007 acceptance item.
+Expected: zero production imports of `workbench.*`, complete ownership classification,
+and exit 0. Distribution membership is additionally proved by artifact validation.
 
 ## V3 — RST equivalence baseline (SC-002)
 
-Pre-migration capture and post-migration comparison per
+Current regression and canonical-serialization proof per
 [contracts/rst-preservation.md](contracts/rst-preservation.md):
 
 ```bash
@@ -50,24 +44,21 @@ pixi run test-all
 ```
 
 ```bash
-pixi run production-api-contract
+pixi run test
 ```
 
 ```bash
 pixi run smoke
 ```
 
-Expected: all green pre-migration (baseline capture persists serialized outputs);
-identical commands green post-migration with serialized contracts byte-equal and parse
-results equivalent under the suite's existing definitions. Any diff halts migration.
-(`smoke-full-mps` was folded into `tests/integration/test_production_smoke.py` as the
-`smoke` task on 2026-09-02; `pixi run rst-baseline capture|compare` is the capture and
-comparison tool feature 010 built for this procedure.)
+Expected: public-surface, ingest, contract, format, provider, and smoke tests pass with
+canonical serialized contracts byte-equal after round-trip and parse results equal under
+the suite's existing semantic assertions. Any unexplained diff fails SC-002.
 
-## V4 — Packaging identity survives relocation (FR-009; research D2 gate)
+## V4 — Distribution preserves the public package (FR-009)
 
-Post-relocation only. `dist/` is ignored build output; tag first so the packaged
-provenance and the build report name the release:
+For a distribution candidate, `dist/` is ignored build output and the package is built
+from the exact release commit:
 
 ```bash
 git tag v<version>
@@ -86,26 +77,23 @@ pixi run -e production production-clean-install
 ```
 
 Expected: wheel and sdist build reproducibly from the one wheel package directory
-`pyproject.toml` declares (`packages = ["rdam"]` since the owner's single-package ruling
-of 2026-09-02; `"reproducible": true`, provenance in both); the artifact validator
+`pyproject.toml` declares (`packages = ["rdam"]`; `"reproducible": true`, provenance
+in both); the artifact validator
 reports `valid: true`; the clean-room install pip-installs the **wheel** into fresh
 `core` and `formats` venvs outside the source tree with the network disabled, imports the
 package from `site-packages`, and passes full installed acceptance including CLI/Python
 semantic parity. This gate discharges the research-D2 `ASSUMED` marker and precedes every
 other migration completion claim.
 
-`production-smoke` is **not** this gate: in the `production` environment it runs against
-the editable source install (`pyproject.toml:110`), never the wheel, so it cannot detect
-a bad artifact — verified 2026-09-02 when it passed against a wheel that
-`validate-production-artifacts` rejected (evidence/rst-surface-audit.md defect 4).
+An editable-source import check is not this gate: it cannot detect a malformed wheel.
 
 ## V5 — Capability honesty (SC-005, SC-007, SC-010)
 
-Once the aggregate contract exists (feature 007+), its acceptance tests must
-demonstrate: every success/unavailable/failed combination across providers with no
-suppression of successful results; zero stubs or fabricated structures for unavailable
-techniques; withholding one provider leaving every other capability declaration
-byte-identical. Anchored to
+Acceptance tests demonstrate every success/unavailable/failed combination across
+providers with no suppression of successful results; zero stubs or fabricated
+structures; withholding one provider leaving every unrelated capability declaration
+byte-identical; and the supported production composition reporting seven available
+techniques. Anchored to
 [contracts/capability-declaration.md](contracts/capability-declaration.md).
 
 ## V6 — Migration safety (SC-008)

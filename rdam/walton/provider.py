@@ -33,9 +33,9 @@ from rdam import (
 )
 from rdam._llm import LlmError, StructuredAnalyst, configured_model, unavailable_reason
 from rdam._strict import JsonValue, sha256_bytes
-from rdam.walton.schemes import SCHEMES, SchemeError, WaltonAnalysis
+from rdam.walton.schemes import SCHEMES, SCHEME_SET_ID, SchemeError, WaltonAnalysis
 
-PROVIDER_ID_PREFIX: Final = "rdam.walton/schemes-v1"
+PROVIDER_ID_PREFIX: Final = f"rdam.walton/{SCHEME_SET_ID}"
 FORMALISM_ID: Final = "walton_schemes"
 CONTRACT_VERSION: Final = SemanticVersion(root="1.0.0")
 LICENCE: Final = "MIT (LICENSE); analyses produced by a third-party model under that model's own terms"
@@ -166,12 +166,22 @@ class WaltonProvider:
                 self._failure("invalid_scheme_instance", Retryability.NOT_RETRYABLE, "SchemeError", str(error))
             ) from error
         except LlmError as error:
-            raise ProviderError(self._failure(error.code, error.retryability, "LlmError", error.detail)) from error
+            raise ProviderError(
+                self._failure(
+                    error.code,
+                    error.retryability,
+                    "LlmError",
+                    error.detail,
+                    output_attempts=error.output_attempts,
+                    transport_attempts=error.transport_attempts,
+                )
+            ) from error
         payload: dict[str, JsonValue] = {
             **extraction.structure.to_payload(),
             "extraction": {
                 "model": extraction.model,
                 "output_attempts": extraction.output_attempts,
+                "transport_attempts": extraction.transport_attempts,
                 "instructions_digest": semantic_sha256(INSTRUCTIONS),
             },
         }
@@ -185,7 +195,21 @@ class WaltonProvider:
             provenance=declaration.provenance,
         )
 
-    def _failure(self, code: str, retryability: Retryability, exception_type: str, detail: str | None = None) -> ProviderFailure:
+    def _failure(
+        self,
+        code: str,
+        retryability: Retryability,
+        exception_type: str,
+        detail: str | None = None,
+        *,
+        output_attempts: int = 0,
+        transport_attempts: int = 0,
+    ) -> ProviderFailure:
+        parameters = [] if detail is None else [("detail", detail)]
+        if output_attempts or transport_attempts:
+            parameters.extend(
+                (("output_attempts", str(output_attempts)), ("transport_attempts", str(transport_attempts)))
+            )
         return ProviderFailure(
             technique=Technique.WALTON,
             provider_id=self.provider_id,
@@ -194,7 +218,7 @@ class WaltonProvider:
             code=code,
             exception_type=exception_type,
             message_template=code,
-            message_parameters=(("detail", detail),) if detail is not None else (),
+            message_parameters=tuple(parameters),
         )
 
 

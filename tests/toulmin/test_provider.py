@@ -1,10 +1,18 @@
-"""The Toulmin provider through the machine: capability is whether the model can be reached."""
+"""The Toulmin provider through the machine: native validity plus evidenced attempts."""
 
+from dataclasses import dataclass
+
+from pydantic_ai import models
+from pydantic_ai.exceptions import ModelHTTPError, UnexpectedModelBehavior
+from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
+from pydantic_ai.models.function import AgentInfo, FunctionModel
+from pydantic_ai.models.openai import OpenAIChatModel
 import pytest
 
 from rdam import (
     AggregateRequest,
     AvailableCapability,
+    FailedOutcome,
     Machine,
     ProviderError,
     ProviderRequest,
@@ -17,8 +25,25 @@ from rdam import (
     technique_curie,
 )
 from rdam.toulmin import PROVIDER_ID_PREFIX, ToulminProvider, source_identity
+from rdam.toulmin.argument import ToulminAnalysis
+from rdam._llm import LlmError, StructuredAnalyst
+from rdam.walton import WaltonProvider
 
 MODEL = "openai:gpt-5.6-sol"
+
+VALID_LAYOUT = {
+    "claim": "The council should reject the proposal.",
+    "grounds": ["The site is unstable."],
+    "warrant": "A council should reject construction proposals for unstable sites.",
+}
+
+
+@pytest.fixture(autouse=True)
+def never_a_real_request():
+    previous = models.ALLOW_MODEL_REQUESTS
+    models.ALLOW_MODEL_REQUESTS = False
+    yield
+    models.ALLOW_MODEL_REQUESTS = previous
 
 
 @pytest.fixture
@@ -32,6 +57,121 @@ def no_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.fixture
 def with_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-used-for-any-request")
+
+
+def _proposing(layouts: object) -> FunctionModel:
+    def behaviour(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        del messages
+        return ModelResponse(parts=[ToolCallPart(tool_name=info.output_tools[0].name, args={"layouts": layouts})])
+
+    return FunctionModel(behaviour)
+
+
+@dataclass
+class _Usage:
+    requests: int
+
+
+@dataclass
+class _Result:
+    output: ToulminAnalysis
+    request_count: int = 1
+
+    def usage(self) -> _Usage:
+        return _Usage(requests=self.request_count)
+
+
+class TestAttemptContract:
+    def test_provider_sdk_retries_are_disabled_at_the_owned_boundary(self, with_credentials: None) -> None:
+        model = ToulminProvider(model=MODEL)._built().agent.model
+        assert isinstance(model, OpenAIChatModel)
+        assert model._provider.client.max_retries == 0
+
+    def test_transient_failures_are_bounded_and_counted(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, transport_retries=2)
+        outcomes: list[object] = [
+            ModelHTTPError(503, MODEL, headers={"retry-after": "0"}),
+            ModelHTTPError(503, MODEL),
+            _Result(ToulminAnalysis()),
+        ]
+        delays: list[float] = []
+
+        def run(_text: str):
+            item = outcomes.pop(0)
+            if isinstance(item, Exception):
+                raise item
+            return item
+
+        monkeypatch.setattr(analyst, "_run_sync", run)
+        monkeypatch.setattr("rdam._llm.time.sleep", delays.append)
+        monkeypatch.setattr("rdam._llm.random.uniform", lambda _low, high: high)
+        extraction = analyst.extract("text")
+        assert extraction.output_attempts == 1
+        assert extraction.transport_attempts == 3
+        assert len(delays) == 2 and delays[0] == 0.0
+
+    def test_retry_after_is_honoured(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, transport_retries=1)
+        outcomes: list[object] = [ModelHTTPError(429, MODEL, headers={"retry-after": "2"}), _Result(ToulminAnalysis())]
+        delays: list[float] = []
+
+        def run(_text: str):
+            item = outcomes.pop(0)
+            if isinstance(item, Exception):
+                raise item
+            return item
+
+        monkeypatch.setattr(analyst, "_run_sync", run)
+        monkeypatch.setattr("rdam._llm.time.sleep", delays.append)
+        extraction = analyst.extract("text")
+        assert extraction.transport_attempts == 2
+        assert delays == [2.0]
+
+    def test_exhaustion_reports_the_exact_transport_attempts(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, transport_retries=1)
+
+        def fail(_text: str):
+            raise ModelHTTPError(503, MODEL)
+
+        monkeypatch.setattr(analyst, "_run_sync", fail)
+        monkeypatch.setattr("rdam._llm.time.sleep", lambda _delay: None)
+        with pytest.raises(LlmError) as caught:
+            analyst.extract("text")
+        assert caught.value.code == "llm_request_rejected"
+        assert caught.value.transport_attempts == 2
+        assert caught.value.output_attempts == 0
+
+    def test_output_exhaustion_is_not_mislabeled_as_transport_retry(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, output_retries=2)
+        monkeypatch.setattr(
+            analyst,
+            "_run_sync",
+            lambda _text: (_ for _ in ()).throw(UnexpectedModelBehavior("invalid output")),
+        )
+        with pytest.raises(LlmError) as caught:
+            analyst.extract("text")
+        assert caught.value.code == "llm_output_failed_validation"
+        assert caught.value.output_attempts == 3
+        assert caught.value.transport_attempts == 3
+
+    def test_transport_deadline_stops_before_an_over_budget_wait(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        analyst = StructuredAnalyst(
+            output_type=ToulminAnalysis,
+            instructions="test",
+            model=MODEL,
+            transport_retries=2,
+            transport_deadline_seconds=1.0,
+        )
+        monkeypatch.setattr(
+            analyst,
+            "_run_sync",
+            lambda _text: (_ for _ in ()).throw(ModelHTTPError(429, MODEL, headers={"retry-after": "2"})),
+        )
+        monkeypatch.setattr("rdam._llm.time.sleep", lambda _delay: pytest.fail("deadline must stop before sleeping"))
+        with pytest.raises(LlmError) as caught:
+            analyst.extract("text")
+        assert caught.value.code == "llm_transport_deadline_exceeded"
+        assert caught.value.transport_attempts == 1
 
 
 class TestDeclaration:
@@ -89,18 +229,50 @@ class TestAnalyseGuards:
 
 
 class TestThroughTheMachine:
+    def test_a_valid_proposal_becomes_a_native_result_with_attempt_evidence(self, with_credentials: None) -> None:
+        provider = ToulminProvider(model=MODEL)
+        with provider._built().agent.override(model=_proposing([VALID_LAYOUT])):
+            outcome = Machine([provider]).analyse(
+                AggregateRequest.for_text("The site is unstable, so reject the proposal.", (Technique.TOULMIN,))
+            ).outcome_for(Technique.TOULMIN)
+        assert isinstance(outcome, ResultOutcome)
+        extraction = outcome.result.payload["extraction"]
+        assert isinstance(extraction, dict)
+        assert extraction["output_attempts"] == 1
+        assert extraction["transport_attempts"] == 1
+
+    def test_a_malformed_proposal_is_one_typed_failure_with_no_partial_result(self, with_credentials: None) -> None:
+        provider = ToulminProvider(model=MODEL)
+        broken = {**VALID_LAYOUT, "warrant": VALID_LAYOUT["claim"]}
+        with provider._built().agent.override(model=_proposing([broken])):
+            outcome = Machine([provider]).analyse(
+                AggregateRequest.for_text("Some argument.", (Technique.TOULMIN,))
+            ).outcome_for(Technique.TOULMIN)
+        assert isinstance(outcome, FailedOutcome)
+        assert outcome.failure.code == "llm_output_failed_validation"
+        assert ("output_attempts", "3") in outcome.failure.message_parameters
+        assert ("transport_attempts", "3") in outcome.failure.message_parameters
+
     def test_an_unreachable_model_is_unavailable_not_failed(self, no_credentials: None) -> None:
         machine = Machine([ToulminProvider(model=MODEL)])
         outcome = machine.analyse(AggregateRequest.for_text("Some text.", (Technique.TOULMIN,))).outcome_for(Technique.TOULMIN)
         assert isinstance(outcome, UnavailableOutcome)
         assert outcome.reason is UnavailableReason.MODEL_UNAVAILABLE
 
+    def test_withholding_toulmin_does_not_change_walton_capability(self, with_credentials: None) -> None:
+        walton = WaltonProvider(model=MODEL)
+        with_toulmin = Machine([walton, ToulminProvider(model=MODEL)]).capabilities().capability_for(Technique.WALTON)
+        without_toulmin = Machine([walton]).capabilities().capability_for(Technique.WALTON)
+        assert with_toulmin.model_dump_json() == without_toulmin.model_dump_json()
 
+
+@pytest.mark.live
 @pytest.mark.slow
 class TestAgainstTheRealModel:
     """One real call: the layout the machine returns is the model's proposal, validated."""
 
-    def test_the_machine_returns_a_validated_toulmin_layout(self) -> None:
+    def test_the_machine_returns_a_validated_toulmin_layout(self, live_model_requests: None) -> None:
+        models.ALLOW_MODEL_REQUESTS = True
         machine = Machine([ToulminProvider()])
         text = (
             "The council should reject the proposal. It would cost £4m that is not in the budget, "

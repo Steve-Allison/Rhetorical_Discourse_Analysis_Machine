@@ -102,6 +102,16 @@ def test_machine_package_may_not_reach_workbench(tmp_path: Path) -> None:
     assert ("rdam", "rdam.core", "workbench") in paths
 
 
+def test_gate_does_not_parse_unrelated_workbench_sources(tmp_path: Path) -> None:
+    """Only production syntax belongs to the production import-closure gate."""
+
+    _write(tmp_path / "rdam/__init__.py")
+    _write(tmp_path / "workbench/vendor/research.py", "broken syntax that is not production")
+    report = validate_import_boundary(tmp_path)
+    assert report.valid
+    assert report.scanned_files == 1
+
+
 def test_machine_wheel_members_are_inside_the_boundary_and_workbench_still_is_not(tmp_path: Path) -> None:
     """D5 check (b): production wheels may carry the machine's import root and nothing else."""
 

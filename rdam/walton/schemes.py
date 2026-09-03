@@ -32,6 +32,8 @@ from rdam._strict import JsonValue
 
 type NonEmpty = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
+SCHEME_SET_ID: Final = "walton-reed-macagno-2008-subset-v1"
+
 
 class SchemeError(ValueError):
     """The supplied structure is not a well-formed instance of its declared scheme."""
@@ -325,12 +327,13 @@ class WaltonAnalysis(BaseModel):
             "instances": [instance.to_payload() for instance in self.instances],
             "instance_count": len(self.instances),
             "total_open_questions": sum(len(instance.open_questions) for instance in self.instances),
-            "scheme_set": "walton-reed-macagno-2008-subset-v1",
+            "scheme_set": SCHEME_SET_ID,
         }
 
 
 __all__ = [
     "SCHEMES",
+    "SCHEME_SET_ID",
     "CriticalQuestion",
     "CriticalQuestionStatus",
     "NonEmpty",
