@@ -7,11 +7,11 @@ package, every technique a sub-package:
 
 | Sub-package | Technique | State (2026-09-02) |
 |---|---|---|
-| `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.analyse()` returning one explicit outcome per technique, the `PromotionDecision` contract | feature 007 / 008 |
-| `rdam.rst` | RST / eRST — DMRST and UniRST discourse parsers (Steve's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, viewer, the `rdam-rst` command, and the machine adapter `rdam.rst.provider.RstProvider` | `available` with promoted/redeclared release |
-| `rdam.dung` | Dung abstract argumentation: grounded, complete, preferred, stable semantics over a supplied or explicitly derived framework | `available` (decision `rdam.dung-exhaustive-subset-v1-replace-lineage-2026-09-02`) |
-| `rdam.ibis` | IBIS: issue–position–argument structures validated under the gIBIS link grammar | `available` (decision `rdam.ibis-gibis-grammar-v1-replace-lineage-2026-09-02`) |
-| SDRT, Toulmin, Walton, PDTB | no provider — the machine reports `unavailable(no_promoted_implementation)`; no stubs | on workbench evidence only (006 FR-024) |
+| `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.analyse()` returning one explicit outcome per technique | feature 007 |
+| `rdam.rst` | RST / eRST — DMRST and UniRST discourse parsers (Steve's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, viewer, the `rdam-rst` command, and the machine adapter `rdam.rst.provider.RstProvider` | `available` |
+| `rdam.dung` | Dung abstract argumentation: grounded, complete, preferred, stable semantics over a supplied or explicitly derived framework | `available` |
+| `rdam.ibis` | IBIS: issue–position–argument structures validated under the gIBIS link grammar | `available` |
+| SDRT, Toulmin, Walton, PDTB | no provider — the machine reports `unavailable(not_implemented)`; no stubs | not yet built (006 FR-024) |
 
 Pixi-managed, MPS-aware, Apple-Silicon-first, real test suite, real CI.
 
@@ -51,7 +51,7 @@ CI (`.github/workflows/ci.yml`) runs lint, typecheck, mdlint, and the fast tests
 
 ## Layout and identity (owner rulings, 2026-09-02)
 
-- **One production package at the repository root, `rdam/`, shipped as one wheel** (`rdam` 6.0.0). Every promoted technique is a sub-package of it. This supersedes the per-technique top-level boundary roster of feature 006 (`machine/`, `rst/`, `dung/`, …); the supersession is recorded in [`specs/010-repository-migration/spec.md`](specs/010-repository-migration/spec.md) and noted at the top of the 006 boundary contract.
+- **One production package at the repository root, `rdam/`, shipped as one wheel** (`rdam` 6.0.0). Every technique is a sub-package of it. This supersedes the per-technique top-level boundary roster of feature 006 (`machine/`, `rst/`, `dung/`, …); the supersession is recorded in [`specs/010-repository-migration/spec.md`](specs/010-repository-migration/spec.md) and noted at the top of the 006 boundary contract.
 - `isanlp_rst` is not a protected name. The RST provider is `rdam.rst`; the console command is `rdam-rst`.
 - **Persisted contract identifiers are unchanged**: `isanlp_rst.production` 2.0.0 (the ingest envelope), `isanlp_rst.parser/modernbert-v1` (the runtime contract named by the immutable release manifests), `isanlp_rst.build_provenance`, `isanlp_rst.public_surface`, the schema `$id`s, and `ISANLP_RST_ERST_CHECKPOINT`. They name contracts and stored releases, not the package. Renaming them is a separate owner ruling.
 - `ontology/` stays a top-level repository directory (vendored Central distribution and the LinkML profile); only the projected `rdam/resources/framework-identities.json` ships in the wheel.
@@ -61,7 +61,9 @@ CI (`.github/workflows/ci.yml`) runs lint, typecheck, mdlint, and the fast tests
 
 The build ordered by the owner on 2026-09-02 ("Go — archive the runs, version 6.0.0, build it all") is recorded feature by feature under `specs/007-…` to `specs/012-…`, with the running handoff in [`docs/plans/2026-09-02-machine-build.md`](docs/plans/2026-09-02-machine-build.md). Remaining: release 6.0.0 (tag, build, validate, clean-install, evidence) and, last, the repository directory rename to `Rhetorical_Discourse_Analysis_Machine` with the sibling-repo and memory-path sweep.
 
-**Owner rulings outstanding**: (1) the RST model releases — every stored release fails the 008 evidence gate (a52b70 withhold: test full F1 0.198 against the archived `gumrrg` 0.487; 462d68 withhold: unevaluated), so the machine reports RST `unavailable(withheld)`; (2) whether the persisted contract identifiers above should also move to the `rdam` name.
+The promotion-evidence system (feature 008) was removed on 2026-09-02 by owner ruling: it was never requested, and it made the machine report `unavailable` for parsers that ran correctly. Capability now means one thing — the provider can run.
+
+**Owner ruling outstanding**: whether the persisted contract identifiers above should also move to the `rdam` name.
 
 Provider order thereafter: **SDRT → Toulmin/Walton → PDTB-if-ever**, each on workbench evidence with its own decision-closed Spec Kit feature.
 
@@ -81,9 +83,9 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 
 ## Files worth knowing
 
-- [`rdam/machine.py`](rdam/machine.py), [`rdam/contracts.py`](rdam/contracts.py), [`rdam/promotion.py`](rdam/promotion.py) — the machine, its typed contracts, and the evidence-gated `PromotionDecision`.
+- [`rdam/machine.py`](rdam/machine.py), [`rdam/contracts.py`](rdam/contracts.py) — the machine and its typed contracts.
 - [`rdam/rst/parser.py`](rdam/rst/parser.py) — RST public entry point; production families are DMRST and UniRST, loaded from an immutable local release or HF version.
-- [`rdam/rst/provider.py`](rdam/rst/provider.py) — the machine-facing RST/eRST adapter: capability from the promotion decision published beside the release; the ingest outcome envelope is handed to the machine verbatim.
+- [`rdam/rst/provider.py`](rdam/rst/provider.py) — the machine-facing RST/eRST adapter: capability from whether the configured parser can run; the ingest outcome envelope is handed to the machine verbatim.
 - [`rdam/rst/cli.py`](rdam/rst/cli.py) — the `rdam-rst` command (parse, capabilities, serve, version).
 - [`rdam/rst/parser_annotator.py`](rdam/rst/parser_annotator.py), [`rdam/rst/universal_parser/`](rdam/rst/universal_parser/) — DMRST and UniRST production parser implementations.
 - [`rdam/rst/annotation_rst.py`](rdam/rst/annotation_rst.py) — native `DiscourseUnit` and RS3 XML serialization.
@@ -93,9 +95,9 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 - [`rdam/rst/model_loading/release.py`](rdam/rst/model_loading/release.py) — immutable release manifests, and the manifest-bound `CompatibilityRedeclaration` sidecar by which a stored release is shown to run under a later package line.
 - [`rdam/rst/hierarchical/stitcher.py`](rdam/rst/hierarchical/stitcher.py) — `HierarchicalSectionStitcher`: two-stage hierarchical section/macro tree stitching for long documents.
 - [`rdam/rst/rstviewer/`](rdam/rst/rstviewer/) — visualizer and HTML/PNG export engine.
-- [`rdam/dung/`](rdam/dung/) — Dung semantics (`semantics.py`) and provider; capability bound to the digest of its own source by the packaged decision.
-- [`rdam/ibis/`](rdam/ibis/) — gIBIS link grammar (`grammar.py`) and provider; same binding.
+- [`rdam/dung/`](rdam/dung/) — Dung semantics (`semantics.py`) and provider; exact and deterministic, so available whenever imported.
+- [`rdam/ibis/`](rdam/ibis/) — gIBIS link grammar (`grammar.py`) and provider; same.
 - [`ontology/`](ontology/) — vendored Central distribution (read-only, `vendor/central-configs/`) and the `rdam` LinkML application profile binding techniques to `coe:` framework identities; `pixi run ontology-validate`.
 - [`tools/production_boundary/`](tools/production_boundary/) — boundary inspection, reproducible build, artifact validation, clean install, and the classified `rst-baseline` comparison; every tool derives name and version from `pyproject.toml` (`identity.py`).
-- [`workbench/`](workbench/) — offline workbench: corpus ingestion, training recipes, Parseval evaluation, promotion (`workbench/promotion/`, ledger under `workbench/promotions/<technique>/`), and the central audit ledger (`workbench/experiments/central_ledger.jsonl`).
+- [`workbench/`](workbench/) — offline workbench: corpus ingestion, training recipes, Parseval evaluation, model-store release tooling (`workbench/promotion/`), and the central audit ledger (`workbench/experiments/central_ledger.jsonl`).
 - [`docs/metrics/UniRST_Metrics.md`](docs/metrics/UniRST_Metrics.md) — per-corpus metrics for the archived multilingual research model.

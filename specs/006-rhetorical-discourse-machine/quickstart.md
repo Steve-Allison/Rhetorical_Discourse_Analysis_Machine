@@ -17,14 +17,14 @@ pixi install          # provision the default environment (pixi.lock)
 
 Review [contracts/architecture-boundaries.md](contracts/architecture-boundaries.md)
 against the repository root: every top-level path resolves to exactly one boundary row;
-no technique directory exists without a promoted provider.
+no technique directory exists without a provider.
 
 ```bash
 ls -d */ | sort        # every entry must appear in the boundary roster
 ```
 
 Expected: zero unlisted top-level directories; zero technique directories while their
-techniques report `unavailable(no_promoted_implementation)`.
+techniques report `unavailable(not_implemented)`.
 
 ## V2 — Production never touches the workbench (SC-003)
 

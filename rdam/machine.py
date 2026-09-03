@@ -5,7 +5,7 @@ Rules implemented here, from the 006 contracts:
 - Capability reporting is side-effect-free: it reads provider *declarations*, never
   loads a model, never runs anything (capability contract §Aggregate behaviour 2).
 - An aggregate request over N techniques returns N explicit outcomes. A technique with no
-  promoted provider is ``unavailable(no_promoted_implementation)``; a provider whose
+  registered provider is ``unavailable(not_implemented)``; a provider whose
   standing state is unavailable reports its reason; a structured-input technique with no
   structured input is ``unavailable(missing_structured_input)``; a provider's typed
   failure is a ``failed`` outcome. One provider's failure never suppresses another's
@@ -47,7 +47,7 @@ from rdam.frameworks import BOUNDARY_TECHNIQUES, STRUCTURED_INPUT_TECHNIQUES, Te
 
 
 class Provider(Protocol):
-    """An independently callable, promoted implementation for one technique (006 data model §Provider)."""
+    """An independently callable implementation for one technique (006 data model §Provider)."""
 
     @property
     def declaration(self) -> ProviderDeclaration: ...
@@ -84,7 +84,7 @@ class Machine:
                     TechniqueCapability(
                         technique=technique,
                         technique_curie=technique_curie(technique),
-                        capability=UnavailableCapability(reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION),
+                        capability=UnavailableCapability(reason=UnavailableReason.NOT_IMPLEMENTED),
                         requires_structured_input=technique in STRUCTURED_INPUT_TECHNIQUES,
                     )
                 )
@@ -142,7 +142,7 @@ class Machine:
     ) -> ResultOutcome | UnavailableOutcome | FailedOutcome:
         provider = self._providers.get(technique)
         if provider is None:
-            return UnavailableOutcome(technique=technique, reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION)
+            return UnavailableOutcome(technique=technique, reason=UnavailableReason.NOT_IMPLEMENTED)
         declaration = provider.declaration
         if isinstance(declaration.capability, UnavailableCapability):
             return UnavailableOutcome(technique=technique, reason=declaration.capability.reason)
@@ -153,7 +153,7 @@ class Machine:
         if chosen is not None:
             formalism = declaration.formalism(chosen)
             if formalism is None:
-                return UnavailableOutcome(technique=technique, reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION)
+                return UnavailableOutcome(technique=technique, reason=UnavailableReason.NOT_IMPLEMENTED)
             if isinstance(formalism.capability, UnavailableCapability):
                 return UnavailableOutcome(technique=technique, reason=formalism.capability.reason)
         provider_request = ProviderRequest(

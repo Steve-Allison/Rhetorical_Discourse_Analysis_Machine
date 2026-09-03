@@ -40,7 +40,7 @@ way to declare it, and `Machine.analyse` never populated the field. Now:
 | Supplied vs explicitly derived input is recorded, never inferred (FR-016, FR-017) | `ProviderRequest.derived_from` reaches the provider; `rdam.dung` and `rdam.ibis` record `input_origin: explicitly_derived` and the upstream identity in their payload; IBIS `extraction` stays `None` | `tests/dung/test_provider.py::…explicitly_derived…`, `tests/ibis/test_provider.py::…explicitly_derived…` |
 | The machine never derives a structure itself | no extraction path exists; a derivation is always the caller's declaration | by construction (the only producer of `derived_from` is the request) |
 
-Both providers' source digests changed and were re-promoted by `replace` decisions
+Both providers' source digests changed with the new import lines
 (`…-replace-lineage-2026-09-02`).
 
 ## Not in this feature

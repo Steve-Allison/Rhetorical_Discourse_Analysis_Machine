@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from pathlib import Path
 
 from rdam.rst.ingest import SourceArtifact, SourceForm
@@ -14,7 +15,7 @@ def test_docling_inventory_includes_notes_tables_and_pictures() -> None:
     artifact = SourceArtifact.from_path(FIXTURE, source_form=SourceForm.DOCLING_JSON)
     outcome = ProductionIngestor().prepare(artifact)
     classes = {item.classification for item in outcome.semantic.inventory}
-    assert outcome.semantic.source_contract.upstream_version == "2.92.0"
+    assert outcome.semantic.source_contract.upstream_version == version("docling-core")
     assert ContentClass.NOTE in classes
     assert ContentClass.TABLE in classes
     assert ContentClass.PICTURE in classes

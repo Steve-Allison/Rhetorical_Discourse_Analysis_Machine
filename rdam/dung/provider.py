@@ -1,11 +1,9 @@
 """The Dung provider: formal evaluation of a supplied argumentation framework (FR-016).
 
-Capability comes from the promotion decision packaged with the provider
-(``resources/promotion-decision.json``): the decision names the exact source identity of
-this provider's code, so a change to the semantics without a new decision makes the
-provider ``unavailable(no_promoted_implementation)`` — the decision cannot be inherited by
-code it did not evaluate. Reporting capability computes a digest of two source files and
-reads one JSON file; it never evaluates a framework.
+The semantics are exact and deterministic, so the provider is available whenever it is
+imported. It never derives a framework from text: it evaluates the structure the caller
+supplies, or the one the caller explicitly declares it derived from another technique's
+result. Reporting capability computes a digest of two source files and nothing else.
 """
 
 from importlib import resources
@@ -16,8 +14,6 @@ from rdam import (
     AvailableCapability,
     FormalismDeclaration,
     NativeTechniqueResult,
-    PromotionDecision,
-    PromotionOutcome,
     ProviderDeclaration,
     ProviderError,
     ProviderFailure,
@@ -27,9 +23,6 @@ from rdam import (
     SemanticVersion,
     Sha256Identity,
     Technique,
-    UnavailableCapability,
-    UnavailableReason,
-    load_decision,
     semantic_sha256,
     technique_curie,
 )
@@ -45,24 +38,18 @@ from rdam.dung.semantics import (
 PROVIDER_ID: Final = "rdam.dung/exhaustive-subset-v1"
 FORMALISM_ID: Final = "dung_extensions"
 CONTRACT_VERSION: Final = SemanticVersion(root="1.0.0")
+LICENCE: Final = "MIT (LICENSE)"
 _SOURCE_FILES: Final = ("semantics.py", "provider.py")
 
 
 def source_identity() -> Sha256Identity:
-    """Digest of the provider's evaluated source files, in a fixed order."""
+    """Digest of the provider's source files, in a fixed order; recorded as provenance."""
 
     package = resources.files("rdam.dung")
     digest = semantic_sha256(
         {name: sha256_bytes(package.joinpath(name).read_bytes()) for name in _SOURCE_FILES}
     )
     return Sha256Identity(hex_digest=digest)
-
-
-def packaged_decision() -> PromotionDecision | None:
-    resource = resources.files("rdam.dung").joinpath("resources/promotion-decision.json")
-    if not resource.is_file():
-        return None
-    return load_decision(resource.read_bytes())
 
 
 def _package_version() -> str:
@@ -79,38 +66,18 @@ def input_origin(request: ProviderRequest) -> str:
 
 
 class DungProvider:
-    """One promoted Dung semantics implementation, declared to the machine."""
+    """Dung abstract argumentation semantics, declared to the machine."""
 
-    def __init__(self, decision: PromotionDecision | None = None, *, capacity: int = DEFAULT_CAPACITY) -> None:
-        self._decision = decision if decision is not None else packaged_decision()
+    def __init__(self, *, capacity: int = DEFAULT_CAPACITY) -> None:
         self._capacity = capacity
 
     @property
-    def decision(self) -> PromotionDecision | None:
-        return self._decision
-
-    def _unavailable_reason(self) -> UnavailableReason | None:
-        decision = self._decision
-        if decision is None:
-            return UnavailableReason.NO_PROMOTED_IMPLEMENTATION
-        if decision.candidate.candidate_id != PROVIDER_ID or decision.candidate.artifact_identity != source_identity():
-            return UnavailableReason.NO_PROMOTED_IMPLEMENTATION
-        return {
-            PromotionOutcome.PROMOTE: None,
-            PromotionOutcome.REPLACE: None,
-            PromotionOutcome.WITHHOLD: UnavailableReason.WITHHELD,
-            PromotionOutcome.RETIRE: UnavailableReason.RETIRED,
-        }[decision.outcome]
+    def capacity(self) -> int:
+        return self._capacity
 
     @property
     def declaration(self) -> ProviderDeclaration:
-        reason = self._unavailable_reason()
-        capability = (
-            AvailableCapability(provider_id=PROVIDER_ID, contract_version=CONTRACT_VERSION)
-            if reason is None
-            else UnavailableCapability(reason=reason)
-        )
-        decision = self._decision
+        capability = AvailableCapability(provider_id=PROVIDER_ID, contract_version=CONTRACT_VERSION)
         return ProviderDeclaration(
             provider_id=PROVIDER_ID,
             technique=Technique.DUNG,
@@ -128,7 +95,7 @@ class DungProvider:
                 package="rdam.dung",
                 version=_package_version(),
                 source_revision=source_identity().hex_digest,
-                licence_decision=decision.licensing.decision_note if decision is not None else "no promotion decision packaged",
+                licence=LICENCE,
             ),
             capability=capability,
             requires_structured_input=True,
@@ -136,8 +103,6 @@ class DungProvider:
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:
         declaration = self.declaration
-        if not isinstance(declaration.capability, AvailableCapability):
-            raise ProviderError(self._failure("provider_not_available", "ValueError", declaration.capability.reason.value))
         if request.formalism_id not in (None, FORMALISM_ID):
             raise ProviderError(self._failure("formalism_not_declared", "ValueError", str(request.formalism_id)))
         if request.structured_input is None:
@@ -190,9 +155,9 @@ class DungProvider:
 __all__ = [
     "CONTRACT_VERSION",
     "FORMALISM_ID",
+    "LICENCE",
     "PROVIDER_ID",
     "DungProvider",
     "input_origin",
-    "packaged_decision",
     "source_identity",
 ]

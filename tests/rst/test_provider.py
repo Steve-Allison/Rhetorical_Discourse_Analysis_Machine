@@ -55,7 +55,7 @@ class TestConfiguration:
             RstProvider(hf_model_version="gumrrg", store=tmp_path, release_id="x")
 
     def test_the_weights_licence_is_reported(self) -> None:
-        assert "CC BY-NC" in RstProvider().declaration.provenance.licence_decision
+        assert "CC BY-NC" in RstProvider().declaration.provenance.licence
 
 
 class TestFormalisms:

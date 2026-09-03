@@ -3,6 +3,8 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import torch
+
 from .annotation_rst import DiscourseUnit
 from .dmrst_parser.predictor import PredictorDMRST
 from .universal_parser.predictor import PredictorUniRST
@@ -11,7 +13,6 @@ from .utils.parse_result import ParseFailedError, extract_root_tree
 __all__ = ["ParseFailedError", "Parser", "extract_root_tree"]
 
 if TYPE_CHECKING:
-    import torch
     from rdam.rst.contracts import RstAnalysis, RstDocument, TextSpan
     from rdam.rst.ingest.contracts.analysis import AnalysisPolicy, ParserAnalysisResult
     from rdam.rst.ingest.contracts.inference import CompositeAnalysisIdentity
@@ -51,7 +52,7 @@ class Parser:
         segmenter_model: str | None = None,
         erst_scorer_checkpoint: str | Path | None = None,
         _validated_model_release: Any | None = None,
-    ):
+    ) -> None:
         if model_dir is not None and hf_model_name is not None and hf_model_name != self._DEFAULT_HF_MODEL_NAME:
             raise ValueError(
                 "Pass either `model_dir` or `hf_model_name`, not both. "
@@ -303,7 +304,7 @@ class Parser:
         except (OSError, json.JSONDecodeError):
             return None
 
-    def __call__(self, text: str):
+    def __call__(self, text: str) -> dict[str, Any]:
         return self.predictor.parse_rst(text)
 
     def parse_tree(self, text: str) -> DiscourseUnit:
@@ -318,7 +319,7 @@ class Parser:
             raise ParseFailedError(f"Parser produced an RST root with the wrong runtime type: {type(root).__name__}.")
         return root
 
-    def from_edus(self, edus: Sequence[str]):
+    def from_edus(self, edus: Sequence[str]) -> dict[str, Any]:
         """Parse a document using predefined EDUs."""
         return self.predictor.parse_from_edus(edus)
 

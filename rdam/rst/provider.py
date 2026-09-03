@@ -159,7 +159,7 @@ class RstProvider:
                 package=PACKAGE,
                 version=rdam.rst.__version__,
                 model_identity=self.model_identity,
-                licence_decision=self._licence(),
+                licence=self._licence(),
             ),
             capability=capability,
             requires_structured_input=False,

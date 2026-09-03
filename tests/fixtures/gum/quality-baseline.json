@@ -1,0 +1,60 @@
+{
+  "schema_version": "rdam.rst.gum-quality-baseline/v1",
+  "measured_at": "2026-09-02",
+  "model": {
+    "parser": "dmrst",
+    "hf_model_name": "tchewik/isanlp_rst_v3",
+    "hf_model_version": "gumrrg",
+    "encoder_model_id": "roberta-base",
+    "encoder_revision": "e2da8e2f811d1448a5b465c236feacd80ffbac7b",
+    "device": "cpu",
+    "gold_edu_boundaries": true
+  },
+  "floor_policy": "Each regression floor is 95 percent of the measured deterministic CPU baseline.",
+  "documents": {
+    "GUM_academic_art": {
+      "observed": {"span_f1": 0.811594202899, "nuclearity_f1": 0.507246376812, "relation_fine_f1": 0.159420289855, "relation_coarse_f1": 0.217391304348, "full_f1": 0.115942028986},
+      "floors": {"span_f1": 0.771014492754, "nuclearity_f1": 0.481884057971, "relation_fine_f1": 0.151449275362, "relation_coarse_f1": 0.206521739130, "full_f1": 0.110144927536}
+    },
+    "GUM_academic_census": {
+      "observed": {"span_f1": 0.775700934579, "nuclearity_f1": 0.485981308411, "relation_fine_f1": 0.177570093458, "relation_coarse_f1": 0.233644859813, "full_f1": 0.093457943925},
+      "floors": {"span_f1": 0.736915887850, "nuclearity_f1": 0.461682242991, "relation_fine_f1": 0.168691588785, "relation_coarse_f1": 0.221962616822, "full_f1": 0.088785046729}
+    },
+    "GUM_bio_byron": {
+      "observed": {"span_f1": 0.556213017751, "nuclearity_f1": 0.307692307692, "relation_fine_f1": 0.142011834320, "relation_coarse_f1": 0.142011834320, "full_f1": 0.082840236686},
+      "floors": {"span_f1": 0.528402366864, "nuclearity_f1": 0.292307692308, "relation_fine_f1": 0.134911242604, "relation_coarse_f1": 0.134911242604, "full_f1": 0.078698224852}
+    },
+    "GUM_bio_dvorak": {
+      "observed": {"span_f1": 0.465116279070, "nuclearity_f1": 0.248062015504, "relation_fine_f1": 0.046511627907, "relation_coarse_f1": 0.062015503876, "full_f1": 0.031007751938},
+      "floors": {"span_f1": 0.441860465116, "nuclearity_f1": 0.235658914729, "relation_fine_f1": 0.044186046512, "relation_coarse_f1": 0.058914728682, "full_f1": 0.029457364341}
+    },
+    "GUM_bio_emperor": {
+      "observed": {"span_f1": 0.585987261146, "nuclearity_f1": 0.369426751592, "relation_fine_f1": 0.127388535032, "relation_coarse_f1": 0.140127388535, "full_f1": 0.101910828025},
+      "floors": {"span_f1": 0.556687898089, "nuclearity_f1": 0.350955414013, "relation_fine_f1": 0.121019108280, "relation_coarse_f1": 0.133121019108, "full_f1": 0.096815286624}
+    },
+    "GUM_interview_gaming": {
+      "observed": {"span_f1": 0.512500000000, "nuclearity_f1": 0.300000000000, "relation_fine_f1": 0.037500000000, "relation_coarse_f1": 0.075000000000, "full_f1": 0.025000000000},
+      "floors": {"span_f1": 0.486875000000, "nuclearity_f1": 0.285000000000, "relation_fine_f1": 0.035625000000, "relation_coarse_f1": 0.071250000000, "full_f1": 0.023750000000}
+    },
+    "GUM_news_nasa": {
+      "observed": {"span_f1": 0.560344827586, "nuclearity_f1": 0.413793103448, "relation_fine_f1": 0.129310344828, "relation_coarse_f1": 0.155172413793, "full_f1": 0.103448275862},
+      "floors": {"span_f1": 0.532327586207, "nuclearity_f1": 0.393103448276, "relation_fine_f1": 0.122844827586, "relation_coarse_f1": 0.147413793103, "full_f1": 0.098275862069}
+    },
+    "GUM_news_sensitive": {
+      "observed": {"span_f1": 0.647482014388, "nuclearity_f1": 0.417266187050, "relation_fine_f1": 0.187050359712, "relation_coarse_f1": 0.201438848921, "full_f1": 0.115107913669},
+      "floors": {"span_f1": 0.615107913669, "nuclearity_f1": 0.396402877698, "relation_fine_f1": 0.177697841727, "relation_coarse_f1": 0.191366906475, "full_f1": 0.109352517986}
+    },
+    "GUM_textbook_chemistry": {
+      "observed": {"span_f1": 0.653061224490, "nuclearity_f1": 0.391836734694, "relation_fine_f1": 0.138775510204, "relation_coarse_f1": 0.187755102041, "full_f1": 0.097959183673},
+      "floors": {"span_f1": 0.620408163265, "nuclearity_f1": 0.372244897959, "relation_fine_f1": 0.131836734694, "relation_coarse_f1": 0.178367346939, "full_f1": 0.093061224490}
+    },
+    "GUM_voyage_oakland": {
+      "observed": {"span_f1": 0.593548387097, "nuclearity_f1": 0.374193548387, "relation_fine_f1": 0.051612903226, "relation_coarse_f1": 0.103225806452, "full_f1": 0.038709677419},
+      "floors": {"span_f1": 0.563870967742, "nuclearity_f1": 0.355483870968, "relation_fine_f1": 0.049032258065, "relation_coarse_f1": 0.098064516129, "full_f1": 0.036774193548}
+    }
+  },
+  "macro": {
+    "observed": {"span_f1": 0.616154814901, "nuclearity_f1": 0.381549833359, "relation_fine_f1": 0.119715149854, "relation_coarse_f1": 0.151778306210, "full_f1": 0.080538384018},
+    "floors": {"span_f1": 0.585347074156, "nuclearity_f1": 0.362472341691, "relation_fine_f1": 0.113729392361, "relation_coarse_f1": 0.144189390899, "full_f1": 0.076511464818}
+  }
+}

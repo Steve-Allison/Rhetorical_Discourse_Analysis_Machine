@@ -14,6 +14,7 @@ class _UpstreamManifest(BaseModel):
 
     upstream_commit: str
     files: dict[str, str]
+    invalid_files: dict[str, str]
 
 
 FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "doclang"
@@ -21,6 +22,7 @@ MANIFEST = _UpstreamManifest.model_validate_json(
     (FIXTURE_DIR / "upstream-manifest.json").read_text(encoding="utf-8")
 )
 LOCAL_FIXTURES = tuple(sorted(FIXTURE_DIR.glob("*.dclg")))
+LOCAL_INVALID_FIXTURES = tuple(sorted((FIXTURE_DIR / "invalid").glob("*.dclg")))
 
 
 def test_fixture_names_and_hashes_match_pinned_upstream_manifest() -> None:
@@ -34,8 +36,19 @@ def test_fixture_names_and_hashes_match_pinned_upstream_manifest() -> None:
     assert not mismatches
 
 
+def test_invalid_fixture_names_and_hashes_match_pinned_upstream_manifest() -> None:
+    local_by_name = {path.name: path for path in LOCAL_INVALID_FIXTURES}
+    assert local_by_name.keys() == MANIFEST.invalid_files.keys()
+    mismatches = {
+        name: (sha256(path.read_bytes()).hexdigest(), MANIFEST.invalid_files[name])
+        for name, path in local_by_name.items()
+        if sha256(path.read_bytes()).hexdigest() != MANIFEST.invalid_files[name]
+    }
+    assert not mismatches
+
+
 def test_no_legacy_double_extension_fixture_remains() -> None:
-    assert not tuple(FIXTURE_DIR.glob("*.dclg.xml"))
+    assert not tuple(FIXTURE_DIR.rglob("*.dclg.xml"))
 
 
 @pytest.mark.parametrize("fixture", LOCAL_FIXTURES, ids=lambda path: path.name)

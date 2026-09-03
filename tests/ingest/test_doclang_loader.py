@@ -139,3 +139,10 @@ def test_local_name_no_namespace_unchanged() -> None:
     xml = b"<doclang><text>hi</text></doclang>"
     tree = etree.ElementTree(etree.fromstring(xml))
     assert local_name(tree.getroot()[0]) == "text"
+
+
+def test_non_element_nodes_have_no_local_name_or_address() -> None:
+    root = etree.fromstring(b"<doclang><!-- comment --><text>hi</text></doclang>")
+    comment = root[0]
+    assert local_name(comment) == ""
+    assert local_path(comment) == ""

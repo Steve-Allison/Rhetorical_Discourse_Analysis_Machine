@@ -18,10 +18,10 @@ The exclusive production home for one discourse framework.
 |---|---|---|
 | `technique_id` | `coe:` curie | Required. One of the canonical concepts under `coe:artifact/narrative/analytical_frameworks_taxonomy` (FR-002; research D6). |
 | `boundary_name` | string | Required. Exactly one of `rst`, `pdtb`, `sdrt`, `toulmin`, `walton`, `dung`, `ibis` (FR-002). One-to-one with `technique_id`. |
-| `state` | enum | `approved_name` (no directory exists) or `active` (directory exists because a provider promoted) — FR-002, spec edge case "production directory with no promoted implementation" is thereby unrepresentable. |
+| `state` | enum | `approved_name` (no directory exists) or `active` (a provider was implemented, so the directory exists) — FR-002, spec edge case "production directory with no implementation" is thereby unrepresentable. |
 | `provider` | Provider ref (0..1) | Present iff `state = active`. |
 
-Validation: a boundary directory on disk without a promoted provider is a contract
+Validation: a boundary directory on disk without a provider is a contract
 violation (SC-007); a boundary never contains a `production/` subdirectory (FR-003);
 boundary directories are not importable packages (spec Assumptions).
 
@@ -31,15 +31,15 @@ The single non-production authority (FR-004). Singleton; root `workbench/`.
 
 | Field | Type | Rules |
 |---|---|---|
-| `candidates` | collection | Candidate implementations per technique, each traceable to exact code/config/model artifacts (FR-023). |
-| `evidence` | collection | Corpora, runs, benchmarks, checkpoints, promotion evidence — all experimentation state lives here and only here (FR-004). |
+| `candidates` | collection | Candidate implementations per technique, each traceable to exact code/config/model artifacts. |
+| `evidence` | collection | Corpora, runs, benchmarks, checkpoints — all experimentation state lives here and only here (FR-004). |
 
 Validation: no production import may resolve into `workbench.*` and no distributable may
 contain workbench members (FR-006, SC-003; enforced per research D5).
 
 ### Provider
 
-An independently callable, promoted implementation for one technique.
+An independently callable implementation for one technique.
 
 | Field | Type | Rules |
 |---|---|---|
@@ -48,7 +48,7 @@ An independently callable, promoted implementation for one technique.
 | `formalisms` | set of Formalism | Required, non-empty. Each declared result-kind the provider can emit, with its own `coe:` identity and its own capability state (see below). The eRST ruling lives here. |
 | `capability` | CapabilityState | Required; the provider's standing state (FR-020). Each formalism additionally reports its own state — a provider can be `available` while one of its formalisms is `unavailable(reason)`. |
 | `contract_version` | semver | Required; versions the technique-native result contract (FR-012). |
-| `provenance` | struct | Required: exact code version, configuration, and model identity where applicable (FR-023); licence decision reference (FR-021). |
+| `provenance` | struct | Required: exact code version, configuration, and model identity where applicable, plus the licence the code and any model weights carry (FR-021). |
 
 ### Formalism (value type)
 
@@ -79,13 +79,13 @@ eight-for-eight.
 | State | Meaning | Required payload |
 |---|---|---|
 | `available` | Provider accepts requests | — |
-| `unavailable` | No promoted implementation, or withheld | `reason`: stable, enumerated string (FR-020, SC-010) |
+| `unavailable` | The provider cannot run | `reason`: stable, enumerated string (FR-020, SC-010) |
 | `failed` | Provider errored on this request | typed error with a mandatory retryability classification (`retryable` / `not_retryable` / `unknown`; see the capability contract's machine-wide standard); never fabricated output (FR-020, SC-007) |
 
-Transitions: `unavailable → available` only via a PromotionDecision with outcome
-`promote`; `available → unavailable` via `withhold`/`retire`; `failed` is per-request,
-not a standing state. An unavailable or failed provider never yields a stub or dummy
-structure (SC-007).
+Transitions: `unavailable → available` when the thing that was missing is supplied —
+the provider is implemented, or its model is configured and resolves; `available →
+unavailable` when that state is withdrawn. `failed` is per-request, not a standing state.
+An unavailable or failed provider never yields a stub or dummy structure (SC-007).
 
 ### NativeTechniqueResult
 
@@ -130,20 +130,6 @@ semantic values (SC-004); one provider's failure never suppresses another's succ
 
 Both native outputs stay separate; the reference records consumption, never merging.
 
-### PromotionDecision
-
-| Field | Type | Rules |
-|---|---|---|
-| `candidate` | workbench artifact identity | Required: exact evaluated code, config, model assets, corpus partitions (FR-023). |
-| `technique_id` | `coe:` curie | Required. |
-| `evidence` | struct | Required, evaluated separately: output quality, calibration, latency/resource, runtime/packaging compatibility, provenance, licensing (FR-021). Output-quality evidence: gold data + theory-specific metrics + baselines + uncertainty for empirical techniques; correctness arguments + property tests against formal definitions for formal techniques (FR-022). |
-| `outcome` | enum | `promote` \| `withhold` \| `replace` \| `retire`. |
-| `recommendation` | text | Required; states strengths and limitations (spec US4). |
-
-Validation: installation/engineering success alone never satisfies the evidence
-requirement (spec Assumptions); comparisons across candidates for one technique use the
-same declared partitions, metrics, and criteria (US4 scenario 2).
-
 ### MigrationSafetyState
 
 | Field | Type | Rules |
@@ -154,14 +140,14 @@ same declared partitions, metrics, and criteria (US4 scenario 2).
 
 ## State machines
 
-**Boundary lifecycle**: `approved_name → active` (first promotion; directory created in
-the same change) — no reverse transition; a retired provider leaves the boundary
-`active` with capability `unavailable(retired)`.
+**Boundary lifecycle**: `approved_name → active` when the technique is first
+implemented; the directory is created in the same change. No reverse transition — a
+removed provider leaves the boundary `active` with capability `unavailable(not_implemented)`.
 
-**Provider capability**: `unavailable(no_promoted_implementation) → available`
-(promotion) → `unavailable(withheld | retired | replaced)` (decision) — with
-per-request `failed` outcomes that never alter the standing state of other techniques
-(SC-010, FR-030).
+**Provider capability**: `unavailable(not_implemented) → available` when the provider is
+implemented; `available → unavailable(model_unavailable)` when a configured model stops
+resolving — with per-request `failed` outcomes that never alter the standing state of
+other techniques (SC-010, FR-030).
 
 ## Relationships
 
@@ -169,6 +155,5 @@ per-request `failed` outcomes that never alter the standing state of other techn
 TechniqueProductionBoundary 1—0..1 Provider —1..* Formalism —* NativeTechniqueResult
 AggregateAnalysis —* Outcome(result | unavailable | failed)
 AggregateAnalysis —* ProviderDependencyReference —> NativeTechniqueResult (upstream)
-Workbench —* candidate —0..1 PromotionDecision —> Provider (on promote)
 MigrationSafetyState — gates → repository migration (one-shot)
 ```

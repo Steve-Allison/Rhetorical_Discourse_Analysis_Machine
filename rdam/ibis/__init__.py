@@ -8,7 +8,7 @@ from text (FR-017).
 from importlib.metadata import PackageNotFoundError, version
 
 from rdam.ibis.grammar import GRAMMAR, IbisStructure, Link, Node, NodeKind, Relation, StructureError, deliberation_map
-from rdam.ibis.provider import CONTRACT_VERSION, FORMALISM_ID, PROVIDER_ID, IbisProvider, packaged_decision, source_identity
+from rdam.ibis.provider import CONTRACT_VERSION, FORMALISM_ID, PROVIDER_ID, IbisProvider, source_identity
 
 try:
     __version__ = version("rdam")
@@ -29,6 +29,5 @@ __all__ = [
     "StructureError",
     "__version__",
     "deliberation_map",
-    "packaged_decision",
     "source_identity",
 ]

@@ -5,19 +5,64 @@ The files live in ``tests/fixtures/gum/``. They are official GUM V12.1.0
 wikiHow, fiction, essays, letters, podcasts, or reddit).
 """
 
+from dataclasses import replace
 from pathlib import Path
+from typing import Literal
 
 import pytest
 from lxml import etree
+from pydantic import BaseModel, ConfigDict, Field
 
 from rdam.rst.contracts import NodeKindEnum, OutputFormalismEnum, RstAnalysis
+from rdam.rst.model_authority import DEFAULT_ENCODER_MODEL_ID, DEFAULT_ENCODER_REVISION
 from rdam.rst.parser import Parser
 from .gum_validator import (
     GOLD_FIXTURE_NAMES,
     GUM_FIXTURES_DIR,
+    GumCorpusValidationReport,
     GumGoldValidator,
     GumValidationReport,
 )
+
+
+class _QualityMetrics(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    span_f1: float = Field(ge=0.0, le=1.0)
+    nuclearity_f1: float = Field(ge=0.0, le=1.0)
+    relation_fine_f1: float = Field(ge=0.0, le=1.0)
+    relation_coarse_f1: float = Field(ge=0.0, le=1.0)
+    full_f1: float = Field(ge=0.0, le=1.0)
+
+
+class _QualityPoint(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    observed: _QualityMetrics
+    floors: _QualityMetrics
+
+
+class _QualityModelIdentity(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    parser: Literal["dmrst"]
+    hf_model_name: str
+    hf_model_version: str
+    encoder_model_id: str
+    encoder_revision: str
+    device: Literal["cpu"]
+    gold_edu_boundaries: Literal[True]
+
+
+class _QualityBaseline(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: Literal["rdam.rst.gum-quality-baseline/v1"]
+    measured_at: str
+    model: _QualityModelIdentity
+    floor_policy: str
+    documents: dict[str, _QualityPoint]
+    macro: _QualityPoint
 
 GOLD_DOCUMENTS: dict[str, int] = {
     "GUM_academic_art": 74,
@@ -31,6 +76,9 @@ GOLD_DOCUMENTS: dict[str, int] = {
     "GUM_textbook_chemistry": 127,
     "GUM_voyage_oakland": 85,
 }
+QUALITY_BASELINE = _QualityBaseline.model_validate_json(
+    (GUM_FIXTURES_DIR / "quality-baseline.json").read_text(encoding="utf-8")
+)
 
 _SECURE_PARSER = etree.XMLParser(
     resolve_entities=False,
@@ -59,6 +107,47 @@ def validator() -> GumGoldValidator:
 @pytest.fixture(scope="module")
 def parser_cpu() -> Parser:
     return Parser(device="cpu")
+
+
+@pytest.fixture(scope="module")
+def parser_quality_report(
+    validator: GumGoldValidator,
+    parser_cpu: Parser,
+) -> GumCorpusValidationReport:
+    return validator.validate_corpus_with_parser(
+        parser=parser_cpu,
+        doc_ids=GOLD_FIXTURE_NAMES,
+        from_edus=True,
+    )
+
+
+def _report_metrics(report: GumValidationReport) -> _QualityMetrics:
+    return _QualityMetrics(
+        span_f1=report.standard_parseval.span_f1,
+        nuclearity_f1=report.standard_parseval.nuclearity_f1,
+        relation_fine_f1=report.standard_parseval.relation_f1,
+        relation_coarse_f1=report.coarse_parseval.relation_f1,
+        full_f1=report.standard_parseval.full_f1,
+    )
+
+
+def _corpus_metrics(report: GumCorpusValidationReport) -> _QualityMetrics:
+    return _QualityMetrics(
+        span_f1=report.macro_span_f1,
+        nuclearity_f1=report.macro_nuclearity_f1,
+        relation_fine_f1=report.macro_relation_fine_f1,
+        relation_coarse_f1=report.macro_relation_coarse_f1,
+        full_f1=report.macro_full_f1,
+    )
+
+
+def _quality_regressions(actual: _QualityMetrics, floors: _QualityMetrics) -> tuple[str, ...]:
+    return tuple(
+        f"{metric}: {actual_value:.12f} < {floor_value:.12f}"
+        for metric, actual_value in actual.model_dump().items()
+        if actual_value < getattr(floors, metric)
+        for floor_value in (getattr(floors, metric),)
+    )
 
 
 @pytest.mark.parametrize("doc_id,edu_count", GOLD_DOCUMENTS.items())
@@ -134,23 +223,43 @@ def test_validator_detects_structural_corruption(validator: GumGoldValidator) ->
     assert any("no nodes" in err for err in report.structural_errors)
 
 
+def test_quality_baseline_is_bound_to_the_current_default_parser_identity() -> None:
+    assert QUALITY_BASELINE.documents.keys() == GOLD_DOCUMENTS.keys()
+    assert QUALITY_BASELINE.model.hf_model_name == Parser._DEFAULT_HF_MODEL_NAME
+    assert QUALITY_BASELINE.model.hf_model_version == Parser._DEFAULT_HF_MODEL_VERSION
+    assert QUALITY_BASELINE.model.encoder_model_id == DEFAULT_ENCODER_MODEL_ID
+    assert QUALITY_BASELINE.model.encoder_revision == DEFAULT_ENCODER_REVISION
+
+
+def test_quality_gate_rejects_a_structurally_valid_wrong_tree(validator: GumGoldValidator) -> None:
+    _, wrong_document_analysis, _ = validator.load_gold_fixture("GUM_bio_dvorak")
+    report = validator.validate_analysis(
+        "GUM_academic_art",
+        replace(wrong_document_analysis, document_id="GUM_academic_art"),
+    )
+    regressions = _quality_regressions(
+        _report_metrics(report),
+        QUALITY_BASELINE.documents["GUM_academic_art"].floors,
+    )
+    assert report.passed_structural_checks
+    assert regressions
+
+
 @pytest.mark.slow
+@pytest.mark.quality
 @pytest.mark.parametrize("doc_id", GOLD_FIXTURE_NAMES)
 def test_parser_gold_standard_validation(
-    validator: GumGoldValidator,
-    parser_cpu: Parser,
+    parser_quality_report: GumCorpusValidationReport,
     doc_id: str,
 ) -> None:
-    """Validate neural parser predictions against GUM gold standards."""
-    report: GumValidationReport = validator.validate_document_with_parser(
-        gold_doc_id=doc_id,
-        parser=parser_cpu,
-        from_edus=True,
-    )
+    """Enforce per-document neural quality floors against human gold trees."""
+    report = next(report for report in parser_quality_report.document_reports if report.doc_id == doc_id)
+    regressions = _quality_regressions(_report_metrics(report), QUALITY_BASELINE.documents[doc_id].floors)
 
     assert report.passed_structural_checks, f"Structural validation failed: {report.structural_errors}"
     assert report.pred_edu_count > 10
     assert report.is_valid_tree
+    assert not regressions, "; ".join(regressions)
 
     md = report.summary_markdown()
     assert doc_id in md
@@ -158,19 +267,17 @@ def test_parser_gold_standard_validation(
 
 
 @pytest.mark.slow
+@pytest.mark.quality
 def test_gum_corpus_macro_benchmark(
-    validator: GumGoldValidator,
-    parser_cpu: Parser,
+    parser_quality_report: GumCorpusValidationReport,
 ) -> None:
-    """Validate the macro-averaged performance of the parser across the full GUM gold corpus."""
-    corpus_report = validator.validate_corpus_with_parser(
-        parser=parser_cpu,
-        doc_ids=GOLD_FIXTURE_NAMES,
-        from_edus=True,
-    )
+    """Enforce macro quality floors across the complete ten-document gold corpus."""
+    corpus_report = parser_quality_report
+    regressions = _quality_regressions(_corpus_metrics(corpus_report), QUALITY_BASELINE.macro.floors)
 
     assert corpus_report.document_count == len(GOLD_FIXTURE_NAMES)
     assert corpus_report.document_count == 10
+    assert not regressions, "; ".join(regressions)
 
     summary_table = corpus_report.summary_table()
     assert "GUM Gold Benchmark Summary" in summary_table

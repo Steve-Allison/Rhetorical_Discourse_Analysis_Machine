@@ -2,6 +2,10 @@
 
 **Feature**: 006 | **Authority**: [spec.md](../spec.md) FR-002, FR-012, FR-014, FR-020, SC-005, SC-007, SC-010
 
+> **Amended 2026-09-02**: capability means the provider can run. The promotion-evidence
+> gate that previously stood between a working provider and `available` was removed by
+> owner ruling; see [spec.md](../spec.md).
+
 ## Identity binding
 
 1. Every capability declaration names its technique by canonical identifier from
@@ -31,8 +35,8 @@ Every technique the machine knows about reports exactly one of:
 
 | State | Payload | Rules |
 |---|---|---|
-| `available` | contract version, provider provenance | Only reachable via a `promote` PromotionDecision. |
-| `unavailable` | stable `reason` | Enumerated reasons, stable across releases: `no_promoted_implementation`, `withheld`, `retired`, `replaced`, `missing_structured_input` (Dung/IBIS requests lacking their required input, FR-016/FR-017). Never a stub, dummy analysis, or fabricated structure (SC-007). |
+| `available` | contract version, provider provenance | The provider can run: its code is present and its model, where it has one, resolves. |
+| `unavailable` | stable `reason` | Enumerated reasons, stable across releases: `not_implemented` (no provider for this technique), `model_unavailable` (the configured model does not resolve), `missing_structured_input` (Dung/IBIS requests lacking their required input, FR-016/FR-017). Never a stub, dummy analysis, or fabricated structure (SC-007). |
 | `failed` | typed error | Per-request. Never suppresses another provider's success (FR-014, SC-005). |
 
 ## Retryability classification (machine-wide standard)
@@ -47,7 +51,7 @@ standard every provider and the machine layer inherit:
    The classification is information for the caller, who alone decides whether to
    re-invoke; the machine never acts on it.
 3. **`unavailable` is never retryable.** Unavailability changes only through an
-   external state change (installation, configuration, promotion), so re-asking
+   external state change (implementing a provider, configuring a model), so re-asking
    without one is defined to return the same answer — claiming otherwise is a
    contract validation error, exactly as the RST failure contract already enforces.
 4. **Deterministic failures are `not_retryable`** (validation, malformed or
@@ -76,7 +80,7 @@ at that boundary only:
    error). Each class has its own bound and budget.
 4. **Idempotency precondition**: an operation may be retried only if a repeat cannot
    double-apply or fork semantic identity — satisfied machine-wide by the
-   semantic-identity and cache design, and re-verified per provider at promotion.
+   semantic-identity and cache design, and re-verified for each provider that adds one.
 5. **No silent retries**: every attempt is recorded in execution evidence (attempt
    count, per-attempt cause, delays, total elapsed). A successful result that retried
    shows its retries; exhaustion yields the typed failure carrying the full attempt
@@ -84,7 +88,7 @@ at that boundary only:
 6. **Excluded by scale ruling** (FR-028): circuit breakers, hedged requests, and
    retry queues — no failure mode in a one-person, one-machine system justifies them.
 
-Promotion evidence for any provider with a transient boundary MUST include tests of
+Any provider with a transient boundary MUST include tests of
 this policy under simulated transient faults (external systems are the one legitimate
 mock target under the project's test-honesty rules).
 
@@ -94,7 +98,7 @@ mock target under the project's test-honesty rules).
    results preserved untouched, every unavailable or failed technique represented with
    its state and reason (FR-014).
 2. Capability reporting is side-effect-free and never triggers model downloads or
-   expensive initialization (spec edge case: import-time work is a promotion-evidence
+   expensive initialization (spec edge case: import-time work is a provider-implementation
    concern, not a capability-query cost).
 3. Withholding or replacing one provider leaves every other technique's declared
    capability byte-identical (SC-010 acceptance check).

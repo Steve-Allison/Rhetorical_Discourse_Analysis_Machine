@@ -1,92 +1,54 @@
-"""The Dung provider through the machine: capability from its packaged decision, structured input only."""
+"""The Dung provider through the machine: structured input only, never derived from text."""
 
-from datetime import UTC, datetime
+from collections.abc import Mapping
 
 import pytest
 
 from rdam import (
     AggregateRequest,
     AvailableCapability,
-    CalibrationEvidence,
-    CandidateIdentity,
-    CompatibilityEvidence,
     FailedOutcome,
-    FormalQualityEvidence,
-    LatencyEvidence,
-    LicensingEvidence,
     Machine,
-    Measurement,
-    PromotionDecision,
-    PromotionOutcome,
-    ProviderError,
-    ProvenanceEvidence,
-    Recommendation,
+    ProviderRequest,
     ResultOutcome,
     Sha256Identity,
     SourceIdentity,
     StructuredInput,
     Technique,
-    UnavailableCapability,
     UnavailableOutcome,
     UnavailableReason,
+    UpstreamResultReference,
 )
-from rdam.dung import PROVIDER_ID, DungProvider, packaged_decision, source_identity
+from rdam._strict import JsonValue
+from rdam.dung import PROVIDER_ID, DungProvider, source_identity
+
+FRAMEWORK: Mapping[str, JsonValue] = {"arguments": ["a", "b", "c"], "attacks": [["a", "b"], ["b", "c"]]}
 
 
-def _decision(outcome: PromotionOutcome, artifact: Sha256Identity | None = None) -> PromotionDecision:
-    return PromotionDecision(
-        decision_id=f"dung-fixture-{outcome.value}",
-        decided_at=datetime(2026, 9, 2, tzinfo=UTC),
-        decided_by="test",
-        candidate=CandidateIdentity(
-            technique=Technique.DUNG,
-            candidate_id=PROVIDER_ID,
-            artifact_identity=artifact or source_identity(),
-            description="fixture",
-        ),
-        output_quality=FormalQualityEvidence(correctness_arguments=("definitions",), property_tests=("tests/dung/test_semantics.py",)),
-        calibration=CalibrationEvidence(state="declared_absent", description="deterministic"),
-        latency=LatencyEvidence(state="measured", platform="fixture", measurements=(Measurement(name="p50_ms", value=1.0, partition="fixture", unit="ms"),)),
-        compatibility=CompatibilityEvidence(state="verified", environment="fixture", import_time_side_effects=False, packaging_declares_dependencies=True),
-        provenance=ProvenanceEvidence(code_revision="fixture", configuration_identity="exhaustive-subset-v1"),
-        licensing=LicensingEvidence(licence="MIT", intended_use="local analysis", permits_intended_use=True, decision_note="own code, MIT"),
-        outcome=outcome,
-        recommendation=Recommendation(summary="fixture", strengths=("s",), limitations=("l",)),
+def _request(payload: Mapping[str, JsonValue] = FRAMEWORK) -> AggregateRequest:
+    return AggregateRequest(
+        source=SourceIdentity.from_bytes(b"framework", media_type="application/json"),
+        text=None,
+        techniques=(Technique.DUNG,),
+        structured_inputs=(StructuredInput(technique=Technique.DUNG, payload=payload),),
     )
 
 
-FRAMEWORK = {"arguments": ["a", "b", "c"], "attacks": [["a", "b"], ["b", "c"]]}
-
-
 class TestDeclaration:
-    def test_without_a_decision_the_provider_is_unavailable(self) -> None:
-        provider = DungProvider(decision=None) if packaged_decision() is None else DungProvider(decision=_decision(PromotionOutcome.WITHHOLD))
-        assert isinstance(provider.declaration.capability, UnavailableCapability)
-
-    def test_a_decision_about_other_code_does_not_promote_this_code(self) -> None:
-        stale = _decision(PromotionOutcome.PROMOTE, artifact=Sha256Identity(hex_digest="0" * 64))
-        assert DungProvider(decision=stale).declaration.capability == UnavailableCapability(
-            reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION
-        )
-
-    def test_a_promote_decision_naming_this_source_makes_it_available(self) -> None:
-        declaration = DungProvider(decision=_decision(PromotionOutcome.PROMOTE)).declaration
+    def test_the_provider_is_available_and_names_its_own_source(self) -> None:
+        declaration = DungProvider().declaration
         assert declaration.technique is Technique.DUNG
         assert declaration.requires_structured_input is True
-        assert isinstance(declaration.capability, AvailableCapability)
+        assert declaration.capability == AvailableCapability(
+            provider_id=PROVIDER_ID, contract_version=declaration.contract_version
+        )
         assert declaration.provenance.source_revision == source_identity().hex_digest
+        assert declaration.provenance.licence == "MIT (LICENSE)"
 
 
 class TestThroughTheMachine:
     def test_supplied_framework_is_evaluated_and_never_derived_from_text(self) -> None:
-        machine = Machine([DungProvider(decision=_decision(PromotionOutcome.PROMOTE))])
-        request = AggregateRequest(
-            source=SourceIdentity.from_bytes(b"framework", media_type="application/json"),
-            text=None,
-            techniques=(Technique.DUNG,),
-            structured_inputs=(StructuredInput(technique=Technique.DUNG, payload=FRAMEWORK),),
-        )
-        outcome = machine.analyse(request).outcome_for(Technique.DUNG)
+        outcome = Machine([DungProvider()]).analyse(_request()).outcome_for(Technique.DUNG)
         assert isinstance(outcome, ResultOutcome)
         payload = outcome.result.payload
         assert payload["input_origin"] == "supplied"
@@ -96,58 +58,48 @@ class TestThroughTheMachine:
         assert extensions["stable"] == [["a", "c"]]
 
     def test_missing_structured_input_is_unavailable_not_failed(self) -> None:
-        machine = Machine([DungProvider(decision=_decision(PromotionOutcome.PROMOTE))])
+        machine = Machine([DungProvider()])
         outcome = machine.analyse(AggregateRequest.for_text("some text", (Technique.DUNG,))).outcome_for(Technique.DUNG)
         assert isinstance(outcome, UnavailableOutcome)
         assert outcome.reason is UnavailableReason.MISSING_STRUCTURED_INPUT
 
     def test_malformed_framework_is_a_typed_deterministic_failure(self) -> None:
-        machine = Machine([DungProvider(decision=_decision(PromotionOutcome.PROMOTE))])
-        request = AggregateRequest(
-            source=SourceIdentity.from_bytes(b"bad", media_type="application/json"),
-            text=None,
-            techniques=(Technique.DUNG,),
-            structured_inputs=(StructuredInput(technique=Technique.DUNG, payload={"arguments": ["a"], "attacks": [["a", "zz"]]}),),
-        )
-        outcome = machine.analyse(request).outcome_for(Technique.DUNG)
+        outcome = Machine([DungProvider()]).analyse(
+            _request({"arguments": ["a"], "attacks": [["a", "zz"]]})
+        ).outcome_for(Technique.DUNG)
         assert isinstance(outcome, FailedOutcome)
         assert outcome.failure.code == "invalid_argumentation_framework"
 
     def test_over_capacity_is_refused_not_approximated(self) -> None:
-        provider = DungProvider(decision=_decision(PromotionOutcome.PROMOTE), capacity=2)
-        request = AggregateRequest(
-            source=SourceIdentity.from_bytes(b"big", media_type="application/json"),
-            text=None,
-            techniques=(Technique.DUNG,),
-            structured_inputs=(StructuredInput(technique=Technique.DUNG, payload=FRAMEWORK),),
-        )
-        outcome = Machine([provider]).analyse(request).outcome_for(Technique.DUNG)
+        outcome = Machine([DungProvider(capacity=2)]).analyse(_request()).outcome_for(Technique.DUNG)
         assert isinstance(outcome, FailedOutcome)
         assert outcome.failure.code == "framework_exceeds_declared_capacity"
 
     def test_an_explicitly_derived_framework_names_its_upstream_result(self) -> None:
         """FR-016: supplied vs explicitly derived is recorded in the payload, with the exact upstream identity."""
 
-        from rdam import ProviderRequest, Sha256Identity, UpstreamResultReference
-
         reference = UpstreamResultReference(technique=Technique.RST, result_identity=Sha256Identity(hex_digest="a" * 64))
-        result = DungProvider(decision=_decision(PromotionOutcome.PROMOTE)).analyse(
+        result = DungProvider().analyse(
             ProviderRequest(source=SourceIdentity.from_bytes(b"f"), text=None, structured_input=FRAMEWORK, derived_from=reference)
         )
         assert result.payload["input_origin"] == "explicitly_derived"
         assert result.payload["derived_from"] == {"technique": "rst", "result_identity": "a" * 64}
-        supplied = DungProvider(decision=_decision(PromotionOutcome.PROMOTE)).analyse(
+        supplied = DungProvider().analyse(
             ProviderRequest(source=SourceIdentity.from_bytes(b"f"), text=None, structured_input=FRAMEWORK)
         )
         assert supplied.payload["input_origin"] == "supplied"
         assert "derived_from" not in supplied.payload
 
-    def test_direct_call_on_unavailable_provider_is_typed(self) -> None:
-        provider = DungProvider(decision=_decision(PromotionOutcome.WITHHOLD))
+    def test_an_undeclared_formalism_is_a_typed_failure(self) -> None:
+        from rdam import ProviderError
+
         with pytest.raises(ProviderError) as caught:
-            provider.analyse(
-                __import__("rdam").ProviderRequest(
-                    source=SourceIdentity.from_bytes(b"x"), text=None, structured_input=FRAMEWORK
+            DungProvider().analyse(
+                ProviderRequest(
+                    source=SourceIdentity.from_bytes(b"x"),
+                    text=None,
+                    structured_input=FRAMEWORK,
+                    formalism_id="not_a_formalism",
                 )
             )
-        assert caught.value.failure.code == "provider_not_available"
+        assert caught.value.failure.code == "formalism_not_declared"

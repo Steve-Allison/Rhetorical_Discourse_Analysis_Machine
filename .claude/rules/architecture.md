@@ -15,19 +15,18 @@ feature wins.
 rdam/                  the distribution `rdam` and the import package `rdam` — the machine
 ├── contracts.py       provider/formalism declarations, capability states, native results, outcomes
 ├── machine.py         Machine.capabilities() (side-effect-free), Machine.analyse() (N outcomes)
-├── promotion.py       PromotionDecision — the evidence-gated record every provider is bound by
 ├── frameworks.py      Technique, coe: identities from resources/framework-identities.json
 ├── rst/               RST/eRST provider: parser, ingest, eRST, viewer, cli (`rdam-rst`), provider.py
-├── dung/              Dung provider: semantics.py, provider.py, resources/promotion-decision.json
-└── ibis/              IBIS provider: grammar.py, provider.py, resources/promotion-decision.json
+├── dung/              Dung provider: semantics.py, provider.py
+└── ibis/              IBIS provider: grammar.py, provider.py
 ontology/              vendored Central distribution + rdam LinkML profile (repository, not shipped)
 workbench/             the one experimentation root; never imported by rdam
 tools/production_boundary/   boundary inspection, reproducible build, validation, clean install
 ```
 
-- A technique is a sub-package of `rdam`; it is created when that technique first promotes
-  a provider (006 FR-002), never speculatively. SDRT, Toulmin, Walton, and PDTB have no
-  sub-package and the machine reports them `unavailable(no_promoted_implementation)`.
+- A technique is a sub-package of `rdam`; it is created when that technique is first
+  implemented (006 FR-002), never speculatively. SDRT, Toulmin, Walton, and PDTB have no
+  sub-package and the machine reports them `unavailable(not_implemented)`.
 - No top-level import name other than `rdam` is ever created (`rst`, `dung`, `ibis`, … are
   never packages; `ibis` would shadow the PyPI Ibis dataframe library).
 - Exactly one `workbench/`. Production code never imports `workbench.*`, directly or
@@ -38,21 +37,20 @@ tools/production_boundary/   boundary inspection, reproducible build, validation
 - Release tooling derives distribution name, version, and package directory from
   `pyproject.toml` (`tools/production_boundary/identity.py`); no tool restates them.
 
-### Capability comes from evidence
+### Capability means the provider can run
 
-A provider's capability is derived from a `PromotionDecision` (006 promotion-evidence
-contract; feature 008), never from whether code happens to import or a model happens to
-load:
+> The promotion-evidence gate (feature 008) was removed on 2026-09-02 by owner ruling. It
+> was never requested and it reported working parsers as `unavailable`. Capability is now
+> exactly what it says: can this provider run?
 
-- `rdam.rst.provider.RstProvider` reads the decision published beside the configured
-  release (`<store>/<release_id>.promotion.json`) and checks its artifact digest against
-  the release manifest before any inference.
-- `rdam.dung` and `rdam.ibis` package their decision as a resource bound to the digest of
-  their own source files; a source change without a new decision makes the provider
-  `unavailable(no_promoted_implementation)`.
-- Outcomes are `promote | withhold | replace | retire`; `promote`/`replace` are
-  unconstructible without every evidence class admissible. Decisions are recorded in the
-  workbench ledger `workbench/promotions/<technique>/`.
+- `rdam.rst.provider.RstProvider` is `available` when the configured `hf_model_version` is
+  one the façade knows how to load, or when the named local release's manifest is present.
+  The check loads no model and touches no network; the parser is built on first `analyse`.
+- `rdam.dung` and `rdam.ibis` are exact and deterministic, so they are `available`
+  whenever imported. Each still reports the digest of its own source files as
+  `provenance.source_revision`.
+- The three unavailability reasons are `not_implemented`, `model_unavailable`, and
+  `missing_structured_input`. None of them is retryable.
 
 ### Identity binding
 
@@ -90,7 +88,7 @@ derived digest, or analytical; the verdict against the pre-migration baseline is
 analytical differences
 ([`specs/010-repository-migration/evidence/release/rename-6.0.0-baseline-comparison.json`](../../specs/010-repository-migration/evidence/release/rename-6.0.0-baseline-comparison.json)).
 
-Immutable release manifests declare `compatibility_range` as of promotion time. A stored
+Immutable release manifests declare `compatibility_range` as of release time. A stored
 release is shown to run under a later package line by a manifest-bound
 `CompatibilityRedeclaration` sidecar (`<store>/<release_id>.compatibility.json`, written
 by `pixi run redeclare-compatibility` with its evidence), never by editing the manifest.

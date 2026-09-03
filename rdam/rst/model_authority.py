@@ -1,7 +1,7 @@
 """Immutable upstream model revisions for production parsers."""
 
 DEFAULT_ENCODER_MODEL_ID = "roberta-base"
-DEFAULT_ENCODER_REVISION = "e4da7003d63a830e25832e3fe1502476b7e01e2c"
+DEFAULT_ENCODER_REVISION = "e2da8e2f811d1448a5b465c236feacd80ffbac7b"
 XLM_ROBERTA_LARGE_MODEL_ID = "xlm-roberta-large"
 
 __all__ = [

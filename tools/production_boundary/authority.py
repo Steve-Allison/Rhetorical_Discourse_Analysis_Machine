@@ -34,6 +34,9 @@ class OwnershipAuthority:
         self.rules = rules or default_rules
         self.production_dependencies = frozenset({
             "python", "playwright", "razdel", "lxml", "numpy", "transformers", "torch", "huggingface-hub", "tqdm", "pillow", "networkx", "packaging", "pydantic", "python-dotenv", "rfc8785", "safetensors", "doclang", "isanlp", "docling-core", "markdown-it-py", "mdit-py-plugins",
+            # The LLM boundary (006 FR-032): the Toulmin, Walton, SDRT, and PDTB providers
+            # are model-backed, so their client is production runtime, not tooling.
+            "pydantic-ai", "openai",
         })
         self.offline_dependencies = frozenset({"blake3", "fire", "jsonnet", "nltk", "peft", "pytest", "pytest-cov", "ruff", "pyright", "tiktoken", "types-lxml", "build"})
 

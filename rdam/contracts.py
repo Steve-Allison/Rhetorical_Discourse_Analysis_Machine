@@ -33,15 +33,16 @@ class Retryability(StrEnum):
 
 
 class UnavailableReason(StrEnum):
-    """Stable, enumerated reasons (FR-020). Unavailability is never retryable."""
+    """Stable, enumerated reasons a technique cannot run right now.
 
-    NO_PROMOTED_IMPLEMENTATION = "no_promoted_implementation"
-    WITHHELD = "withheld"
-    RETIRED = "retired"
-    REPLACED = "replaced"
+    Availability means the provider can actually run, nothing more. Unavailability is
+    never retryable: it changes only through an external state change — implementing a
+    provider, or configuring a model — so re-asking without one returns the same answer.
+    """
+
+    NOT_IMPLEMENTED = "not_implemented"
     MISSING_STRUCTURED_INPUT = "missing_structured_input"
     MODEL_UNAVAILABLE = "model_unavailable"
-    NOT_IMPLEMENTED = "not_implemented"
 
 
 class AvailableCapability(StrictModel):
@@ -75,17 +76,17 @@ class FormalismDeclaration(StrictModel):
 
 
 class ProviderProvenance(StrictModel):
-    """Exact code, configuration, and model identity behind a provider (FR-023)."""
+    """Exact code, configuration, and model identity behind a provider."""
 
     package: str = Field(min_length=1)
     version: str = Field(min_length=1)
     source_revision: str | None = None
     model_identity: str | None = None
-    licence_decision: str = Field(min_length=1)
+    licence: str = Field(min_length=1)
 
 
 class ProviderDeclaration(StrictModel):
-    """A promoted provider's identity, formalisms, contract version, and standing state."""
+    """A provider's identity, formalisms, contract version, and standing state."""
 
     provider_id: str = Field(min_length=1)
     technique: Technique

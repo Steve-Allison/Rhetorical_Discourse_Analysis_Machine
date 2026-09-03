@@ -8,21 +8,19 @@
 |---|---|---|
 | The machine-facing RST adapter consumes the supported `isanlp_rst` public contract and never duplicates, reinterprets, or bypasses its authority (FR-010) | `rst/rdam_rst/` — package `rdam_rst`, distribution `rdam-rst`, depends on `rdam` and `isanlp_rst`; `RstProvider.analyse` runs `ProductionIngestor(parser).analyse(SourceArtifact.from_text(...))` and hands the machine `serialize_contract(outcome)` **verbatim** as the opaque native payload | `tests/rst/test_provider.py::TestRealRelease::test_machine_gets_isanlp_rst_outcome_envelope_as_the_native_payload` — the payload is `isanlp_rst.production` / `analysed_outcome` with its nodes |
 | `isanlp_rst` stays the canonical provider under the `rst/` boundary (FR-008); its import name is untouched (FR-009) | `rst/` created as the RST boundary holding the adapter; `isanlp_rst/` moves into it in feature 010 | boundary tool: `rst` is a production root, `rdam_rst/` an admitted wheel root |
-| Capability is an explicit state with stable reasons, never a stub (FR-020, SC-007) | `RstProvider.declaration` derives `available`/`unavailable(reason)` from the **published promotion decision** beside the release: none → `no_promoted_implementation`; withhold → `withheld`; retire → `retired`; promote/replace → `available` | `TestDeclaration` |
-| Capability reporting is side-effect-free (capability contract §Aggregate behaviour 2) | `declaration` reads the sidecar and checks for a bundle path; the parser loads on first `analyse` | `test_no_decision_means_no_promoted_implementation` asserts no parser after declaring |
-| Formalism ruling (006 U1): `rst_tree → …/rst`, `erst_graph → …/erst`, each with its own state | `erst_graph` is `available` only when a validated eRST completion bundle resolves; a request for it without one is `unavailable`, not a failure | `test_promote_decision_makes_rst_tree_available_and_erst_depends_on_a_bundle`, `test_asking_for_erst_without_a_bundle_is_unavailable_not_failed` |
-| A decision cannot be borrowed by another artifact (FR-023) | Before the first inference the decision's `artifact_identity` is checked against the release manifest's `parser_state` digest | `test_decision_for_a_different_artifact_cannot_borrow_the_release` |
+| Capability is an explicit state with stable reasons, never a stub (FR-020, SC-007) | `RstProvider.declaration` derives `available`/`unavailable(reason)` from whether the configured parser can run: a published version the façade knows how to load, or a local release whose manifest is present; otherwise `model_unavailable` | `TestConfiguration` |
+| Capability reporting is side-effect-free (capability contract §Aggregate behaviour 2) | `declaration` checks configuration and looks for a bundle path; the parser loads on first `analyse` | `test_a_published_version_is_available_without_loading_a_model` asserts no parser after declaring |
+| Formalism ruling (006 U1): `rst_tree → …/rst`, `erst_graph → …/erst`, each with its own state | `erst_graph` is `available` only when a validated eRST completion bundle resolves; a request for it without one is `unavailable`, not a failure | `test_erst_is_declared_with_its_own_identity_and_state`, `test_asking_for_erst_without_a_bundle_is_unavailable_not_failed` |
 | Failure algebra preserved (FR-011; capability contract §Retryability) | `ProductionIngestError` → `ProviderFailure` one-to-one: same code, same retryability, stage and category carried as parameters; the machine never retries | `TestAnalyseGuards` |
 | A caller can choose a formalism per technique | `AggregateRequest.formalisms` (`FormalismChoice`), threaded by `Machine` into `ProviderRequest.formalism_id`; an unavailable choice is an `unavailable` outcome | `test_asking_for_erst_without_a_bundle_is_unavailable_not_failed` |
 
 ## The state this leaves the machine in
 
-With the retroactive decisions of feature 008 published beside the releases, an
-`RstProvider` configured with `modernbert-v1-a52b70fbc1a3` reports **`unavailable(withheld)`**
-and the machine says so (`test_machine_reports_the_withheld_rst_provider_honestly`). That
-is the truthful state, not a defect of the adapter: the slow tests prove the adapter
-works by supplying a fixture `promote` decision that names the real artifact. The path to
-`available` is the owner ruling named in [008 §Consequence](../008-promotion-system/spec.md).
+**Amended 2026-09-02**: the promotion-evidence gate was removed by owner ruling. It had
+made a working parser report `unavailable(withheld)`, which was never the owner's
+intent — the DMRST and UniRST parsers run and are the production families. `RstProvider()`
+now reports **`available`** as `rdam.rst/gumrrg`, and reports `model_unavailable` only
+when the configured version is unknown to the façade or a local release is absent.
 
 ## Gates
 

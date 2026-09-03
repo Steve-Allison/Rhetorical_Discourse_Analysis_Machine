@@ -33,7 +33,7 @@ class TestCapabilities:
         capabilities = Machine().capabilities()
         assert tuple(item.technique for item in capabilities.techniques) == BOUNDARY_TECHNIQUES
         for item in capabilities.techniques:
-            assert item.capability == UnavailableCapability(reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION)
+            assert item.capability == UnavailableCapability(reason=UnavailableReason.NOT_IMPLEMENTED)
             assert item.formalisms == ()
         assert capabilities.capability_for(Technique.DUNG).requires_structured_input is True
         assert capabilities.capability_for(Technique.RST).requires_structured_input is False
@@ -52,7 +52,7 @@ class TestCapabilities:
                 continue
             assert serialize_capability(with_dung, technique) == serialize_capability(without_dung, technique)
         assert without_dung.capability_for(Technique.DUNG).capability == UnavailableCapability(
-            reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION
+            reason=UnavailableReason.NOT_IMPLEMENTED
         )
 
     def test_two_providers_for_one_boundary_are_rejected(self, rst_provider: FakeProvider) -> None:
@@ -80,7 +80,7 @@ class TestAnalyse:
         assert result.result.source == request.source
         pdtb = aggregate.outcome_for(Technique.PDTB)
         assert isinstance(pdtb, UnavailableOutcome)
-        assert pdtb.reason is UnavailableReason.NO_PROMOTED_IMPLEMENTATION
+        assert pdtb.reason is UnavailableReason.NOT_IMPLEMENTED
 
     def test_a_typed_failure_never_suppresses_another_success(self, rst_provider: FakeProvider) -> None:
         failing_dung = FakeProvider(dung_declaration(), typed_failure())
@@ -120,13 +120,13 @@ class TestAnalyse:
 
     def test_withheld_provider_reports_its_reason_and_is_not_called(self) -> None:
         withheld = FakeProvider(
-            rst_declaration(capability=UnavailableCapability(reason=UnavailableReason.WITHHELD)),
+            rst_declaration(capability=UnavailableCapability(reason=UnavailableReason.NOT_IMPLEMENTED)),
             echo_result("rst_tree"),
         )
         aggregate = Machine([withheld]).analyse(AggregateRequest.for_text("t", (Technique.RST,)))
         outcome = aggregate.outcome_for(Technique.RST)
         assert isinstance(outcome, UnavailableOutcome)
-        assert outcome.reason is UnavailableReason.WITHHELD
+        assert outcome.reason is UnavailableReason.NOT_IMPLEMENTED
         assert withheld.calls == []
 
     def test_a_result_outside_the_declaration_is_a_deterministic_failure(self) -> None:

@@ -5,7 +5,7 @@
 `rdam` — the one production package — contains only code and resources required while
 a consumer performs analysis: the machine (`rdam`), the RST/eRST provider (`rdam.rst`),
 and the Dung and IBIS providers (`rdam.dung`, `rdam.ibis`). `workbench` owns corpus
-construction, training, calibration, evaluation, benchmarking, research, and promotion.
+construction, training, calibration, evaluation, benchmarking, research, and model releases.
 Provenance does not change that boundary: inherited inference code is production code
 and must meet the same Python 3.14 standard.
 
@@ -31,7 +31,7 @@ pixi install -e offline
 
 The production environment runs inference and production-boundary checks. The
 offline environment adds test, lint, type-check, corpus, training, evaluation,
-research, and promotion dependencies.
+research, and model-release dependencies.
 
 ## Capability and identity boundary
 
@@ -55,7 +55,7 @@ Parser identity has four explicit states:
 The active production parser families are DMRST and UniRST. Candidate architectures
 (such as ModernBERT) reside strictly in the workbench. No model weight is packaged in the wheel.
 
-A stored release's manifest declares `compatibility_range` as of promotion time and is
+A stored release's manifest declares `compatibility_range` as of release time and is
 immutable. When a later package line runs a release unchanged, that finding is recorded
 beside the release as a manifest-bound `CompatibilityRedeclaration`
 (`<store>/<release_id>.compatibility.json`, `pixi run redeclare-compatibility`); the
@@ -65,7 +65,7 @@ loader honours it only for the exact manifest it names.
 
 | Capability | Owner | Wheel |
 |---|---|---:|
-| The machine: declarations, capability states, outcomes, promotion decision contract | `rdam` | yes |
+| The machine: declarations, capability states, outcomes | `rdam` | yes |
 | Parser facade and active inference runtime | `rdam.rst.parser`, predictors, segmenter | yes |
 | Machine-facing RST/eRST adapter | `rdam.rst.provider` | yes |
 | Strict source, preparation, analysis, inference, failure, and capability contracts | `rdam.rst.ingest` | yes |
@@ -80,7 +80,7 @@ loader honours it only for the exact manifest it names.
 | Training and calibration | `workbench.training` | no |
 | Evaluation and benchmarking | `workbench.evaluation` | no |
 | Research comparisons | `workbench.research` | no |
-| Promotion/build tooling, tests, specs, evidence, caches | repository-only | no |
+| Release/build tooling, tests, specs, evidence, caches | repository-only | no |
 
 The artifact validator rejects workbench, tests, scripts, specs, corpora,
 experiments, cache files, secrets, pickles, Python bytecode, model-weight
@@ -110,7 +110,7 @@ for acceptance, runs `pip check`, and retains `pip inspect`.
 
 Core acceptance proves unavailable optional forms yield typed provider
 failures. Formats acceptance covers all six source forms. Full acceptance also
-requires the exact promoted ModernBERT release and checks canonical parser
+requires the exact stored model release and checks canonical parser
 results, loaded-component receipts, validation, and CLI semantic parity.
 
 ```bash

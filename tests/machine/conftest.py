@@ -23,7 +23,7 @@ from rdam import (
 )
 
 V1 = SemanticVersion(root="1.0.0")
-PROVENANCE = ProviderProvenance(package="fake-provider", version="0.0.0", licence_decision="test fixture")
+PROVENANCE = ProviderProvenance(package="fake-provider", version="0.0.0", licence="test fixture")
 
 
 def available(provider_id: str) -> AvailableCapability:
@@ -52,7 +52,7 @@ def rst_declaration(*, erst_loaded: bool = True, capability: CapabilityState | N
                 Technique.ERST,
                 available(provider_id)
                 if erst_loaded
-                else UnavailableCapability(reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION),
+                else UnavailableCapability(reason=UnavailableReason.NOT_IMPLEMENTED),
             ),
         ),
         contract_version=V1,

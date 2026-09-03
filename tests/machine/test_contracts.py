@@ -135,8 +135,8 @@ class TestAggregateAnalysis:
             AggregateAnalysis(
                 source=source,
                 outcomes=(
-                    UnavailableOutcome(technique=Technique.PDTB, reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION),
-                    UnavailableOutcome(technique=Technique.PDTB, reason=UnavailableReason.WITHHELD),
+                    UnavailableOutcome(technique=Technique.PDTB, reason=UnavailableReason.NOT_IMPLEMENTED),
+                    UnavailableOutcome(technique=Technique.PDTB, reason=UnavailableReason.NOT_IMPLEMENTED),
                 ),
             )
 
@@ -225,7 +225,7 @@ class TestMachineCapabilities:
                     TechniqueCapability(
                         technique=Technique.RST,
                         technique_curie=technique_curie(Technique.RST),
-                        capability=UnavailableCapability(reason=UnavailableReason.NO_PROMOTED_IMPLEMENTATION),
+                        capability=UnavailableCapability(reason=UnavailableReason.NOT_IMPLEMENTED),
                         requires_structured_input=False,
                     ),
                 )

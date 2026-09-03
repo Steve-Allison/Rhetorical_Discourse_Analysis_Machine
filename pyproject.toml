@@ -35,6 +35,8 @@ dependencies = [
   "rfc8785>=0.1.4,<0.2",
   "python-dotenv>=1.2.1,<2",
   "safetensors>=0.8,<0.9",
+  "openai>=3.7.0,<4",
+  "pydantic-ai>=2.37.0,<3",
 ]
 
 [project.scripts]
@@ -48,6 +50,7 @@ Issues = "https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine
 [project.optional-dependencies]
 dev = [
   "build>=1.6,<2",
+  "coverage>=7.16,<8",
   "hatchling>=1.32,<2",
   "pytest>=8",
   "ruff>=0.6",
@@ -60,7 +63,7 @@ dev = [
 # chain.
 formats = [
   "doclang[schematron-saxon]>=0.7.3,<0.8",
-  "docling-core>=2.92,<2.93",
+  "docling-core>=2.93,<2.94",
   "markdown-it-py>=3",
   "mdit-py-plugins>=0.4",
 ]
@@ -95,6 +98,7 @@ include = [
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 markers = [
+  "quality: model-backed RST quality gates against human gold trees",
   "slow: integration tests that download models from HF (~2 GB each)",
   "stress: concurrency, megadoc, and memory-leak stress tests",
 ]
@@ -142,6 +146,13 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["B011"]
 
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+
 [tool.pyright]
 include = [
   "rdam",
@@ -181,6 +192,10 @@ mdlint = { cmd = "python scripts/lint_markdown.py --lint", description = "markdo
 cleanup = { cmd = "python scripts/cleanup.py", description = "Remove bytecode, tool caches, and dist/ (never .pixi)" }
 bench = { cmd = "python -m scripts.bench", description = "Performance bench across models and dtypes" }
 rst-diag = { cmd = "python scripts/rst_diag.py", description = "RST quality proxy metrics over .md / Docling / DocLang sources; --json for machine output" }
+rst-format-test = { cmd = "pytest tests/ingest/test_doclang_fixture_parity.py tests/ingest/test_doclang_loader.py tests/ingest/test_doclang_text_walker.py tests/ingest/test_markdown_loader.py tests/ingest/production_ingest/test_doclang_complex.py tests/ingest/production_ingest/test_doclang_ingest.py tests/ingest/production_ingest/test_docling_complex.py tests/ingest/production_ingest/test_docling_ingest.py tests/ingest/production_ingest/test_markdown_complex.py tests/ingest/production_ingest/test_markdown_conformance.py tests/ingest/production_ingest/test_markdown_ingest.py tests/ingest/production_ingest/test_native_anchors.py tests/ingest/production_ingest/test_upstream_conformance.py -q", description = "Normative, adversarial, and native-anchor tests for DocLang, Docling, and Markdown" }
+rst-format-coverage = { cmd = "coverage erase && coverage run --source=rdam/rst -m pytest tests/ingest -q && coverage report --fail-under=90 rdam/rst/doclang/loader.py rdam/rst/doclang/text_walker.py rdam/rst/markdown/loader.py rdam/rst/ingest/_harvest.py", description = "Branch-coverage gate for DocLang, Docling, and Markdown loaders and harvesters" }
+rst-mutation-test = { cmd = "python tools/rst_mutation_test.py", description = "Deterministic mutation gate for DocLang validation and archive safety, Docling layer retention, and Markdown fidelity" }
+rst-quality = { cmd = "pytest tests/offline/test_gum_gold.py -m quality -q", description = "Model-backed RST quality regression floors against ten human-annotated GUM gold trees" }
 build-production = { cmd = "python -m tools.production_boundary.build --evidence-dir specs/010-repository-migration/evidence/release", description = "Reproducibly double-build the wheel and sdist from the clean, tagged HEAD into ignored dist/<version>/ (name and version from pyproject.toml) and write the release evidence JSON under specs/010-repository-migration/evidence/release/" }
 validate-production-artifacts = { cmd = "python -m tools.production_boundary --root . --release", description = "Boundary gate plus full validation of the built dist/<version> pair: RECORD, provenance, metadata, forbidden members" }
 production-boundary = { cmd = "python -m tools.production_boundary --root .", description = "Ownership and import boundary inspection of the source tree (no artifacts)" }

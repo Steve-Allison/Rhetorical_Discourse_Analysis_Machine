@@ -35,6 +35,12 @@ jobs:
       - name: Run unit tests (fast)
         run: pixi run test
 
+      - name: Run RST format conformance and branch coverage
+        run: pixi run rst-format-coverage
+
+      - name: Run RST critical mutation gate
+        run: pixi run rst-mutation-test
+
   # The production smoke (tests/integration/test_production_smoke.py) loads immutable
   # local releases from models/model-releases. Weights are not in git, so it is a local
   # gate: `pixi run smoke`. A CI job that could only skip would certify nothing.

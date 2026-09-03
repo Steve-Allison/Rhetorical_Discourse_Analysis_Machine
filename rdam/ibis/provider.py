@@ -1,10 +1,9 @@
-"""The IBIS provider: typed issue–position–argument structure, validated under the grammar (FR-017).
+"""The IBIS provider: typed issue-position-argument structure, validated under the grammar (FR-017).
 
-Any automated extraction into IBIS structure would be a separately identified and
-evaluated candidate; this provider performs none. It accepts a supplied structure,
-validates it against the gIBIS link grammar, and returns the organised deliberation map.
-Capability comes from the promotion decision packaged with the provider, bound to the
-digest of this provider's source files exactly as the Dung provider does.
+Any automated extraction into IBIS structure would be a separate implementation; this
+provider performs none. It accepts a supplied structure, validates it against the gIBIS
+link grammar, and returns the organised deliberation map. The grammar is exact, so the
+provider is available whenever it is imported.
 """
 
 from importlib import resources
@@ -15,8 +14,6 @@ from rdam import (
     AvailableCapability,
     FormalismDeclaration,
     NativeTechniqueResult,
-    PromotionDecision,
-    PromotionOutcome,
     ProviderDeclaration,
     ProviderError,
     ProviderFailure,
@@ -26,9 +23,6 @@ from rdam import (
     SemanticVersion,
     Sha256Identity,
     Technique,
-    UnavailableCapability,
-    UnavailableReason,
-    load_decision,
     semantic_sha256,
     technique_curie,
 )
@@ -38,20 +32,16 @@ from rdam.ibis.grammar import IbisStructure, StructureError, deliberation_map
 PROVIDER_ID: Final = "rdam.ibis/gibis-grammar-v1"
 FORMALISM_ID: Final = "ibis_structure"
 CONTRACT_VERSION: Final = SemanticVersion(root="1.0.0")
+LICENCE: Final = "MIT (LICENSE)"
 _SOURCE_FILES: Final = ("grammar.py", "provider.py")
 
 
 def source_identity() -> Sha256Identity:
+    """Digest of the provider's source files, in a fixed order; recorded as provenance."""
+
     package = resources.files("rdam.ibis")
     digest = semantic_sha256({name: sha256_bytes(package.joinpath(name).read_bytes()) for name in _SOURCE_FILES})
     return Sha256Identity(hex_digest=digest)
-
-
-def packaged_decision() -> PromotionDecision | None:
-    resource = resources.files("rdam.ibis").joinpath("resources/promotion-decision.json")
-    if not resource.is_file():
-        return None
-    return load_decision(resource.read_bytes())
 
 
 def _package_version() -> str:
@@ -62,37 +52,11 @@ def _package_version() -> str:
 
 
 class IbisProvider:
-    """One promoted IBIS structural-validation implementation, declared to the machine."""
-
-    def __init__(self, decision: PromotionDecision | None = None) -> None:
-        self._decision = decision if decision is not None else packaged_decision()
-
-    @property
-    def decision(self) -> PromotionDecision | None:
-        return self._decision
-
-    def _unavailable_reason(self) -> UnavailableReason | None:
-        decision = self._decision
-        if decision is None:
-            return UnavailableReason.NO_PROMOTED_IMPLEMENTATION
-        if decision.candidate.candidate_id != PROVIDER_ID or decision.candidate.artifact_identity != source_identity():
-            return UnavailableReason.NO_PROMOTED_IMPLEMENTATION
-        return {
-            PromotionOutcome.PROMOTE: None,
-            PromotionOutcome.REPLACE: None,
-            PromotionOutcome.WITHHOLD: UnavailableReason.WITHHELD,
-            PromotionOutcome.RETIRE: UnavailableReason.RETIRED,
-        }[decision.outcome]
+    """gIBIS structural validation, declared to the machine."""
 
     @property
     def declaration(self) -> ProviderDeclaration:
-        reason = self._unavailable_reason()
-        capability = (
-            AvailableCapability(provider_id=PROVIDER_ID, contract_version=CONTRACT_VERSION)
-            if reason is None
-            else UnavailableCapability(reason=reason)
-        )
-        decision = self._decision
+        capability = AvailableCapability(provider_id=PROVIDER_ID, contract_version=CONTRACT_VERSION)
         return ProviderDeclaration(
             provider_id=PROVIDER_ID,
             technique=Technique.IBIS,
@@ -110,7 +74,7 @@ class IbisProvider:
                 package="rdam.ibis",
                 version=_package_version(),
                 source_revision=source_identity().hex_digest,
-                licence_decision=decision.licensing.decision_note if decision is not None else "no promotion decision packaged",
+                licence=LICENCE,
             ),
             capability=capability,
             requires_structured_input=True,
@@ -118,8 +82,6 @@ class IbisProvider:
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:
         declaration = self.declaration
-        if not isinstance(declaration.capability, AvailableCapability):
-            raise ProviderError(self._failure("provider_not_available", "ValueError", declaration.capability.reason.value))
         if request.formalism_id not in (None, FORMALISM_ID):
             raise ProviderError(self._failure("formalism_not_declared", "ValueError", str(request.formalism_id)))
         if request.structured_input is None:
@@ -137,7 +99,7 @@ class IbisProvider:
         }
         if request.derived_from is not None:
             # FR-017: a structure the caller explicitly derived from another technique's
-            # result names that exact result; ``extraction`` stays None — nothing here
+            # result names that exact result; ``extraction`` stays None -- nothing here
             # extracted anything, the derivation was the caller's.
             payload["derived_from"] = {
                 "technique": request.derived_from.technique.value,
@@ -166,4 +128,4 @@ class IbisProvider:
         )
 
 
-__all__ = ["CONTRACT_VERSION", "FORMALISM_ID", "PROVIDER_ID", "IbisProvider", "packaged_decision", "source_identity"]
+__all__ = ["CONTRACT_VERSION", "FORMALISM_ID", "LICENCE", "PROVIDER_ID", "IbisProvider", "source_identity"]

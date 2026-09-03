@@ -4,8 +4,8 @@
 
 `rdam` runs several discourse and argumentation techniques on one text, natively and
 side by side, and reports one explicit outcome per technique. It never collapses them
-into a common formalism, never generates or rewrites text, and never says a technique is
-available unless recorded evidence says so. It serves one person on one local machine.
+into a common formalism, never generates or rewrites text, and never reports a technique as
+available when it cannot actually run. It serves one person on one local machine.
 
 ```text
                        ┌────────────────────────────────────────────────┐
@@ -26,7 +26,6 @@ available unless recorded evidence says so. It serves one person on one local ma
 - [Design principles](#design-principles)
 - [Installation](#installation)
 - [Using the machine](#using-the-machine)
-- [Capability comes from evidence](#capability-comes-from-evidence)
 - [Provider: RST / eRST (`rdam.rst`)](#provider-rst--erst-rdamrst)
 - [Provider: Dung abstract argumentation (`rdam.dung`)](#provider-dung-abstract-argumentation-rdamdung)
 - [Provider: IBIS (`rdam.ibis`)](#provider-ibis-rdamibis)
@@ -42,11 +41,11 @@ One distribution, one import package, every technique a sub-package.
 
 | Sub-package | Technique | Provides | State (2026-09-02) |
 |---|---|---|---|
-| `rdam` | the machine | `Machine`, `AggregateRequest`, typed provider declarations, capability states, native results, outcomes, and the `PromotionDecision` contract | — |
-| `rdam.rst` | RST and Extended RST | DMRST and UniRST discourse parsers (Steve Allison's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, the RS3 viewer, the `rdam-rst` command, and the machine adapter | `available` with promoted/redeclared release |
+| `rdam` | the machine | `Machine`, `AggregateRequest`, typed provider declarations, capability states, native results, and outcomes | — |
+| `rdam.rst` | RST and Extended RST | DMRST and UniRST discourse parsers (Steve Allison's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, the RS3 viewer, the `rdam-rst` command, and the machine adapter | `available` |
 | `rdam.dung` | Dung abstract argumentation | grounded, complete, preferred, and stable extensions of a supplied argument–attack framework, exact by construction | `available` |
 | `rdam.ibis` | IBIS | issue–position–argument structures validated under the gIBIS link grammar and organised into a deliberation map | `available` |
-| — | SDRT, Toulmin, Walton, PDTB | nothing yet; the machine reports `unavailable(no_promoted_implementation)`. No stubs. | — |
+| — | SDRT, Toulmin, Walton, PDTB | nothing yet; the machine reports `unavailable(not_implemented)`. No stubs. | — |
 
 ## Design principles
 
@@ -59,10 +58,10 @@ One distribution, one import package, every technique a sub-package.
   `ResultOutcome`, `UnavailableOutcome(reason)`, or `FailedOutcome(failure)` for every
   requested technique. A failure in one technique never hides a result in another; the
   machine never retries; internal bugs propagate instead of being relabelled.
-- **Capability is evidence.** A provider is `available` only under a recorded
-  `PromotionDecision` whose evidence is admissible and which names the exact artifact.
-  No decision, a withheld decision, or a source change the decision did not evaluate
-  all mean `unavailable`, with a stable reason.
+- **Capability means it can run.** A provider is `available` when its code is present
+  and its model, where it has one, resolves. Otherwise it is `unavailable` with one of
+  three stable reasons — `not_implemented`, `model_unavailable`,
+  `missing_structured_input` — and never a stub.
 - **Structure in, structure out.** Formal techniques (Dung, IBIS) take a supplied
   structure and never extract one from text. A text-only request for them is
   `unavailable(missing_structured_input)`, not a guess.
@@ -118,8 +117,8 @@ including the techniques that have no provider:
 ```python
 for item in machine.capabilities().techniques:
     print(item.technique.value, item.capability)
-# rst    UnavailableCapability(reason='withheld')
-# pdtb   UnavailableCapability(reason='no_promoted_implementation')
+# rst    AvailableCapability(provider_id='rdam.rst/gumrrg-eb1d5745f3a1', ...)
+# pdtb   UnavailableCapability(reason='not_implemented')
 # ...
 # dung   AvailableCapability(provider_id='rdam.dung/exhaustive-subset-v1', ...)
 # ibis   AvailableCapability(provider_id='rdam.ibis/gibis-grammar-v1', ...)
@@ -183,29 +182,27 @@ request = AggregateRequest(
 print(machine.analyse(request).lineage)
 ```
 
-## Capability comes from evidence
+## Capability and provenance
 
-A `PromotionDecision` (`rdam.promotion`) records six evidence classes — output quality
-(empirical, with gold data and baselines, or formal, with correctness arguments and
-property tests), calibration, latency and resources, compatibility, provenance, and
-licensing — and one of four outcomes: `promote`, `withhold`, `replace`, `retire`. A
-`promote` or `replace` decision cannot be constructed unless every class is admissible;
-installation success, a green test run, or the existence of an artifact is never
-evidence, because there is no field for it.
+A technique is `available` when its provider can actually run, and `unavailable` with a
+stable reason otherwise. There are exactly three reasons:
 
-Decisions live in the workbench ledger `workbench/promotions/<technique>/` and are
-bound to the exact artifact they evaluated:
+| reason | meaning |
+|---|---|
+| `not_implemented` | no provider exists for this technique |
+| `model_unavailable` | a provider exists but its configured model does not resolve |
+| `missing_structured_input` | Dung or IBIS was asked without the structure it requires |
 
-- `rdam.dung` and `rdam.ibis` package their decision beside their code, bound to the
-  digest of their own source files. Changing the source without a new decision makes the
-  provider `unavailable(no_promoted_implementation)`.
-- `rdam.rst` reads the decision published beside the configured model release
-  (`<store>/<release_id>.promotion.json`) and checks its artifact digest against the
-  release manifest before any inference. A decision cannot be borrowed by a different
-  set of weights.
+`rdam.dung` and `rdam.ibis` are exact and deterministic, so they are available whenever
+imported. `rdam.rst` is available when the configured parser version is one the façade
+knows how to load, or when the named local model release is present; neither check loads
+a model or touches the network.
 
-Promoted releases such as `gumrrg-eb1d5745f3a1` and `unirst-9407970f1d9d` provide production
-discourse tree parsing through `RstProvider` and `Parser`.
+Every provider declares its own provenance to the machine — package, version, source
+digest, model identity where it has one, and the licence its code and weights carry —
+and that provenance travels on every native result. Releases such as
+`gumrrg-eb1d5745f3a1` and `unirst-9407970f1d9d` provide production discourse tree parsing
+through `RstProvider` and `Parser`.
 
 ## Provider: RST / eRST (`rdam.rst`)
 
@@ -376,16 +373,16 @@ acceptability is the Dung provider's job, not this one's.
 
 ```text
 rdam/                        the distribution and import package — the machine
-├── contracts.py, machine.py, promotion.py, frameworks.py, serialization.py
+├── contracts.py, machine.py, frameworks.py, serialization.py
 ├── resources/framework-identities.json   coe: identities projected from the vendored taxonomy
 ├── rst/                     RST/eRST provider: parser, ingest, erst, rstviewer, cli, provider.py
-├── dung/                    semantics.py, provider.py, resources/promotion-decision.json
-└── ibis/                    grammar.py, provider.py, resources/promotion-decision.json
+├── dung/                    semantics.py, provider.py
+└── ibis/                    grammar.py, provider.py
 ontology/                    vendored Central distribution + the rdam LinkML profile (not shipped)
 workbench/                   the one experimentation root: corpora, training, evaluation, research,
-                             promotion tooling, and the decision ledger workbench/promotions/
-models/model-releases/       immutable local releases, each with its manifest, promotion decision
-                             sidecar, and compatibility re-declaration sidecar
+                             and the model-store release tooling
+models/model-releases/       immutable local releases, each with its manifest and its
+                             compatibility re-declaration sidecar
 tools/production_boundary/   boundary inspection, reproducible build, artifact validation,
                              clean install, classified baseline comparison
 tests/  specs/  docs/        verification, decision-closed feature records, documentation
@@ -432,26 +429,27 @@ across such changes, classifying every field-level difference before giving a ve
 
 Built on 2026-09-02 against the decision-closed architecture in
 `specs/006-rhetorical-discourse-machine/`, feature by feature (`specs/007-…` to
-`specs/012-…`): the aggregate contract and ontology vendoring, the evidence-gated
-promotion system, the RST provider adapter, the repository migration and the
-single-package restructure, and the Dung and IBIS providers. Release 6.0.0 is tagged and
+`specs/012-…`): the aggregate contract and ontology vendoring, the RST provider
+adapter, the repository migration and the single-package restructure, and the Dung and
+IBIS providers. The promotion-evidence system built as feature 008 was removed on
+2026-09-02 by owner ruling — it gated working analysers behind a ceremony that had never
+been asked for. Release 6.0.0 is tagged and
 certified; the release record is in
 [`specs/010-repository-migration/evidence/gates.md`](specs/010-repository-migration/evidence/gates.md).
 
 Persisted contract identifiers (`isanlp_rst.production` 2.0.0, `isanlp_rst.parser/dmrst-v1`,
 `isanlp_rst.parser/unirst-v1`) name immutable runtime contracts, not the package.
 
-Provider order thereafter: SDRT, then Toulmin and Walton, then PDTB if ever — each only
-once workbench evidence identifies a credible candidate, each with its own
-decision-closed feature and its own decision.
+Provider order thereafter: SDRT, then Toulmin and Walton, then PDTB if ever — each with
+its own decision-closed feature.
 
 ## Provenance and licence
 
 This repository is Steve Allison's evolution of the IsaNLP RST Parser into the
 Rhetorical Discourse Analysis Machine. The original RST research code and the archived
 research model weights are by Elena Chistova; the MIT-licensed source carries her
-copyright. The machine, the Dung and IBIS providers, the promotion system, canonical
-source ingest, eRST completion, and the build and release tooling are Steve's own code.
+copyright. The machine, the Dung and IBIS providers, canonical source ingest, eRST
+completion, and the build and release tooling are Steve's own code.
 
 - **Source code:** MIT — see [`LICENSE`](LICENSE). Copyright Elena Chistova 2020 for the
   original parser; Steve Allison's contributions also under MIT.
@@ -460,7 +458,7 @@ source ingest, eRST completion, and the build and release tooling are Steve's ow
   non-commercial use only**, see [`LICENSE_MODELS`](LICENSE_MODELS). These models power
   `PredictorDMRST` and `PredictorUniRST` through `Parser`.
 - **Workbench research experiments:** candidate architectures (e.g. ModernBERT) reside
-  strictly under `workbench/` and are evaluated against baselines before any promotion.
+  strictly under `workbench/` and are evaluated against baselines before any production use.
 
 Issues and pull requests: `Steve-Allison/Rhetorical_Discourse_Analysis_Machine`.
 

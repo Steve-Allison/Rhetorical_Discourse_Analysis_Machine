@@ -8,11 +8,11 @@ below. A violation is a defect, not a style choice.
 > **Superseded in part by the owner rulings of 2026-09-02**, recorded in
 > [010 §Single package and rename](../../010-repository-migration/spec.md): the
 > production boundary is **one package at the repository root, `rdam/`**, and every
-> promoted technique is a sub-package of it (`rdam.rst`, `rdam.dung`, `rdam.ibis`),
+> technique is a sub-package of it (`rdam.rst`, `rdam.dung`, `rdam.ibis`),
 > shipped as one wheel. The roster's per-technique top-level directories (`rst/`,
 > `dung/`, …) and `machine/` no longer exist, and structural rule 2's namespaced
 > per-boundary import names are replaced by sub-packages of `rdam`. Everything else
-> below stands: no `production/` subdirectory, creation only on promotion (now: a
+> below stands: no `production/` subdirectory, creation only on implementation (now: a
 > sub-package), one framework identity per technique, exactly one `workbench/`, the
 > import and distribution rules (enforced from the `rdam` root), the independence
 > rules, and the scale rule. `ontology/` remains a repository directory as listed.
@@ -22,10 +22,10 @@ below. A violation is a defect, not a style choice.
 | Boundary | Owner of | Exists |
 |---|---|---|
 | `rst/` | The RST/eRST boundary: the canonical `isanlp_rst` provider package (moves in at migration, feature 010) and the machine-facing adapter `rst/rdam_rst` (import name `rdam_rst`, feature 009) | now (adapter, 2026-09-02); `isanlp_rst` at migration |
-| `pdtb/`, `sdrt/`, `toulmin/`, `walton/`, `dung/`, `ibis/` | One technique's promoted provider, native contract, runtime assets, capability declaration | only on that technique's first promotion (FR-002) |
+| `pdtb/`, `sdrt/`, `toulmin/`, `walton/`, `dung/`, `ibis/` | One technique's provider, native contract, runtime assets, capability declaration | only on that technique's first implotion (FR-002) |
 | `machine/` | Aggregate analysis contract (`machine/rdam`, import name `rdam`); cross-provider orchestration later | now (feature 007, 2026-09-02) |
 | `ontology/` | Vendored Central distribution (read-only, `ontology/vendor/central-configs/`) + the `rdam` application profile (`ontology/schema/rdam.linkml.yaml`, bindings in `ontology/data/`) | now (feature 007, 2026-09-02) |
-| `workbench/` | All candidates, corpora, experiments, training, evaluation, benchmarks, checkpoints, runs, promotion evidence (FR-004) | now |
+| `workbench/` | All candidates, corpora, experiments, training, evaluation, benchmarks, checkpoints, runs (FR-004) | now |
 | `tests/` | Production verification, kept distinct from workbench evaluation (FR-007). Owns `tests/offline/research` too: that subtree is workbench-evaluation material located under `tests/`, and FR-007's distinction is satisfied within `tests/` by the subtree split and the separate `research-test` / `research-lint` tasks. One owner, no ambiguity — ruling recorded in [evidence/boundary-audit.md](../evidence/boundary-audit.md) | now |
 | `tools/` | Production boundary inspection and release tooling | now |
 | `specs/` | Planning material | now |
