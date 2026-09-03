@@ -33,9 +33,17 @@
 - [X] T011 Run quickstart, focused tests, lint, typecheck, and production-boundary gate; record exact output in `evidence.md`
 - [X] T012 Run `$speckit-analyze`, resolve all findings, and mark the feature complete
 
+## Phase 6: Current Contract Convergence
+
+- [x] T013 [US2] Add causal counterexamples for silently normalized span text, coerced offsets, and mutable validated collections in `tests/pdtb/test_relations.py`
+- [x] T014 [US2] Preserve proposed quote bytes, require strict integer offsets, and make validated PDTB collections immutable in `rdam/pdtb/relations.py`
+- [x] T015 Run the focused PDTB suite and static checks; resolve every failure
+- [x] T016 Run all repository certification gates and append exact current proof to `evidence.md`
+- [x] T017 Re-run cross-artifact analysis, resolve every finding, and complete the clean delivery audit
+
 ## Dependencies
 
-T001 precedes all contract work. T003 precedes T004; T005 precedes T006; T007 precedes T008. T010 follows provider completion. T011–T012 run last.
+T001 precedes all contract work. T003 precedes T004; T005 precedes T006; T007 precedes T008. T010 follows provider completion. T011–T012 establish the original delivery. T013 precedes T014; T015–T017 run last.
 
 ## Implementation Strategy
 

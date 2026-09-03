@@ -20,7 +20,7 @@ def span(start: int, end: int, text: str) -> TextSpan:
 
 
 def argument(start: int, end: int, text: str) -> PdtbArgument:
-    return PdtbArgument(spans=[span(start, end, text)])
+    return PdtbArgument(spans=(span(start, end, text),))
 
 
 def base_relation(relation_type: RelationType, **overrides: object) -> PdtbRelation:
@@ -64,10 +64,21 @@ def test_shipped_sense_constant_is_exactly_the_enum() -> None:
 
 
 def test_discontinuous_spans_are_ordered_and_preserved() -> None:
-    arg = PdtbArgument(spans=[span(0, 4, "Rain"), span(18, 25, "stopped")])
+    arg = PdtbArgument(spans=(span(0, 4, "Rain"), span(18, 25, "stopped")))
     spans = arg.to_payload()["spans"]
     assert isinstance(spans, list) and isinstance(spans[1], dict)
     assert spans[1]["start"] == 18
+
+
+@pytest.mark.parametrize(
+    ("field", "invalid_value"),
+    [("start", "0"), ("start", False), ("end", "4"), ("end", True)],
+)
+def test_span_offsets_refuse_non_integer_proposals(field: str, invalid_value: object) -> None:
+    proposal: dict[str, object] = {"start": 0, "end": 4, "text": "Rain"}
+    proposal[field] = invalid_value
+    with pytest.raises(ValidationError):
+        TextSpan.model_validate(proposal)
 
 
 def test_arg1_need_not_precede_arg2() -> None:
@@ -100,18 +111,50 @@ def test_implicit_requires_inferred_connective_only() -> None:
         base_relation(RelationType.IMPLICIT, inferred_connectives=[])
 
 
+def test_inferred_connective_is_refused_instead_of_trimmed() -> None:
+    with pytest.raises(ValidationError, match="surrounding whitespace"):
+        base_relation(RelationType.IMPLICIT, inferred_connectives=[" so "])
+
+
 def test_altlex_requires_exact_alternative_evidence() -> None:
     with pytest.raises(ValidationError, match="alternative lexicalization"):
         base_relation(RelationType.ALTLEX, alternative_lexicalization_spans=[])
 
 
 def test_exact_source_slices_are_mandatory() -> None:
-    analysis = PdtbAnalysis(relations=[base_relation(RelationType.EXPLICIT)])
+    analysis = PdtbAnalysis(relations=(base_relation(RelationType.EXPLICIT),))
     with pytest.raises(RelationError, match="does not equal source slice"):
         analysis.validate_source("Hail so traffic")
+
+
+def test_span_text_is_not_normalized_into_a_source_match() -> None:
+    relation = base_relation(
+        RelationType.EXPLICIT,
+        arg1={"spans": [{"start": 0, "end": 4, "text": " Rain "}]},
+    )
+    assert relation.arg1.spans[0].text == " Rain "
+    with pytest.raises(RelationError, match="does not equal source slice"):
+        PdtbAnalysis(relations=(relation,)).validate_source("Rain so traffic")
+
+
+def test_validated_collections_cannot_be_mutated_after_validation() -> None:
+    explicit = base_relation(RelationType.EXPLICIT)
+    implicit = base_relation(RelationType.IMPLICIT)
+    altlex = base_relation(RelationType.ALTLEX)
+    analysis = PdtbAnalysis(relations=(explicit,))
+    collections = (
+        analysis.relations,
+        explicit.arg1.spans,
+        explicit.senses,
+        explicit.connective_spans,
+        implicit.inferred_connectives,
+        altlex.alternative_lexicalization_spans,
+    )
+    for collection in collections:
+        assert isinstance(collection, tuple)
 
 
 def test_relation_ids_are_unique() -> None:
     relation = base_relation(RelationType.ENTREL)
     with pytest.raises(ValidationError, match="relation ids must be unique"):
-        PdtbAnalysis(relations=[relation, relation])
+        PdtbAnalysis(relations=(relation, relation))

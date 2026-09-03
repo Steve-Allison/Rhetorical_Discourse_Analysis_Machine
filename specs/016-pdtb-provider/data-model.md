@@ -5,6 +5,9 @@
 - `start`, `end`: zero-based half-open character offsets with `start < end`.
 - `text`: non-empty exact source slice.
 
+Offsets accept integers only: strings and booleans are not coerced. Span text is retained
+exactly as proposed so source validation can detect, rather than normalize, a mismatch.
+
 ## PdtbArgument
 
 - `spans`: one or more internally ordered, non-overlapping `TextSpan` values.
@@ -28,6 +31,8 @@ Type-specific validation forbids evidence in the wrong field and forbids senses 
 - `relations`: ordered relation collection, including a valid empty list.
 
 Relation IDs are unique. `validate_source(source)` proves every quoted span against the source.
+Validated relation, argument, sense, and evidence collections are immutable internally and
+serialize as ordinary JSON arrays.
 
 ## Native payload
 

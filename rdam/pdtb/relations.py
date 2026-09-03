@@ -3,11 +3,24 @@
 from enum import StrEnum
 from typing import Annotated, Final, Self
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 from rdam._strict import JsonValue
 
-type NonEmpty = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+def _untrimmed_non_blank(value: str) -> str:
+    if not value.strip():
+        raise ValueError("value must not be blank")
+    if value != value.strip():
+        raise ValueError("value must not have surrounding whitespace")
+    return value
+
+
+type ExactText = Annotated[str, StringConstraints(min_length=1)]
+type NonEmpty = Annotated[
+    str,
+    StringConstraints(min_length=1),
+    AfterValidator(_untrimmed_non_blank),
+]
 type RelationId = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9_]*$")]
 
 
@@ -76,9 +89,9 @@ class _ClosedModel(BaseModel):
 class TextSpan(_ClosedModel):
     """One exact, half-open source span."""
 
-    start: int = Field(ge=0)
-    end: int = Field(gt=0)
-    text: NonEmpty
+    start: int = Field(strict=True, ge=0)
+    end: int = Field(strict=True, gt=0)
+    text: ExactText
 
     @model_validator(mode="after")
     def positive_span(self) -> Self:
@@ -96,7 +109,7 @@ class TextSpan(_ClosedModel):
 class PdtbArgument(_ClosedModel):
     """One PDTB argument, including discontinuous ordered spans."""
 
-    spans: list[TextSpan] = Field(min_length=1)
+    spans: tuple[TextSpan, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
     def ordered_non_overlapping_spans(self) -> Self:
@@ -116,10 +129,10 @@ class PdtbRelation(_ClosedModel):
     relation_type: RelationType
     arg1: PdtbArgument
     arg2: PdtbArgument
-    senses: list[PdtbSense] = Field(default_factory=list)
-    connective_spans: list[TextSpan] = Field(default_factory=list)
-    inferred_connectives: list[NonEmpty] = Field(default_factory=list)
-    alternative_lexicalization_spans: list[TextSpan] = Field(default_factory=list)
+    senses: tuple[PdtbSense, ...] = ()
+    connective_spans: tuple[TextSpan, ...] = ()
+    inferred_connectives: tuple[NonEmpty, ...] = ()
+    alternative_lexicalization_spans: tuple[TextSpan, ...] = ()
 
     @model_validator(mode="after")
     def type_specific_contract(self) -> Self:
@@ -185,7 +198,7 @@ class PdtbRelation(_ClosedModel):
 class PdtbAnalysis(_ClosedModel):
     """Every PDTB-3 relation found in one source."""
 
-    relations: list[PdtbRelation] = Field(default_factory=list)
+    relations: tuple[PdtbRelation, ...] = ()
 
     @model_validator(mode="after")
     def unique_relation_ids(self) -> Self:
