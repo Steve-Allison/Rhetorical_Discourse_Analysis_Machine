@@ -30,15 +30,18 @@ that retried shows its retries and an exhausted budget yields a typed failure ca
 the reason. Nothing retries silently.
 """
 
+import asyncio
 from collections.abc import Mapping
 from dataclasses import dataclass
 import os
 from pathlib import Path
 import random
-import time
+from threading import Lock
 from typing import Final, cast
 
 from anthropic import AsyncAnthropic
+from dotenv import dotenv_values
+from dotenv import load_dotenv as load_dotenv_file
 from openai import AsyncOpenAI
 from pydantic import BaseModel, NonNegativeInt
 from pydantic_ai import Agent, AgentRunResult
@@ -80,6 +83,42 @@ _PROVIDER_KEY_ENV: Final[Mapping[str, str]] = {
 }
 
 
+class ModelIdentityError(ValueError):
+    """A configured identity is malformed or names an unsupported provider."""
+
+
+@dataclass(frozen=True, slots=True)
+class ModelIdentity:
+    """Canonical provider-qualified model identity."""
+
+    provider: str
+    model: str
+
+    def __str__(self) -> str:
+        return f"{self.provider}:{self.model}"
+
+
+def parse_model_identity(model: str) -> ModelIdentity:
+    """Parse and normalize a supported identity; bare names mean OpenAI."""
+
+    if not model or model != model.strip() or any(character.isspace() for character in model):
+        raise ModelIdentityError("model identity must be a non-empty value without whitespace")
+    provider, separator, model_name = model.partition(":")
+    if not separator:
+        provider, model_name = "openai", provider
+    if provider not in _PROVIDER_KEY_ENV:
+        raise ModelIdentityError(f"unsupported model provider {provider!r}")
+    if not model_name or ":" in model_name:
+        raise ModelIdentityError("model identity must be '<provider>:<model>' or a bare model name")
+    return ModelIdentity(provider=provider, model=model_name)
+
+
+def normalize_model_identity(model: str) -> str:
+    """Return the provider-qualified canonical spelling of ``model``."""
+
+    return str(parse_model_identity(model))
+
+
 class LlmError(RuntimeError):
     """A typed failure at the LLM boundary, classified for the caller (never retried here)."""
 
@@ -103,11 +142,30 @@ class LlmError(RuntimeError):
 def configured_model() -> str:
     """The model string in force: ``RDAM_LLM_MODEL`` if set, else :data:`DEFAULT_MODEL`."""
 
-    return os.environ.get(MODEL_ENV) or DEFAULT_MODEL
+    configured = os.environ.get(MODEL_ENV) or DEFAULT_MODEL
+    try:
+        return normalize_model_identity(configured)
+    except ModelIdentityError:
+        return configured
 
 
-def _provider_of(model: str) -> str:
-    return model.split(":", 1)[0] if ":" in model else "openai"
+def resolved_model_identity(model: str | None = None) -> str:
+    """Normalize valid explicit/default configuration while retaining invalid input for capability reporting."""
+
+    configured = configured_model() if model is None else model
+    try:
+        return normalize_model_identity(configured)
+    except ModelIdentityError:
+        return configured
+
+
+def _nearest_dotenv(start: Path | None = None) -> Path | None:
+    directory = (start or Path.cwd()).resolve()
+    for candidate in (directory, *directory.parents):
+        env_file = candidate / ".env"
+        if env_file.is_file():
+            return env_file
+    return None
 
 
 def load_dotenv(start: Path | None = None) -> None:
@@ -118,21 +176,8 @@ def load_dotenv(start: Path | None = None) -> None:
     file and nothing here can silently replace a deliberate setting.
     """
 
-    directory = (start or Path.cwd()).resolve()
-    wanted = set(_PROVIDER_KEY_ENV.values())
-    for candidate in (directory, *directory.parents):
-        env_file = candidate / ".env"
-        if not env_file.is_file():
-            continue
-        for line in env_file.read_text(encoding="utf-8", errors="replace").splitlines():
-            stripped = line.strip().removeprefix("export ").strip()
-            if not stripped or stripped.startswith("#") or "=" not in stripped:
-                continue
-            name, _, raw = stripped.partition("=")
-            name = name.strip()
-            if name in wanted and name not in os.environ:
-                os.environ[name] = raw.strip().strip("'\"")
-        return
+    if env_file := _nearest_dotenv(start):
+        load_dotenv_file(env_file, override=False)
 
 
 def unavailable_reason(model: str | None = None) -> UnavailableReason | None:
@@ -142,16 +187,20 @@ def unavailable_reason(model: str | None = None) -> UnavailableReason | None:
     connection or sends a request.
     """
 
-    resolved = model or configured_model()
-    variable = _PROVIDER_KEY_ENV.get(_provider_of(resolved))
-    if variable is None:
+    resolved = configured_model() if model is None else model
+    try:
+        identity = parse_model_identity(resolved)
+    except ModelIdentityError:
         return UnavailableReason.MODEL_UNAVAILABLE
-    if not os.environ.get(variable):
-        load_dotenv()
-    return None if os.environ.get(variable) else UnavailableReason.MODEL_UNAVAILABLE
+    variable = _PROVIDER_KEY_ENV[identity.provider]
+    if os.environ.get(variable):
+        return None
+    env_file = _nearest_dotenv()
+    file_value = dotenv_values(env_file).get(variable) if env_file is not None else None
+    return None if file_value else UnavailableReason.MODEL_UNAVAILABLE
 
 
-def _model_without_implicit_retries(model: str) -> Model:
+def _model_without_implicit_retries(model: str, *, timeout_seconds: float) -> Model:
     """Build a supported model whose SDK performs one HTTP attempt per agent request.
 
     ``StructuredAnalyst`` owns retries and evidence. Provider SDK defaults retry twice
@@ -159,39 +208,39 @@ def _model_without_implicit_retries(model: str) -> Model:
     """
 
     load_dotenv()
-    provider_name, separator, model_name = model.partition(":")
-    if not separator or not model_name:
-        raise ValueError("model identity must be '<provider>:<model>'")
-    variable = _PROVIDER_KEY_ENV.get(provider_name)
-    if variable is None or not (api_key := os.environ.get(variable)):
-        raise ValueError(f"model provider {provider_name!r} is not configured")
-    match provider_name:
+    identity = parse_model_identity(model)
+    variable = _PROVIDER_KEY_ENV[identity.provider]
+    if not (api_key := os.environ.get(variable)):
+        raise ValueError(f"model provider {identity.provider!r} is not configured")
+    match identity.provider:
         case "openai":
-            client = AsyncOpenAI(api_key=api_key, max_retries=0)
+            client = AsyncOpenAI(api_key=api_key, max_retries=0, timeout=timeout_seconds)
             return OpenAIChatModel(
-                cast(OpenAIModelName, model_name),
+                cast(OpenAIModelName, identity.model),
                 provider=OpenAIProvider(openai_client=client),
             )
         case "anthropic":
-            client = AsyncAnthropic(api_key=api_key, max_retries=0)
+            client = AsyncAnthropic(api_key=api_key, max_retries=0, timeout=timeout_seconds)
             return AnthropicModel(
-                cast(AnthropicModelName, model_name),
+                cast(AnthropicModelName, identity.model),
                 provider=AnthropicProvider(anthropic_client=client),
             )
         case "google" | "google-gla" | "google-vertex":
+            from httpx2 import AsyncClient
             from google.genai.types import HttpRetryOptions
             from pydantic_ai.models.google import GoogleModel, GoogleModelName
             from pydantic_ai.providers.google import GoogleProvider
 
             return GoogleModel(
-                cast(GoogleModelName, model_name),
+                cast(GoogleModelName, identity.model),
                 provider=GoogleProvider(
                     api_key=api_key,
+                    http_client=AsyncClient(timeout=timeout_seconds),
                     retry_options=HttpRetryOptions(attempts=1),
                 ),
             )
         case _:
-            raise ValueError(f"unsupported model provider {provider_name!r}")
+            raise AssertionError("model identity parser admitted an unsupported provider")
 
 
 @dataclass(frozen=True, slots=True)
@@ -226,13 +275,14 @@ class StructuredAnalyst[StructureT: BaseModel]:
             raise ValueError("retry counts must be non-negative")
         if transport_deadline_seconds <= 0:
             raise ValueError("transport deadline must be positive")
-        self._model = model or configured_model()
+        self._model = resolved_model_identity(model)
         self._output_type = output_type
         self._output_retries = output_retries
         self._transport_retries = transport_retries
         self._transport_deadline_seconds = transport_deadline_seconds
         self._instructions = instructions
         self._agent: Agent[None, StructureT] | None = None
+        self._agent_lock = Lock()
 
     @property
     def model(self) -> str:
@@ -250,78 +300,95 @@ class StructuredAnalyst[StructureT: BaseModel]:
         return self._built()
 
     def _built(self) -> Agent[None, StructureT]:
-        if self._agent is None:
-            self._agent = Agent(
-                _model_without_implicit_retries(self._model),
-                output_type=self._output_type,
-                instructions=self._instructions,
-                retries=self._output_retries,
-            )
+        if self._agent is not None:
+            return self._agent
+        with self._agent_lock:
+            if self._agent is None:
+                self._agent = Agent(
+                    _model_without_implicit_retries(
+                        self._model,
+                        timeout_seconds=self._transport_deadline_seconds,
+                    ),
+                    output_type=self._output_type,
+                    instructions=self._instructions,
+                    retries=self._output_retries,
+                )
         return self._agent
 
-    def _run_sync(self, text: str) -> AgentRunResult[StructureT]:
+    async def _run(self, text: str) -> AgentRunResult[StructureT]:
         """One agent run. Kept as the causal external-boundary seam for tests."""
 
-        return self._built().run_sync(text)
+        return await self._built().run(text)
 
     def extract(self, text: str) -> Extraction[StructureT]:
         """Return the validated structure, or raise :class:`LlmError` with its class."""
 
+        return asyncio.run(self.extract_async(text))
+
+    async def extract_async(self, text: str) -> Extraction[StructureT]:
+        """Async extraction under one deadline covering requests, validation, and retries."""
+
         if not text.strip():
             raise LlmError("empty_source_text", Retryability.NOT_RETRYABLE, "no text to analyse")
-        started = time.monotonic()
         transport_attempts = 0
-        while True:
-            transport_attempts += 1
-            try:
-                result = self._run_sync(text)
-                break
-            except UnexpectedModelBehavior as error:
-                # Pydantic AI has spent the independent output-validation budget. Each
-                # proposal required one successful transport request.
-                output_attempts = self._output_retries + 1
-                raise LlmError(
-                    "llm_output_failed_validation",
-                    Retryability.NOT_RETRYABLE,
-                    f"no valid {self._output_type.__name__} in {output_attempts} attempts: {error}",
-                    output_attempts=output_attempts,
-                    transport_attempts=transport_attempts - 1 + output_attempts,
-                ) from error
-            except ModelHTTPError as error:
-                retryable = error.status_code in {408, 409, 429} or error.status_code >= 500
-                if retryable and transport_attempts <= self._transport_retries:
-                    self._wait_before_retry(error.retry_after, transport_attempts, started)
-                    continue
-                raise LlmError(
-                    "llm_request_rejected",
-                    Retryability.RETRYABLE if retryable else Retryability.NOT_RETRYABLE,
-                    f"HTTP {error.status_code}",
-                    transport_attempts=transport_attempts,
-                ) from error
-            except UsageLimitExceeded as error:
-                raise LlmError(
-                    "llm_usage_limit_exceeded",
-                    Retryability.NOT_RETRYABLE,
-                    str(error),
-                    transport_attempts=transport_attempts,
-                ) from error
-            except ModelAPIError as error:
-                if transport_attempts <= self._transport_retries:
-                    self._wait_before_retry(None, transport_attempts, started)
-                    continue
-                raise LlmError(
-                    "llm_transport_failed",
-                    Retryability.RETRYABLE,
-                    str(error),
-                    transport_attempts=transport_attempts,
-                ) from error
-            except AgentRunError as error:
-                raise LlmError(
-                    "llm_run_failed",
-                    Retryability.UNKNOWN,
-                    str(error),
-                    transport_attempts=transport_attempts,
-                ) from error
+        try:
+            async with asyncio.timeout(self._transport_deadline_seconds):
+                while True:
+                    transport_attempts += 1
+                    try:
+                        result = await self._run(text)
+                        break
+                    except UnexpectedModelBehavior as error:
+                        output_attempts = self._output_retries + 1
+                        raise LlmError(
+                            "llm_output_failed_validation",
+                            Retryability.NOT_RETRYABLE,
+                            f"no valid {self._output_type.__name__} in {output_attempts} attempts: {error}",
+                            output_attempts=output_attempts,
+                            transport_attempts=transport_attempts - 1 + output_attempts,
+                        ) from error
+                    except ModelHTTPError as error:
+                        retryable = error.status_code in {408, 409, 429} or error.status_code >= 500
+                        if retryable and transport_attempts <= self._transport_retries:
+                            await self._wait_before_retry(error.retry_after, transport_attempts)
+                            continue
+                        raise LlmError(
+                            "llm_request_rejected",
+                            Retryability.RETRYABLE if retryable else Retryability.NOT_RETRYABLE,
+                            f"HTTP {error.status_code}",
+                            transport_attempts=transport_attempts,
+                        ) from error
+                    except UsageLimitExceeded as error:
+                        raise LlmError(
+                            "llm_usage_limit_exceeded",
+                            Retryability.NOT_RETRYABLE,
+                            str(error),
+                            transport_attempts=transport_attempts,
+                        ) from error
+                    except ModelAPIError as error:
+                        if transport_attempts <= self._transport_retries:
+                            await self._wait_before_retry(None, transport_attempts)
+                            continue
+                        raise LlmError(
+                            "llm_transport_failed",
+                            Retryability.RETRYABLE,
+                            str(error),
+                            transport_attempts=transport_attempts,
+                        ) from error
+                    except AgentRunError as error:
+                        raise LlmError(
+                            "llm_run_failed",
+                            Retryability.UNKNOWN,
+                            str(error),
+                            transport_attempts=transport_attempts,
+                        ) from error
+        except TimeoutError as error:
+            raise LlmError(
+                "llm_transport_deadline_exceeded",
+                Retryability.RETRYABLE,
+                f"transport deadline {self._transport_deadline_seconds:g}s exhausted",
+                transport_attempts=transport_attempts,
+            ) from error
         output_attempts = _request_count(result)
         return Extraction(
             structure=result.output,
@@ -330,17 +397,10 @@ class StructuredAnalyst[StructureT: BaseModel]:
             transport_attempts=transport_attempts - 1 + output_attempts,
         )
 
-    def _wait_before_retry(self, retry_after: float | None, attempt: int, started: float) -> None:
+    async def _wait_before_retry(self, retry_after: float | None, attempt: int) -> None:
         ceiling = min(_INITIAL_RETRY_DELAY_SECONDS * (2 ** (attempt - 1)), _MAX_RETRY_DELAY_SECONDS)
         delay = retry_after if retry_after is not None else random.uniform(0.0, ceiling)
-        if time.monotonic() - started + delay > self._transport_deadline_seconds:
-            raise LlmError(
-                "llm_transport_deadline_exceeded",
-                Retryability.RETRYABLE,
-                f"transport deadline {self._transport_deadline_seconds:g}s exhausted",
-                transport_attempts=attempt,
-            )
-        time.sleep(delay)
+        await asyncio.sleep(delay)
 
 
 def _request_count(result: object) -> int:
@@ -359,8 +419,13 @@ __all__ = [
     "MODEL_ENV",
     "Extraction",
     "LlmError",
+    "ModelIdentity",
+    "ModelIdentityError",
     "StructuredAnalyst",
     "configured_model",
     "load_dotenv",
+    "normalize_model_identity",
+    "parse_model_identity",
+    "resolved_model_identity",
     "unavailable_reason",
 ]

@@ -52,8 +52,9 @@ def load(payload: bytes | str) -> PersistedRecord:
     parsed: Any = json.loads(text, object_pairs_hook=_unique_object)
     if not isinstance(parsed, dict):
         raise ValueError("record payload must be a JSON object")
-    contract = parsed.get("contract")
-    version = parsed.get("contract_version")
+    envelope = cast(dict[object, object], parsed)
+    contract = envelope.get("contract")
+    version = envelope.get("contract_version")
     record_type = _RECORD_TYPES.get(contract) if isinstance(contract, str) else None
     if record_type is None:
         raise UnsupportedRecordError(f"unsupported record contract: {contract!r}")

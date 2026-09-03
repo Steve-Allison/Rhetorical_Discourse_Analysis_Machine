@@ -1,27 +1,40 @@
 """Knowledge graph export bridges for Rhetorical Structure Theory analyses."""
 
+import json
+import re
 from typing import Any
+from urllib.parse import quote
 import networkx as nx
 
 from rdam.rst.contracts.analysis import RstAnalysis
 from rdam.rst.contracts.document import RstDocument
 from rdam.rst.contracts.enums import NodeKindEnum
 
+_TURTLE_LOCAL_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9._-]*$")
+
+
+def _turtle_resource(prefix: str, namespace: str, local_name: str) -> str:
+    return (
+        f"{prefix}:{local_name}"
+        if _TURTLE_LOCAL_NAME.fullmatch(local_name)
+        else f"<{namespace}{quote(local_name, safe='')}>"
+    )
+
 
 def to_networkx_graph(
     analysis: RstAnalysis,
     document: RstDocument | None = None,
-) -> nx.DiGraph:
-    """Convert an RstAnalysis tree/graph into a typed NetworkX DiGraph.
+) -> nx.MultiDiGraph[int, dict[str, Any], dict[str, Any]]:
+    """Convert an RstAnalysis tree/graph into a typed NetworkX MultiDiGraph.
 
     Args:
         analysis: The parsed discourse analysis result.
         document: Optional original RstDocument for additional metadata.
 
     Returns:
-        nx.DiGraph: Directed graph with node and edge attributes.
+        nx.MultiDiGraph: Directed multigraph with stable edge-ID keys and attributes.
     """
-    g = nx.DiGraph()
+    g: nx.MultiDiGraph[int, dict[str, Any], dict[str, Any]] = nx.MultiDiGraph()
     g.graph["document_id"] = analysis.document_id
     g.graph["formalism"] = analysis.formalism.value
     if document is not None and document.language is not None:
@@ -57,6 +70,7 @@ def to_networkx_graph(
         g.add_edge(
             edge.parent_id,
             edge.child_id,
+            key=edge.edge_id,
             edge_id=edge.edge_id,
             relation_concept=edge.relation_concept,
             relation_raw=edge.relation_raw,
@@ -72,6 +86,7 @@ def to_networkx_graph(
         g.add_edge(
             edge.source_id,
             edge.target_id,
+            key=edge.edge_id,
             edge_id=edge.edge_id,
             relation_concept=edge.relation_concept,
             relation_raw=edge.relation_raw,
@@ -103,13 +118,25 @@ def to_rdf_triples(
     doc_uri = f"{base_uri}{analysis.document_id}"
     triples: list[tuple[str, str, str]] = []
 
-    triples.append((doc_uri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://example.org/central/ontology/DiscourseDocument"))
+    triples.append(
+        (
+            doc_uri,
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "http://example.org/central/ontology/DiscourseDocument",
+        )
+    )
     triples.append((doc_uri, "http://example.org/central/ontology/formalism", analysis.formalism.value))
 
     for node in analysis.nodes:
         node_uri = f"{doc_uri}#node_{node.node_id}"
         kind_class = "ElementaryDiscourseUnit" if node.kind == NodeKindEnum.EDU else "ComplexDiscourseUnit"
-        triples.append((node_uri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", f"http://example.org/central/ontology/{kind_class}"))
+        triples.append(
+            (
+                node_uri,
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                f"http://example.org/central/ontology/{kind_class}",
+            )
+        )
         triples.append((node_uri, "http://example.org/central/ontology/partOfDocument", doc_uri))
         triples.append((node_uri, "http://example.org/central/ontology/text", f'"{node.text}"'))
         triples.append((node_uri, "http://example.org/central/ontology/charStart", str(node.char_span[0])))
@@ -121,12 +148,30 @@ def to_rdf_triples(
         edge_uri = f"{doc_uri}#edge_{edge.edge_id}"
         parent_uri = f"{doc_uri}#node_{edge.parent_id}"
         child_uri = f"{doc_uri}#node_{edge.child_id}"
-        triples.append((edge_uri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://example.org/central/ontology/PrimaryDiscourseRelation"))
+        triples.append(
+            (
+                edge_uri,
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "http://example.org/central/ontology/PrimaryDiscourseRelation",
+            )
+        )
         triples.append((edge_uri, "http://example.org/central/ontology/hasParent", parent_uri))
         triples.append((edge_uri, "http://example.org/central/ontology/hasChild", child_uri))
-        triples.append((edge_uri, "http://example.org/central/ontology/relationConcept", f"http://example.org/central/ontology/DiscourseRelation#{edge.relation_concept}"))
+        triples.append(
+            (
+                edge_uri,
+                "http://example.org/central/ontology/relationConcept",
+                f"http://example.org/central/ontology/DiscourseRelation#{edge.relation_concept}",
+            )
+        )
         triples.append((edge_uri, "http://example.org/central/ontology/relationRaw", f'"{edge.relation_raw}"'))
-        triples.append((edge_uri, "http://example.org/central/ontology/nuclearity", f"http://example.org/central/ontology/Nuclearity#{edge.nuclearity.name}"))
+        triples.append(
+            (
+                edge_uri,
+                "http://example.org/central/ontology/nuclearity",
+                f"http://example.org/central/ontology/Nuclearity#{edge.nuclearity.name}",
+            )
+        )
         if edge.confidence is not None:
             triples.append((edge_uri, "http://example.org/central/ontology/confidence", str(edge.confidence)))
         triples.append((edge_uri, "http://example.org/central/ontology/calibrated", str(edge.calibrated).lower()))
@@ -135,10 +180,22 @@ def to_rdf_triples(
         edge_uri = f"{doc_uri}#edge_{edge.edge_id}"
         source_uri = f"{doc_uri}#node_{edge.source_id}"
         target_uri = f"{doc_uri}#node_{edge.target_id}"
-        triples.append((edge_uri, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "http://example.org/central/ontology/SecondaryDiscourseRelation"))
+        triples.append(
+            (
+                edge_uri,
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "http://example.org/central/ontology/SecondaryDiscourseRelation",
+            )
+        )
         triples.append((edge_uri, "http://example.org/central/ontology/hasSource", source_uri))
         triples.append((edge_uri, "http://example.org/central/ontology/hasTarget", target_uri))
-        triples.append((edge_uri, "http://example.org/central/ontology/relationConcept", f"http://example.org/central/ontology/DiscourseRelation#{edge.relation_concept}"))
+        triples.append(
+            (
+                edge_uri,
+                "http://example.org/central/ontology/relationConcept",
+                f"http://example.org/central/ontology/DiscourseRelation#{edge.relation_concept}",
+            )
+        )
         triples.append((edge_uri, "http://example.org/central/ontology/relationRaw", f'"{edge.relation_raw}"'))
         if edge.confidence is not None:
             triples.append((edge_uri, "http://example.org/central/ontology/confidence", str(edge.confidence)))
@@ -153,11 +210,14 @@ def to_turtle(
     base_uri: str = "http://example.org/discourse/",
 ) -> str:
     """Serialize discourse analysis to W3C Turtle RDF format."""
-    doc_id = analysis.document_id
+    doc_id = quote(analysis.document_id, safe="")
+    doc_namespace = f"{base_uri}{doc_id}#"
+    concept_namespace = "http://example.org/central/ontology/DiscourseRelation#"
     lines = [
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .",
         "@prefix coe: <http://example.org/central/ontology/> .",
-        f"@prefix doc: <{base_uri}{doc_id}#> .",
+        f"@prefix rel: <{concept_namespace}> .",
+        f"@prefix doc: <{doc_namespace}> .",
         "",
         f"<{base_uri}{doc_id}> a coe:DiscourseDocument ;",
         f'    coe:formalism "{analysis.formalism.value}" .',
@@ -166,11 +226,10 @@ def to_turtle(
 
     for node in analysis.nodes:
         kind_class = "ElementaryDiscourseUnit" if node.kind == NodeKindEnum.EDU else "ComplexDiscourseUnit"
-        escaped_text = node.text.replace('"', '\\"').replace("\n", " ")
         lines.extend(
             [
                 f"doc:node_{node.node_id} a coe:{kind_class} ;",
-                f'    coe:text "{escaped_text}" ;',
+                f"    coe:text {json.dumps(node.text, ensure_ascii=False)} ;",
                 f"    coe:charStart {node.char_span[0]} ;",
                 f"    coe:charEnd {node.char_span[1]} ;",
                 f"    coe:eduStart {node.edu_span[0]} ;",
@@ -180,37 +239,37 @@ def to_turtle(
         )
 
     for edge in analysis.primary_edges:
-        conf_line = f"    coe:confidence {edge.confidence} ;" if edge.confidence is not None else ""
+        edge_resource = _turtle_resource("doc", doc_namespace, f"edge_{edge.edge_id}")
+        concept_resource = _turtle_resource("rel", concept_namespace, edge.relation_concept)
         lines.extend(
             [
-                f"doc:edge_{edge.edge_id} a coe:PrimaryDiscourseRelation ;",
+                f"{edge_resource} a coe:PrimaryDiscourseRelation ;",
                 f"    coe:hasParent doc:node_{edge.parent_id} ;",
                 f"    coe:hasChild doc:node_{edge.child_id} ;",
-                f"    coe:relationConcept coe:{edge.relation_concept} ;",
-                f'    coe:relationRaw "{edge.relation_raw}" ;',
+                f"    coe:relationConcept {concept_resource} ;",
+                f"    coe:relationRaw {json.dumps(edge.relation_raw, ensure_ascii=False)} ;",
                 f"    coe:nuclearity coe:{edge.nuclearity.name} ;",
-                f"{conf_line}" if conf_line else "",
-                f"    coe:calibrated {str(edge.calibrated).lower()} .",
-                "",
             ]
         )
-        lines = [line for line in lines if line]
+        if edge.confidence is not None:
+            lines.append(f"    coe:confidence {edge.confidence} ;")
+        lines.extend((f"    coe:calibrated {str(edge.calibrated).lower()} .", ""))
 
     for edge in analysis.secondary_edges:
-        conf_line = f"    coe:confidence {edge.confidence} ;" if edge.confidence is not None else ""
+        edge_resource = _turtle_resource("doc", doc_namespace, f"edge_{edge.edge_id}")
+        concept_resource = _turtle_resource("rel", concept_namespace, edge.relation_concept)
         lines.extend(
             [
-                f"doc:edge_{edge.edge_id} a coe:SecondaryDiscourseRelation ;",
+                f"{edge_resource} a coe:SecondaryDiscourseRelation ;",
                 f"    coe:hasSource doc:node_{edge.source_id} ;",
                 f"    coe:hasTarget doc:node_{edge.target_id} ;",
-                f"    coe:relationConcept coe:{edge.relation_concept} ;",
-                f'    coe:relationRaw "{edge.relation_raw}" ;',
-                f"{conf_line}" if conf_line else "",
-                f"    coe:calibrated {str(edge.calibrated).lower()} .",
-                "",
+                f"    coe:relationConcept {concept_resource} ;",
+                f"    coe:relationRaw {json.dumps(edge.relation_raw, ensure_ascii=False)} ;",
             ]
         )
-        lines = [line for line in lines if line]
+        if edge.confidence is not None:
+            lines.append(f"    coe:confidence {edge.confidence} ;")
+        lines.extend((f"    coe:calibrated {str(edge.calibrated).lower()} .", ""))
 
     return "\n".join(lines)
 
@@ -259,34 +318,34 @@ def to_jsonld(
             }
         )
 
-    for edge in analysis.primary_edges:
-        graph.append(
-            {
-                "@id": f"doc:edge_{edge.edge_id}",
-                "@type": "coe:PrimaryDiscourseRelation",
-                "hasParent": f"doc:node_{edge.parent_id}",
-                "hasChild": f"doc:node_{edge.child_id}",
-                "relationConcept": f"coe:{edge.relation_concept}",
-                "relationRaw": edge.relation_raw,
-                "nuclearity": f"coe:{edge.nuclearity.name}",
-                "confidence": edge.confidence,
-                "calibrated": edge.calibrated,
-            }
-        )
+    graph.extend(
+        {
+            "@id": f"doc:edge_{edge.edge_id}",
+            "@type": "coe:PrimaryDiscourseRelation",
+            "hasParent": f"doc:node_{edge.parent_id}",
+            "hasChild": f"doc:node_{edge.child_id}",
+            "relationConcept": f"coe:{edge.relation_concept}",
+            "relationRaw": edge.relation_raw,
+            "nuclearity": f"coe:{edge.nuclearity.name}",
+            "confidence": edge.confidence,
+            "calibrated": edge.calibrated,
+        }
+        for edge in analysis.primary_edges
+    )
 
-    for edge in analysis.secondary_edges:
-        graph.append(
-            {
-                "@id": f"doc:edge_{edge.edge_id}",
-                "@type": "coe:SecondaryDiscourseRelation",
-                "hasSource": f"doc:node_{edge.source_id}",
-                "hasTarget": f"doc:node_{edge.target_id}",
-                "relationConcept": f"coe:{edge.relation_concept}",
-                "relationRaw": edge.relation_raw,
-                "confidence": edge.confidence,
-                "calibrated": edge.calibrated,
-            }
-        )
+    graph.extend(
+        {
+            "@id": f"doc:edge_{edge.edge_id}",
+            "@type": "coe:SecondaryDiscourseRelation",
+            "hasSource": f"doc:node_{edge.source_id}",
+            "hasTarget": f"doc:node_{edge.target_id}",
+            "relationConcept": f"coe:{edge.relation_concept}",
+            "relationRaw": edge.relation_raw,
+            "confidence": edge.confidence,
+            "calibrated": edge.calibrated,
+        }
+        for edge in analysis.secondary_edges
+    )
 
     return {
         "@context": context,
@@ -307,8 +366,6 @@ def to_graphrag_json(
     Returns:
         dict[str, Any]: Semantic chunk hierarchy with relational transitions.
     """
-    chunks: list[dict[str, Any]] = []
-
     # Map children and parents
     parent_map: dict[int, int] = {}
     child_map: dict[int, list[int]] = {}
@@ -316,51 +373,50 @@ def to_graphrag_json(
         parent_map[edge.child_id] = edge.parent_id
         child_map.setdefault(edge.parent_id, []).append(edge.child_id)
 
-    for node in analysis.nodes:
-        chunks.append(
-            {
-                "chunk_id": f"{analysis.document_id}__node_{node.node_id}",
-                "node_id": node.node_id,
-                "chunk_type": node.kind.value,
-                "text": node.text,
-                "char_span": list(node.char_span),
-                "edu_span": list(node.edu_span),
-                "parent_node_id": parent_map.get(node.node_id),
-                "child_node_ids": child_map.get(node.node_id, []),
-                "confidence": node.confidence,
-            }
-        )
+    chunks: list[dict[str, Any]] = [
+        {
+            "chunk_id": f"{analysis.document_id}__node_{node.node_id}",
+            "node_id": node.node_id,
+            "chunk_type": node.kind.value,
+            "text": node.text,
+            "char_span": list(node.char_span),
+            "edu_span": list(node.edu_span),
+            "parent_node_id": parent_map.get(node.node_id),
+            "child_node_ids": child_map.get(node.node_id, []),
+            "confidence": node.confidence,
+        }
+        for node in analysis.nodes
+    ]
 
-    relations: list[dict[str, Any]] = []
-    for edge in analysis.primary_edges:
-        relations.append(
-            {
-                "relation_id": edge.edge_id,
-                "relation_type": "primary",
-                "source_chunk": f"{analysis.document_id}__node_{edge.parent_id}",
-                "target_chunk": f"{analysis.document_id}__node_{edge.child_id}",
-                "concept": edge.relation_concept,
-                "raw_label": edge.relation_raw,
-                "nuclearity": edge.nuclearity.value,
-                "confidence": edge.confidence,
-                "calibrated": edge.calibrated,
-            }
-        )
+    relations: list[dict[str, Any]] = [
+        {
+            "relation_id": edge.edge_id,
+            "relation_type": "primary",
+            "source_chunk": f"{analysis.document_id}__node_{edge.parent_id}",
+            "target_chunk": f"{analysis.document_id}__node_{edge.child_id}",
+            "concept": edge.relation_concept,
+            "raw_label": edge.relation_raw,
+            "nuclearity": edge.nuclearity.value,
+            "confidence": edge.confidence,
+            "calibrated": edge.calibrated,
+        }
+        for edge in analysis.primary_edges
+    ]
 
-    for edge in analysis.secondary_edges:
-        relations.append(
-            {
-                "relation_id": edge.edge_id,
-                "relation_type": "secondary",
-                "source_chunk": f"{analysis.document_id}__node_{edge.source_id}",
-                "target_chunk": f"{analysis.document_id}__node_{edge.target_id}",
-                "concept": edge.relation_concept,
-                "raw_label": edge.relation_raw,
-                "nuclearity": None,
-                "confidence": edge.confidence,
-                "calibrated": edge.calibrated,
-            }
-        )
+    relations.extend(
+        {
+            "relation_id": edge.edge_id,
+            "relation_type": "secondary",
+            "source_chunk": f"{analysis.document_id}__node_{edge.source_id}",
+            "target_chunk": f"{analysis.document_id}__node_{edge.target_id}",
+            "concept": edge.relation_concept,
+            "raw_label": edge.relation_raw,
+            "nuclearity": None,
+            "confidence": edge.confidence,
+            "calibrated": edge.calibrated,
+        }
+        for edge in analysis.secondary_edges
+    )
 
     return {
         "document_id": analysis.document_id,

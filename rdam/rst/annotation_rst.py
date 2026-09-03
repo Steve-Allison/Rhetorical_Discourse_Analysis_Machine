@@ -15,22 +15,22 @@ class DiscourseUnit:
     """A node in a binary Rhetorical Structure Theory (RST) discourse tree."""
 
     __slots__ = (
+        "_exporter",
+        "end",
+        "entropy",
         "id",
         "left",
-        "right",
-        "relation",
         "nuclearity",
         "proba",
-        "entropy",
+        "relation",
+        "right",
         "start",
-        "end",
         "text",
-        "_exporter",
     )
 
     id: int | None
-    left: "DiscourseUnit | None"
-    right: "DiscourseUnit | None"
+    left: DiscourseUnit | None
+    right: DiscourseUnit | None
     relation: str
     nuclearity: str
     proba: float | None
@@ -38,13 +38,13 @@ class DiscourseUnit:
     start: int | None
     end: int | None
     text: str
-    _exporter: "Exporter | None"
+    _exporter: Exporter | None
 
     def __init__(
         self,
         id: int | None = None,
-        left: "DiscourseUnit | None" = None,
-        right: "DiscourseUnit | None" = None,
+        left: DiscourseUnit | None = None,
+        right: DiscourseUnit | None = None,
         text: str = "",
         start: int | None = None,
         end: int | None = None,
@@ -95,21 +95,27 @@ class DiscourseUnit:
         return f"(id={self.id}, start={self.start}, end={self.end})"
 
     def clear_textfields(self) -> None:
-        """Recursively clear the text attribute across the tree to save memory."""
-        self.text = ""
-        if self.left is not None:
-            self.left.clear_textfields()
-        if self.right is not None:
-            self.right.clear_textfields()
+        """Clear text across an arbitrarily deep tree without using the call stack."""
+        pending: list[DiscourseUnit] = [self]
+        while pending:
+            node = pending.pop()
+            node.text = ""
+            if node.right is not None:
+                pending.append(node.right)
+            if node.left is not None:
+                pending.append(node.left)
 
     def fill_textfields(self, full_text: str) -> None:
-        """Recursively populate the text attribute from full_text using node character spans."""
-        if self.start is not None and self.end is not None:
-            self.text = full_text[self.start : self.end]
-        if self.left is not None:
-            self.left.fill_textfields(full_text)
-        if self.right is not None:
-            self.right.fill_textfields(full_text)
+        """Populate text across an arbitrarily deep tree from character spans."""
+        pending: list[DiscourseUnit] = [self]
+        while pending:
+            node = pending.pop()
+            if node.start is not None and node.end is not None:
+                node.text = full_text[node.start : node.end]
+            if node.right is not None:
+                pending.append(node.right)
+            if node.left is not None:
+                pending.append(node.left)
 
     def to_rs3(self, filename: str | Path, encoding: str = "utf8") -> None:
         """Serialize this discourse tree to RS3 XML format."""
@@ -146,7 +152,7 @@ class Segment:
 class Group:
     """A composite structural group element for RS3 XML."""
 
-    __slots__ = ("id", "type", "parent", "relname")
+    __slots__ = ("id", "parent", "relname", "type")
 
     id: int
     type: str
@@ -193,13 +199,17 @@ class Exporter:
         path.write_text(content, encoding=self._encoding)
 
     def compile_relation_set(self, tree: DiscourseUnit) -> list[str]:
-        result = [f"{tree.relation}_{tree.nuclearity}", "antithesis_NN"]
-        if tree.left is None:
-            return result
-        if tree.left.left is not None:
-            result += self.compile_relation_set(tree.left)
-        if tree.right is not None and tree.right.left is not None:
-            result += self.compile_relation_set(tree.right)
+        result = ["antithesis_NN"]
+        pending = [tree]
+        while pending:
+            node = pending.pop()
+            result.append(f"{node.relation}_{node.nuclearity}")
+            if node.left is None:
+                continue
+            if node.right is not None and node.right.left is not None:
+                pending.append(node.right)
+            if node.left.left is not None:
+                pending.append(node.left)
         return result
 
     def make_header(self, tree: DiscourseUnit, whole_set: bool = False) -> str:
@@ -240,16 +250,14 @@ class Exporter:
             rel_map[name] = "multinuc" if (name in rel_map and rel_map[name] == "multinuc") else rtype
 
         lines = ["\t<header>", "\t\t<relations>"]
-        for name in sorted(rel_map):
-            lines.append(f'\t\t\t<rel name="{name}" type="{rel_map[name]}" />')
+        lines.extend(f'\t\t\t<rel name="{name}" type="{rel_map[name]}" />' for name in sorted(rel_map))
         lines += ["\t\t</relations>", "\t</header>", ""]
         return "\n".join(lines)
 
     def make_body(self, tree: DiscourseUnit) -> str:
         groups, edus = self.get_groups_and_edus(tree, terminal=True)
         lines = ["\t<body>"]
-        for item in edus + groups:
-            lines.append(f"\t\t{item}")
+        lines.extend(f"\t\t{item}" for item in edus + groups)
         lines.append("\t</body>\n")
         return "\n".join(lines)
 
@@ -260,52 +268,37 @@ class Exporter:
     ) -> tuple[list[Group], list[Segment]]:
         groups: list[Group] = []
         edus: list[Segment] = []
-
         if tree.left is None:
-            edus.append(Segment(tree.id, parent=-2, relname="", text=tree.text))
-            return groups, edus
+            return groups, [Segment(tree.id, parent=-2, relname="", text=tree.text)]
 
-        assert tree.right is not None, "Binary DiscourseUnit must have both left and right children."
-
-        # Processing left child
-        if tree.left.left is None:
-            if tree.nuclearity == "SN":
-                edus.append(Segment(tree.left.id, parent=tree.right.id, relname=tree.relation, text=tree.left.text))
-            elif tree.nuclearity == "NS":
-                edus.append(Segment(tree.left.id, parent=tree.id, relname="span", text=tree.left.text))
+        if tree.right is None:
+            raise ValueError("Binary DiscourseUnit must have both left and right children.")
+        pending: list[tuple[DiscourseUnit, DiscourseUnit, bool]] = [
+            (tree, tree.right, False),
+            (tree, tree.left, True),
+        ]
+        while pending:
+            node, child, is_left = pending.pop()
+            if node.left is None or node.right is None:
+                raise ValueError("Binary DiscourseUnit must have both left and right children.")
+            if node.nuclearity == "SN":
+                parent = node.right.id if is_left else node.id
+                relname = node.relation if is_left else "span"
+            elif node.nuclearity == "NS":
+                parent = node.id if is_left else node.left.id
+                relname = "span" if is_left else node.relation
             else:
-                edus.append(Segment(tree.left.id, parent=tree.id, relname=tree.relation, text=tree.left.text))
-        else:
-            _type = "multinuc" if tree.left.nuclearity == "NN" else "span"
-            if tree.nuclearity == "SN":
-                groups.append(Group(tree.left.id, type=_type, parent=tree.right.id, relname=tree.relation))
-            elif tree.nuclearity == "NS":
-                groups.append(Group(tree.left.id, type=_type, parent=tree.id, relname="span"))
-            else:
-                groups.append(Group(tree.left.id, type=_type, parent=tree.id, relname=tree.relation))
-            _groups, _edus = self.get_groups_and_edus(tree.left)
-            groups += _groups
-            edus += _edus
-
-        # Processing right child
-        if tree.right.left is None:
-            if tree.nuclearity == "SN":
-                edus.append(Segment(tree.right.id, parent=tree.id, relname="span", text=tree.right.text))
-            elif tree.nuclearity == "NS":
-                edus.append(Segment(tree.right.id, parent=tree.left.id, relname=tree.relation, text=tree.right.text))
-            else:
-                edus.append(Segment(tree.right.id, parent=tree.id, relname=tree.relation, text=tree.right.text))
-        else:
-            _type = "multinuc" if tree.right.nuclearity == "NN" else "span"
-            if tree.nuclearity == "SN":
-                groups.append(Group(tree.right.id, type=_type, parent=tree.id, relname="span"))
-            elif tree.nuclearity == "NS":
-                groups.append(Group(tree.right.id, type=_type, parent=tree.left.id, relname=tree.relation))
-            else:
-                groups.append(Group(tree.right.id, type=_type, parent=tree.id, relname=tree.relation))
-            _groups, _edus = self.get_groups_and_edus(tree.right)
-            groups += _groups
-            edus += _edus
+                parent = node.id
+                relname = node.relation
+            if child.left is None:
+                edus.append(Segment(child.id, parent=parent, relname=relname, text=child.text))
+                continue
+            if child.right is None:
+                raise ValueError("Binary DiscourseUnit must have both left and right children.")
+            type_ = "multinuc" if child.nuclearity == "NN" else "span"
+            groups.append(Group(child.id, type=type_, parent=parent, relname=relname))
+            pending.append((child, child.right, False))
+            pending.append((child, child.left, True))
 
         if terminal and len(edus) > 1:
             if tree.nuclearity == "NN":
@@ -319,7 +312,7 @@ class Exporter:
 class ForestExporter:
     """RS3 XML exporter for a collection of DiscourseUnit trees."""
 
-    __slots__ = ("_encoding", "verbose", "_tree_exporter")
+    __slots__ = ("_encoding", "_tree_exporter", "verbose")
 
     _encoding: str
     verbose: bool
@@ -349,9 +342,9 @@ class ForestExporter:
             parts = rel.split("_")
             if len(parts) < 2:
                 continue
-            _relname, _type = "_".join(parts[:-1]), parts[-1]
-            rtype = "multinuc" if _type == "NN" else "rst"
-            lines.append(f'\t\t\t<rel name="{_relname}" type="{rtype}" />')
+            relname, type_ = "_".join(parts[:-1]), parts[-1]
+            rtype = "multinuc" if type_ == "NN" else "rst"
+            lines.append(f'\t\t\t<rel name="{relname}" type="{rtype}" />')
         lines += ["\t\t</relations>", "\t</header>", ""]
         return "\n".join(lines)
 
@@ -360,18 +353,17 @@ class ForestExporter:
         edus: list[Segment] = []
 
         for tree in trees:
-            _groups, _edus = self._tree_exporter.get_groups_and_edus(tree, terminal=True)
-            if len(_edus) > 1:
+            groups_, edus_ = self._tree_exporter.get_groups_and_edus(tree, terminal=True)
+            if len(edus_) > 1:
                 if tree.nuclearity == "NN":
                     groups.append(Root(tree.id, type="multinuc"))
                 else:
                     groups.append(Root(tree.id))
-            groups += _groups
-            edus += _edus
+            groups += groups_
+            edus += edus_
 
         lines = ["\t<body>"]
-        for item in edus + groups:
-            lines.append(f"\t\t{str(item).replace('―', '-')}")
+        lines.extend(f"\t\t{str(item).replace('―', '-')}" for item in edus + groups)
         lines.append("\t</body>\n")
         return "\n".join(lines)
 

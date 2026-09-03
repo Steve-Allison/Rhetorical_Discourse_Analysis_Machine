@@ -1,7 +1,9 @@
 from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import Any, cast
 
 from rdam.rst.annotation_rst import DiscourseUnit
+
+type RelationDescription = tuple[int, int, str, str, int, int, float]
 
 
 class DUConverter:
@@ -13,7 +15,8 @@ class DUConverter:
 
     def __init__(self, predictions: Mapping[str, Any], tokenization_type: str = "default") -> None:
         self.predictions = predictions
-        assert tokenization_type in ("default", "rubert")
+        if tokenization_type not in {"default", "rubert"}:
+            raise ValueError(f"Unknown tokenization_type: {tokenization_type!r}")
         self.tokenization_type = tokenization_type
 
         self.du_id = 0
@@ -25,9 +28,9 @@ class DUConverter:
             List of the predictions as isanlp.DiscourseUnit objects.
         """
         data: list[DiscourseUnit] = []
-        token_docs = self.predictions["tokens"]
-        edu_docs = self.predictions["edu_breaks"]
-        span_docs = self.predictions["spans"]
+        token_docs = cast(list[list[str]], self.predictions["tokens"])
+        edu_docs = cast(list[list[int]], self.predictions["edu_breaks"])
+        span_docs = cast(list[list[str]], self.predictions["spans"])
         for i, (doc_tokens, edu_breaks, span_batch) in enumerate(zip(token_docs, edu_docs, span_docs, strict=True)):
             gold_tokens = tokens[i] if tokens else None
 
@@ -48,8 +51,8 @@ class DUConverter:
         return data
 
     @staticmethod
-    def fix_segmented_strings(predicted_segments, gold_tokens):
-        fixed_segments = []
+    def fix_segmented_strings(predicted_segments: Sequence[str], gold_tokens: Sequence[str]) -> list[str]:
+        fixed_segments: list[str] = []
         start_token = 0
 
         for segment in predicted_segments:
@@ -70,7 +73,12 @@ class DUConverter:
 
         return fixed_segments
 
-    def _lists_to_isanlp_format(self, tokens, edu_breaks, gold_tokens=None):
+    def _lists_to_isanlp_format(
+        self,
+        tokens: Sequence[str],
+        edu_breaks: Sequence[int],
+        gold_tokens: Sequence[str] | None = None,
+    ) -> list[DiscourseUnit]:
         """
         Produces EDUs in isanlp format from the model predictions.
 
@@ -84,7 +92,7 @@ class DUConverter:
 
         prev_break = 0
         prev_chr_end = 0
-        edus = []
+        edus: list[DiscourseUnit] = []
         for i, brk in enumerate(edu_breaks):
             match self.tokenization_type:
                 case "default":
@@ -103,7 +111,7 @@ class DUConverter:
         if gold_tokens:
             pred_texts = [edu.text for edu in edus]
             gold_texts = self.fix_segmented_strings(pred_texts, gold_tokens)
-            fixed_edus = []
+            fixed_edus: list[DiscourseUnit] = []
             for edu, fixed_text in zip(edus, gold_texts, strict=True):
                 edu.text = fixed_text
                 fixed_edus.append(edu)
@@ -112,7 +120,7 @@ class DUConverter:
         return edus
 
     @staticmethod
-    def _tree_string_to_list(description):
+    def _tree_string_to_list(description: str) -> list[RelationDescription]:
         """
         Parses the tree predictions given in a string format.
 
@@ -122,7 +130,7 @@ class DUConverter:
         Returns:
             List of tuples describing constituents.
         """
-        rels = []
+        rels: list[RelationDescription] = []
         for rel in description.split(" "):
             left, right = rel.split(",")
             left_start, left_label, left_end = left[1:].split(":")
@@ -155,7 +163,7 @@ class DUConverter:
     def _get_child(
         start: int,
         end: int,
-        rels: Sequence[tuple[Any, ...]],
+        rels: Sequence[RelationDescription],
         span_map: dict[tuple[int, int], int] | None = None,
     ) -> int:
         """Selects the discourse unit description for given constituent.
@@ -185,7 +193,7 @@ class DUConverter:
         self,
         root: int,
         edus: Sequence[DiscourseUnit],
-        rels: Sequence[tuple[Any, ...]],
+        rels: Sequence[RelationDescription],
         span_map: dict[tuple[int, int], int] | None = None,
     ) -> DiscourseUnit:
         """Constructs the DiscourseUnit binary tree.
@@ -231,5 +239,5 @@ class DUConverter:
         return du
 
     @staticmethod
-    def dummy_tree(tokens):
+    def dummy_tree(tokens: Sequence[str]) -> DiscourseUnit:
         return DiscourseUnit(id=0, text=" ".join(tokens), relation="elementary", start=0, end=len(" ".join(tokens)))

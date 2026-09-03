@@ -23,7 +23,12 @@ from rdam import (
 )
 
 V1 = SemanticVersion(root="1.0.0")
-PROVENANCE = ProviderProvenance(package="fake-provider", version="0.0.0", licence="test fixture")
+PROVENANCE = ProviderProvenance(
+    package="fake-provider",
+    version="0.0.0",
+    source_revision="fixture-revision",
+    licence="test fixture",
+)
 
 
 def available(provider_id: str) -> AvailableCapability:

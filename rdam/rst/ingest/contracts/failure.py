@@ -87,8 +87,12 @@ class SourceDigestContext(StrictContractModel):
 
 
 type SafeDiagnosticContext = Annotated[
-    CountContext | IdentifierContext | ContractContext | MissingDistributionContext
-    | CacheIdentityContext | SourceDigestContext,
+    CountContext
+    | IdentifierContext
+    | ContractContext
+    | MissingDistributionContext
+    | CacheIdentityContext
+    | SourceDigestContext,
     Field(discriminator="kind"),
 ]
 
@@ -97,7 +101,7 @@ class SafeCause(StrictContractModel):
     category: FailureCategory
     exception_type: str
     message_template: str = Field(pattern=r"^[a-z0-9]+(?:_[a-z0-9]+)*$")
-    nested: "SafeCause | None" = None
+    nested: SafeCause | None = None
 
 
 class NoCompletedEvidence(StrictContractModel):
@@ -140,9 +144,13 @@ class AssemblyCompletedEvidence(StrictContractModel):
 
 
 type CompletedStageEvidence = Annotated[
-    NoCompletedEvidence | AcquisitionCompletedEvidence | InventoryCompletedEvidence
-    | PreparationCompletedEvidence | InferenceCompletedEvidence
-    | ValidationCompletedEvidence | AssemblyCompletedEvidence,
+    NoCompletedEvidence
+    | AcquisitionCompletedEvidence
+    | InventoryCompletedEvidence
+    | PreparationCompletedEvidence
+    | InferenceCompletedEvidence
+    | ValidationCompletedEvidence
+    | AssemblyCompletedEvidence,
     Field(discriminator="kind"),
 ]
 
@@ -247,9 +255,7 @@ class ProductionIngestError(RuntimeError):
 
     def __init__(self, failure: ProductionFailure) -> None:
         self.failure = failure
-        super().__init__(
-            f"{failure.failed_stage.value}/{failure.code}: {failure.message_template}"
-        )
+        super().__init__(f"{failure.failed_stage.value}/{failure.code}: {failure.message_template}")
 
     def __repr__(self) -> str:
         failure = self.failure
@@ -295,9 +301,7 @@ def _safe_completed_evidence(completed: CompletedStageEvidence) -> SafeCompleted
         source_identity = Sha256Identity(hex_digest=completed.source.source_id)
     elif isinstance(completed, InventoryCompletedEvidence):
         source_identity = Sha256Identity(hex_digest=completed.source.source_id)
-        identities.append(
-            Sha256Identity(hex_digest=completed.source_contract.semantic_digest)
-        )
+        identities.append(Sha256Identity(hex_digest=completed.source_contract.semantic_digest))
         items = completed.inventory
     elif isinstance(
         completed,
@@ -318,16 +322,11 @@ def _safe_completed_evidence(completed: CompletedStageEvidence) -> SafeCompleted
             )
     elif isinstance(completed, AssemblyCompletedEvidence):
         outcome = completed.outcome
-        source_identity = Sha256Identity(
-            hex_digest=outcome.semantic.preparation.semantic.source.source_id
-        )
+        source_identity = Sha256Identity(hex_digest=outcome.semantic.preparation.semantic.source.source_id)
         identities.append(_required_identity(outcome.semantic_digest, "analysis outcome"))
         items = outcome.semantic.preparation.semantic.inventory
     anchor_count = sum(len(item.anchors) for item in items)
-    redacted = sum(
-        isinstance(item.representation, RedactedContentRepresentation)
-        for item in items
-    )
+    redacted = sum(isinstance(item.representation, RedactedContentRepresentation) for item in items)
     return SafeCompletedStageEvidence(
         kind=completed.kind,
         source_identity=source_identity,
@@ -358,12 +357,16 @@ def _required_identity(
 def _set_failure_identity[
     T: SafeProductionFailureRecord | DiagnosticProductionFailureRecord,
 ](value: T) -> T:
-    expected = Sha256Identity(hex_digest=semantic_sha256({
-        "contract": value.contract,
-        "contract_version": value.contract_version,
-        "kind": value.kind,
-        "semantic": value.semantic,
-    }))
+    expected = Sha256Identity(
+        hex_digest=semantic_sha256(
+            {
+                "contract": value.contract,
+                "contract_version": value.contract_version,
+                "kind": value.kind,
+                "semantic": value.semantic,
+            }
+        )
+    )
     if value.semantic_digest is not None and value.semantic_digest != expected:
         raise ValueError("failure record semantic digest mismatch")
     object.__setattr__(value, "semantic_digest", expected)
@@ -371,13 +374,31 @@ def _set_failure_identity[
 
 
 __all__ = [
-    "AcquisitionCompletedEvidence", "AssemblyCompletedEvidence", "CacheIdentityContext",
-    "CompletedStageEvidence", "ContractContext", "CountContext", "DiagnosticPolicy",
-    "DiagnosticProductionFailureRecord", "FailureCategory", "FailureExecutionEvidence",
-    "IdentifierContext", "InferenceCompletedEvidence", "InventoryCompletedEvidence",
-    "LifecycleStage", "MissingDistributionContext", "NoCompletedEvidence",
-    "PreparationCompletedEvidence", "ProductionFailure", "ProductionIngestError",
-    "Retryability", "SafeCause", "SafeCompletedStageEvidence", "SafeDiagnosticContext",
-    "SafeFailureSemanticEvidence", "SafeProductionFailureRecord", "SourceDigestContext",
+    "AcquisitionCompletedEvidence",
+    "AssemblyCompletedEvidence",
+    "CacheIdentityContext",
+    "CompletedStageEvidence",
+    "ContractContext",
+    "CountContext",
+    "DiagnosticPolicy",
+    "DiagnosticProductionFailureRecord",
+    "FailureCategory",
+    "FailureExecutionEvidence",
+    "IdentifierContext",
+    "InferenceCompletedEvidence",
+    "InventoryCompletedEvidence",
+    "LifecycleStage",
+    "MissingDistributionContext",
+    "NoCompletedEvidence",
+    "PreparationCompletedEvidence",
+    "ProductionFailure",
+    "ProductionIngestError",
+    "Retryability",
+    "SafeCause",
+    "SafeCompletedStageEvidence",
+    "SafeDiagnosticContext",
+    "SafeFailureSemanticEvidence",
+    "SafeProductionFailureRecord",
+    "SourceDigestContext",
     "ValidationCompletedEvidence",
 ]

@@ -1,7 +1,9 @@
 """Faithful RS4 XML reader and writer for GUM eRST and classical RST."""
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 
 from lxml import etree
@@ -60,12 +62,18 @@ class RS4Signal:
 class RS4Document:
     """Complete RS4 XML document representation."""
 
-    relations: dict[str, str] = field(default_factory=dict)  # relname -> "rst" | "multinuc"
-    sigtypes: dict[str, tuple[str, ...]] = field(default_factory=dict)  # sigtype -> tuple of subtypes
+    relations: Mapping[str, str] = field(default_factory=lambda: dict[str, str]())  # relname -> type
+    sigtypes: Mapping[str, tuple[str, ...]] = field(
+        default_factory=lambda: dict[str, tuple[str, ...]]()
+    )  # sigtype -> tuple of subtypes
     segments: tuple[RS4Segment, ...] = ()
     groups: tuple[RS4Group, ...] = ()
     secedges: tuple[RS4SecEdge, ...] = ()
     signals: tuple[RS4Signal, ...] = ()
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "relations", MappingProxyType(dict(self.relations)))
+        object.__setattr__(self, "sigtypes", MappingProxyType(dict(self.sigtypes)))
 
 
 class RS4Reader:

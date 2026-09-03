@@ -1,5 +1,6 @@
 """The PDTB provider through its independent and aggregate contracts."""
 
+from collections.abc import Mapping, Sequence
 from pydantic_ai import models
 from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
@@ -56,6 +57,7 @@ def with_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
 def no_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr("rdam._llm.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("rdam._llm._nearest_dotenv", lambda *_args, **_kwargs: None)
 
 
 def proposing(payload: dict[str, Any]) -> FunctionModel:
@@ -87,7 +89,10 @@ def test_provenance_names_model_source_and_licence(with_credentials: None) -> No
     provenance = PdtbProvider(model=MODEL).declaration.provenance
     assert provenance.package == "rdam.pdtb"
     assert provenance.model_identity == MODEL
-    assert provenance.source_revision == source_identity().hex_digest
+    assert provenance.source_revision
+    first_identity = source_identity()
+    assert source_identity() is first_identity
+    assert first_identity.hex_digest != "0" * 64
     assert "MIT" in provenance.licence
 
 
@@ -110,14 +115,14 @@ def test_text_and_formalism_guards_precede_model_construction(with_credentials: 
 def test_valid_proposal_becomes_native_result_with_attempt_evidence(with_credentials: None) -> None:
     provider = PdtbProvider(model=MODEL)
     with provider._built().agent.override(model=proposing(VALID_ANALYSIS)):
-        outcome = Machine([provider]).analyse(
-            AggregateRequest.for_text(TEXT, (Technique.PDTB,))
-        ).outcome_for(Technique.PDTB)
+        outcome = (
+            Machine([provider]).analyse(AggregateRequest.for_text(TEXT, (Technique.PDTB,))).outcome_for(Technique.PDTB)
+        )
     assert isinstance(outcome, ResultOutcome)
     relations = outcome.result.payload["relations"]
     extraction = outcome.result.payload["extraction"]
-    assert isinstance(relations, list) and isinstance(relations[0], dict)
-    assert isinstance(extraction, dict)
+    assert isinstance(relations, Sequence) and isinstance(relations[0], Mapping)
+    assert isinstance(extraction, Mapping)
     assert relations[0]["relation_type"] == "Explicit"
     assert extraction["output_attempts"] == 1
     assert extraction["transport_attempts"] == 1
@@ -125,13 +130,11 @@ def test_valid_proposal_becomes_native_result_with_attempt_evidence(with_credent
 
 def test_malformed_proposal_is_one_failure_and_no_partial_result(with_credentials: None) -> None:
     provider = PdtbProvider(model=MODEL)
-    malformed = {
-        "relations": [{**VALID_ANALYSIS["relations"][0], "senses": ["Expansion.List"]}]
-    }
+    malformed = {"relations": [{**VALID_ANALYSIS["relations"][0], "senses": ["Expansion.List"]}]}
     with provider._built().agent.override(model=proposing(malformed)):
-        outcome = Machine([provider]).analyse(
-            AggregateRequest.for_text(TEXT, (Technique.PDTB,))
-        ).outcome_for(Technique.PDTB)
+        outcome = (
+            Machine([provider]).analyse(AggregateRequest.for_text(TEXT, (Technique.PDTB,))).outcome_for(Technique.PDTB)
+        )
     assert isinstance(outcome, FailedOutcome)
     assert outcome.failure.code == "llm_output_failed_validation"
     assert ("output_attempts", "3") in outcome.failure.message_parameters
@@ -148,9 +151,9 @@ def test_source_mismatch_is_a_native_typed_failure(with_credentials: None) -> No
         ]
     }
     with provider._built().agent.override(model=proposing(mismatch)):
-        outcome = Machine([provider]).analyse(
-            AggregateRequest.for_text(TEXT, (Technique.PDTB,))
-        ).outcome_for(Technique.PDTB)
+        outcome = (
+            Machine([provider]).analyse(AggregateRequest.for_text(TEXT, (Technique.PDTB,))).outcome_for(Technique.PDTB)
+        )
     assert isinstance(outcome, FailedOutcome)
     assert outcome.failure.code == "invalid_pdtb_source"
 

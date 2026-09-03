@@ -68,6 +68,21 @@ JS_GRAPH_BBOX = """
 })()
 """
 
+JS_GRAPH_READY = """
+() => {
+  if (document.readyState !== 'complete') return false;
+  const root = document.querySelector('#inner_canvas');
+  if (!root) return false;
+  const nodes = root.querySelectorAll('.edu, .group');
+  if (nodes.length === 0) return false;
+  return Array.from(nodes).every((node) => {
+    const rect = node.getBoundingClientRect();
+    return Number.isFinite(rect.left) && Number.isFinite(rect.top)
+      && rect.width > 0 && rect.height > 0;
+  });
+}
+"""
+
 
 def launch_chromium(playwright_api: Playwright, *, headless: bool = True) -> Browser:
     return playwright_api.chromium.launch(

@@ -1,6 +1,6 @@
 """Loader and runtime reconciler for the production public-surface authority."""
 
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from enum import StrEnum
 from importlib import import_module, resources
 import inspect
@@ -121,7 +121,7 @@ def reconcile_public_surface(
         if entry.public_import is not None:
             try:
                 value, module_name, root_name = _resolve_import(entry.public_import)
-            except (AttributeError, ImportError, ValueError):
+            except AttributeError, ImportError, ValueError:
                 missing.append(entry.qualified_name)
                 continue
             declared_by_module.setdefault(module_name, set()).add(root_name)
@@ -130,20 +130,20 @@ def reconcile_public_surface(
                     signature_mismatches.append(entry.qualified_name)
                     continue
                 try:
-                    inspect.signature(cast(Callable[..., object], value))
-                except (TypeError, ValueError):
+                    inspect.signature(value)
+                except TypeError, ValueError:
                     signature_mismatches.append(entry.qualified_name)
             if entry.kind is PublicEntryKind.ENUM:
                 members = getattr(value, "__members__", None)
-                if not isinstance(members, Mapping) or len(members) != len(
-                    {member.value for member in members.values()}
-                ):
+                if not isinstance(members, Mapping):
+                    enum_mismatches.append(entry.qualified_name)
+                    continue
+                enum_members = cast(Mapping[object, object], members)
+                if len(enum_members) != len({getattr(member, "value", object()) for member in enum_members.values()}):
                     enum_mismatches.append(entry.qualified_name)
         if entry.schema_id is not None and not _schema_exists(entry.schema_id):
             schema_mismatches.append(entry.qualified_name)
-        if entry.documentation_anchor is not None and not _documentation_anchor_exists(
-            entry.documentation_anchor
-        ):
+        if entry.documentation_anchor is not None and not _documentation_anchor_exists(entry.documentation_anchor):
             documentation_mismatches.append(entry.qualified_name)
 
     unclassified: list[str] = []
@@ -151,9 +151,7 @@ def reconcile_public_surface(
         exported = getattr(import_module(module_name), "__all__", None)
         if exported is None:
             continue
-        unclassified.extend(
-            f"{module_name}.{name}" for name in sorted(set(exported) - declared)
-        )
+        unclassified.extend(f"{module_name}.{name}" for name in sorted(set(exported) - declared))
 
     return PublicSurfaceReconciliation(
         missing_exports=tuple(sorted(missing)),
@@ -183,10 +181,10 @@ def _schema_exists(schema_id: str) -> bool:
 
 
 def _documentation_anchor_exists(anchor: str) -> bool:
-    repository = Path(__file__).resolve().parents[2]
+    repository = Path(__file__).resolve().parents[3]
     quickstart = repository / "specs/004-production-api-contract/quickstart.md"
     if not quickstart.is_file():
-        return True
+        return False
     headings = {
         _slug(match.group(1))
         for match in re.finditer(r"^#{1,6}\s+(.+)$", quickstart.read_text(encoding="utf-8"), re.MULTILINE)

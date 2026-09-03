@@ -1,8 +1,10 @@
 """Unit tests for NetworkX, RDF, Turtle, JSON-LD, and GraphRAG discourse export bridges."""
 
+from dataclasses import replace
 import json
 import networkx as nx
 import pytest
+from rdflib import Graph
 
 from rdam.rst.contracts import (
     AnnotationStatusEnum,
@@ -108,7 +110,7 @@ def test_to_networkx_graph(sample_analysis: tuple[RstDocument, RstAnalysis]):
     doc, analysis = sample_analysis
     g = to_networkx_graph(analysis, doc)
 
-    assert isinstance(g, nx.DiGraph)
+    assert isinstance(g, nx.MultiDiGraph)
     assert g.graph["document_id"] == "doc_kg_01"
     assert g.graph["formalism"] == "erst_graph"
     assert g.graph["language"] == "en"
@@ -118,13 +120,13 @@ def test_to_networkx_graph(sample_analysis: tuple[RstDocument, RstAnalysis]):
     assert g.nodes[1]["confidence"] == 0.98
 
     assert len(g.edges) == 2
-    edge_p = g.edges[3, 2]
+    edge_p = g.edges[3, 2, "e1"]
     assert edge_p["edge_kind"] == "primary"
     assert edge_p["relation_concept"] == "Cause"
     assert edge_p["calibrated"] is True
     assert len(edge_p["signals"]) == 1
 
-    edge_s = g.edges[2, 1]
+    edge_s = g.edges[2, 1, "e2_sec"]
     assert edge_s["edge_kind"] == "secondary"
     assert edge_s["relation_concept"] == "Explanation"
 
@@ -141,7 +143,9 @@ def test_to_rdf_triples_and_turtle(sample_analysis: tuple[RstDocument, RstAnalys
     turtle_text = to_turtle(analysis, doc)
     assert "@prefix coe:" in turtle_text
     assert "doc:node_1 a coe:ElementaryDiscourseUnit" in turtle_text
-    assert "coe:relationConcept coe:Cause" in turtle_text
+    assert "coe:relationConcept rel:Cause" in turtle_text
+    parsed = Graph().parse(data=turtle_text, format="turtle")
+    assert len(parsed) > 0
 
 
 def test_to_jsonld(sample_analysis: tuple[RstDocument, RstAnalysis]):
@@ -152,6 +156,29 @@ def test_to_jsonld(sample_analysis: tuple[RstDocument, RstAnalysis]):
     assert "@graph" in jsonld
     graph_items = jsonld["@graph"]
     assert len(graph_items) == 6  # 1 doc + 3 nodes + 2 edges
+
+
+def test_turtle_escapes_literals_and_non_prefixed_local_names(
+    sample_analysis: tuple[RstDocument, RstAnalysis],
+) -> None:
+    doc, analysis = sample_analysis
+    first_node = replace(analysis.nodes[0], text='A "quoted" line\ncontinues.')
+    first_edge = replace(
+        analysis.primary_edges[0],
+        edge_id="edge with spaces",
+        relation_concept="Cause Effect",
+        relation_raw='cause "quoted"',
+    )
+    changed = replace(
+        analysis,
+        document_id="document with spaces",
+        nodes=(first_node, *analysis.nodes[1:]),
+        primary_edges=(first_edge,),
+    )
+
+    parsed = Graph().parse(data=to_turtle(changed, doc), format="turtle")
+
+    assert len(parsed) > 0
 
 
 def test_to_graphrag_json(sample_analysis: tuple[RstDocument, RstAnalysis]):

@@ -25,16 +25,22 @@ from rdam.rst.base_predictor import (
         ("TRUE", True),
         ("True", True),
         ("false", False),
-        ("anything-else", False),
+        ("yes", True),
+        ("no", False),
+        ("on", True),
+        ("off", False),
         (1, True),
         (0, False),
-        (None, False),
-        ([], False),
-        ([0], True),
     ],
 )
 def test_str2bool(value, expected):
     assert str2bool(value) is expected
+
+
+@pytest.mark.parametrize("value", ("anything-else", None, [], [0], 2))
+def test_str2bool_rejects_ambiguous_values(value):
+    with pytest.raises(ValueError, match="explicit boolean"):
+        str2bool(value)
 
 
 # ---------- _guess_token_offsets (the bug-fix lives here) ----------
@@ -265,6 +271,10 @@ def test_resolve_dtype_default_is_float32():
     """Default is fp32 on every device — measured fp32 wins on MPS for typical
     inputs; users opt into bf16/fp16 via dtype= when their workload benefits."""
     assert BasePredictor._resolve_dtype(None) == torch.float32
+
+
+def test_resolve_dtype_auto_uses_native_mps_half_precision():
+    assert BasePredictor._resolve_dtype(None, torch.device("mps")) == torch.float16
 
 
 @pytest.mark.parametrize(

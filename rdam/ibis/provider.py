@@ -6,8 +6,6 @@ link grammar, and returns the organised deliberation map. The grammar is exact, 
 provider is available whenever it is imported.
 """
 
-from importlib import resources
-from importlib.metadata import PackageNotFoundError, version
 from typing import Final
 
 from rdam import (
@@ -17,16 +15,16 @@ from rdam import (
     ProviderDeclaration,
     ProviderError,
     ProviderFailure,
-    ProviderProvenance,
     ProviderRequest,
     Retryability,
     SemanticVersion,
     Sha256Identity,
     Technique,
-    semantic_sha256,
     technique_curie,
 )
-from rdam._strict import JsonValue, sha256_bytes
+from rdam._provider_provenance import provider_failure, provider_provenance, source_identity as _source_identity
+from rdam._immutable_json import thaw_json
+from rdam._strict import JsonValue
 from rdam.ibis.grammar import IbisStructure, StructureError, deliberation_map
 
 PROVIDER_ID: Final = "rdam.ibis/gibis-grammar-v1"
@@ -37,18 +35,7 @@ _SOURCE_FILES: Final = ("grammar.py", "provider.py")
 
 
 def source_identity() -> Sha256Identity:
-    """Digest of the provider's source files, in a fixed order; recorded as provenance."""
-
-    package = resources.files("rdam.ibis")
-    digest = semantic_sha256({name: sha256_bytes(package.joinpath(name).read_bytes()) for name in _SOURCE_FILES})
-    return Sha256Identity(hex_digest=digest)
-
-
-def _package_version() -> str:
-    try:
-        return version("rdam")
-    except PackageNotFoundError:
-        return "unknown"
+    return _source_identity("rdam.ibis", _SOURCE_FILES)
 
 
 class IbisProvider:
@@ -70,10 +57,8 @@ class IbisProvider:
                 ),
             ),
             contract_version=CONTRACT_VERSION,
-            provenance=ProviderProvenance(
+            provenance=provider_provenance(
                 package="rdam.ibis",
-                version=_package_version(),
-                source_revision=source_identity().hex_digest,
                 licence=LICENCE,
             ),
             capability=capability,
@@ -87,7 +72,7 @@ class IbisProvider:
         if request.structured_input is None:
             raise ProviderError(self._failure("structured_input_required", "ValueError"))
         try:
-            structure = IbisStructure.from_payload(request.structured_input)
+            structure = IbisStructure.from_payload(thaw_json(request.structured_input))
         except StructureError as error:
             raise ProviderError(self._failure("invalid_ibis_structure", "StructureError", str(error))) from error
         payload: dict[str, JsonValue] = {
@@ -116,15 +101,13 @@ class IbisProvider:
         )
 
     def _failure(self, code: str, exception_type: str, detail: str | None = None) -> ProviderFailure:
-        return ProviderFailure(
+        return provider_failure(
             technique=Technique.IBIS,
             provider_id=PROVIDER_ID,
-            failed_operation="analyse",
-            retryability=Retryability.NOT_RETRYABLE,
             code=code,
+            retryability=Retryability.NOT_RETRYABLE,
             exception_type=exception_type,
-            message_template=code,
-            message_parameters=(("detail", detail),) if detail is not None else (),
+            detail=detail,
         )
 
 

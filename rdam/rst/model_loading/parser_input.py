@@ -3,26 +3,42 @@
 from dataclasses import dataclass, field, fields
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
+
+
+def _strings() -> list[str]:
+    return []
+
+
+def _integers() -> list[int]:
+    return []
+
+
+def _integer_rows() -> list[list[int]]:
+    return []
+
+
+def _extras() -> dict[str, Any]:
+    return {}
 
 
 @dataclass(slots=True)
 class ParserInput:
     """Mutable historical parser record with no corpus or training behavior."""
 
-    sentences: list[str] = field(default_factory=list)
-    edu_breaks: list[int] = field(default_factory=list)
-    label_for_metrics_list: list[str] = field(default_factory=list)
+    sentences: list[str] = field(default_factory=_strings)
+    edu_breaks: list[int] = field(default_factory=_integers)
+    label_for_metrics_list: list[str] = field(default_factory=_strings)
     label_for_metrics: str = ""
-    parsing_index: list[int] = field(default_factory=list)
-    relation: list[int] = field(default_factory=list)
-    decoder_inputs: list[int] = field(default_factory=list)
-    parents: list[int] = field(default_factory=list)
-    siblings: list[int] = field(default_factory=list)
-    sentence_span: list[list[int]] = field(default_factory=list)
-    LabelforMetric: list[str] = field(default_factory=list)
-    relation_table: list[str] = field(default_factory=list)
-    extra: dict[str, Any] = field(default_factory=dict)
+    parsing_index: list[int] = field(default_factory=_integers)
+    relation: list[int] = field(default_factory=_integers)
+    decoder_inputs: list[int] = field(default_factory=_integers)
+    parents: list[int] = field(default_factory=_integers)
+    siblings: list[int] = field(default_factory=_integers)
+    sentence_span: list[list[int]] = field(default_factory=_integer_rows)
+    LabelforMetric: list[str] = field(default_factory=_strings)
+    relation_table: list[str] = field(default_factory=_strings)
+    extra: dict[str, Any] = field(default_factory=_extras)
 
     @property
     def edu_count(self) -> int:
@@ -35,7 +51,7 @@ class ParserInput:
         return base | self.extra
 
     @classmethod
-    def from_dict(cls, payload: dict[str, Any]) -> "ParserInput":
+    def from_dict(cls, payload: dict[str, Any]) -> ParserInput:
         known = {field_.name for field_ in fields(cls) if field_.name != "extra"}
         record = cls(**{key: payload[key] for key in known if key in payload})
         for key, value in payload.items():
@@ -47,8 +63,8 @@ class ParserInput:
         path.write_text(json.dumps(self.to_dict(), sort_keys=True) + "\n", encoding="utf-8")
 
     @classmethod
-    def from_json(cls, path: Path) -> "ParserInput":
+    def from_json(cls, path: Path) -> ParserInput:
         payload = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(payload, dict):
             raise ValueError("parser input JSON must contain an object")
-        return cls.from_dict(payload)
+        return cls.from_dict(cast(dict[str, Any], payload))

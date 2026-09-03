@@ -5,7 +5,9 @@ from typing import Any, Final, cast
 from uuid import uuid4
 
 from pydantic import BaseModel
-import rfc8785
+
+from rdam._canonical import canonical_json_bytes as _canonical_json_bytes
+from rdam._canonical import validate_ijson_value
 
 from rdam.rst.ingest.contracts.base import (
     PRODUCTION_CONTRACT,
@@ -31,8 +33,6 @@ from rdam.rst.ingest.identity import (
     parser_result_semantic_projection,
     semantic_sha256,
 )
-
-_IJSON_INTEGER_LIMIT: Final = 9_007_199_254_740_991
 
 
 class UnsupportedContractVersionError(ValueError):
@@ -68,8 +68,8 @@ def canonical_json_bytes(value: BaseModel | dict[str, Any]) -> bytes:
     """Return RFC 8785 canonical bytes for a JSON-compatible contract value."""
 
     payload = value.model_dump(mode="json", exclude_none=False) if isinstance(value, BaseModel) else value
-    _validate_ijson_value(payload)
-    return rfc8785.dumps(payload)
+    validate_ijson_value(payload)
+    return _canonical_json_bytes(payload)
 
 
 def serialize_contract(
@@ -107,12 +107,13 @@ def load_contract(payload: bytes | str) -> PersistedContract:
         object_pairs_hook=_unique_object,
         parse_constant=_reject_non_finite,
     )
-    _validate_ijson_value(parsed)
+    validate_ijson_value(parsed)
     if not isinstance(parsed, dict):
         raise ValueError("production contract payload must be a JSON object")
-    contract = parsed.get("contract")
-    contract_version = parsed.get("contract_version")
-    kind = parsed.get("kind")
+    envelope = cast(dict[object, object], parsed)
+    contract = envelope.get("contract")
+    contract_version = envelope.get("contract_version")
+    kind = envelope.get("kind")
     if contract != PRODUCTION_CONTRACT:
         raise ValueError(f"unsupported contract family: {contract!r}")
     if contract_version not in READABLE_CONTRACT_VERSIONS:
@@ -121,9 +122,7 @@ def load_contract(payload: bytes | str) -> PersistedContract:
         )
     record_type = _RECORD_TYPES.get(kind) if isinstance(kind, str) else None
     if record_type is None:
-        raise UnsupportedContractKindError(
-            f"unsupported {PRODUCTION_CONTRACT}/{contract_version} kind: {kind!r}"
-        )
+        raise UnsupportedContractKindError(f"unsupported {PRODUCTION_CONTRACT}/{contract_version} kind: {kind!r}")
     record = record_type.model_validate_json(data)
     verify_semantic_digest(record)
     return cast(PersistedContract, record)
@@ -165,35 +164,6 @@ def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 def _reject_non_finite(value: str) -> Any:
     raise ValueError(f"non-finite JSON number is forbidden: {value}")
-
-
-def _validate_ijson_value(value: Any) -> None:
-    if isinstance(value, str):
-        if any(0xD800 <= ord(character) <= 0xDFFF for character in value):
-            raise ValueError("unpaired Unicode surrogate is forbidden by I-JSON")
-        return
-    if isinstance(value, bool) or value is None:
-        return
-    if isinstance(value, int):
-        if abs(value) > _IJSON_INTEGER_LIMIT:
-            raise ValueError("integer exceeds the interoperable I-JSON range")
-        return
-    if isinstance(value, float):
-        if not (-float("inf") < value < float("inf")):
-            raise ValueError("non-finite JSON number is forbidden")
-        return
-    if isinstance(value, list | tuple):
-        for item in value:
-            _validate_ijson_value(item)
-        return
-    if isinstance(value, dict):
-        for key, item in value.items():
-            if not isinstance(key, str):
-                raise TypeError("JSON object keys must be strings")
-            _validate_ijson_value(key)
-            _validate_ijson_value(item)
-        return
-    raise TypeError(f"value is outside the JSON data model: {type(value).__name__}")
 
 
 __all__ = [

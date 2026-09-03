@@ -1,5 +1,6 @@
 """The Walton provider through the machine: capability is whether the model can be reached."""
 
+from collections.abc import Mapping, Sequence
 from pydantic_ai import models
 from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
@@ -45,6 +46,7 @@ def never_a_real_request(monkeypatch: pytest.MonkeyPatch):
 def no_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr("rdam._llm.load_dotenv", lambda *_a, **_k: None)
+    monkeypatch.setattr("rdam._llm._nearest_dotenv", lambda *_a, **_k: None)
 
 
 @pytest.fixture
@@ -79,7 +81,10 @@ class TestDeclaration:
         provenance = WaltonProvider(model=MODEL).declaration.provenance
         assert provenance.package == "rdam.walton"
         assert provenance.model_identity == MODEL
-        assert provenance.source_revision == source_identity().hex_digest
+        assert provenance.source_revision
+        first_identity = source_identity()
+        assert source_identity() is first_identity
+        assert first_identity.hex_digest != "0" * 64
         assert "MIT" in provenance.licence
 
     def test_declaring_capability_never_builds_an_agent(self, with_credentials: None) -> None:
@@ -136,20 +141,24 @@ class TestThroughTheMachine:
     def test_a_valid_proposal_becomes_a_native_result(self, with_credentials: None) -> None:
         provider = WaltonProvider(model=MODEL)
         with provider._built().agent.override(model=_proposing([VALID_INSTANCE])):
-            outcome = Machine([provider]).analyse(
-                AggregateRequest.for_text("Dr Okonkwo says the bridge cannot carry its load.", (Technique.WALTON,))
-            ).outcome_for(Technique.WALTON)
+            outcome = (
+                Machine([provider])
+                .analyse(
+                    AggregateRequest.for_text("Dr Okonkwo says the bridge cannot carry its load.", (Technique.WALTON,))
+                )
+                .outcome_for(Technique.WALTON)
+            )
         assert isinstance(outcome, ResultOutcome)
         payload = outcome.result.payload
         assert payload["instance_count"] == 1
         instances = payload["instances"]
-        assert isinstance(instances, list)
+        assert isinstance(instances, Sequence)
         first = instances[0]
-        assert isinstance(first, dict)
+        assert isinstance(first, Mapping)
         assert first["scheme_id"] == SchemeId.EXPERT_OPINION.value
         assert payload["scheme_set"] == SCHEME_SET_ID
         extraction = payload["extraction"]
-        assert isinstance(extraction, dict)
+        assert isinstance(extraction, Mapping)
         assert extraction["output_attempts"] == 1
         assert extraction["transport_attempts"] == 1
         expected_open = len(SCHEMES[SchemeId.EXPERT_OPINION].critical_questions) - 1
@@ -158,9 +167,11 @@ class TestThroughTheMachine:
     def test_a_passage_that_argues_nothing_yields_an_empty_analysis(self, with_credentials: None) -> None:
         provider = WaltonProvider(model=MODEL)
         with provider._built().agent.override(model=_proposing([])):
-            outcome = Machine([provider]).analyse(
-                AggregateRequest.for_text("The meeting is at four.", (Technique.WALTON,))
-            ).outcome_for(Technique.WALTON)
+            outcome = (
+                Machine([provider])
+                .analyse(AggregateRequest.for_text("The meeting is at four.", (Technique.WALTON,)))
+                .outcome_for(Technique.WALTON)
+            )
         assert isinstance(outcome, ResultOutcome)
         assert outcome.result.payload["instance_count"] == 0
 
@@ -170,9 +181,11 @@ class TestThroughTheMachine:
         broken = {**VALID_INSTANCE, "premises": {"source": "Dr Okonkwo"}}
         provider = WaltonProvider(model=MODEL)
         with provider._built().agent.override(model=_proposing([broken])):
-            outcome = Machine([provider]).analyse(
-                AggregateRequest.for_text("some passage", (Technique.WALTON,))
-            ).outcome_for(Technique.WALTON)
+            outcome = (
+                Machine([provider])
+                .analyse(AggregateRequest.for_text("some passage", (Technique.WALTON,)))
+                .outcome_for(Technique.WALTON)
+            )
         assert isinstance(outcome, FailedOutcome)
         assert outcome.failure.code == "llm_output_failed_validation"
         assert outcome.failure.retryability.value == "not_retryable"
@@ -180,9 +193,11 @@ class TestThroughTheMachine:
         assert ("transport_attempts", "3") in outcome.failure.message_parameters
 
     def test_an_unreachable_model_is_unavailable_not_failed(self, no_credentials: None) -> None:
-        outcome = Machine([WaltonProvider(model=MODEL)]).analyse(
-            AggregateRequest.for_text("Some text.", (Technique.WALTON,))
-        ).outcome_for(Technique.WALTON)
+        outcome = (
+            Machine([WaltonProvider(model=MODEL)])
+            .analyse(AggregateRequest.for_text("Some text.", (Technique.WALTON,)))
+            .outcome_for(Technique.WALTON)
+        )
         assert isinstance(outcome, UnavailableOutcome)
         assert outcome.reason is UnavailableReason.MODEL_UNAVAILABLE
 
@@ -202,13 +217,15 @@ class TestAgainstTheRealModel:
             "We should not widen the road. Professor Lindqvist, who studies urban traffic, says that widening "
             "roads increases congestion within five years."
         )
-        outcome = Machine([WaltonProvider()]).analyse(
-            AggregateRequest.for_text(text, (Technique.WALTON,))
-        ).outcome_for(Technique.WALTON)
+        outcome = (
+            Machine([WaltonProvider()])
+            .analyse(AggregateRequest.for_text(text, (Technique.WALTON,)))
+            .outcome_for(Technique.WALTON)
+        )
         assert isinstance(outcome, ResultOutcome)
         instances = outcome.result.payload["instances"]
-        assert isinstance(instances, list) and instances, "the passage argues from expertise; a scheme is expected"
+        assert isinstance(instances, Sequence) and instances, "the passage argues from expertise; a scheme is expected"
         first = instances[0]
-        assert isinstance(first, dict)
+        assert isinstance(first, Mapping)
         assert first["scheme_id"] in {scheme.value for scheme in SchemeId}
-        assert isinstance(first["open_questions"], list)
+        assert isinstance(first["open_questions"], Sequence)

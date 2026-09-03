@@ -14,7 +14,7 @@ class PointerSegmenter(nn.Module):
     def __init__(
         self,
         hidden_size: int,
-        atten_model: str | None = None,
+        atten_model: str = "Dotproduct",
         decoder_input_size: int | None = None,
         rnn_layers: int | None = None,
         dropout_d: float | None = None,
@@ -26,7 +26,13 @@ class PointerSegmenter(nn.Module):
         self.hidden_size = hidden_size
         self.pointer = modules.PointerAtten(atten_model, hidden_size)
         self.encoder = nn.GRU(
-            hidden_size, int(hidden_size / 2), num_layers=1, batch_first=True, dropout=0, bidirectional=True
+            hidden_size,
+            int(hidden_size / 2),
+            num_layers=1,
+            batch_first=True,
+            dropout=0,
+            bidirectional=True,
+            device=cuda_device,
         )
         resolved_decoder_input = hidden_size if decoder_input_size is None else decoder_input_size
         resolved_rnn_layers = 1 if rnn_layers is None else rnn_layers
@@ -47,11 +53,12 @@ class PointerSegmenter(nn.Module):
         raise RuntimeError("Segmenter does not have forward process.")
 
     def train_segment_loss(self, word_embeddings: Tensor, edu_breaks: list[int]) -> Tensor:
-        outputs, last_hidden = self.encoder(word_embeddings.unsqueeze(0))
+        encoder_input = word_embeddings.unsqueeze(0).to(next(self.encoder.parameters()).dtype)
+        outputs, _last_hidden = self.encoder(encoder_input)
         outputs = outputs.squeeze()
         cur_decoder_hidden = outputs[-1, :].unsqueeze(0).unsqueeze(0)
-        edu_breaks = [0] + edu_breaks
-        total_loss = torch.FloatTensor([0.0]).to(self._cuda_device)
+        edu_breaks = [0, *edu_breaks]
+        total_loss = word_embeddings.new_zeros(1)
         for step, start_index in enumerate(edu_breaks[:-1]):
             cur_decoder_output, cur_decoder_hidden = self.decoder(
                 outputs[start_index].unsqueeze(0).unsqueeze(0), last_hidden=cur_decoder_hidden
@@ -63,18 +70,20 @@ class PointerSegmenter(nn.Module):
 
         return total_loss
 
-    def test_segment_loss(self, word_embeddings: Tensor) -> list[int]:
-        outputs, last_hidden = self.encoder(word_embeddings.unsqueeze(0))
+    def test_segment_loss(self, word_embeddings: Tensor, sent_breaks: list[int] | None = None) -> list[int]:
+        del sent_breaks
+        encoder_input = word_embeddings.unsqueeze(0).to(next(self.encoder.parameters()).dtype)
+        outputs, _last_hidden = self.encoder(encoder_input)
         outputs = outputs.squeeze()
         cur_decoder_hidden = outputs[-1, :].unsqueeze(0).unsqueeze(0)
         start_index = 0
-        predict_segment = []
+        predict_segment: list[int] = []
         sentence_length = outputs.shape[0]
         while start_index < sentence_length:
             cur_decoder_output, cur_decoder_hidden = self.decoder(
                 outputs[start_index].unsqueeze(0).unsqueeze(0), last_hidden=cur_decoder_hidden
             )
-            atten_weights, log_atten_weights = self.pointer(
+            atten_weights, _log_atten_weights = self.pointer(
                 outputs[start_index:], cur_decoder_output.squeeze(0).squeeze(0)
             )
             _, top_index_seg = atten_weights.topk(1)
@@ -110,7 +119,7 @@ class LinearSegmenter(nn.Module):
         self.loss_fn = nn.CrossEntropyLoss(weight=torch.Tensor([1.0, 10.0]).to(self._cuda_device))
         self._init_weights()
 
-    def _init_weights(self):
+    def _init_weights(self) -> None:
         nn.init.uniform_(self.linear.weight, -0.005, 0.005)
         nn.init.constant_(self.linear.bias, val=0)
         nn.init.uniform_(self.linear_start.weight, -0.005, 0.005)
@@ -202,7 +211,7 @@ class CRF(nn.Module):
         self.transitions = nn.Parameter(torch.Tensor(num_tags, num_tags))
         self.reset_parameters()
 
-    def reset_parameters(self):
+    def reset_parameters(self) -> None:
         torch.nn.init.uniform_(self.start_transitions, -1.0, 1.0)
         torch.nn.init.uniform_(self.end_transitions, -1.0, 1.0)
         torch.nn.init.uniform_(self.transitions, -1.0, 1.0)
@@ -251,7 +260,7 @@ class CRF(nn.Module):
 
         return -llh.mean()
 
-    def decode(self, emissions, mask=None):
+    def decode(self, emissions: Tensor, mask: Tensor | None = None) -> Tensor:
         """Find the most likely tag sequence using Viterbi algorithm.
 
         Args:
@@ -273,7 +282,7 @@ class CRF(nn.Module):
 
         return self._viterbi_decode(emissions, mask)
 
-    def _compute_score(self, emissions, tags, mask):
+    def _compute_score(self, emissions: Tensor, tags: Tensor, mask: Tensor) -> Tensor:
         # emissions: (seq_length, batch_size, num_tags)
         # tags: (seq_length, batch_size)
         # mask: (seq_length, batch_size)
@@ -305,7 +314,7 @@ class CRF(nn.Module):
 
         return score
 
-    def _compute_normalizer(self, emissions, mask):
+    def _compute_normalizer(self, emissions: Tensor, mask: Tensor) -> Tensor:
         # emissions: (seq_length, batch_size, num_tags)
         # mask: (seq_length, batch_size)
 
@@ -351,7 +360,7 @@ class CRF(nn.Module):
         # shape: (batch_size,)
         return torch.logsumexp(score, dim=1)
 
-    def _viterbi_decode(self, emissions, mask):
+    def _viterbi_decode(self, emissions: Tensor, mask: Tensor) -> Tensor:
         # emissions: (seq_length, batch_size, num_tags)
         # mask: (seq_length, batch_size)
 
@@ -360,7 +369,7 @@ class CRF(nn.Module):
         # Start transition and first emission
         # shape: (batch_size, num_tags)
         score = self.start_transitions + emissions[0]
-        history = list()
+        history: list[Tensor] = []
 
         # score is a tensor of size (batch_size, num_tags) where for every batch,
         # value at column j stores the score of the best tag sequence so far that ends
@@ -403,7 +412,7 @@ class CRF(nn.Module):
 
         # shape: (batch_size,)
         seq_ends = mask.long().sum(dim=0) - 1
-        best_tags_list = list()
+        best_tags_list: list[Tensor] = []
 
         for idx in range(batch_size):
             # Find the tag which maximizes the score at the last timestep; this is our best tag
@@ -413,9 +422,7 @@ class CRF(nn.Module):
             # We trace back where the best last tag comes from, append that to our best tag
             # sequence, and trace it back again, and so on
 
-            best_tags = list()
-            for _hist in range(seq_length - seq_ends[idx]):
-                best_tags.append(torch.zeros_like(best_last_tag))
+            best_tags = [torch.zeros_like(best_last_tag) for _ in range(seq_length - seq_ends[idx])]
 
             best_tags.append(best_last_tag)
 
@@ -425,12 +432,10 @@ class CRF(nn.Module):
 
             # Reverse the order because we start from the last timestep
             best_tags.reverse()
-            best_tags = torch.stack(best_tags, dim=0)
-            best_tags_list.append(best_tags)
+            stacked_tags = torch.stack(best_tags, dim=0)
+            best_tags_list.append(stacked_tags)
 
-        best_tags_list = torch.stack(best_tags_list, dim=0)
-
-        return best_tags_list
+        return torch.stack(best_tags_list, dim=0)
 
 
 class ToNySegmenter(nn.Module):
@@ -490,7 +495,7 @@ class ToNySegmenter(nn.Module):
             self.loss_fn = nn.CrossEntropyLoss(weight=torch.Tensor([1.0, 10.0]).to(self._cuda_device))
 
     @staticmethod
-    def _init_weights(layer):
+    def _init_weights(layer: nn.Module) -> None:
         if isinstance(layer, nn.LSTM):
             for name, param in layer.named_parameters():
                 if "weight_ih" in name:
@@ -505,18 +510,24 @@ class ToNySegmenter(nn.Module):
         logits = self.hidden2tag(encodings)
 
         if self.use_sentence_boundaries and sent_breaks is not None:
-            logits[sent_breaks][0] = -300.0  # inf breaks half-precision computation
+            logits[sent_breaks, 0] = torch.finfo(logits.dtype).min
 
         return F.log_softmax(logits, dim=1)
 
-    def encode(self, embeddings):
+    def encode(self, embeddings: Tensor) -> Tensor:
         if self.use_lstm:
-            lstm_out, _ = self.lstm(self.dropout(embeddings))
+            lstm_input = self.dropout(embeddings).to(self.lstm.weight_ih_l0.dtype)
+            lstm_out, _ = self.lstm(lstm_input)
             return lstm_out.view(len(embeddings), -1)
         else:
             return self.dropout(embeddings)
 
-    def train_segment_loss(self, word_embeddings, edu_breaks, sent_breaks):
+    def train_segment_loss(
+        self,
+        word_embeddings: Tensor,
+        edu_breaks: list[int],
+        sent_breaks: list[int] | None,
+    ) -> Tensor:
         encodings = self.encode(word_embeddings)
         prediction = self(encodings, sent_breaks)
 
@@ -544,11 +555,11 @@ class ToNySegmenter(nn.Module):
         return loss
 
     @staticmethod
-    def _scaled_sigmoid(x, value):
+    def _scaled_sigmoid(x: Tensor, value: float) -> Tensor:
         return value / (1 + torch.exp(-1 / value * x))
 
-    def _crf(self, prediction, targets):
-        seq_length, num_tags = prediction.shape
+    def _crf(self, prediction: Tensor, targets: Tensor) -> Tensor:
+        seq_length, _num_tags = prediction.shape
         emissions = prediction.unsqueeze(0)
         tags = targets.unsqueeze(0)
         mask = torch.ones((1, seq_length), dtype=torch.uint8, device=self._cuda_device)
@@ -561,7 +572,7 @@ class ToNySegmenter(nn.Module):
         if self.use_crf:
             pred = self.crf.decode(prediction.unsqueeze(0))[0]
         else:
-            pred = torch.argmax(prediction, dim=1).detach().cpu().tolist()
+            pred = torch.argmax(prediction, dim=1).detach().cpu()
 
         predict_segment = [i for i, k in enumerate(pred) if k == 1]
 

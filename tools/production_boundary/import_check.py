@@ -16,8 +16,6 @@ import json
 from pathlib import Path
 import sys
 
-from rdam.rst._version import PACKAGE_NAME
-
 _PUBLIC_MODULES = (
     "rdam",
     "rdam.rst",
@@ -39,13 +37,14 @@ _FORMAT_MODULES = (
     "rdam.rst.markdown",
 )
 _FORBIDDEN_PREFIXES = ("workbench", "workbench.research")
+_PACKAGE_NAME = "rdam"
 
 
 def _distribution_members() -> tuple[str, ...]:
     try:
-        package = distribution(PACKAGE_NAME)
+        package = distribution(_PACKAGE_NAME)
     except PackageNotFoundError as exc:
-        raise RuntimeError(f"{PACKAGE_NAME} is not installed as a distribution") from exc
+        raise RuntimeError(f"{_PACKAGE_NAME} is not installed as a distribution") from exc
     return tuple(sorted(str(path) for path in package.files or ()))
 
 
@@ -55,6 +54,7 @@ def main() -> int:
     parser.add_argument("--outside", type=Path, help="fail if rdam resolves beneath this source directory")
     args = parser.parse_args()
 
+    baseline_modules = frozenset(sys.modules)
     for module_name in _PUBLIC_MODULES + (_FORMAT_MODULES if args.formats else ()):
         import_module(module_name)
 
@@ -67,7 +67,9 @@ def main() -> int:
         member for member in members if member.split("/", 1)[0] in _FORBIDDEN_PREFIXES
     )
     forbidden_imports = tuple(
-        module for module in sys.modules if module.split(".", 1)[0] in _FORBIDDEN_PREFIXES
+        module
+        for module in sys.modules
+        if module not in baseline_modules and module.split(".", 1)[0] in _FORBIDDEN_PREFIXES
     )
     if forbidden_members or forbidden_imports:
         raise AssertionError(

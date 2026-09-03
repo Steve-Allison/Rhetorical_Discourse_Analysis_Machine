@@ -37,45 +37,80 @@ class PydanticDiscourseUnit(BaseModel):
     entropy: float | None = None
     # Quoted: Pydantic resolves field annotations at class creation
     # (https://docs.pydantic.dev/latest/concepts/forward_annotations/).
-    left: "PydanticDiscourseUnit | None" = None
-    right: "PydanticDiscourseUnit | None" = None
+    left: PydanticDiscourseUnit | None = None
+    right: PydanticDiscourseUnit | None = None
 
     @classmethod
-    def from_tree(cls, node: DiscourseUnit | None) -> "PydanticDiscourseUnit | None":
-        """Build a ``PydanticDiscourseUnit`` from a ``DiscourseUnit`` tree (recursive)."""
+    def from_tree(cls, node: DiscourseUnit | None) -> PydanticDiscourseUnit | None:
+        """Build a model from an arbitrarily deep, acyclic ``DiscourseUnit`` tree."""
         if node is None:
             return None
-        return cls(
-            id=node.id,
-            relation=node.relation,
-            nuclearity=node.nuclearity,
-            start=node.start,
-            end=node.end,
-            text=node.text,
-            proba=node.proba,
-            entropy=node.entropy,
-            left=cls.from_tree(node.left),
-            right=cls.from_tree(node.right),
-        )
+        completed: dict[int, PydanticDiscourseUnit] = {}
+        visiting: set[int] = set()
+        pending: list[tuple[DiscourseUnit, bool]] = [(node, False)]
+        while pending:
+            current, expanded = pending.pop()
+            identity = id(current)
+            if expanded:
+                completed[identity] = cls(
+                    id=current.id,
+                    relation=current.relation,
+                    nuclearity=current.nuclearity,
+                    start=current.start,
+                    end=current.end,
+                    text=current.text,
+                    proba=current.proba,
+                    entropy=current.entropy,
+                    left=completed.get(id(current.left)) if current.left is not None else None,
+                    right=completed.get(id(current.right)) if current.right is not None else None,
+                )
+                visiting.remove(identity)
+                continue
+            if identity in visiting or identity in completed:
+                raise ValueError("DiscourseUnit input must be an acyclic tree without shared nodes")
+            visiting.add(identity)
+            pending.append((current, True))
+            if current.right is not None:
+                pending.append((current.right, False))
+            if current.left is not None:
+                pending.append((current.left, False))
+        return completed[id(node)]
 
     def to_tree(self) -> DiscourseUnit:
-        """Reconstruct a ``DiscourseUnit`` tree from this model (recursive)."""
-        return DiscourseUnit(
-            id=self.id,
-            relation=self.relation or "",
-            nuclearity=self.nuclearity or "",
-            start=self.start,
-            end=self.end,
-            text=self.text or "",
-            proba=self.proba,
-            entropy=self.entropy,
-            left=self.left.to_tree() if self.left is not None else None,
-            right=self.right.to_tree() if self.right is not None else None,
-        )
+        """Reconstruct an arbitrarily deep ``DiscourseUnit`` tree iteratively."""
+        completed: dict[int, DiscourseUnit] = {}
+        visiting: set[int] = set()
+        pending: list[tuple[PydanticDiscourseUnit, bool]] = [(self, False)]
+        while pending:
+            current, expanded = pending.pop()
+            identity = id(current)
+            if expanded:
+                completed[identity] = DiscourseUnit(
+                    id=current.id,
+                    relation=current.relation or "",
+                    nuclearity=current.nuclearity or "",
+                    start=current.start,
+                    end=current.end,
+                    text=current.text or "",
+                    proba=current.proba,
+                    entropy=current.entropy,
+                    left=completed.get(id(current.left)) if current.left is not None else None,
+                    right=completed.get(id(current.right)) if current.right is not None else None,
+                )
+                visiting.remove(identity)
+                continue
+            if identity in visiting or identity in completed:
+                raise ValueError("PydanticDiscourseUnit input must be an acyclic tree without shared nodes")
+            visiting.add(identity)
+            pending.append((current, True))
+            if current.right is not None:
+                pending.append((current.right, False))
+            if current.left is not None:
+                pending.append((current.left, False))
+        return completed[id(self)]
 
 
 # Backward-compatible alias for existing consumers
 RstNode = PydanticDiscourseUnit
 
 __all__ = ["PydanticDiscourseUnit", "RstNode"]
-

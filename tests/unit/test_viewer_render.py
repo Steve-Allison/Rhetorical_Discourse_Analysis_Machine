@@ -32,6 +32,7 @@ def test_rs3tohtml_structural_slices() -> None:
     assert 'id="edu2"' in html_out
     assert 'id="lg3"' in html_out
     assert 'id="g3"' in html_out
+    assert 'id="inner_canvas"' in html_out
     assert html_out.count('class="edu"') == 2
     assert html_out.count('class="group"') == 1
     assert "Hello &amp; welcome" in html_out

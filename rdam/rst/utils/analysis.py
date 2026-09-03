@@ -157,7 +157,7 @@ def relation_category(label: str, inventory: str | None = None) -> RelationCateg
     -------
     ``"subject_matter"``, ``"presentational"``, or ``"unknown"``.
     """
-    if not isinstance(label, str) or not label:
+    if not label:
         return "unknown"
 
     raw = label.lower().replace("_", "-").strip()

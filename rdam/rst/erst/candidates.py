@@ -5,9 +5,11 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from itertools import batched, pairwise
 import math
+from types import MappingProxyType
+from typing import Any
 
 import networkx as nx
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from rdam.rst.contracts.analysis import DiscourseSignal, RstAnalysis, RstNode
 from rdam.rst.contracts.document import RstDocument
@@ -21,7 +23,12 @@ class RelationCompatibilityProfile(BaseModel):
 
     source_revision: str
     inventory_digest: str
-    by_signal: dict[str, tuple[str, ...]]
+    by_signal: Mapping[str, tuple[str, ...]]
+
+    @field_validator("by_signal")
+    @classmethod
+    def freeze_by_signal(cls, value: Mapping[str, tuple[str, ...]]) -> Mapping[str, tuple[str, ...]]:
+        return MappingProxyType(dict(value))
 
 
 class CandidateMode(StrEnum):
@@ -69,7 +76,7 @@ class SecondaryEdgeCandidate:
 def compute_structural_features(
     source: RstNode,
     target: RstNode,
-    primary_graph: nx.DiGraph,
+    primary_graph: nx.DiGraph[int, dict[str, Any], dict[str, Any]],
     doc_text: str,
     *,
     hop_distance: int | None = None,
@@ -81,16 +88,9 @@ def compute_structural_features(
     signed_log_distance = (1.0 if char_distance >= 0 else -1.0) * math.log1p(abs(char_distance))
     edu_distance = float(target.edu_span[0] - source.edu_span[0])
     if hop_distance is None:
-        try:
-            resolved_hop_distance = float(
-                nx.shortest_path_length(
-                    primary_graph.to_undirected(),
-                    source.node_id,
-                    target.node_id,
-                )
-            )
-        except (nx.NetworkXNoPath, nx.NodeNotFound):
-            resolved_hop_distance = math.inf
+        paths = nx.single_source_shortest_path(primary_graph.to_undirected(), source.node_id)
+        path = paths.get(target.node_id)
+        resolved_hop_distance = math.inf if path is None else float(len(path) - 1)
     else:
         resolved_hop_distance = float(hop_distance)
     source_length = max(1, source.char_span[1] - source.char_span[0])
@@ -111,21 +111,6 @@ def compute_structural_features(
 
 def _overlaps(first: tuple[int, int], second: tuple[int, int]) -> bool:
     return first[0] < second[1] and second[0] < first[1]
-
-
-def _signal_applies(signal: DiscourseSignal, node: RstNode, document: RstDocument) -> bool:
-    if not signal.sufficient:
-        return False
-    if signal.char_spans and any(_overlaps(span, node.char_span) for span in signal.char_spans):
-        return True
-    if signal.token_ids:
-        node_tokens = {
-            token.token_id
-            for token in document.tokens
-            if node.char_span[0] <= token.start and token.end <= node.char_span[1]
-        }
-        return bool(node_tokens.intersection(signal.token_ids))
-    return not signal.char_spans
 
 
 def _sentence_ids(document: RstDocument, node: RstNode) -> tuple[int, ...]:
@@ -151,35 +136,40 @@ def _node_heads(
     children: dict[int, list[tuple[int, str]]] = {}
     for edge in analysis.primary_edges:
         children.setdefault(edge.parent_id, []).append((edge.child_id, edge.relation_raw))
-    edu_nodes = tuple(node for node in nodes if node.kind == NodeKindEnum.EDU)
-    memo: dict[int, int] = {}
-
-    def resolve(node_id: int, visiting: frozenset[int] = frozenset()) -> int:
-        if node_id in memo:
-            return memo[node_id]
-        if node_id in visiting:
-            raise ValueError(f"primary graph cycle prevents head resolution at node {node_id}")
-        node = node_by_id[node_id]
+    edu_by_start = {node.edu_span[0]: node.node_id for node in nodes if node.kind == NodeKindEnum.EDU}
+    preferred_child: dict[int, int] = {}
+    for node in nodes:
         if node.kind == NodeKindEnum.EDU:
-            memo[node_id] = node_id
-            return node_id
-        node_children = children.get(node_id, [])
+            continue
+        node_children = children.get(node.node_id, [])
         nucleus_children = [child_id for child_id, relation in node_children if relation.casefold() == "span"]
         choices = nucleus_children or [child_id for child_id, _ in node_children]
-        if choices:
-            chosen = min(choices, key=lambda child_id: (node_by_id[child_id].edu_span[0], child_id))
-            head = resolve(chosen, visiting | {node_id})
-        else:
-            covered = [
-                edu
-                for edu in edu_nodes
-                if node.edu_span[0] <= edu.edu_span[0] and edu.edu_span[1] <= node.edu_span[1]
-            ]
-            head = min(covered, key=lambda edu: (edu.edu_span[0], edu.node_id)).node_id if covered else node_id
-        memo[node_id] = head
-        return head
-
-    return {node.node_id: resolve(node.node_id) for node in nodes}
+        preferred_child[node.node_id] = (
+            min(choices, key=lambda child_id: (node_by_id[child_id].edu_span[0], child_id))
+            if choices
+            else edu_by_start.get(node.edu_span[0], node.node_id)
+        )
+    memo: dict[int, int] = {}
+    for node in nodes:
+        if node.node_id in memo:
+            continue
+        path: list[int] = []
+        visiting: set[int] = set()
+        current = node.node_id
+        while current not in memo and current in preferred_child:
+            if current in visiting:
+                raise ValueError(f"primary graph cycle prevents head resolution at node {current}")
+            visiting.add(current)
+            path.append(current)
+            successor = preferred_child[current]
+            if successor == current:
+                break
+            current = successor
+        head = memo.get(current, current)
+        memo.setdefault(current, head)
+        for path_node in reversed(path):
+            memo[path_node] = head
+    return {node.node_id: memo[node.node_id] for node in nodes}
 
 
 def _primary_path(
@@ -189,9 +179,9 @@ def _primary_path(
     steps: list[str] = []
     for left, right in pairwise(node_path):
         if (left, right) in relation_by_pair:
-            steps.append(f">{relation_by_pair[(left, right)]}")
+            steps.append(f">{relation_by_pair[left, right]}")
         else:
-            steps.append(f"<{relation_by_pair[(right, left)]}")
+            steps.append(f"<{relation_by_pair[right, left]}")
     return tuple(steps)
 
 
@@ -217,11 +207,13 @@ def iter_secondary_edge_candidates(
     nodes = tuple(sorted(analysis.nodes, key=lambda node: (node.edu_span[0], node.edu_span[1], node.node_id)))
     if len(nodes) < 2:
         return
-    available_signals = tuple(signal for signal in (signals if signals is not None else analysis.signals) if signal.sufficient)
+    available_signals = tuple(
+        signal for signal in (signals if signals is not None else analysis.signals) if signal.sufficient
+    )
     if not available_signals:
         return
 
-    graph = nx.DiGraph()
+    graph: nx.DiGraph[int, dict[str, Any], dict[str, Any]] = nx.DiGraph()
     graph.add_nodes_from(node.node_id for node in nodes)
     relation_by_pair = {(edge.parent_id, edge.child_id): edge.relation_raw for edge in analysis.primary_edges}
     graph.add_edges_from(relation_by_pair)
@@ -229,12 +221,28 @@ def iter_secondary_edge_candidates(
     node_by_id = {node.node_id: node for node in nodes}
     head_by_node = _node_heads(nodes, analysis)
     sentence_ids_by_node = {node.node_id: _sentence_ids(document, node) for node in nodes}
-    signals_by_node = {
-        node.node_id: tuple(
-            signal for signal in available_signals if _signal_applies(signal, node, document)
+    node_tokens = {
+        node.node_id: frozenset(
+            token.token_id
+            for token in document.tokens
+            if node.char_span[0] <= token.start and token.end <= node.char_span[1]
         )
         for node in nodes
     }
+    signals_by_node = {
+        node.node_id: tuple(
+            signal
+            for signal in available_signals
+            if signal.sufficient
+            and (
+                (signal.char_spans and any(_overlaps(span, node.char_span) for span in signal.char_spans))
+                or (signal.token_ids and bool(node_tokens[node.node_id].intersection(signal.token_ids)))
+                or (not signal.char_spans and not signal.token_ids)
+            )
+        )
+        for node in nodes
+    }
+    signal_by_id = {signal.signal_id: signal for signal in available_signals}
     gold_by_pair = {(edge.source_id, edge.target_id): edge for edge in analysis.secondary_edges}
     for source in nodes:
         source_sigs = signals_by_node[source.node_id]
@@ -245,22 +253,15 @@ def iter_secondary_edge_candidates(
             target_sigs = signals_by_node[target.node_id]
             if not source_sigs and not target_sigs:
                 continue
-            applicable_signal_ids = {
-                signal.signal_id
-                for signal in (*source_sigs, *target_sigs)
-            }
-            pair_signals = tuple(
-                signal for signal in available_signals if signal.signal_id in applicable_signal_ids
-            )
+            applicable_signal_ids = dict.fromkeys(signal.signal_id for signal in (*source_sigs, *target_sigs))
+            pair_signals = tuple(signal_by_id[signal_id] for signal_id in applicable_signal_ids)
             if not pair_signals:
                 continue
             if paths_from_source is None:
                 paths_from_source = nx.single_source_shortest_path(undirected_graph, source.node_id)
             node_path = paths_from_source.get(target.node_id)
             if node_path is None:
-                raise ValueError(
-                    f"primary tree is disconnected between nodes {source.node_id} and {target.node_id}"
-                )
+                raise ValueError(f"primary tree is disconnected between nodes {source.node_id} and {target.node_id}")
             compatible_relations: list[str] = []
             for signal in pair_signals:
                 learned = (

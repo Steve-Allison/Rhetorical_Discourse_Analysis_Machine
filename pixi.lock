@@ -1097,6 +1097,7 @@ packages:
   - python-dotenv>=1.2.1,<2
   - safetensors>=0.8,<0.9
   - openai>=3.7.0,<4
+  - httpx2>=2.12,<3
   - pydantic-ai>=2.37.0,<3
   - build>=1.6,<2 ; extra == 'dev'
   - coverage>=7.16,<8 ; extra == 'dev'

@@ -1,11 +1,11 @@
 import json
 from collections.abc import Sequence
+from importlib import import_module
 from pathlib import Path
-from typing import Any
+from typing import Any, cast, override
 
 import razdel
 import torch
-from huggingface_hub import hf_hub_download
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel, AutoConfig
 
@@ -13,6 +13,8 @@ from rdam.rst.base_predictor import BasePredictor, resolve_device, str2bool
 from rdam.rst.utils.du_converter import DUConverter
 from .src.parser.data import Data
 from .src.parser.parsing_net import ParsingNet
+
+hf_hub_download: Any = import_module("huggingface_hub").hf_hub_download
 
 
 class PredictorDMRST(BasePredictor):
@@ -61,10 +63,10 @@ class PredictorDMRST(BasePredictor):
         else:
             raise ValueError("Pass either `model_dir` or `hf_model_name`.")
 
-        self.config = json.loads(Path(self.config_path).read_text(encoding="utf-8"))
+        self.config: dict[str, Any] = json.loads(Path(self.config_path).read_text(encoding="utf-8"))
 
         self._device = resolve_device(device, cuda_device)
-        self._dtype = self._resolve_dtype(dtype)
+        self._dtype = self._resolve_dtype(dtype, self._device)
 
         self._load_model()
 
@@ -77,7 +79,7 @@ class PredictorDMRST(BasePredictor):
         return table
 
     def _load_model(self) -> None:
-        self.tokenizer = AutoTokenizer.from_pretrained(
+        self.tokenizer: Any = cast(Any, AutoTokenizer).from_pretrained(
             self.config["model"]["transformer"]["model_name"],
             use_fast=True,
         )
@@ -85,13 +87,15 @@ class PredictorDMRST(BasePredictor):
             1e9
         )  # The parser relies on a sliding window encoding, so we'll suppress the max_len warning this way.
 
-        transformer_config = AutoConfig.from_pretrained(self.config["model"]["transformer"]["model_name"])
-        transformer = AutoModel.from_config(transformer_config).to(self._device)
+        transformer_config: Any = cast(Any, AutoConfig).from_pretrained(
+            self.config["model"]["transformer"]["model_name"]
+        )
+        transformer: Any = cast(Any, AutoModel).from_config(transformer_config).to(self._device)
 
         self.tokenizer.add_tokens(["<P>"])
         transformer.resize_token_embeddings(len(self.tokenizer))
 
-        model_config = {
+        model_config: dict[str, Any] = {
             "relation_table": self.relation_table,
             "classes_number": len(self.relation_table),
             "transformer": transformer,
@@ -162,29 +166,32 @@ class PredictorDMRST(BasePredictor):
         """Takes data with word level tokenization, run current transformer tokenizer and recount EDU boundaries."""
 
         # (word_start_char, word_end_char+1) for each token
-        word_offsets = []
+        word_offsets: list[list[tuple[int, int]]] = []
         for document in data.input_sentences:
-            doc_word_offsets = []
+            if not all(isinstance(word, str) for word in document):
+                raise TypeError("tokenize expects word-level string input")
+            words = cast(list[str], document)
+            doc_word_offsets: list[tuple[int, int]] = []
             cur_char = 0
-            for word in document:
+            for word in words:
                 doc_word_offsets.append((cur_char, cur_char + len(word)))
                 cur_char += len(word) + 1
             word_offsets.append(doc_word_offsets)
 
-        texts = [" ".join(line).strip() for line in data.input_sentences]
-        tokens = self.tokenizer(texts, add_special_tokens=False, return_offsets_mapping=True)
+        texts = [" ".join(cast(list[str], line)).strip() for line in data.input_sentences]
+        tokens: dict[str, Any] = self.tokenizer(texts, add_special_tokens=False, return_offsets_mapping=True)
         tokens["entity_ids"] = None
         tokens["entity_position_ids"] = None
 
         # recount edu_breaks for subwords
-        subword_edu_breaks = []
+        subword_edu_breaks: list[list[int]] = []
         for doc_word_offsets, doc_subword_offsets, edu_breaks in zip(
             word_offsets, tokens["offset_mapping"], data.edu_breaks, strict=True
         ):
             subword_edu_breaks.append(self._recount_spans(doc_word_offsets, doc_subword_offsets, edu_breaks))
 
         return Data(
-            input_sentences=tokens["input_ids"],
+            input_sentences=cast(list[list[str] | list[int]], tokens["input_ids"]),
             entity_ids=tokens["entity_ids"],
             entity_position_ids=tokens["entity_position_ids"],
             sent_breaks=None,
@@ -203,37 +210,21 @@ class PredictorDMRST(BasePredictor):
         if len(data.input_sentences) < size:
             return [data]
 
-        _input_sentences = list(self.divide_chunks(data.input_sentences, size))
-        _edu_breaks = list(self.divide_chunks(data.edu_breaks, size))
-        _decoder_input = list(self.divide_chunks(data.decoder_input, size))
-        _relation_label = list(self.divide_chunks(data.relation_label, size))
-        _parsing_breaks = list(self.divide_chunks(data.parsing_breaks, size))
-        _golden_metric = list(self.divide_chunks(data.golden_metric, size))
-
-        batches = []
-        for input_sentences, edu_breaks, decoder_input, relation_label, parsing_breaks, golden_metric in tqdm(
-            zip(
-                _input_sentences,
-                _edu_breaks,
-                _decoder_input,
-                _relation_label,
-                _parsing_breaks,
-                _golden_metric,
-                strict=True,
-            ),
-            total=len(_input_sentences),
-        ):
+        batches: list[Data] = []
+        starts = range(0, len(data.input_sentences), size)
+        for start in tqdm(starts, total=(len(data.input_sentences) + size - 1) // size):
+            stop = start + size
             batches.append(
                 Data(
-                    input_sentences=input_sentences,
+                    input_sentences=data.input_sentences[start:stop],
                     entity_ids=None,
                     entity_position_ids=None,
                     sent_breaks=None,
-                    edu_breaks=edu_breaks,
-                    decoder_input=decoder_input,
-                    relation_label=relation_label,
-                    parsing_breaks=parsing_breaks,
-                    golden_metric=golden_metric,
+                    edu_breaks=data.edu_breaks[start:stop],
+                    decoder_input=data.decoder_input[start:stop],
+                    relation_label=data.relation_label[start:stop],
+                    parsing_breaks=data.parsing_breaks[start:stop],
+                    golden_metric=data.golden_metric[start:stop],
                     parents_index=None,
                     sibling=None,
                 )
@@ -241,6 +232,7 @@ class PredictorDMRST(BasePredictor):
 
         return batches
 
+    @override
     def parse_rst(self, text: str) -> dict[str, Any]:
         """Parses the given text to generate a tree of rhetorical structure.
 
@@ -268,14 +260,10 @@ class PredictorDMRST(BasePredictor):
             raise ValueError(f"batch_size must be positive, got {batch_size}")
 
         for idx, text in enumerate(texts):
-            if text is None:
-                raise ValueError(f"`text` at index {idx} must be provided for parsing.")
-            if not isinstance(text, str):
-                raise TypeError(f"`text` at index {idx} must be a str, got {type(text).__name__}.")
             if not text.strip():
                 raise ValueError(f"`text` at index {idx} must be non-empty (got empty/whitespace-only input).")
 
-        results: list[dict[str, Any]] = [{}] * len(texts)
+        results: list[dict[str, Any] | None] = [None] * len(texts)
 
         for chunk_start in range(0, len(texts), batch_size):
             chunk_texts = list(texts[chunk_start : chunk_start + batch_size])
@@ -304,20 +292,19 @@ class PredictorDMRST(BasePredictor):
             if not model_indices:
                 continue
 
-            data = {
-                "input_sentences": model_input_sentences,
-                "edu_breaks": [[] for _ in model_input_sentences],
-                "decoder_input": [[] for _ in model_input_sentences],
-                "relation_label": [[] for _ in model_input_sentences],
-                "parsing_breaks": [[] for _ in model_input_sentences],
-                "golden_metric": [[] for _ in model_input_sentences],
-            }
-            input_data = Data(**data)
+            input_data = Data(
+                input_sentences=cast(list[list[str] | list[int]], model_input_sentences),
+                edu_breaks=[[] for _ in model_input_sentences],
+                decoder_input=[[] for _ in model_input_sentences],
+                relation_label=[[] for _ in model_input_sentences],
+                parsing_breaks=[[] for _ in model_input_sentences],
+                golden_metric=[[] for _ in model_input_sentences],
+            )
             batch = self.tokenize(input_data)
 
             with torch.inference_mode(), self._autocast():
                 _, _, span_batch, _, predict_edu_breaks = self.model.testing_loss(
-                    batch.input_sentences,
+                    cast(list[list[int]], batch.input_sentences),
                     batch.sent_breaks,
                     batch.entity_ids,
                     batch.entity_position_ids,
@@ -332,7 +319,7 @@ class PredictorDMRST(BasePredictor):
                 raise RuntimeError("testing_loss returned no spans with generate_tree=True")
 
             batch_tokens = [self.tokenizer.convert_ids_to_tokens(sent) for sent in batch.input_sentences]
-            predictions = {
+            predictions: dict[str, Any] = {
                 "tokens": batch_tokens,
                 "spans": span_batch,
                 "edu_breaks": predict_edu_breaks,
@@ -348,8 +335,11 @@ class PredictorDMRST(BasePredictor):
                 self.remap_tree_offsets(tree, offset_pos, orig_off, texts[g_idx])
                 results[g_idx] = {"rst": [tree]}
 
-        return results
+        if any(result is None for result in results):
+            raise RuntimeError("batch parsing did not produce a result for every input")
+        return [result for result in results if result is not None]
 
+    @override
     def parse_from_edus(self, edus: Sequence[str]) -> dict[str, Any]:
         """Parse a document using predefined EDU boundaries."""
 
@@ -390,13 +380,19 @@ class PredictorDMRST(BasePredictor):
 
         input_data = data
 
-        predictions = {"tokens": [], "spans": [], "edu_breaks": [], "true_spans": [], "true_edu_breaks": []}
+        predictions: dict[str, Any] = {
+            "tokens": [],
+            "spans": [],
+            "edu_breaks": [],
+            "true_spans": [],
+            "true_edu_breaks": [],
+        }
 
         batch = self.tokenize(input_data)
 
         with torch.inference_mode(), self._autocast():
             _, _, span_batch, _, predict_edu_breaks = self.model.testing_loss(
-                batch.input_sentences,
+                cast(list[list[int]], batch.input_sentences),
                 batch.sent_breaks,
                 batch.entity_ids,
                 batch.entity_position_ids,

@@ -5,6 +5,7 @@ a genuinely external system. Every model here is a Pydantic AI ``FunctionModel``
 structure the boundary receives is chosen by the test, not by a live model.
 """
 
+import asyncio
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -27,6 +28,8 @@ from rdam._llm import (
     StructuredAnalyst,
     configured_model,
     load_dotenv,
+    normalize_model_identity,
+    parse_model_identity,
     unavailable_reason,
 )
 
@@ -68,6 +71,16 @@ class TestModelConfiguration:
     def test_the_model_string_carries_its_provider(self) -> None:
         assert DEFAULT_MODEL.startswith("openai:"), "provider is part of the model identity"
 
+    def test_bare_and_explicit_identities_share_one_canonical_spelling(self) -> None:
+        assert normalize_model_identity("gpt-5.6-sol") == "openai:gpt-5.6-sol"
+        assert normalize_model_identity("openai:gpt-5.6-sol") == "openai:gpt-5.6-sol"
+        assert str(parse_model_identity("anthropic:claude-opus-5")) == "anthropic:claude-opus-5"
+
+    @pytest.mark.parametrize("identity", ("", " openai:gpt-5.6-sol", "openai:", ":model", "unknown:model"))
+    def test_malformed_or_unsupported_identity_has_a_precise_configuration_error(self, identity: str) -> None:
+        with pytest.raises(ValueError, match="model identity|unsupported model provider"):
+            parse_model_identity(identity)
+
 
 class TestCapability:
     """Capability resolves a key. It never opens a connection."""
@@ -77,14 +90,14 @@ class TestCapability:
         assert unavailable_reason("openai:gpt-5.6-sol") is None
 
     def test_each_provider_reads_its_own_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr("rdam._llm.load_dotenv", lambda *_a, **_k: None)
+        monkeypatch.setattr("rdam._llm._nearest_dotenv", lambda *_a, **_k: None)
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         monkeypatch.setenv("ANTHROPIC_API_KEY", "k")
         assert unavailable_reason("anthropic:claude-opus-5") is None
         assert unavailable_reason("openai:gpt-5.6-sol") is UnavailableReason.MODEL_UNAVAILABLE
 
     def test_model_unavailable_when_no_key_resolves(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr("rdam._llm.load_dotenv", lambda *_a, **_k: None)
+        monkeypatch.setattr("rdam._llm._nearest_dotenv", lambda *_a, **_k: None)
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         assert unavailable_reason("openai:gpt-5.6-sol") is UnavailableReason.MODEL_UNAVAILABLE
 
@@ -94,6 +107,10 @@ class TestCapability:
     def test_a_bare_model_name_is_treated_as_openai(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("OPENAI_API_KEY", "k")
         assert unavailable_reason("gpt-5.6-sol") is None
+
+    @pytest.mark.parametrize("identity", ("", "openai:", ":model", "nosuch:model"))
+    def test_malformed_identity_is_unavailable_during_capability_reporting(self, identity: str) -> None:
+        assert unavailable_reason(identity) is UnavailableReason.MODEL_UNAVAILABLE
 
 
 class TestDotEnv:
@@ -107,7 +124,9 @@ class TestDotEnv:
 
         assert os.environ["OPENAI_API_KEY"] == "from-file"
 
-    def test_an_explicit_environment_variable_always_wins(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_an_explicit_environment_variable_always_wins(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         (tmp_path / ".env").write_text("OPENAI_API_KEY=from-file\n", encoding="utf-8")
         monkeypatch.setenv("OPENAI_API_KEY", "explicit")
         load_dotenv(tmp_path)
@@ -115,7 +134,9 @@ class TestDotEnv:
 
         assert os.environ["OPENAI_API_KEY"] == "explicit", "a deliberate export is never silently replaced"
 
-    def test_comments_blanks_exports_and_quotes_are_handled(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_comments_blanks_exports_and_quotes_are_handled(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         (tmp_path / ".env").write_text(
             '\n# a comment\nexport ANTHROPIC_API_KEY="quoted-value"\n\nNOT_A_KEY=ignored\n', encoding="utf-8"
         )
@@ -153,6 +174,43 @@ class TestExtraction:
             _analyst().extract("   \n  ")
         assert caught.value.code == "empty_source_text"
         assert caught.value.retryability is Retryability.NOT_RETRYABLE
+
+    def test_one_deadline_covers_an_active_model_request(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        analyst = StructuredAnalyst(
+            output_type=Finding,
+            instructions="find the claim",
+            model="openai:test",
+            transport_deadline_seconds=0.01,
+        )
+
+        async def never_returns(_text: str):
+            await asyncio.Future()
+
+        monkeypatch.setattr(analyst, "_run", never_returns)
+        with pytest.raises(LlmError) as caught:
+            analyst.extract("passage")
+        assert caught.value.code == "llm_transport_deadline_exceeded"
+        assert caught.value.retryability is Retryability.RETRYABLE
+        assert caught.value.transport_attempts == 1
+
+    def test_external_cancellation_propagates_unchanged(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        analyst = StructuredAnalyst(output_type=Finding, instructions="find", model="openai:test")
+        entered = asyncio.Event()
+
+        async def never_returns(_text: str):
+            entered.set()
+            await asyncio.Future()
+
+        monkeypatch.setattr(analyst, "_run", never_returns)
+
+        async def scenario() -> None:
+            task = asyncio.create_task(analyst.extract_async("passage"))
+            await entered.wait()
+            task.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await task
+
+        asyncio.run(scenario())
 
 
 class TestFailureAlgebra:

@@ -1,9 +1,10 @@
 """Deterministic stdlib JSON serialization and deserialization for contracts."""
 
-from dataclasses import asdict, is_dataclass
+from collections.abc import Mapping
+from dataclasses import fields, is_dataclass
 from enum import Enum
 import json
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel
 
@@ -33,29 +34,32 @@ from rdam.rst.contracts.enums import (
     OutputFormalismEnum,
 )
 
+
 def _custom_asdict(obj: Any) -> Any:
     if isinstance(obj, BaseModel):
         return obj.model_dump(mode="json")
     if is_dataclass(obj) and not isinstance(obj, type):
-        result = {}
-        for key, val in asdict(obj).items():
-            result[key] = _custom_asdict(val)
-        return result
+        return {item.name: _custom_asdict(getattr(obj, item.name)) for item in fields(obj)}
     if isinstance(obj, Enum):
         return obj.value
     if isinstance(obj, (list, tuple)):
-        return [_custom_asdict(item) for item in obj]
-    if isinstance(obj, dict):
-        return {str(k): _custom_asdict(v) for k, v in obj.items()}
+        sequence = cast(list[object] | tuple[object, ...], obj)
+        return [_custom_asdict(item) for item in sequence]
+    if isinstance(obj, Mapping):
+        mapping = cast(Mapping[object, object], obj)
+        return {str(key): _custom_asdict(value) for key, value in mapping.items()}
     return obj
 
 
 def _int_pair(value: Any, field_name: str) -> tuple[int, int]:
     """Validate and normalize a serialized two-integer coordinate pair."""
 
-    if not isinstance(value, (list, tuple)) or len(value) != 2:
+    if not isinstance(value, (list, tuple)):
         raise ValueError(f"{field_name} must contain exactly two integers")
-    first, second = value
+    pair = cast(list[object] | tuple[object, ...], value)
+    if len(pair) != 2:
+        raise ValueError(f"{field_name} must contain exactly two integers")
+    first, second = pair
     if isinstance(first, bool) or isinstance(second, bool) or not isinstance(first, int) or not isinstance(second, int):
         raise ValueError(f"{field_name} must contain exactly two integers")
     return first, second
@@ -66,7 +70,7 @@ def to_dict(obj: Any) -> dict[str, Any]:
     data = _custom_asdict(obj)
     if not isinstance(data, dict):
         raise TypeError(f"Expected dict from contract serialization, got {type(data)}")
-    return data
+    return cast(dict[str, Any], data)
 
 
 def to_json(obj: Any, indent: int | None = 2) -> str:
@@ -75,11 +79,17 @@ def to_json(obj: Any, indent: int | None = 2) -> str:
     return json.dumps(data, indent=indent, sort_keys=True, ensure_ascii=False)
 
 
+def _load_json_object(json_str: str) -> dict[str, Any]:
+    """Decode one contract payload and reject non-object JSON roots."""
+
+    decoded: object = json.loads(json_str)
+    if not isinstance(decoded, dict):
+        raise ValueError("Expected JSON object")
+    return cast(dict[str, Any], decoded)
+
+
 def document_from_dict(payload: dict[str, Any]) -> RstDocument:
     """Deserialize an RstDocument from a dictionary."""
-    if not isinstance(payload, dict):
-        raise ValueError(f"Expected JSON object / dict, got {type(payload).__name__}")
-
     tokens = tuple(
         DocumentToken(
             token_id=t["token_id"],
@@ -153,14 +163,11 @@ def document_from_dict(payload: dict[str, Any]) -> RstDocument:
 
 def document_from_json(json_str: str) -> RstDocument:
     """Deserialize an RstDocument from a JSON string."""
-    return document_from_dict(json.loads(json_str))
+    return document_from_dict(_load_json_object(json_str))
 
 
 def analysis_from_dict(payload: dict[str, Any]) -> RstAnalysis:
     """Deserialize an RstAnalysis from a dictionary."""
-    if not isinstance(payload, dict):
-        raise ValueError(f"Expected JSON object / dict, got {type(payload).__name__}")
-
     nodes = tuple(
         RstNode(
             node_id=n["node_id"],
@@ -242,14 +249,11 @@ def analysis_from_dict(payload: dict[str, Any]) -> RstAnalysis:
 
 def analysis_from_json(json_str: str) -> RstAnalysis:
     """Deserialize an RstAnalysis from a JSON string."""
-    return analysis_from_dict(json.loads(json_str))
+    return analysis_from_dict(_load_json_object(json_str))
 
 
 def format_analysis_from_dict(payload: dict[str, Any]) -> FormatRstAnalysis:
     """Deserialize a FormatRstAnalysis from a dictionary."""
-    if not isinstance(payload, dict):
-        raise ValueError(f"Expected JSON object / dict, got {type(payload).__name__}")
-
     doc_analysis = analysis_from_dict(payload["document_analysis"])
     table_analyses = {key: analysis_from_dict(val) for key, val in payload.get("table_analyses", {}).items()}
     node_map = dict(payload.get("node_map", {}))
@@ -262,4 +266,4 @@ def format_analysis_from_dict(payload: dict[str, Any]) -> FormatRstAnalysis:
 
 def format_analysis_from_json(json_str: str) -> FormatRstAnalysis:
     """Deserialize a FormatRstAnalysis from a JSON string."""
-    return format_analysis_from_dict(json.loads(json_str))
+    return format_analysis_from_dict(_load_json_object(json_str))

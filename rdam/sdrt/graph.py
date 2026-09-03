@@ -94,22 +94,49 @@ class SdrtRelation(_ClosedModel):
 
 
 def _has_cycle(adjacency: dict[str, set[str]]) -> bool:
-    visiting: set[str] = set()
-    visited: set[str] = set()
+    state: dict[str, int] = {}
+    for root in adjacency:
+        if state.get(root) == 2:
+            continue
+        pending: list[tuple[str, bool]] = [(root, False)]
+        while pending:
+            node, expanded = pending.pop()
+            if expanded:
+                state[node] = 2
+                continue
+            current_state = state.get(node, 0)
+            if current_state == 1:
+                return True
+            if current_state == 2:
+                continue
+            state[node] = 1
+            pending.append((node, True))
+            pending.extend((target, False) for target in adjacency.get(node, ()))
+    return False
 
-    def visit(node: str) -> bool:
-        if node in visiting:
-            return True
-        if node in visited:
-            return False
-        visiting.add(node)
-        if any(visit(target) for target in adjacency.get(node, ())):
-            return True
-        visiting.remove(node)
-        visited.add(node)
-        return False
 
-    return any(visit(node) for node in adjacency)
+def _elementary_members(cdu_members: dict[str, set[str]]) -> dict[str, frozenset[str]]:
+    """Resolve nested CDU membership once, without recursion."""
+
+    resolved: dict[str, frozenset[str]] = {}
+    for root in cdu_members:
+        if root in resolved:
+            continue
+        pending: list[tuple[str, bool]] = [(root, False)]
+        while pending:
+            unit_id, expanded = pending.pop()
+            if unit_id in resolved:
+                continue
+            nested = cdu_members.get(unit_id)
+            if nested is None:
+                resolved[unit_id] = frozenset((unit_id,))
+                continue
+            if expanded:
+                resolved[unit_id] = frozenset().union(*(resolved[member] for member in nested))
+                continue
+            pending.append((unit_id, True))
+            pending.extend((member, False) for member in nested if member not in resolved)
+    return {cdu_id: resolved[cdu_id] for cdu_id in cdu_members}
 
 
 def _connected(nodes: set[str], edges: Iterable[tuple[str, str]]) -> bool:
@@ -134,8 +161,8 @@ class SdrtAnalysis(_ClosedModel):
     """A complete native SDRS graph proposed for one source."""
 
     edus: list[ElementaryDiscourseUnit] = Field(min_length=1)
-    cdus: list[ComplexDiscourseUnit] = Field(default_factory=list)
-    relations: list[SdrtRelation] = Field(default_factory=list)
+    cdus: list[ComplexDiscourseUnit] = Field(default_factory=lambda: list[ComplexDiscourseUnit]())
+    relations: list[SdrtRelation] = Field(default_factory=lambda: list[SdrtRelation]())
 
     @model_validator(mode="after")
     def valid_sdrs(self) -> Self:
@@ -162,7 +189,9 @@ class SdrtAnalysis(_ClosedModel):
         for relation in self.relations:
             for endpoint in (relation.source_id, relation.target_id):
                 if endpoint not in known:
-                    raise GraphError(f"relation {relation.relation_id!r} references unknown discourse unit {endpoint!r}")
+                    raise GraphError(
+                        f"relation {relation.relation_id!r} references unknown discourse unit {endpoint!r}"
+                    )
 
     def _validate_edu_order(self) -> None:
         for previous, current in zip(self.edus, self.edus[1:], strict=False):
@@ -171,10 +200,7 @@ class SdrtAnalysis(_ClosedModel):
 
     def _validate_acyclicity(self) -> None:
         cdu_ids = {cdu.unit_id for cdu in self.cdus}
-        membership = {
-            cdu.unit_id: {member for member in cdu.members if member in cdu_ids}
-            for cdu in self.cdus
-        }
+        membership = {cdu.unit_id: {member for member in cdu.members if member in cdu_ids} for cdu in self.cdus}
         if _has_cycle(membership):
             raise GraphError("CDU membership is cyclic")
         relation_graph: dict[str, set[str]] = {}
@@ -202,21 +228,11 @@ class SdrtAnalysis(_ClosedModel):
         if len(self.edus) == 1:
             return
         cdu_members = {cdu.unit_id: set(cdu.members) for cdu in self.cdus}
-
-        def elementary_members(unit_id: str, trail: frozenset[str] = frozenset()) -> set[str]:
-            if unit_id not in cdu_members:
-                return {unit_id}
-            if unit_id in trail:
-                return set()
-            return set().union(
-                *(elementary_members(member, trail | {unit_id}) for member in cdu_members[unit_id])
-            )
+        elementary_members = _elementary_members(cdu_members)
 
         for index, current in enumerate(self.edus[1:], start=1):
             prior_edus = {unit.unit_id for unit in self.edus[:index]}
-            completed_cdus = {
-                cdu_id for cdu_id in cdu_members if elementary_members(cdu_id) <= prior_edus
-            }
+            completed_cdus = {cdu_id for cdu_id, members in elementary_members.items() if members <= prior_edus}
             introduced = prior_edus | completed_cdus
             frontier = {self.edus[index - 1].unit_id}
             changed = True
@@ -236,12 +252,9 @@ class SdrtAnalysis(_ClosedModel):
                         frontier.add(cdu_id)
                         changed = True
             if not any(
-                relation.target_id == current.unit_id and relation.source_id in frontier
-                for relation in self.relations
+                relation.target_id == current.unit_id and relation.source_id in frontier for relation in self.relations
             ):
-                raise GraphError(
-                    f"EDU {current.unit_id!r} has no attachment from the SDRT right frontier"
-                )
+                raise GraphError(f"EDU {current.unit_id!r} has no attachment from the SDRT right frontier")
 
     def validate_source(self, source: str) -> Self:
         """Prove every EDU quote against the submitted source without repairing offsets."""

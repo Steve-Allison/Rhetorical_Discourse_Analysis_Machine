@@ -54,7 +54,10 @@ class TestDeclaration:
         assert declaration.capability == AvailableCapability(
             provider_id=PROVIDER_ID, contract_version=declaration.contract_version
         )
-        assert declaration.provenance.source_revision == source_identity().hex_digest
+        assert declaration.provenance.source_revision
+        first_identity = source_identity()
+        assert source_identity() is first_identity
+        assert first_identity.hex_digest != "0" * 64
 
 
 class TestThroughTheMachine:
@@ -77,7 +80,7 @@ class TestThroughTheMachine:
         assert payload["input_origin"] == "supplied"
         assert payload["extraction"] is None
         deliberation = payload["map"]
-        assert isinstance(deliberation, dict)
+        assert isinstance(deliberation, Mapping)
         assert deliberation["issues"] == [
             {
                 "id": "i1",

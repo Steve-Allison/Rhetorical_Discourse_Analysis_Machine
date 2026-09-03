@@ -1,7 +1,12 @@
 import re
-from typing import Any
+from rdam.rst._metric_kernel import (
+    MetricTriple,
+    is_no_tree,
+    macro_metrics,
+    metric_triple,
+    micro_metrics,
+)
 
-type MetricTriple = tuple[float, float, float]
 type SpanLabelMap = dict[str, list[str]]
 
 
@@ -9,17 +14,17 @@ def _strip_entropy(span: str) -> str:
     return re.sub(r";entropy=[^:]+", "", span)
 
 
-def get_eval_data_rst_parseval(sen: str, edus: list[Any]) -> SpanLabelMap:
+def get_eval_data_rst_parseval(sen: str, edus: list[int]) -> SpanLabelMap:
     b = re.findall(r"\d+", sen)
     b = [str(edus[int(i) - 1]) for i in b]
-    cur_new = []
+    cur_new: list[str] = []
     x = 0
     while x < len(b):
         cur_new.append(b[x] + "-" + b[x + 1])
         x = x + 2
-    span = re.split(r" ", sen)
+    span = sen.split(r" ")
     # print(span)
-    dic = {}
+    dic: SpanLabelMap = {}
     for i in range(len(span)):
         temp = _strip_entropy(span[i])
         IDK = re.split(r"[:,=]", temp)
@@ -32,18 +37,16 @@ def get_eval_data_rst_parseval(sen: str, edus: list[Any]) -> SpanLabelMap:
     return dic
 
 
-def get_eval_data_parseval(tree_spans: str, edus: list[Any]) -> SpanLabelMap:
+def get_eval_data_parseval(tree_spans: str, edus: list[int]) -> SpanLabelMap:
     span_list = tree_spans.strip().split()
-    dic = {}
+    dic: SpanLabelMap = {}
     for i in range(len(span_list)):
         temp = _strip_entropy(span_list[i])
         IDK = re.split(r"[:,=]", temp)
         try:
             nuclearity = IDK[1][0] + IDK[5][0]
-        except Exception as e:
-            print(f"{temp = }")
-            print(f"{IDK = }")
-            raise e
+        except (IndexError, TypeError) as error:
+            raise ValueError(f"invalid Parseval span at position {i}: {temp!r}") from error
         relation1 = IDK[2]
         relation2 = IDK[6]
         relation = relation1 if relation1 != "span" else relation2
@@ -57,8 +60,8 @@ def get_eval_data_parseval(tree_spans: str, edus: list[Any]) -> SpanLabelMap:
 def get_measurement(
     tree1_spans: str,
     tree2_spans: str,
-    tree1_edus: list[Any],
-    tree2_edus: list[Any],
+    tree1_edus: list[int],
+    tree2_edus: list[int],
     use_org_parseval: bool,
 ) -> tuple[int, int, int, int, int, int]:
     if use_org_parseval:
@@ -73,7 +76,7 @@ def get_measurement(
     n_full = 0
 
     # number of right spans
-    right_span = list(set(dic1.keys()).intersection(set(dic2.keys())))
+    right_span = list(dic1.keys() & dic2.keys())
     n_spans = len(right_span)
 
     # Right Number of relations and nuclearity
@@ -95,7 +98,7 @@ def get_measurement(
     return correct_span, correct_relation, correct_nuclearity, correct_full, no_system, no_golden
 
 
-def get_seg_measure(pred_seg: list[Any], gold_seg: list[Any]) -> tuple[int, int, int]:
+def get_seg_measure(pred_seg: list[int], gold_seg: list[int]) -> tuple[int, int, int]:
     num_gold = len(gold_seg)
     num_pred = len(pred_seg)
     correct = len(set(pred_seg) & set(gold_seg))
@@ -104,10 +107,10 @@ def get_seg_measure(pred_seg: list[Any], gold_seg: list[Any]) -> tuple[int, int,
 
 
 def get_batch_metrics(
-    pred_spans_batch: list[Any],
-    gold_spans_batch: list[Any],
-    pred_edu_breaks_batch: list[Any],
-    gold_edu_breaks_batch: list[Any],
+    pred_spans_batch: list[list[str]],
+    gold_spans_batch: list[str],
+    pred_edu_breaks_batch: list[list[int]],
+    gold_edu_breaks_batch: list[list[int]],
     use_org_parseval: bool,
 ) -> tuple[
     int, int, int, int, int, int, list[int], list[int], list[int], list[int], list[int], list[int], tuple[int, int, int]
@@ -122,12 +125,12 @@ def get_batch_metrics(
     n_pred_seg = 0
     n_correct_seg = 0
 
-    correct_span_batch_list = []
-    correct_relation_batch_list = []
-    correct_nuclearity_batch_list = []
-    correct_full_batch_list = []
-    no_system_batch_list = []
-    no_golden_batch_list = []
+    correct_span_batch_list: list[int] = []
+    correct_relation_batch_list: list[int] = []
+    correct_nuclearity_batch_list: list[int] = []
+    correct_full_batch_list: list[int] = []
+    no_system_batch_list: list[int] = []
+    no_golden_batch_list: list[int] = []
 
     for i in range(len(pred_spans_batch)):
         # Lowercasing in case the casing is different in the relation table
@@ -149,7 +152,7 @@ def get_batch_metrics(
         n_pred_seg += num_pred_seg
         n_correct_seg += num_correct_seg
 
-        if cur_pred_spans not in "none" and cur_gold_spans != "none":
+        if not is_no_tree(cur_pred_spans) and not is_no_tree(cur_gold_spans):
             cur_span_n, cur_relation_n, cur_ns_n, cur_full, cur_sys_n, cur_golden_n = get_measurement(
                 cur_pred_spans, cur_gold_spans, cur_pred_edus, cur_gold_edus, use_org_parseval
             )
@@ -161,17 +164,17 @@ def get_batch_metrics(
             n_system += cur_sys_n
             n_golden += cur_golden_n
 
-        elif cur_pred_spans != "none" and cur_gold_spans == "none":
+        elif not is_no_tree(cur_pred_spans) and is_no_tree(cur_gold_spans):
             _, _, _, _, cur_sys_n, _ = get_measurement(
                 cur_pred_spans, cur_pred_spans, cur_pred_edus, cur_pred_edus, use_org_parseval
             )
             n_system += cur_sys_n
 
-        elif cur_pred_spans == "none" and cur_gold_spans != "none":
-            _, _, _, _, _, cur_goldenno = get_measurement(
+        elif is_no_tree(cur_pred_spans) and not is_no_tree(cur_gold_spans):
+            _, _, _, _, _, cur_golden_n = get_measurement(
                 cur_gold_spans, cur_gold_spans, cur_gold_edus, cur_gold_edus, use_org_parseval
             )
-            n_golden += cur_goldenno
+            n_golden += cur_golden_n
 
         correct_span_batch_list.append(cur_span_n)
         correct_relation_batch_list.append(cur_relation_n)
@@ -208,47 +211,21 @@ def get_micro_metrics(
     n_pred_seg: float,
     n_correct_seg: float,
 ) -> tuple[MetricTriple, MetricTriple, MetricTriple, float, MetricTriple]:
-
-    n_sys = 1 if n_sys == 0 else n_sys
-
-    # segmentation
-    precision_seg = n_correct_seg / n_pred_seg
-    recall_seg = n_correct_seg / n_gold_seg
-    f1_seg = (2 * n_correct_seg) / (n_gold_seg + n_pred_seg)
-
-    # Span
-    precision_span = correct_span / n_sys
-    recall_span = correct_span / n_gold
-    f1_span = (2 * correct_span) / (n_gold + n_sys)
-
-    # Relation
-    precision_relation = correct_relation / n_sys
-    recall_relation = correct_relation / n_gold
-    f1_relation = (2 * correct_relation) / (n_gold + n_sys)
-
-    # Nuclearity
-    precision_nuclearity = correct_nuclearity / n_sys
-    recall_nuclearity = correct_nuclearity / n_gold
-    f1_nuclearity = (2 * correct_nuclearity) / (n_gold + n_sys)
-
-    # Full
-    f1_Full = (2 * correct_full) / (n_gold + n_sys)
-
-    return (
-        (precision_span, recall_span, f1_span),
-        (precision_relation, recall_relation, f1_relation),
-        (precision_nuclearity, recall_nuclearity, f1_nuclearity),
-        f1_Full,
-        (precision_seg, recall_seg, f1_seg),
+    return micro_metrics(
+        correct_span,
+        correct_relation,
+        correct_nuclearity,
+        correct_full,
+        n_sys,
+        n_gold,
+        n_gold_seg,
+        n_pred_seg,
+        n_correct_seg,
     )
 
 
 def calc_metrics(n_correct: float, n_pred: float, n_gold: float) -> MetricTriple:
-    pr = n_correct / n_pred
-    re = n_correct / n_gold
-    f1 = (2 * n_correct) / (n_gold + n_pred)
-
-    return pr, re, f1
+    return metric_triple(n_correct, n_pred, n_gold)
 
 
 def get_macro_metrics(
@@ -259,72 +236,11 @@ def get_macro_metrics(
     no_system_list: list[float],
     no_golden_list: list[float],
 ) -> tuple[MetricTriple, MetricTriple, MetricTriple, MetricTriple]:
-    precision_span_list = []
-    precision_relation_list = []
-    precision_nuclearity_list = []
-    precision_full_list = []
-
-    recall_span_list = []
-    recall_relation_list = []
-    recall_nuclearity_list = []
-    recall_full_list = []
-
-    f1_span_list = []
-    f1_relation_list = []
-    f1_nuclearity_list = []
-    f1_full_list = []
-
-    for i in range(len(correct_span_list)):
-        correct_span = correct_span_list[i]
-        correct_relation = correct_relation_list[i]
-        correct_nuclearity = correct_nuclearity_list[i]
-        correct_full = correct_full_list[i]
-        no_system = no_system_list[i]
-        no_golden = no_golden_list[i]
-
-        # span
-        precision_span, recall_span, f1_span = calc_metrics(correct_span, no_system, no_golden)
-        precision_span_list.append(precision_span)
-        recall_span_list.append(recall_span)
-        f1_span_list.append(f1_span)
-
-        # Nuclearity
-        precision_nuclearity, recall_nuclearity, f1_nuclearity = calc_metrics(correct_nuclearity, no_system, no_golden)
-        precision_nuclearity_list.append(precision_nuclearity)
-        recall_nuclearity_list.append(recall_nuclearity)
-        f1_nuclearity_list.append(f1_nuclearity)
-
-        # Relation
-        precision_relation, recall_relation, f1_relation = calc_metrics(correct_relation, no_system, no_golden)
-        precision_relation_list.append(precision_relation)
-        recall_relation_list.append(recall_relation)
-        f1_relation_list.append(f1_relation)
-
-        # Full
-        precision_full, recall_full, f1_full = calc_metrics(correct_full, no_system, no_golden)
-        precision_full_list.append(precision_full)
-        recall_full_list.append(recall_full)
-        f1_full_list.append(f1_full)
-
-    precision_span_avg = sum(precision_span_list) / len(precision_span_list)
-    recall_span_avg = sum(recall_span_list) / len(recall_span_list)
-    f1_span_avg = sum(f1_span_list) / len(f1_span_list)
-
-    precision_nuclearity_avg = sum(precision_nuclearity_list) / len(precision_nuclearity_list)
-    recall_nuclearity_avg = sum(recall_nuclearity_list) / len(recall_nuclearity_list)
-    f1_nuclearity_avg = sum(f1_nuclearity_list) / len(f1_nuclearity_list)
-
-    precision_relation_avg = sum(precision_relation_list) / len(precision_relation_list)
-    recall_relation_avg = sum(recall_relation_list) / len(recall_relation_list)
-    f1_relation_avg = sum(f1_relation_list) / len(f1_relation_list)
-
-    precision_full_avg = sum(precision_full_list) / len(precision_full_list)
-    recall_full_avg = sum(recall_full_list) / len(recall_full_list)
-    f1_full_avg = sum(f1_full_list) / len(f1_full_list)
-
-    return (
-        (precision_span_avg, recall_span_avg, f1_span_avg),
-        (precision_nuclearity_avg, recall_nuclearity_avg, f1_nuclearity_avg),
-        (precision_relation_avg, recall_relation_avg, f1_relation_avg),
-        (precision_full_avg, recall_full_avg, f1_full_avg),
+    return macro_metrics(
+        correct_span_list,
+        correct_nuclearity_list,
+        correct_relation_list,
+        correct_full_list,
+        no_system_list,
+        no_golden_list,
     )

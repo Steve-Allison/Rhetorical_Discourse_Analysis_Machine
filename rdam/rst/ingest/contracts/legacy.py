@@ -5,7 +5,7 @@ from datetime import datetime
 from enum import StrEnum
 import json
 from pathlib import Path
-from typing import Self
+from typing import Self, cast
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -261,7 +261,7 @@ class SourceArtifact(_StrictModel):
     ) -> Self:
         materialized = tuple(edus)
         for index, edu in enumerate(materialized):
-            if not isinstance(edu, str) or not edu.strip():
+            if not edu.strip():
                 raise ValueError(f"EDU at index {index} must be a non-empty string")
         if not materialized:
             raise ValueError("EDU source must contain at least one EDU")
@@ -697,15 +697,18 @@ def _raw_contract(data: bytes, source_form: SourceForm) -> RawContractDeclaratio
         except json.JSONDecodeError:
             return None
         if isinstance(payload, dict):
+            document = cast(dict[object, object], payload)
+            schema_name = document.get("schema_name")
+            version = document.get("version")
             return RawContractDeclaration(
-                schema_name=payload.get("schema_name") if isinstance(payload.get("schema_name"), str) else None,
-                version=payload.get("version") if isinstance(payload.get("version"), str) else None,
+                schema_name=schema_name if isinstance(schema_name, str) else None,
+                version=version if isinstance(version, str) else None,
             )
     if source_form is SourceForm.DOCLANG_XML:
         prefix = data[:4096].decode("utf-8", errors="strict")
         namespace = None
-        if "xmlns=\"" in prefix:
-            namespace = prefix.split("xmlns=\"", 1)[1].split('"', 1)[0]
+        if 'xmlns="' in prefix:
+            namespace = prefix.split('xmlns="', 1)[1].split('"', 1)[0]
         return RawContractDeclaration(namespace=namespace)
     return None
 
@@ -725,7 +728,7 @@ def _identify_path(path: Path, data: bytes) -> SourceForm:
             payload = json.loads(data)
         except json.JSONDecodeError as exc:
             raise ValueError("JSON source is invalid and source_form cannot be inferred") from exc
-        if isinstance(payload, dict) and payload.get("schema_name") == "DoclingDocument":
+        if isinstance(payload, dict) and cast(dict[object, object], payload).get("schema_name") == "DoclingDocument":
             return SourceForm.DOCLING_JSON
     raise ValueError(f"source_form is required for ambiguous path {path.name!r}")
 
@@ -742,9 +745,9 @@ def _media_type(source_form: SourceForm) -> str:
 
 
 __all__ = [
+    "INGEST_PIPELINE_VERSION",
     "INGEST_SCHEMA_NAME",
     "INGEST_SCHEMA_VERSION",
-    "INGEST_PIPELINE_VERSION",
     "AnalysisAnchor",
     "AnalysisStatus",
     "AnalysisUnit",

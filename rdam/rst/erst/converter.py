@@ -200,9 +200,7 @@ def rs4_to_document_and_analysis(
     raw_relation_by_source.update({str(node_id): relation for node_id, relation in node_relnames.items()})
     signals: list[DiscourseSignal] = []
     for idx, sig in enumerate(rs4.signals):
-        token_ids = tuple(
-            dict.fromkeys(token_id - 1 for token_id in sig.tokens if 0 < token_id <= len(tokens))
-        )
+        token_ids = tuple(dict.fromkeys(token_id - 1 for token_id in sig.tokens if 0 < token_id <= len(tokens)))
         char_spans = tuple((tokens[token_id].start, tokens[token_id].end) for token_id in token_ids)
         relation = raw_relation_by_source.get(sig.source)
         signals.append(

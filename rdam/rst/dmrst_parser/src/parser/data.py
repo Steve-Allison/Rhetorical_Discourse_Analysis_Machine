@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import Any
-
 import numpy as np
+from numpy import ndarray
 from numpy.typing import ArrayLike
 
 # Fine-grained labels (51)
@@ -127,32 +126,30 @@ RelationTableRuRSTB = [
 ]
 
 
-def getLabelOrdered(Original_Order: ArrayLike) -> list[Any]:
+def getLabelOrdered(Original_Order: ArrayLike) -> list[int]:
     """
     Get the right order of lable for stacks manner.
     E.g.
     [8,3,9,2,6,10,1,5,7,11,4] to [8,3,2,1,6,5,4,7,9,10,11]
     """
-    Original_Order = np.array(Original_Order)
-    target = []
-    stacks = ["root", Original_Order]
-    while stacks[-1] != "root":
-        head = stacks[-1]
+    original_order = np.asarray(Original_Order, dtype=np.int64)
+    target: list[int] = []
+    stacks: list[ndarray[tuple[int], np.dtype[np.int64]]] = [original_order]
+    while stacks:
+        head = stacks.pop()
         if len(head) < 3:
-            target.extend(head.tolist())
-            del stacks[-1]
+            target.extend(int(value) for value in head)
         else:
-            target.append(head[0])
+            target.append(int(head[0]))
             temp = np.arange(len(head))
             top = head[temp[head < head[0]]]
             down = head[temp[head > head[0]]]
-            del stacks[-1]
             if down.size > 0:
                 stacks.append(down)
             if top.size > 0:
                 stacks.append(top)
 
-    return [x for x in target]
+    return target
 
 
 def nucs_and_rels(label_index: int, relation_table: list[str]) -> tuple[str, str, str, str]:
@@ -180,14 +177,14 @@ def nucs_and_rels(label_index: int, relation_table: list[str]) -> tuple[str, str
 class Data:
     """One batched parser example. Field order matches the historical constructor."""
 
-    input_sentences: list
-    edu_breaks: list
-    decoder_input: list
-    relation_label: list
-    parsing_breaks: list
-    golden_metric: list
-    entity_ids: list | None = None
-    entity_position_ids: list | None = None
-    sent_breaks: list | None = None
-    parents_index: list | None = None
-    sibling: list | None = None
+    input_sentences: list[list[str] | list[int]]
+    edu_breaks: list[list[int]]
+    decoder_input: list[list[int]]
+    relation_label: list[list[int]]
+    parsing_breaks: list[list[int]]
+    golden_metric: list[list[str]]
+    entity_ids: list[object] | None = None
+    entity_position_ids: list[object] | None = None
+    sent_breaks: list[list[int]] | None = None
+    parents_index: list[list[int]] | None = None
+    sibling: list[list[int]] | None = None

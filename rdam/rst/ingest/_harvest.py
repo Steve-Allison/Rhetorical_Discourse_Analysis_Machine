@@ -4,9 +4,10 @@ from importlib.metadata import version
 from pathlib import Path
 import re
 import tempfile
-from typing import Any
+from typing import Any, cast
 
 from rdam.rst._version import PACKAGE_NAME
+from rdam.rst.doclang.loader import DoclangArchiveMember, XmlElement
 from rdam.rst.ingest.contracts.legacy import (
     AnchorKind,
     AuthorshipRole,
@@ -199,7 +200,9 @@ def _inventory_docling(
                 AnchorKind.JSON_POINTER,
                 item_id,
                 layer=layer,
-                authorship=AuthorshipRole.TRANSCRIBED if label == "text" and _is_transcript(doc) else AuthorshipRole.AUTHORED,
+                authorship=AuthorshipRole.TRANSCRIBED
+                if label == "text" and _is_transcript(doc)
+                else AuthorshipRole.AUTHORED,
                 additional_anchors=_docling_anchors(artifact, node),
                 attributes=_docling_attributes(node, label=label, layer=layer),
                 adapter="isanlp_rst.docling.inventory/v1",
@@ -280,33 +283,34 @@ def _inventory_doclang_data(
     artifact: SourceArtifact,
     data: bytes,
     *,
-    archive_members: tuple[Any, ...],
+    archive_members: tuple[DoclangArchiveMember, ...],
 ) -> tuple[tuple[ContentInventoryItem, ...], SourceContractIdentity]:
     from doclang import ValidationError as DoclangValidationError
     from doclang import validate
     from lxml import etree
     from rdam.rst.doclang.errors import InvalidDoclangError
-    from rdam.rst.doclang.loader import local_path
+    from rdam.rst.doclang.loader import local_path_index
 
     try:
         with tempfile.NamedTemporaryFile(suffix=".dclg") as stream:
             stream.write(data)
             stream.flush()
             validate(stream.name, allow_empty_namespace=True)
-        parser = etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False, recover=False, huge_tree=False)
-        root = etree.fromstring(data, parser=parser)
+        parser = etree.XMLParser(
+            resolve_entities=False, no_network=True, load_dtd=False, recover=False, huge_tree=False
+        )
+        root = cast(XmlElement, etree.fromstring(data, parser=parser))
     except (DoclangValidationError, etree.XMLSyntaxError) as exc:
-        raise InvalidDoclangError(
-            f"DocLang XML failed current validation ({type(exc).__name__})"
-        ) from exc
+        raise InvalidDoclangError(f"DocLang XML failed current validation ({type(exc).__name__})") from exc
     items: list[ContentInventoryItem] = []
+    path_by_element = local_path_index(root)
     for element in root.iter():
         if not isinstance(element.tag, str):
             continue
-        item_id = local_path(element)
+        item_id = path_by_element[element]
         parent = element.getparent()
-        parent_id = local_path(parent) if parent is not None else None
-        tag = etree.QName(element).localname
+        parent_id = path_by_element[parent] if parent is not None else None
+        tag = etree.QName(cast(Any, element)).localname
         content_class = _doclang_class(tag)
         ancestor_names = _doclang_ancestor_names(element)
         if "table" in ancestor_names and tag != "table":
@@ -357,7 +361,7 @@ def _inventory_doclang_data(
     contract = SourceContractIdentity(
         family="doclang",
         raw_declared_schema=artifact.raw_contract,
-        accepted_schema=RawContractDeclaration(namespace=etree.QName(root).namespace),
+        accepted_schema=RawContractDeclaration(namespace=etree.QName(cast(Any, root)).namespace),
         validator_distribution="doclang",
         validator_version=version("doclang"),
         validator_digest=_adapter_digest(Path(__file__), Path(__file__).parents[1] / "doclang/loader.py"),
@@ -429,20 +433,20 @@ def _docling_anchors(artifact: SourceArtifact, node: Any) -> tuple[NativeAnchor,
                 )
             )
         charspan = getattr(provenance, "charspan", None)
+        coordinates = cast(tuple[object, ...], charspan) if isinstance(charspan, tuple) else ()
         if (
-            isinstance(charspan, tuple)
-            and len(charspan) == 2
-            and isinstance(charspan[0], int)
-            and isinstance(charspan[1], int)
-            and charspan[1] > charspan[0]
+            len(coordinates) == 2
+            and isinstance(coordinates[0], int)
+            and isinstance(coordinates[1], int)
+            and coordinates[1] > coordinates[0]
         ):
             anchors.append(
                 NativeAnchor(
                     artifact_id=artifact.source_id,
                     item_id=str(node.self_ref),
                     kind=AnchorKind.CHARACTER,
-                    selector=f"item_char={charspan[0]},{charspan[1]}",
-                    range=PreparedRange(start=charspan[0], end=charspan[1]),
+                    selector=f"item_char={coordinates[0]},{coordinates[1]}",
+                    range=PreparedRange(start=coordinates[0], end=coordinates[1]),
                 )
             )
     return tuple(anchors)
@@ -466,9 +470,7 @@ def _docling_attributes(node: Any, *, label: str, layer: str) -> tuple[tuple[str
         for index, reference in enumerate(getattr(node, relationship_name, ())):
             target = getattr(reference, "cref", None)
             if target is not None:
-                attributes.append(
-                    (f"relationship:{relationship_name}:{index}", str(target))
-                )
+                attributes.append((f"relationship:{relationship_name}:{index}", str(target)))
     for index, comment in enumerate(getattr(node, "comments", ())):
         model_dump_json = getattr(comment, "model_dump_json", None)
         attributes.append(
@@ -514,10 +516,7 @@ def _docling_cell_anchors(artifact: SourceArtifact, cell_id: str, cell: Any) -> 
                 artifact_id=artifact.source_id,
                 item_id=cell_id,
                 kind=AnchorKind.BOUNDING_BOX,
-                selector=(
-                    f"l={bbox.l:.12g};t={bbox.t:.12g};r={bbox.r:.12g};"
-                    f"b={bbox.b:.12g};origin={origin}"
-                ),
+                selector=(f"l={bbox.l:.12g};t={bbox.t:.12g};r={bbox.r:.12g};b={bbox.b:.12g};origin={origin}"),
             )
         )
     return tuple(anchors)
@@ -539,8 +538,7 @@ def _reclassify_markdown(items: tuple[ContentInventoryItem, ...]) -> tuple[Conte
         text = (item.text or "").strip()
         normalized = " ".join(text.upper().split())
         if item.content_class is ContentClass.HEADING and (
-            normalized.endswith("VISUAL DESCRIPTION")
-            or normalized.endswith("CONCEPTUAL ANALYSIS & METAPHOR")
+            normalized.endswith(("VISUAL DESCRIPTION", "CONCEPTUAL ANALYSIS & METAPHOR"))
         ):
             revised[index] = item.model_copy(update={"content_class": ContentClass.NAVIGATION})
             presentation_analysis_next = True
@@ -566,7 +564,11 @@ def _reclassify_back_matter(items: tuple[ContentInventoryItem, ...]) -> tuple[Co
     )
     if abstract_index is not None:
         first_heading = next(
-            (index for index, item in enumerate(revised[:abstract_index]) if item.content_class in {ContentClass.TITLE, ContentClass.HEADING}),
+            (
+                index
+                for index, item in enumerate(revised[:abstract_index])
+                if item.content_class in {ContentClass.TITLE, ContentClass.HEADING}
+            ),
             None,
         )
         if first_heading is not None:
@@ -591,19 +593,6 @@ def _reclassify_back_matter(items: tuple[ContentInventoryItem, ...]) -> tuple[Co
 
 def _is_image_only_markdown(text: str) -> bool:
     return re.fullmatch(r"!\[[^\]]*\]\([^\n)]+\)", text) is not None
-
-
-def _verify_inventory(items: tuple[ContentInventoryItem, ...]) -> None:
-    ids = [item.item_id for item in items]
-    if len(ids) != len(set(ids)):
-        raise ValueError("complete inventory contains duplicate item IDs")
-    known = set(ids)
-    for item in items:
-        if item.parent_id is not None and item.parent_id not in known:
-            raise ValueError(f"inventory item {item.item_id} has unknown parent: {item.parent_id}")
-        unknown_children = set(item.child_ids) - known
-        if unknown_children:
-            raise ValueError(f"inventory item {item.item_id} has unknown children: {sorted(unknown_children)}")
 
 
 def _builtin_contract(family: str, adapter: str) -> SourceContractIdentity:
@@ -684,7 +673,7 @@ def _markdown_attributes(tokens: tuple[Any, ...], index: int) -> tuple[tuple[str
 
 def _line_starts(source: str) -> tuple[int, ...]:
     starts = [0]
-    starts.extend(match.end() for match in re.finditer("\n", source))
+    starts.extend(match.end() for match in re.finditer(r"\n", source))
     return tuple(starts)
 
 
@@ -696,9 +685,10 @@ def _markdown_character_anchors(
     text: str | None,
     line_starts: tuple[int, ...],
 ) -> tuple[NativeAnchor, ...]:
-    if token.map is None or text is None:
+    token_map = cast(tuple[int, int] | None, token.map)
+    if token_map is None or text is None:
         return ()
-    start_line, end_line = token.map
+    start_line, end_line = token_map
     block_start = line_starts[start_line]
     block_end = line_starts[end_line] if end_line < len(line_starts) else len(source)
     relative = source[block_start:block_end].find(text)
@@ -865,7 +855,17 @@ def _doclang_text(element: Any, tag: str) -> str | None:
     if tag in {"ched", "rhed", "corn", "fcel"}:
         pieces = [element.tail or ""]
         for sibling in element.itersiblings():
-            if isinstance(sibling.tag, str) and local_name(sibling) in {"ched", "rhed", "corn", "fcel", "ecel", "lcel", "ucel", "xcel", "nl"}:
+            if isinstance(sibling.tag, str) and local_name(sibling) in {
+                "ched",
+                "rhed",
+                "corn",
+                "fcel",
+                "ecel",
+                "lcel",
+                "ucel",
+                "xcel",
+                "nl",
+            }:
                 break
             pieces.append("".join(sibling.itertext()))
             if sibling.tail:
@@ -898,11 +898,7 @@ def _doclang_anchors(
     from rdam.rst.doclang.loader import local_name
 
     anchors: list[NativeAnchor] = []
-    locations = [
-        child
-        for child in element
-        if isinstance(child.tag, str) and local_name(child) == "location"
-    ]
+    locations = [child for child in element if isinstance(child.tag, str) and local_name(child) == "location"]
     if len(locations) == 4:
         coordinates = ";".join(
             f"{axis}={location.get('value')};{axis}_resolution={location.get('resolution') or 'default'}"
@@ -953,16 +949,6 @@ def _doclang_ancestor_names(element: Any) -> frozenset[str]:
             names.add(local_name(parent))
         parent = parent.getparent()
     return frozenset(names)
-
-
-def _structure_path(item: ContentInventoryItem, inventory: tuple[ContentInventoryItem, ...]) -> tuple[str, ...]:
-    by_id = {candidate.item_id: candidate for candidate in inventory}
-    path = [item.item_id]
-    current = item
-    while current.parent_id is not None and current.parent_id in by_id:
-        current = by_id[current.parent_id]
-        path.append(current.item_id)
-    return tuple(reversed(path))
 
 
 __all__ = ["inventory_source"]

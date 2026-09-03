@@ -26,7 +26,7 @@ refused with a typed failure rather than approximated.
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import Final, Self
+from typing import Final, Self, TypeGuard, cast
 
 DEFAULT_CAPACITY: Final = 14
 """Maximum number of arguments the exhaustive enumeration accepts (2^14 candidate sets)."""
@@ -38,6 +38,19 @@ class FrameworkError(ValueError):
 
 class FrameworkCapacityError(ValueError):
     """The framework exceeds the declared enumeration capacity."""
+
+
+def _non_empty_string(value: object) -> TypeGuard[str]:
+    return isinstance(value, str) and bool(value)
+
+
+def _attack_pair(value: object) -> TypeGuard[tuple[str, str]]:
+    if not isinstance(value, tuple):
+        return False
+    pair = cast(tuple[object, ...], value)
+    if len(pair) != 2:
+        return False
+    return isinstance(pair[0], str) and isinstance(pair[1], str)
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,17 +67,13 @@ class ArgumentationFramework:
             raise FrameworkError("arguments must be a non-empty tuple")
         known: set[str] = set()
         for argument in self.arguments:
-            if not isinstance(argument, str) or not argument:
+            if not _non_empty_string(argument):
                 raise FrameworkError("every argument must be a non-empty string")
             if argument in known:
                 raise FrameworkError(f"duplicate argument: {argument!r}")
             known.add(argument)
         for attack in self.attacks:
-            if (
-                not isinstance(attack, tuple)
-                or len(attack) != 2
-                or not all(isinstance(endpoint, str) for endpoint in attack)
-            ):
+            if not _attack_pair(attack):
                 raise FrameworkError("every attack must be a two-element tuple of argument names")
             if attack[0] not in known or attack[1] not in known:
                 raise FrameworkError(f"attack references an unknown argument: {attack!r}")
@@ -78,7 +87,7 @@ class ArgumentationFramework:
         if not isinstance(raw_arguments, list) or not raw_arguments:
             raise FrameworkError("arguments must be a non-empty list")
         arguments: list[str] = []
-        for item in raw_arguments:
+        for item in cast(list[object], raw_arguments):
             if not isinstance(item, str) or not item:
                 raise FrameworkError("every argument must be a non-empty string")
             if item in arguments:
@@ -88,10 +97,16 @@ class ArgumentationFramework:
             raise FrameworkError("attacks must be a list of [attacker, attacked] pairs")
         known = set(arguments)
         attacks: set[tuple[str, str]] = set()
-        for pair in raw_attacks:
-            if not isinstance(pair, list) or len(pair) != 2 or not all(isinstance(end, str) for end in pair):
+        for pair in cast(list[object], raw_attacks):
+            if not isinstance(pair, list):
                 raise FrameworkError("every attack must be a two-element list of argument names")
-            source, target = str(pair[0]), str(pair[1])
+            raw_pair = cast(list[object], pair)
+            if len(raw_pair) != 2:
+                raise FrameworkError("every attack must be a two-element list of argument names")
+            if not isinstance(raw_pair[0], str) or not isinstance(raw_pair[1], str):
+                raise FrameworkError("every attack must be a two-element list of argument names")
+            typed_pair = cast(list[str], raw_pair)
+            source, target = typed_pair
             if source not in known or target not in known:
                 raise FrameworkError(f"attack references an unknown argument: {pair!r}")
             attacks.add((source, target))
@@ -135,7 +150,9 @@ def is_complete(framework: ArgumentationFramework, candidate: frozenset[str]) ->
 
 
 def is_stable(framework: ArgumentationFramework, candidate: frozenset[str]) -> bool:
-    return is_conflict_free(framework, candidate) and (candidate | framework.attacked_by(candidate)) == frozenset(framework.arguments)
+    return is_conflict_free(framework, candidate) and (candidate | framework.attacked_by(candidate)) == frozenset(
+        framework.arguments
+    )
 
 
 def grounded_extension(framework: ArgumentationFramework) -> frozenset[str]:
@@ -180,12 +197,14 @@ def _ordered(framework: ArgumentationFramework, extensions: Iterable[frozenset[s
 def validate_capacity(capacity: int) -> int:
     """Return a valid exhaustive-enumeration capacity or reject invalid configuration."""
 
-    if isinstance(capacity, bool) or not isinstance(capacity, int) or capacity <= 0:
+    if isinstance(capacity, bool) or capacity <= 0:
         raise ValueError("exhaustive capacity must be a positive integer")
     return capacity
 
 
-def complete_extensions(framework: ArgumentationFramework, *, capacity: int = DEFAULT_CAPACITY) -> tuple[frozenset[str], ...]:
+def complete_extensions(
+    framework: ArgumentationFramework, *, capacity: int = DEFAULT_CAPACITY
+) -> tuple[frozenset[str], ...]:
     """Every complete extension, by exhaustive enumeration of the ``2^|Ar|`` candidate sets."""
 
     capacity = validate_capacity(capacity)

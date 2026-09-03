@@ -144,7 +144,7 @@ class GumCorpusAuthority(BaseModel):
     authority_sha256: str = ""
 
     @model_validator(mode="after")
-    def validate_authority(self) -> "GumCorpusAuthority":
+    def validate_authority(self) -> GumCorpusAuthority:
         seen: set[str] = set()
         for entry in self.entries:
             if entry.document_id in seen:
@@ -197,7 +197,7 @@ class CorpusDocumentReceipt(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_success(self) -> "CorpusDocumentReceipt":
+    def validate_success(self) -> CorpusDocumentReceipt:
         if not self.succeeded:
             raise ValueError("accepted document receipts must be successful")
         return self
@@ -223,7 +223,7 @@ class CorpusLoadReceipt(BaseModel):
     receipt_sha256: str = ""
 
     @model_validator(mode="after")
-    def validate_reconciliation(self) -> "CorpusLoadReceipt":
+    def validate_reconciliation(self) -> CorpusLoadReceipt:
         expected_counts = {
             "document_count": len(self.documents),
             "candidate_count": sum(document.candidate_count for document in self.documents),
@@ -254,13 +254,17 @@ class SplitManifest(BaseModel):
     corpus_revision: str = Field(pattern=_GIT_REVISION_PATTERN)
     split_authority_sha256: str = Field(pattern=_SHA256_PATTERN)
     documents: tuple[CorpusDocumentReceipt, ...] = Field(min_length=1)
-    partition_document_ids: dict[CorpusPartition, tuple[str, ...]] = Field(default_factory=dict)
-    partition_source_sha256: dict[CorpusPartition, tuple[str, ...]] = Field(default_factory=dict)
-    partition_counts: dict[CorpusPartition, int] = Field(default_factory=dict)
+    partition_document_ids: dict[CorpusPartition, tuple[str, ...]] = Field(
+        default_factory=lambda: dict[CorpusPartition, tuple[str, ...]]()
+    )
+    partition_source_sha256: dict[CorpusPartition, tuple[str, ...]] = Field(
+        default_factory=lambda: dict[CorpusPartition, tuple[str, ...]]()
+    )
+    partition_counts: dict[CorpusPartition, int] = Field(default_factory=lambda: dict[CorpusPartition, int]())
     manifest_sha256: str = ""
 
     @model_validator(mode="after")
-    def validate_disjointness(self) -> "SplitManifest":
+    def validate_disjointness(self) -> SplitManifest:
         document_ids: set[str] = set()
         source_hashes: set[str] = set()
         for document in self.documents:
@@ -269,9 +273,7 @@ class SplitManifest(BaseModel):
             if document.document_id in document_ids:
                 raise ValueError(f"document ID is present in multiple partitions: {document.document_id}")
             if document.source_sha256 in source_hashes:
-                raise ValueError(
-                    f"source SHA-256 is present in multiple partitions: {document.source_sha256}"
-                )
+                raise ValueError(f"source SHA-256 is present in multiple partitions: {document.source_sha256}")
             document_ids.add(document.document_id)
             source_hashes.add(document.source_sha256)
 
@@ -321,7 +323,7 @@ class HardNegativeSamplingConfig(BaseModel):
     config_sha256: str = ""
 
     @model_validator(mode="after")
-    def validate_config_hash(self) -> "HardNegativeSamplingConfig":
+    def validate_config_hash(self) -> HardNegativeSamplingConfig:
         expected = _canonical_model_hash(self, exclude={"config_sha256"})
         if self.config_sha256 and self.config_sha256 != expected:
             raise ValueError("hard-negative config SHA-256 does not match its canonical content")
@@ -343,7 +345,7 @@ class CandidateDocumentSelection(BaseModel):
     selected_negative_count: int = Field(ge=0)
 
     @model_validator(mode="after")
-    def validate_counts(self) -> "CandidateDocumentSelection":
+    def validate_counts(self) -> CandidateDocumentSelection:
         if self.complete_count != self.positive_count + self.negative_count:
             raise ValueError("complete candidate count does not reconcile")
         if self.selected_count != self.selected_positive_count + self.selected_negative_count:
@@ -370,7 +372,7 @@ class CandidateSelectionReceipt(BaseModel):
     selected_identity_sha256: str = Field(pattern=_SHA256_PATTERN)
 
     @model_validator(mode="after")
-    def validate_selection(self) -> "CandidateSelectionReceipt":
+    def validate_selection(self) -> CandidateSelectionReceipt:
         if self.complete_count != sum(document.complete_count for document in self.documents):
             raise ValueError("complete selection count does not reconcile with documents")
         if self.selected_count != sum(document.selected_count for document in self.documents):
@@ -430,7 +432,7 @@ class PrivateCorpusVerificationReceipt(BaseModel):
     receipt_sha256: str = ""
 
     @model_validator(mode="after")
-    def validate_private_corpus(self) -> "PrivateCorpusVerificationReceipt":
+    def validate_private_corpus(self) -> PrivateCorpusVerificationReceipt:
         document_ids = [source.document_id for source in self.sources]
         source_hashes = [source.source_sha256 for source in self.sources]
         if len(document_ids) != len(set(document_ids)):
@@ -438,8 +440,7 @@ class PrivateCorpusVerificationReceipt(BaseModel):
         if len(source_hashes) != len(set(source_hashes)):
             raise ValueError("private corpus source hashes are not disjoint")
         expected_counts = {
-            partition: sum(source.partition == partition for source in self.sources)
-            for partition in CorpusPartition
+            partition: sum(source.partition == partition for source in self.sources) for partition in CorpusPartition
         }
         if self.partition_counts != expected_counts:
             raise ValueError("private corpus partition counts do not reconcile")
@@ -477,7 +478,7 @@ class ErstDecoderConfig(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_config_hash(self) -> "ErstDecoderConfig":
+    def validate_config_hash(self) -> ErstDecoderConfig:
         expected = _canonical_model_hash(self, exclude={"config_sha256"})
         if self.config_sha256 and self.config_sha256 != expected:
             raise ValueError("decoder config SHA-256 does not match its canonical content")
@@ -500,14 +501,12 @@ class ErstDecodeReceipt(BaseModel):
     decoder_config_sha256: str = Field(pattern=_SHA256_PATTERN)
 
     @model_validator(mode="after")
-    def validate_decode_counts(self) -> "ErstDecodeReceipt":
+    def validate_decode_counts(self) -> ErstDecodeReceipt:
         if set(self.formal_rejections) != set(DecodeRejectionReason):
             raise ValueError("decode receipt must enumerate every formal rejection reason")
         if any(count < 0 for count in self.formal_rejections.values()):
             raise ValueError("formal rejection counts cannot be negative")
-        accounted = self.below_threshold_count + self.accepted_count + sum(
-            self.formal_rejections.values()
-        )
+        accounted = self.below_threshold_count + self.accepted_count + sum(self.formal_rejections.values())
         if accounted != self.candidate_count:
             raise ValueError("decode receipt counts do not reconcile")
         if self.accepted_count != len(self.output_edge_ids):
@@ -535,7 +534,7 @@ class TokenizerProbeResult(BaseModel):
     failure_message: str | None = Field(default=None, max_length=500)
 
     @model_validator(mode="after")
-    def validate_probe(self) -> "TokenizerProbeResult":
+    def validate_probe(self) -> TokenizerProbeResult:
         success_evidence = (
             self.is_fast
             and self.encoding_sha256 is not None
@@ -568,7 +567,7 @@ class TokenizerCompatibilityReceipt(BaseModel):
     receipt_sha256: str = ""
 
     @model_validator(mode="after")
-    def validate_compatibility(self) -> "TokenizerCompatibilityReceipt":
+    def validate_compatibility(self) -> TokenizerCompatibilityReceipt:
         model_revisions = {(probe.model_id, probe.revision) for probe in self.probes}
         if len(model_revisions) != len(self.probes):
             raise ValueError("tokenizer probes must have unique model/revision identities")
@@ -682,7 +681,7 @@ class ErstCalibrationState(BaseModel):
     fitted_partition: CorpusPartition
 
     @model_validator(mode="after")
-    def require_dev_calibration(self) -> "ErstCalibrationState":
+    def require_dev_calibration(self) -> ErstCalibrationState:
         if self.fitted_partition != CorpusPartition.DEV:
             raise ValueError("eRST calibration may be fitted on dev only")
         return self
@@ -754,7 +753,7 @@ class ErstCheckpointVerificationReceipt(BaseModel):
     verified: bool
 
     @model_validator(mode="after")
-    def require_verified(self) -> "ErstCheckpointVerificationReceipt":
+    def require_verified(self) -> ErstCheckpointVerificationReceipt:
         if not self.verified:
             raise ValueError("checkpoint verification receipt cannot represent an unverified bundle")
         if any(not relation for relation in self.raw_relations):
@@ -774,7 +773,7 @@ class ErstCheckpointLicenses(BaseModel):
     private_only: bool
 
     @model_validator(mode="after")
-    def require_private_bundle(self) -> "ErstCheckpointLicenses":
+    def require_private_bundle(self) -> ErstCheckpointLicenses:
         if not self.private_only:
             raise ValueError("mixed GUM underlying-text licences require a private eRST bundle")
         return self
@@ -817,12 +816,15 @@ class ErstCheckpointBuildSpec(BaseModel):
     @field_validator("upstream_revisions")
     @classmethod
     def validate_upstream_revisions(cls, value: dict[str, str]) -> dict[str, str]:
-        if any(not name.strip() or re.fullmatch(_GIT_REVISION_PATTERN, revision) is None for name, revision in value.items()):
+        if any(
+            not name.strip() or re.fullmatch(_GIT_REVISION_PATTERN, revision) is None
+            for name, revision in value.items()
+        ):
             raise ValueError("upstream revisions require non-empty names and immutable Git revisions")
         return value
 
     @model_validator(mode="after")
-    def validate_release_evidence(self) -> "ErstCheckpointBuildSpec":
+    def validate_release_evidence(self) -> ErstCheckpointBuildSpec:
         if self.provenance.producer_version != PACKAGE_VERSION:
             raise ValueError("checkpoint producer version must equal the package version")
         if self.release_eligible:
@@ -859,7 +861,7 @@ class ErstCheckpointManifest(BaseModel):
     manifest_sha256: str = ""
 
     @model_validator(mode="after")
-    def validate_manifest(self) -> "ErstCheckpointManifest":
+    def validate_manifest(self) -> ErstCheckpointManifest:
         if self.package_version != PACKAGE_VERSION:
             raise ValueError("checkpoint package version does not match the installed package")
         paths = tuple(file.path for file in self.files)
@@ -909,7 +911,7 @@ class RawRelationInventory(BaseModel):
     inventory_sha256: str = ""
 
     @model_validator(mode="after")
-    def validate_inventory(self) -> "RawRelationInventory":
+    def validate_inventory(self) -> RawRelationInventory:
         if self.partition != CorpusPartition.TRAIN:
             raise ValueError("raw relation inventory must be derived from train only")
         if self.labels != tuple(sorted(set(self.labels))):
@@ -942,15 +944,15 @@ __all__ = [
     "CANDIDATE_SELECTION_SCHEMA_VERSION",
     "CORPUS_AUTHORITY_SCHEMA_VERSION",
     "CORPUS_RECEIPT_SCHEMA_VERSION",
-    "ERST_DECODER_SCHEMA_VERSION",
     "ERST_CHECKPOINT_SCHEMA_VERSION",
+    "ERST_DECODER_SCHEMA_VERSION",
     "PRIVATE_CORPUS_VERIFICATION_SCHEMA_VERSION",
     "RAW_RELATION_INVENTORY_SCHEMA_VERSION",
     "SPLIT_MANIFEST_SCHEMA_VERSION",
     "TOKENIZER_PROBE_SCHEMA_VERSION",
     "CandidateDocumentSelection",
-    "CandidateSelectionReceipt",
     "CandidateIdentityProbe",
+    "CandidateSelectionReceipt",
     "CorpusAuthorityEntry",
     "CorpusDocumentReceipt",
     "CorpusFailureType",
@@ -960,8 +962,6 @@ __all__ = [
     "CorpusPartition",
     "CorpusSourceIdentity",
     "DecodeRejectionReason",
-    "ErstDecodeReceipt",
-    "ErstDecoderConfig",
     "ErstCalibrationState",
     "ErstCheckpointBuildSpec",
     "ErstCheckpointComponent",
@@ -974,6 +974,8 @@ __all__ = [
     "ErstCheckpointResearchEvidence",
     "ErstCheckpointTestVector",
     "ErstCheckpointVerificationReceipt",
+    "ErstDecodeReceipt",
+    "ErstDecoderConfig",
     "ErstFeatureSchema",
     "ErstGraphComponentConfig",
     "ErstScorerConfig",

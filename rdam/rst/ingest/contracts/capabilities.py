@@ -118,7 +118,7 @@ class ProductionCapabilities(StrictContractModel):
         return self
 
     @classmethod
-    def discover(cls, *, execution_id: str = "capability-discovery") -> "ProductionCapabilities":
+    def discover(cls, *, execution_id: str = "capability-discovery") -> ProductionCapabilities:
         """Describe the installed boundary without importing optional adapters or models."""
 
         try:
@@ -129,9 +129,7 @@ class ProductionCapabilities(StrictContractModel):
         semantic = ProductionCapabilitiesSemantic(
             package_version=package_version,
             write_contract_version=SemanticVersion(root=WRITE_CONTRACT_VERSION),
-            readable_contract_versions=tuple(
-                SemanticVersion(root=item) for item in READABLE_CONTRACT_VERSIONS
-            ),
+            readable_contract_versions=tuple(SemanticVersion(root=item) for item in READABLE_CONTRACT_VERSIONS),
             source_forms=source_forms,
             operations=(
                 OperationCapability(
@@ -186,11 +184,7 @@ def _source_capability(source_form: SourceForm) -> SourceFormCapability:
         SourceForm.DOCLANG_ARCHIVE: ("doclang",),
     }
     required = requirements.get(source_form, ())
-    missing = tuple(
-        distribution
-        for distribution in required
-        if not _distribution_installed(distribution)
-    )
+    missing = tuple(distribution for distribution in required if not _distribution_installed(distribution))
     media_types = {
         SourceForm.TEXT: ("text/plain; charset=utf-8",),
         SourceForm.EDUS: ("application/vnd.isanlp-rst.edus+json",),

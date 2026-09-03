@@ -9,10 +9,11 @@ object the machine never renames, removes, or reinterprets (FR-013).
 
 from collections.abc import Mapping
 from enum import StrEnum
-from typing import Annotated, Literal, Self
+from typing import Annotated, Literal, Self, cast
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_serializer, field_validator, model_validator
 
+from rdam._immutable_json import freeze_json_object, thaw_json
 from rdam._strict import JsonValue, SemanticVersion, Sha256Identity, StrictModel, semantic_sha256, sha256_bytes
 from rdam.frameworks import BOUNDARY_TECHNIQUES, STRUCTURED_INPUT_TECHNIQUES, Technique, technique_curie
 
@@ -71,7 +72,9 @@ class FormalismDeclaration(StrictModel):
     def curie_is_the_canonical_identity(self) -> Self:
         expected = technique_curie(self.technique)
         if self.technique_curie != expected:
-            raise ValueError(f"formalism {self.formalism_id!r} names {self.technique_curie!r}; Central names {expected!r}")
+            raise ValueError(
+                f"formalism {self.formalism_id!r} names {self.technique_curie!r}; Central names {expected!r}"
+            )
         return self
 
 
@@ -80,7 +83,7 @@ class ProviderProvenance(StrictModel):
 
     package: str = Field(min_length=1)
     version: str = Field(min_length=1)
-    source_revision: str | None = None
+    source_revision: str | None = Field(default=None, min_length=1)
     model_identity: str | None = None
     licence: str = Field(min_length=1)
 
@@ -103,7 +106,9 @@ class ProviderDeclaration(StrictModel):
             raise ValueError(f"{self.technique.value!r} is a formalism, not a technique boundary")
         expected = technique_curie(self.technique)
         if self.technique_curie != expected:
-            raise ValueError(f"provider {self.provider_id!r} names {self.technique_curie!r}; Central names {expected!r}")
+            raise ValueError(
+                f"provider {self.provider_id!r} names {self.technique_curie!r}; Central names {expected!r}"
+            )
         ids = [formalism.formalism_id for formalism in self.formalisms]
         if len(ids) != len(set(ids)):
             raise ValueError("formalism identifiers must be unique")
@@ -112,6 +117,8 @@ class ProviderDeclaration(StrictModel):
         if self.technique in STRUCTURED_INPUT_TECHNIQUES and not self.requires_structured_input:
             raise ValueError(f"{self.technique.value} analyses a supplied structure and must require structured input")
         if isinstance(self.capability, AvailableCapability):
+            if self.provenance.source_revision is None:
+                raise ValueError("available provider declaration must carry a source revision")
             if self.capability.provider_id != self.provider_id:
                 raise ValueError("available capability must name this provider")
             if self.capability.contract_version != self.contract_version:
@@ -131,7 +138,9 @@ class SourceIdentity(StrictModel):
 
     @classmethod
     def from_bytes(cls, payload: bytes, *, source_name: str | None = None, media_type: str | None = None) -> Self:
-        return cls(source_id=Sha256Identity(hex_digest=sha256_bytes(payload)), source_name=source_name, media_type=media_type)
+        return cls(
+            source_id=Sha256Identity(hex_digest=sha256_bytes(payload)), source_name=source_name, media_type=media_type
+        )
 
     @classmethod
     def from_text(cls, text: str, *, source_name: str | None = None) -> Self:
@@ -151,6 +160,20 @@ class NativeTechniqueResult(StrictModel):
     payload: Mapping[str, JsonValue]
     provenance: ProviderProvenance
     semantic_digest: Sha256Identity | None = None
+
+    @field_validator("payload", mode="before")
+    @classmethod
+    def normalize_payload(cls, value: object) -> object:
+        return thaw_json(cast(Mapping[str, JsonValue], value)) if isinstance(value, Mapping) else value
+
+    @field_validator("payload", mode="after")
+    @classmethod
+    def freeze_payload(cls, value: Mapping[str, JsonValue]) -> Mapping[str, JsonValue]:
+        return freeze_json_object(value)
+
+    @field_serializer("payload")
+    def serialize_payload(self, value: Mapping[str, JsonValue]) -> object:
+        return thaw_json(value)
 
     @model_validator(mode="after")
     def complete_identity(self) -> Self:
@@ -339,6 +362,20 @@ class StructuredInput(StrictModel):
     payload: Mapping[str, JsonValue]
     derived_from: UpstreamResultReference | None = None
 
+    @field_validator("payload", mode="before")
+    @classmethod
+    def normalize_payload(cls, value: object) -> object:
+        return thaw_json(cast(Mapping[str, JsonValue], value)) if isinstance(value, Mapping) else value
+
+    @field_validator("payload", mode="after")
+    @classmethod
+    def freeze_payload(cls, value: Mapping[str, JsonValue]) -> Mapping[str, JsonValue]:
+        return freeze_json_object(value)
+
+    @field_serializer("payload")
+    def serialize_payload(self, value: Mapping[str, JsonValue]) -> object:
+        return thaw_json(value)
+
     @model_validator(mode="after")
     def only_for_structured_input_techniques(self) -> Self:
         if self.technique not in STRUCTURED_INPUT_TECHNIQUES:
@@ -454,6 +491,23 @@ class ProviderRequest(StrictModel):
     structured_input: Mapping[str, JsonValue] | None
     formalism_id: str | None = Field(default=None, pattern=_SNAKE)
     derived_from: UpstreamResultReference | None = None
+
+    @field_validator("structured_input", mode="before")
+    @classmethod
+    def normalize_structured_input(cls, value: object) -> object:
+        return thaw_json(cast(Mapping[str, JsonValue], value)) if isinstance(value, Mapping) else value
+
+    @field_validator("structured_input", mode="after")
+    @classmethod
+    def freeze_structured_input(
+        cls,
+        value: Mapping[str, JsonValue] | None,
+    ) -> Mapping[str, JsonValue] | None:
+        return None if value is None else freeze_json_object(value)
+
+    @field_serializer("structured_input")
+    def serialize_structured_input(self, value: Mapping[str, JsonValue] | None) -> object:
+        return None if value is None else thaw_json(value)
 
 
 __all__ = [

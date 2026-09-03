@@ -1,10 +1,12 @@
 """Neural Secondary Edge Scorer with boundary-aware span pooling and asymmetric bilinear attention."""
 
-import torch
+from typing import Any, cast
+
 import torch.nn as nn
 import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer, PretrainedConfig, PreTrainedTokenizerBase
 
+from rdam.rst._torch_runtime import resolve_device, resolve_dtype, torch
 from rdam.rst.model_authority import DEFAULT_ENCODER_MODEL_ID, DEFAULT_ENCODER_REVISION
 
 
@@ -54,9 +56,7 @@ class BoundaryAwareSpanEncoder(nn.Module):
             raise ValueError("offset mapping shape must be [batch, sequence, 2]")
 
         lexical_mask = (
-            attention_mask.bool()
-            & ~special_tokens_mask.bool()
-            & (offset_mapping[..., 1] > offset_mapping[..., 0])
+            attention_mask.bool() & ~special_tokens_mask.bool() & (offset_mapping[..., 1] > offset_mapping[..., 0])
         )
         if not bool(torch.all(lexical_mask.any(dim=1)).item()):
             raise ValueError("every encoded span must contain at least one lexical token")
@@ -115,62 +115,32 @@ class NeuralSecondaryEdgeScorer(nn.Module):
         if raw_relation_inventory is None:
             raise ValueError("scorer requires an explicit train-derived raw relation inventory")
         self.raw_relation_inventory = raw_relation_inventory
-        if not self.raw_relation_inventory or len(self.raw_relation_inventory) != len(
-            set(self.raw_relation_inventory)
-        ):
+        if not self.raw_relation_inventory or len(self.raw_relation_inventory) != len(set(self.raw_relation_inventory)):
             raise ValueError("scorer raw relation inventory must be non-empty and unique")
-        resolved_num_relations = (
-            len(self.raw_relation_inventory) if num_relations is None else num_relations
-        )
+        resolved_num_relations = len(self.raw_relation_inventory) if num_relations is None else num_relations
         if resolved_num_relations != len(self.raw_relation_inventory):
             raise ValueError("relation head width must match the raw relation inventory")
         self.num_relations = resolved_num_relations
 
-        # 1. Resolve Device
-        if device == "auto":
-            if torch.cuda.is_available():
-                self.dev = torch.device("cuda")
-            elif torch.backends.mps.is_available():
-                self.dev = torch.device("mps")
-            else:
-                self.dev = torch.device("cpu")
-        else:
-            self.dev = torch.device(device)
-
-        # 2. Resolve Dtype
-        if torch_dtype == "auto":
-            if self.dev.type in ("cuda", "mps"):
-                self.dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
-            else:
-                self.dtype = torch.float32
-        elif isinstance(torch_dtype, str):
-            dtype_map = {
-                "float32": torch.float32,
-                "float16": torch.float16,
-                "bfloat16": torch.bfloat16,
-            }
-            self.dtype = dtype_map.get(torch_dtype, torch.float32)
-        else:
-            self.dtype = torch_dtype
+        self.dev = resolve_device(device)
+        self.dtype = resolve_dtype(self.dev, torch_dtype)
 
         # 3. Backbone and Tokenizer
         revision_kwargs = {"revision": self.model_revision} if self.model_revision is not None else {}
-        self.tokenizer = tokenizer or AutoTokenizer.from_pretrained(
-            model_name_or_path,
-            use_fast=True,
-            **revision_kwargs,
+        self.tokenizer: Any = tokenizer or cast(Any, AutoTokenizer).from_pretrained(
+            model_name_or_path, use_fast=True, **revision_kwargs
         )
         if not self.tokenizer.is_fast:
             raise ValueError("eRST scoring requires a verified fast tokenizer artifact")
         if encoder_config is None:
-            self.encoder = AutoModel.from_pretrained(
+            self.encoder: Any = cast(Any, AutoModel).from_pretrained(
                 model_name_or_path,
                 dtype=self.dtype,
                 use_safetensors=True,
                 **revision_kwargs,
             ).to(self.dev)
         else:
-            self.encoder = AutoModel.from_config(
+            self.encoder = cast(Any, AutoModel).from_config(
                 encoder_config,
                 dtype=self.dtype,
             ).to(self.dev)
@@ -206,18 +176,10 @@ class NeuralSecondaryEdgeScorer(nn.Module):
         device: str | torch.device,
         *,
         torch_dtype: torch.dtype | None = None,
-    ) -> "NeuralSecondaryEdgeScorer":
+    ) -> NeuralSecondaryEdgeScorer:
         """Move the complete scorer while keeping its runtime contract synchronized."""
 
-        if device == "auto":
-            if torch.cuda.is_available():
-                resolved_device = torch.device("cuda")
-            elif torch.backends.mps.is_available():
-                resolved_device = torch.device("mps")
-            else:
-                resolved_device = torch.device("cpu")
-        else:
-            resolved_device = torch.device(device)
+        resolved_device = resolve_device(device)
         resolved_dtype = torch_dtype or self.dtype
         self.to(device=resolved_device, dtype=resolved_dtype)
         self.dev = resolved_device
@@ -243,8 +205,14 @@ class NeuralSecondaryEdgeScorer(nn.Module):
         struct_features = struct_features.to(device=self.dev, dtype=self.dtype)
 
         # 2. Encode source and target spans
-        src_out = self.encoder(input_ids=src_input_ids, attention_mask=src_attention_mask).last_hidden_state
-        tgt_out = self.encoder(input_ids=tgt_input_ids, attention_mask=tgt_attention_mask).last_hidden_state
+        src_out = cast(
+            torch.Tensor,
+            self.encoder(input_ids=src_input_ids, attention_mask=src_attention_mask).last_hidden_state,
+        )
+        tgt_out = cast(
+            torch.Tensor,
+            self.encoder(input_ids=tgt_input_ids, attention_mask=tgt_attention_mask).last_hidden_state,
+        )
 
         h_u = self.span_encoder(
             src_out,
@@ -295,7 +263,7 @@ class NeuralSecondaryEdgeScorer(nn.Module):
 
             # Masked Cross-Entropy for relation classification on positive pairs
             if rel_label is not None:
-                pos_mask = (edge_label == 1.0) & (rel_label != -100)
+                pos_mask = torch.eq(edge_label, 1) & (rel_label != -100)
                 if pos_mask.sum() > 0:
                     loss_rel = F.cross_entropy(rel_logits[pos_mask], rel_label[pos_mask])
                     loss_total = loss_edge + (1.2 * loss_rel)

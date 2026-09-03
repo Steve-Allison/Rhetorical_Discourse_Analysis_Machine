@@ -10,7 +10,7 @@ For a typed / validated model with ``.model_dump()`` / ``.model_validate()`` and
 JSON-schema export, see :mod:`rdam.rst.utils.serialization_pydantic`.
 """
 
-from typing import Any
+from typing import Any, cast
 
 from rdam.rst.annotation_rst import DiscourseUnit
 
@@ -39,16 +39,30 @@ def tree_to_dict(node: DiscourseUnit | None) -> dict[str, Any]:
     """
     if node is None:
         return {}
-    out: dict[str, Any] = {}
-    for field in _NODE_FIELDS:
-        value = getattr(node, field)
-        if value is not None:
-            out[field] = value
-    if node.left is not None:
-        out["left"] = tree_to_dict(node.left)
-    if node.right is not None:
-        out["right"] = tree_to_dict(node.right)
-    return out
+    completed: dict[int, dict[str, Any]] = {}
+    visiting: set[int] = set()
+    pending: list[tuple[DiscourseUnit, bool]] = [(node, False)]
+    while pending:
+        current, expanded = pending.pop()
+        identity = id(current)
+        if expanded:
+            out = {field: value for field in _NODE_FIELDS if (value := getattr(current, field)) is not None}
+            if current.left is not None:
+                out["left"] = completed[id(current.left)]
+            if current.right is not None:
+                out["right"] = completed[id(current.right)]
+            completed[identity] = out
+            visiting.remove(identity)
+            continue
+        if identity in visiting or identity in completed:
+            raise ValueError("DiscourseUnit input must be an acyclic tree without shared nodes")
+        visiting.add(identity)
+        pending.append((current, True))
+        if current.right is not None:
+            pending.append((current.right, False))
+        if current.left is not None:
+            pending.append((current.left, False))
+    return completed[id(node)]
 
 
 def tree_from_dict(data: dict[str, Any]) -> DiscourseUnit | None:
@@ -58,10 +72,33 @@ def tree_from_dict(data: dict[str, Any]) -> DiscourseUnit | None:
     """
     if not data:
         return None
-    node = DiscourseUnit(**{f: data[f] for f in _NODE_FIELDS if f in data})
-    node.left = tree_from_dict(data["left"]) if "left" in data else None
-    node.right = tree_from_dict(data["right"]) if "right" in data else None
-    return node
+    completed: dict[int, DiscourseUnit] = {}
+    visiting: set[int] = set()
+    pending: list[tuple[dict[str, Any], bool]] = [(data, False)]
+    while pending:
+        current, expanded = pending.pop()
+        identity = id(current)
+        if expanded:
+            node = DiscourseUnit(**{field: current[field] for field in _NODE_FIELDS if field in current})
+            left = current.get("left")
+            right = current.get("right")
+            node.left = completed[id(cast(dict[str, Any], left))] if isinstance(left, dict) and left else None
+            node.right = completed[id(cast(dict[str, Any], right))] if isinstance(right, dict) and right else None
+            completed[identity] = node
+            visiting.remove(identity)
+            continue
+        if identity in visiting or identity in completed:
+            raise ValueError("serialized DiscourseUnit must be an acyclic tree without shared mappings")
+        visiting.add(identity)
+        pending.append((current, True))
+        for child_name in ("right", "left"):
+            child = current.get(child_name)
+            if child is None or child == {}:
+                continue
+            if not isinstance(child, dict):
+                raise TypeError(f"{child_name} must be a JSON object")
+            pending.append((cast(dict[str, Any], child), False))
+    return completed[id(data)]
 
 
 __all__ = ["tree_from_dict", "tree_to_dict"]

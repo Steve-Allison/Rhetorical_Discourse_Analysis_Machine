@@ -22,8 +22,16 @@ Rules implemented here, from the 006 contracts:
 """
 
 from collections.abc import Iterable, Mapping
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextvars import copy_context
+from threading import Lock
+from types import MappingProxyType
 from typing import Protocol
+from weakref import ReferenceType, ref
 
+from rdam._execution import ExecutionPolicy
+from rdam._result_cache import ResultCache, revision_is_cacheable
+from rdam._strict import semantic_sha256
 from rdam.contracts import (
     AggregateAnalysis,
     AggregateRequest,
@@ -45,6 +53,9 @@ from rdam.contracts import (
 )
 from rdam.frameworks import BOUNDARY_TECHNIQUES, STRUCTURED_INPUT_TECHNIQUES, Technique, technique_curie
 
+_PROVIDER_LOCKS_GUARD = Lock()
+_PROVIDER_LOCKS: dict[int, tuple[ReferenceType[Provider] | Provider, Lock]] = {}
+
 
 class Provider(Protocol):
     """An independently callable implementation for one technique (006 data model §Provider)."""
@@ -60,14 +71,26 @@ class Provider(Protocol):
 class Machine:
     """Runs several techniques side by side without collapsing them into one formalism."""
 
-    def __init__(self, providers: Iterable[Provider] = ()) -> None:
+    def __init__(
+        self,
+        providers: Iterable[Provider] = (),
+        *,
+        execution_policy: ExecutionPolicy | None = None,
+    ) -> None:
         registry: dict[Technique, Provider] = {}
+        provider_locks: dict[Technique, Lock] = {}
         for provider in providers:
-            technique = provider.declaration.technique
+            declaration = provider.declaration
+            technique = declaration.technique
             if technique in registry:
                 raise ValueError(f"two providers declare {technique.value}; a boundary has exactly one provider")
             registry[technique] = provider
-        self._providers: Mapping[Technique, Provider] = registry
+            provider_locks[technique] = _provider_lock(provider)
+        self._providers: Mapping[Technique, Provider] = MappingProxyType(registry)
+        self._provider_locks: Mapping[Technique, Lock] = MappingProxyType(provider_locks)
+        self._execution_policy = execution_policy or ExecutionPolicy()
+        cache_directory = self._execution_policy.cache_directory
+        self._cache = None if cache_directory is None else ResultCache(cache_directory)
 
     @property
     def providers(self) -> Mapping[Technique, Provider]:
@@ -111,10 +134,27 @@ class Machine:
         outcomes: list[ResultOutcome | UnavailableOutcome | FailedOutcome] = [
             ResultOutcome(result=upstream) for upstream in request.upstream_results
         ]
+        executor = ThreadPoolExecutor(
+            max_workers=min(self._execution_policy.max_workers, len(request.techniques)),
+            thread_name_prefix="rdam-provider",
+        )
+        futures = {
+            executor.submit(copy_context().run, self._analyse_one, technique, request): technique
+            for technique in request.techniques
+        }
+        requested_outcomes: dict[Technique, ResultOutcome | UnavailableOutcome | FailedOutcome] = {}
+        try:
+            for future in as_completed(futures):
+                requested_outcomes[futures[future]] = future.result()
+        finally:
+            if len(requested_outcomes) != len(futures):
+                for future in futures:
+                    future.cancel()
+            executor.shutdown(wait=True, cancel_futures=True)
+        outcomes.extend(requested_outcomes[technique] for technique in request.techniques)
         lineage: list[ProviderDependencyReference] = []
         for technique in request.techniques:
-            outcome = self._analyse_one(technique, request)
-            outcomes.append(outcome)
+            outcome = requested_outcomes[technique]
             derivation = request.derivation_for(technique)
             if derivation is None or not isinstance(outcome, ResultOutcome):
                 continue
@@ -163,8 +203,31 @@ class Machine:
             formalism_id=chosen,
             derived_from=request.derivation_for(technique),
         )
+        if self._cache is not None and revision_is_cacheable(declaration.provenance.source_revision):
+            cache_key = _cache_key(technique, declaration, provider_request)
+            with self._cache.single_flight(cache_key):
+                cached = self._cache.load(
+                    cache_key,
+                    validate=lambda result: _result_contract_violation(declaration, provider_request, result),
+                )
+                if cached is not None:
+                    return ResultOutcome(result=cached)
+                outcome = self._call_provider(technique, provider, declaration, provider_request)
+                if isinstance(outcome, ResultOutcome):
+                    self._cache.store(cache_key, outcome.result)
+                return outcome
+        return self._call_provider(technique, provider, declaration, provider_request)
+
+    def _call_provider(
+        self,
+        technique: Technique,
+        provider: Provider,
+        declaration: ProviderDeclaration,
+        provider_request: ProviderRequest,
+    ) -> ResultOutcome | FailedOutcome:
         try:
-            result = provider.analyse(provider_request)
+            with self._provider_locks[technique]:
+                result = provider.analyse(provider_request)
         except ProviderError as error:
             violation = _failure_contract_violation(declaration, error.failure)
             if violation is None:
@@ -177,7 +240,7 @@ class Machine:
                     violation=violation,
                 )
             )
-        violation = _result_contract_violation(declaration, request, result)
+        violation = _result_contract_violation(declaration, provider_request, result)
         if violation is not None:
             return FailedOutcome(
                 failure=_contract_failure(
@@ -190,7 +253,11 @@ class Machine:
         return ResultOutcome(result=result)
 
 
-def production_machine(*, model: str | None = None) -> Machine:
+def production_machine(
+    *,
+    model: str | None = None,
+    execution_policy: ExecutionPolicy | None = None,
+) -> Machine:
     """Construct the supported seven-technique production composition.
 
     Provider imports stay local so importing :mod:`rdam` remains cheap. Construction
@@ -215,13 +282,14 @@ def production_machine(*, model: str | None = None) -> Machine:
             WaltonProvider(model=model),
             DungProvider(),
             IbisProvider(),
-        )
+        ),
+        execution_policy=execution_policy,
     )
 
 
 def _result_contract_violation(
     declaration: ProviderDeclaration,
-    request: AggregateRequest,
+    request: ProviderRequest,
     result: NativeTechniqueResult,
 ) -> str | None:
     """A provider that returns a result outside its own declaration has failed, deterministically."""
@@ -234,6 +302,8 @@ def _result_contract_violation(
         return "result_provenance_differs_from_declaration"
     if result.source != request.source:
         return "result_is_about_a_different_source"
+    if request.formalism_id is not None and result.formalism_id != request.formalism_id:
+        return "result_formalism_differs_from_request"
     formalism = declaration.formalism(result.formalism_id)
     if formalism is None:
         return "result_formalism_is_not_declared"
@@ -275,4 +345,58 @@ def _contract_failure(
     )
 
 
-__all__ = ["Machine", "Provider", "production_machine"]
+def _cache_key(
+    technique: Technique,
+    declaration: ProviderDeclaration,
+    request: ProviderRequest,
+) -> str:
+    """Identity of every input that can change one native provider result."""
+
+    return semantic_sha256(
+        {
+            "source": request.source,
+            "technique": technique,
+            "formalism_id": request.formalism_id,
+            "structured_input": request.structured_input,
+            "derived_from": request.derived_from,
+            "provider_id": declaration.provider_id,
+            "provider_contract": declaration.contract_version,
+            "provenance": declaration.provenance,
+            "model_identity": declaration.provenance.model_identity,
+        }
+    )
+
+
+def _provider_lock(provider: Provider) -> Lock:
+    """Return the process-wide call lock for one concrete provider instance."""
+
+    identity = id(provider)
+    with _PROVIDER_LOCKS_GUARD:
+        existing = _PROVIDER_LOCKS.get(identity)
+        if existing is not None:
+            owner, lock = existing
+            if isinstance(owner, ReferenceType):
+                if owner() is provider:
+                    return lock
+            elif owner is provider:
+                return lock
+        lock = Lock()
+        try:
+            owner_reference: ReferenceType[Provider] | Provider = ref(
+                provider,
+                lambda reference, key=identity: _remove_provider_lock(key, reference),
+            )
+        except TypeError:
+            owner_reference = provider
+        _PROVIDER_LOCKS[identity] = (owner_reference, lock)
+        return lock
+
+
+def _remove_provider_lock(identity: int, owner: ReferenceType[Provider]) -> None:
+    with _PROVIDER_LOCKS_GUARD:
+        current = _PROVIDER_LOCKS.get(identity)
+        if current is not None and current[0] is owner:
+            del _PROVIDER_LOCKS[identity]
+
+
+__all__ = ["ExecutionPolicy", "Machine", "Provider", "production_machine"]

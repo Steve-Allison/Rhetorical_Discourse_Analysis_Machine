@@ -1,10 +1,12 @@
 """Loader for immutable Central_Configs ontology lockfile."""
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from functools import cache
 import hashlib
 from importlib import resources
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 
 import yaml
@@ -32,10 +34,16 @@ class OntologyLockData:
     release_status: str
     sha256_digest: str
     coarse_concepts: tuple[str, ...]
-    rst_dt_fine_to_coarse: dict[str, str]
-    gum_fine_to_coarse: dict[str, str]
-    dmrst_gum_model_27: dict[int, ModelClassMapping]
-    dmrst_rstdt_model_42: dict[int, ModelClassMapping]
+    rst_dt_fine_to_coarse: Mapping[str, str]
+    gum_fine_to_coarse: Mapping[str, str]
+    dmrst_gum_model_27: Mapping[int, ModelClassMapping]
+    dmrst_rstdt_model_42: Mapping[int, ModelClassMapping]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "rst_dt_fine_to_coarse", MappingProxyType(dict(self.rst_dt_fine_to_coarse)))
+        object.__setattr__(self, "gum_fine_to_coarse", MappingProxyType(dict(self.gum_fine_to_coarse)))
+        object.__setattr__(self, "dmrst_gum_model_27", MappingProxyType(dict(self.dmrst_gum_model_27)))
+        object.__setattr__(self, "dmrst_rstdt_model_42", MappingProxyType(dict(self.dmrst_rstdt_model_42)))
 
 
 @cache

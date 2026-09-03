@@ -11,38 +11,46 @@ import tempfile
 import uuid
 import warnings
 from pathlib import Path
-from typing import IO
+from typing import IO, TypedDict, cast
 
-from playwright.async_api import TimeoutError as PlaywrightTimeoutError
+from playwright.async_api import TimeoutError as AsyncPlaywrightTimeoutError
 from playwright.async_api import async_playwright
+from playwright.sync_api import TimeoutError as SyncPlaywrightTimeoutError
 from playwright.sync_api import sync_playwright
 
 from ._chromium import (
     JS_GET_DOCUMENT_HEIGHT,
     JS_GET_DOCUMENT_WIDTH,
     JS_GRAPH_BBOX,
+    JS_GRAPH_READY,
     attach_navigation_guard,
     attach_navigation_guard_async,
     launch_chromium,
     launch_chromium_async,
     trim_whitespace,
 )
-from .rstweb_classes import NODE, get_depth, get_left_right
-from .rstweb_sql import (
-    get_def_rel,
-    get_max_right,
-    get_multinuc_children_lr,
-    get_multinuc_children_lr_ids,
-    get_rst_doc,
-    get_rst_rels,
-    import_document,
-    temporary_db,
-)
+from .rstweb_classes import get_depth, get_left_right
+from .rstweb_reader import read_rst
 
 type PathLike = str | os.PathLike[str]
 
 PACKAGE_ROOT_DIR = Path(__file__).resolve().parent
 DATA_ROOT_DIR = PACKAGE_ROOT_DIR / "data"
+
+
+class Rs3ImportError(RuntimeError):
+    """An RS3 source could not be parsed and imported for rendering."""
+
+
+class RstRenderError(RuntimeError):
+    """The browser could not complete an RST render within its contract."""
+
+
+class _GraphBoundingBox(TypedDict):
+    x: float
+    y: float
+    width: float
+    height: float
 
 
 def _html_to_fragment(full_html: str) -> str:
@@ -71,8 +79,7 @@ def rs3tohtml(
     user: str = "temp_user",
     project: str = "rstviewer_temp",
 ) -> str:
-    with temporary_db():
-        return _rs3tohtml_with_db(rs3_filepath, user=user, project=project)
+    return _rs3tohtml_with_db(rs3_filepath, user=user, project=project)
 
 
 def _rs3tohtml_with_db(
@@ -80,15 +87,18 @@ def _rs3tohtml_with_db(
     user: str = "temp_user",
     project: str = "rstviewer_temp",
 ) -> str:
-    import_document(filename=os.fspath(rs3_filepath), project=project, user=user)
+    del project, user
+    relation_types: dict[str, str] = {}
+    imported = read_rst(Path(rs3_filepath), relation_types)
+    if isinstance(imported, str):
+        raise Rs3ImportError(imported)
+    nodes = imported
 
     top_spacing = 0
     layer_spacing = 60
 
     current_doc = Path(rs3_filepath).name
     current_doc_safe = html.escape(current_doc, quote=True)
-    current_project = project
-
     header = (DATA_ROOT_DIR / "templates" / "main.html").read_text(encoding="utf-8")
 
     header = header.replace("**page_title**", "RST Viewer")
@@ -126,10 +136,13 @@ def _rs3tohtml_with_db(
 
     cpout = ""
     cpout += header
-    cpout += """<div>\n"""
+    cpout += '<div id="inner_canvas">\n'
 
-    rels = get_rst_rels(current_doc, current_project)
-    def_rstrel = get_def_rel("rst", current_doc, current_project)
+    rels = tuple(sorted(relation_types.items()))
+    try:
+        def_rstrel = next(relation for relation, kind in rels if kind == "rst")
+    except StopIteration as exc:
+        raise Rs3ImportError("RS3 relation inventory contains no RST relation") from exc
     multi_rel_entries: list[dict[str, str]] = []
     rst_rel_entries: list[dict[str, str]] = []
     rel_kinds: dict[str, str] = {}
@@ -143,32 +156,8 @@ def _rs3tohtml_with_db(
             rel_kinds[value] = "rst"
     multi_rel_entries.append({"value": str(def_rstrel), "label": "(satellite...)"})
 
-    nodes: dict[str, NODE] = {}
-    rows = get_rst_doc(current_doc, current_project, user)
-    for row in rows:
-        node_id = str(row[0])
-        parent = str(row[3])
-        kind = str(row[5])
-        text = str(row[6])
-        relname = str(row[7])
-        if relname in rel_kinds:
-            relkind = rel_kinds[relname]
-        else:
-            relkind = "span"
-        if kind == "edu":
-            nodes[node_id] = NODE(
-                node_id,
-                float(row[1]),
-                float(row[2]),
-                parent,
-                float(row[4]),
-                kind,
-                text,
-                relname,
-                relkind,
-            )
-        else:
-            nodes[node_id] = NODE(node_id, 0, 0, parent, float(row[4]), kind, text, relname, relkind)
+    for node in nodes.values():
+        node.relkind = rel_kinds.get(node.relname, "span")
 
     for key in nodes:
         node = nodes[key]
@@ -180,13 +169,13 @@ def _rs3tohtml_with_db(
 
     # ---- Adaptive horizontal unit to keep coordinates stable on very wide graphs
     # We need max_right before any anchor/pixel calculations.
-    max_right = get_max_right(current_doc, current_project, user)
+    max_right = max((node.right for node in nodes.values()), default=0)
     # Constrain total width roughly <= 100000k px; keep units reasonable.
     px_unit = max(40, min(100, int(100000 / max(1, float(max_right)))))
     edu_inner_w = px_unit - 4  # keeps same 2px margins as before
 
-    anchors = {}
-    pix_anchors = {}
+    anchors: dict[str, str] = {}
+    pix_anchors: dict[str, str] = {}
 
     # Calculate anchor points for nodes (proportional within the parent)
     for key in sorted(nodes, key=lambda id: nodes[id].depth, reverse=True):
@@ -208,9 +197,19 @@ def _rs3tohtml_with_db(
                         ((node.left - parent.left) * px_unit) / parent_wid + (0.5 * child_wid) / parent_wid
                     )
             elif node.relkind == "multinuc" and parent.kind == "multinuc":
-                lr = get_multinuc_children_lr(node.parent, current_doc, current_project, user)
+                multinuc_children = tuple(
+                    child for child in nodes.values() if child.parent == node.parent and child.relkind == "multinuc"
+                )
+                if not multinuc_children:
+                    raise Rs3ImportError(f"multinuclear node {node.parent!r} has no multinuclear children")
+                lr = [
+                    int(min(child.left for child in multinuc_children)),
+                    int(max(child.right for child in multinuc_children)),
+                ]
                 lr_wid = (lr[0] + lr[1]) / 2
-                lr_ids = get_multinuc_children_lr_ids(node.parent, lr[0], lr[1], current_doc, current_project, user)
+                left_child = min(multinuc_children, key=lambda child: (child.left, int(child.id)))
+                right_child = max(multinuc_children, key=lambda child: (child.right, -int(child.id)))
+                lr_ids = (left_child.id, right_child.id)
                 left_child = str(lr_ids[0])
                 right_child = str(lr_ids[1])
                 if left_child == right_child:
@@ -379,10 +378,7 @@ def _rs3tohtml_with_db(
 
     for key in nodes:
         node = nodes[key]
-        if node.kind == "edu":
-            node_id_str = "edu" + node.id
-        else:
-            node_id_str = "g" + node.id
+        node_id_str = "edu" + node.id if node.kind == "edu" else "g" + node.id
         cpout += 'jsPlumb.makeSource("' + node_id_str + '", {anchor: "Top", filter: ".num_id", allowLoopback:false});'
         cpout += 'jsPlumb.makeTarget("' + node_id_str + '", {anchor: "Top", filter: ".num_id", allowLoopback:false});'
 
@@ -391,14 +387,8 @@ def _rs3tohtml_with_db(
         node = nodes[key]
         if node.parent != "0":
             parent = nodes[node.parent]
-            if node.kind == "edu":
-                node_id_str = "edu" + node.id
-            else:
-                node_id_str = "g" + node.id
-            if parent.kind == "edu":
-                parent_id_str = "edu" + parent.id
-            else:
-                parent_id_str = "g" + parent.id
+            node_id_str = "edu" + node.id if node.kind == "edu" else "g" + node.id
+            parent_id_str = "edu" + parent.id if parent.kind == "edu" else "g" + parent.id
 
             if node.relname == "span":
                 cpout += (
@@ -517,27 +507,29 @@ def rs3topng(
             browser = launch_chromium(p)
         except Exception as exc:
             raise ImportError("Browser is not installed.\nRun:\n  playwright install chromium") from exc
-        context = browser.new_context(
-            device_scale_factor=device_scale_factor,
-            color_scheme="light",
-        )
-        page = context.new_page()
-        page.set_default_timeout(timeout_ms)
-        attach_navigation_guard(page)
-
         try:
-            page.set_content(html_str, wait_until="domcontentloaded", timeout=timeout_ms)
-        except PlaywrightTimeoutError:
-            pass
+            context = browser.new_context(
+                device_scale_factor=device_scale_factor,
+                color_scheme="light",
+            )
+            try:
+                page = context.new_page()
+                page.set_default_timeout(timeout_ms)
+                attach_navigation_guard(page)
+                try:
+                    page.set_content(html_str, wait_until="domcontentloaded", timeout=timeout_ms)
+                    page.wait_for_function(JS_GRAPH_READY, timeout=timeout_ms)
+                except SyncPlaywrightTimeoutError as exc:
+                    raise RstRenderError(f"RST graph layout did not complete within {timeout_ms} ms") from exc
 
-        page.wait_for_timeout(50)
-
-        doc_width = max(int(page.evaluate(JS_GET_DOCUMENT_WIDTH)), 320)
-        doc_height = max(int(page.evaluate(JS_GET_DOCUMENT_HEIGHT)), 240)
-        page.set_viewport_size({"width": doc_width, "height": doc_height})
-        png_bytes: bytes = page.screenshot(full_page=True, type="png")
-        context.close()
-        browser.close()
+                doc_width = max(int(cast(float, page.evaluate(JS_GET_DOCUMENT_WIDTH))), 320)
+                doc_height = max(int(cast(float, page.evaluate(JS_GET_DOCUMENT_HEIGHT))), 240)
+                page.set_viewport_size({"width": doc_width, "height": doc_height})
+                png_bytes: bytes = page.screenshot(full_page=True, type="png")
+            finally:
+                context.close()
+        finally:
+            browser.close()
 
     return _emit_png(png_bytes, png_filepath, base64_encoded)
 
@@ -560,37 +552,41 @@ async def rs3topng_async(
             browser = await launch_chromium_async(p)
         except Exception as exc:
             raise ImportError("Browser is not installed.\nRun:\n  playwright install chromium") from exc
-        context = await browser.new_context(
-            device_scale_factor=device_scale_factor,
-            viewport={"width": viewport_width, "height": viewport_height},
-            color_scheme="light",
-        )
-        page = await context.new_page()
-        page.set_default_timeout(timeout_ms)
-        await attach_navigation_guard_async(page)
         try:
-            await page.set_content(html_str, wait_until="domcontentloaded", timeout=timeout_ms)
-        except PlaywrightTimeoutError:
-            pass
+            context = await browser.new_context(
+                device_scale_factor=device_scale_factor,
+                viewport={"width": viewport_width, "height": viewport_height},
+                color_scheme="light",
+            )
+            try:
+                page = await context.new_page()
+                page.set_default_timeout(timeout_ms)
+                await attach_navigation_guard_async(page)
+                try:
+                    await page.set_content(html_str, wait_until="domcontentloaded", timeout=timeout_ms)
+                    await page.wait_for_function(JS_GRAPH_READY, timeout=timeout_ms)
+                except AsyncPlaywrightTimeoutError as exc:
+                    raise RstRenderError(f"RST graph layout did not complete within {timeout_ms} ms") from exc
 
-        await page.wait_for_timeout(100)
-        bbox = await page.evaluate(JS_GRAPH_BBOX)
-        x = max(bbox["x"] - margin_px, 0)
-        y = max(bbox["y"] - margin_px, 0)
-        w = bbox["width"] + margin_px * 2
-        h = bbox["height"] + margin_px * 2
-        await page.set_viewport_size(
-            {
-                "width": max(viewport_width, x + w + 20),
-                "height": max(viewport_height, y + h + 20),
-            }
-        )
-        png_bytes: bytes = await page.screenshot(
-            type="png",
-            clip={"x": x, "y": y, "width": w, "height": h},
-        )
-        await context.close()
-        await browser.close()
+                bbox = cast(_GraphBoundingBox, await page.evaluate(JS_GRAPH_BBOX))
+                x = max(bbox["x"] - margin_px, 0)
+                y = max(bbox["y"] - margin_px, 0)
+                w = bbox["width"] + margin_px * 2
+                h = bbox["height"] + margin_px * 2
+                await page.set_viewport_size(
+                    {
+                        "width": max(viewport_width, int(x + w + 20)),
+                        "height": max(viewport_height, int(y + h + 20)),
+                    }
+                )
+                png_bytes: bytes = await page.screenshot(
+                    type="png",
+                    clip={"x": x, "y": y, "width": w, "height": h},
+                )
+            finally:
+                await context.close()
+        finally:
+            await browser.close()
 
     return _emit_png(trim_whitespace(png_bytes), png_filepath, base64_encoded)
 
@@ -613,55 +609,39 @@ async def rs3topdf_async(
         except Exception as exc:
             raise ImportError("Browser is not installed.\nRun:\n  playwright install chromium") from exc
 
-        context = await browser.new_context(
-            device_scale_factor=device_scale_factor,
-            viewport={"width": viewport_width, "height": viewport_height},
-            color_scheme="light",
-        )
-        page = await context.new_page()
-        page.set_default_timeout(timeout_ms)
-        await attach_navigation_guard_async(page)
         try:
-            await page.set_content(html_str, wait_until="domcontentloaded", timeout=timeout_ms)
-        except PlaywrightTimeoutError:
-            pass
-        await page.wait_for_timeout(100)
+            context = await browser.new_context(
+                device_scale_factor=device_scale_factor,
+                viewport={"width": viewport_width, "height": viewport_height},
+                color_scheme="light",
+            )
+            try:
+                page = await context.new_page()
+                page.set_default_timeout(timeout_ms)
+                await attach_navigation_guard_async(page)
+                try:
+                    await page.set_content(html_str, wait_until="domcontentloaded", timeout=timeout_ms)
+                    await page.wait_for_function(JS_GRAPH_READY, timeout=timeout_ms)
+                except AsyncPlaywrightTimeoutError as exc:
+                    raise RstRenderError(f"RST graph layout did not complete within {timeout_ms} ms") from exc
 
-        bbox = await page.evaluate(JS_GRAPH_BBOX)
-        x = max(bbox["x"] - margin_px, 0)
-        y = max(bbox["y"] - margin_px, 0)
-        w = bbox["width"] + margin_px * 2
-        h = bbox["height"] + margin_px * 2
+                bbox = cast(_GraphBoundingBox, await page.evaluate(JS_GRAPH_BBOX))
+                x = max(bbox["x"] - margin_px, 0)
+                y = max(bbox["y"] - margin_px, 0)
+                w = bbox["width"] + margin_px * 2
+                h = bbox["height"] + margin_px * 2
 
-        await page.add_style_tag(
-            content=f"""
-html, body {{
-  margin: 0 !important;
-  padding: 0 !important;
-  width: {w}px !important;
-  height: {h}px !important;
-  overflow: hidden !important;
-}}
-#inner_canvas {{
-  position: absolute !important;
-  left: {-x}px !important;
-  top: {-y}px !important;
-}}
-@page {{
-  size: {w}px {h}px;
-  margin: 0;
-}}
-"""
-        )
-        await page.pdf(
-            path=pdf_path,
-            width=f"{w}px",
-            height=f"{h}px",
-            print_background=True,
-            prefer_css_page_size=True,
-        )
-        await context.close()
-        await browser.close()
+                await page.emulate_media(media="screen")
+                await page.pdf(
+                    path=pdf_path,
+                    width=f"{x + w}px",
+                    height=f"{y + h}px",
+                    print_background=True,
+                )
+            finally:
+                await context.close()
+        finally:
+            await browser.close()
 
 
 def _emit_png(
@@ -785,11 +765,8 @@ def _wrap_for_notebook(html_str: str) -> str:
 
 
 def _write_temp_rs3(content: str) -> Path:
-    handle = tempfile.NamedTemporaryFile(suffix=".rs3", delete=False)
-    try:
+    with tempfile.NamedTemporaryFile(suffix=".rs3", delete=False) as handle:
         handle.write(content.encode("utf8"))
-    finally:
-        handle.close()
     return Path(handle.name)
 
 
@@ -824,10 +801,7 @@ def render(
             temp_path.unlink(missing_ok=True)
 
     already_displayed = False
-    if colab:
-        display_html = _wrap_for_colab(html_str)
-    else:
-        display_html = _wrap_for_notebook(html_str)
+    display_html = _wrap_for_colab(html_str) if colab else _wrap_for_notebook(html_str)
     if display_inline:
         try:
             ipython_display = import_module("IPython.display")
@@ -890,7 +864,8 @@ def cli(argv: list[str] | None = None) -> None:
                 rs3topng(args.rs3_file, args.output_file, base64_encoded=True)
                 sys.exit(0)
             base64_png_str = rs3topng(args.rs3_file, base64_encoded=True)
-            assert isinstance(base64_png_str, str)
+            if not isinstance(base64_png_str, str):
+                raise RstRenderError("PNG renderer did not return a base64 string")
             sys.stdout.write(base64_png_str)
             sys.exit(0)
         case _:

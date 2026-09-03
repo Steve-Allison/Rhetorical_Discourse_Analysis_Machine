@@ -1,7 +1,7 @@
 import json
 from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import torch
 
@@ -34,7 +34,8 @@ class Parser:
     AVAILABLE_VERSIONS = DMRST_PARSERS + UNIVERSAL_PARSERS
     AVAILABLE_FAMILIES = ("dmrst", "unirst")
     _DEFAULT_HF_MODEL_NAME = "tchewik/isanlp_rst_v3"
-    _DEFAULT_HF_MODEL_VERSION = "gumrrg"
+    DEFAULT_HF_MODEL_VERSION = "gumrrg"
+    _DEFAULT_HF_MODEL_VERSION = DEFAULT_HF_MODEL_VERSION
     predictor: Any
 
     def __init__(
@@ -156,7 +157,7 @@ class Parser:
         prefix = "isanlp_rst.parser/"
         if not runtime_contract.startswith(prefix):
             raise ValueError(f"Invalid parser runtime contract prefix: {runtime_contract!r}")
-        suffix = runtime_contract[len(prefix):]
+        suffix = runtime_contract[len(prefix) :]
         family = suffix.split("-v", 1)[0]
         if family not in cls.AVAILABLE_FAMILIES:
             raise ValueError(
@@ -179,7 +180,7 @@ class Parser:
         segmenter: Any | None = None,
         segmenter_model: str | None = None,
         erst_scorer_checkpoint: str | Path | None = None,
-    ) -> "Parser":
+    ) -> Parser:
         """Validate and load one immutable child of the production model store."""
 
         from rdam.rst.model_loading import load_model_release, peek_runtime_contract
@@ -274,8 +275,10 @@ class Parser:
             return "unirst"
 
         cfg = Parser._safe_load_json(root / "config.json")
-        if cfg is not None and "corpora" in cfg.get("data", {}):
-            return "unirst"
+        if cfg is not None:
+            data = cfg.get("data")
+            if isinstance(data, dict) and "corpora" in cast(dict[object, object], data):
+                return "unirst"
 
         if (root / "relation_table.txt").is_file():
             return "dmrst"
@@ -293,16 +296,19 @@ class Parser:
         return any(path for directory in search_roots for pattern in patterns for path in directory.glob(pattern))
 
     @staticmethod
-    def _safe_load_json(path: Path) -> dict | None:
+    def _safe_load_json(path: Path) -> dict[str, object] | None:
         """Read ``path`` as JSON. Returns ``None`` if the file is missing,
         unreadable, or contains malformed JSON.
         """
         if not path.is_file():
             return None
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except OSError, json.JSONDecodeError:
             return None
+        if not isinstance(payload, dict):
+            return None
+        return cast(dict[str, object], payload)
 
     def __call__(self, text: str) -> dict[str, Any]:
         return self.predictor.parse_rst(text)
@@ -522,9 +528,23 @@ class Parser:
             start_t = time.perf_counter()
             texts = [doc.text for doc in documents]
             batch_raw_res: list[dict[str, Any]] = parse_rst_batch_fn(texts, batch_size=batch_size)
-            elapsed_ms = ((time.perf_counter() - start_t) * 1000.0) / max(1, len(documents))
+            average_parsing_ms = ((time.perf_counter() - start_t) * 1000.0) / max(1, len(documents))
 
             results: list[RstAnalysis] = []
+            primer = DiscourseMarkerPrimer() if prime_markers else None
+            completer = None
+            if formalism == OutputFormalismEnum.ERST_GRAPH:
+                from rdam.rst.english.erst.completer import CompleterConfig, ErstCompleter
+
+                if erst_checkpoint is None:
+                    raise RuntimeError("validated eRST checkpoint disappeared during parsing")
+                completer = ErstCompleter(
+                    config=CompleterConfig(
+                        min_confidence_threshold=erst_checkpoint.decoder_config.edge_threshold,
+                    ),
+                    signal_detector=erst_checkpoint.signal_detector,
+                    decoder_config=erst_checkpoint.decoder_config,
+                )
             for doc, raw_res in zip(documents, batch_raw_res, strict=True):
                 root_unit = extract_root_tree(raw_res)
                 base_analysis = du_to_analysis(root_unit, document_id=doc.document_id)
@@ -536,7 +556,7 @@ class Parser:
                     model_id=self.hf_model_version or str(getattr(self.predictor, "model_dir", "unknown")),
                     ontology_version="4.1.0-discourse",
                 )
-                timing = TimingRecord(parsing_ms=elapsed_ms, total_ms=elapsed_ms)
+                timing = TimingRecord(parsing_ms=average_parsing_ms, total_ms=average_parsing_ms)
 
                 analysis = RstAnalysis(
                     document_id=base_analysis.document_id,
@@ -547,26 +567,16 @@ class Parser:
                     signals=base_analysis.signals,
                     provenance=prov,
                     timing=timing,
-                    warnings=base_analysis.warnings,
+                    warnings=(*base_analysis.warnings, "timing:parsing_ms=batch_average_per_document"),
                     failure_code=base_analysis.failure_code,
                 )
 
-                if prime_markers:
-                    primer = DiscourseMarkerPrimer()
+                if primer is not None:
                     analysis = primer.prime_analysis(analysis, doc)
 
                 if formalism == OutputFormalismEnum.ERST_GRAPH:
-                    from rdam.rst.english.erst.completer import CompleterConfig, ErstCompleter
-
-                    if erst_checkpoint is None:
-                        raise RuntimeError("validated eRST checkpoint disappeared during parsing")
-                    completer = ErstCompleter(
-                        config=CompleterConfig(
-                            min_confidence_threshold=erst_checkpoint.decoder_config.edge_threshold,
-                        ),
-                        signal_detector=erst_checkpoint.signal_detector,
-                        decoder_config=erst_checkpoint.decoder_config,
-                    )
+                    if completer is None or erst_checkpoint is None:
+                        raise RuntimeError("validated eRST completion runtime disappeared during parsing")
                     analysis = completer.complete_graph(
                         doc,
                         analysis,

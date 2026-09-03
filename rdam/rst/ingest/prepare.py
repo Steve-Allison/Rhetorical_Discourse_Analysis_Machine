@@ -1,5 +1,6 @@
 """Complete v2 source inventory and reversible canonical preparation."""
 
+from collections.abc import Mapping
 from importlib.metadata import version
 import re
 from time import perf_counter
@@ -98,7 +99,12 @@ def inventory_source(
     """Harvest every provider-observed item and translate it to the v2 contract."""
 
     legacy_inventory, legacy_contract = _harvest.inventory_source(_legacy_artifact(artifact))
-    inventory = tuple(_translate_item(item, legacy_inventory, artifact) for item in legacy_inventory)
+    children_by_parent: dict[str, list[LegacyInventoryItem]] = {}
+    for item in legacy_inventory:
+        if item.parent_id is not None:
+            children_by_parent.setdefault(item.parent_id, []).append(item)
+    known_ids = frozenset(item.item_id for item in legacy_inventory)
+    inventory = tuple(_translate_item(item, children_by_parent, known_ids, artifact) for item in legacy_inventory)
     return inventory, _translate_source_contract(legacy_contract)
 
 
@@ -120,9 +126,7 @@ def prepare_source(
     except ModuleNotFoundError:
         raise
     except (TypeError, UnicodeError, ValueError) as exc:
-        raise SourceClassificationError(
-            "source failed its declared classification contract"
-        ) from exc
+        raise SourceClassificationError("source failed its declared classification contract") from exc
     inventory = apply_policy(harvested, policy)
     validate_inventory(inventory)
     primary = tuple(
@@ -372,7 +376,8 @@ def _legacy_artifact(artifact: SourceArtifact) -> LegacySourceArtifact:
 
 def _translate_item(
     legacy: LegacyInventoryItem,
-    inventory: tuple[LegacyInventoryItem, ...],
+    children_by_parent: Mapping[str, list[LegacyInventoryItem]],
+    known_ids: frozenset[str],
     artifact: SourceArtifact,
 ) -> ContentInventoryItem:
     classification = ContentClass(legacy.content_class.value)
@@ -397,11 +402,11 @@ def _translate_item(
             source_layer=legacy.content_layer,
             producer=legacy.inventory_adapter,
         ),
-        representation=_representation(legacy, inventory, classification),
+        representation=_representation(legacy, children_by_parent, classification),
         anchors=anchors,
         parent_id=legacy.parent_id,
         child_ids=legacy.child_ids,
-        relationships=_relationships(legacy, inventory),
+        relationships=_relationships(legacy, known_ids),
         provider_attributes=legacy.attributes,
         disposition=Disposition(
             decision=DispositionDecision.RETAINED,
@@ -412,11 +417,12 @@ def _translate_item(
 
 def _representation(
     item: LegacyInventoryItem,
-    inventory: tuple[LegacyInventoryItem, ...],
+    children_by_parent: Mapping[str, list[LegacyInventoryItem]],
     classification: ContentClass,
 ) -> ContentRepresentation:
+    children = children_by_parent.get(item.item_id, ())
     if classification is ContentClass.TABLE:
-        return _table_representation(item, inventory)
+        return _table_representation(children)
     attributes = dict(item.attributes)
     target = attributes.get("uri") or attributes.get("href") or attributes.get("target")
     if target is not None and item.text is None:
@@ -425,7 +431,7 @@ def _representation(
             relation="source_reference",
         )
     if classification is ContentClass.GROUP and any(
-        child.parent_id == item.item_id and child.content_class is LegacyContentClass.LIST_ITEM for child in inventory
+        child.content_class is LegacyContentClass.LIST_ITEM for child in children
     ):
         return ListRepresentation(
             ordered=False,
@@ -435,8 +441,7 @@ def _representation(
                     text=child.text,
                     child_item_ids=child.child_ids,
                 )
-                for child in inventory
-                if child.parent_id == item.item_id
+                for child in children
             ),
         )
     if classification in {ContentClass.METADATA, ContentClass.FIELD}:
@@ -451,14 +456,11 @@ def _representation(
     }:
         return AnnotationRepresentation(label=classification.value, text=item.text)
     if classification in {ContentClass.PICTURE, ContentClass.ASSET}:
-        child_reference = next(
-            (
-                dict(child.attributes).get("uri")
-                for child in inventory
-                if child.parent_id == item.item_id and dict(child.attributes).get("uri") is not None
-            ),
-            None,
-        )
+        child_reference = None
+        for child in children:
+            if (uri := dict(child.attributes).get("uri")) is not None:
+                child_reference = uri
+                break
         markdown_reference = (
             match.group(1)
             if item.text is not None
@@ -488,9 +490,8 @@ def _representation(
 
 def _relationships(
     item: LegacyInventoryItem,
-    inventory: tuple[LegacyInventoryItem, ...],
+    known: frozenset[str],
 ) -> tuple[ItemRelationship, ...]:
-    known = {candidate.item_id for candidate in inventory}
     relationships: list[ItemRelationship] = []
     for key, target in item.attributes:
         if key in {"href", "uri", "target"}:
@@ -513,16 +514,11 @@ def _relationships(
 
 
 def _table_representation(
-    table: LegacyInventoryItem,
-    inventory: tuple[LegacyInventoryItem, ...],
+    children: tuple[LegacyInventoryItem, ...] | list[LegacyInventoryItem],
 ) -> TableRepresentation:
-    children = tuple(
-        item
-        for item in inventory
-        if item.parent_id == table.item_id and item.content_class is LegacyContentClass.TABLE_CELL
-    )
+    table_cells = tuple(item for item in children if item.content_class is LegacyContentClass.TABLE_CELL)
     coordinates: dict[tuple[int, int], tuple[LegacyInventoryItem, str]] = {}
-    for index, child in enumerate(children):
+    for index, child in enumerate(table_cells):
         anchor = next(
             (candidate for candidate in child.native_anchors if candidate.kind is LegacyAnchorKind.TABLE_COORDINATE),
             None,
@@ -530,7 +526,7 @@ def _table_representation(
         values = _selector_values(anchor.selector) if anchor is not None else {}
         row = _leading_integer(values.get("row", str(index)))
         column = _leading_integer(values.get("column", "0"))
-        coordinates[(row, column)] = (child, values.get("token", "fcel"))
+        coordinates[row, column] = (child, values.get("token", "fcel"))
 
     continuations = {"lcel", "ucel", "xcel"}
     cells: list[TableCell] = []

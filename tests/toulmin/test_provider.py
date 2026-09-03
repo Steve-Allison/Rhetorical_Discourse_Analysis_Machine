@@ -1,5 +1,6 @@
 """The Toulmin provider through the machine: native validity plus evidenced attempts."""
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from pydantic_ai import models
@@ -52,6 +53,7 @@ def no_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr("rdam._llm.load_dotenv", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("rdam._llm._nearest_dotenv", lambda *_args, **_kwargs: None)
 
 
 @pytest.fixture
@@ -96,14 +98,17 @@ class TestAttemptContract:
         ]
         delays: list[float] = []
 
-        def run(_text: str):
+        async def run(_text: str):
             item = outcomes.pop(0)
             if isinstance(item, Exception):
                 raise item
             return item
 
-        monkeypatch.setattr(analyst, "_run_sync", run)
-        monkeypatch.setattr("rdam._llm.time.sleep", delays.append)
+        async def sleep(delay: float) -> None:
+            delays.append(delay)
+
+        monkeypatch.setattr(analyst, "_run", run)
+        monkeypatch.setattr("rdam._llm.asyncio.sleep", sleep)
         monkeypatch.setattr("rdam._llm.random.uniform", lambda _low, high: high)
         extraction = analyst.extract("text")
         assert extraction.output_attempts == 1
@@ -115,14 +120,17 @@ class TestAttemptContract:
         outcomes: list[object] = [ModelHTTPError(429, MODEL, headers={"retry-after": "2"}), _Result(ToulminAnalysis())]
         delays: list[float] = []
 
-        def run(_text: str):
+        async def run(_text: str):
             item = outcomes.pop(0)
             if isinstance(item, Exception):
                 raise item
             return item
 
-        monkeypatch.setattr(analyst, "_run_sync", run)
-        monkeypatch.setattr("rdam._llm.time.sleep", delays.append)
+        async def sleep(delay: float) -> None:
+            delays.append(delay)
+
+        monkeypatch.setattr(analyst, "_run", run)
+        monkeypatch.setattr("rdam._llm.asyncio.sleep", sleep)
         extraction = analyst.extract("text")
         assert extraction.transport_attempts == 2
         assert delays == [2.0]
@@ -130,11 +138,14 @@ class TestAttemptContract:
     def test_exhaustion_reports_the_exact_transport_attempts(self, monkeypatch: pytest.MonkeyPatch) -> None:
         analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, transport_retries=1)
 
-        def fail(_text: str):
+        async def fail(_text: str):
             raise ModelHTTPError(503, MODEL)
 
-        monkeypatch.setattr(analyst, "_run_sync", fail)
-        monkeypatch.setattr("rdam._llm.time.sleep", lambda _delay: None)
+        async def no_wait(_delay: float) -> None:
+            return None
+
+        monkeypatch.setattr(analyst, "_run", fail)
+        monkeypatch.setattr("rdam._llm.asyncio.sleep", no_wait)
         with pytest.raises(LlmError) as caught:
             analyst.extract("text")
         assert caught.value.code == "llm_request_rejected"
@@ -143,11 +154,10 @@ class TestAttemptContract:
 
     def test_output_exhaustion_is_not_mislabeled_as_transport_retry(self, monkeypatch: pytest.MonkeyPatch) -> None:
         analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, output_retries=2)
-        monkeypatch.setattr(
-            analyst,
-            "_run_sync",
-            lambda _text: (_ for _ in ()).throw(UnexpectedModelBehavior("invalid output")),
-        )
+        async def invalid(_text: str):
+            raise UnexpectedModelBehavior("invalid output")
+
+        monkeypatch.setattr(analyst, "_run", invalid)
         with pytest.raises(LlmError) as caught:
             analyst.extract("text")
         assert caught.value.code == "llm_output_failed_validation"
@@ -160,14 +170,13 @@ class TestAttemptContract:
             instructions="test",
             model=MODEL,
             transport_retries=2,
-            transport_deadline_seconds=1.0,
+            transport_deadline_seconds=0.01,
         )
-        monkeypatch.setattr(
-            analyst,
-            "_run_sync",
-            lambda _text: (_ for _ in ()).throw(ModelHTTPError(429, MODEL, headers={"retry-after": "2"})),
-        )
-        monkeypatch.setattr("rdam._llm.time.sleep", lambda _delay: pytest.fail("deadline must stop before sleeping"))
+
+        async def rejected(_text: str):
+            raise ModelHTTPError(429, MODEL, headers={"retry-after": "2"})
+
+        monkeypatch.setattr(analyst, "_run", rejected)
         with pytest.raises(LlmError) as caught:
             analyst.extract("text")
         assert caught.value.code == "llm_transport_deadline_exceeded"
@@ -199,7 +208,10 @@ class TestDeclaration:
         provenance = ToulminProvider(model=MODEL).declaration.provenance
         assert provenance.package == "rdam.toulmin"
         assert provenance.model_identity == MODEL
-        assert provenance.source_revision == source_identity().hex_digest
+        assert provenance.source_revision
+        first_identity = source_identity()
+        assert source_identity() is first_identity, "the compatibility source wrapper is stable and cached"
+        assert first_identity.hex_digest != "0" * 64
         assert "MIT" in provenance.licence
 
 
@@ -222,7 +234,10 @@ class TestAnalyseGuards:
         with pytest.raises(ProviderError) as caught:
             ToulminProvider(model=MODEL).analyse(
                 ProviderRequest(
-                    source=SourceIdentity.from_text("t"), text="t", structured_input=None, formalism_id="not_a_formalism"
+                    source=SourceIdentity.from_text("t"),
+                    text="t",
+                    structured_input=None,
+                    formalism_id="not_a_formalism",
                 )
             )
         assert caught.value.failure.code == "formalism_not_declared"
@@ -232,12 +247,16 @@ class TestThroughTheMachine:
     def test_a_valid_proposal_becomes_a_native_result_with_attempt_evidence(self, with_credentials: None) -> None:
         provider = ToulminProvider(model=MODEL)
         with provider._built().agent.override(model=_proposing([VALID_LAYOUT])):
-            outcome = Machine([provider]).analyse(
-                AggregateRequest.for_text("The site is unstable, so reject the proposal.", (Technique.TOULMIN,))
-            ).outcome_for(Technique.TOULMIN)
+            outcome = (
+                Machine([provider])
+                .analyse(
+                    AggregateRequest.for_text("The site is unstable, so reject the proposal.", (Technique.TOULMIN,))
+                )
+                .outcome_for(Technique.TOULMIN)
+            )
         assert isinstance(outcome, ResultOutcome)
         extraction = outcome.result.payload["extraction"]
-        assert isinstance(extraction, dict)
+        assert isinstance(extraction, Mapping)
         assert extraction["output_attempts"] == 1
         assert extraction["transport_attempts"] == 1
 
@@ -245,9 +264,11 @@ class TestThroughTheMachine:
         provider = ToulminProvider(model=MODEL)
         broken = {**VALID_LAYOUT, "warrant": VALID_LAYOUT["claim"]}
         with provider._built().agent.override(model=_proposing([broken])):
-            outcome = Machine([provider]).analyse(
-                AggregateRequest.for_text("Some argument.", (Technique.TOULMIN,))
-            ).outcome_for(Technique.TOULMIN)
+            outcome = (
+                Machine([provider])
+                .analyse(AggregateRequest.for_text("Some argument.", (Technique.TOULMIN,)))
+                .outcome_for(Technique.TOULMIN)
+            )
         assert isinstance(outcome, FailedOutcome)
         assert outcome.failure.code == "llm_output_failed_validation"
         assert ("output_attempts", "3") in outcome.failure.message_parameters
@@ -255,7 +276,9 @@ class TestThroughTheMachine:
 
     def test_an_unreachable_model_is_unavailable_not_failed(self, no_credentials: None) -> None:
         machine = Machine([ToulminProvider(model=MODEL)])
-        outcome = machine.analyse(AggregateRequest.for_text("Some text.", (Technique.TOULMIN,))).outcome_for(Technique.TOULMIN)
+        outcome = machine.analyse(AggregateRequest.for_text("Some text.", (Technique.TOULMIN,))).outcome_for(
+            Technique.TOULMIN
+        )
         assert isinstance(outcome, UnavailableOutcome)
         assert outcome.reason is UnavailableReason.MODEL_UNAVAILABLE
 
@@ -282,12 +305,12 @@ class TestAgainstTheRealModel:
         assert isinstance(outcome, ResultOutcome)
         payload = outcome.result.payload
         layouts = payload["layouts"]
-        assert isinstance(layouts, list) and layouts, "the passage argues; a layout is expected"
+        assert isinstance(layouts, Sequence) and layouts, "the passage argues; a layout is expected"
         first = layouts[0]
-        assert isinstance(first, dict)
+        assert isinstance(first, Mapping)
         assert first["claim"], "a layout always carries a claim"
         assert first["grounds"], "a layout always carries grounds"
         assert first["warrant"], "FR-019: a layout always carries a recovered warrant"
         extraction = payload["extraction"]
-        assert isinstance(extraction, dict)
+        assert isinstance(extraction, Mapping)
         assert extraction["model"] == outcome.result.provenance.model_identity

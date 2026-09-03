@@ -121,7 +121,15 @@ class ParsingNet(nn.Module):
         if segmenter_type == "linear":
             self.segmenter = segmenters.LinearSegmenter(emb_dim, cuda_device=self._cuda_device)
         elif segmenter_type == "pointer":
-            self.segmenter = segmenters.PointerSegmenter(emb_dim, cuda_device=self._cuda_device)
+            self.segmenter = segmenters.PointerSegmenter(
+                emb_dim,
+                atten_model=atten_model,
+                decoder_input_size=decoder_input_size,
+                rnn_layers=rnn_layers,
+                dropout_d=dropout_d,
+                if_edu_start_loss=segmenter_if_edu_start_loss,
+                cuda_device=self._cuda_device,
+            )
         elif segmenter_type == "tony":
             self.segmenter = segmenters.ToNySegmenter(
                 emb_dim,
@@ -186,7 +194,7 @@ class ParsingNet(nn.Module):
                 classifier_input_size,
                 classifier_hidden_size,
                 resolved_classes_number,
-                bias=True,
+                bias=classifier_bias,
                 dropout=dropout_c,
                 cuda_device=self._cuda_device,
             )
@@ -195,7 +203,7 @@ class ParsingNet(nn.Module):
                 classifier_input_size,
                 classifier_hidden_size,
                 resolved_classes_number,
-                bias=True,
+                bias=classifier_bias,
                 dropout=dropout_c,
                 cuda_device=self._cuda_device,
             )
@@ -223,14 +231,14 @@ class ParsingNet(nn.Module):
 
     def training_loss(
         self,
-        input_texts: list,
-        sent_breaks: list | None,
-        entity_ids: list | None,
-        entity_position_ids: list | None,
-        edu_breaks: list,
-        label_index: list,
-        parsing_index: list,
-        decoder_input_index: list,
+        input_texts: list[list[int]],
+        sent_breaks: list[list[int]] | None,
+        entity_ids: list[Any] | None,
+        entity_position_ids: list[Any] | None,
+        edu_breaks: list[list[int]],
+        label_index: list[list[int]],
+        parsing_index: list[list[int]],
+        decoder_input_index: list[list[int]],
     ) -> tuple[Tensor, Tensor, Tensor]:
 
         # Obtain encoder outputs and last hidden states
@@ -273,7 +281,7 @@ class ParsingNet(nn.Module):
                     input_right = cur_encoder_outputs[1].unsqueeze(0)
 
                     # (1, 1, encoding_size)
-                    if self.du_encoding_kind == "none" and not self.rel_classification_kind == "with_bimpm":
+                    if self.du_encoding_kind == "none" and self.rel_classification_kind != "with_bimpm":
                         input_left = input_left.unsqueeze(0)
                         input_right = input_right.unsqueeze(0)
 
@@ -295,11 +303,11 @@ class ParsingNet(nn.Module):
                 cur_last_hidden_states = last_hidden_states[:, i, :].unsqueeze(1)
                 cur_decoder_hidden = cur_last_hidden_states.contiguous()
 
-                edu_index = [x for x in range(len(cur_encoder_outputs))]
-                stacks = ["__StackRoot__", edu_index]
+                edu_index = list(range(len(cur_encoder_outputs)))
+                stacks: list[list[int]] = [edu_index]
 
                 for j in range(len(cur_decoder_input_index)):
-                    if stacks[-1] != "__StackRoot__":
+                    if stacks:
                         stack_head = stacks[-1]
 
                         if len(stack_head) < 3:
@@ -314,11 +322,12 @@ class ParsingNet(nn.Module):
                                 input_right = cur_encoder_outputs[stack_head[-1]].unsqueeze(0)
 
                                 # (1, 1, encoding_size)
-                                if self.du_encoding_kind == "none" and not self.rel_classification_kind == "with_bimpm":
+                                if self.du_encoding_kind == "none" and self.rel_classification_kind != "with_bimpm":
                                     input_left = input_left.unsqueeze(0)
                                     input_right = input_right.unsqueeze(0)
 
-                            assert cur_parsing_index[j] < stack_head[-1]
+                            if cur_parsing_index[j] >= stack_head[-1]:
+                                raise RuntimeError("top-down parser produced a non-shrinking split")
 
                             # keep the last hidden state consistent.
                             cur_decoder_input = torch.mean(
@@ -354,7 +363,7 @@ class ParsingNet(nn.Module):
                                 cur_decoder_input, last_hidden=cur_decoder_hidden
                             )
 
-                            atten_weights, log_atten_weights = self.pointer(
+                            _atten_weights, log_atten_weights = self.pointer(
                                 cur_encoder_outputs[stack_head[:-1]], cur_decoder_output.squeeze(0).squeeze(0)
                             )
                             cur_ground_index = torch.tensor([int(cur_parsing_index[j]) - int(stack_head[0])]).to(
@@ -385,14 +394,14 @@ class ParsingNet(nn.Module):
                                 )
                                 self.du_encoding_kind = dek
 
-                                relation_weights, log_relation_weights = self.label_classifier(
+                                _relation_weights, log_relation_weights = self.label_classifier(
                                     left_edus=input_left_edus,
                                     right_edus=input_right_edus,
                                     left_du=input_left_du,
                                     right_du=input_right_du,
                                 )
                             else:
-                                relation_weights, log_relation_weights = self.label_classifier(
+                                _relation_weights, log_relation_weights = self.label_classifier(
                                     input_left_du, input_right_du
                                 )
 
@@ -418,16 +427,16 @@ class ParsingNet(nn.Module):
 
     def testing_loss(
         self,
-        input_sentence: list,
-        input_sent_breaks: list | None,
-        input_entity_ids: list | None,
-        input_entity_position_ids: list | None,
-        input_edu_breaks: list,
-        label_index: list | None,
-        parsing_index: list | None,
+        input_sentence: list[list[int]],
+        input_sent_breaks: list[list[int]] | None,
+        input_entity_ids: list[Any] | None,
+        input_entity_position_ids: list[Any] | None,
+        input_edu_breaks: list[list[int]],
+        label_index: list[list[int]] | None,
+        parsing_index: list[list[int]] | None,
         generate_tree: bool,
         use_pred_segmentation: bool,
-    ) -> tuple[object, object, list | None, tuple[list, list], list]:
+    ) -> tuple[object, object, list[list[str]] | None, tuple[list[int], list[int]], list[list[int]]]:
         """
         Input:
             input_sentence: [batch_size, length]
@@ -479,13 +488,13 @@ class ParsingNet(nn.Module):
         loop_label_batch = 0
         loop_tree_batch = 0
 
-        label_batch = []
-        tree_batch = []
-        span_batch: list = []
+        label_batch: list[list[int]] = []
+        tree_batch: list[list[int]] = []
+        span_batch: list[list[str]] = []
 
         for i in range(len(edu_breaks)):
-            cur_label = []
-            cur_tree = []
+            cur_label: list[int] = []
+            cur_tree: list[int] = []
             span = ""
 
             cur_label_index = torch.tensor(label_index[i]).to(self._cuda_device)
@@ -546,7 +555,7 @@ class ParsingNet(nn.Module):
                         label_idx, self.relation_table
                     )
                     span = "(" + "1:" + str(nuclearity_left) + "=" + str(relation_left)
-                    span += ";entropy=" + "{:.5f}".format(0.0)
+                    span += ";entropy=" + f"{0.0:.5f}"
                     span += ":1,2:" + str(nuclearity_right) + "=" + str(relation_right) + ":2)"
                     span_batch.append([span])
 
@@ -554,8 +563,8 @@ class ParsingNet(nn.Module):
                 # Obtain the encoded representations, the dimension: [num_EDU, hidden_size]
                 cur_encoder_outputs = encoder_outputs[i][: len(edu_breaks[i])]
 
-                edu_index = [x for x in range(len(cur_encoder_outputs))]
-                stacks = ["__StackRoot__", edu_index]
+                edu_index = list(range(len(cur_encoder_outputs)))
+                stacks: list[list[int]] = [edu_index]
 
                 # Obtain last hidden state
                 cur_last_hidden_states = last_hidden_states[:, i, :].unsqueeze(1)
@@ -565,7 +574,7 @@ class ParsingNet(nn.Module):
 
                 tmp_decode_step = -1
 
-                while stacks[-1] != "__StackRoot__":
+                while stacks:
                     stack_head = stacks[-1]
 
                     if len(stack_head) < 3:
@@ -631,7 +640,7 @@ class ParsingNet(nn.Module):
                             cur_span = (
                                 "(" + str(stack_head[0] + 1) + ":" + str(nuclearity_left) + "=" + str(relation_left)
                             )
-                            cur_span += ";entropy=" + "{:.5f}".format(0.0)
+                            cur_span += ";entropy=" + f"{0.0:.5f}"
                             cur_span += (
                                 ":"
                                 + str(stack_head[0] + 1)
@@ -665,7 +674,7 @@ class ParsingNet(nn.Module):
                             cur_encoder_outputs[stack_head[:-1]], cur_decoder_output.squeeze(0).squeeze(0)
                         )
 
-                        split_values, topindex_tree = atten_weights.topk(1)
+                        _split_values, topindex_tree = atten_weights.topk(1)
                         tree_predict = int(topindex_tree[0][0]) + stack_head[0]
                         split_entropy = self._calculate_normalized_entropy(log_atten_weights)
 
@@ -751,7 +760,7 @@ class ParsingNet(nn.Module):
                             cur_span = (
                                 "(" + str(stack_head[0] + 1) + ":" + str(nuclearity_left) + "=" + str(relation_left)
                             )
-                            cur_span += ";entropy=" + "{:.5f}".format(split_entropy)
+                            cur_span += ";entropy=" + f"{split_entropy:.5f}"
                             cur_span += (
                                 ":"
                                 + str(tree_predict + 1)
@@ -783,11 +792,11 @@ class ParsingNet(nn.Module):
         loss_label_batch = loss_label_batch.detach().cpu().numpy()
         loss_tree_batch = loss_tree_batch.detach().cpu().numpy()
 
-        merged_label_gold = []
+        merged_label_gold: list[int] = []
         for tmp_i in label_index:
             merged_label_gold.extend(tmp_i)
 
-        merged_label_pred = []
+        merged_label_pred: list[int] = []
         for tmp_i in label_batch:
             merged_label_pred.extend(tmp_i)
 
@@ -814,7 +823,7 @@ class ParsingNet(nn.Module):
         :return: one DU embedding of size (1, embedding_dim).
         """
 
-        def slice_tensor(tensor, start, end):
+        def slice_tensor(tensor: Tensor, start: int, end: int) -> Tensor:
             # Somehow slicing works only in place, so this is a shortcut
             return tensor[start : end + 1, :]
 
@@ -845,9 +854,7 @@ class ParsingNet(nn.Module):
             attn_weights_right = (attn_weights_right + 1e-4).clamp(max=1.0)
 
             input_left = (
-                (slice_tensor(cur_encoder_outputs, left_boundary, du_break) * attn_weights_left)
-                .sum(dim=0)
-                .unsqueeze(0)
+                (slice_tensor(cur_encoder_outputs, left_boundary, du_break) * attn_weights_left).sum(dim=0).unsqueeze(0)
             )
             input_right = (
                 (slice_tensor(cur_encoder_outputs, du_break + 1, right_boundary) * attn_weights_right)
@@ -877,7 +884,7 @@ class ParsingNet(nn.Module):
         :return: token embeddings of size (2, num_tokens, embedding_dim).
         """
 
-        def convert_du_to_tokens(left_b, middle_b, right_b):
+        def convert_du_to_tokens(left_b: int, middle_b: int, right_b: int) -> tuple[int, int, int]:
             left = 0 if left_b == 0 else edu_breaks[left_b - 1] + 1  # Right neighbor of the previous right boundary
             middle = edu_breaks[middle_b]
             right = edu_breaks[right_b]
@@ -886,7 +893,7 @@ class ParsingNet(nn.Module):
         left, middle, right = convert_du_to_tokens(left_boundary, du_break, right_boundary)
 
         input_left = embeddings[left : middle + 1, :].unsqueeze(0)
-        input_right = embeddings[middle + 1 :, :].unsqueeze(0)
+        input_right = embeddings[middle + 1 : right + 1, :].unsqueeze(0)
 
         if self.rel_classification_kind != "bimpm":
             input_left = torch.mean(input_left, dim=1)
@@ -921,7 +928,7 @@ class ParsingNet(nn.Module):
 
     def eval_loss(
         self,
-        batch: tuple,
+        batch: tuple[Any, ...],
         use_pred_segmentation: bool = True,
         use_org_parseval: bool = True,
     ) -> tuple[tuple[object, object], object]:
@@ -932,13 +939,13 @@ class ParsingNet(nn.Module):
             batch_entity_ids,
             batch_entity_position_ids,
             batch_edu_breaks,
-            batch_decoder_inputs,
+            _batch_decoder_inputs,
             batch_relation_labels,
             batch_parsing_breaks,
             batch_golden_metrics,
         ) = batch
 
-        loss_tree_batch, loss_label_batch, span_batch, label_tuple_batch, predict_edu_breaks = self.testing_loss(
+        loss_tree_batch, loss_label_batch, span_batch, _label_tuple_batch, predict_edu_breaks = self.testing_loss(
             batch_input_sentences,
             batch_sent_breaks,
             batch_entity_ids,

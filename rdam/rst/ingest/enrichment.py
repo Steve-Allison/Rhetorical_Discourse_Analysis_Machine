@@ -22,34 +22,23 @@ def enrich_parser_evidence(
 
     prepared = preparation.semantic.prepared_document
     parser_document = parser_result.semantic.analysed_document
-    tokens = tuple(
-        _enrich_token(token, prepared.segments)
-        for token in parser_document.tokens
-    )
+    tokens = tuple(_enrich_token(token, prepared.segments) for token in parser_document.tokens)
     token_by_id = {token.token_id: token for token in tokens}
-    edus = tuple(
-        _enrich_edu(edu, token_by_id, prepared.segments)
-        for edu in parser_document.edus
-    )
+    edus = tuple(_enrich_edu(edu, token_by_id, prepared.segments) for edu in parser_document.edus)
     document = AnalysedDocument.model_validate(
         {
             **parser_document.model_dump(exclude={"semantic_digest"}),
             "tokens": tokens,
             "edus": edus,
-            "structural_boundary_ids": tuple(
-                boundary.boundary_id for boundary in prepared.structural_boundaries
-            ),
+            "structural_boundary_ids": tuple(boundary.boundary_id for boundary in prepared.structural_boundaries),
             "prepared_segment_ids": tuple(segment.segment_id for segment in prepared.segments),
             "source_anchors": _unique_anchors(
-                anchor
-                for segment in prepared.segments
-                for anchor in segment.source_anchors
+                anchor for segment in prepared.segments for anchor in segment.source_anchors
             ),
         }
     )
     anchors = tuple(
-        _enrich_analysis_anchor(anchor, document, prepared.segments)
-        for anchor in parser_result.semantic.anchors
+        _enrich_analysis_anchor(anchor, document, prepared.segments) for anchor in parser_result.semantic.anchors
     )
     return document, anchors
 
@@ -75,9 +64,7 @@ def _enrich_token(
             "source_anchors": anchors,
             "transformation_ids": tuple(
                 dict.fromkeys(
-                    transformation_id
-                    for segment in overlapping
-                    for transformation_id in segment.transformation_ids
+                    transformation_id for segment in overlapping for transformation_id in segment.transformation_ids
                 )
             ),
         }
@@ -113,13 +100,9 @@ def _enrich_analysis_anchor(
 ) -> AnalysisAnchor:
     token_by_id = {token.token_id: token for token in document.tokens}
     tokens = tuple(token_by_id[token_id] for token_id in anchor.token_ids)
-    source_anchors = _unique_anchors(
-        native for token in tokens for native in token.source_anchors
-    )
+    source_anchors = _unique_anchors(native for token in tokens for native in token.source_anchors)
     if not source_anchors:
-        raise ValueError(
-            f"analysis anchor {anchor.target_id!r} has no native source mapping"
-        )
+        raise ValueError(f"analysis anchor {anchor.target_id!r} has no native source mapping")
     prepared_segment_ids = tuple(
         dict.fromkeys(
             segment.segment_id
@@ -152,9 +135,7 @@ def _enrich_endpoint(
     tokens = tuple(token_by_id[token_id] for token_id in endpoint.token_ids)
     return endpoint.model_copy(
         update={
-            "source_anchors": _unique_anchors(
-                anchor for token in tokens for anchor in token.source_anchors
-            ),
+            "source_anchors": _unique_anchors(anchor for token in tokens for anchor in token.source_anchors),
             "prepared_segment_ids": tuple(
                 dict.fromkeys(
                     segment.segment_id
@@ -177,9 +158,7 @@ def _overlapping_segments(
     segments: tuple[PreparedSegment, ...],
 ) -> tuple[PreparedSegment, ...]:
     return tuple(
-        segment
-        for segment in segments
-        if segment.prepared_range.start < end and start < segment.prepared_range.end
+        segment for segment in segments if segment.prepared_range.start < end and start < segment.prepared_range.end
     )
 
 

@@ -67,15 +67,15 @@ class BiMPM(nn.Module):
             + self.l
             * 2
             * sum(
-                [
-                    int(v)
-                    for v in [
+                map(
+                    int,
+                    (
                         self.with_full_match,
                         self.with_maxpool_match,
                         self.with_attentive_match,
                         self.with_max_attentive_match,
-                    ]
-                ]
+                    ),
+                )
             ),
             hidden_size=hidden_size,
             num_layers=1,
@@ -146,11 +146,8 @@ class BiMPM(nn.Module):
         # (1, 1, hidden_size, l)
         w = w.transpose(1, 0).unsqueeze(0).unsqueeze(0)
         # (batch, seq_len, hidden_size, l)
-        v1 = w * torch.stack([v1] * self.l, dim=3)
-        if len(v2.size()) == 3:
-            v2 = w * torch.stack([v2] * self.l, dim=3)
-        else:
-            v2 = w * torch.stack([torch.stack([v2] * seq_len, dim=1)] * self.l, dim=3)
+        v1 = w * v1.unsqueeze(-1)
+        v2 = w * v2.unsqueeze(-1) if len(v2.size()) == 3 else w * v2[:, None, :, None].expand(-1, seq_len, -1, -1)
 
         m = F.cosine_similarity(v1, v2, dim=2)
         return m
@@ -166,10 +163,10 @@ class BiMPM(nn.Module):
         # (1, l, 1, hidden_size)
         w = w.unsqueeze(0).unsqueeze(2)
         # (batch, l, seq_len, hidden_size)
-        v1, v2 = w * torch.stack([v1] * self.l, dim=1), w * torch.stack([v2] * self.l, dim=1)
+        v1, v2 = w * v1.unsqueeze(1), w * v2.unsqueeze(1)
         # (batch, l, seq_len, hidden_size->1)
-        v1_norm = v1.norm(p=2, dim=3, keepdim=True)
-        v2_norm = v2.norm(p=2, dim=3, keepdim=True)
+        v1_norm = v1.square().sum(dim=3, keepdim=True).sqrt()
+        v2_norm = v2.square().sum(dim=3, keepdim=True).sqrt()
 
         # (batch, l, seq_len1, seq_len2)
         if self.use_amp:
@@ -190,9 +187,9 @@ class BiMPM(nn.Module):
         """
 
         # (batch, seq_len1, 1)
-        v1_norm = v1.norm(p=2, dim=2, keepdim=True)
+        v1_norm = v1.square().sum(dim=2, keepdim=True).sqrt()
         # (batch, 1, seq_len2)
-        v2_norm = v2.norm(p=2, dim=2, keepdim=True).permute(0, 2, 1)
+        v2_norm = v2.square().sum(dim=2, keepdim=True).sqrt().permute(0, 2, 1)
 
         # (batch, seq_len1, seq_len2)
         if self.use_amp:
@@ -216,16 +213,15 @@ class BiMPM(nn.Module):
         :param: emb (torch.FloatTensor)  - all embeddings of [1, seq_length, emb_size]
         Output (torch.FloatTensor)  - embeddings of [1, self.max_len+1, emb_size]
         """
-        if self.max_len:
-            if emb.size(1) > self.max_len + 1:
-                return torch.cat(
-                    [
-                        emb[:, : self.max_len // 2, :],
-                        emb[:, self.max_len // 2 : -self.max_len // 2, :].mean(dim=1, keepdim=True),
-                        emb[:, -self.max_len // 2 :, :],
-                    ],
-                    dim=1,
-                )
+        if self.max_len and emb.size(1) > self.max_len + 1:
+            return torch.cat(
+                [
+                    emb[:, : self.max_len // 2, :],
+                    emb[:, self.max_len // 2 : -self.max_len // 2, :].mean(dim=1, keepdim=True),
+                    emb[:, -self.max_len // 2 :, :],
+                ],
+                dim=1,
+            )
         return emb
 
     def encode(
@@ -240,8 +236,9 @@ class BiMPM(nn.Module):
 
         # ----- Context Representation Layer -----
         # (batch, seq_len, hidden_size * 2)
-        left, _ = self.context_LSTM(left)
-        right, _ = self.context_LSTM(right)
+        context_dtype = next(self.context_LSTM.parameters()).dtype
+        left, _ = self.context_LSTM(left.to(context_dtype))
+        right, _ = self.context_LSTM(right.to(context_dtype))
 
         left = self.dropout(left)
         right = self.dropout(right)
@@ -397,8 +394,9 @@ class BiMPM(nn.Module):
 
         # ----- Aggregation Layer -----
         # (batch, seq_len, l * 8 + 2) -> (2, batch, hidden_size)
-        _, (agg_p_last, _) = self.aggregation_LSTM(mv_p)
-        _, (agg_h_last, _) = self.aggregation_LSTM(mv_h)
+        aggregation_dtype = self.aggregation_LSTM.weight_ih_l0.dtype
+        _, (agg_p_last, _) = self.aggregation_LSTM(mv_p.to(aggregation_dtype))
+        _, (agg_h_last, _) = self.aggregation_LSTM(mv_h.to(aggregation_dtype))
 
         return agg_p_last, agg_h_last, lengths
 

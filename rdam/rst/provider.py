@@ -18,7 +18,6 @@ import json
 from pathlib import Path
 from typing import Final
 
-import rdam.rst
 from rdam.rst import Parser
 from rdam.rst.erst.checkpoint import resolve_default_erst_checkpoint
 from rdam.rst.ingest import (
@@ -39,7 +38,6 @@ from rdam import (
     ProviderDeclaration,
     ProviderError,
     ProviderFailure,
-    ProviderProvenance,
     ProviderRequest,
     Retryability,
     SemanticVersion,
@@ -49,6 +47,7 @@ from rdam import (
     technique_curie,
 )
 from rdam._strict import JsonValue
+from rdam._provider_provenance import provider_provenance
 
 PACKAGE: Final = "rdam.rst"
 RST_TREE: Final = "rst_tree"
@@ -94,7 +93,7 @@ class RstProvider:
         if store is not None and hf_model_version is not None:
             raise ProviderConfigurationError("configure either a published version or a local release, not both")
         if store is None and hf_model_version is None:
-            hf_model_version = Parser._DEFAULT_HF_MODEL_VERSION
+            hf_model_version = Parser.DEFAULT_HF_MODEL_VERSION
         self._hf_model_version = hf_model_version
         self._store = Path(store) if store is not None else None
         self._release_id = release_id
@@ -135,7 +134,7 @@ class RstProvider:
         try:
             release = load_model_release(self._store, self._release_id)
             family = Parser.family_for_runtime_contract(release.manifest.runtime_contract)
-        except (ModelReleaseError, ValueError):
+        except ModelReleaseError, ValueError:
             return None
         self._validated_local_release = release
         self._validated_local_family = family
@@ -174,9 +173,8 @@ class RstProvider:
                 ),
             ),
             contract_version=contract_version,
-            provenance=ProviderProvenance(
+            provenance=provider_provenance(
                 package=PACKAGE,
-                version=rdam.rst.__version__,
                 model_identity=self.model_identity,
                 licence=self._licence(),
             ),
@@ -197,10 +195,18 @@ class RstProvider:
         formalism_id = request.formalism_id or RST_TREE
         formalism = declaration.formalism(formalism_id)
         if formalism is None:
-            raise ProviderError(self._failure("analyse", Retryability.NOT_RETRYABLE, "formalism_not_declared", "ValueError"))
+            raise ProviderError(
+                self._failure("analyse", Retryability.NOT_RETRYABLE, "formalism_not_declared", "ValueError")
+            )
         if not isinstance(formalism.capability, AvailableCapability):
             raise ProviderError(
-                self._failure("analyse", Retryability.NOT_RETRYABLE, "provider_not_available", "ValueError", formalism.capability.reason.value)
+                self._failure(
+                    "analyse",
+                    Retryability.NOT_RETRYABLE,
+                    "provider_not_available",
+                    "ValueError",
+                    formalism.capability.reason.value,
+                )
             )
         if request.text is None:
             raise ProviderError(self._failure("analyse", Retryability.NOT_RETRYABLE, "text_required", "ValueError"))
@@ -237,7 +243,10 @@ class RstProvider:
                     code=error.failure.code,
                     exception_type="ProductionIngestError",
                     message_template=error.failure.message_template,
-                    message_parameters=(("failed_stage", error.failure.failed_stage.value), ("category", error.failure.category.value)),
+                    message_parameters=(
+                        ("failed_stage", error.failure.failed_stage.value),
+                        ("category", error.failure.category.value),
+                    ),
                 )
             ) from error
         payload: Mapping[str, JsonValue] = json.loads(serialize_contract(outcome))

@@ -36,6 +36,7 @@ dependencies = [
   "python-dotenv>=1.2.1,<2",
   "safetensors>=0.8,<0.9",
   "openai>=3.7.0,<4",
+  "httpx2>=2.12,<3",
   "pydantic-ai>=2.37.0,<3",
 ]
 
@@ -120,8 +121,6 @@ rdam = { path = ".", editable = true }
 # Task descriptions are the authority `pixi task list` shows; docs point here rather than
 # restating them.
 [tool.pixi.feature.production.tasks]
-production-boundary = { cmd = "python -m tools.production_boundary --root .", description = "Ownership and import boundary inspection of the source tree (no artifacts)" }
-production-import-check = { cmd = "python -m tools.production_boundary.import_check", description = "Import the installed distribution without loading weights; here that is the editable source, so it certifies no wheel" }
 production-artifacts = { cmd = "python -m tools.production_boundary --root . --release", description = "Boundary inspection plus full validation of the built dist/<version> pair (version from pyproject.toml)" }
 production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --root . --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3 --full", description = "Wheel certification: pip-install the built dist/<version> wheel into fresh core and formats venvs, network disabled, full installed acceptance on the named release" }
 
@@ -155,12 +154,9 @@ precision = 2
 show_missing = true
 
 [tool.pyright]
+typeCheckingMode = "strict"
 include = [
   "rdam",
-  "workbench",
-  "tools",
-  "tests",
-  "scripts",
 ]
 exclude = [
   "**/__pycache__",
@@ -173,6 +169,7 @@ pythonVersion = "3.14"
 venvPath = "."
 venv = ".pixi/envs/default"
 extraPaths = ["scripts"]
+stubPath = "typings"
 reportMissingImports = "warning"     # pyright runs against the active env
 # torch's runtime API exposes many names not in __all__ (e.g. torch.device,
 # torch.tensor, torch.equal); flagging them as private noise dwarfs real issues.
@@ -185,8 +182,12 @@ test = { cmd = "pytest -m 'not slow and not stress' -q", description = "Fast sui
 test-all = { cmd = "pytest -q", description = "Every test, including slow model-loading tests and the production smoke" }
 test-live-models = { cmd = "pytest -m live -q", description = "Opt-in live LLM checks; requires RDAM_RUN_LIVE_MODEL_TESTS=1 and valid configured credentials" }
 test-stress = { cmd = "pytest tests/stress -q", description = "Concurrency, megadoc, and memory-leak stress tests" }
+shared-runtime-test = { cmd = "pytest tests/machine tests/llm tests/pdtb/test_provider.py tests/sdrt/test_provider.py tests/toulmin/test_provider.py tests/walton/test_provider.py tests/dung/test_provider.py tests/ibis/test_provider.py tests/rst/test_provider.py -q -m 'not slow'", description = "Feature 018 canonical data, provenance, LLM boundary, parallel execution, and cache regressions" }
+shared-runtime-coverage = { cmd = "coverage erase && coverage run --branch --source=rdam._canonical,rdam._immutable_json,rdam._execution,rdam._result_cache,rdam._provenance,rdam._provider_provenance -m pytest tests/machine/test_shared_runtime.py tests/machine/test_shared_runtime_internals.py tests/machine/test_contracts.py tests/llm/test_provider_consistency.py -q && coverage report --fail-under=100 rdam/_canonical.py rdam/_immutable_json.py rdam/_execution.py rdam/_result_cache.py rdam/_provenance.py rdam/_provider_provenance.py", description = "100% statement and branch coverage for Feature 018 shared-runtime modules" }
+shared-runtime-mutation-test = { cmd = "python tools/shared_runtime_mutation_test.py", description = "Deterministic mutation gate for deep freeze, deadlines, cache identity and single flight, ordering, and provenance" }
 smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every parser release in the configured model releases store on every available device through the public façade" }
 lint = { cmd = "ruff check rdam workbench tests scripts tools", description = "Ruff" }
+lint-production-modern = { cmd = "ruff check rdam --preview --select E,F,B,W,BLE,UP,PERF,C4,PIE,SIM,RUF005,RUF007,RUF022,RUF023,RUF031,RUF039,RUF052,RUF055,RUF059,RUF069 --ignore E501,E741", description = "Python 3.14 modernization gate for production code" }
 project-framework-identities = { cmd = "python tools/ontology/project_framework_identities.py", description = "Regenerate rdam/resources/framework-identities.json from the vendored Central taxonomy" }
 ontology-validate = { cmd = "linkml lint --ignore-warnings ontology/schema/rdam.linkml.yaml && linkml validate ontology/schema/rdam.linkml.yaml && linkml validate -s ontology/schema/rdam.linkml.yaml -C ProviderBindings ontology/data/rdam-providers.yaml && python tools/ontology/project_framework_identities.py --check", description = "Validate the rdam LinkML application profile and its provider bindings against the vendored Central distribution, and check the framework projection is current" }
 typecheck = { cmd = "pyright", description = "Pyright, strict" }

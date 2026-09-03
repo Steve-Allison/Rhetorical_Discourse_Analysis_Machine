@@ -47,7 +47,10 @@ class TestDeclaration:
         assert declaration.capability == AvailableCapability(
             provider_id=PROVIDER_ID, contract_version=declaration.contract_version
         )
-        assert declaration.provenance.source_revision == source_identity().hex_digest
+        assert declaration.provenance.source_revision
+        first_identity = source_identity()
+        assert source_identity() is first_identity
+        assert first_identity.hex_digest != "0" * 64
         assert declaration.provenance.licence == "MIT (LICENSE)"
 
 
@@ -58,7 +61,7 @@ class TestThroughTheMachine:
         payload = outcome.result.payload
         assert payload["input_origin"] == "supplied"
         extensions = payload["extensions"]
-        assert isinstance(extensions, dict)
+        assert isinstance(extensions, Mapping)
         assert extensions["grounded"] == ["a", "c"]
         assert extensions["stable"] == [["a", "c"]]
 

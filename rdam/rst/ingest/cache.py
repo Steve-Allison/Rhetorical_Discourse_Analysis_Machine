@@ -40,11 +40,7 @@ class ProductionIngestCache:
         self.root = Path(root)
 
     def path_for(self, request_identity: Sha256Identity | str) -> Path:
-        digest = (
-            request_identity.hex_digest
-            if isinstance(request_identity, Sha256Identity)
-            else request_identity
-        )
+        digest = request_identity.hex_digest if isinstance(request_identity, Sha256Identity) else request_identity
         if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
             raise ValueError("cache identity must be a lowercase SHA-256 digest")
         return self.root / digest[:2] / f"{digest}.json"
@@ -186,13 +182,7 @@ def _validate_cache_result(
         analysis = result.semantic.analysis
         validation = result.semantic.validation
         primary = result.semantic.primary_inference
-        if (
-            parser_result is None
-            or analysed is None
-            or analysis is None
-            or validation is None
-            or primary is None
-        ):
+        if parser_result is None or analysed is None or analysis is None or validation is None or primary is None:
             raise ValueError("analysed cache result lacks validated evidence")
         validate_parser_analysis_result(parser_result)
         rebuilt = build_analysis_validation_receipt(

@@ -3,9 +3,13 @@
 from dataclasses import dataclass
 from typing import Any, cast
 
-import torch
+import numpy as np
+from numpy.typing import NDArray
+from torch import Tensor
+
 from transformers import AutoConfig, AutoModelForTokenClassification, AutoTokenizer, PreTrainedModel
 
+from rdam.rst._torch_runtime import resolve_device, resolve_dtype, torch
 from rdam.rst.contracts.document import DocumentToken, Edu
 
 
@@ -45,37 +49,13 @@ class TransformerEduSegmenter:
         self.model_revision = model_revision
         self.max_length = max_length
 
-        # 1. Resolve Device
-        if device == "auto":
-            if torch.cuda.is_available():
-                self.device = torch.device("cuda")
-            elif torch.backends.mps.is_available():
-                self.device = torch.device("mps")
-            else:
-                self.device = torch.device("cpu")
-        else:
-            self.device = torch.device(device)
-
-        # 2. Resolve Dtype
-        if torch_dtype == "auto":
-            if self.device.type in ("cuda", "mps"):
-                self.dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
-            else:
-                self.dtype = torch.float32
-        elif isinstance(torch_dtype, str):
-            dtype_map = {
-                "float32": torch.float32,
-                "float16": torch.float16,
-                "bfloat16": torch.bfloat16,
-            }
-            self.dtype = dtype_map.get(torch_dtype, torch.float32)
-        else:
-            self.dtype = torch_dtype
+        self.device = resolve_device(device)
+        self.dtype = resolve_dtype(self.device, torch_dtype)
 
         revision_kwargs = {"revision": model_revision} if model_revision is not None else {}
 
         # 3. Validate and load a complete, trained token-classification checkpoint.
-        config = AutoConfig.from_pretrained(self.model_name_or_path, **revision_kwargs)
+        config: Any = cast(Any, AutoConfig).from_pretrained(self.model_name_or_path, **revision_kwargs)
         architectures = tuple(config.architectures or ())
         if not any(name.endswith("ForTokenClassification") for name in architectures):
             raise InvalidSegmenterCheckpointError(
@@ -85,7 +65,7 @@ class TransformerEduSegmenter:
         if config.num_labels != 2 or config.id2label != expected_labels:
             raise InvalidSegmenterCheckpointError("EDU segmenter config must declare exactly {0: 'I-EDU', 1: 'B-EDU'}")
 
-        self.tokenizer = AutoTokenizer.from_pretrained(
+        self.tokenizer: Any = cast(Any, AutoTokenizer).from_pretrained(
             self.model_name_or_path,
             use_fast=True,
             **revision_kwargs,
@@ -93,7 +73,7 @@ class TransformerEduSegmenter:
         if not self.tokenizer.is_fast:
             raise InvalidSegmenterCheckpointError("EDU segmentation requires a native fast tokenizer artifact")
 
-        loaded: Any = AutoModelForTokenClassification.from_pretrained(
+        loaded: object = cast(Any, AutoModelForTokenClassification).from_pretrained(
             self.model_name_or_path,
             config=config,
             dtype=self.dtype,
@@ -101,13 +81,17 @@ class TransformerEduSegmenter:
             output_loading_info=True,
             **revision_kwargs,
         )
-        if not isinstance(loaded, tuple) or len(loaded) != 2:
+        if not isinstance(loaded, tuple):
             raise InvalidSegmenterCheckpointError("Transformers did not return checkpoint loading evidence")
-        model, loading_info = loaded
-        if not isinstance(model, PreTrainedModel) or not isinstance(loading_info, dict):
+        loaded_tuple = cast(tuple[object, ...], loaded)
+        if len(loaded_tuple) != 2:
+            raise InvalidSegmenterCheckpointError("Transformers did not return checkpoint loading evidence")
+        model, raw_loading_info = loaded_tuple
+        if not isinstance(model, PreTrainedModel) or not isinstance(raw_loading_info, dict):
             raise InvalidSegmenterCheckpointError("Transformers returned malformed checkpoint loading evidence")
+        loading_info = cast(dict[str, object], raw_loading_info)
         defects = {
-            key: tuple(value)
+            key: tuple(cast(list[object], value))
             for key in ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")
             if (value := loading_info.get(key))
         }
@@ -140,16 +124,19 @@ class TransformerEduSegmenter:
         global_edu_id = 1
 
         for p_start, _p_end, p_text in paragraphs:
-            encoding = self.tokenizer(
+            encoding = cast(
+                dict[str, Tensor],
+                self.tokenizer(
                 p_text,
                 truncation=False,
                 return_offsets_mapping=True,
                 return_tensors="pt",
+                ),
             )
 
             input_ids = encoding["input_ids"].to(self.device)
             attention_mask = encoding["attention_mask"].to(self.device)
-            offset_mapping = encoding["offset_mapping"][0].cpu().numpy()
+            offset_mapping = cast(NDArray[np.int64], encoding["offset_mapping"][0].cpu().numpy())
             context_limit = _segmenter_context_limit(
                 self.model,
                 self.tokenizer,
@@ -163,7 +150,7 @@ class TransformerEduSegmenter:
 
             outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
             logits = outputs.logits[0]  # (seq_len, 2)
-            preds = torch.argmax(logits, dim=-1).cpu().numpy()
+            preds = cast(NDArray[np.int64], torch.argmax(logits, dim=-1).cpu().numpy())
 
             # Extract subword boundary offsets
             edu_start_offsets: list[int] = [0]
@@ -177,9 +164,8 @@ class TransformerEduSegmenter:
                     if s_int < len(p_text) and not p_text[s_int].isspace():
                         # Check that previous character is whitespace or punctuation
                         prev_char = p_text[s_int - 1] if s_int > 0 else " "
-                        if prev_char.isspace() or prev_char in ",.;:!?-—\"'()[]{}":
-                            if s_int not in edu_start_offsets:
-                                edu_start_offsets.append(s_int)
+                        if (prev_char.isspace() or prev_char in ",.;:!?-—\"'()[]{}") and s_int not in edu_start_offsets:
+                            edu_start_offsets.append(s_int)
 
             edu_start_offsets = sorted(set(edu_start_offsets))
 
@@ -221,8 +207,7 @@ class TransformerEduSegmenter:
         import re
 
         tokens: list[DocumentToken] = []
-        tok_id = 0
-        for match in re.finditer(r"\S+", text):
+        for tok_id, match in enumerate(re.finditer(r"\S+", text)):
             tokens.append(
                 DocumentToken(
                     token_id=tok_id,
@@ -231,7 +216,6 @@ class TransformerEduSegmenter:
                     end=match.end(),
                 )
             )
-            tok_id += 1
 
         return SegmentationResult(
             text=text,

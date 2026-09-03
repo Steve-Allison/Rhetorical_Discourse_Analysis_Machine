@@ -1,7 +1,9 @@
 """Construction of evidence-complete parser-owned production results."""
 
+from bisect import bisect_left, bisect_right
 from collections import Counter
 from collections.abc import Sequence
+from dataclasses import dataclass
 import math
 from pathlib import Path
 from typing import Any, Literal
@@ -65,6 +67,46 @@ from rdam.rst.ingest.validation import (
 from rdam.rst.contracts.trace import PredictorAnalysisTrace
 
 
+@dataclass(frozen=True, slots=True)
+class _AnchorIndex:
+    tokens: tuple[AnalysedToken, ...]
+    starts: tuple[int, ...]
+    ends: tuple[int, ...]
+    edu_ids_by_token: dict[str, tuple[str, ...]]
+    edu_order: dict[str, int]
+
+    @classmethod
+    def build(cls, analysed: AnalysedDocument) -> _AnchorIndex:
+        linked: dict[str, list[str]] = {}
+        for edu in analysed.edus:
+            for token_id in edu.token_ids:
+                linked.setdefault(token_id, []).append(edu.edu_id)
+        return cls(
+            tokens=analysed.tokens,
+            starts=tuple(token.character_range.start for token in analysed.tokens),
+            ends=tuple(token.character_range.end for token in analysed.tokens),
+            edu_ids_by_token={token_id: tuple(edu_ids) for token_id, edu_ids in linked.items()},
+            edu_order={edu.edu_id: index for index, edu in enumerate(analysed.edus)},
+        )
+
+    def within(self, start: int, end: int) -> tuple[str, ...]:
+        first = bisect_left(self.starts, start)
+        stop = bisect_right(self.ends, end)
+        return tuple(token.token_id for token in self.tokens[first:stop])
+
+    def overlapping(self, spans: Sequence[tuple[int, int]]) -> tuple[str, ...]:
+        indexes: set[int] = set()
+        for start, end in spans:
+            first = bisect_right(self.ends, start)
+            stop = bisect_left(self.starts, end)
+            indexes.update(range(first, stop))
+        return tuple(self.tokens[index].token_id for index in sorted(indexes))
+
+    def edus_for(self, token_ids: Sequence[str]) -> tuple[str, ...]:
+        linked = {edu_id for token_id in token_ids for edu_id in self.edu_ids_by_token.get(token_id, ())}
+        return tuple(sorted(linked, key=self.edu_order.__getitem__))
+
+
 def build_parser_analysis_result(
     parser: Any,
     document: RstDocument,
@@ -80,19 +122,17 @@ def build_parser_analysis_result(
 
     composite, loaded = _composite_identity(parser, trace.segmentation_source, policy)
     analysed_document = _analysed_document(document, trace)
-    component_digest = _component_digest(composite.primary_parser)
-    relation_inventory_identity = Sha256Identity(
-        hex_digest=semantic_sha256(tuple(trace.relation_inventory))
-    )
+    component_digest = component_digest_for(composite.primary_parser)
+    relation_inventory_identity = Sha256Identity(hex_digest=semantic_sha256(tuple(trace.relation_inventory)))
     primary = _primary_evidence(
         trace,
         model_analysis,
         final_analysis,
         policy,
         component_digest=component_digest,
-        segmenter_component_digest=_component_digest(composite.segmenter),
+        segmenter_component_digest=component_digest_for(composite.segmenter),
         relation_inventory_identity=relation_inventory_identity,
-        marker_component_digest=_component_digest(composite.marker_refiner),
+        marker_component_digest=component_digest_for(composite.marker_refiner),
         document_identity=document.document_id,
     )
     erst = (
@@ -104,7 +144,7 @@ def build_parser_analysis_result(
         if erst_trace is not None
         else None
     )
-    anchors = _analysis_anchors(
+    anchors = analysis_anchors(
         final_analysis,
         analysed_document,
         primary,
@@ -165,9 +205,7 @@ def complete_parser_analysis_result_with_erst(
     primary_semantic = primary_result.semantic
     if primary_semantic.policy.output_formalism is not OutputFormalism.RST_TREE:
         raise ValueError("document-global eRST completion requires an RST primary result")
-    segmentation_source = _segmentation_source_from_composite(
-        primary_semantic.composite_identity.segmenter
-    )
+    segmentation_source = _segmentation_source_from_composite(primary_semantic.composite_identity.segmenter)
     composite, loaded = _composite_identity(parser, segmentation_source, policy)
     previous_composite = primary_semantic.composite_identity
     if (
@@ -181,7 +219,7 @@ def complete_parser_analysis_result_with_erst(
         composite,
         document_identity=document.document_id,
     )
-    anchors = _analysis_anchors(
+    anchors = analysis_anchors(
         erst_trace.analysis,
         primary_semantic.analysed_document,
         primary_semantic.primary_inference,
@@ -259,6 +297,7 @@ def _analysed_document(
         )
         for order, edu in enumerate(trace.edus)
     )
+
     def _edu_id_for_token(tok: Any) -> str:
         if tok.token_id in token_to_edu:
             return edu_ids[token_to_edu[tok.token_id].edu_id]
@@ -483,9 +522,9 @@ def _erst_evidence(
     *,
     document_identity: str,
 ) -> ErstCompletionEvidence:
-    scorer_digest = _component_digest(composite.erst_scorer)
-    calibration_digest = _component_digest(composite.calibration)
-    inventory_digest = _component_digest(composite.relation_inventory)
+    scorer_digest = component_digest_for(composite.erst_scorer)
+    calibration_digest = component_digest_for(composite.calibration)
+    inventory_digest = component_digest_for(composite.relation_inventory)
     decisions: list[ErstCandidateDecision] = []
     for decoded in trace.decoded.decisions:
         reason = decoded.rejection_reason
@@ -556,15 +595,15 @@ def _erst_evidence(
     # checked only on candidates that survived every earlier check.
     decoder_receipt = trace.decoded.receipt
     checked_sufficient_signal = decoder_receipt.candidate_count - decoder_receipt.below_threshold_count
-    checked_no_self_loop = checked_sufficient_signal - decoder_receipt.formal_rejections[
-        DecodeRejectionReason.INSUFFICIENT_SIGNAL
-    ]
-    checked_existing_endpoints = checked_no_self_loop - decoder_receipt.formal_rejections[
-        DecodeRejectionReason.SELF_LOOP
-    ]
-    checked_unique_directed_pair = checked_existing_endpoints - decoder_receipt.formal_rejections[
-        DecodeRejectionReason.INVENTED_NODE
-    ]
+    checked_no_self_loop = (
+        checked_sufficient_signal - decoder_receipt.formal_rejections[DecodeRejectionReason.INSUFFICIENT_SIGNAL]
+    )
+    checked_existing_endpoints = (
+        checked_no_self_loop - decoder_receipt.formal_rejections[DecodeRejectionReason.SELF_LOOP]
+    )
+    checked_unique_directed_pair = (
+        checked_existing_endpoints - decoder_receipt.formal_rejections[DecodeRejectionReason.INVENTED_NODE]
+    )
     decode_receipt = ErstDecodeReceipt(
         policy="four_formal_erst_constraints",
         policy_version=SemanticVersion(root="2.0.0"),
@@ -582,11 +621,7 @@ def _erst_evidence(
         ordering_identity=Sha256Identity(
             hex_digest=semantic_sha256(tuple(decision.candidate_id for decision in decisions))
         ),
-        warnings=(
-            (f"orphan_signals_without_candidates:{orphan_signal_count}",)
-            if orphan_signal_count
-            else ()
-        ),
+        warnings=((f"orphan_signals_without_candidates:{orphan_signal_count}",) if orphan_signal_count else ()),
     )
     return ErstCompletionEvidence(
         signals=signals,
@@ -598,65 +633,60 @@ def _erst_evidence(
     )
 
 
-def _analysis_anchors(
+def analysis_anchors(
     analysis: RstAnalysis,
     analysed: AnalysedDocument,
     primary: PrimaryInferenceEvidence,
     *,
     document_identity: str,
 ) -> tuple[AnalysisAnchor, ...]:
-    anchors: list[AnalysisAnchor] = []
-    for edu in analysed.edus:
-        anchors.append(
-            AnalysisAnchor(
-                target_id=edu.edu_id,
-                target_kind=AnchorTargetKind.EDU,
-                token_ids=edu.token_ids,
-                edu_ids=(edu.edu_id,),
-                prepared_segment_ids=edu.prepared_segment_ids,
-                source_anchors=edu.source_anchors,
-            )
+    index = _AnchorIndex.build(analysed)
+    anchors: list[AnalysisAnchor] = [
+        AnalysisAnchor(
+            target_id=edu.edu_id,
+            target_kind=AnchorTargetKind.EDU,
+            token_ids=edu.token_ids,
+            edu_ids=(edu.edu_id,),
+            prepared_segment_ids=edu.prepared_segment_ids,
+            source_anchors=edu.source_anchors,
         )
-    for node in analysis.nodes:
-        anchors.append(_node_anchor(node, analysed, document_identity=document_identity))
+        for edu in analysed.edus
+    ]
+    anchors.extend(_node_anchor(node, analysed, index, document_identity=document_identity) for node in analysis.nodes)
     node_by_id = {node.node_id: node for node in analysis.nodes}
-    for edge in analysis.primary_edges:
-        anchors.append(
-            _edge_anchor(
-                edge.edge_id,
-                AnchorTargetKind.PRIMARY_EDGE,
-                node_by_id[edge.parent_id],
-                node_by_id[edge.child_id],
-                analysed,
-                document_identity=document_identity,
-            )
+    anchors.extend(
+        _edge_anchor(
+            edge.edge_id,
+            AnchorTargetKind.PRIMARY_EDGE,
+            node_by_id[edge.parent_id],
+            node_by_id[edge.child_id],
+            analysed,
+            index,
+            document_identity=document_identity,
         )
-    for edge in analysis.secondary_edges:
-        anchors.append(
-            _edge_anchor(
-                edge.edge_id,
-                AnchorTargetKind.SECONDARY_EDGE,
-                node_by_id[edge.source_id],
-                node_by_id[edge.target_id],
-                analysed,
-                document_identity=document_identity,
-            )
+        for edge in analysis.primary_edges
+    )
+    anchors.extend(
+        _edge_anchor(
+            edge.edge_id,
+            AnchorTargetKind.SECONDARY_EDGE,
+            node_by_id[edge.source_id],
+            node_by_id[edge.target_id],
+            analysed,
+            index,
+            document_identity=document_identity,
         )
+        for edge in analysis.secondary_edges
+    )
+    edu_by_id = {edu.edu_id: edu for edu in analysed.edus}
     for decision in (*primary.segmentation_decisions, *primary.structure_decisions):
         token_ids = (
             decision.token_ids
             if isinstance(decision, SegmentationDecisionEvidence)
-            else tuple(
-                token.token_id
-                for token in analysed.tokens
-                if decision.analysed_start <= token.character_range.start
-                and token.character_range.end <= decision.analysed_end
-            )
+            else index.within(decision.analysed_start, decision.analysed_end)
         )
-        edu_ids = tuple(edu.edu_id for edu in analysed.edus if set(edu.token_ids) & set(token_ids))
-        source_anchors = tuple(
-            anchor for edu in analysed.edus if edu.edu_id in edu_ids for anchor in edu.source_anchors
-        )
+        edu_ids = index.edus_for(token_ids)
+        source_anchors = tuple(anchor for edu_id in edu_ids for anchor in edu_by_id[edu_id].source_anchors)
         anchors.append(
             AnalysisAnchor(
                 target_id=decision.decision_id,
@@ -664,26 +694,14 @@ def _analysis_anchors(
                 token_ids=token_ids,
                 edu_ids=edu_ids,
                 prepared_segment_ids=tuple(
-                    dict.fromkeys(
-                        segment
-                        for edu in analysed.edus
-                        if edu.edu_id in edu_ids
-                        for segment in edu.prepared_segment_ids
-                    )
+                    dict.fromkeys(segment for edu_id in edu_ids for segment in edu_by_id[edu_id].prepared_segment_ids)
                 ),
                 source_anchors=source_anchors,
             )
         )
     for signal in analysis.signals:
-        tokens = tuple(
-            token.token_id
-            for token in analysed.tokens
-            if any(
-                start < token.character_range.end and token.character_range.start < end
-                for start, end in signal.char_spans
-            )
-        )
-        edu_ids = tuple(edu.edu_id for edu in analysed.edus if set(edu.token_ids) & set(tokens))
+        tokens = index.overlapping(signal.char_spans)
+        edu_ids = index.edus_for(tokens)
         source_anchors = tuple(
             _span_anchor(document_identity, start, end, analysed.text) for start, end in signal.char_spans
         )
@@ -706,15 +724,12 @@ def _analysis_anchors(
 def _node_anchor(
     node: Any,
     analysed: AnalysedDocument,
+    index: _AnchorIndex,
     *,
     document_identity: str,
 ) -> AnalysisAnchor:
-    tokens = tuple(
-        token.token_id
-        for token in analysed.tokens
-        if node.char_span[0] <= token.character_range.start and token.character_range.end <= node.char_span[1]
-    )
-    edus = tuple(edu.edu_id for edu in analysed.edus if set(edu.token_ids) & set(tokens))
+    tokens = index.within(*node.char_span)
+    edus = index.edus_for(tokens)
     return AnalysisAnchor(
         target_id=str(node.node_id),
         target_kind=AnchorTargetKind.NODE,
@@ -731,11 +746,12 @@ def _edge_anchor(
     source_node: Any,
     target_node: Any,
     analysed: AnalysedDocument,
+    index: _AnchorIndex,
     *,
     document_identity: str,
 ) -> AnalysisAnchor:
-    source = _endpoint(source_node, analysed, document_identity=document_identity)
-    target = _endpoint(target_node, analysed, document_identity=document_identity)
+    source = _endpoint(source_node, analysed, index, document_identity=document_identity)
+    target = _endpoint(target_node, analysed, index, document_identity=document_identity)
     return AnalysisAnchor(
         target_id=edge_id,
         target_kind=kind,
@@ -751,15 +767,12 @@ def _edge_anchor(
 def _endpoint(
     node: Any,
     analysed: AnalysedDocument,
+    index: _AnchorIndex,
     *,
     document_identity: str,
 ) -> EndpointAnchor:
-    tokens = tuple(
-        token.token_id
-        for token in analysed.tokens
-        if node.char_span[0] <= token.character_range.start and token.character_range.end <= node.char_span[1]
-    )
-    edus = tuple(edu.edu_id for edu in analysed.edus if set(edu.token_ids) & set(tokens))
+    tokens = index.within(*node.char_span)
+    edus = index.edus_for(tokens)
     return EndpointAnchor(
         node_id=node.node_id,
         token_ids=tokens,
@@ -999,13 +1012,13 @@ def _checkpoint_component(
 def _loaded_receipt(identity: ImmutableComponentIdentity) -> LoadedComponentReceipt:
     return LoadedComponentReceipt(
         component=identity.component,
-        declared_identity=_component_digest(identity),
+        declared_identity=component_digest_for(identity),
         resolved_member_identities=identity.files,
         verified=True,
     )
 
 
-def _component_digest(component: ComponentIdentity) -> Sha256Identity:
+def component_digest_for(component: ComponentIdentity) -> Sha256Identity:
     return Sha256Identity(hex_digest=semantic_sha256(component))
 
 
@@ -1139,9 +1152,11 @@ def _candidate_id(candidate: Any) -> str:
 
 
 __all__ = [
+    "analysis_anchors",
     "build_parser_analysis_result",
     "build_validation_receipt",
     "complete_parser_analysis_result_with_erst",
+    "component_digest_for",
     "describe_analysis_components",
     "validate_parser_analysis_result",
 ]

@@ -66,8 +66,7 @@ class NotUsedComponentIdentity(StrictContractModel):
 
 
 type ComponentIdentity = Annotated[
-    ImmutableComponentIdentity | MutableComponentIdentity | UnidentifiedComponentIdentity
-    | NotUsedComponentIdentity,
+    ImmutableComponentIdentity | MutableComponentIdentity | UnidentifiedComponentIdentity | NotUsedComponentIdentity,
     Field(discriminator="state"),
 ]
 
@@ -96,7 +95,8 @@ class CompositeAnalysisIdentity(StrictContractModel):
     @property
     def durable_cache_eligible(self) -> bool:
         return all(
-            component.state in {
+            component.state
+            in {
                 ComponentIdentityState.IMMUTABLE_RELEASE,
                 ComponentIdentityState.NOT_USED,
             }
@@ -211,9 +211,7 @@ class SegmentationDecisionEvidence(StrictContractModel):
 
     @model_validator(mode="after")
     def evidence_matches_basis(self) -> Self:
-        if self.decision_basis == "presegmented" and (
-            self.confidence is not None or self.distribution is not None
-        ):
+        if self.decision_basis == "presegmented" and (self.confidence is not None or self.distribution is not None):
             raise ValueError("presegmented boundaries cannot fabricate provider scores")
         if self.distribution is not None and self.confidence is None:
             raise ValueError("segmentation distribution requires provider confidence")
@@ -367,25 +365,18 @@ class ErstCompletionEvidence(StrictContractModel):
         signal_ids = {signal.signal_id for signal in self.signals}
         if len(signal_ids) != len(self.signals):
             raise ValueError("eRST supporting signal identities must be unique")
-        if any(
-            not set(candidate.supporting_signal_ids) <= signal_ids
-            for candidate in self.candidate_decisions
-        ):
+        if any(not set(candidate.supporting_signal_ids) <= signal_ids for candidate in self.candidate_decisions):
             raise ValueError("eRST candidate references an absent supporting signal")
-        if any(
-            not set(signal.candidate_ids) <= candidates.keys()
-            for signal in self.signals
-        ):
+        if any(not set(signal.candidate_ids) <= candidates.keys() for signal in self.signals):
             raise ValueError("eRST signal references an absent candidate")
         accepted = tuple(
-            item.secondary_edge_id
-            for item in self.candidate_decisions
-            if item.decision is ErstDecision.ACCEPTED
+            item.secondary_edge_id for item in self.candidate_decisions if item.decision is ErstDecision.ACCEPTED
         )
         if len(accepted) != self.decode_receipt.accepted_count:
             raise ValueError("eRST accepted decisions differ from decoder receipt")
         if any(
-            signal_id not in {
+            signal_id
+            not in {
                 supporting.signal_id
                 for supporting in self.signals
                 if candidate.candidate_id in supporting.candidate_ids
@@ -422,13 +413,32 @@ class InferenceEvidence(StrictContractModel):
 
 
 __all__ = [
-    "ComponentFileIdentity", "ComponentIdentity", "ComponentIdentityState",
-    "CompositeAnalysisIdentity", "ConfidenceKind", "ErstCandidateDecision",
-    "ErstCompletionEvidence", "ErstDecision", "ErstDecodeReceipt", "EvidenceDetailPolicy",
-    "ImmutableComponentIdentity", "InferenceEvidence", "LabelledScore",
-    "LoadedComponentReceipt", "MappingStatus", "MutableComponentIdentity", "NamedCount",
-    "NormalizedDistribution", "NotUsedComponentIdentity", "OutputFormalism",
-    "PrimaryInferenceEvidence", "PrimaryStructureDecisionEvidence", "RefinementRecord",
-    "RelationInterpretation", "ScoreValue", "SegmentationDecisionEvidence",
-    "SupportingSignalEvidence", "UnidentifiedComponentIdentity",
+    "ComponentFileIdentity",
+    "ComponentIdentity",
+    "ComponentIdentityState",
+    "CompositeAnalysisIdentity",
+    "ConfidenceKind",
+    "ErstCandidateDecision",
+    "ErstCompletionEvidence",
+    "ErstDecision",
+    "ErstDecodeReceipt",
+    "EvidenceDetailPolicy",
+    "ImmutableComponentIdentity",
+    "InferenceEvidence",
+    "LabelledScore",
+    "LoadedComponentReceipt",
+    "MappingStatus",
+    "MutableComponentIdentity",
+    "NamedCount",
+    "NormalizedDistribution",
+    "NotUsedComponentIdentity",
+    "OutputFormalism",
+    "PrimaryInferenceEvidence",
+    "PrimaryStructureDecisionEvidence",
+    "RefinementRecord",
+    "RelationInterpretation",
+    "ScoreValue",
+    "SegmentationDecisionEvidence",
+    "SupportingSignalEvidence",
+    "UnidentifiedComponentIdentity",
 ]

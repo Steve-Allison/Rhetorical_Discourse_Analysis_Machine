@@ -4,10 +4,18 @@ from collections.abc import Iterable
 import os
 from pathlib import Path, PurePosixPath
 
-from tools.production_boundary.contracts import BoundaryViolation, DependencyRule, OwnershipClass, OwnershipRule, ViolationKind
+from tools.production_boundary.contracts import (
+    BoundaryViolation,
+    DependencyRule,
+    OwnershipClass,
+    OwnershipRule,
+    ViolationKind,
+)
 
 
-_GENERATED_PARTS = frozenset({".git", ".pixi", ".pytest_cache", ".ruff_cache", ".mypy_cache", "__pycache__", "build", "dist", "graphify-out"})
+_GENERATED_PARTS = frozenset(
+    {".git", ".pixi", ".pytest_cache", ".ruff_cache", ".mypy_cache", "__pycache__", "build", "dist", "graphify-out"}
+)
 
 
 class OwnershipClassificationError(ValueError):
@@ -22,38 +30,147 @@ class OwnershipAuthority:
         default_rules = (
             # The production boundary (owner ruling 2026-09-02): one package, one wheel, every
             # technique a sub-package — rdam (machine), rdam.rst, rdam.dung, rdam.ibis, ...
-            OwnershipRule(rule_id="rdam", prefix=PurePosixPath("rdam"), ownership=OwnershipClass.PRODUCTION, reason="the Rhetorical Discourse Analysis Machine and every promoted technique provider", publishable=True),
-            OwnershipRule(rule_id="ontology", prefix=PurePosixPath("ontology"), ownership=OwnershipClass.REPOSITORY, reason="vendored Central distribution (read-only) and the rdam application profile"),
-            OwnershipRule(rule_id="models", prefix=PurePosixPath("models"), ownership=OwnershipClass.MODEL, reason="governed model candidates and immutable runtime releases"),
-            OwnershipRule(rule_id="offline", prefix=PurePosixPath("workbench"), ownership=OwnershipClass.OFFLINE, reason="corpus, training, evaluation, and promotion workbench"),
-            OwnershipRule(rule_id="research", prefix=PurePosixPath("workbench.research"), ownership=OwnershipClass.OFFLINE, reason="offline research implementation"),
-            OwnershipRule(rule_id="corpora", prefix=PurePosixPath("corpora"), ownership=OwnershipClass.OFFLINE, reason="training/evaluation corpora"),
-            OwnershipRule(rule_id="experiments", prefix=PurePosixPath("experiments"), ownership=OwnershipClass.OFFLINE, reason="experiment outputs and configuration"),
-            *(OwnershipRule(rule_id=f"repository-{name.lstrip('.').replace('_', '-')}", prefix=PurePosixPath(name), ownership=OwnershipClass.REPOSITORY, reason="repository control, documentation, tests, or tooling") for name in (".agents", ".claude", ".cursor", ".github", ".specify", "config", "docs", "examples", "scripts", "specs", "tests", "tools")),
+            OwnershipRule(
+                rule_id="rdam",
+                prefix=PurePosixPath("rdam"),
+                ownership=OwnershipClass.PRODUCTION,
+                reason="the Rhetorical Discourse Analysis Machine and every promoted technique provider",
+                publishable=True,
+            ),
+            OwnershipRule(
+                rule_id="ontology",
+                prefix=PurePosixPath("ontology"),
+                ownership=OwnershipClass.REPOSITORY,
+                reason="vendored Central distribution (read-only) and the rdam application profile",
+            ),
+            OwnershipRule(
+                rule_id="models",
+                prefix=PurePosixPath("models"),
+                ownership=OwnershipClass.MODEL,
+                reason="governed model candidates and immutable runtime releases",
+            ),
+            OwnershipRule(
+                rule_id="offline",
+                prefix=PurePosixPath("workbench"),
+                ownership=OwnershipClass.OFFLINE,
+                reason="corpus, training, evaluation, and promotion workbench",
+            ),
+            OwnershipRule(
+                rule_id="research",
+                prefix=PurePosixPath("workbench.research"),
+                ownership=OwnershipClass.OFFLINE,
+                reason="offline research implementation",
+            ),
+            OwnershipRule(
+                rule_id="corpora",
+                prefix=PurePosixPath("corpora"),
+                ownership=OwnershipClass.OFFLINE,
+                reason="training/evaluation corpora",
+            ),
+            OwnershipRule(
+                rule_id="experiments",
+                prefix=PurePosixPath("experiments"),
+                ownership=OwnershipClass.OFFLINE,
+                reason="experiment outputs and configuration",
+            ),
+            *(
+                OwnershipRule(
+                    rule_id=f"repository-{name.lstrip('.').replace('_', '-')}",
+                    prefix=PurePosixPath(name),
+                    ownership=OwnershipClass.REPOSITORY,
+                    reason="repository control, documentation, tests, or tooling",
+                )
+                for name in (
+                    ".agents",
+                    ".claude",
+                    ".cursor",
+                    ".github",
+                    ".specify",
+                    "artifacts",
+                    "config",
+                    "docs",
+                    "examples",
+                    "scripts",
+                    "specs",
+                    "tests",
+                    "tools",
+                    "typings",
+                )
+            ),
         )
         self.rules = rules or default_rules
-        self.production_dependencies = frozenset({
-            "python", "playwright", "razdel", "lxml", "numpy", "transformers", "torch", "huggingface-hub", "tqdm", "pillow", "networkx", "packaging", "pydantic", "python-dotenv", "rfc8785", "safetensors", "doclang", "isanlp", "docling-core", "markdown-it-py", "mdit-py-plugins",
-            # The LLM boundary (006 FR-032): the Toulmin, Walton, SDRT, and PDTB providers
-            # are model-backed, so their client is production runtime, not tooling.
-            "pydantic-ai", "openai",
-        })
-        self.offline_dependencies = frozenset({"blake3", "fire", "jsonnet", "nltk", "peft", "pytest", "pytest-cov", "ruff", "pyright", "tiktoken", "types-lxml", "build"})
+        self.production_dependencies = frozenset(
+            {
+                "python",
+                "playwright",
+                "razdel",
+                "lxml",
+                "numpy",
+                "transformers",
+                "torch",
+                "huggingface-hub",
+                "tqdm",
+                "pillow",
+                "networkx",
+                "packaging",
+                "pydantic",
+                "python-dotenv",
+                "rfc8785",
+                "safetensors",
+                "doclang",
+                "isanlp",
+                "docling-core",
+                "markdown-it-py",
+                "mdit-py-plugins",
+                # The LLM boundary (006 FR-032): the Toulmin, Walton, SDRT, and PDTB providers
+                # are model-backed, so their client is production runtime, not tooling.
+                "pydantic-ai",
+                "openai",
+                "httpx2",
+            }
+        )
+        self.offline_dependencies = frozenset(
+            {
+                "blake3",
+                "fire",
+                "jsonnet",
+                "nltk",
+                "peft",
+                "pytest",
+                "pytest-cov",
+                "ruff",
+                "pyright",
+                "tiktoken",
+                "types-lxml",
+                "build",
+            }
+        )
 
     def relative(self, path: Path) -> PurePosixPath:
         return PurePosixPath(path.resolve().relative_to(self.root).as_posix())
 
     def matching_rules(self, path: Path | PurePosixPath | str) -> tuple[OwnershipRule, ...]:
-        relative = path if isinstance(path, PurePosixPath) else PurePosixPath(path.as_posix() if isinstance(path, Path) else path)
+        relative = (
+            path
+            if isinstance(path, PurePosixPath)
+            else PurePosixPath(path.as_posix() if isinstance(path, Path) else path)
+        )
         if relative.is_absolute():
             relative = PurePosixPath(Path(str(relative)).resolve().relative_to(self.root).as_posix())
         return tuple(rule for rule in self.rules if relative == rule.prefix or relative.is_relative_to(rule.prefix))
 
     def classify(self, path: Path | PurePosixPath | str) -> OwnershipClass:
-        relative = path if isinstance(path, PurePosixPath) else PurePosixPath(path.as_posix() if isinstance(path, Path) else path)
+        relative = (
+            path
+            if isinstance(path, PurePosixPath)
+            else PurePosixPath(path.as_posix() if isinstance(path, Path) else path)
+        )
         if relative.is_absolute():
             relative = PurePosixPath(Path(str(relative)).resolve().relative_to(self.root).as_posix())
-        if any(part in _GENERATED_PARTS or part.endswith(".egg-info") for part in relative.parts) or relative.name == "pixi.lock":
+        if (
+            any(part in _GENERATED_PARTS or part.endswith(".egg-info") for part in relative.parts)
+            or relative.name == "pixi.lock"
+        ):
             return OwnershipClass.GENERATED
         if len(relative.parts) == 1:
             return OwnershipClass.REPOSITORY
@@ -82,8 +199,18 @@ class OwnershipAuthority:
         return OwnershipClass.REPOSITORY
 
     def dependency_rules(self) -> tuple[DependencyRule, ...]:
-        production = tuple(DependencyRule(distribution=name, ownership=OwnershipClass.PRODUCTION, reason="declared production runtime capability") for name in sorted(self.production_dependencies))
-        offline = tuple(DependencyRule(distribution=name, ownership=OwnershipClass.OFFLINE, reason="offline or repository-only tooling") for name in sorted(self.offline_dependencies))
+        production = tuple(
+            DependencyRule(
+                distribution=name, ownership=OwnershipClass.PRODUCTION, reason="declared production runtime capability"
+            )
+            for name in sorted(self.production_dependencies)
+        )
+        offline = tuple(
+            DependencyRule(
+                distribution=name, ownership=OwnershipClass.OFFLINE, reason="offline or repository-only tooling"
+            )
+            for name in sorted(self.offline_dependencies)
+        )
         return production + offline
 
 

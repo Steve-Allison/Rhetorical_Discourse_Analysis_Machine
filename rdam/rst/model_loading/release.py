@@ -79,7 +79,7 @@ class ModelReleaseManifest(_StrictModel):
     files: tuple[ModelFile, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
-    def complete_coherent_manifest(self) -> "ModelReleaseManifest":
+    def complete_coherent_manifest(self) -> ModelReleaseManifest:
         paths = [item.path for item in self.files]
         if len(paths) != len(set(paths)):
             raise ValueError("model release file paths must be unique")
@@ -133,29 +133,6 @@ class CompatibilityRedeclaration(_StrictModel):
         except InvalidSpecifier as exc:
             raise ValueError("compatibility_range must be a valid Python version specifier") from exc
         return value
-
-
-class PromotionReceipt(_StrictModel):
-    """Immutable evidence for one successful local promotion."""
-
-    candidate_path: str
-    candidate_manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    release_path: str
-    release_manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    verified_files: int = Field(gt=0)
-    promoted_at: datetime
-    producer_version: str = Field(min_length=1)
-    succeeded: bool
-    failure_code: str | None = None
-    failure_detail: str | None = None
-
-    @model_validator(mode="after")
-    def success_fields_are_coherent(self) -> "PromotionReceipt":
-        if self.succeeded and (self.failure_code is not None or self.failure_detail is not None):
-            raise ValueError("successful promotion cannot contain failure fields")
-        if not self.succeeded and not self.failure_code:
-            raise ValueError("failed promotion requires failure_code")
-        return self
 
 
 class ParserCapacity(_StrictModel):
@@ -292,7 +269,9 @@ def validate_model_release(
             f"runtime contract mismatch: expected {expected_runtime_contract!r}, found {manifest.runtime_contract!r}"
         )
     redeclaration = load_compatibility_redeclaration(release, manifest)
-    compatibility_range = redeclaration.compatibility_range if redeclaration is not None else manifest.compatibility_range
+    compatibility_range = (
+        redeclaration.compatibility_range if redeclaration is not None else manifest.compatibility_range
+    )
     current_version = package_version or resolve_installed_package_version()
     try:
         compatible = Version(current_version) in SpecifierSet(compatibility_range)
@@ -373,10 +352,9 @@ __all__ = [
     "MODEL_RELEASE_MANIFEST",
     "CompatibilityRedeclaration",
     "ModelFile",
-    "ModelReleaseIdentity",
     "ModelReleaseError",
+    "ModelReleaseIdentity",
     "ModelReleaseManifest",
-    "PromotionReceipt",
     "ParserCapacity",
     "ValidatedModelRelease",
     "canonical_json_bytes",

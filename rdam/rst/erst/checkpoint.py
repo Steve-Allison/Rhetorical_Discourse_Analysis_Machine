@@ -5,11 +5,12 @@ import hashlib
 import json
 import math
 from pathlib import Path
-from typing import Any
+from collections.abc import Callable
+from typing import Any, cast
 
 from safetensors.torch import load_model
 import torch
-from transformers import AutoConfig, AutoTokenizer
+from transformers import AutoConfig, AutoTokenizer, PretrainedConfig, PreTrainedTokenizerFast
 
 from rdam.rst.contracts.erst import (
     ErstCalibrationState,
@@ -126,7 +127,7 @@ def validate_erst_checkpoint_bundle(root: Path | str) -> ErstCheckpointManifest:
         raise ErstCheckpointError("eRST checkpoint is missing a regular manifest.json")
     try:
         manifest = ErstCheckpointManifest.model_validate_json(_read_small_json(manifest_path))
-    except Exception as error:
+    except (OSError, ValueError) as error:
         raise ErstCheckpointError("eRST checkpoint manifest is invalid") from error
 
     declared = {record.path: record for record in manifest.files}
@@ -155,7 +156,7 @@ def validate_erst_checkpoint_bundle(root: Path | str) -> ErstCheckpointManifest:
             raise ErstCheckpointError(f"eRST checkpoint role mismatch: {relative}")
 
     roles = {record.role for record in manifest.files}
-    if not _REQUIRED_ROLES <= roles:
+    if not roles >= _REQUIRED_ROLES:
         raise ErstCheckpointError(f"eRST checkpoint is missing required roles: {sorted(_REQUIRED_ROLES - roles)}")
     components = {component.component_id: component for component in manifest.components}
     if set(components) != _REQUIRED_COMPONENTS:
@@ -164,9 +165,7 @@ def validate_erst_checkpoint_bundle(root: Path | str) -> ErstCheckpointManifest:
     if scorer_component.state_file is None or not scorer_component.state_file.endswith(".safetensors"):
         raise ErstCheckpointError("eRST scorer component requires safetensors state")
     graph_component = components["graph"]
-    graph_config = ErstGraphComponentConfig.model_validate_json(
-        _read_small_json(bundle / graph_component.config_file)
-    )
+    graph_config = ErstGraphComponentConfig.model_validate_json(_read_small_json(bundle / graph_component.config_file))
     if graph_config.has_learned_state != (graph_component.state_file is not None):
         raise ErstCheckpointError("graph component state declaration is inconsistent")
     return manifest
@@ -181,7 +180,7 @@ def _load_signal_detector(path: Path) -> RuleBasedSignalDetector:
             patterns=patterns,
             detector_version=str(provenance["detector_version"]),
         )
-    except Exception as error:
+    except (KeyError, OSError, TypeError, ValueError) as error:
         raise ErstCheckpointError("signal-detector configuration is invalid") from error
     if detector.provenance.model_dump(mode="json") != provenance:
         raise ErstCheckpointError("signal-detector provenance does not reproduce from its config")
@@ -206,28 +205,30 @@ def load_erst_checkpoint_bundle(
         relation_inventory = RawRelationInventory.model_validate_json(
             _read_small_json(bundle / "relation_inventory.json")
         )
-        decoder_config = ErstDecoderConfig.model_validate_json(
-            _read_small_json(bundle / "decoder_config.json")
-        )
-        calibration = ErstCalibrationState.model_validate_json(
-            _read_small_json(bundle / "calibration.json")
-        )
+        decoder_config = ErstDecoderConfig.model_validate_json(_read_small_json(bundle / "decoder_config.json"))
+        calibration = ErstCalibrationState.model_validate_json(_read_small_json(bundle / "calibration.json"))
         graph_config = ErstGraphComponentConfig.model_validate_json(
             _read_small_json(bundle / components["graph"].config_file)
         )
-        test_vector = ErstCheckpointTestVector.model_validate_json(
-            _read_small_json(bundle / "test_vector.json")
+        test_vector = ErstCheckpointTestVector.model_validate_json(_read_small_json(bundle / "test_vector.json"))
+        load_config = cast(
+            Callable[..., PretrainedConfig],
+            cast(Any, AutoConfig).from_pretrained,
         )
-        encoder_config = AutoConfig.from_pretrained(
+        load_tokenizer = cast(
+            Callable[..., PreTrainedTokenizerFast],
+            cast(Any, AutoTokenizer).from_pretrained,
+        )
+        encoder_config = load_config(
             bundle / "scorer/encoder",
             local_files_only=True,
         )
-        tokenizer = AutoTokenizer.from_pretrained(
+        tokenizer = load_tokenizer(
             bundle / "tokenizer",
             use_fast=True,
             local_files_only=True,
         )
-    except Exception as error:
+    except (KeyError, OSError, TypeError, ValueError) as error:
         raise ErstCheckpointError("eRST checkpoint control files cannot be reconstructed") from error
     if not tokenizer.is_fast:
         raise ErstCheckpointError("eRST checkpoint tokenizer is not a fast tokenizer")
@@ -259,12 +260,10 @@ def load_erst_checkpoint_bundle(
             strict=True,
             device="cpu",
         )
-    except Exception as error:
+    except (OSError, RuntimeError, ValueError) as error:
         raise ErstCheckpointError("eRST scorer safetensors state failed strict loading") from error
     if missing or unexpected:
-        raise ErstCheckpointError(
-            f"strict eRST scorer load returned missing={missing}, unexpected={unexpected}"
-        )
+        raise ErstCheckpointError(f"strict eRST scorer load returned missing={missing}, unexpected={unexpected}")
     scorer.set_runtime_device(device, torch_dtype=storage_dtype)
     scorer.eval()
     signal_detector = _load_signal_detector(bundle / components["signal_detector"].config_file)
@@ -369,7 +368,6 @@ def resolve_default_erst_checkpoint(checkpoint_path: str | Path | None = None) -
     1. Explicit checkpoint_path argument.
     2. ISANLP_RST_ERST_CHECKPOINT environment variable.
     3. ~/.cache/isanlp_rst/model-releases/erst-scorer-gum-v12/ (if present with manifest.json).
-    4. models/erst_scorer_bundle/ (if local build bundle exists with manifest.json).
     """
     import os
 
@@ -388,10 +386,6 @@ def resolve_default_erst_checkpoint(checkpoint_path: str | Path | None = None) -
     user_cache = Path.home() / ".cache/isanlp_rst/model-releases/erst-scorer-gum-v12"
     if (user_cache / _MANIFEST_NAME).is_file():
         return user_cache
-
-    local_dev = Path("models/erst_scorer_bundle").resolve()
-    if (local_dev / _MANIFEST_NAME).is_file():
-        return local_dev
 
     return None
 

@@ -100,7 +100,7 @@ class RstDocument:
         language: str | None = None,
         source: SourceReference | None = None,
         provenance: ProvenanceRecord | None = None,
-    ) -> "RstDocument":
+    ) -> RstDocument:
         """Create an RstDocument from raw text without pre-segmented EDUs."""
         doc_id = document_id or str(uuid4())
         prov = provenance or ProvenanceRecord()
@@ -125,7 +125,7 @@ class RstDocument:
         language: str | None = None,
         source: SourceReference | None = None,
         provenance: ProvenanceRecord | None = None,
-    ) -> "RstDocument":
+    ) -> RstDocument:
         """Create an RstDocument from pre-segmented EDU strings.
 
         Note: Character offsets are reconstructed by joining EDUs with spaces.
@@ -142,7 +142,7 @@ class RstDocument:
         curr_offset = 0
 
         for idx, edu_str in enumerate(edus):
-            if not isinstance(edu_str, str) or not edu_str.strip():
+            if not edu_str.strip():
                 raise ValueError(f"EDU at index {idx} must be a non-empty string.")
             if idx > 0:
                 constructed_parts.append(" ")
@@ -180,7 +180,7 @@ class RstDocument:
         source: SourceReference | None = None,
         provenance: ProvenanceRecord | None = None,
         fidelity: InputFidelityEnum = InputFidelityEnum.LOSSLESS,
-    ) -> "RstDocument":
+    ) -> RstDocument:
         """Create an RstDocument with full token and EDU coordinates."""
         doc_id = document_id or str(uuid4())
         prov = provenance or ProvenanceRecord()

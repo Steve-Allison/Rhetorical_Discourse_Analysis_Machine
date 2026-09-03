@@ -11,7 +11,7 @@ from lxml import etree
 
 from .rstweb_classes import NODE, NodeMap, get_left_right
 
-__all__ = ["read_rst", "read_text", "read_relfile"]
+__all__ = ["read_relfile", "read_rst", "read_text"]
 
 # Same XXE posture as DocLang loader — RS3 is untrusted input.
 _SECURE_PARSER = etree.XMLParser(
@@ -83,8 +83,7 @@ def read_rst(filename: str | Path, rel_hash: dict[str, str]) -> NodeMap | str:
         return '<div class="warn">No segment elements found in .rs3 file</div>'
 
     id_counter = 0
-    for segment in item_list:
-        id_counter += 1
+    for id_counter, segment in enumerate(item_list, start=1):
         ordered_id[segment.attributes["id"].value] = id_counter
     for group in xmldoc.getElementsByTagName("group"):
         id_counter += 1
@@ -97,9 +96,7 @@ def read_rst(filename: str | Path, rel_hash: dict[str, str]) -> NodeMap | str:
     for element in xmldoc.getElementsByTagName("group"):
         element_types[element.attributes["id"].value] = element.attributes["type"].value
 
-    id_counter = 0
-    for segment in xmldoc.getElementsByTagName("segment"):
-        id_counter += 1
+    for id_counter, segment in enumerate(xmldoc.getElementsByTagName("segment"), start=1):
         parent = segment.attributes["parent"].value if segment.hasAttribute("parent") else "0"
         relname = segment.attributes["relname"].value if segment.hasAttribute("relname") else default_rst
 
@@ -129,10 +126,7 @@ def read_rst(filename: str | Path, rel_hash: dict[str, str]) -> NodeMap | str:
         )
 
     for group in xmldoc.getElementsByTagName("group"):
-        if group.attributes.length == 4:
-            parent = group.attributes["parent"].value
-        else:
-            parent = "0"
+        parent = group.attributes["parent"].value if group.attributes.length == 4 else "0"
         if group.attributes.length == 4:
             relname = group.attributes["relname"].value
             if relname in schemas:
@@ -174,7 +168,6 @@ def read_rst(filename: str | Path, rel_hash: dict[str, str]) -> NodeMap | str:
 
 
 def read_text(filename: str | Path, rel_hash: dict[str, str]) -> NodeMap:
-    id_counter = 0
     nodes: NodeMap = {}
     lines = Path(filename).read_text(encoding="utf-8").splitlines(keepends=True)
     if len(rel_hash) < 2:
@@ -187,8 +180,7 @@ def read_text(filename: str | Path, rel_hash: dict[str, str]) -> NodeMap:
     except StopIteration as exc:
         raise ValueError("Relation map is empty; expected at least one relation.") from exc
 
-    for line in lines:
-        id_counter += 1
+    for id_counter, line in enumerate(lines, start=1):
         nodes[str(id_counter)] = NODE(
             str(id_counter),
             id_counter,
@@ -215,4 +207,6 @@ def read_relfile(filename: str | Path) -> dict[str, str]:
                     rels[f"{rel_data[0].strip()}_r"] = "rst"
                 case "multinuc":
                     rels[f"{rel_data[0].strip()}_m"] = "multinuc"
+                case _:
+                    pass
     return rels

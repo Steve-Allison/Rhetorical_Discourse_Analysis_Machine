@@ -6,7 +6,7 @@ from collections.abc import Iterator
 
 import pytest
 
-from rdam.rst import _version
+from rdam import _provenance as runtime_provenance
 from rdam.rst import _provenance
 
 
@@ -27,7 +27,7 @@ def test_unknown_is_only_used_when_distribution_metadata_is_absent(monkeypatch: 
     def missing(_: str) -> str:
         raise PackageNotFoundError("rdam")
 
-    monkeypatch.setattr(_version, "distribution_version", missing)
+    monkeypatch.setattr(runtime_provenance, "version", missing)
     assert _provenance.resolve_package_version() == "unknown"
 
 
@@ -35,7 +35,7 @@ def test_unexpected_metadata_failure_is_not_hidden(monkeypatch: pytest.MonkeyPat
     def broken(_: str) -> str:
         raise RuntimeError("metadata backend failed")
 
-    monkeypatch.setattr(_version, "distribution_version", broken)
+    monkeypatch.setattr(runtime_provenance, "version", broken)
     with pytest.raises(RuntimeError, match="metadata backend failed"):
         _provenance.resolve_package_version()
 

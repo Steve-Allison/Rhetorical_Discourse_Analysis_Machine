@@ -51,11 +51,15 @@ class DiscourseMarkerPrimer:
 
         Returns (MarkerRule, match_start, match_end) or None.
         """
+        return self._find_cue(text, self.sorted_rules)
+
+    @staticmethod
+    def _find_cue(text: str, rules: Sequence[MarkerRule]) -> tuple[MarkerRule, int, int] | None:
         clean_text = text.lstrip()
         leading_ws = len(text) - len(clean_text)
         text_lower = clean_text.lower()
 
-        for rule in self.sorted_rules:
+        for rule in rules:
             cue = rule.cue.lower()
             regex = _compile_rule_pattern(cue)
             match = regex.search(text_lower)
@@ -109,21 +113,7 @@ class DiscourseMarkerPrimer:
                 continue
 
             child_text = child_node.text
-            match_res = None
-            clean_child = child_text.lstrip()
-            leading_ws = len(child_text) - len(clean_child)
-            text_lower = clean_child.lower()
-
-            for rule in primer_rules:
-                cue = rule.cue.lower()
-                regex = _compile_rule_pattern(cue)
-                match = regex.search(text_lower)
-                if match:
-                    cue_start_in_match = match.group(0).lower().find(cue)
-                    start_pos = leading_ws + match.start() + cue_start_in_match
-                    end_pos = start_pos + len(cue)
-                    match_res = (rule, start_pos, end_pos)
-                    break
+            match_res = self._find_cue(child_text, primer_rules)
 
             if match_res is None:
                 new_edges.append(edge)
@@ -136,9 +126,11 @@ class DiscourseMarkerPrimer:
             # Find matching document tokens if tokenized
             matched_token_ids: list[int] = []
             if document.tokens:
-                for token in document.tokens:
-                    if not (token.end <= doc_cue_start or token.start >= doc_cue_end):
-                        matched_token_ids.append(token.token_id)
+                matched_token_ids.extend(
+                    token.token_id
+                    for token in document.tokens
+                    if not (token.end <= doc_cue_start or token.start >= doc_cue_end)
+                )
 
             sig = DiscourseSignal(
                 signal_id=f"sig_{signal_counter:04d}",

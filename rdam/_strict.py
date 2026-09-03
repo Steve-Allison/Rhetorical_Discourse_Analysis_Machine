@@ -7,15 +7,12 @@ the 006 standardised-patterns register.
 """
 
 from collections.abc import Mapping, Sequence
-from datetime import datetime
-from enum import Enum
-import hashlib
-from pathlib import PurePath
 import re
-from typing import Any, Literal, Self
+from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel, model_validator
-import rfc8785
+
+from rdam._canonical import canonical_json_bytes, json_projection, semantic_sha256, sha256_bytes
 
 _SEMANTIC_VERSION = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
 
@@ -55,46 +52,6 @@ class Sha256Identity(StrictModel):
 
     algorithm: Literal["sha256"] = "sha256"
     hex_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
-
-
-def json_projection(value: Any) -> Any:
-    """Project supported values onto the JSON data model without losing meaning."""
-
-    if isinstance(value, BaseModel):
-        return json_projection(value.model_dump(mode="json", exclude_none=False))
-    if isinstance(value, Enum):
-        return value.value
-    if isinstance(value, datetime):
-        return value.isoformat()
-    if isinstance(value, PurePath):
-        return value.as_posix()
-    if isinstance(value, bytes):
-        return value.hex()
-    if isinstance(value, tuple | list):
-        return [json_projection(item) for item in value]
-    if isinstance(value, Mapping):
-        if any(not isinstance(key, str) for key in value):
-            raise TypeError("canonical mappings require string keys")
-        return {key: json_projection(item) for key, item in value.items()}
-    if value is None or isinstance(value, str | int | float | bool):
-        return value
-    raise TypeError(f"unsupported canonical value: {type(value).__name__}")
-
-
-def canonical_json_bytes(value: Any) -> bytes:
-    """RFC 8785 canonical bytes of the JSON projection of ``value``."""
-
-    return rfc8785.dumps(json_projection(value))
-
-
-def semantic_sha256(value: Any) -> str:
-    """SHA-256 hex digest of the canonical JSON projection of ``value``."""
-
-    return hashlib.sha256(canonical_json_bytes(value)).hexdigest()
-
-
-def sha256_bytes(payload: bytes) -> str:
-    return hashlib.sha256(payload).hexdigest()
 
 
 __all__ = [

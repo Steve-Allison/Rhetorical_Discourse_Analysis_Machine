@@ -21,7 +21,12 @@ from rdam.pdtb.provider import (
 )
 
 __all__ = [
+    "CONTRACT_VERSION",
+    "FORMALISM_ID",
+    "INSTRUCTIONS",
+    "LICENCE",
     "PDTB3_SENSES",
+    "PROVIDER_ID_PREFIX",
     "PdtbAnalysis",
     "PdtbArgument",
     "PdtbProvider",
@@ -30,10 +35,5 @@ __all__ = [
     "RelationError",
     "RelationType",
     "TextSpan",
-    "CONTRACT_VERSION",
-    "FORMALISM_ID",
-    "INSTRUCTIONS",
-    "LICENCE",
-    "PROVIDER_ID_PREFIX",
     "source_identity",
 ]

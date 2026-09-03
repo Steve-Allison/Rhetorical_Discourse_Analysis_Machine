@@ -3,9 +3,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
-from typing import override
+from typing import Any, Protocol, override
 
 from rdam.rst.utils.mps_init import orthogonal_ as mps_safe_orthogonal_
+
+
+class Segmenter(Protocol):
+    def test_segment_loss(self, word_embeddings: Tensor, sent_breaks: list[int] | None = None) -> list[int]: ...
 
 
 class EncoderRNN(nn.Module):
@@ -19,23 +23,23 @@ class EncoderRNN(nn.Module):
 
     def __init__(
         self,
-        transformer,
-        word_dim,
-        hidden_size,
-        rnn_layers,
-        dropout,
-        normalize_embeddings,
-        segmenter,
-        edu_encoding_kind,
-        document_enc_gru,
-        add_first_and_last,
-        edu_embedding_compression_rate,
-        window_size,
-        window_padding,
-        edu_dropout=0.3,
-        token_bilstm_hidden=100,
-        cuda_device=None,
-    ):
+        transformer: Any,
+        word_dim: int,
+        hidden_size: int,
+        rnn_layers: int,
+        dropout: float,
+        normalize_embeddings: bool,
+        segmenter: Segmenter,
+        edu_encoding_kind: str,
+        document_enc_gru: bool,
+        add_first_and_last: bool,
+        edu_embedding_compression_rate: float,
+        window_size: int,
+        window_padding: int,
+        edu_dropout: float = 0.3,
+        token_bilstm_hidden: int = 100,
+        cuda_device: torch.device | None = None,
+    ) -> None:
         """
         :param transformer: transformers.PreTrainedModel  - LM encoder
         :param word_dim: int  - word embedding dimension (from LM)
@@ -145,16 +149,22 @@ class EncoderRNN(nn.Module):
 
     @override
     def forward(
-        self, input_tokenized_texts, entity_ids, entity_position_ids, edu_breaks, sent_breaks=None, is_test=False
-    ):
-        all_outputs = []
-        all_hidden = []
-        all_token_embeddings = []
+        self,
+        input_tokenized_texts: list[list[int]],
+        entity_ids: list[Any] | None,
+        entity_position_ids: list[Any] | None,
+        edu_breaks: list[list[int]],
+        sent_breaks: list[list[int]] | None = None,
+        is_test: bool = False,
+    ) -> tuple[Tensor, Tensor, Tensor, list[list[int]], list[Tensor]]:
+        all_outputs: list[Tensor] = []
+        all_hidden: list[Tensor] = []
+        all_token_embeddings: list[Tensor] = []
 
         # for segmenter initialization
         total_edu_loss = torch.FloatTensor([0.0]).to(self._cuda_device)
-        predict_edu_breaks_list = []
-        tem_outputs = []
+        predict_edu_breaks_list: list[list[int]] = []
+        tem_outputs: list[Tensor] = []
 
         for i in range(len(input_tokenized_texts)):
             token_ids = torch.LongTensor(input_tokenized_texts[i]).to(self._cuda_device)
@@ -180,14 +190,12 @@ class EncoderRNN(nn.Module):
             tem_outputs.append(outputs)
             all_hidden.append(hidden)
 
-        max_edu_break_num = max([len(tmp_l) for tmp_l in predict_edu_breaks_list])
+        max_edu_break_num = max(len(tmp_l) for tmp_l in predict_edu_breaks_list)
 
         for output in tem_outputs:
-            batch_size, cur_break_num, edu_dim = output.shape
+            _batch_size, cur_break_num, edu_dim = output.shape
             all_outputs.append(
-                torch.cat(
-                    [output, torch.zeros(1, max_edu_break_num - cur_break_num, edu_dim).to(self._cuda_device)], dim=1
-                )
+                torch.cat([output, output.new_zeros((1, max_edu_break_num - cur_break_num, edu_dim))], dim=1)
             )
 
         res_merged_output = torch.cat(all_outputs, dim=0)
@@ -201,14 +209,15 @@ class EncoderRNN(nn.Module):
             all_token_embeddings,
         )
 
-    def encode_edus(self, embeddings, cur_edu_break):
-        tmp_edus_list = []
+    def encode_edus(self, embeddings: Tensor, cur_edu_break: list[int]) -> tuple[Tensor, Tensor]:
+        tmp_edus_list: list[Tensor] = []
         tmp_break_list = [
             0,
         ] + [tmp_j + 1 for tmp_j in cur_edu_break]
 
         for tmp_i in range(len(tmp_break_list) - 1):
-            assert tmp_break_list[tmp_i] < tmp_break_list[tmp_i + 1]
+            if tmp_break_list[tmp_i] >= tmp_break_list[tmp_i + 1]:
+                raise ValueError("discourse-unit break positions must be strictly increasing")
             edu_embeddings = embeddings[
                 tmp_break_list[tmp_i] : tmp_break_list[tmp_i + 1], :
             ]  # Shape: (n_subwords, 768)
@@ -219,13 +228,13 @@ class EncoderRNN(nn.Module):
 
         if not self.document_enc_gru:
             raise ValueError("DMRST decoding requires document-level GRU encoding")
-        outputs, hidden = self.doc_gru_enc(outputs)
+        outputs, hidden = self.doc_gru_enc(outputs.to(next(self.doc_gru_enc.parameters()).dtype))
         hidden = hidden.view(2, 2, 1, int(self.hidden_size / 2))[-1]
         hidden = hidden.transpose(0, 1).view(1, 1, -1).contiguous()
 
         if self.add_first_and_last:
-            first_words = []
-            last_words = []
+            first_words: list[Tensor] = []
+            last_words: list[Tensor] = []
             for tmp_i in range(len(tmp_break_list) - 1):
                 first_words.append(embeddings[tmp_break_list[tmp_i]].unsqueeze(dim=0))
                 last_words.append(embeddings[tmp_break_list[tmp_i + 1] - 1].unsqueeze(dim=0))
@@ -244,7 +253,7 @@ class EncoderRNN(nn.Module):
 
         return outputs, hidden
 
-    def _encode_edu(self, edu_embeddings):
+    def _encode_edu(self, edu_embeddings: Tensor) -> Tensor:
         """
         :param edu_embeddings: torch.FloatTensor  - Subwords embeddings of shape (n_subwords, embedding_dim)
         :return: one EDU embedding of size (1, embedding_dim).
@@ -264,7 +273,8 @@ class EncoderRNN(nn.Module):
             # return summed / counts
 
         if self.edu_encoding_kind in ("gru", "bigru"):
-            edu_gru_enc, _ = self._edu_gru(edu_embeddings.unsqueeze(0))
+            edu_gru_input = edu_embeddings.unsqueeze(0).to(next(self._edu_gru.parameters()).dtype)
+            edu_gru_enc, _ = self._edu_gru(edu_gru_input)
 
             if self.edu_encoding_kind == "gru":
                 return edu_gru_enc[:, -1]
@@ -276,13 +286,22 @@ class EncoderRNN(nn.Module):
                 return torch.cat((forward_output, backward_output), dim=1)
 
         elif self.edu_encoding_kind == "bilstm":
-            lstm_enc, _ = self._edu_lstm(self.edu_dropout(edu_embeddings.unsqueeze(0)))
+            edu_lstm_input = self.edu_dropout(edu_embeddings.unsqueeze(0)).to(next(self._edu_lstm.parameters()).dtype)
+            lstm_enc, _ = self._edu_lstm(edu_lstm_input)
             hidden_size = lstm_enc.size(-1) // 2
             forward_output = lstm_enc[:, -1, :hidden_size]
             backward_output = lstm_enc[:, 0, hidden_size:]
             return torch.cat((forward_output, backward_output), dim=1)
 
-    def _fixed_sliding_window(self, token_ids, entity_ids, entity_position_ids, use_bilstm=False):
+        raise RuntimeError(f"unsupported EDU encoding kind: {self.edu_encoding_kind!r}")
+
+    def _fixed_sliding_window(
+        self,
+        token_ids: Tensor,
+        entity_ids: Tensor | None,
+        entity_position_ids: Tensor | None,
+        use_bilstm: bool = False,
+    ) -> Tensor:
         """Sliding window for encoding long sequences."""
 
         use_entities = entity_ids is not None and entity_position_ids is not None
@@ -303,7 +322,7 @@ class EncoderRNN(nn.Module):
                 return self.transformer(token_ids)[0]
 
         slide_steps = int(np.ceil(sequence_length / self.window_size))
-        window_embed_list = []
+        window_embed_list: list[Tensor] = []
         for tmp_step in range(slide_steps):
             if tmp_step == 0:
                 end = self.window_size + 2 * self.window_padding
@@ -353,21 +372,26 @@ class EncoderRNN(nn.Module):
                     ]
 
             if use_bilstm:
-                one_win_res, _ = self._embedding_bilstm(one_win_res)
+                one_win_res, _ = self._embedding_bilstm(
+                    one_win_res.to(next(self._embedding_bilstm.parameters()).dtype)
+                )
 
             window_embed_list.append(one_win_res)
 
         embeddings = torch.cat(window_embed_list, dim=1)
-        assert embeddings.size(1) == sequence_length
+        if embeddings.size(1) != sequence_length:
+            raise RuntimeError("sliding-window reconstruction changed the token sequence length")
 
         return embeddings
 
-    def encode_du_pair(self, token_ids, breaking_point, use_bilstm=False):
+    def encode_du_pair(
+        self, token_ids: list[int], breaking_point: int, use_bilstm: bool = False
+    ) -> tuple[Tensor, Tensor]:
         """Encodes the sequence of tokens, returns two matrices: for left and right texts."""
-        token_ids = torch.LongTensor(token_ids).to(self._cuda_device)
+        token_tensor = torch.tensor(token_ids, dtype=torch.long, device=self._cuda_device)
 
         # Shape: (1, n_subwords, emb_dim|bilstm_hidden_size)
-        embeddings = self._fixed_sliding_window(token_ids, None, None, use_bilstm=use_bilstm)
+        embeddings = self._fixed_sliding_window(token_tensor, None, None, use_bilstm=use_bilstm)
         return embeddings[:, : breaking_point + 1, :], embeddings[:, breaking_point + 1 :, :]
 
 
@@ -398,7 +422,11 @@ class DecoderRNN(nn.Module):
     @override
     def forward(self, input_hidden_states: Tensor, last_hidden: Tensor) -> tuple[Tensor, Tensor]:
         # Forward through unidirectional GRU
-        outputs, hidden = self.gru(input_hidden_states, last_hidden)
+        recurrent_dtype = next(self.gru.parameters()).dtype
+        outputs, hidden = self.gru(
+            input_hidden_states.to(recurrent_dtype),
+            last_hidden.to(recurrent_dtype),
+        )
 
         return outputs, hidden
 
@@ -452,7 +480,15 @@ class PointerAtten(nn.Module):
 
 
 class DefaultLabelClassifier(nn.Module):
-    def __init__(self, input_size, hidden_size, classes_number, bias=True, dropout=0.5, cuda_device=None):
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        classes_number: int,
+        bias: bool = True,
+        dropout: float = 0.5,
+        cuda_device: torch.device | None = None,
+    ) -> None:
         """
         :param input_size: int  - input size
         :param hidden_size: int  - hidden size of linear DU encoders
@@ -488,12 +524,16 @@ class DefaultLabelClassifier(nn.Module):
             self.weight_bilateral,
         )
         for layer in layers:
-            if not isinstance(layer.weight, Tensor):
-                raise TypeError("DMRST label-classifier weight must be a tensor")
             nn.init.xavier_uniform_(layer.weight)
 
+    @property
+    def device(self) -> torch.device | None:
+        return self._cuda_device
+
     @override
-    def forward(self, input_left, input_right, mask=None):
+    def forward(
+        self, input_left: Tensor, input_right: Tensor, mask: Tensor | None = None
+    ) -> tuple[Tensor, Tensor]:
         labelspace_left = self.dropout(F.elu(self.labelspace_left(input_left)))
         labelspace_right = self.dropout(F.elu(self.labelspace_right(input_right)))
 
@@ -516,7 +556,7 @@ class DefaultLabelClassifier(nn.Module):
 
 
 class DefaultPlusBiMPMClassifier(nn.Module):
-    def __init__(self, default_encoder, bimpm_encoder):
+    def __init__(self, default_encoder: DefaultLabelClassifier, bimpm_encoder: Any) -> None:
         super().__init__()
 
         self._default_encoder = default_encoder
@@ -531,10 +571,12 @@ class DefaultPlusBiMPMClassifier(nn.Module):
             self._default_encoder.input_size, self._default_encoder.hidden_size, bias=False
         )
 
-        self._cuda_device = self._default_encoder._cuda_device
+        self._cuda_device = self._default_encoder.device
 
     @override
-    def forward(self, left_edus, right_edus, left_du, right_du):
+    def forward(
+        self, left_edus: Tensor, right_edus: Tensor, left_du: Tensor, right_du: Tensor
+    ) -> tuple[Tensor, Tensor]:
         """Default classifier takes as input averaged DU representations,
         BiMPM computes over sequences of EDUs."""
 

@@ -1,11 +1,13 @@
 """Native Penn Discourse Treebank 3.0 relation contracts."""
 
 from enum import StrEnum
+from itertools import pairwise
 from typing import Annotated, Final, Self
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 from rdam._strict import JsonValue
+
 
 def _untrimmed_non_blank(value: str) -> str:
     if not value.strip():
@@ -59,9 +61,7 @@ class PdtbSense(StrEnum):
     CONTINGENCY_PURPOSE_ARG2 = "Contingency.Purpose.Arg2-as-goal"
     COMPARISON_CONCESSION_ARG1 = "Comparison.Concession.Arg1-as-denier"
     COMPARISON_CONCESSION_ARG2 = "Comparison.Concession.Arg2-as-denier"
-    COMPARISON_CONCESSION_SPEECH_ACT_ARG2 = (
-        "Comparison.Concession+SpeechAct.Arg2-as-denier+SpeechAct"
-    )
+    COMPARISON_CONCESSION_SPEECH_ACT_ARG2 = "Comparison.Concession+SpeechAct.Arg2-as-denier+SpeechAct"
     COMPARISON_CONTRAST = "Comparison.Contrast"
     COMPARISON_SIMILARITY = "Comparison.Similarity"
     EXPANSION_CONJUNCTION = "Expansion.Conjunction"
@@ -113,7 +113,7 @@ class PdtbArgument(_ClosedModel):
 
     @model_validator(mode="after")
     def ordered_non_overlapping_spans(self) -> Self:
-        for previous, current in zip(self.spans, self.spans[1:], strict=False):
+        for previous, current in pairwise(self.spans):
             if current.start < previous.end:
                 raise RelationError("argument spans must be ordered and non-overlapping")
         return self
@@ -171,13 +171,11 @@ class PdtbRelation(_ClosedModel):
         return self
 
     def quoted_spans(self) -> tuple[TextSpan, ...]:
-        return tuple(
-            [
-                *self.arg1.spans,
-                *self.arg2.spans,
-                *self.connective_spans,
-                *self.alternative_lexicalization_spans,
-            ]
+        return (
+            *self.arg1.spans,
+            *self.arg2.spans,
+            *self.connective_spans,
+            *self.alternative_lexicalization_spans,
         )
 
     def to_payload(self) -> dict[str, JsonValue]:
@@ -189,9 +187,7 @@ class PdtbRelation(_ClosedModel):
             "senses": [sense.value for sense in self.senses],
             "connective_spans": [item.to_payload() for item in self.connective_spans],
             "inferred_connectives": list(self.inferred_connectives),
-            "alternative_lexicalization_spans": [
-                item.to_payload() for item in self.alternative_lexicalization_spans
-            ],
+            "alternative_lexicalization_spans": [item.to_payload() for item in self.alternative_lexicalization_spans],
         }
 
 

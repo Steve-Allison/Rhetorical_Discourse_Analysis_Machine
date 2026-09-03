@@ -1,6 +1,8 @@
 """Discourse analysis result models and graph structures."""
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
+from types import MappingProxyType
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -192,5 +194,9 @@ class FormatRstAnalysis:
     """Composite analysis for structured documents (Docling, DocLang, Markdown)."""
 
     document_analysis: RstAnalysis
-    table_analyses: dict[str, RstAnalysis] = field(default_factory=dict)
-    node_map: dict[str, int] = field(default_factory=dict)
+    table_analyses: Mapping[str, RstAnalysis] = field(default_factory=lambda: dict[str, RstAnalysis]())
+    node_map: Mapping[str, int] = field(default_factory=lambda: dict[str, int]())
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "table_analyses", MappingProxyType(dict(self.table_analyses)))
+        object.__setattr__(self, "node_map", MappingProxyType(dict(self.node_map)))

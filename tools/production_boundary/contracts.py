@@ -10,7 +10,8 @@ from typing import Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 import rfc8785
 
-from rdam.rst.model_loading.release import ModelFile, ModelReleaseManifest, PromotionReceipt
+from rdam.rst.model_loading.release import ModelFile, ModelReleaseManifest
+from workbench.promotion.contracts import PromotionReceipt
 
 
 _SHA256_PATTERN = r"^[0-9a-f]{64}$"
@@ -184,7 +185,10 @@ class EvidenceRecord(StrictModel):
             raise ValueError("pre-source evidence cannot name a future commit")
         if self.state is not EvidenceState.PRE_SOURCE and self.source_commit is None:
             raise ValueError("post-source evidence requires the existing source commit")
-        if self.state in {EvidenceState.CANDIDATE_VERIFIED, EvidenceState.RELEASE_CERTIFIED} and self.candidate_commit is None:
+        if (
+            self.state in {EvidenceState.CANDIDATE_VERIFIED, EvidenceState.RELEASE_CERTIFIED}
+            and self.candidate_commit is None
+        ):
             raise ValueError("candidate verification requires the existing candidate commit")
         if self.state is EvidenceState.RELEASE_CERTIFIED and self.certification_commit is None:
             raise ValueError("release certification requires the existing certification commit")
@@ -192,9 +196,7 @@ class EvidenceRecord(StrictModel):
             raise ValueError("evidence check identifiers must be unique")
         is_performance = self.schema_name == "isanlp_rst.release_evidence.performance"
         if is_performance != (self.preparation_performance is not None):
-            raise ValueError(
-                "only performance evidence carries complete preparation measurements"
-            )
+            raise ValueError("only performance evidence carries complete preparation measurements")
         return self
 
 
@@ -210,9 +212,7 @@ class SourceReleaseIdentity(StrictModel):
 class SourceReleaseRecord(StrictModel):
     """Canonical evidence selecting one immutable clean source revision."""
 
-    schema_name: Literal["isanlp_rst.release_evidence.source_release"] = (
-        "isanlp_rst.release_evidence.source_release"
-    )
+    schema_name: Literal["isanlp_rst.release_evidence.source_release"] = "isanlp_rst.release_evidence.source_release"
     schema_version: Literal["1.0.0"] = "1.0.0"
     state: Literal[EvidenceState.SOURCE_SELECTED] = EvidenceState.SOURCE_SELECTED
     source: SourceReleaseIdentity

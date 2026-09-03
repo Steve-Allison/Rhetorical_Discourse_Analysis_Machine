@@ -1,7 +1,5 @@
 """LLM-assisted PDTB-3 provider with deterministic native relation validation."""
 
-from importlib import resources
-from importlib.metadata import PackageNotFoundError, version
 from typing import Final
 
 from rdam import (
@@ -11,7 +9,6 @@ from rdam import (
     ProviderDeclaration,
     ProviderError,
     ProviderFailure,
-    ProviderProvenance,
     ProviderRequest,
     Retryability,
     SemanticVersion,
@@ -21,8 +18,15 @@ from rdam import (
     semantic_sha256,
     technique_curie,
 )
-from rdam._llm import LlmError, StructuredAnalyst, configured_model, unavailable_reason
-from rdam._strict import JsonValue, sha256_bytes
+from rdam._llm import LlmError, StructuredAnalyst, resolved_model_identity, unavailable_reason
+from rdam._provider_provenance import (
+    llm_provider_failure,
+    provider_failure,
+    provider_provenance,
+    require_llm_text,
+    source_identity as _source_identity,
+)
+from rdam._strict import JsonValue
 from rdam.pdtb.relations import PdtbAnalysis, RelationError
 
 PROVIDER_ID_PREFIX: Final = "rdam.pdtb/pdtb3-relations-v1"
@@ -30,6 +34,11 @@ FORMALISM_ID: Final = "pdtb3_relations"
 CONTRACT_VERSION: Final = SemanticVersion(root="1.0.0")
 LICENCE: Final = "MIT (LICENSE); analyses produced by a third-party model under that model's own terms"
 _SOURCE_FILES: Final = ("relations.py", "provider.py")
+
+
+def source_identity() -> Sha256Identity:
+    return _source_identity("rdam.pdtb", _SOURCE_FILES)
+
 
 INSTRUCTIONS: Final = """\
 Analyse the passage using the Penn Discourse Treebank 3.0 annotation framework.
@@ -55,28 +64,11 @@ relation into a plausible one.
 """
 
 
-def source_identity() -> Sha256Identity:
-    """Digest the complete provider source surface in a fixed order."""
-
-    package = resources.files("rdam.pdtb")
-    digest = semantic_sha256(
-        {name: sha256_bytes(package.joinpath(name).read_bytes()) for name in _SOURCE_FILES}
-    )
-    return Sha256Identity(hex_digest=digest)
-
-
-def _package_version() -> str:
-    try:
-        return version("rdam")
-    except PackageNotFoundError:
-        return "unknown"
-
-
 class PdtbProvider:
     """Produce validated native PDTB-3 relations from raw text."""
 
     def __init__(self, *, model: str | None = None) -> None:
-        self._model = model or configured_model()
+        self._model = resolved_model_identity(model)
         self._analyst: StructuredAnalyst[PdtbAnalysis] | None = None
 
     @property
@@ -110,10 +102,8 @@ class PdtbProvider:
                 ),
             ),
             contract_version=CONTRACT_VERSION,
-            provenance=ProviderProvenance(
+            provenance=provider_provenance(
                 package="rdam.pdtb",
-                version=_package_version(),
-                source_revision=source_identity().hex_digest,
                 model_identity=self._model,
                 licence=LICENCE,
             ),
@@ -150,13 +140,10 @@ class PdtbProvider:
                     str(request.formalism_id),
                 )
             )
-        if request.text is None or not request.text.strip():
-            raise ProviderError(
-                self._failure("text_required", Retryability.NOT_RETRYABLE, "ValueError")
-            )
+        text = require_llm_text(request.text, technique=Technique.PDTB, provider_id=self.provider_id)
         try:
-            extraction = self._built().extract(request.text)
-            extraction.structure.validate_source(request.text)
+            extraction = self._built().extract(text)
+            extraction.structure.validate_source(text)
         except RelationError as error:
             raise ProviderError(
                 self._failure(
@@ -168,14 +155,7 @@ class PdtbProvider:
             ) from error
         except LlmError as error:
             raise ProviderError(
-                self._failure(
-                    error.code,
-                    error.retryability,
-                    "LlmError",
-                    error.detail,
-                    output_attempts=error.output_attempts,
-                    transport_attempts=error.transport_attempts,
-                )
+                llm_provider_failure(error, technique=Technique.PDTB, provider_id=self.provider_id)
             ) from error
         payload: dict[str, JsonValue] = {
             **extraction.structure.to_payload(),
@@ -206,23 +186,19 @@ class PdtbProvider:
         output_attempts: int = 0,
         transport_attempts: int = 0,
     ) -> ProviderFailure:
-        parameters = [] if detail is None else [("detail", detail)]
-        if output_attempts or transport_attempts:
-            parameters.extend(
-                (
-                    ("output_attempts", str(output_attempts)),
-                    ("transport_attempts", str(transport_attempts)),
-                )
-            )
-        return ProviderFailure(
+        return provider_failure(
             technique=Technique.PDTB,
             provider_id=self.provider_id,
-            failed_operation="analyse",
-            retryability=retryability,
             code=code,
+            retryability=retryability,
             exception_type=exception_type,
-            message_template=code,
-            message_parameters=tuple(parameters),
+            detail=detail,
+            message_parameters=(
+                ("output_attempts", str(output_attempts)),
+                ("transport_attempts", str(transport_attempts)),
+            )
+            if output_attempts or transport_attempts
+            else (),
         )
 
 

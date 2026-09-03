@@ -18,7 +18,7 @@ def _assign_html_relkinds(nodes: dict, rel_hash: dict[str, str]) -> None:
 
 def test_segment_tokens_are_a_split_snapshot() -> None:
     seg = SEGMENT("1", "hello world  extra")
-    assert seg.tokens == ["hello", "world", "", "extra"]
+    assert seg.tokens == ("hello", "world", "", "extra")
     assert seg.id == "1"
     assert seg.text == "hello world  extra"
 

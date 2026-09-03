@@ -28,7 +28,19 @@ positions, positions with no arguments, isolated nodes) are the analysis.
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Final, Self
+from typing import Final, Self, TypeGuard, cast
+
+
+def _non_empty_string(value: object) -> TypeGuard[str]:
+    return isinstance(value, str) and bool(value)
+
+
+def _node_kind(value: object) -> TypeGuard[NodeKind]:
+    return isinstance(value, NodeKind)
+
+
+def _relation(value: object) -> TypeGuard[Relation]:
+    return isinstance(value, Relation)
 
 
 class NodeKind(StrEnum):
@@ -83,11 +95,11 @@ class Node:
     text: str
 
     def __post_init__(self) -> None:
-        if not isinstance(self.node_id, str) or not self.node_id:
+        if not _non_empty_string(self.node_id):
             raise StructureError("every node needs a non-empty string id")
-        if not isinstance(self.kind, NodeKind):
+        if not _node_kind(self.kind):
             raise StructureError(f"node {self.node_id!r} has an unknown kind: {self.kind!r}")
-        if not isinstance(self.text, str) or not self.text.strip():
+        if not _non_empty_string(self.text) or not self.text.strip():
             raise StructureError(f"node {self.node_id!r} needs non-empty text")
 
 
@@ -98,14 +110,22 @@ class Link:
     target: str
 
     def __post_init__(self) -> None:
-        if not isinstance(self.source, str) or not self.source:
+        if not _non_empty_string(self.source):
             raise StructureError("every link needs a non-empty source id")
-        if not isinstance(self.target, str) or not self.target:
+        if not _non_empty_string(self.target):
             raise StructureError("every link needs a non-empty target id")
-        if not isinstance(self.relation, Relation):
+        if not _relation(self.relation):
             raise StructureError(f"unknown relation: {self.relation!r}")
         if self.source == self.target:
             raise StructureError(f"self-link on {self.source!r} is not permitted")
+
+
+def _is_node(value: object) -> TypeGuard[Node]:
+    return isinstance(value, Node)
+
+
+def _is_link(value: object) -> TypeGuard[Link]:
+    return isinstance(value, Link)
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,14 +138,14 @@ class IbisStructure:
 
         if not self.nodes:
             raise StructureError("nodes must be a non-empty tuple")
-        if not all(isinstance(node, Node) for node in self.nodes):
+        if not all(_is_node(node) for node in self.nodes):
             raise StructureError("every native node must be a Node")
         kinds: dict[str, NodeKind] = {}
         for node in self.nodes:
             if node.node_id in kinds:
                 raise StructureError(f"duplicate node id: {node.node_id!r}")
             kinds[node.node_id] = node.kind
-        if not all(isinstance(link, Link) for link in self.links):
+        if not all(_is_link(link) for link in self.links):
             raise StructureError("every native link must be a Link")
         if len(set(self.links)) != len(self.links):
             raise StructureError("duplicate links are not permitted")
@@ -152,10 +172,11 @@ class IbisStructure:
             raise StructureError("links must be a list")
         nodes: list[Node] = []
         seen: set[str] = set()
-        for item in raw_nodes:
+        for item in cast(list[object], raw_nodes):
             if not isinstance(item, dict):
                 raise StructureError("every node must be an object")
-            node_id, kind, text = item.get("id"), item.get("kind"), item.get("text")
+            node_payload = cast(dict[str, object], item)
+            node_id, kind, text = node_payload.get("id"), node_payload.get("kind"), node_payload.get("text")
             if not isinstance(node_id, str) or not node_id:
                 raise StructureError("every node needs a non-empty string id")
             if node_id in seen:
@@ -168,10 +189,15 @@ class IbisStructure:
             nodes.append(Node(node_id=node_id, kind=NodeKind(kind), text=text))
         kinds = {node.node_id: node.kind for node in nodes}
         links: list[Link] = []
-        for item in raw_links:
+        for item in cast(list[object], raw_links):
             if not isinstance(item, dict):
                 raise StructureError("every link must be an object")
-            source, relation, target = item.get("from"), item.get("relation"), item.get("to")
+            link_payload = cast(dict[str, object], item)
+            source, relation, target = (
+                link_payload.get("from"),
+                link_payload.get("relation"),
+                link_payload.get("to"),
+            )
             if not isinstance(source, str) or not isinstance(target, str) or not isinstance(relation, str):
                 raise StructureError("every link needs string from, relation, and to")
             if source not in kinds or target not in kinds:
@@ -187,9 +213,7 @@ class IbisStructure:
                     f"{kinds[source].value} {source!r} --{typed.value}--> {kinds[target].value} {target!r} is not permitted by the grammar"
                 )
             links.append(Link(source=source, relation=typed, target=target))
-        structure = cls(nodes=tuple(nodes), links=tuple(links))
-        structure._check_attachment()
-        return structure
+        return cls(nodes=tuple(nodes), links=tuple(links))
 
     def _check_attachment(self) -> None:
         outgoing: dict[str, list[Link]] = {node.node_id: [] for node in self.nodes}
@@ -213,10 +237,14 @@ class IbisStructure:
         return tuple(node for node in self.nodes if node.kind is kind)
 
     def links_from(self, node_id: str, relation: Relation | None = None) -> tuple[Link, ...]:
-        return tuple(link for link in self.links if link.source == node_id and (relation is None or link.relation is relation))
+        return tuple(
+            link for link in self.links if link.source == node_id and (relation is None or link.relation is relation)
+        )
 
     def links_to(self, node_id: str, relation: Relation | None = None) -> tuple[Link, ...]:
-        return tuple(link for link in self.links if link.target == node_id and (relation is None or link.relation is relation))
+        return tuple(
+            link for link in self.links if link.target == node_id and (relation is None or link.relation is relation)
+        )
 
     def to_payload(self) -> dict[str, list[dict[str, str]]]:
         return {
@@ -232,39 +260,50 @@ def _ids(nodes: Iterable[Node]) -> list[str]:
 def deliberation_map(structure: IbisStructure) -> DeliberationMap:
     """What was said, organised: each issue with its positions and each position's pro and con arguments."""
 
+    node_by_id = {node.node_id: node for node in structure.nodes}
+    nodes_by_kind = {kind: tuple(node for node in structure.nodes if node.kind is kind) for kind in NodeKind}
+    incoming: dict[tuple[str, Relation], list[Link]] = {}
+    outgoing: dict[tuple[str, Relation], list[Link]] = {}
+    for link in structure.links:
+        incoming.setdefault((link.target, link.relation), []).append(link)
+        outgoing.setdefault((link.source, link.relation), []).append(link)
+
     issues: list[IssueEntry] = []
-    for issue in structure.of_kind(NodeKind.ISSUE):
+    for issue in nodes_by_kind[NodeKind.ISSUE]:
         positions: list[PositionEntry] = []
-        for link in structure.links_to(issue.node_id, Relation.RESPONDS_TO):
-            position = structure.node(link.source)
+        for link in incoming.get((issue.node_id, Relation.RESPONDS_TO), ()):
+            position = node_by_id[link.source]
             positions.append(
                 {
                     "id": position.node_id,
-                    "supporting": [item.source for item in structure.links_to(position.node_id, Relation.SUPPORTS)],
-                    "objecting": [item.source for item in structure.links_to(position.node_id, Relation.OBJECTS_TO)],
+                    "supporting": [item.source for item in incoming.get((position.node_id, Relation.SUPPORTS), ())],
+                    "objecting": [item.source for item in incoming.get((position.node_id, Relation.OBJECTS_TO), ())],
                 }
             )
         issues.append(
             {
                 "id": issue.node_id,
                 "positions": positions,
-                "raised_by": [link.target for link in structure.links_from(issue.node_id, Relation.IS_SUGGESTED_BY)],
-                "questions": [link.target for link in structure.links_from(issue.node_id, Relation.QUESTIONS)],
-                "generalizes": [link.target for link in structure.links_from(issue.node_id, Relation.GENERALIZES)],
-                "specializes": [link.target for link in structure.links_from(issue.node_id, Relation.SPECIALIZES)],
-                "replaces": [link.target for link in structure.links_from(issue.node_id, Relation.REPLACES)],
+                "raised_by": [link.target for link in outgoing.get((issue.node_id, Relation.IS_SUGGESTED_BY), ())],
+                "questions": [link.target for link in outgoing.get((issue.node_id, Relation.QUESTIONS), ())],
+                "generalizes": [link.target for link in outgoing.get((issue.node_id, Relation.GENERALIZES), ())],
+                "specializes": [link.target for link in outgoing.get((issue.node_id, Relation.SPECIALIZES), ())],
+                "replaces": [link.target for link in outgoing.get((issue.node_id, Relation.REPLACES), ())],
             }
         )
     linked = {link.source for link in structure.links} | {link.target for link in structure.links}
     return {
         "issues": issues,
         "issues_without_positions": [
-            issue.node_id for issue in structure.of_kind(NodeKind.ISSUE) if not structure.links_to(issue.node_id, Relation.RESPONDS_TO)
+            issue.node_id
+            for issue in nodes_by_kind[NodeKind.ISSUE]
+            if (issue.node_id, Relation.RESPONDS_TO) not in incoming
         ],
         "positions_without_arguments": [
             position.node_id
-            for position in structure.of_kind(NodeKind.POSITION)
-            if not structure.links_to(position.node_id, Relation.SUPPORTS) and not structure.links_to(position.node_id, Relation.OBJECTS_TO)
+            for position in nodes_by_kind[NodeKind.POSITION]
+            if (position.node_id, Relation.SUPPORTS) not in incoming
+            and (position.node_id, Relation.OBJECTS_TO) not in incoming
         ],
         "isolated_nodes": _ids(node for node in structure.nodes if node.node_id not in linked),
     }

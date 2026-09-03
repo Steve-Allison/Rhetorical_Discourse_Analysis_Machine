@@ -14,6 +14,7 @@ default namespace, so this is the common case). The local-name path
 """
 
 from dataclasses import dataclass
+from collections import defaultdict
 import hashlib
 from io import BytesIO
 from pathlib import PurePosixPath
@@ -21,6 +22,8 @@ import re
 import stat
 from urllib.parse import unquote, urlsplit
 from zipfile import BadZipFile, ZipFile, ZipInfo
+from collections.abc import Iterator, Mapping
+from typing import Protocol, TypeVar, cast, overload
 
 from lxml import etree
 
@@ -39,6 +42,35 @@ _DOCUMENT_CONTENT_TYPE = "application/vnd.doclang.document+xml"
 _RELATIONSHIPS_CONTENT_TYPE = "application/vnd.openxmlformats-package.relationships+xml"
 _DOCUMENT_RELATIONSHIP_TYPE = "http://doclang.ai/ns/package/2026/relationships/document"
 _PAGE_IMAGE = re.compile(r"pages/([1-9][0-9]*)\.(png|jpg|jpeg|webp)", re.IGNORECASE)
+_DefaultT = TypeVar("_DefaultT")
+
+
+class XmlElement(Protocol):
+    """Public structural type for the private lxml element implementation."""
+
+    @property
+    def tag(self) -> object: ...
+
+    @property
+    def text(self) -> str | None: ...
+
+    @property
+    def tail(self) -> str | None: ...
+
+    @property
+    def attrib(self) -> Mapping[str, str]: ...
+
+    def __iter__(self) -> Iterator[XmlElement]: ...
+
+    def getparent(self) -> XmlElement | None: ...
+
+    @overload
+    def get(self, key: str) -> str | None: ...
+
+    @overload
+    def get(self, key: str, default: _DefaultT) -> str | _DefaultT: ...
+
+    def iter(self) -> Iterator[XmlElement]: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,7 +91,7 @@ class DoclangArchive:
     members: tuple[DoclangArchiveMember, ...]
 
 
-def local_name(element: etree._Element) -> str:
+def local_name(element: XmlElement) -> str:
     """Return the element's tag with any XML namespace stripped."""
     tag = element.tag
     if isinstance(tag, str) and tag.startswith("{"):
@@ -67,7 +99,7 @@ def local_name(element: etree._Element) -> str:
     return tag if isinstance(tag, str) else ""
 
 
-def local_path(element: etree._Element) -> str:
+def local_path(element: XmlElement) -> str:
     """Return a local-name canonical XPath for ``element``.
 
     Each step is ``local_name[i]`` where ``i`` is the 1-based position
@@ -78,8 +110,8 @@ def local_path(element: etree._Element) -> str:
     Example output: ``"/doclang[1]/heading[2]/text[1]"``.
     """
     parts: list[str] = []
-    cur: etree._Element | None = element
-    while cur is not None and isinstance(cur.tag, str):
+    cur = element
+    while isinstance(cur.tag, str):
         parent = cur.getparent()
         my_local = local_name(cur)
         if parent is None:
@@ -90,6 +122,28 @@ def local_path(element: etree._Element) -> str:
         parts.append(f"/{my_local}[{pos}]")
         cur = parent
     return "".join(reversed(parts))
+
+
+def local_path_index(root: XmlElement) -> dict[XmlElement, str]:
+    """Index canonical local-name paths for an element tree in one pass."""
+
+    if not isinstance(root.tag, str):
+        return {}
+    result = {root: f"/{local_name(root)}[1]"}
+    stack = [root]
+    while stack:
+        parent = stack.pop()
+        positions: defaultdict[str, int] = defaultdict(int)
+        children: list[XmlElement] = []
+        for child in parent:
+            if not isinstance(child.tag, str):
+                continue
+            name = local_name(child)
+            positions[name] += 1
+            result[child] = f"{result[parent]}/{name}[{positions[name]}]"
+            children.append(child)
+        stack.extend(reversed(children))
+    return result
 
 
 def load_doclang_archive(data: bytes) -> DoclangArchive:
@@ -128,9 +182,7 @@ def load_doclang_archive(data: bytes) -> DoclangArchive:
                 package_parts[entry.filename] = member_data
         missing = {_CONTENT_TYPES_PART, _RELATIONSHIPS_PART, _DOCUMENT_PART} - package_parts.keys()
         if missing:
-            raise InvalidDoclangError(
-                f"DocLang OPC package is missing required part(s): {', '.join(sorted(missing))}"
-            )
+            raise InvalidDoclangError(f"DocLang OPC package is missing required part(s): {', '.join(sorted(missing))}")
         document_root = _parse_control_xml(package_parts[_DOCUMENT_PART], part_name=_DOCUMENT_PART)
         member_names = frozenset(entry.filename for entry in entries if not entry.is_dir())
         _validate_content_types(package_parts[_CONTENT_TYPES_PART], member_names)
@@ -140,7 +192,7 @@ def load_doclang_archive(data: bytes) -> DoclangArchive:
         return DoclangArchive(document_bytes=package_parts[_DOCUMENT_PART], members=tuple(identities))
 
 
-def _parse_control_xml(data: bytes, *, part_name: str) -> etree._Element:
+def _parse_control_xml(data: bytes, *, part_name: str) -> XmlElement:
     parser = etree.XMLParser(
         resolve_entities=False,
         no_network=True,
@@ -149,7 +201,7 @@ def _parse_control_xml(data: bytes, *, part_name: str) -> etree._Element:
         huge_tree=False,
     )
     try:
-        return etree.fromstring(data, parser=parser)
+        return cast(XmlElement, etree.fromstring(data, parser=parser))
     except etree.XMLSyntaxError as exc:
         raise InvalidDoclangError(f"DocLang OPC part {part_name!r} is not well-formed XML") from exc
 
@@ -177,13 +229,14 @@ def _validate_content_types(data: bytes, member_names: frozenset[str]) -> None:
             raise InvalidDoclangError("DocLang OPC content-types part contains an unsupported element")
     if overrides.get(f"/{_DOCUMENT_PART}") != _DOCUMENT_CONTENT_TYPE:
         raise InvalidDoclangError(
-            "DocLang OPC content-types part must declare /document.xml as "
-            f"{_DOCUMENT_CONTENT_TYPE}"
+            f"DocLang OPC content-types part must declare /document.xml as {_DOCUMENT_CONTENT_TYPE}"
         )
     if defaults.get("rels") != _RELATIONSHIPS_CONTENT_TYPE:
         raise InvalidDoclangError("DocLang OPC content-types part must declare the .rels content type")
     for member_name in member_names - {_CONTENT_TYPES_PART}:
-        extension = "rels" if member_name.endswith(".rels") else PurePosixPath(member_name).suffix.removeprefix(".").lower()
+        extension = (
+            "rels" if member_name.endswith(".rels") else PurePosixPath(member_name).suffix.removeprefix(".").lower()
+        )
         if f"/{member_name}" not in overrides and (not extension or extension not in defaults):
             raise InvalidDoclangError(f"DocLang OPC part has no declared content type: {member_name!r}")
 
@@ -192,7 +245,7 @@ def _validate_root_relationships(data: bytes) -> None:
     root = _parse_control_xml(data, part_name=_RELATIONSHIPS_PART)
     if root.tag != f"{{{_RELATIONSHIPS_NAMESPACE}}}Relationships":
         raise InvalidDoclangError("DocLang OPC root relationships part has the wrong root element")
-    document_relationships: list[etree._Element] = []
+    document_relationships: list[XmlElement] = []
     relationship_ids: set[str] = set()
     for child in root:
         if child.tag != f"{{{_RELATIONSHIPS_NAMESPACE}}}Relationship":
@@ -210,7 +263,7 @@ def _validate_root_relationships(data: bytes) -> None:
         raise InvalidDoclangError("DocLang OPC main-document relationship must target internal document.xml")
 
 
-def _validate_document_references(root: etree._Element, member_names: frozenset[str]) -> None:
+def _validate_document_references(root: XmlElement, member_names: frozenset[str]) -> None:
     for element in root.iter():
         if not isinstance(element.tag, str) or local_name(element) != "src":
             continue
@@ -228,12 +281,8 @@ def _validate_document_references(root: etree._Element, member_names: frozenset[
             raise InvalidDoclangError(f"DocLang archive references a missing asset part: {decoded_path!r}")
 
 
-def _validate_page_images(root: etree._Element, member_names: frozenset[str]) -> None:
-    page_count = 1 + sum(
-        1
-        for child in root
-        if isinstance(child.tag, str) and local_name(child) == "page_break"
-    )
+def _validate_page_images(root: XmlElement, member_names: frozenset[str]) -> None:
+    page_count = 1 + sum(1 for child in root if isinstance(child.tag, str) and local_name(child) == "page_break")
     for member_name in member_names:
         if not member_name.startswith("pages/"):
             continue
@@ -272,7 +321,9 @@ def _validate_archive_member(entry: ZipInfo, seen: set[str]) -> None:
 __all__ = [
     "DoclangArchive",
     "DoclangArchiveMember",
+    "XmlElement",
     "load_doclang_archive",
     "local_name",
     "local_path",
+    "local_path_index",
 ]

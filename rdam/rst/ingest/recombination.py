@@ -32,6 +32,7 @@ from rdam.rst.ingest.contracts.inference import (
     ConfidenceKind,
     MappingStatus,
     PrimaryInferenceEvidence,
+    SegmentationDecisionEvidence,
     PrimaryStructureDecisionEvidence,
     RefinementRecord,
     RelationInterpretation,
@@ -41,9 +42,9 @@ from rdam.rst.ingest.contracts.preparation import AnalysisPlan
 from rdam.rst.ingest.contracts.source import TextSpanAnchor
 from rdam.rst.ingest.identity import semantic_sha256
 from rdam.rst.ingest.parser_result import (
-    _analysis_anchors,
-    _component_digest,
+    analysis_anchors,
     build_validation_receipt,
+    component_digest_for,
     validate_parser_analysis_result,
 )
 
@@ -79,7 +80,7 @@ def recombine_parser_results(
     all_nodes: list[RstNode] = []
     all_edges: list[PrimaryRelationEdge] = []
     all_signals: list[DiscourseSignal] = []
-    segmentation = []
+    segmentation: list[SegmentationDecisionEvidence] = []
     structures: list[PrimaryStructureDecisionEvidence] = []
     refinements: list[RefinementRecord] = []
     node_receipts: list[LocalToGlobalMapping] = []
@@ -89,38 +90,21 @@ def recombine_parser_results(
     token_order = 0
     edu_order = 0
     next_node_id = 1
-    for unit_index, (result, (offset, unit_end)) in enumerate(
-        zip(results, unit_ranges, strict=True)
-    ):
+    for unit_index, (result, (offset, unit_end)) in enumerate(zip(results, unit_ranges, strict=True)):
         local = result.semantic
         if local.analysed_document.text != text[offset:unit_end]:
             raise ValueError("analysis-unit text does not match its declared prepared range")
         prefix = f"unit:{unit_index:04d}"
-        token_ids = {
-            token.token_id: f"{prefix}:{token.token_id}"
-            for token in local.analysed_document.tokens
-        }
+        token_ids = {token.token_id: f"{prefix}:{token.token_id}" for token in local.analysed_document.tokens}
         signal_token_ids = {
             int(token.token_id.rsplit(":", 1)[-1]): token_order + index
             for index, token in enumerate(local.analysed_document.tokens)
         }
-        edu_ids = {
-            edu.edu_id: f"{prefix}:{edu.edu_id}"
-            for edu in local.analysed_document.edus
-        }
-        node_ids = {
-            node.node_id: next_node_id + index
-            for index, node in enumerate(local.analysis.nodes)
-        }
+        edu_ids = {edu.edu_id: f"{prefix}:{edu.edu_id}" for edu in local.analysed_document.edus}
+        node_ids = {node.node_id: next_node_id + index for index, node in enumerate(local.analysis.nodes)}
         next_node_id += len(node_ids)
-        edge_ids = {
-            edge.edge_id: f"{prefix}:{edge.edge_id}"
-            for edge in local.analysis.primary_edges
-        }
-        signal_ids = {
-            signal.signal_id: f"{prefix}:{signal.signal_id}"
-            for signal in local.analysis.signals
-        }
+        edge_ids = {edge.edge_id: f"{prefix}:{edge.edge_id}" for edge in local.analysis.primary_edges}
+        signal_ids = {signal.signal_id: f"{prefix}:{signal.signal_id}" for signal in local.analysis.signals}
 
         for token in local.analysed_document.tokens:
             all_tokens.append(
@@ -148,11 +132,7 @@ def recombine_parser_results(
             token_order += 1
         for edu in local.analysed_document.edus:
             mapped_tokens = tuple(token_ids[token_id] for token_id in edu.token_ids)
-            anchors = tuple(
-                token.source_anchors[0]
-                for token in all_tokens
-                if token.token_id in mapped_tokens
-            )
+            anchors = tuple(token.source_anchors[0] for token in all_tokens if token.token_id in mapped_tokens)
             all_edus.append(
                 edu.model_copy(
                     update={
@@ -221,9 +201,7 @@ def recombine_parser_results(
                         else signal.edge_id
                     ),
                     "token_ids": tuple(signal_token_ids[token_id] for token_id in signal.token_ids),
-                    "char_spans": tuple(
-                        (start + offset, end + offset) for start, end in signal.char_spans
-                    ),
+                    "char_spans": tuple((start + offset, end + offset) for start, end in signal.char_spans),
                 }
             )
             for signal in local.analysis.signals
@@ -234,9 +212,7 @@ def recombine_parser_results(
                     "decision_id": f"{prefix}:{decision.decision_id}",
                     "boundary_id": f"{prefix}:{decision.boundary_id}",
                     "token_ids": tuple(token_ids[token_id] for token_id in decision.token_ids),
-                    "resulting_edu_ids": tuple(
-                        edu_ids[edu_id] for edu_id in decision.resulting_edu_ids
-                    ),
+                    "resulting_edu_ids": tuple(edu_ids[edu_id] for edu_id in decision.resulting_edu_ids),
                 }
             )
             for decision in local.primary_inference.segmentation_decisions
@@ -246,9 +222,7 @@ def recombine_parser_results(
                 update={
                     "decision_id": f"{prefix}:{decision.decision_id}",
                     "node_ids": tuple(node_ids[node_id] for node_id in decision.node_ids),
-                    "primary_edge_ids": tuple(
-                        edge_ids[edge_id] for edge_id in decision.primary_edge_ids
-                    ),
+                    "primary_edge_ids": tuple(edge_ids[edge_id] for edge_id in decision.primary_edge_ids),
                     "analysed_start": decision.analysed_start + offset,
                     "analysed_end": decision.analysed_end + offset,
                 }
@@ -260,16 +234,12 @@ def recombine_parser_results(
                 {
                     **refinement.model_dump(exclude={"semantic_digest"}),
                     "refinement_id": f"{prefix}:{refinement.refinement_id}",
-                    "trigger_signal_ids": tuple(
-                        signal_ids[signal_id] for signal_id in refinement.trigger_signal_ids
-                    ),
+                    "trigger_signal_ids": tuple(signal_ids[signal_id] for signal_id in refinement.trigger_signal_ids),
                     "trigger_anchors": tuple(
-                        _shift_anchor(anchor, offset, document_id, text)
-                        for anchor in refinement.trigger_anchors
+                        _shift_anchor(anchor, offset, document_id, text) for anchor in refinement.trigger_anchors
                     ),
                     "graph_element_ids": tuple(
-                        edge_ids.get(element_id, element_id)
-                        for element_id in refinement.graph_element_ids
+                        edge_ids.get(element_id, element_id) for element_id in refinement.graph_element_ids
                     ),
                 }
             )
@@ -321,7 +291,7 @@ def recombine_parser_results(
             }
         )
     )
-    relation_inventory_identity = _component_digest(composite.relation_inventory)
+    relation_inventory_identity = component_digest_for(composite.relation_inventory)
     structures.append(
         PrimaryStructureDecisionEvidence(
             decision_id="recombine:decision:0000",
@@ -376,20 +346,13 @@ def recombine_parser_results(
             for result, (offset, _) in zip(results, unit_ranges, strict=True)
             for boundary in result.analysed_document.paragraph_boundaries
         ),
-        structural_boundary_ids=tuple(
-            f"unit:{index:04d}" for index in range(len(results))
-        ),
-        prepared_segment_ids=tuple(
-            f"document:segment:{index:04d}" for index in range(len(results))
-        ),
+        structural_boundary_ids=tuple(f"unit:{index:04d}" for index in range(len(results))),
+        prepared_segment_ids=tuple(f"document:segment:{index:04d}" for index in range(len(results))),
         source_anchors=(_document_anchor(document_id, 0, len(text), text),),
         transformations=(),
         fidelity=(
             FidelityClass.LOSSLESS
-            if all(
-                result.analysed_document.fidelity is FidelityClass.LOSSLESS
-                for result in results
-            )
+            if all(result.analysed_document.fidelity is FidelityClass.LOSSLESS for result in results)
             else FidelityClass.LOSSY
         ),
         character_coverage=ExactCoverage(
@@ -413,25 +376,20 @@ def recombine_parser_results(
         structure_decisions=tuple(structures),
         refinements=tuple(refinements),
     )
-    anchors = _analysis_anchors(
+    anchors = analysis_anchors(
         analysis,
         analysed,
         primary,
         document_identity=document_id,
     )
     receipt = RecombinationReceipt(
-        unit_identities=tuple(
-            Sha256Identity(hex_digest=semantic_sha256(unit)) for unit in plan.units
-        ),
-        local_result_identities=tuple(
-            _required_identity(result) for result in results
-        ),
+        unit_identities=tuple(Sha256Identity(hex_digest=semantic_sha256(unit)) for unit in plan.units),
+        local_result_identities=tuple(_required_identity(result) for result in results),
         segment_mappings=tuple(segment_receipts),
         node_mappings=tuple(node_receipts),
         edge_mappings=tuple(edge_receipts),
         boundary_inputs=tuple(
-            f"{link.predecessor_unit_id}->{link.successor_unit_id}"
-            for link in plan.recombination.links
+            f"{link.predecessor_unit_id}->{link.successor_unit_id}" for link in plan.recombination.links
         ),
         nuclear_spine_inputs=tuple(str(root) for root in unit_roots),
         stitching_decisions=tuple(

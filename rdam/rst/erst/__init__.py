@@ -46,14 +46,14 @@ from rdam.rst.erst.signals import (
 )
 
 __all__ = [
+    "DEFAULT_SIGNAL_PATTERNS",
     "AttentionPooling",
     "BoundaryAwareSpanEncoder",
     "CandidateMode",
-    "DEFAULT_SIGNAL_PATTERNS",
     "DecodedErstEdges",
-    "ErstSecondaryEdgeDecoder",
     "ErstCapabilityError",
     "ErstCheckpointError",
+    "ErstSecondaryEdgeDecoder",
     "LoadedErstCheckpoint",
     "NeuralSecondaryEdgeScorer",
     "RS4Document",
@@ -75,8 +75,8 @@ __all__ = [
     "iter_candidate_batches",
     "iter_secondary_edge_candidates",
     "load_erst_checkpoint_bundle",
-    "rs4_to_document_and_analysis",
     "resolve_gum_relation_concept",
+    "rs4_to_document_and_analysis",
     "validate_erst_checkpoint_bundle",
     "verify_erst_checkpoint_test_vector",
 ]

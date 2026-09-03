@@ -27,7 +27,6 @@ from rdam.rst.ingest.contracts.base import SemanticVersion, Sha256Identity
 from rdam.rst.ingest.contracts.capabilities import ProductionCapabilities
 from rdam.rst.ingest.contracts.failure import (
     AcquisitionCompletedEvidence,
-    DiagnosticPolicy,
     FailureCategory,
     InferenceCompletedEvidence,
     LifecycleStage,
@@ -273,7 +272,6 @@ class ProductionIngestor:
         planning_policy: PlanningPolicy | None = None,
         analysis_policy: AnalysisPolicy | None = None,
         cache_directory: Path | None = None,
-        diagnostic_policy: DiagnosticPolicy | None = None,
     ) -> ProductionAnalysisOutcome:
         """Analyse atomically or raise one typed completed-stage failure."""
 
@@ -656,9 +654,7 @@ def _analysis_request(
         analysis_policy=policy,
         analysis_plan_identity=plan_identity,
         parser_capacity_identity=(
-            Sha256Identity(hex_digest=semantic_sha256(capacity))
-            if capacity is not None
-            else None
+            Sha256Identity(hex_digest=semantic_sha256(capacity)) if capacity is not None else None
         ),
         composite_analysis_identity=composite,
         pipeline_version=SemanticVersion(root="2.0.0"),
@@ -751,9 +747,7 @@ def _inference_completed(
 ) -> InferenceCompletedEvidence:
     if not results:
         raise ValueError("inference completed evidence requires at least one complete result")
-    unit_identities = tuple(
-        _required_identity(result.semantic_digest, "parser result") for result in results
-    )
+    unit_identities = tuple(_required_identity(result.semantic_digest, "parser result") for result in results)
     final = results[-1]
     semantic = final.semantic
     return InferenceCompletedEvidence(
@@ -777,21 +771,15 @@ def _inference_completed(
                 "composite analysis",
             ),
             unit_identities=unit_identities,
-            primary_evidence_identity=Sha256Identity(
-                hex_digest=semantic_sha256(semantic.primary_inference)
-            ),
+            primary_evidence_identity=Sha256Identity(hex_digest=semantic_sha256(semantic.primary_inference)),
             erst_evidence_identity=(
                 _required_identity(semantic.erst_completion.semantic_digest, "eRST evidence")
                 if semantic.erst_completion is not None
                 else None
             ),
             output_node_count=sum(len(result.semantic.analysis.nodes) for result in results),
-            output_primary_edge_count=sum(
-                len(result.semantic.analysis.primary_edges) for result in results
-            ),
-            output_secondary_edge_count=sum(
-                len(result.semantic.analysis.secondary_edges) for result in results
-            ),
+            output_primary_edge_count=sum(len(result.semantic.analysis.primary_edges) for result in results),
+            output_secondary_edge_count=sum(len(result.semantic.analysis.secondary_edges) for result in results),
             completed_unit_count=len(results),
             expected_unit_count=len(results),
         ),
@@ -904,9 +892,9 @@ def _parser_capacity(value: object) -> ParserCapacity:
 
 
 __all__ = [
+    "DEFAULT_ANALYSIS_POLICY",
     "AnalysisIdentityProvider",
     "AnalysisParser",
-    "DEFAULT_ANALYSIS_POLICY",
     "ErstCompletionParser",
     "ProductionIngestor",
 ]

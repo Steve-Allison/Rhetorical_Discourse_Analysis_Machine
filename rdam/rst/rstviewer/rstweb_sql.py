@@ -8,7 +8,7 @@ part of the public module surface.
 import os
 import sqlite3
 import tempfile
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import closing, contextmanager
 from contextvars import ContextVar
 from pathlib import Path
@@ -24,47 +24,47 @@ _active_dbpath: ContextVar[str | None] = ContextVar("rstviewer_dbpath", default=
 
 __all__ = [
     "NODE",
+    "add_node",
+    "add_seg",
+    "count_children",
+    "count_multinuc_children",
+    "count_span_children",
+    "delete_document",
+    "delete_node",
+    "generic_query",
+    "get_children",
+    "get_def_rel",
+    "get_kind",
     "get_left_right",
+    "get_max_node_id",
+    "get_max_right",
+    "get_multinuc_children_lr",
+    "get_multinuc_children_lr_ids",
+    "get_multirel",
+    "get_node_lr",
+    "get_parent",
+    "get_rel",
+    "get_rel_type",
+    "get_rst_doc",
+    "get_rst_rels",
+    "get_seg_contents",
+    "get_split_text",
+    "get_tok_map",
+    "import_document",
+    "insert_parent",
+    "insert_seg",
+    "merge_seg_forward",
+    "node_exists",
+    "push_down",
+    "push_up",
     "read_relfile",
     "read_rst",
     "read_text",
-    "temporary_db",
     "setup_db",
-    "import_document",
-    "get_rst_doc",
-    "get_def_rel",
-    "get_rst_rels",
-    "add_node",
+    "temporary_db",
     "update_parent",
-    "get_multirel",
-    "get_parent",
-    "get_rel",
-    "get_kind",
     "update_rel",
-    "count_children",
-    "count_multinuc_children",
-    "get_multinuc_children_lr",
-    "get_multinuc_children_lr_ids",
-    "count_span_children",
-    "node_exists",
-    "get_rel_type",
-    "delete_node",
-    "insert_parent",
-    "get_children",
-    "get_max_node_id",
-    "get_max_right",
-    "generic_query",
-    "delete_document",
-    "insert_seg",
-    "get_tok_map",
-    "push_up",
-    "push_down",
-    "get_split_text",
     "update_seg_contents",
-    "get_seg_contents",
-    "add_seg",
-    "merge_seg_forward",
-    "get_node_lr",
 ]
 
 
@@ -78,7 +78,7 @@ def _resolve_dbpath(dbpath: str | None = None) -> str:
 
 
 @contextmanager
-def temporary_db() -> Iterator[str]:
+def temporary_db() -> Generator[str]:
     """Create a private SQLite file for one render; unlink in ``finally``."""
     fd, path = tempfile.mkstemp(prefix="rstviewer_", suffix=".sqlite")
     os.close(fd)
@@ -260,19 +260,19 @@ def update_parent(node_id: str, new_parent_id: str, doc: str, project: str, user
             update_rel(node_id, multi_rel, doc, project, user)
         elif get_rel(node_id, doc, project, user) == "span" and get_kind(new_parent_id, doc, project, user) != "span":
             update_rel(node_id, get_def_rel("rst", doc, project), doc, project, user)
-    if prev_parent:
-        if not count_children(prev_parent, doc, project, user) > 0 and not prev_parent == "0":
-            delete_node(prev_parent, doc, project, user)
-        elif (
+    if prev_parent and (
+        not count_children(prev_parent, doc, project, user) > 0
+        and prev_parent != "0"
+        or (
             get_kind(prev_parent, doc, project, user) == "span"
             and count_span_children(prev_parent, doc, project, user) == 0
-        ):
-            delete_node(prev_parent, doc, project, user)
-        elif (
+        )
+        or (
             get_kind(prev_parent, doc, project, user) == "multinuc"
             and count_multinuc_children(prev_parent, doc, project, user) == 0
-        ):
-            delete_node(prev_parent, doc, project, user)
+        )
+    ):
+        delete_node(prev_parent, doc, project, user)
 
 
 def get_multirel(node_id: str, exclude_child: str, doc: str, project: str, user: str) -> str:
@@ -420,7 +420,7 @@ def get_rel_type(relname: str, doc: str, project: str) -> str:
 def delete_node(node_id: str, doc: str, project: str, user: str) -> None:
     if node_exists(node_id, doc, project, user):
         parent = get_parent(node_id, doc, project, user)
-        if not get_kind(node_id, doc, project, user) == "edu":
+        if get_kind(node_id, doc, project, user) != "edu":
             old_children = get_children(node_id, doc, project, user)
             for child in old_children:
                 if len(str(child[0])) > 0:
@@ -429,18 +429,15 @@ def delete_node(node_id: str, doc: str, project: str, user: str) -> None:
                 "DELETE FROM rst_nodes WHERE id=? and doc=? and project=? and user=?",
                 (node_id, doc, project, user),
             )
-        if not parent == "0":
-            if not count_children(parent, doc, project, user) > 0:
-                delete_node(parent, doc, project, user)
-            elif (
-                get_kind(parent, doc, project, user) == "span" and count_span_children(parent, doc, project, user) == 0
-            ):
-                delete_node(parent, doc, project, user)
-            elif (
+        if parent != "0" and (
+            not count_children(parent, doc, project, user) > 0
+            or (get_kind(parent, doc, project, user) == "span" and count_span_children(parent, doc, project, user) == 0)
+            or (
                 get_kind(parent, doc, project, user) == "multinuc"
                 and count_multinuc_children(parent, doc, project, user) == 0
-            ):
-                delete_node(parent, doc, project, user)
+            )
+        ):
+            delete_node(parent, doc, project, user)
 
 
 def insert_parent(node_id: str, new_rel: str, node_kind: str, doc: str, project: str, user: str) -> None:

@@ -2,9 +2,7 @@
 
 from collections.abc import Iterable
 
-from lxml import etree
-
-from .loader import local_name
+from .loader import XmlElement, local_name
 
 _METADATA_HEAD_ELEMENTS = frozenset(
     {
@@ -23,7 +21,7 @@ _METADATA_HEAD_ELEMENTS = frozenset(
 
 
 def iter_body_text(
-    element: etree._Element,
+    element: XmlElement,
     *,
     excluded_subtrees: frozenset[str] = frozenset(),
 ) -> Iterable[str]:
@@ -50,7 +48,7 @@ def iter_body_text(
 
 
 def iter_sibling_body_text(
-    element: etree._Element,
+    element: XmlElement,
     *,
     excluded_subtrees: frozenset[str] = frozenset(),
 ) -> Iterable[str]:
@@ -67,7 +65,7 @@ def iter_sibling_body_text(
 
 
 def body_text(
-    element: etree._Element,
+    element: XmlElement,
     *,
     excluded_subtrees: frozenset[str] = frozenset(),
 ) -> str:

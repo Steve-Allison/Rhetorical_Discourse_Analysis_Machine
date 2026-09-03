@@ -23,7 +23,7 @@ from enum import StrEnum
 from functools import cache
 from importlib import resources
 import json
-from typing import Final
+from typing import Final, cast
 
 FRAMEWORK_SCHEME: Final = "coe:artifact/narrative/analytical_frameworks_taxonomy"
 _CONCEPT_ROOT: Final = "coe:concept/analytical_frameworks_taxonomy"
@@ -84,24 +84,26 @@ def framework_identities() -> Mapping[Technique, FrameworkIdentity]:
     concepts = payload.get("concepts")
     if not isinstance(concepts, dict):
         raise FrameworkResolutionError("framework projection has no concepts mapping")
+    concept_map = cast(dict[object, object], concepts)
     resolved: dict[Technique, FrameworkIdentity] = {}
     for technique in Technique:
-        entry = concepts.get(technique.value)
+        entry = concept_map.get(technique.value)
         if not isinstance(entry, dict):
             raise FrameworkResolutionError(f"framework projection lacks {technique.value!r}")
-        curie = str(entry["id"])
+        concept = cast(dict[object, object], entry)
+        curie = str(concept["id"])
         if not curie.startswith(f"{_CONCEPT_ROOT}/") or not curie.endswith(f"/{technique.value}"):
             raise FrameworkResolutionError(
                 f"framework identity for {technique.value!r} does not follow Central's concept id pattern: {curie}"
             )
-        if entry.get("in_scheme") != FRAMEWORK_SCHEME:
+        if concept.get("in_scheme") != FRAMEWORK_SCHEME:
             raise FrameworkResolutionError(f"framework identity for {technique.value!r} is outside the scheme")
         resolved[technique] = FrameworkIdentity(
             technique=technique,
             curie=curie,
-            label=str(entry["label"]),
-            broader=str(entry["broader"]),
-            scheme=str(entry["in_scheme"]),
+            label=str(concept["label"]),
+            broader=str(concept["broader"]),
+            scheme=str(concept["in_scheme"]),
         )
     return resolved
 

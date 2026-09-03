@@ -128,6 +128,35 @@ class TestNativeTechniqueResult:
         )
         assert dict(result.payload) == payload
 
+    def test_payload_is_recursively_immutable_and_digest_cannot_go_stale(self) -> None:
+        source = SourceIdentity.from_text("hello")
+        original = {"nodes": [{"id": 1}], "labels": ["claim"]}
+        result = NativeTechniqueResult(
+            technique=Technique.RST,
+            formalism_id="rst_tree",
+            provider_id="p",
+            provider_contract_version=V1,
+            source=source,
+            payload=original,
+            provenance=PROVENANCE,
+        )
+        digest = result.semantic_digest
+
+        original["nodes"][0]["id"] = 9
+        original["labels"].append("evidence")
+
+        assert result.payload == {"nodes": [{"id": 1}], "labels": ["claim"]}
+        assert result.semantic_digest == digest
+        with pytest.raises(TypeError):
+            result.payload["nodes"][0]["id"] = 2
+
+    def test_frozen_payload_keeps_the_public_json_wire_representation(self) -> None:
+        result = _result(rst_declaration(), "rst_tree", SourceIdentity.from_text("hello"))
+        assert result.model_dump(mode="json")["payload"] == {
+            "nodes": [1, 2],
+            "edges": [{"from": 1, "to": 2, "relation": "elaboration"}],
+        }
+
 
 class TestAggregateAnalysis:
     def test_at_most_one_outcome_per_technique(self) -> None:
@@ -258,6 +287,16 @@ class TestAggregateRequest:
     def test_text_technique_cannot_receive_structured_input(self) -> None:
         with pytest.raises(ValidationError, match="does not accept structured input"):
             StructuredInput(technique=Technique.RST, payload={"invented": "tree"})
+
+    def test_structured_input_copies_and_freezes_the_callers_containers(self) -> None:
+        original = {"arguments": [{"id": "a"}], "attacks": [["a", "b"]]}
+        structured = StructuredInput(technique=Technique.DUNG, payload=original)
+        original["arguments"][0]["id"] = "changed"
+        original["attacks"].append(["b", "a"])
+
+        assert structured.payload == {"arguments": [{"id": "a"}], "attacks": [["a", "b"]]}
+        with pytest.raises(TypeError):
+            structured.payload["arguments"][0]["id"] = "changed"
 
 
 class TestMachineCapabilities:

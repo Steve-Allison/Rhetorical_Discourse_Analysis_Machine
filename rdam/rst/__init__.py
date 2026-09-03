@@ -13,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import IO
 
+from . import _torch_runtime as _torch_runtime
 from ._version import resolve_installed_package_version
 from .annotation_rst import DiscourseUnit, register_isanlp_compat
 from .contracts import (
@@ -64,8 +65,6 @@ __all__ = [
     "CapabilityStatusEnum",
     "ConfidenceKindEnum",
     "DeviceEnum",
-    "PredictorDMRST",
-    "PredictorUniRST",
     "DiscourseSignal",
     "DiscourseUnit",
     "DocumentToken",
@@ -83,6 +82,8 @@ __all__ = [
     "OntologyAdapter",
     "OutputFormalismEnum",
     "Parser",
+    "PredictorDMRST",
+    "PredictorUniRST",
     "PrimaryRelationEdge",
     "ProvenanceRecord",
     "RS4Document",
@@ -97,6 +98,7 @@ __all__ = [
     "SecondaryRelationEdge",
     "TextSpan",
     "TimingRecord",
+    "__version__",
     "find_cdu",
     "register_isanlp_compat",
     "relation_category",
@@ -110,7 +112,6 @@ __all__ = [
     "to_rdf_triples",
     "to_turtle",
     "tree_stats",
-    "__version__",
 ]
 
 __version__ = resolve_installed_package_version()

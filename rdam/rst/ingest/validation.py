@@ -1,5 +1,7 @@
 """Cross-field production inventory, preparation, analysis, and evidence validation."""
 
+from itertools import pairwise
+
 from rdam.rst.contracts import RstAnalysis
 from rdam.rst.contracts.enums import NodeKindEnum
 from rdam.rst.ingest.contracts.analysis import (
@@ -79,17 +81,17 @@ def build_analysis_validation_receipt(
                 affected_ids=(),
             )
         )
-    for check_id in policy.validation.advisory_checks:
-        checks.append(
-            ValidationCheckReceipt(
-                check_id=check_id,
-                classification=CheckClassification.ADVISORY,
-                outcome=CheckOutcome.NOT_APPLICABLE,
-                checked_count=0,
-                affected_ids=(),
-                code="advisory_not_configured",
-            )
+    checks.extend(
+        ValidationCheckReceipt(
+            check_id=check_id,
+            classification=CheckClassification.ADVISORY,
+            outcome=CheckOutcome.NOT_APPLICABLE,
+            checked_count=0,
+            affected_ids=(),
+            code="advisory_not_configured",
         )
+        for check_id in policy.validation.advisory_checks
+    )
     graph_count = len(analysis.nodes) + len(analysis.primary_edges) + len(analysis.secondary_edges)
     evidence_count = len(primary.segmentation_decisions) + len(primary.structure_decisions)
     if erst is not None:
@@ -102,7 +104,9 @@ def build_analysis_validation_receipt(
         passed=True,
         graph_coverage=ExactCoverage(covered_units=graph_count, total_units=graph_count, unit=CoverageUnit.ITEMS),
         anchor_coverage=ExactCoverage(covered_units=len(anchors), total_units=len(anchors), unit=CoverageUnit.ANCHORS),
-        evidence_coverage=ExactCoverage(covered_units=evidence_count, total_units=evidence_count, unit=CoverageUnit.ITEMS),
+        evidence_coverage=ExactCoverage(
+            covered_units=evidence_count, total_units=evidence_count, unit=CoverageUnit.ITEMS
+        ),
         warnings=(),
     )
 
@@ -168,7 +172,7 @@ def _validate_analysed_document(document: AnalysedDocument) -> None:
     if any(mapping.edu_id not in edu_ids for mapping in document.mappings):
         raise ValueError("token mapping references an absent EDU")
     for token in document.tokens:
-        if document.text[token.character_range.start:token.character_range.end] != token.text:
+        if document.text[token.character_range.start : token.character_range.end] != token.text:
             raise ValueError("analysed token cannot be reconstructed from exact offsets")
     if document.character_coverage.covered_units != len(document.text):
         raise ValueError("analysed character coverage is incomplete")
@@ -196,19 +200,20 @@ def _validate_primary_tree(analysis: RstAnalysis) -> None:
         raise ValueError("primary graph is not a single rooted tree")
     visited: set[int] = set()
     active: set[int] = set()
-
-    def visit(node_id: int) -> None:
+    stack: list[tuple[int, bool]] = [(next(iter(roots)), False)]
+    while stack:
+        node_id, exiting = stack.pop()
+        if exiting:
+            active.remove(node_id)
+            visited.add(node_id)
+            continue
         if node_id in active:
             raise ValueError("primary graph contains a cycle")
         if node_id in visited:
-            return
+            continue
         active.add(node_id)
-        for child_id in children.get(node_id, ()):
-            visit(child_id)
-        active.remove(node_id)
-        visited.add(node_id)
-
-    visit(next(iter(roots)))
+        stack.append((node_id, True))
+        stack.extend((child_id, False) for child_id in reversed(children.get(node_id, ())))
     if visited != node_ids:
         raise ValueError("primary graph is disconnected")
 
@@ -220,7 +225,9 @@ def _validate_erst(analysis: RstAnalysis, evidence: ErstCompletionEvidence | Non
         return
     node_ids = {node.node_id for node in analysis.nodes}
     sufficient = {signal.signal_id for signal in analysis.signals if signal.sufficient}
-    decisions = {decision.secondary_edge_id: decision for decision in evidence.candidate_decisions if decision.secondary_edge_id}
+    decisions = {
+        decision.secondary_edge_id: decision for decision in evidence.candidate_decisions if decision.secondary_edge_id
+    }
     seen: set[tuple[int, int]] = set()
     for edge in analysis.secondary_edges:
         pair = (edge.source_id, edge.target_id)
@@ -234,7 +241,9 @@ def _validate_erst(analysis: RstAnalysis, evidence: ErstCompletionEvidence | Non
         seen.add(pair)
 
 
-def _validate_decisions(analysis: RstAnalysis, primary: PrimaryInferenceEvidence, erst: ErstCompletionEvidence | None) -> None:
+def _validate_decisions(
+    analysis: RstAnalysis, primary: PrimaryInferenceEvidence, erst: ErstCompletionEvidence | None
+) -> None:
     node_ids = {node.node_id for node in analysis.nodes}
     edge_ids = {edge.edge_id for edge in analysis.primary_edges}
     linked_nodes = {node_id for decision in primary.structure_decisions for node_id in decision.node_ids}
@@ -249,7 +258,10 @@ def _validate_decisions(analysis: RstAnalysis, primary: PrimaryInferenceEvidence
             raise ValueError("refinement lacks trigger evidence or graph linkage")
     if erst is not None:
         candidate_ids = {decision.candidate_id for decision in erst.candidate_decisions}
-        if tuple(decision.candidate_id for decision in erst.candidate_decisions) != erst.decode_receipt.candidate_decision_ids:
+        if (
+            tuple(decision.candidate_id for decision in erst.candidate_decisions)
+            != erst.decode_receipt.candidate_decision_ids
+        ):
             raise ValueError("eRST decoder receipt order differs from candidate decisions")
         for signal in erst.signals:
             if not signal.candidate_ids or not set(signal.candidate_ids) <= candidate_ids:
@@ -257,7 +269,9 @@ def _validate_decisions(analysis: RstAnalysis, primary: PrimaryInferenceEvidence
 
 
 def _validate_anchors(analysis: RstAnalysis, analysed: AnalysedDocument, anchors: tuple[AnalysisAnchor, ...]) -> None:
-    expected: set[tuple[str, AnchorTargetKind]] = {(str(node.node_id), AnchorTargetKind.NODE) for node in analysis.nodes}
+    expected: set[tuple[str, AnchorTargetKind]] = {
+        (str(node.node_id), AnchorTargetKind.NODE) for node in analysis.nodes
+    }
     expected.update((edge.edge_id, AnchorTargetKind.PRIMARY_EDGE) for edge in analysis.primary_edges)
     expected.update((edge.edge_id, AnchorTargetKind.SECONDARY_EDGE) for edge in analysis.secondary_edges)
     actual = {(anchor.target_id, anchor.target_kind) for anchor in anchors}
@@ -289,7 +303,9 @@ def _validate_recombination(receipt: RecombinationReceipt) -> None:
         raise ValueError("recombination edge mappings are not one-to-one")
 
 
-def _analysis_checked_count(check_id: str, analysis: RstAnalysis, anchors: tuple[AnalysisAnchor, ...], primary: PrimaryInferenceEvidence) -> int:
+def _analysis_checked_count(
+    check_id: str, analysis: RstAnalysis, anchors: tuple[AnalysisAnchor, ...], primary: PrimaryInferenceEvidence
+) -> int:
     return {
         "source_substrate_identity": len(primary.segmentation_decisions),
         "primary_tree": len(analysis.nodes) + len(analysis.primary_edges),
@@ -317,20 +333,14 @@ def validate_inventory(inventory: tuple[ContentInventoryItem, ...]) -> None:
             if child is None or child.parent_id != item.item_id:
                 raise ValueError(f"inventory child link is not reciprocal: {child_id}")
         for relationship in item.relationships:
-            if (
-                relationship.target_kind == "inventory_item"
-                and relationship.target_identity not in by_id
-            ):
-                raise ValueError(
-                    f"inventory relationship target does not exist: {relationship.target_identity}"
-                )
+            if relationship.target_kind == "inventory_item" and relationship.target_identity not in by_id:
+                raise ValueError(f"inventory relationship target does not exist: {relationship.target_identity}")
         if item.disposition.retained and isinstance(
             item.representation,
             RedactedContentRepresentation,
         ):
             raise ValueError("normal retained inventory cannot replace accessible content with a digest")
-        if item.disposition.decision is DispositionDecision.DUPLICATE:
-            _validate_duplicate_chain(item.item_id, by_id)
+    _validate_duplicate_chains(by_id)
 
 
 def validate_preparation_outcome(outcome: PreparationOutcome) -> None:
@@ -349,9 +359,7 @@ def validate_preparation_outcome(outcome: PreparationOutcome) -> None:
     for transformation in semantic.transformations:
         _revalidate(transformation, TransformationRecord)
 
-    primary_count = sum(
-        item.disposition.decision is DispositionDecision.PRIMARY for item in inventory
-    )
+    primary_count = sum(item.disposition.decision is DispositionDecision.PRIMARY for item in inventory)
     retained_count = sum(item.disposition.retained for item in inventory)
     _require_exact_coverage(
         semantic.inventory_coverage.covered_units,
@@ -384,12 +392,9 @@ def validate_preparation_outcome(outcome: PreparationOutcome) -> None:
     item_by_id = {item.item_id: item for item in inventory}
     segment_by_id = {segment.segment_id: segment for segment in prepared.segments}
     transformation_by_id = {
-        transformation.transformation_id: transformation
-        for transformation in semantic.transformations
+        transformation.transformation_id: transformation for transformation in semantic.transformations
     }
-    boundary_by_id = {
-        boundary.boundary_id: boundary for boundary in prepared.structural_boundaries
-    }
+    boundary_by_id = {boundary.boundary_id: boundary for boundary in prepared.structural_boundaries}
     if len(segment_by_id) != len(prepared.segments):
         raise ValueError("prepared segment identities must be unique")
     if len(transformation_by_id) != len(semantic.transformations):
@@ -455,18 +460,13 @@ def _validate_analysis_plan(outcome: PreparationOutcome) -> None:
             raise ValueError("analysis units are not in canonical order")
         covered_orders.extend(range(unit.first_segment_order, unit.last_segment_order + 1))
         expected_predecessor = plan.units[expected_order - 1].unit_id if expected_order else None
-        expected_successor = (
-            plan.units[expected_order + 1].unit_id
-            if expected_order + 1 < len(plan.units)
-            else None
-        )
+        expected_successor = plan.units[expected_order + 1].unit_id if expected_order + 1 < len(plan.units) else None
         if unit.predecessor_id != expected_predecessor or unit.successor_id != expected_successor:
             raise ValueError("analysis-unit chain is incomplete")
     if covered_orders != list(range(len(segments))):
         raise ValueError("analysis units must cover every prepared segment exactly once")
     expected_links = tuple(
-        (left.unit_id, right.unit_id, right.first_segment_order)
-        for left, right in zip(plan.units, plan.units[1:], strict=False)
+        (left.unit_id, right.unit_id, right.first_segment_order) for left, right in pairwise(plan.units)
     )
     actual_links = tuple(
         (link.predecessor_unit_id, link.successor_unit_id, link.boundary_segment_order)
@@ -489,24 +489,31 @@ def _revalidate(value: object, model_type: type[object]) -> None:
     validator(dumper())
 
 
-def _validate_duplicate_chain(
-    item_id: str,
+def _validate_duplicate_chains(
     by_id: dict[str, ContentInventoryItem],
 ) -> None:
-    seen: set[str] = set()
-    current = by_id[item_id]
-    while current.disposition.duplicate_of is not None:
-        if current.item_id in seen:
-            raise ValueError(f"duplicate disposition cycle includes {current.item_id}")
-        seen.add(current.item_id)
-        target = by_id.get(current.disposition.duplicate_of)
-        if target is None:
-            raise ValueError(
-                f"duplicate canonical target does not exist: {current.disposition.duplicate_of}"
-            )
-        current = target
-    if current.disposition.decision is DispositionDecision.DUPLICATE:
-        raise ValueError("duplicate chain does not resolve to a canonical item")
+    resolved: set[str] = set()
+    for item in by_id.values():
+        if item.disposition.decision is not DispositionDecision.DUPLICATE or item.item_id in resolved:
+            continue
+        path: list[str] = []
+        positions: dict[str, int] = {}
+        current = item
+        while current.item_id not in resolved:
+            if current.item_id in positions:
+                raise ValueError(f"duplicate disposition cycle includes {current.item_id}")
+            positions[current.item_id] = len(path)
+            path.append(current.item_id)
+            duplicate_of = current.disposition.duplicate_of
+            if duplicate_of is None:
+                if current.disposition.decision is DispositionDecision.DUPLICATE:
+                    raise ValueError("duplicate chain does not resolve to a canonical item")
+                break
+            target = by_id.get(duplicate_of)
+            if target is None:
+                raise ValueError(f"duplicate canonical target does not exist: {duplicate_of}")
+            current = target
+        resolved.update(path)
 
 
 __all__ = [

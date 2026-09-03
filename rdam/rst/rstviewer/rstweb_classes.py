@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 
 @dataclass(slots=True)
-class NODE:
+class Node:
     """EDU, span, or multinuc node used while importing and laying out a tree."""
 
     id: str
@@ -28,16 +28,19 @@ class SEGMENT:
 
     id: str
     text: str
-    tokens: list[str] = field(init=False)
+    tokens: tuple[str, ...] = field(init=False)
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "tokens", self.text.split(" "))
+        object.__setattr__(self, "tokens", tuple(self.text.split(" ")))
 
 
-type NodeMap = dict[str, NODE]
+NODE = Node
+"""Compatibility alias for the historical public viewer class name."""
+
+type NodeMap = dict[str, Node]
 
 
-def get_depth(orig_node: NODE, probe_node: NODE, nodes: NodeMap) -> None:
+def get_depth(orig_node: Node, probe_node: Node, nodes: NodeMap) -> None:
     """Set graphical nesting depth of ``orig_node`` from the parent chain.
 
     RST parentage without span/multinuc does not increase ``depth``.
@@ -72,9 +75,8 @@ def get_left_right(
     while nodes[current_id].parent != "0" and current_id != "0":
         node = nodes[current_id]
         parent = nodes[node.parent]
-        if min_left > node.left or min_left == 0:
-            if node.left != 0:
-                min_left = node.left
+        if (min_left > node.left or min_left == 0) and node.left != 0:
+            min_left = node.left
         if max_right < node.right or max_right == 0:
             max_right = node.right
         if node.relname == "span":

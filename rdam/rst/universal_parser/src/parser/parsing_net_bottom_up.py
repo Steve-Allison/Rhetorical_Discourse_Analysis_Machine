@@ -1,3 +1,5 @@
+from collections import deque
+from dataclasses import dataclass
 from typing import Any, override
 
 import torch
@@ -7,6 +9,8 @@ from torch import Tensor
 
 from .parsing_net import ParsingNet
 from .data import nucs_and_rels
+
+type SpanState = tuple[int, int, Tensor]
 
 
 class ParsingNetBottomUp(ParsingNet):
@@ -32,22 +36,14 @@ class ParsingNetBottomUp(ParsingNet):
             nn.Linear(pair_hidden_size, 2, bias=True, device=self._cuda_device),
         )
 
+    @dataclass(slots=True)
     class _Node:
-        def __init__(
-            self,
-            start: int,
-            end: int,
-            split: int | None,
-            label: int | None,
-            left: ParsingNetBottomUp._Node | None = None,
-            right: ParsingNetBottomUp._Node | None = None,
-        ) -> None:
-            self.start = start
-            self.end = end
-            self.split = split
-            self.label = label
-            self.left = left
-            self.right = right
+        start: int
+        end: int
+        split: int | None
+        label: int | None
+        left: ParsingNetBottomUp._Node | None = None
+        right: ParsingNetBottomUp._Node | None = None
 
     def _build_tree(
         self,
@@ -78,7 +74,7 @@ class ParsingNetBottomUp(ParsingNet):
             return []
         if node.right is None:
             raise ValueError("bottom-up parser tree contains a left-only node")
-        ops = []
+        ops: list[ParsingNetBottomUp._Node] = []
         ops.extend(self._postorder(node.left))
         ops.extend(self._postorder(node.right))
         ops.append(node)
@@ -92,7 +88,7 @@ class ParsingNetBottomUp(ParsingNet):
             return [("SHIFT", None)]
         if node.right is None:
             raise ValueError("bottom-up parser tree contains a left-only node")
-        actions = []
+        actions: list[tuple[str, int | None]] = []
         actions.extend(self._actions(node.left))
         actions.extend(self._actions(node.right))
         actions.append(("REDUCE", node.label))
@@ -104,8 +100,8 @@ class ParsingNetBottomUp(ParsingNet):
     @override
     def training_loss(
         self,
-        input_texts: list[Any],
-        sent_breaks: list[Any] | None,
+        input_texts: list[list[int]],
+        sent_breaks: list[list[int]] | None,
         entity_ids: list[Any] | None,
         entity_position_ids: list[Any] | None,
         edu_breaks: list[list[int]],
@@ -143,8 +139,10 @@ class ParsingNetBottomUp(ParsingNet):
             tree, _ = self._build_tree(parsing_index[i], label_index[i], n_edus)
             actions = self._actions(tree)
 
-            stack = []
-            buffer = [(j, j, self._span_embedding(cur_enc, j, j)) for j in range(n_edus)]
+            stack: list[SpanState] = []
+            buffer: deque[SpanState] = deque(
+                (j, j, self._span_embedding(cur_enc, j, j)) for j in range(n_edus)
+            )
 
             for act, lbl in actions:
                 top1 = stack[-1][2] if len(stack) >= 1 else zero
@@ -157,7 +155,7 @@ class ParsingNetBottomUp(ParsingNet):
                 count_struct += 1
 
                 if act == "SHIFT":
-                    stack.append(buffer.pop(0))
+                    stack.append(buffer.popleft())
                 else:  # REDUCE
                     right = stack.pop()
                     left = stack.pop()
@@ -185,8 +183,8 @@ class ParsingNetBottomUp(ParsingNet):
     @override
     def testing_loss(
         self,
-        input_sentence: list[Any],
-        input_sent_breaks: list[Any] | None,
+        input_sentence: list[list[int]],
+        input_sent_breaks: list[list[int]] | None,
         input_entity_ids: list[Any] | None,
         input_entity_position_ids: list[Any] | None,
         input_edu_breaks: list[list[int]],
@@ -206,9 +204,9 @@ class ParsingNetBottomUp(ParsingNet):
             dataset_index=dataset_index,
         )
 
-        span_batch = []
-        label_batch = []
-        tree_batch = []
+        span_batch: list[list[str]] = []
+        label_batch: list[list[int]] = []
+        tree_batch: list[list[int]] = []
 
         effective_edu_breaks = predicted_edu_breaks if use_pred_segmentation else input_edu_breaks
         batch_size = len(effective_edu_breaks)
@@ -222,11 +220,13 @@ class ParsingNetBottomUp(ParsingNet):
                 continue
 
             cur_enc = encoder_outputs[i][:n_edus]
-            stack = []
-            buffer = [(j, j, self._span_embedding(cur_enc, j, j)) for j in range(n_edus)]
+            stack: list[SpanState] = []
+            buffer: deque[SpanState] = deque(
+                (j, j, self._span_embedding(cur_enc, j, j)) for j in range(n_edus)
+            )
 
-            cur_tree = []
-            cur_labels = []
+            cur_tree: list[int] = []
+            cur_labels: list[int] = []
             cur_span_str = ""
 
             while buffer or len(stack) > 1:
@@ -238,12 +238,12 @@ class ParsingNetBottomUp(ParsingNet):
                 act = int(torch.argmax(action_scores))  # 0=SHIFT, 1=REDUCE
 
                 if act == 0 and buffer:
-                    stack.append(buffer.pop(0))
+                    stack.append(buffer.popleft())
                 else:
                     if len(stack) < 2:
                         # force shift if not enough items
                         if buffer:
-                            stack.append(buffer.pop(0))
+                            stack.append(buffer.popleft())
                             continue
                         else:
                             break
@@ -262,7 +262,9 @@ class ParsingNetBottomUp(ParsingNet):
                     cur_tree.append(left[1])
 
                     if generate_tree:
-                        relation_inventory = self.relation_vocab if self.dataset_masks is not None else self.relation_tables[cls_idx]
+                        relation_inventory = (
+                            self.relation_vocab if self.dataset_masks is not None else self.relation_tables[cls_idx]
+                        )
                         nuc_l, nuc_r, rel_l, rel_r = nucs_and_rels(label_idx, relation_inventory)
                         span_s = f"({left[0] + 1}:{nuc_l}={rel_l}:{left[1] + 1},{right[0] + 1}:{nuc_r}={rel_r}:{right[1] + 1})"
                         cur_span_str += " " + span_s
@@ -275,10 +277,10 @@ class ParsingNetBottomUp(ParsingNet):
             label_batch.append(cur_labels)
             span_batch.append([cur_span_str.strip()])
 
-        merged_label_gold = []
+        merged_label_gold: list[int] = []
         for tmp_i in label_index:
             merged_label_gold.extend(tmp_i)
-        merged_label_pred = []
+        merged_label_pred: list[int] = []
         for tmp_i in label_batch:
             merged_label_pred.extend(tmp_i)
 

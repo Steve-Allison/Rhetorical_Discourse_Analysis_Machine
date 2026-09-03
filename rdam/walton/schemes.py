@@ -24,6 +24,7 @@ is good; that judgement is exactly what the critical questions hand to the reade
 from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
+from types import MappingProxyType
 from typing import Annotated, Final, Self
 
 from pydantic import BaseModel, Field, StringConstraints, model_validator
@@ -76,9 +77,7 @@ class Scheme:
     critical_questions: tuple[str, ...]
 
     def __post_init__(self) -> None:
-        if not isinstance(self.scheme_id, SchemeId):
-            raise SchemeError(f"unknown scheme id: {self.scheme_id!r}")
-        if not isinstance(self.name, str) or not self.name.strip():
+        if not self.name.strip():
             raise SchemeError("a scheme requires a non-empty name")
         if not self.premise_roles or any(not role.strip() for role in self.premise_roles):
             raise SchemeError("a scheme requires non-empty premise roles")
@@ -94,136 +93,138 @@ def _scheme(
     return scheme_id, Scheme(scheme_id=scheme_id, name=name, premise_roles=roles, critical_questions=questions)
 
 
-SCHEMES: Final[Mapping[SchemeId, Scheme]] = dict(
-    (
-        _scheme(
-            SchemeId.EXPERT_OPINION,
-            "Argument from Expert Opinion",
-            ("source", "domain", "assertion"),
-            (
-                "How credible is the source as an expert?",
-                "Is the source an expert in the domain the assertion falls under?",
-                "What did the source actually assert?",
-                "Is the source personally reliable as a source?",
-                "Is the assertion consistent with what other experts say?",
-                "Is the assertion based on evidence?",
+SCHEMES: Final[Mapping[SchemeId, Scheme]] = MappingProxyType(
+    dict(
+        (
+            _scheme(
+                SchemeId.EXPERT_OPINION,
+                "Argument from Expert Opinion",
+                ("source", "domain", "assertion"),
+                (
+                    "How credible is the source as an expert?",
+                    "Is the source an expert in the domain the assertion falls under?",
+                    "What did the source actually assert?",
+                    "Is the source personally reliable as a source?",
+                    "Is the assertion consistent with what other experts say?",
+                    "Is the assertion based on evidence?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.POSITION_TO_KNOW,
-            "Argument from Position to Know",
-            ("source", "situation", "assertion"),
-            (
-                "Is the source in a position to know about the situation?",
-                "Is the source honest and reliable?",
-                "Did the source actually assert this?",
+            _scheme(
+                SchemeId.POSITION_TO_KNOW,
+                "Argument from Position to Know",
+                ("source", "situation", "assertion"),
+                (
+                    "Is the source in a position to know about the situation?",
+                    "Is the source honest and reliable?",
+                    "Did the source actually assert this?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.POPULAR_OPINION,
-            "Argument from Popular Opinion",
-            ("proposition", "acceptance"),
-            (
-                "What evidence is there that the proposition really is generally accepted?",
-                "Does general acceptance give any reason to think it true?",
-                "Is there other evidence that counts against it?",
+            _scheme(
+                SchemeId.POPULAR_OPINION,
+                "Argument from Popular Opinion",
+                ("proposition", "acceptance"),
+                (
+                    "What evidence is there that the proposition really is generally accepted?",
+                    "Does general acceptance give any reason to think it true?",
+                    "Is there other evidence that counts against it?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.ANALOGY,
-            "Argument from Analogy",
-            ("source_case", "target_case", "similarity", "conclusion_property"),
-            (
-                "Are the two cases similar in the respect claimed?",
-                "Is the property in the source case true as stated?",
-                "Are there relevant differences that defeat the analogy?",
-                "Is there a third case more similar to the target that points the other way?",
+            _scheme(
+                SchemeId.ANALOGY,
+                "Argument from Analogy",
+                ("source_case", "target_case", "similarity", "conclusion_property"),
+                (
+                    "Are the two cases similar in the respect claimed?",
+                    "Is the property in the source case true as stated?",
+                    "Are there relevant differences that defeat the analogy?",
+                    "Is there a third case more similar to the target that points the other way?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.EXAMPLE,
-            "Argument from Example",
-            ("example", "generalisation"),
-            (
-                "Is the example actually true?",
-                "Does the example genuinely instance the generalisation?",
-                "Is the example typical, or is it special in some way?",
-                "How strong is the generalisation given how many examples support it?",
-                "Are there counter-examples?",
+            _scheme(
+                SchemeId.EXAMPLE,
+                "Argument from Example",
+                ("example", "generalisation"),
+                (
+                    "Is the example actually true?",
+                    "Does the example genuinely instance the generalisation?",
+                    "Is the example typical, or is it special in some way?",
+                    "How strong is the generalisation given how many examples support it?",
+                    "Are there counter-examples?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.SIGN,
-            "Argument from Sign",
-            ("finding", "indicated"),
-            (
-                "How strongly does the finding indicate what is claimed?",
-                "Could the finding indicate something else instead?",
+            _scheme(
+                SchemeId.SIGN,
+                "Argument from Sign",
+                ("finding", "indicated"),
+                (
+                    "How strongly does the finding indicate what is claimed?",
+                    "Could the finding indicate something else instead?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.CAUSE_TO_EFFECT,
-            "Argument from Cause to Effect",
-            ("cause", "effect", "causal_generalisation"),
-            (
-                "How strong is the causal generalisation?",
-                "Is the evidence for the causal relation strong enough?",
-                "Are there other causal factors that could interfere?",
-                "Could the correlation be coincidence, or the causation run the other way?",
+            _scheme(
+                SchemeId.CAUSE_TO_EFFECT,
+                "Argument from Cause to Effect",
+                ("cause", "effect", "causal_generalisation"),
+                (
+                    "How strong is the causal generalisation?",
+                    "Is the evidence for the causal relation strong enough?",
+                    "Are there other causal factors that could interfere?",
+                    "Could the correlation be coincidence, or the causation run the other way?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.CONSEQUENCES,
-            "Argument from Consequences",
-            ("action", "consequence", "valence"),
-            (
-                "How likely is the consequence if the action is taken?",
-                "What evidence supports that this consequence would follow?",
-                "Are there opposite consequences that should be weighed against it?",
+            _scheme(
+                SchemeId.CONSEQUENCES,
+                "Argument from Consequences",
+                ("action", "consequence", "valence"),
+                (
+                    "How likely is the consequence if the action is taken?",
+                    "What evidence supports that this consequence would follow?",
+                    "Are there opposite consequences that should be weighed against it?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.PRACTICAL_REASONING,
-            "Practical Reasoning",
-            ("goal", "means", "conclusion_action"),
-            (
-                "Are there alternative means to the same goal?",
-                "Is this means the most efficient one?",
-                "Is the goal itself acceptable?",
-                "Are there conflicting goals that should take priority?",
-                "Does the means have side effects that outweigh the goal?",
+            _scheme(
+                SchemeId.PRACTICAL_REASONING,
+                "Practical Reasoning",
+                ("goal", "means", "conclusion_action"),
+                (
+                    "Are there alternative means to the same goal?",
+                    "Is this means the most efficient one?",
+                    "Is the goal itself acceptable?",
+                    "Are there conflicting goals that should take priority?",
+                    "Does the means have side effects that outweigh the goal?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.VERBAL_CLASSIFICATION,
-            "Argument from Verbal Classification",
-            ("individual", "property", "classification"),
-            (
-                "Does the individual really have the property?",
-                "Does having the property really place it in the class as defined?",
-                "Is the classification vague or contestable in this case?",
+            _scheme(
+                SchemeId.VERBAL_CLASSIFICATION,
+                "Argument from Verbal Classification",
+                ("individual", "property", "classification"),
+                (
+                    "Does the individual really have the property?",
+                    "Does having the property really place it in the class as defined?",
+                    "Is the classification vague or contestable in this case?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.SLIPPERY_SLOPE,
-            "Slippery Slope Argument",
-            ("first_step", "sequence", "outcome"),
-            (
-                "What are the intervening steps, and is each one plausible?",
-                "What keeps the sequence from being stopped part-way?",
-                "How likely is the final outcome given the first step?",
+            _scheme(
+                SchemeId.SLIPPERY_SLOPE,
+                "Slippery Slope Argument",
+                ("first_step", "sequence", "outcome"),
+                (
+                    "What are the intervening steps, and is each one plausible?",
+                    "What keeps the sequence from being stopped part-way?",
+                    "How likely is the final outcome given the first step?",
+                ),
             ),
-        ),
-        _scheme(
-            SchemeId.AD_HOMINEM,
-            "Argument Against the Person",
-            ("person", "attack", "claim_attacked"),
-            (
-                "Is the attack on the person relevant to the claim at all?",
-                "Is what is alleged about the person actually true?",
-                "Even if true, does it bear on the truth of the claim?",
+            _scheme(
+                SchemeId.AD_HOMINEM,
+                "Argument Against the Person",
+                ("person", "attack", "claim_attacked"),
+                (
+                    "Is the attack on the person relevant to the claim at all?",
+                    "Is what is alleged about the person actually true?",
+                    "Even if true, does it bear on the truth of the claim?",
+                ),
             ),
-        ),
+        )
     )
 )
 """Every recognised scheme with its premise roles and Walton's critical questions."""
@@ -264,7 +265,7 @@ class SchemeInstance(BaseModel):
         )
     )
     critical_questions: list[CriticalQuestion] = Field(
-        default_factory=list,
+        default_factory=lambda: list[CriticalQuestion](),
         description="The scheme's critical questions, each marked addressed or open by the passage.",
     )
 
@@ -276,7 +277,9 @@ class SchemeInstance(BaseModel):
         if missing := sorted(required - supplied):
             raise SchemeError(f"{self.scheme_id.value} requires premise roles {missing}; they are missing")
         if unknown := sorted(supplied - required):
-            raise SchemeError(f"{self.scheme_id.value} has no premise roles {unknown}; permitted roles are {sorted(required)}")
+            raise SchemeError(
+                f"{self.scheme_id.value} has no premise roles {unknown}; permitted roles are {sorted(required)}"
+            )
         seen: set[int] = set()
         for question in self.critical_questions:
             if question.index >= len(scheme.critical_questions):
@@ -329,7 +332,7 @@ class WaltonAnalysis(BaseModel):
     model_config = {"extra": "forbid"}
 
     instances: list[SchemeInstance] = Field(
-        default_factory=list,
+        default_factory=lambda: list[SchemeInstance](),
         description=(
             "One entry per argument in the passage that instances a recognised scheme. A passage that argues "
             "nothing, or argues in no recognised pattern, yields an empty list — never force a scheme onto it."

@@ -35,5 +35,8 @@ corpora/
 .DS_Store
 **/.DS_Store
 
+# ephemeral Graphify read/query state
+graphify-out/cache/last_query_stamp
+
 # build output — rebuilt from a tagged commit by `pixi run build-production`; evidence is committed under specs/
 dist/

@@ -62,8 +62,6 @@ class Discriminator(nn.Module):
         if isinstance(layer, nn.Conv2d | nn.Linear):
             nn.init.normal_(layer.weight.data, 0.0, 0.02)
         elif isinstance(layer, nn.BatchNorm2d):
-            if layer.weight is None or layer.bias is None:
-                raise ValueError("BatchNorm2d initialization requires affine parameters")
             nn.init.normal_(layer.weight.data, 1.0, 0.02)
             nn.init.constant_(layer.bias.data, 0.0)
 

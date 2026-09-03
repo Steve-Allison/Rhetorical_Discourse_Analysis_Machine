@@ -14,11 +14,11 @@ from rdam.rst.model_loading.release import (
     ModelFile,
     ModelReleaseError,
     ModelReleaseManifest,
-    PromotionReceipt,
     canonical_json_bytes,
     sha256_file,
     validate_model_release,
 )
+from workbench.promotion.contracts import PromotionReceipt
 
 
 def write_candidate_manifest(

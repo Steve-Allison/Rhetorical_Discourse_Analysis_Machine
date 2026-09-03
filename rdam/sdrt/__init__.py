@@ -19,6 +19,11 @@ from rdam.sdrt.provider import (
 )
 
 __all__ = [
+    "CONTRACT_VERSION",
+    "FORMALISM_ID",
+    "INSTRUCTIONS",
+    "LICENCE",
+    "PROVIDER_ID_PREFIX",
     "ComplexDiscourseUnit",
     "ElementaryDiscourseUnit",
     "GraphError",
@@ -26,10 +31,5 @@ __all__ = [
     "SdrtAnalysis",
     "SdrtProvider",
     "SdrtRelation",
-    "CONTRACT_VERSION",
-    "FORMALISM_ID",
-    "INSTRUCTIONS",
-    "LICENCE",
-    "PROVIDER_ID_PREFIX",
     "source_identity",
 ]

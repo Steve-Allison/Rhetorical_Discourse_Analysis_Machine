@@ -224,9 +224,7 @@ class RecombinationReceipt(StrictContractModel):
         if len(self.unit_durations_ms) != len(self.unit_identities):
             raise ValueError("recombination timings must cover every analysis unit")
         expected = Sha256Identity(
-            hex_digest=semantic_sha256(
-                self.model_dump(exclude={"semantic_digest", "unit_durations_ms"})
-            )
+            hex_digest=semantic_sha256(self.model_dump(exclude={"semantic_digest", "unit_durations_ms"}))
         )
         if self.semantic_digest is not None and self.semantic_digest != expected:
             raise ValueError("recombination receipt semantic digest mismatch")
@@ -456,18 +454,21 @@ class AnalysisSemanticEvidence(StrictContractModel):
                 != tuple(edu.edu_id for edu in parser.analysed_document.edus)
             ):
                 raise ValueError("source enrichment changed the parser inference substrate")
-        elif any(
-            value is not None
-            for value in (
-                self.analysed_document,
-                self.parser_result,
-                self.analysis,
-                self.primary_inference,
-                self.erst_completion,
-                self.recombination,
-                self.validation,
+        elif (
+            any(
+                value is not None
+                for value in (
+                    self.analysed_document,
+                    self.parser_result,
+                    self.analysis,
+                    self.primary_inference,
+                    self.erst_completion,
+                    self.recombination,
+                    self.validation,
+                )
             )
-        ) or self.anchors:
+            or self.anchors
+        ):
             raise ValueError("empty primary outcome cannot fabricate analysis evidence")
         return self
 
@@ -525,14 +526,37 @@ def _set_outcome_identity[T: AnalysedOutcome | EmptyPrimaryAnalysisOutcome](valu
 
 
 __all__ = [
-    "AnalysedDocument", "AnalysedEdu", "AnalysedOutcome", "AnalysedToken",
-    "AnalysisAnchor", "AnalysisExecutionEvidence", "AnalysisPolicy", "AnalysisRequest",
-    "AnalysisSemanticEvidence", "AnalysisStatus", "AnalysisSubstrateTransformation",
-    "AnchorTargetKind", "CacheStatus", "CheckClassification", "CheckOutcome",
-    "EmptyPrimaryAnalysisOutcome", "EndpointAnchor", "FidelityClass", "LocalToGlobalMapping",
-    "LossyInputPolicy", "MarkerRefinementMode", "ParserAnalysisExecutionEvidence",
-    "ParserAnalysisResult", "ParserAnalysisSemanticEvidence", "ProductionAnalysisOutcome",
-    "RecombinationReceipt", "RelationInterpretationPolicy", "StitchingDecision",
-    "TokenMapping", "UnitExecutionReceipt", "ValidationCheckReceipt", "ValidationPolicy",
+    "AnalysedDocument",
+    "AnalysedEdu",
+    "AnalysedOutcome",
+    "AnalysedToken",
+    "AnalysisAnchor",
+    "AnalysisExecutionEvidence",
+    "AnalysisPolicy",
+    "AnalysisRequest",
+    "AnalysisSemanticEvidence",
+    "AnalysisStatus",
+    "AnalysisSubstrateTransformation",
+    "AnchorTargetKind",
+    "CacheStatus",
+    "CheckClassification",
+    "CheckOutcome",
+    "EmptyPrimaryAnalysisOutcome",
+    "EndpointAnchor",
+    "FidelityClass",
+    "LocalToGlobalMapping",
+    "LossyInputPolicy",
+    "MarkerRefinementMode",
+    "ParserAnalysisExecutionEvidence",
+    "ParserAnalysisResult",
+    "ParserAnalysisSemanticEvidence",
+    "ProductionAnalysisOutcome",
+    "RecombinationReceipt",
+    "RelationInterpretationPolicy",
+    "StitchingDecision",
+    "TokenMapping",
+    "UnitExecutionReceipt",
+    "ValidationCheckReceipt",
+    "ValidationPolicy",
     "ValidationReceipt",
 ]

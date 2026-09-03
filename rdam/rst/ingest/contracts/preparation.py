@@ -110,9 +110,7 @@ class PreparationPolicy(StrictContractModel):
     def disjoint_classification(self) -> Self:
         if set(self.primary_classes) & set(self.retained_classes):
             raise ValueError("primary and retained content classes must be disjoint")
-        expected = Sha256Identity(
-            hex_digest=semantic_sha256(self.model_dump(exclude={"semantic_digest"}))
-        )
+        expected = Sha256Identity(hex_digest=semantic_sha256(self.model_dump(exclude={"semantic_digest"})))
         if self.semantic_digest is not None and self.semantic_digest != expected:
             raise ValueError("preparation policy semantic digest mismatch")
         object.__setattr__(self, "semantic_digest", expected)
@@ -132,9 +130,7 @@ class PlanningPolicy(StrictContractModel):
             raise ValueError("planning policy requires at least one boundary preference")
         if len(self.boundary_preference) != len(set(self.boundary_preference)):
             raise ValueError("planning boundary preferences must be unique")
-        expected = Sha256Identity(
-            hex_digest=semantic_sha256(self.model_dump(exclude={"semantic_digest"}))
-        )
+        expected = Sha256Identity(hex_digest=semantic_sha256(self.model_dump(exclude={"semantic_digest"})))
         if self.semantic_digest is not None and self.semantic_digest != expected:
             raise ValueError("planning policy semantic digest mismatch")
         object.__setattr__(self, "semantic_digest", expected)
@@ -161,10 +157,7 @@ class SeparatorInsertionParameters(StrictContractModel):
 
 
 type TransformationParameters = Annotated[
-    PreserveParameters
-    | UnicodeNormalizationParameters
-    | LineEndingParameters
-    | SeparatorInsertionParameters,
+    PreserveParameters | UnicodeNormalizationParameters | LineEndingParameters | SeparatorInsertionParameters,
     Field(discriminator="kind"),
 ]
 
@@ -393,11 +386,31 @@ class PreparationOutcome(StrictContractModel):
 
 
 __all__ = [
-    "AdapterExecutionIdentity", "AnalysisPlan", "AnalysisPlanStatus", "AnalysisUnit",
-    "BoundaryPreference", "CapacityUnit", "LineEndingParameters", "ParserCapacity", "PlanningPolicy",
-    "PreparationExecutionEvidence", "PreparationOutcome", "PreparationPolicy", "PreparationWarning",
-    "PreparationSemanticEvidence", "PreparedRange", "PreparedRstDocument",
-    "PreparedSegment", "PreserveParameters", "RecombinationLink", "RecombinationPlan",
-    "SegmentKind", "SeparatorInsertionParameters", "StructuralBoundary", "StructureKind",
-    "TransformationParameters", "TransformationRecord", "UnicodeNormalizationParameters",
+    "AdapterExecutionIdentity",
+    "AnalysisPlan",
+    "AnalysisPlanStatus",
+    "AnalysisUnit",
+    "BoundaryPreference",
+    "CapacityUnit",
+    "LineEndingParameters",
+    "ParserCapacity",
+    "PlanningPolicy",
+    "PreparationExecutionEvidence",
+    "PreparationOutcome",
+    "PreparationPolicy",
+    "PreparationSemanticEvidence",
+    "PreparationWarning",
+    "PreparedRange",
+    "PreparedRstDocument",
+    "PreparedSegment",
+    "PreserveParameters",
+    "RecombinationLink",
+    "RecombinationPlan",
+    "SegmentKind",
+    "SeparatorInsertionParameters",
+    "StructuralBoundary",
+    "StructureKind",
+    "TransformationParameters",
+    "TransformationRecord",
+    "UnicodeNormalizationParameters",
 ]

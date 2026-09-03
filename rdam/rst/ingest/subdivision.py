@@ -21,6 +21,7 @@ from rdam.rst.ingest.contracts.preparation import (
     SegmentKind,
     StructureKind,
 )
+import itertools
 
 
 class AnalysisPlanningError(ValueError):
@@ -46,9 +47,7 @@ def build_analysis_plan(
 
     available = capacity.maximum - policy.capacity_margin
     if available <= 0:
-        raise AnalysisPlanningError(
-            "planning capacity margin leaves no usable parser capacity"
-        )
+        raise AnalysisPlanningError("planning capacity margin leaves no usable parser capacity")
     if not prepared.segments:
         return AnalysisPlan(
             status=AnalysisPlanStatus.SINGLE_UNIT,
@@ -64,9 +63,7 @@ def build_analysis_plan(
     for index, segment in enumerate(prepared.segments):
         segment_demand = _estimated_demand(segment.text, segment.kind, capacity)
         if segment_demand > available:
-            raise AnalysisPlanningError(
-                f"prepared segment {segment.segment_id!r} exceeds usable parser capacity"
-            )
+            raise AnalysisPlanningError(f"prepared segment {segment.segment_id!r} exceeds usable parser capacity")
         if demand and demand + segment_demand > available:
             groups.append((start, index - 1, demand))
             start = index
@@ -94,7 +91,7 @@ def build_analysis_plan(
             successor_unit_id=right.unit_id,
             boundary_segment_order=right.first_segment_order,
         )
-        for left, right in zip(units, units[1:], strict=False)
+        for left, right in itertools.pairwise(units)
     )
     return AnalysisPlan(
         status=(AnalysisPlanStatus.SINGLE_UNIT if len(units) == 1 else AnalysisPlanStatus.SUBDIVIDED),

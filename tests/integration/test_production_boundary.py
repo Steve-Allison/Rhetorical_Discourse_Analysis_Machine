@@ -33,9 +33,11 @@ def test_authority_classifies_each_surface() -> None:
     assert authority.classify("workbench/evaluation/rst/parseval.py") == OwnershipClass.OFFLINE
     assert authority.classify("workbench/training/run.py") == OwnershipClass.OFFLINE
     assert authority.classify("tests/test_parser.py") == OwnershipClass.REPOSITORY
+    assert authority.classify("typings/razdel/__init__.pyi") == OwnershipClass.REPOSITORY
     assert authority.classify("models/dmrst_v1/model.safetensors") == OwnershipClass.MODEL
     assert authority.classify("models/model-releases/dmrst-v1-e5ea56cd620f/release-manifest.json") == OwnershipClass.MODEL
     assert authority.classify("dist/6.0.0/rdam-6.0.0-py3-none-any.whl") == OwnershipClass.GENERATED
+    assert authority.dependency_owner("httpx2") == OwnershipClass.PRODUCTION
 
 
 def test_unmatched_relevant_path_fails_closed(tmp_path: Path) -> None:

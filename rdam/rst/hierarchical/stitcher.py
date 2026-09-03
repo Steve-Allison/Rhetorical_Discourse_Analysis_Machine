@@ -435,11 +435,7 @@ def nuclear_spine_text(analysis: RstAnalysis, *, fallback: str) -> str:
             selected = children[:1]
         elif pattern == "SN":
             selected = children[-1:]
-        return tuple(
-            text
-            for edge in selected
-            for text in visit(edge.child_id, ancestors | {node_id})
-        )
+        return tuple(text for edge in selected for text in visit(edge.child_id, ancestors | {node_id}))
 
     pieces = visit(root.node_id, frozenset())
     representation = " ".join(piece for piece in pieces if piece)

@@ -9,7 +9,7 @@ boundary roster.
 
 | Path | Exclusive owner |
 |---|---|
-| `rdam/contracts.py`, `machine.py`, `frameworks.py`, `serialization.py`, `_strict.py` | Aggregate contracts, canonical identities, orchestration, and serialization |
+| `rdam/contracts.py`, `machine.py`, `frameworks.py`, `serialization.py`, `_strict.py`, `_canonical.py`, `_immutable_json.py`, `_execution.py`, `_result_cache.py`, `_provenance.py`, `_provider_provenance.py`, `_llm.py` | Aggregate contracts, canonical identities, immutable JSON, provenance, LLM boundary, bounded orchestration, and opt-in result caching |
 | `rdam/rst/` | RST/eRST parser, universal ingest, native contracts, provider, viewer, and command |
 | `rdam/pdtb/` | Native PDTB-3 relation contract and provider |
 | `rdam/sdrt/` | Native SDRS graph contract and provider |
@@ -42,6 +42,12 @@ native vocabulary and validation; the machine owns only shared envelopes and exe
 4. Shared production abstractions require at least two real callers and one clear owner.
 5. Historical `isanlp_rst.*` values may survive only as persisted contract/release
    identifiers; they do not authorize a second import package.
+6. Independent techniques run concurrently under an explicit bounded policy; result and
+   lineage order remain contractual rather than completion-ordered.
+7. Persistent native-result caching is absent by default and requires an explicit local
+   directory plus a clean exact source revision.
+8. Shared runtime hardening does not own universal source preparation or format parsing;
+   that decision remains deferred to Feature 017.
 
 `pixi run -e default production-boundary` is the executable source-boundary gate.
 Artifact membership is checked by the production artifact validation tasks.

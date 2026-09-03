@@ -8,6 +8,7 @@ Authority: ``specs/006-rhetorical-discourse-machine/``.
 from importlib.metadata import PackageNotFoundError, version
 
 from rdam._strict import SemanticVersion, Sha256Identity, StrictModel, canonical_json_bytes, semantic_sha256
+from rdam._execution import ExecutionPolicy
 from rdam.contracts import (
     AggregateAnalysis,
     AggregateRequest,
@@ -62,6 +63,7 @@ __all__ = [
     "AggregateRequest",
     "AvailableCapability",
     "CapabilityState",
+    "ExecutionPolicy",
     "FailedOutcome",
     "FormalismChoice",
     "FormalismDeclaration",
@@ -98,8 +100,8 @@ __all__ = [
     "framework_identities",
     "load",
     "outcome_technique",
+    "production_machine",
     "semantic_sha256",
     "serialize",
     "technique_curie",
-    "production_machine",
 ]

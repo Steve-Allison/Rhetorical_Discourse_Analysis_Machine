@@ -8,7 +8,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import sys
-from typing import Any, Final, Protocol
+from typing import Any, Final, Protocol, cast
 
 import rfc8785
 
@@ -68,30 +68,36 @@ def cmd_parse(args: argparse.Namespace) -> int:
     try:
         source = _source_from_cli(args)
     except (OSError, UnicodeError, ValueError, TypeError) as exc:
-        payload = serialize_contract(
-            _safe_boundary_failure(
-                exc,
-                stage=LifecycleStage.ACQUISITION,
-                category=FailureCategory.MALFORMED_INPUT,
-                code="cli_source_acquisition_failed",
-                message_template="cli_source_could_not_be_acquired",
+        payload = (
+            serialize_contract(
+                _safe_boundary_failure(
+                    exc,
+                    stage=LifecycleStage.ACQUISITION,
+                    category=FailureCategory.MALFORMED_INPUT,
+                    code="cli_source_acquisition_failed",
+                    message_template="cli_source_could_not_be_acquired",
+                )
             )
-        ) + b"\n"
+            + b"\n"
+        )
         _write_payload(payload, args.output, stream=sys.stderr.buffer)
         return 2
     try:
         ingestor = _configured_ingestor(args)
     except (OSError, ValueError) as exc:
-        payload = serialize_contract(
-            _safe_boundary_failure(
-                exc,
-                stage=LifecycleStage.INFERENCE,
-                category=FailureCategory.PROVIDER_UNAVAILABLE,
-                code="cli_provider_configuration_failed",
-                message_template="configured_parser_could_not_be_created",
-                completed=AcquisitionCompletedEvidence(source=source.summary()),
+        payload = (
+            serialize_contract(
+                _safe_boundary_failure(
+                    exc,
+                    stage=LifecycleStage.INFERENCE,
+                    category=FailureCategory.PROVIDER_UNAVAILABLE,
+                    code="cli_provider_configuration_failed",
+                    message_template="configured_parser_could_not_be_created",
+                    completed=AcquisitionCompletedEvidence(source=source.summary()),
+                )
             )
-        ) + b"\n"
+            + b"\n"
+        )
         _write_payload(payload, args.output, stream=sys.stderr.buffer)
         return 2
     try:
@@ -183,9 +189,12 @@ def _source_from_cli(args: argparse.Namespace) -> SourceArtifact:
         return SourceArtifact.from_text(args.text, source_name=args.source_name or "cli-text")
     if args.edus is not None:
         values = json.loads(args.edus)
-        if not isinstance(values, list) or any(not isinstance(item, str) for item in values):
+        if not isinstance(values, list):
             raise ValueError("--edus must be a JSON array of strings")
-        return SourceArtifact.from_edus(tuple(values), source_name=args.source_name or "cli-edus")
+        items = cast(list[object], values)
+        if any(not isinstance(item, str) for item in items):
+            raise ValueError("--edus must be a JSON array of strings")
+        return SourceArtifact.from_edus(tuple(cast(list[str], items)), source_name=args.source_name or "cli-edus")
     if args.input and args.input != "-":
         source_form = _optional_source_form(args.source_form)
         if source_form is None and Path(args.input).suffix.casefold() in {".txt", ".text"}:
@@ -211,9 +220,12 @@ def _source_from_http(data: Mapping[str, Any]) -> SourceArtifact:
     source_name = str(data.get("source_name", "http-request"))
     if source_form is SourceForm.EDUS:
         edus = data.get("edus")
-        if not isinstance(edus, list) or any(not isinstance(item, str) for item in edus):
+        if not isinstance(edus, list):
             raise ValueError("EDU requests require an edus array of strings")
-        return SourceArtifact.from_edus(tuple(edus), source_name=source_name)
+        items = cast(list[object], edus)
+        if any(not isinstance(item, str) for item in items):
+            raise ValueError("EDU requests require an edus array of strings")
+        return SourceArtifact.from_edus(tuple(cast(list[str], items)), source_name=source_name)
     if "text" in data:
         text = data["text"]
         if not isinstance(text, str):
@@ -269,7 +281,7 @@ def _handler_type(ingestor: _ProductionService) -> type[BaseHTTPRequestHandler]:
                 data = json.loads(self.rfile.read(length).decode("utf-8", errors="strict"))
                 if not isinstance(data, dict):
                     raise ValueError("request body must be a JSON object")
-                source = _source_from_http(data)
+                source = _source_from_http(cast(dict[str, Any], data))
             except (ValueError, TypeError, UnicodeError, json.JSONDecodeError) as exc:
                 self._send(
                     HTTPStatus.BAD_REQUEST,

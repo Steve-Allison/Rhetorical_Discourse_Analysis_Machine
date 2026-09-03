@@ -15,6 +15,7 @@ import sys
 import types
 from importlib import import_module
 from pathlib import Path
+from typing import cast
 
 from rdam.rst.model_loading.parser_input import ParserInput
 
@@ -84,14 +85,20 @@ def relation_table_from_txt(text: str) -> list[str]:
 
 
 def relation_table_from_json_obj(payload: object) -> list[str]:
-    if isinstance(payload, list) and all(isinstance(x, str) for x in payload):
-        return list(payload)
+    if isinstance(payload, list):
+        items = cast(list[object], payload)
+        if all(isinstance(item, str) for item in items):
+            return cast(list[str], items)
     if not isinstance(payload, dict):
         raise ValueError("relation inventory JSON must be an object or a string list")
-    table = payload.get("relation_table")
-    if not isinstance(table, list) or not all(isinstance(x, str) for x in table):
+    inventory = cast(dict[object, object], payload)
+    table = inventory.get("relation_table")
+    if not isinstance(table, list):
         raise ValueError("relation inventory JSON missing string list 'relation_table'")
-    return [item.strip() for item in table if item.strip()]
+    labels = cast(list[object], table)
+    if not all(isinstance(item, str) for item in labels):
+        raise ValueError("relation inventory JSON missing string list 'relation_table'")
+    return [item.strip() for item in cast(list[str], labels) if item.strip()]
 
 
 def dump_relation_inventory(path: Path, labels: list[str], *, corpus_name: str = "") -> None:
@@ -144,9 +151,7 @@ def ensure_unirst_module_aliases() -> None:
 
 def _ensure_parent_module(name: str) -> types.ModuleType:
     if name in sys.modules:
-        existing = sys.modules[name]
-        if isinstance(existing, types.ModuleType):
-            return existing
+        return sys.modules[name]
     module = types.ModuleType(name)
     sys.modules[name] = module
     parent_name, _, child_name = name.rpartition(".")
@@ -162,7 +167,7 @@ def parse_corpora_config(corpora: object) -> list[str]:
         parsed = ast.literal_eval(corpora)
         if not isinstance(parsed, list):
             raise ValueError("config data.corpora string must be a list literal")
-        return [str(item) for item in parsed]
+        return [str(item) for item in cast(list[object], parsed)]
     if isinstance(corpora, list):
-        return [str(item) for item in corpora]
+        return [str(item) for item in cast(list[object], corpora)]
     raise ValueError("config data.corpora must be a list or list-literal string")

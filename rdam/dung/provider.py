@@ -6,8 +6,6 @@ supplies, or the one the caller explicitly declares it derived from another tech
 result. Reporting capability computes a digest of two source files and nothing else.
 """
 
-from importlib import resources
-from importlib.metadata import PackageNotFoundError, version
 from typing import Final
 
 from rdam import (
@@ -17,16 +15,16 @@ from rdam import (
     ProviderDeclaration,
     ProviderError,
     ProviderFailure,
-    ProviderProvenance,
     ProviderRequest,
     Retryability,
     SemanticVersion,
     Sha256Identity,
     Technique,
-    semantic_sha256,
     technique_curie,
 )
-from rdam._strict import JsonValue, sha256_bytes
+from rdam._provider_provenance import provider_failure, provider_provenance, source_identity as _source_identity
+from rdam._immutable_json import thaw_json
+from rdam._strict import JsonValue
 from rdam.dung.semantics import (
     DEFAULT_CAPACITY,
     ArgumentationFramework,
@@ -44,20 +42,7 @@ _SOURCE_FILES: Final = ("semantics.py", "provider.py")
 
 
 def source_identity() -> Sha256Identity:
-    """Digest of the provider's source files, in a fixed order; recorded as provenance."""
-
-    package = resources.files("rdam.dung")
-    digest = semantic_sha256(
-        {name: sha256_bytes(package.joinpath(name).read_bytes()) for name in _SOURCE_FILES}
-    )
-    return Sha256Identity(hex_digest=digest)
-
-
-def _package_version() -> str:
-    try:
-        return version("rdam")
-    except PackageNotFoundError:
-        return "unknown"
+    return _source_identity("rdam.dung", _SOURCE_FILES)
 
 
 def input_origin(request: ProviderRequest) -> str:
@@ -92,10 +77,8 @@ class DungProvider:
                 ),
             ),
             contract_version=CONTRACT_VERSION,
-            provenance=ProviderProvenance(
+            provenance=provider_provenance(
                 package="rdam.dung",
-                version=_package_version(),
-                source_revision=source_identity().hex_digest,
                 licence=LICENCE,
             ),
             capability=capability,
@@ -109,13 +92,17 @@ class DungProvider:
         if request.structured_input is None:
             raise ProviderError(self._failure("structured_input_required", "ValueError"))
         try:
-            framework = ArgumentationFramework.from_payload(request.structured_input)
+            framework = ArgumentationFramework.from_payload(thaw_json(request.structured_input))
         except FrameworkError as error:
-            raise ProviderError(self._failure("invalid_argumentation_framework", "FrameworkError", str(error))) from error
+            raise ProviderError(
+                self._failure("invalid_argumentation_framework", "FrameworkError", str(error))
+            ) from error
         try:
             semantics = evaluate(framework, capacity=self._capacity)
         except FrameworkCapacityError as error:
-            raise ProviderError(self._failure("framework_exceeds_declared_capacity", "FrameworkCapacityError", str(error))) from error
+            raise ProviderError(
+                self._failure("framework_exceeds_declared_capacity", "FrameworkCapacityError", str(error))
+            ) from error
         algorithm: dict[str, JsonValue] = {"name": "exhaustive-subset", "version": "1", "capacity": self._capacity}
         payload: dict[str, JsonValue] = {
             "framework": framework.to_payload(),
@@ -141,15 +128,13 @@ class DungProvider:
         )
 
     def _failure(self, code: str, exception_type: str, detail: str | None = None) -> ProviderFailure:
-        return ProviderFailure(
+        return provider_failure(
             technique=Technique.DUNG,
             provider_id=PROVIDER_ID,
-            failed_operation="analyse",
-            retryability=Retryability.NOT_RETRYABLE,
             code=code,
+            retryability=Retryability.NOT_RETRYABLE,
             exception_type=exception_type,
-            message_template=code,
-            message_parameters=(("detail", detail),) if detail is not None else (),
+            detail=detail,
         )
 
 

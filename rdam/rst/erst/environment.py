@@ -7,6 +7,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
+CONFIG_HOME_ENV = "RDAM_CONFIG_HOME"
+
 
 class HfTokenSource(StrEnum):
     """Supported Hugging Face token environment variables in precedence order."""
@@ -42,7 +44,9 @@ def load_repository_environment(repository_root: Path | None = None) -> Reposito
     excludes the secret field from serialized output and never logs values.
     """
 
-    root = (repository_root or Path(__file__).resolve().parents[2]).resolve()
+    configured_root = os.environ.get(CONFIG_HOME_ENV)
+    default_root = Path(configured_root).expanduser() if configured_root else Path.home() / ".config" / "rdam"
+    root = (repository_root or default_root).resolve()
     dotenv_path = root / ".env"
     dotenv_present = dotenv_path.is_file()
     dotenv_loaded = load_dotenv(dotenv_path=dotenv_path, override=False, verbose=False) if dotenv_present else False

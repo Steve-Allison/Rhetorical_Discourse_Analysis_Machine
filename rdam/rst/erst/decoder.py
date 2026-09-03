@@ -68,7 +68,7 @@ class ErstSecondaryEdgeDecoder:
         ontology_adapter: Callable[[str], str] | None = None,
     ) -> None:
         self.config = config
-        self.ontology_adapter = ontology_adapter or (lambda raw_relation: raw_relation)
+        self.ontology_adapter: Callable[[str], str] = ontology_adapter or _identity_relation
 
     def decode_with_receipt(
         self,
@@ -120,9 +120,7 @@ class ErstSecondaryEdgeDecoder:
 
         node_ids = {node.node_id for node in analysis.nodes}
         seen_pairs = {(edge.source_id, edge.target_id) for edge in analysis.secondary_edges}
-        rejection_counts: Counter[DecodeRejectionReason] = Counter(
-            {reason: 0 for reason in DecodeRejectionReason}
-        )
+        rejection_counts: Counter[DecodeRejectionReason] = Counter(dict.fromkeys(DecodeRejectionReason, 0))
         accepted: list[SecondaryRelationEdge] = []
         decisions: list[DecodedErstCandidate] = []
         for decoder_order, scored_candidate in enumerate(scored):
@@ -161,14 +159,14 @@ class ErstSecondaryEdgeDecoder:
             seen_pairs.add(pair)
             relation_concept = self.ontology_adapter(scored_candidate.relation_raw)
             edge = SecondaryRelationEdge(
-                    edge_id=f"se_pred_{candidate.source_id}_{candidate.target_id}",
-                    source_id=candidate.source_id,
-                    target_id=candidate.target_id,
-                    relation_raw=scored_candidate.relation_raw,
-                    relation_concept=relation_concept,
-                    confidence=scored_candidate.edge_probability,
-                    calibrated=True,
-                )
+                edge_id=f"se_pred_{candidate.source_id}_{candidate.target_id}",
+                source_id=candidate.source_id,
+                target_id=candidate.target_id,
+                relation_raw=scored_candidate.relation_raw,
+                relation_concept=relation_concept,
+                confidence=scored_candidate.edge_probability,
+                calibrated=True,
+            )
             accepted.append(edge)
             decisions.append(
                 DecodedErstCandidate(
@@ -221,6 +219,10 @@ class ErstSecondaryEdgeDecoder:
             sufficient_signal_ids=sufficient_signal_ids,
             streamed_batch_count=streamed_batch_count,
         ).edges
+
+
+def _identity_relation(raw_relation: str) -> str:
+    return raw_relation
 
 
 __all__ = [

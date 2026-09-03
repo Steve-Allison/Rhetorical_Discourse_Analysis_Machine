@@ -52,7 +52,9 @@ class Rebuttal(BaseModel):
     model_config = {"extra": "forbid"}
 
     condition: NonEmpty = Field(description="The circumstance in which the step from grounds to claim fails.")
-    source_text: NonEmpty | None = Field(default=None, description="The span of the source stating it, if it is stated.")
+    source_text: NonEmpty | None = Field(
+        default=None, description="The span of the source stating it, if it is stated."
+    )
 
 
 class ToulminLayout(BaseModel):
@@ -77,7 +79,7 @@ class ToulminLayout(BaseModel):
         )
     )
     backing: list[NonEmpty] = Field(
-        default_factory=list,
+        default_factory=lambda: list[NonEmpty](),
         description="What stands behind the warrant and makes it credible. Backs the warrant, not the claim.",
     )
     qualifier: NonEmpty | None = Field(
@@ -85,7 +87,7 @@ class ToulminLayout(BaseModel):
         description="The force attached to the claim, such as 'presumably', 'in most cases', 'necessarily'.",
     )
     rebuttals: list[Rebuttal] = Field(
-        default_factory=list,
+        default_factory=lambda: list[Rebuttal](),
         description="Conditions under which the warrant would not license the claim.",
     )
 
@@ -97,8 +99,6 @@ class ToulminLayout(BaseModel):
             raise IncompleteLayoutError("the warrant restates the claim; no inference licence was identified")
         if any(self.warrant.strip().casefold() == ground.strip().casefold() for ground in self.grounds):
             raise IncompleteLayoutError("the warrant restates a ground; no inference licence was identified")
-        if self.backing and not self.warrant:
-            raise LayoutError("backing supports a warrant; there is no warrant to back")
         return self
 
     @property
@@ -127,9 +127,7 @@ class ToulminLayout(BaseModel):
             "warrant": self.warrant,
             "backing": list(self.backing),
             "qualifier": self.qualifier,
-            "rebuttals": [
-                {"condition": item.condition, "source_text": item.source_text} for item in self.rebuttals
-            ],
+            "rebuttals": [{"condition": item.condition, "source_text": item.source_text} for item in self.rebuttals],
             "elements_present": list(self.elements_present),
             "is_qualified": self.is_qualified,
         }
@@ -141,7 +139,7 @@ class ToulminAnalysis(BaseModel):
     model_config = {"extra": "forbid"}
 
     layouts: list[ToulminLayout] = Field(
-        default_factory=list,
+        default_factory=lambda: list[ToulminLayout](),
         description=(
             "One entry per distinct argument in the passage. A passage that argues nothing yields an empty list — "
             "never invent a layout to fill it."

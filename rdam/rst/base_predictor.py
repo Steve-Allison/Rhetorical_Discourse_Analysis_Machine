@@ -1,14 +1,13 @@
-import os
-import warnings
 from bisect import bisect_right
 from collections.abc import Iterable, Sequence
 from contextlib import AbstractContextManager
-from dataclasses import dataclass
 from itertools import batched
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
-from ._torch_runtime import torch
+from ._torch_runtime import DeviceProbe as DeviceProbe
+from ._torch_runtime import resolve_device as resolve_device
+from ._torch_runtime import resolve_dtype, torch
 
 
 class _OffsetToken(Protocol):
@@ -20,157 +19,18 @@ class _OffsetToken(Protocol):
 
 
 def str2bool(value: object) -> bool:
-    """Robust string-to-bool conversion used in configs."""
+    """Parse explicit boolean spellings and reject ambiguous configuration."""
     if isinstance(value, bool):
         return value
     if isinstance(value, str):
-        return value.lower() == "true"
-    return bool(value)
-
-
-@dataclass(frozen=True, slots=True)
-class DeviceProbe:
-    """Immutable snapshot of which accelerators the host exposes.
-
-    Production code uses ``DeviceProbe.detect()``. Tests pass explicit
-    probes — no monkeypatching of ``torch.cuda`` / MPS backends.
-    This project is Apple-Silicon-first; CUDA fields exist so the public
-    ``device='cuda*'`` API stays correct without needing NVIDIA CI.
-    """
-
-    cuda_available: bool = False
-    cuda_device_count: int = 0
-    mps_available: bool = False
-
-    @classmethod
-    def detect(cls) -> DeviceProbe:
-        """Probe the real host (CUDA, then MPS, else CPU-only)."""
-        cuda_ok = torch.cuda.is_available()
-        return cls(
-            cuda_available=cuda_ok,
-            cuda_device_count=torch.cuda.device_count() if cuda_ok else 0,
-            mps_available=_mps_available(),
-        )
-
-
-def _mps_available() -> bool:
-    """True when this host has a usable MPS (Apple Silicon Metal) backend."""
-    return hasattr(torch.backends, "mps") and torch.backends.mps.is_available() and torch.backends.mps.is_built()
-
-
-def _device_from_spec(spec: str, probe: DeviceProbe) -> torch.device:
-    """Resolve the string device API to a ``torch.device``.
-
-    ``"auto"`` picks the best available backend (CUDA, else MPS, else CPU) and
-    never raises. ``"cpu"`` is always available. ``"mps"`` / ``"cuda"`` /
-    ``"cuda:N"`` are explicit requests and raise ``RuntimeError`` if that
-    backend is not present on the host (per ``probe``).
-    """
-    key = spec.strip().lower()
-    if key == "cpu":
-        return torch.device("cpu")
-    if key == "auto":
-        if probe.cuda_available:
-            return torch.device("cuda:0")
-        if probe.mps_available:
-            os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
-            return torch.device("mps")
-        return torch.device("cpu")
-    if key == "mps":
-        if not probe.mps_available:
-            raise RuntimeError("device='mps' requested but MPS is not available on this host.")
-        os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
-        return torch.device("mps")
-    if key == "cuda" or key.startswith("cuda:"):
-        if not probe.cuda_available:
-            raise RuntimeError(f"device={spec!r} requested but CUDA is not available on this host.")
-        if key == "cuda":
-            return torch.device("cuda:0")
-        try:
-            index = int(key.split(":", 1)[1])
-        except ValueError as exc:
-            raise ValueError(f"Invalid CUDA device specifier: {spec!r}") from exc
-        if index < 0:
-            raise ValueError(f"CUDA device index must be non-negative: {spec!r}")
-        if index >= probe.cuda_device_count:
-            raise ValueError(f"CUDA device index {index} is out of range (device_count={probe.cuda_device_count}).")
-        return torch.device(f"cuda:{index}")
-    raise ValueError(f"Unrecognised device {spec!r}. Expected 'auto', 'cpu', 'mps', 'cuda', or 'cuda:N'.")
-
-
-def _device_from_legacy_int(cuda_device: int, probe: DeviceProbe) -> torch.device:
-    """Reproduce the historical ``cuda_device: int`` selection exactly.
-
-    ``-1`` -> CPU. ``>= 0`` -> ``cuda:<n>`` on an NVIDIA host, else ``mps`` on
-    Apple Silicon, else ``RuntimeError``. Kept bit-for-bit so the deprecated
-    integer path behaves as it always did.
-    """
-    if isinstance(cuda_device, bool) or not isinstance(cuda_device, int):
-        raise ValueError(f"cuda_device must be an int (-1 for CPU, or >= 0 for GPU); got {cuda_device!r}.")
-    if cuda_device < -1:
-        raise ValueError(f"cuda_device must be -1 (CPU) or >= 0 (GPU); got {cuda_device}.")
-    if cuda_device == -1:
-        return torch.device("cpu")
-    if probe.cuda_available:
-        return torch.device(f"cuda:{cuda_device}")
-    if probe.mps_available:
-        os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
-        return torch.device("mps")
-    raise RuntimeError(
-        f"cuda_device={cuda_device} requested but no GPU backend is "
-        'available (neither CUDA nor MPS). Pass device="cpu" for CPU.'
-    )
-
-
-def resolve_device(
-    device: str | torch.device | None = None,
-    cuda_device: int | None = None,
-    *,
-    probe: DeviceProbe | None = None,
-) -> torch.device:
-    """Resolve the compute device from the string API (or the deprecated int).
-
-    ``device`` is the canonical API:
-
-    - ``"auto"`` (or ``None``) -> CUDA if present, else MPS on Apple Silicon,
-      else CPU.
-    - ``"cpu"`` -> CPU.
-    - ``"mps"`` -> Apple Silicon Metal backend (raises if unavailable).
-    - ``"cuda"`` / ``"cuda:N"`` -> a specific NVIDIA device (raises if no CUDA).
-    - a ``torch.device`` -> validated with the same availability rules.
-
-    ``cuda_device`` is the deprecated integer shim: ``-1`` -> CPU; ``>= 0`` ->
-    the best available accelerator. Passing it emits a ``DeprecationWarning``.
-    Passing both ``device`` and ``cuda_device`` is a ``ValueError``.
-
-    ``probe`` injects accelerator availability for tests; production omits it
-    and uses ``DeviceProbe.detect()``.
-    """
-    resolved_probe = probe if probe is not None else DeviceProbe.detect()
-
-    if cuda_device is not None:
-        if device is not None:
-            raise ValueError("Pass either `device` (preferred) or `cuda_device` (deprecated), not both.")
-        resolved_device = _device_from_legacy_int(cuda_device, resolved_probe)
-        warnings.warn(
-            "`cuda_device` is deprecated and will be removed in a future release; "
-            "use `device=` instead (e.g. device='auto'|'cpu'|'mps'|'cuda:0'). "
-            "cuda_device=-1 maps to device='cpu'; cuda_device>=0 selects the best "
-            "available accelerator.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return resolved_device
-
-    if device is None:
-        return _device_from_spec("auto", resolved_probe)
-    if isinstance(device, torch.device):
-        # Same availability rules as the string API — do not silently accept
-        # an unavailable backend via passthrough.
-        if device.type == "cpu":
-            return device
-        return _device_from_spec(str(device), resolved_probe)
-    return _device_from_spec(device, resolved_probe)
+        normalized = value.strip().casefold()
+        if normalized in {"1", "true", "yes", "on"}:
+            return True
+        if normalized in {"0", "false", "no", "off"}:
+            return False
+    if isinstance(value, int) and value in {0, 1}:
+        return bool(value)
+    raise ValueError(f"expected an explicit boolean value, got {value!r}")
 
 
 class BasePredictor:
@@ -296,27 +156,30 @@ class BasePredictor:
         Raises:
             ValueError: if a non-leaf node is missing one of its children.
         """
-        left = getattr(unit, "left", None)
-        right = getattr(unit, "right", None)
-
-        if left is not None:
-            self.remap_tree_offsets(left, positions, originals, original_text)
-        if right is not None:
-            self.remap_tree_offsets(right, positions, originals, original_text)
-
-        if left is None and right is None:
-            unit.start = self._map_offset(unit.start, positions, originals)
-            unit.end = self._map_offset(unit.end, positions, originals)
-        elif left is not None and right is not None:
-            unit.start = left.start
-            unit.end = right.end
-        else:
-            raise ValueError(
-                "remap_tree_offsets received a unary node (one of left/right is None). "
-                "DUConverter is expected to produce strictly binary trees."
-            )
-
-        unit.text = original_text[unit.start : unit.end]
+        pending = [(unit, False)]
+        while pending:
+            node, expanded = pending.pop()
+            left = getattr(node, "left", None)
+            right = getattr(node, "right", None)
+            if expanded:
+                if left is None and right is None:
+                    node.start = self._map_offset(node.start, positions, originals)
+                    node.end = self._map_offset(node.end, positions, originals)
+                elif left is not None and right is not None:
+                    node.start = left.start
+                    node.end = right.end
+                else:
+                    raise ValueError(
+                        "remap_tree_offsets received a unary node (one of left/right is None). "
+                        "DUConverter is expected to produce strictly binary trees."
+                    )
+                node.text = original_text[node.start : node.end]
+                continue
+            pending.append((node, True))
+            if right is not None:
+                pending.append((right, False))
+            if left is not None:
+                pending.append((left, False))
 
     def remap_tree_to_edu_spans(
         self,
@@ -334,19 +197,18 @@ class BasePredictor:
         """
 
         leaves: list[Any] = []
-
-        def collect(node: Any) -> None:
+        pending = [unit]
+        while pending:
+            node = pending.pop()
             left = getattr(node, "left", None)
             right = getattr(node, "right", None)
             if left is None and right is None:
                 leaves.append(node)
-                return
+                continue
             if left is None or right is None:
                 raise ValueError("predefined-EDU tree contains a unary node")
-            collect(left)
-            collect(right)
-
-        collect(unit)
+            pending.append(right)
+            pending.append(left)
         if len(leaves) != len(spans):
             raise ValueError(
                 "The produced tree does not contain exactly one leaf per provided EDU "
@@ -361,20 +223,23 @@ class BasePredictor:
             leaf.end = end
             leaf.text = original_text[start:end]
 
-        def update_internal(node: Any) -> None:
+        pending_nodes = [(unit, False)]
+        while pending_nodes:
+            node, expanded = pending_nodes.pop()
             left = getattr(node, "left", None)
             right = getattr(node, "right", None)
             if left is None and right is None:
-                return
+                continue
             if left is None or right is None:
                 raise ValueError("predefined-EDU tree contains a unary node")
-            update_internal(left)
-            update_internal(right)
-            node.start = left.start
-            node.end = right.end
-            node.text = original_text[node.start : node.end]
-
-        update_internal(unit)
+            if expanded:
+                node.start = left.start
+                node.end = right.end
+                node.text = original_text[node.start : node.end]
+                continue
+            pending_nodes.append((node, True))
+            pending_nodes.append((right, False))
+            pending_nodes.append((left, False))
 
     @staticmethod
     def _guess_token_offsets(text: str, tokens: Sequence[str]) -> list[tuple[int, int]]:
@@ -420,14 +285,13 @@ class BasePredictor:
         for w_end in word_span_boundaries:
             final_char = word_offsets[w_end][1]
             for i in range(1, len(subword_offsets)):
-                if subword_offsets[i][0] < subword_offsets[i][1]:
-                    if subword_offsets[i][0] >= final_char:
-                        # Fixes LUKE segmentation
-                        if i - 1 in subword_span_boundaries:
-                            subword_span_boundaries.append(i)
-                        else:
-                            subword_span_boundaries.append(i - 1)
-                        break
+                if subword_offsets[i][0] < subword_offsets[i][1] and subword_offsets[i][0] >= final_char:
+                    # Fixes LUKE segmentation
+                    if i - 1 in subword_span_boundaries:
+                        subword_span_boundaries.append(i)
+                    else:
+                        subword_span_boundaries.append(i - 1)
+                    break
 
         if len(subword_offsets) - 1 not in subword_span_boundaries:
             subword_span_boundaries.append(len(subword_offsets) - 1)
@@ -436,17 +300,18 @@ class BasePredictor:
 
     @staticmethod
     def _collect_leaf_texts(unit: Any, acc: list[str]) -> None:
-        left = getattr(unit, "left", None)
-        right = getattr(unit, "right", None)
-
-        if left is None and right is None:
-            acc.append(unit.text)
-            return
-
-        if left is not None:
-            BasePredictor._collect_leaf_texts(left, acc)
-        if right is not None:
-            BasePredictor._collect_leaf_texts(right, acc)
+        pending = [unit]
+        while pending:
+            node = pending.pop()
+            left = getattr(node, "left", None)
+            right = getattr(node, "right", None)
+            if left is None and right is None:
+                acc.append(node.text)
+                continue
+            if right is not None:
+                pending.append(right)
+            if left is not None:
+                pending.append(left)
 
     @staticmethod
     def _validate_edus(edus: object) -> list[str]:
@@ -473,7 +338,7 @@ class BasePredictor:
             raise ValueError("`edus` must contain at least one EDU.")
 
         normalized: list[str] = []
-        for idx, edu in enumerate(edus):
+        for idx, edu in enumerate(cast(Sequence[object], edus)):
             if not isinstance(edu, str):
                 raise TypeError(f"EDU at position {idx} must be a string.")
             if not edu:
@@ -496,10 +361,7 @@ class BasePredictor:
             if text[start:end] != edu:
                 raise ValueError(f"EDU at position {idx} does not align after concatenation.")
             spans.append((start, end))
-            if idx < len(edus) - 1:
-                cursor = end + 1
-            else:
-                cursor = end
+            cursor = end + 1 if idx < len(edus) - 1 else end
 
         return text, spans
 
@@ -552,50 +414,11 @@ class BasePredictor:
     @staticmethod
     def _resolve_dtype(
         dtype: str | torch.dtype | None,
+        device: torch.device | None = None,
     ) -> torch.dtype:
-        """Normalise a dtype spec to a ``torch.dtype``.
+        """Compatibility façade over the shared device-aware dtype resolver."""
 
-        Accepts:
-            * ``None`` -> ``float32`` on every device (the default). Measured
-              fastest for document-length inputs on Apple Silicon; pass
-              ``dtype='bf16'`` explicitly for large-batch CUDA where native
-              half-precision matmul wins.
-            * a ``torch.dtype`` instance, returned as-is after validation.
-            * a string: ``'float32' / 'fp32'``, ``'float16' / 'fp16' / 'half'``,
-              ``'bfloat16' / 'bf16'``.
-
-        Raises:
-            ValueError: if the string is not recognised, or the dtype is not
-            one of the three supported by ``torch.autocast``.
-        """
-        if dtype is None:
-            # Default: fp32 across all devices. Measured on Apple Silicon
-            # (M-series, PyTorch 2.11), bf16/fp16 autocast is ~1.5x slower
-            # than native fp32 for typical document-length inputs because
-            # per-op dtype-dispatch overhead dominates the matmul speedup.
-            # On large-batch CUDA workloads with H100/Ada Tensor Cores, bf16
-            # likely wins — pass ``dtype=torch.bfloat16`` explicitly there.
-            # See ``scripts/bench.py`` to measure on your hardware.
-            return torch.float32
-        if isinstance(dtype, str):
-            key = dtype.lower().strip()
-            mapping = {
-                "float32": torch.float32,
-                "fp32": torch.float32,
-                "float16": torch.float16,
-                "fp16": torch.float16,
-                "half": torch.float16,
-                "bfloat16": torch.bfloat16,
-                "bf16": torch.bfloat16,
-            }
-            if key not in mapping:
-                raise ValueError(
-                    f"Unknown dtype {dtype!r}. Supported: 'float32'/'fp32', 'float16'/'fp16'/'half', 'bfloat16'/'bf16'."
-                )
-            return mapping[key]
-        if dtype in (torch.float32, torch.float16, torch.bfloat16):
-            return dtype
-        raise ValueError(f"Unsupported dtype {dtype!r}. Use float32, float16, or bfloat16.")
+        return resolve_dtype(device or torch.device("cpu"), dtype)
 
     def _autocast(self) -> AbstractContextManager[Any]:
         """Return a context manager enabling autocast for inference.
@@ -637,10 +460,7 @@ class BasePredictor:
         from rdam.rst.erst.converter import du_to_analysis
 
         if edus is not None and len(edus) > 0:
-            if isinstance(edus[0], ContractEdu):
-                edu_texts = [e.text for e in edus]
-            else:
-                edu_texts = [str(e) for e in edus]
+            edu_texts = [e.text for e in edus] if isinstance(edus[0], ContractEdu) else [str(e) for e in edus]
             res = self.parse_from_edus(edu_texts)
             used_source = segmentation_source or "presegmented"
         else:
@@ -656,19 +476,16 @@ class BasePredictor:
         if not sentences:
             sentence_spans = [TextSpan(start=0, end=len(text), text=text)]
         else:
-            sentence_spans = [
-                TextSpan(start=s.start, end=s.stop, text=s.text)
-                for s in sentences
-            ]
+            sentence_spans = [TextSpan(start=s.start, end=s.stop, text=s.text) for s in sentences]
 
         raw_tokens = list(razdel.tokenize(text))
         tokens: list[DocumentToken] = []
+        sentence_index = 0
         for idx, t in enumerate(raw_tokens):
-            s_id = 1
-            for s_idx, s in enumerate(sentence_spans):
-                if s.start <= t.start and t.stop <= s.end:
-                    s_id = s_idx + 1
-                    break
+            while sentence_index + 1 < len(sentence_spans) and t.start >= sentence_spans[sentence_index].end:
+                sentence_index += 1
+            sentence = sentence_spans[sentence_index]
+            s_id = sentence_index + 1 if sentence.start <= t.start and t.stop <= sentence.end else 1
             tokens.append(
                 DocumentToken(
                     token_id=idx + 1,
@@ -683,26 +500,33 @@ class BasePredictor:
         leaves: list[Any] = []
         self._collect_leaf_units(root_unit, leaves)
         leaf_tok_ids: list[list[int]] = [[] for _ in leaves]
+        leaf_spans = [
+            (
+                leaf.start if getattr(leaf, "start", None) is not None else 0,
+                leaf.end if getattr(leaf, "end", None) is not None else len(leaf.text),
+            )
+            for leaf in leaves
+        ]
+        leaf_index = 0
         for tok in tokens:
-            assigned = False
-            for idx, leaf in enumerate(leaves):
-                l_start = leaf.start if getattr(leaf, "start", None) is not None else 0
-                l_end = leaf.end if getattr(leaf, "end", None) is not None else len(leaf.text)
-                if tok.start >= l_start and tok.end <= l_end:
-                    leaf_tok_ids[idx].append(tok.token_id)
-                    assigned = True
-                    break
-            if not assigned and leaves:
-                best_idx = 0
-                best_dist = float("inf")
-                for idx, leaf in enumerate(leaves):
-                    l_start = leaf.start if getattr(leaf, "start", None) is not None else 0
-                    l_end = leaf.end if getattr(leaf, "end", None) is not None else len(leaf.text)
-                    dist = min(abs(tok.start - l_start), abs(tok.end - l_end), abs(tok.start - l_end))
-                    if dist < best_dist:
-                        best_dist = dist
-                        best_idx = idx
-                leaf_tok_ids[best_idx].append(tok.token_id)
+            while leaf_index + 1 < len(leaf_spans) and tok.start >= leaf_spans[leaf_index][1]:
+                leaf_index += 1
+            if not leaf_spans:
+                continue
+            l_start, l_end = leaf_spans[leaf_index]
+            if tok.start >= l_start and tok.end <= l_end:
+                leaf_tok_ids[leaf_index].append(tok.token_id)
+                continue
+            candidate_indices = range(max(0, leaf_index - 1), min(len(leaf_spans), leaf_index + 2))
+            best_index = min(
+                candidate_indices,
+                key=lambda index: min(
+                    abs(tok.start - leaf_spans[index][0]),
+                    abs(tok.end - leaf_spans[index][1]),
+                    abs(tok.start - leaf_spans[index][1]),
+                ),
+            )
+            leaf_tok_ids[best_index].append(tok.token_id)
 
         contract_edus: list[ContractEdu] = []
         for idx, leaf in enumerate(leaves):
@@ -719,7 +543,9 @@ class BasePredictor:
             )
 
         resolved_sentences = tuple(sentence_boundaries) if sentence_boundaries else tuple(sentence_spans)
-        resolved_paragraphs = tuple(paragraph_boundaries) if paragraph_boundaries else (TextSpan(start=0, end=len(text), text=text),)
+        resolved_paragraphs = (
+            tuple(paragraph_boundaries) if paragraph_boundaries else (TextSpan(start=0, end=len(text), text=text),)
+        )
 
         raw_inventory: list[str] = []
         for item in getattr(self, "relation_table", ()):
@@ -745,32 +571,36 @@ class BasePredictor:
         from rdam.rst.contracts.trace import ParsedRstTreeEvidence, ParsedRstTreeSpan
 
         decisions: list[Any] = []
-        curr_edu = 0
-
-        def walk(node: Any) -> tuple[int, int]:
-            nonlocal curr_edu
+        spans: dict[int, tuple[int, int]] = {}
+        relation_indexes = {relation: index for index, relation in enumerate(rel_table)}
+        relation_casefold = {relation.casefold(): relation for relation in rel_table}
+        leaf_index = 0
+        pending = [(unit, False)]
+        while pending:
+            node, expanded = pending.pop()
             left = getattr(node, "left", None)
             right = getattr(node, "right", None)
             if left is None and right is None:
-                leaf_idx = curr_edu
-                curr_edu += 1
-                return leaf_idx, leaf_idx
+                spans[id(node)] = (leaf_index, leaf_index)
+                leaf_index += 1
+                continue
+            if left is None or right is None:
+                raise ValueError("parsed RST evidence contains a unary node")
+            if not expanded:
+                pending.append((node, True))
+                pending.append((right, False))
+                pending.append((left, False))
+                continue
 
-            start_idx = curr_edu
-            left_start, left_end = walk(left) if left is not None else (start_idx, start_idx)
-            right_start, right_end = walk(right) if right is not None else (curr_edu - 1, curr_edu - 1)
-            end_idx = right_end
+            start_idx, left_end = spans[id(left)]
+            _right_start, end_idx = spans[id(right)]
             split_idx = left_end
 
             nuc = getattr(node, "nuclearity", "NS") or "NS"
             rel = getattr(node, "relation", "elaboration") or "elaboration"
             if "_" in rel:
                 rel = rel.split("_")[0]
-            canonical_rel = rel
-            for candidate in rel_table:
-                if candidate.lower() == rel.lower():
-                    canonical_rel = candidate
-                    break
+            canonical_rel = relation_casefold.get(rel.casefold(), rel)
             proba = float(getattr(node, "proba", 1.0) or 1.0)
 
             span = ParsedRstTreeSpan(
@@ -787,8 +617,8 @@ class BasePredictor:
             nuc_idx = nuc_classes.index(nuc) if nuc in nuc_classes else 0
             nuclearity_logits = tuple(1.0 if idx == nuc_idx else 0.0 for idx in range(3))
 
-            if canonical_rel in rel_table:
-                rel_idx = rel_table.index(canonical_rel)
+            if canonical_rel in relation_indexes:
+                rel_idx = relation_indexes[canonical_rel]
                 relation_logits = tuple(1.0 if idx == rel_idx else 0.0 for idx in range(len(rel_table)))
             else:
                 relation_logits = tuple(1.0 if idx == 0 else 0.0 for idx in range(max(1, len(rel_table))))
@@ -802,16 +632,19 @@ class BasePredictor:
                     relation_logits=relation_logits,
                 )
             )
-            return start_idx, end_idx
-
-        walk(unit)
+            spans[id(node)] = (start_idx, end_idx)
         return decisions
 
     def _collect_leaf_units(self, unit: Any, leaves: list[Any]) -> None:
-        if getattr(unit, "left", None) is None and getattr(unit, "right", None) is None:
-            leaves.append(unit)
-            return
-        if getattr(unit, "left", None) is not None:
-            self._collect_leaf_units(unit.left, leaves)
-        if getattr(unit, "right", None) is not None:
-            self._collect_leaf_units(unit.right, leaves)
+        pending = [unit]
+        while pending:
+            node = pending.pop()
+            left = getattr(node, "left", None)
+            right = getattr(node, "right", None)
+            if left is None and right is None:
+                leaves.append(node)
+                continue
+            if right is not None:
+                pending.append(right)
+            if left is not None:
+                pending.append(left)
