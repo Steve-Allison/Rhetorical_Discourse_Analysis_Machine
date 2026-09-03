@@ -33,9 +33,19 @@
 - [X] T011 Run the quickstart, focused tests, lint, typecheck, and production-boundary gate; record exact output in `evidence.md`
 - [X] T012 Run `$speckit-analyze`, resolve all findings, and mark the feature complete
 
+## Phase 6: Current Convergence and Delivery
+
+- [X] T013 Add failing non-integer EDU-offset coercion cases in `tests/sdrt/test_graph.py`
+- [X] T014 Enforce strict integer source offsets in `rdam/sdrt/graph.py`
+- [X] T015 Re-run focused, static, boundary, Markdown, ontology, fast, and complete gates; append exact current results to `specs/015-sdrt-provider/evidence.md`
+- [X] T016 Re-run cross-artifact analysis and resolve all findings
+- [X] T017 Stage all Feature 015 files, commit, push, and verify local HEAD equals upstream
+
 ## Dependencies
 
-T001 precedes contract work. T003 precedes T004; T005 precedes T006; T007 precedes T008. T010 follows provider completion. T011–T012 run last.
+T001 precedes original contract work. T003 precedes T004; T005 precedes T006; T007
+precedes T008. T010 follows provider completion. T013–T017 are the current sequential
+convergence pass.
 
 ## Implementation Strategy
 

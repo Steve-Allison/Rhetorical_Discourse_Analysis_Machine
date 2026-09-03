@@ -24,3 +24,19 @@ coordinating/subordinating relations, and the right-frontier constraint:
 - Pyright strict: **0 errors, 0 warnings, 0 informations**.
 - Production boundary: **valid**, zero violations.
 - Cross-artifact analysis: 12 requirements, 7 success criteria, and 12 tasks; zero unresolved ambiguity, duplication, constitution conflict, or unmapped work.
+
+## Current convergence verification
+
+- Strict-offset red phase: **2 failed, 13 passed** before implementation; numeric text
+  and booleans were coerced into integer source offsets.
+- `pixi run pytest tests/sdrt -q`: **23 passed in 1.28s** after making both offset fields strict.
+- Focused Ruff and strict Pyright: clean; **0 errors, 0 warnings, 0 informations**.
+- Repository Ruff: **All checks passed**.
+- Repository strict Pyright: **0 errors, 0 warnings, 0 informations**.
+- Markdown: **206 files linted, 43 governed exclusions, 0 issues**.
+- Ontology: exit 0; schema and bindings validated and the framework projection matched
+  its vendored authority. The configured ignored `_meta` naming warning remained visible.
+- Source boundary: default and production environments each reported **valid: true**,
+  137 production modules/files, and zero violations.
+- Fast suite: **1,341 passed, 134 deselected in 34.61s**.
+- Complete suite: **1,419 passed, 56 skipped in 236.45s**.

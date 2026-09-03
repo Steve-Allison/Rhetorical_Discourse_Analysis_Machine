@@ -73,6 +73,16 @@ def test_edu_offsets_must_form_a_positive_span(field: str, value: int) -> None:
         ElementaryDiscourseUnit.model_validate(values)
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (("start", "0"), ("end", True)),
+)
+def test_edu_offsets_refuse_non_integer_coercion(field: str, value: object) -> None:
+    values = {"unit_id": "e1", "text": "x", "start": 0, "end": 1, field: value}
+    with pytest.raises(ValidationError):
+        ElementaryDiscourseUnit.model_validate(values)
+
+
 def test_exact_source_slice_is_mandatory() -> None:
     with pytest.raises(GraphError, match="does not equal source slice"):
         valid_graph().validate_source("One! Two. Three.")

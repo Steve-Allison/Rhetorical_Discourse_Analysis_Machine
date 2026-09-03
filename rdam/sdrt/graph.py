@@ -37,8 +37,8 @@ class ElementaryDiscourseUnit(_ClosedModel):
 
     unit_id: UnitId
     text: NonEmpty
-    start: int = Field(ge=0)
-    end: int = Field(gt=0)
+    start: int = Field(strict=True, ge=0)
+    end: int = Field(strict=True, gt=0)
 
     @model_validator(mode="after")
     def positive_span(self) -> Self:
