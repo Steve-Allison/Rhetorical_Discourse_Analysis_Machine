@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from rdam.rst.ingest import (
+from rdam.ingest import (
     CoordinateBoxAnchor,
     PageAnchor,
     PageBoxAnchor,
@@ -10,7 +10,7 @@ from rdam.rst.ingest import (
     TableCoordinateAnchor,
     TextSpanAnchor,
 )
-from rdam.rst.ingest.prepare import inventory_source
+from rdam.ingest.prepare import inventory_source
 
 
 def test_docling_inventory_retains_page_bbox_and_table_coordinates() -> None:
@@ -50,4 +50,9 @@ def test_doclang_and_markdown_use_stable_native_addresses() -> None:
         type(anchor) for item in (*doclang, *location_inventory, *table_inventory) for anchor in item.anchors
     }
     assert {CoordinateBoxAnchor, TableCoordinateAnchor} <= doclang_anchor_types
-    assert all(isinstance(anchor, SourcePathAnchor | TextSpanAnchor) for item in markdown for anchor in item.anchors)
+    assert all(
+        isinstance(anchor, SourcePathAnchor | TextSpanAnchor | TableCoordinateAnchor)
+        for item in markdown
+        for anchor in item.anchors
+    )
+    assert any(isinstance(anchor, TableCoordinateAnchor) for item in markdown for anchor in item.anchors)

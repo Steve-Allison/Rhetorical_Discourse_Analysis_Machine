@@ -6,18 +6,20 @@
 
 1. Canonical source ingest is **machine-level**, at `rdam.ingest`, owned by the machine and
    not by any technique (FR-001).
-2. The dependency direction is **machine → ingest** and **provider → ingest**. The machine
-   layer MUST NOT import from a technique sub-package (FR-003), enforced by the production
-   boundary gate walking imports from `rdam`.
-3. `rdam.rst.ingest` remains importable with the same public names (FR-002), as a re-export
-   with no independent behaviour — one canonical authority per governed fact.
+2. The dependency direction is **machine → ingest** and **provider → ingest**. Generic
+   orchestration in `rdam/machine.py` MUST NOT import from a technique sub-package
+   (FR-003), enforced by the production boundary gate. Concrete provider assembly lives
+   in `rdam/composition.py` and may import providers. The root package exports this
+   factory directly; `rdam.machine` has no forwarding factory (owner ruling, 2026-09-04).
+3. `rdam.ingest` is the only ingest import surface (FR-002). Remove the historical
+   module and update callers; no re-export shim or duplicate implementation remains.
 4. Persisted identifiers do not move with the package: `isanlp_rst.production` 2.0.0, the
    schema `$id`s, and the runtime contract names are unchanged (FR-004). They name stored
    contracts, not module paths.
-5. Contracts named for one technique are renamed to what they model, with the old names
-   retained as aliases (FR-006): `PreparedRstDocument` → `PreparedDocument`,
-   `ParserCapacity` → `AnalysisCapacity`. No consumer breaks, and the contract stops
-   understating its own scope.
+5. Contracts use `PreparedDocument` and `AnalysisCapacity` without old-name aliases
+   (FR-006). `AnalysisPlan.capacity` is also `capacity` in JSON. Old payloads need not
+   load; historical baseline evidence is preserved and the approved rename is classified
+   separately from analytical differences.
 
 ## Entry points
 

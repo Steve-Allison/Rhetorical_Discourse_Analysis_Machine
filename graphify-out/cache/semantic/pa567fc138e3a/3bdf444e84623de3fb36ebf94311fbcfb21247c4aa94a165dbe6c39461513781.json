@@ -1,1 +1,0 @@
-{"nodes": [{"id": "speckit_specify_skill", "label": "speckit-specify", "file_type": "code", "source_file": ".cursor/skills/speckit-specify/SKILL.md", "rationale": "Creates or updates feature specifications from natural language descriptions."}], "edges": [], "hyperedges": []}

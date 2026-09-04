@@ -17,10 +17,14 @@ from collections.abc import Mapping
 import json
 from pathlib import Path
 from typing import Final
+from uuid import uuid4
+from threading import RLock
+from time import perf_counter
+import sys
 
 from rdam.rst import Parser
 from rdam.rst.erst.checkpoint import resolve_default_erst_checkpoint
-from rdam.rst.ingest import (
+from rdam.ingest import (
     WRITE_CONTRACT_VERSION,
     AnalysisPolicy,
     OutputFormalism,
@@ -29,7 +33,16 @@ from rdam.rst.ingest import (
     SourceArtifact,
     serialize_contract,
 )
-from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
+from rdam.ingest.service import declared_capacity
+from rdam.ingest.contracts.preparation import (
+    ContentInventory,
+    ContentRequirement,
+    PreparationOutcome,
+    PreparationExecutionEvidence,
+)
+from rdam.ingest.policy import DEFAULT_PLANNING_POLICY, DEFAULT_PREPARATION_POLICY
+from rdam.ingest.projection import project, bind_preparation
 from rdam.rst.model_loading import ModelReleaseError, ValidatedModelRelease, load_model_release
 from rdam import (
     AvailableCapability,
@@ -102,6 +115,7 @@ class RstProvider:
         self._erst_checkpoint = erst_scorer_checkpoint
         self._cache_directory = cache_directory
         self._parser: Parser | None = None
+        self._initialization_lock = RLock()
         self._local_release_checked = False
         self._validated_local_release: ValidatedModelRelease | None = None
         self._validated_local_family: str | None = None
@@ -126,6 +140,11 @@ class RstProvider:
     def _inspect_local_release(self) -> ValidatedModelRelease | None:
         """Validate the configured immutable release once without constructing a parser."""
 
+        with self._initialization_lock:
+            return self._inspect_local_release_locked()
+
+    def _inspect_local_release_locked(self) -> ValidatedModelRelease | None:
+
         if self._local_release_checked:
             return self._validated_local_release
         self._local_release_checked = True
@@ -139,6 +158,17 @@ class RstProvider:
         self._validated_local_release = release
         self._validated_local_family = family
         return release
+
+    @property
+    def content_requirement(self) -> ContentRequirement:
+        return ContentRequirement(
+            requirement_id="rst/authored-prose-v1",
+            admitted_classes=DEFAULT_PREPARATION_POLICY.primary_classes,
+            capacity=declared_capacity(Parser.declared_analysis_capacity()),
+            boundary_preference=DEFAULT_PLANNING_POLICY.boundary_preference,
+            normalization=DEFAULT_PREPARATION_POLICY.normalization,
+            requires_speaker_identity=False,
+        )
 
     @property
     def declaration(self) -> ProviderDeclaration:
@@ -180,6 +210,15 @@ class RstProvider:
             ),
             capability=capability,
             requires_structured_input=False,
+            content_requirement=self.content_requirement,
+            # T073/T082 measured full cold initialization and inference on CPU
+            # and MPS. Other devices and eRST completion remain unmeasured.
+            parallel_safety=(
+                "concurrent"
+                if not erst_bundle
+                and (self._device in {"cpu", "mps"} or (self._device == "auto" and sys.platform == "darwin"))
+                else "serialized"
+            ),
         )
 
     def _licence(self) -> str:
@@ -228,11 +267,39 @@ class RstProvider:
                 "output_formalism": _FORMALISM_OUTPUT[formalism_id],
             }
         )
-        source = SourceArtifact.from_text(request.text, source_name=request.source.source_name or "rdam-source")
         try:
-            outcome = ProductionIngestor(parser=parser).analyse(
-                source, analysis_policy=policy, cache_directory=self._cache_directory
-            )
+            ingestor = ProductionIngestor(parser=parser)
+            if request.projection is not None and request.preparation is not None:
+                binding_started = perf_counter()
+                inventory = request.preparation.inventory
+                projection = request.projection
+                semantic = bind_preparation(inventory, self.content_requirement, projection)
+                preparation = PreparationOutcome(
+                    semantic=semantic,
+                    execution=PreparationExecutionEvidence(
+                        execution_id=str(uuid4()), adapters=(), duration_ms=(perf_counter() - binding_started) * 1000.0
+                    ),
+                )
+                outcome = ingestor.analyse_prepared(
+                    preparation,
+                    analysis_policy=policy,
+                    cache_directory=self._cache_directory,
+                )
+            else:
+                source = SourceArtifact.from_text(request.text, source_name=request.source.source_name or "rdam-source")
+                preparation = ingestor.prepare(source, capacity=self.content_requirement.capacity)
+                inventory = ContentInventory.from_preparation(preparation)
+                projection = project(inventory, self.content_requirement)
+                preparation = PreparationOutcome(
+                    semantic=bind_preparation(inventory, self.content_requirement, projection),
+                    execution=preparation.execution,
+                )
+                outcome = ingestor.analyse(
+                    source,
+                    preparation=preparation,
+                    analysis_policy=policy,
+                    cache_directory=self._cache_directory,
+                )
         except ProductionIngestError as error:
             raise ProviderError(
                 ProviderFailure(
@@ -258,9 +325,14 @@ class RstProvider:
             source=request.source,
             payload=payload,
             provenance=declaration.provenance,
+            execution_fields=_execution_fields(payload),
         )
 
     def _load_parser(self) -> Parser:
+        with self._initialization_lock:
+            return self._load_parser_locked()
+
+    def _load_parser_locked(self) -> Parser:
         if self._parser is not None:
             return self._parser
         if self._store is not None and self._release_id is not None:
@@ -302,6 +374,31 @@ class RstProvider:
             message_template=code,
             message_parameters=(("detail", detail),) if detail is not None else (),
         )
+
+
+def _execution_fields(payload: Mapping[str, JsonValue]) -> tuple[tuple[str, ...], ...]:
+    """Declare the native contract's execution-only fields without changing its payload."""
+    candidates = (
+        ("execution",),
+        ("semantic", "preparation", "execution"),
+        ("semantic", "parser_result", "execution"),
+        ("semantic", "analysis", "timing"),
+        ("semantic", "analysis", "provenance", "timestamp"),
+        ("semantic", "parser_result", "semantic", "analysis", "timing"),
+        ("semantic", "parser_result", "semantic", "analysis", "provenance", "timestamp"),
+        ("semantic", "recombination", "unit_durations_ms"),
+        ("semantic", "parser_result", "semantic", "recombination", "unit_durations_ms"),
+    )
+    present: list[tuple[str, ...]] = []
+    for path in candidates:
+        current: object = payload
+        for key in path:
+            if not isinstance(current, Mapping) or key not in current:
+                break
+            current = current[key]
+        else:
+            present.append(path)
+    return tuple(present)
 
 
 __all__ = ["ERST_GRAPH", "PUBLISHED_WEIGHTS_LICENCE", "RST_TREE", "ProviderConfigurationError", "RstProvider"]

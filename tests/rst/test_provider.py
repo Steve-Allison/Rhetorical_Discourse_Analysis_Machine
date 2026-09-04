@@ -27,7 +27,7 @@ from rdam import (
     production_machine,
     technique_curie,
 )
-from rdam.rst.ingest import (
+from rdam.ingest import (
     FailureCategory,
     LifecycleStage,
     ProductionFailure,
@@ -36,7 +36,9 @@ from rdam.rst.ingest import (
     Retryability as IngestRetryability,
     SourceArtifact,
 )
-from rdam.rst.ingest.serialization import PersistedContract, serialize_contract
+from rdam.ingest.serialization import PersistedContract, serialize_contract
+from rdam.ingest.contracts.preparation import PreparationOutcome
+from rdam.ingest.contracts.source import ContentClass
 from rdam.rst.provider import ERST_GRAPH, RST_TREE, ProviderConfigurationError, RstProvider
 from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST
 from tests.ingest.production_ingest.conftest import build_deterministic_parser
@@ -320,12 +322,12 @@ class TestAnalyseGuards:
 
         def fail_ingest(
             _ingestor: ProductionIngestor,
-            _source: SourceArtifact,
+            _preparation: PreparationOutcome,
             **_options: object,
         ) -> None:
             raise ProductionIngestError(ingest_failure)
 
-        monkeypatch.setattr(ProductionIngestor, "analyse", fail_ingest)
+        monkeypatch.setattr(ProductionIngestor, "analyse_prepared", fail_ingest)
         aggregate = Machine([provider]).analyse(
             AggregateRequest.for_text("text", (Technique.RST,))
         )
@@ -337,6 +339,28 @@ class TestAnalyseGuards:
         assert outcome.failure.message_parameters == (
             ("failed_stage", ingest_failure.failed_stage.value),
             ("category", ingest_failure.category.value),
+        )
+
+    def test_declared_projection_excludes_tables_without_losing_inventory(
+        self, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        provider = RstProvider(device="cpu")
+        monkeypatch.setattr(provider, "_load_parser", build_deterministic_parser)
+        result = Machine([provider]).analyse(AggregateRequest.for_source(
+            ROOT / "tests/fixtures/pipeline/tabular-evidence.md", (Technique.RST,),
+        ))
+        assert isinstance(result.outcome_for(Technique.RST), ResultOutcome)
+        assert result.preparation is not None
+        inventory = {item.item_id: item for item in result.preparation.inventory.items}
+        assert any(item.classification is ContentClass.TABLE_CELL for item in inventory.values())
+        projection = result.preparation.projections[0]
+        contributors = {item_id for segment in projection.prepared_document.segments
+                        for item_id in segment.contributing_item_ids}
+        assert contributors
+        assert all(inventory[item_id].classification in provider.content_requirement.admitted_classes
+                   for item_id in contributors)
+        assert not {ContentClass.TABLE, ContentClass.TABLE_CELL}.intersection(
+            inventory[item_id].classification for item_id in contributors
         )
 
     def test_unexpected_ingest_exception_propagates_as_an_adapter_bug(

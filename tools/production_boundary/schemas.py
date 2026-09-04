@@ -7,19 +7,19 @@ from typing import Any, Final
 from pydantic import BaseModel, TypeAdapter
 import rfc8785
 
-import rdam.rst.ingest as ingest
-from rdam.rst.ingest.contracts.analysis import (
+import rdam.ingest as ingest
+from rdam.ingest.contracts.analysis import (
     AnalysedOutcome,
     EmptyPrimaryAnalysisOutcome,
     ParserAnalysisResult,
     ProductionAnalysisOutcome,
 )
-from rdam.rst.ingest.contracts.capabilities import ProductionCapabilities
-from rdam.rst.ingest.contracts.failure import (
+from rdam.ingest.contracts.capabilities import ProductionCapabilities
+from rdam.ingest.contracts.failure import (
     DiagnosticProductionFailureRecord,
     SafeProductionFailureRecord,
 )
-from rdam.rst.ingest.contracts.preparation import PreparationOutcome
+from rdam.ingest.contracts.preparation import PreparationOutcome
 
 # Schemas are package resources; locate them from the package, not from a repository path.
 SCHEMA_ROOT: Final = Path(str(ingest.__file__)).parent / "schemas"

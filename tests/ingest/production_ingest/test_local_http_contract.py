@@ -9,7 +9,7 @@ import threading
 import pytest
 
 from rdam.rst.cli import _handler_type
-from rdam.rst.ingest import (
+from rdam.ingest import (
     FailureCategory,
     LifecycleStage,
     ProductionAnalysisOutcome,

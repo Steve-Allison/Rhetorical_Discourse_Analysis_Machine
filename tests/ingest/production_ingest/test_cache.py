@@ -5,14 +5,14 @@ from pathlib import Path
 
 import pytest
 
-from rdam.rst.ingest import (
+from rdam.ingest import (
     CacheStatus,
     ProductionIngestError,
     ProductionIngestor,
     SourceArtifact,
 )
-from rdam.rst.ingest.cache import ProductionIngestCache
-from rdam.rst.ingest.contracts.failure import FailureCategory, LifecycleStage, Retryability
+from rdam.ingest.cache import ProductionIngestCache
+from rdam.ingest.contracts.failure import FailureCategory, LifecycleStage, Retryability
 
 from .conftest import ParserBuilder
 
@@ -89,7 +89,7 @@ def test_interrupted_atomic_write_leaves_no_success_or_temporary_entry(
     def interrupt_replace(*_args: object) -> None:
         raise OSError("private operating-system detail")
 
-    monkeypatch.setattr("rdam.rst.ingest.cache.os.replace", interrupt_replace)
+    monkeypatch.setattr("rdam.ingest.cache.os.replace", interrupt_replace)
     with pytest.raises(ProductionIngestError) as raised:
         ingestor.analyse(source, cache_directory=tmp_path)
     assert raised.value.failure.code == "cache_persistence_failed"
@@ -153,8 +153,8 @@ def test_policy_change_rekeys_the_cache_instead_of_false_hitting(
     parser_builder: ParserBuilder,
     tmp_path: Path,
 ) -> None:
-    from rdam.rst.ingest.contracts.analysis import AnalysisPolicy, MarkerRefinementMode
-    from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+    from rdam.ingest.contracts.analysis import AnalysisPolicy, MarkerRefinementMode
+    from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
 
     ingestor = ProductionIngestor(parser=parser_builder())
     source = SourceArtifact.from_text("First. Second.", source_name="cache.txt")

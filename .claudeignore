@@ -1,0 +1,3 @@
+# Generated Graphify outputs change frequently and should not invalidate Claude's
+# prompt cache. Claude accesses the graph through the Graphify CLI instead.
+graphify-out/

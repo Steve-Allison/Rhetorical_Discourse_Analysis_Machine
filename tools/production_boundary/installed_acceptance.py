@@ -93,7 +93,7 @@ def _prepare_sources(
     doclang: Path | None,
     docling: Path | None,
 ) -> dict[str, object]:
-    from rdam.rst.ingest import (
+    from rdam.ingest import (
         Availability,
         ProductionIngestError,
         ProductionIngestor,
@@ -196,7 +196,7 @@ def _analyse_with_release(
     device: str,
 ) -> dict[str, object]:
     from rdam.rst import Parser
-    from rdam.rst.ingest import (
+    from rdam.ingest import (
         AnalysedOutcome,
         ParserAnalysisResult,
         ProductionIngestor,
@@ -208,7 +208,6 @@ def _analyse_with_release(
     parser = Parser.from_model_release(
         model_store,
         release_id,
-        family="modernbert",
         device=device,
         erst_scorer_checkpoint=erst_checkpoint,
     )
@@ -296,7 +295,7 @@ def main() -> int:
         )
     _assert_offline_distributions_absent()
     surface = json.loads(
-        resources.files("rdam.rst.ingest")
+        resources.files("rdam.ingest")
         .joinpath("public-surface.json")
         .read_text(encoding="utf-8")
     )

@@ -23,21 +23,21 @@ without them:
 - a **multi-party transcript**, including turns that are deliberately unattributable — for
   SC-007 and SC-008.
 
-## Baseline before you start
+## Historical baseline
 
-```bash
-pixi run test                                   # record the pre-feature count
-pixi run -e default production-boundary         # expect: valid: true, violations: []
-pixi run rst-baseline capture                   # capture the pre-change RST baseline
-```
+The pre-change baseline is already captured in `evidence/baseline-dmrst-current/`;
+its commands and measurements are recorded in [evidence/baseline.md](evidence/baseline.md).
+Do not overwrite it with a post-change capture. SC-010 below compares the current
+implementation with that historical evidence using the same immutable parser release.
 
 ## SC-001 — Every available source form is analysable
 
 ```bash
 pixi run python -c "
 from rdam.ingest import describe_capabilities
-print([f.source_form.value for f in describe_capabilities().semantic.source_forms])
+print([(f.source_form.value, f.availability.value) for f in describe_capabilities().semantic.source_forms])
 "
+pixi run pytest tests/machine/test_all_source_forms.py -q
 ```
 
 Then analyse a fixture of each reported form. **Expected**: every available form analyses;
@@ -63,6 +63,7 @@ The claim that justifies this feature being more than a relocation.
 ```bash
 pixi run pytest tests/ingest -k "projection_admits" -q
 pixi run pytest tests/toulmin -k "table" -q
+pixi run pytest tests/rst/test_provider.py -k "projection_excludes_tables" -q
 ```
 
 **Expected**: for the tabular-evidence fixture, Toulmin's grounds are present and each
@@ -104,17 +105,31 @@ pixi run pytest tests/ingest -k "capacity" -q
 **Expected**: two providers declaring different capacity units over one source each receive
 a plan valid for their own capacity, from the one inventory.
 
-## SC-010 — RST is analytically unchanged
+## SC-010 — RST preservation with independently verified correctness repairs
 
 The gate for the whole relocation, and for the projection model being behaviour-preserving.
 
 ```bash
-pixi run rst-baseline compare
+pixi run rst-baseline compare \
+  --baseline specs/017-universal-source-pipeline/evidence/baseline-dmrst-current \
+  --store "$HOME/.cache/isanlp_rst/model-releases" \
+  --release-id gumrrg-eb1d5745f3a1 --device cpu
 ```
 
-**Expected**: **zero analytical differences.** Differences classified as execution, package
-identity, package source identity, or derived digest are expected — the package moved. One
-analytical difference fails the feature.
+**Expected**: exit 0, `no_unexplained_regressions: true`, and no unexplained analytical
+differences. The owner-approved source-ID and DocLang table corrections are reported
+separately as `source_identity_correction` and `doclang_table_correction`. They change
+the records, so `equivalent` and `analytically_equivalent` remain `false`. The original
+baseline is never overwritten. Execution, package identities, derived digests and the
+earlier approved capacity-field rename remain separately classified.
+
+Verify that the checker rejects deliberate corruption, including unchanged historical
+bugs and a stale digest that conceals changed contents:
+
+```bash
+pixi run --locked pytest tests/production_boundary/test_baseline_corrections.py \
+  tests/production_boundary/test_rst_baseline.py -q
+```
 
 ## SC-011, SC-012 — The cache answers only when it should
 
@@ -134,7 +149,7 @@ than trusted.
 
 ```bash
 pixi run pytest tests/machine -k "concurren" -q
-pixi run pytest tests/stress -m stress -k "parser" -q     # R8: the real parser, CPU and MPS
+pixi run pytest tests/stress -m stress -k "real_parser or real_provider" -q
 ```
 
 **Expected**: concurrent and sequential aggregates over one request have **identical
@@ -146,7 +161,7 @@ forced it.
 
 ## SC-015 — Two techniques, one span
 
-The machine's payoff, currently unreachable.
+Two native findings sharing source coordinates.
 
 ```bash
 pixi run pytest tests/machine -k "alignment" -q
@@ -154,6 +169,40 @@ pixi run pytest tests/machine -k "alignment" -q
 
 **Expected**: findings from two techniques over one source are reported against one source
 span, by shared anchor — without their formalisms being merged into a common vocabulary.
+
+## SC-018 — The persisted contract identifiers did not move
+
+The relocation's silent-failure mode. `rst-baseline compare` classifies *analytical*
+difference and would not catch an identifier drifting.
+
+```bash
+pixi run pytest tests/ingest -k "persisted_identifiers" -q
+```
+
+**Expected**: `isanlp_rst.production` is still 2.0.0, every schema `$id` is byte-identical
+to its recorded value, and every runtime contract name is unchanged. These name stored
+contracts, not module paths, and the module path is exactly what this feature changes.
+
+## SC-019 — The inventory is still complete
+
+```bash
+pixi run pytest tests/ingest -k "inventory_completeness" -q
+```
+
+**Expected**: across all six source forms, every item is classified, dispositioned and
+accounted, with **zero valid content discarded**. This is the existing guarantee; relocation
+plus per-requirement projection is exactly what could erode it.
+
+## SC-020 — Parallel safety is declared, and nothing is retained
+
+```bash
+pixi run pytest tests/machine -k "provider_lock_lifetime or parallel_safety" -q
+```
+
+**Expected**: every provider declares its parallel safety; no provider is serialised without
+a declaration; a provider declaring itself safe is not locked; and a provider is not
+retained after collection — including one that cannot be weak-referenced, which the current
+registry would otherwise hold for the life of the process.
 
 ## SC-016, SC-017 — Nothing regressed, nothing suppressed
 
@@ -180,7 +229,7 @@ anywhere:
 grep -rn "type: ignore\|pyright: ignore\|noqa" rdam tests tools    # expect: no matches
 ```
 
-## End to end: the thing that does not work today
+## End to end: a real tabular document
 
 ```bash
 pixi run python -c "
@@ -189,7 +238,10 @@ from rdam import AggregateRequest, Technique, production_machine
 
 machine = production_machine()
 aggregate = machine.analyse(
-    AggregateRequest.for_source(Path('README.md'), (Technique.RST, Technique.TOULMIN, Technique.WALTON))
+    AggregateRequest.for_source(
+        Path('tests/fixtures/pipeline/tabular-evidence.md'),
+        (Technique.RST, Technique.TOULMIN, Technique.WALTON),
+    )
 )
 print('preparation receipts:', 1 if aggregate.preparation else 0)
 print('distinct projections:', len(aggregate.preparation.projections) if aggregate.preparation else 0)

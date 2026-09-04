@@ -2,7 +2,7 @@
 
 import pytest
 
-from rdam.rst.ingest.contracts.source import (
+from rdam.ingest.contracts.source import (
     AuthorshipRole,
     ContentClass,
     ContentInventoryItem,
@@ -14,8 +14,8 @@ from rdam.rst.ingest.contracts.source import (
     SourceOrigin,
     TextRepresentation,
 )
-from rdam.rst.ingest.policy import DEFAULT_PREPARATION_POLICY, apply_policy
-from rdam.rst.ingest.validation import validate_inventory
+from rdam.ingest.policy import DEFAULT_PREPARATION_POLICY, apply_policy
+from rdam.ingest.validation import validate_inventory
 
 
 def test_same_origin_exact_duplicate_resolves_to_first_canonical_item() -> None:

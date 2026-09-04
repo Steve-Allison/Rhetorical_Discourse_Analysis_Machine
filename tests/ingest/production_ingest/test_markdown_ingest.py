@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from rdam.rst.ingest import SourceArtifact
-from rdam.rst.ingest.contracts import ContentClass, DispositionDecision
-from rdam.rst.ingest.prepare import inventory_source
-from rdam.rst.ingest.service import ProductionIngestor
+from rdam.ingest import SourceArtifact
+from rdam.ingest.contracts import ContentClass, DispositionDecision
+from rdam.ingest.prepare import inventory_source
+from rdam.ingest.service import ProductionIngestor
 
 
 FIXTURE = Path("tests/fixtures/markdown/gfm-rich.md")

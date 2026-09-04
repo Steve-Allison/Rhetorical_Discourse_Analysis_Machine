@@ -1,6 +1,6 @@
 """Decision-complete primary inference evidence."""
 
-from rdam.rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest import ProductionIngestor, SourceArtifact
 
 from .conftest import ParserBuilder
 

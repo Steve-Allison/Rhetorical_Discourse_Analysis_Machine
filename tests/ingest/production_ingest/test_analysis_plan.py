@@ -1,14 +1,14 @@
 """Deterministic public analysis-plan and capacity tests."""
 
-from rdam.rst.ingest import ParserCapacity, ProductionIngestor, SourceArtifact, SourceForm
-from rdam.rst.ingest.contracts.base import SemanticVersion
-from rdam.rst.ingest.contracts.preparation import BoundaryPreference, CapacityUnit
-from rdam.rst.ingest.subdivision import build_analysis_plan
-from rdam.rst.ingest.policy import DEFAULT_PLANNING_POLICY
+from rdam.ingest import AnalysisCapacity, ProductionIngestor, SourceArtifact, SourceForm
+from rdam.ingest.contracts.base import SemanticVersion
+from rdam.ingest.contracts.preparation import BoundaryPreference, CapacityUnit
+from rdam.ingest.subdivision import build_analysis_plan
+from rdam.ingest.policy import DEFAULT_PLANNING_POLICY
 
 
-def _capacity(maximum: int) -> ParserCapacity:
-    return ParserCapacity(
+def _capacity(maximum: int) -> AnalysisCapacity:
+    return AnalysisCapacity(
         unit=CapacityUnit.EDU_COUNT,
         maximum=maximum,
         estimation_algorithm="fixture_edu_count",
@@ -23,14 +23,14 @@ def test_absent_capacity_returns_explicit_not_planned_state() -> None:
     )
     plan = outcome.semantic.analysis_plan
     assert plan.status.value == "not_planned"
-    assert plan.parser_capacity is None
+    assert plan.capacity is None
     assert plan.units == ()
 
 
 def test_capacity_returns_single_or_subdivided_complete_plan() -> None:
     source = SourceArtifact.from_edus(("One.", "Two.", "Three."), source_name="three.edus")
-    single = ProductionIngestor().prepare(source, parser_capacity=_capacity(8)).semantic.analysis_plan
-    subdivided = ProductionIngestor().prepare(source, parser_capacity=_capacity(2)).semantic.analysis_plan
+    single = ProductionIngestor().prepare(source, capacity=_capacity(8)).semantic.analysis_plan
+    subdivided = ProductionIngestor().prepare(source, capacity=_capacity(2)).semantic.analysis_plan
     assert single.status.value == "single_unit"
     assert len(single.units) == 1
     assert subdivided.status.value == "subdivided"
@@ -48,7 +48,7 @@ def test_boundary_reason_states_the_actual_boundary_kind() -> None:
         media_type="text/markdown; charset=utf-8",
     )
     prepared = ProductionIngestor().prepare(source).semantic.prepared_document
-    capacity = ParserCapacity(
+    capacity = AnalysisCapacity(
         unit=CapacityUnit.TOKEN_COUNT,
         maximum=3,
         estimation_algorithm="test",
@@ -63,7 +63,7 @@ def test_boundary_reason_states_the_actual_boundary_kind() -> None:
 
 def test_plan_semantics_are_deterministic() -> None:
     source = SourceArtifact.from_edus(("One.", "Two.", "Three."), source_name="three.edus")
-    first = ProductionIngestor().prepare(source, parser_capacity=_capacity(2)).semantic.analysis_plan
-    second = ProductionIngestor().prepare(source, parser_capacity=_capacity(2)).semantic.analysis_plan
+    first = ProductionIngestor().prepare(source, capacity=_capacity(2)).semantic.analysis_plan
+    second = ProductionIngestor().prepare(source, capacity=_capacity(2)).semantic.analysis_plan
     assert first == second
     assert first.semantic_digest == second.semantic_digest

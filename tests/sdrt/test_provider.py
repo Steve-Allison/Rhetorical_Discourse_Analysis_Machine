@@ -6,6 +6,10 @@ from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 import pytest
 from typing import Any
+from pathlib import Path
+from rdam.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest.contracts.preparation import ContentInventory
+from rdam.ingest.projection import project
 
 from rdam import (
     AggregateRequest,
@@ -160,3 +164,15 @@ def test_withholding_sdrt_does_not_change_toulmin_capability(with_credentials: N
     with_sdrt = Machine([toulmin, SdrtProvider(model=MODEL)]).capabilities().capability_for(Technique.TOULMIN)
     without_sdrt = Machine([toulmin]).capabilities().capability_for(Technique.TOULMIN)
     assert with_sdrt.model_dump_json() == without_sdrt.model_dump_json()
+
+
+def test_speaker_requirement_reports_unattributed_source_turns() -> None:
+    provider = SdrtProvider(model=MODEL)
+    inventory = ContentInventory.from_preparation(ProductionIngestor().prepare(
+        SourceArtifact.from_path(Path("tests/fixtures/pipeline/transcript.md")),
+    ))
+    projection = project(inventory, provider.content_requirement)
+    assert provider.content_requirement.requires_speaker_identity
+    assert len(projection.unmet_requirements) == 1
+    assert projection.unmet_requirements[0].aspect == "speaker_identity"
+    assert len(projection.unmet_requirements[0].affected_item_ids) == 2

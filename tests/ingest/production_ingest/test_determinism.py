@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-from rdam.rst.ingest import CacheStatus, ProductionIngestor, SourceArtifact
-from rdam.rst.ingest.identity import (
+from rdam.ingest import CacheStatus, ProductionIngestor, SourceArtifact
+from rdam.ingest.identity import (
     analysis_outcome_semantic_projection,
     canonical_json_bytes,
 )

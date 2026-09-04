@@ -53,7 +53,25 @@ that existing value into the key rather than inventing one.
 5. A non-`ProviderError` exception is a bug and MUST still propagate natively. Running
    concurrently MUST NOT capture it and relabel it as a provider failure (FR-036).
 
-## The RST parser question
+## Semantic identity versus execution evidence
+
+Native payloads retain their complete provider-owned result, including execution evidence.
+`NativeTechniqueResult.artifact_digest` verifies that complete envelope. Its
+`semantic_digest` excludes only the payload paths explicitly named by that provider in
+`execution_fields`; paths must exist and be unique. RST declares its native execution,
+timing, timestamp, and unit-duration fields. Analytical text, trees, anchors, and validation
+remain part of semantic identity. The aggregate hashes result semantic identities, so run
+timing cannot make sequential and concurrent aggregates analytically different.
+
+## The RST parser measurement
+
+The 2026-09-04 stress run passed eight real CPU/MPS cases: both DMRST and UniRST,
+at predictor and full-provider boundaries, including concurrent cold initialization.
+See [parser-concurrency.md](../evidence/parser-concurrency.md) for the command and limits.
+The declaration permits concurrent CPU/MPS RST inference. Other devices and eRST
+completion remain serialized because this experiment does not establish their safety.
+
+### Historical starting point
 
 Established from `tests/stress/test_concurrency_stress.py` on 2026-09-03:
 
@@ -79,7 +97,7 @@ is the only local-compute provider.
 2. Alignment MUST NOT merge formalisms. Reporting an RST relation and a Toulmin ground over
    the same span is two native findings sharing a coordinate — not a combined structure, not
    a shared vocabulary, not a new theory (006 FR-013).
-3. This is the machine's payoff and is currently unreachable: seven analyses of one source,
+3. This is the machine's payoff: seven analyses of one source,
    comparable on the source. SC-015 demonstrates it by reporting two techniques' findings
    over one span.
 

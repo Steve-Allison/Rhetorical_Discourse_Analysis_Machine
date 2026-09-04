@@ -54,7 +54,7 @@ from pydantic_ai.exceptions import (
 )
 from pydantic_ai.models.anthropic import AnthropicModel, AnthropicModelName
 from pydantic_ai.models import Model
-from pydantic_ai.models.openai import OpenAIChatModel, OpenAIModelName
+from pydantic_ai.models.openai import OpenAIResponsesModel, OpenAIModelName
 from pydantic_ai.providers.anthropic import AnthropicProvider
 from pydantic_ai.providers.openai import OpenAIProvider
 
@@ -215,7 +215,7 @@ def _model_without_implicit_retries(model: str, *, timeout_seconds: float) -> Mo
     match identity.provider:
         case "openai":
             client = AsyncOpenAI(api_key=api_key, max_retries=0, timeout=timeout_seconds)
-            return OpenAIChatModel(
+            return OpenAIResponsesModel(
                 cast(OpenAIModelName, identity.model),
                 provider=OpenAIProvider(openai_client=client),
             )

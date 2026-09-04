@@ -110,7 +110,7 @@ the contiguous-text invariant that makes anchoring work.
 one capacity, and the type is named for the parser.
 
 **Decision**: plan per requirement against that requirement's declared capacity. Rename the
-capacity type to what it models, keeping the existing name as an alias (FR-006).
+capacity type to what it models without an alias (FR-006; owner ruling, 2026-09-04).
 
 **Rationale**: the estimator identity is already in the contract, so a plan stays
 reproducible and a change of estimator stays visible. Multiple plans from one inventory
@@ -194,8 +194,8 @@ knob with no failure mode behind it.
 
 ## R10 — Relocation mechanics
 
-**Decision**: move the directory, then re-export. `rdam/rst/ingest/` → `rdam/ingest/`, with
-`rdam/rst/ingest` re-exporting the public surface unchanged.
+**Decision**: move `rdam/rst/ingest/` → `rdam/ingest/` and update all active callers.
+No compatibility re-export remains (owner ruling, 2026-09-04).
 
 **Scale**: 25 modules, 10,477 lines; 109 code files and 29 documents reference
 `rst.ingest`. Within production the importers are five files: `rdam/rst/cli.py`,
@@ -212,8 +212,9 @@ was held to.
 unchanged (FR-004). They name stored contracts, not module paths.
 
 **Naming**: `PreparedRstDocument` and `ParserCapacity` model general concepts under
-technique-specific names. They are renamed with aliases retained (FR-006), so no consumer
-breaks and the contract stops lying about its own scope.
+technique-specific names. They become `PreparedDocument` and `AnalysisCapacity`, with
+no aliases (FR-006). The approved `parser_capacity` → `capacity` JSON rename is a
+wire-shape change, not a change to analytical behavior; baseline evidence stays immutable.
 
 ## Open risks carried into implementation
 
@@ -223,4 +224,4 @@ breaks and the contract stops lying about its own scope.
 | Table linearisation fidelity for merged cells and headerless tables | fixture-driven; the transformation records exactly what it did, so a poor projection is visible rather than silent |
 | Speaker resolution varies by source form | resolution coverage is reported per source; unresolved is a first-class state, never filled in |
 | Six providers migrate from raw text | native contracts expected unaffected — only input changes; each re-verified against its own suite |
-| 109 code references to `rst.ingest` | the re-export means most need no change; the boundary gate and baseline comparison catch what does |
+| 109 code references to `rst.ingest` | update active callers; canonical-import tests and the boundary gate catch stale paths |

@@ -3,12 +3,12 @@
 import pytest
 
 from rdam.rst.contracts import RstDocument
-from rdam.rst.ingest import (
+from rdam.ingest import (
     AnalysedOutcome,
     Availability,
     CapacityUnit,
     ModelIdentityState,
-    ParserCapacity,
+    AnalysisCapacity,
     ProductionIngestError,
     ProductionIngestor,
     SafeProductionFailureRecord,
@@ -36,14 +36,14 @@ def test_model_free_capability_and_preparation_quickstart() -> None:
         "A claim. Because evidence supports it.",
         source_name="example.txt",
     )
-    capacity = ParserCapacity(
+    capacity = AnalysisCapacity(
         unit=CapacityUnit.TOKEN_COUNT,
         maximum=8192,
         estimation_algorithm="provider_declared",
         estimation_version=SemanticVersion(root="2.0.0"),
         source="consumer_known_capacity",
     )
-    prepared = ProductionIngestor().prepare(source, parser_capacity=capacity)
+    prepared = ProductionIngestor().prepare(source, capacity=capacity)
     assert prepared.semantic.inventory_coverage.covered_units == (
         prepared.semantic.inventory_coverage.total_units
     )

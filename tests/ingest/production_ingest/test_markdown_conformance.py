@@ -1,8 +1,8 @@
 """Adversarial CommonMark/GFM inventory and native-anchor conformance."""
 
-from rdam.rst.ingest import ContentInventoryItem, SourceArtifact, SourceForm, TextSpanAnchor
-from rdam.rst.ingest.contracts import ContentClass
-from rdam.rst.ingest.prepare import inventory_source
+from rdam.ingest import ContentInventoryItem, SourceArtifact, SourceForm, TextSpanAnchor
+from rdam.ingest.contracts import ContentClass
+from rdam.ingest.prepare import inventory_source
 
 
 MARKDOWN = """---

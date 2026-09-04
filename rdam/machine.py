@@ -13,6 +13,8 @@ Rules implemented here, from the 006 contracts:
 - The machine never retries (§Retryability). A provider may raise only ``ProviderError``;
   anything else is a bug and propagates natively rather than being relabelled as a
   provider failure (standardised pattern P9).
+  A typed failure preserves other successes. A bug is fail-fast: pending work is
+  cancelled and no aggregate is returned, although already-running threads must finish.
 - Lineage is recorded, never invented (FR-015). When a request carries an earlier native
   result and a structured input declares it was derived from that result, the machine
   re-emits the upstream result untouched, hands the consumer the declared derivation, and
@@ -28,6 +30,7 @@ from threading import Lock
 from types import MappingProxyType
 from typing import Protocol
 from weakref import ReferenceType, ref
+from contextlib import nullcontext
 
 from rdam._execution import ExecutionPolicy
 from rdam._result_cache import ResultCache, revision_is_cacheable
@@ -52,9 +55,11 @@ from rdam.contracts import (
     UnavailableReason,
 )
 from rdam.frameworks import BOUNDARY_TECHNIQUES, STRUCTURED_INPUT_TECHNIQUES, Technique, technique_curie
+from rdam.ingest.contracts.preparation import ContentInventory, PreparationReceipt, SourceProjection, SpeakerCoverage
+from rdam.ingest.contracts.source import SourceArtifact
 
 _PROVIDER_LOCKS_GUARD = Lock()
-_PROVIDER_LOCKS: dict[int, tuple[ReferenceType[Provider] | Provider, Lock]] = {}
+_PROVIDER_LOCKS: dict[int, ReferenceType[Lock]] = {}
 
 
 class Provider(Protocol):
@@ -85,7 +90,8 @@ class Machine:
             if technique in registry:
                 raise ValueError(f"two providers declare {technique.value}; a boundary has exactly one provider")
             registry[technique] = provider
-            provider_locks[technique] = _provider_lock(provider)
+            if declaration.parallel_safety == "serialized":
+                provider_locks[technique] = _provider_lock(provider)
         self._providers: Mapping[Technique, Provider] = MappingProxyType(registry)
         self._provider_locks: Mapping[Technique, Lock] = MappingProxyType(provider_locks)
         self._execution_policy = execution_policy or ExecutionPolicy()
@@ -134,12 +140,15 @@ class Machine:
         outcomes: list[ResultOutcome | UnavailableOutcome | FailedOutcome] = [
             ResultOutcome(result=upstream) for upstream in request.upstream_results
         ]
+        preparation, projections = self._prepare(request)
         executor = ThreadPoolExecutor(
             max_workers=min(self._execution_policy.max_workers, len(request.techniques)),
             thread_name_prefix="rdam-provider",
         )
         futures = {
-            executor.submit(copy_context().run, self._analyse_one, technique, request): technique
+            executor.submit(
+                copy_context().run, self._analyse_one, technique, request, preparation, projections.get(technique)
+            ): technique
             for technique in request.techniques
         }
         requested_outcomes: dict[Technique, ResultOutcome | UnavailableOutcome | FailedOutcome] = {}
@@ -173,12 +182,63 @@ class Machine:
                     upstream_model_identity=upstream.provenance.model_identity,
                 )
             )
-        return AggregateAnalysis(source=request.source, outcomes=tuple(outcomes), lineage=tuple(lineage))
+        return AggregateAnalysis(
+            source=request.source, outcomes=tuple(outcomes), lineage=tuple(lineage), preparation=preparation
+        )
+
+    def _prepare(
+        self,
+        request: AggregateRequest,
+    ) -> tuple[PreparationReceipt | None, dict[Technique, SourceProjection]]:
+        if request.text is None and request.source_artifact is None:
+            return None, {}
+        from rdam.ingest.projection import project
+        from rdam.ingest.service import ProductionIngestor
+
+        source = (
+            request.source_artifact.artifact
+            if request.source_artifact is not None
+            else SourceArtifact.from_text(request.text or "", source_name=request.source.source_name or "rdam-source")
+        )
+        prepared = ProductionIngestor().prepare(source)
+        inventory = ContentInventory.from_preparation(prepared)
+        by_digest: dict[str, SourceProjection] = {}
+        projections: dict[Technique, SourceProjection] = {}
+        for technique in request.techniques:
+            provider = self._providers.get(technique)
+            if provider is None:
+                continue
+            requirement = provider.declaration.content_requirement
+            if requirement is None:
+                continue
+            if requirement.semantic_digest is None:
+                raise ValueError("provider requirement has no identity")
+            key = requirement.semantic_digest.hex_digest
+            if key not in by_digest:
+                by_digest[key] = project(inventory, requirement)
+            projections[technique] = by_digest[key]
+        semantic = prepared.semantic
+        transformations = {
+            record.semantic_digest: record for projection in by_digest.values() for record in projection.transformations
+        }
+        receipt = PreparationReceipt(
+            inventory=inventory,
+            inventory_coverage=semantic.inventory_coverage,
+            primary_coverage=semantic.primary_coverage,
+            retained_coverage=semantic.retained_coverage,
+            mapping_coverage=semantic.mapping_coverage,
+            projections=tuple(by_digest.values()),
+            transformations=tuple(transformations.values()),
+            speaker_coverage=SpeakerCoverage.from_items(inventory.items),
+        )
+        return receipt, projections
 
     def _analyse_one(
         self,
         technique: Technique,
         request: AggregateRequest,
+        preparation: PreparationReceipt | None = None,
+        projection: SourceProjection | None = None,
     ) -> ResultOutcome | UnavailableOutcome | FailedOutcome:
         provider = self._providers.get(technique)
         if provider is None:
@@ -198,7 +258,9 @@ class Machine:
                 return UnavailableOutcome(technique=technique, reason=formalism.capability.reason)
         provider_request = ProviderRequest(
             source=request.source,
-            text=request.text,
+            text=projection.prepared_document.text if projection is not None else request.text,
+            projection=projection,
+            preparation=None if declaration.requires_structured_input else preparation,
             structured_input=structured_input,
             formalism_id=chosen,
             derived_from=request.derivation_for(technique),
@@ -226,7 +288,8 @@ class Machine:
         provider_request: ProviderRequest,
     ) -> ResultOutcome | FailedOutcome:
         try:
-            with self._provider_locks[technique]:
+            lock = self._provider_locks.get(technique)
+            with lock if lock is not None else nullcontext():
                 result = provider.analyse(provider_request)
         except ProviderError as error:
             violation = _failure_contract_violation(declaration, error.failure)
@@ -251,40 +314,6 @@ class Machine:
                 )
             )
         return ResultOutcome(result=result)
-
-
-def production_machine(
-    *,
-    model: str | None = None,
-    execution_policy: ExecutionPolicy | None = None,
-) -> Machine:
-    """Construct the supported seven-technique production composition.
-
-    Provider imports stay local so importing :mod:`rdam` remains cheap. Construction
-    reads declarations only; RST models and LLM clients remain lazy until invocation.
-    ``model`` selects one explicit identity for every LLM-backed technique.
-    """
-
-    from rdam.dung import DungProvider
-    from rdam.ibis import IbisProvider
-    from rdam.pdtb import PdtbProvider
-    from rdam.rst.provider import RstProvider
-    from rdam.sdrt import SdrtProvider
-    from rdam.toulmin import ToulminProvider
-    from rdam.walton import WaltonProvider
-
-    return Machine(
-        (
-            RstProvider(),
-            PdtbProvider(model=model),
-            SdrtProvider(model=model),
-            ToulminProvider(model=model),
-            WaltonProvider(model=model),
-            DungProvider(),
-            IbisProvider(),
-        ),
-        execution_policy=execution_policy,
-    )
 
 
 def _result_contract_violation(
@@ -355,6 +384,7 @@ def _cache_key(
     return semantic_sha256(
         {
             "source": request.source,
+            "projection": None if request.projection is None else request.projection.projection_identity,
             "technique": technique,
             "formalism_id": request.formalism_id,
             "structured_input": request.structured_input,
@@ -363,40 +393,31 @@ def _cache_key(
             "provider_contract": declaration.contract_version,
             "provenance": declaration.provenance,
             "model_identity": declaration.provenance.model_identity,
+            "instructions_identity": declaration.instructions_identity,
         }
     )
 
 
 def _provider_lock(provider: Provider) -> Lock:
-    """Return the process-wide call lock for one concrete provider instance."""
+    """Share a weakly held lock, never retaining its provider (including slotted providers)."""
 
     identity = id(provider)
     with _PROVIDER_LOCKS_GUARD:
         existing = _PROVIDER_LOCKS.get(identity)
         if existing is not None:
-            owner, lock = existing
-            if isinstance(owner, ReferenceType):
-                if owner() is provider:
-                    return lock
-            elif owner is provider:
+            lock = existing()
+            if lock is not None:
                 return lock
         lock = Lock()
-        try:
-            owner_reference: ReferenceType[Provider] | Provider = ref(
-                provider,
-                lambda reference, key=identity: _remove_provider_lock(key, reference),
-            )
-        except TypeError:
-            owner_reference = provider
-        _PROVIDER_LOCKS[identity] = (owner_reference, lock)
+        _PROVIDER_LOCKS[identity] = ref(lock, lambda reference, key=identity: _remove_provider_lock(key, reference))
         return lock
 
 
-def _remove_provider_lock(identity: int, owner: ReferenceType[Provider]) -> None:
+def _remove_provider_lock(identity: int, owner: ReferenceType[Lock]) -> None:
     with _PROVIDER_LOCKS_GUARD:
         current = _PROVIDER_LOCKS.get(identity)
-        if current is not None and current[0] is owner:
+        if current is owner:
             del _PROVIDER_LOCKS[identity]
 
 
-__all__ = ["ExecutionPolicy", "Machine", "Provider", "production_machine"]
+__all__ = ["ExecutionPolicy", "Machine", "Provider"]

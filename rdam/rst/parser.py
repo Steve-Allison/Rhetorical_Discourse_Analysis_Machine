@@ -14,8 +14,8 @@ __all__ = ["ParseFailedError", "Parser", "extract_root_tree"]
 
 if TYPE_CHECKING:
     from rdam.rst.contracts import RstAnalysis, RstDocument, TextSpan
-    from rdam.rst.ingest.contracts.analysis import AnalysisPolicy, ParserAnalysisResult
-    from rdam.rst.ingest.contracts.inference import CompositeAnalysisIdentity
+    from rdam.ingest.contracts.analysis import AnalysisPolicy, ParserAnalysisResult
+    from rdam.ingest.contracts.inference import CompositeAnalysisIdentity
     from rdam.rst.model_loading import ModelReleaseIdentity, ParserCapacity
 
 
@@ -137,6 +137,12 @@ class Parser:
     @property
     def analysis_capacity(self) -> ParserCapacity:
         """Return the safe recursive-analysis capacity in the parser's limiting unit."""
+
+        return self.declared_analysis_capacity()
+
+    @staticmethod
+    def declared_analysis_capacity() -> ParserCapacity:
+        """Declare the recursive limit without constructing or loading a parser."""
 
         from rdam.rst.model_loading import ParserCapacity
 
@@ -340,13 +346,13 @@ class Parser:
         import time
 
         from rdam.rst.english.erst.completer import CompleterConfig, ErstCompleter
-        from rdam.rst.ingest.contracts.analysis import (
+        from rdam.ingest.contracts.analysis import (
             AnalysisPolicy,
             MarkerRefinementMode,
         )
-        from rdam.rst.ingest.contracts.inference import OutputFormalism
-        from rdam.rst.ingest.parser_result import build_parser_analysis_result
-        from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+        from rdam.ingest.contracts.inference import OutputFormalism
+        from rdam.ingest.parser_result import build_parser_analysis_result
+        from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
         from rdam.rst.relations.primer import DiscourseMarkerPrimer
 
         policy = AnalysisPolicy.model_validate((analysis_policy or DEFAULT_ANALYSIS_POLICY).model_dump())
@@ -416,9 +422,9 @@ class Parser:
     ) -> RstAnalysis:
         """Project the canonical parser result to its final graph."""
 
-        from rdam.rst.ingest.contracts.analysis import AnalysisPolicy, MarkerRefinementMode
-        from rdam.rst.ingest.contracts.inference import OutputFormalism
-        from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+        from rdam.ingest.contracts.analysis import AnalysisPolicy, MarkerRefinementMode
+        from rdam.ingest.contracts.inference import OutputFormalism
+        from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
 
         policy = AnalysisPolicy.model_validate(
             {
@@ -442,7 +448,7 @@ class Parser:
 
         from rdam.rst.english.erst.completer import CompleterConfig, ErstCompleter
         from rdam.rst.erst.checkpoint import ErstCapabilityError
-        from rdam.rst.ingest.parser_result import complete_parser_analysis_result_with_erst
+        from rdam.ingest.parser_result import complete_parser_analysis_result_with_erst
 
         checkpoint = self.erst_checkpoint
         if checkpoint is None:
@@ -475,7 +481,7 @@ class Parser:
     ) -> CompositeAnalysisIdentity:
         """Return the exact composite runtime identity without running inference."""
 
-        from rdam.rst.ingest.parser_result import describe_analysis_components
+        from rdam.ingest.parser_result import describe_analysis_components
 
         composite, _ = describe_analysis_components(
             self,

@@ -8,12 +8,13 @@ from typing import Any, Final
 import rfc8785
 
 from rdam.rst._version import TOOL_NAME
-import rdam.rst.ingest as ingest
+import rdam.ingest as ingest
 from tools.production_boundary.schemas import SCHEMA_BASE, generated_schemas
 
 # The resource lives inside the package wherever the package lives in the repository.
 PUBLIC_SURFACE_PATH: Final = Path(str(ingest.__file__)).parent / "public-surface.json"
 PACKAGE: Final = "rdam.rst"
+INGEST_PACKAGE: Final = "rdam.ingest"
 # The release in which these qualified names first shipped under the ``rdam.rst`` import
 # name (owner ruling 2026-09-02: one distribution, one package, the RST provider inside it).
 INTRODUCED: Final = "6.0.0"
@@ -32,21 +33,21 @@ def generated_public_surface() -> bytes:
             ),
             _special_entry(f"{PACKAGE}.Parser.complete_erst_document", "function"),
             _special_entry(
-                f"{PACKAGE}.ingest.ProductionIngestor.prepare",
+                f"{INGEST_PACKAGE}.ProductionIngestor.prepare",
                 "function",
-                public_import=f"{PACKAGE}.ingest:ProductionIngestor.prepare",
+                public_import=f"{INGEST_PACKAGE}:ProductionIngestor.prepare",
                 documentation_anchor="4-prepare-and-inspect-complete-evidence",
             ),
             _special_entry(
-                f"{PACKAGE}.ingest.ProductionIngestor.analyse",
+                f"{INGEST_PACKAGE}.ProductionIngestor.analyse",
                 "function",
-                public_import=f"{PACKAGE}.ingest:ProductionIngestor.analyse",
+                public_import=f"{INGEST_PACKAGE}:ProductionIngestor.analyse",
                 documentation_anchor="6-analyse-with-an-immutable-model-release",
             ),
             _special_entry(
-                f"{PACKAGE}.ingest.ProductionIngestor.capabilities",
+                f"{INGEST_PACKAGE}.ProductionIngestor.capabilities",
                 "function",
-                public_import=f"{PACKAGE}.ingest:ProductionIngestor.capabilities",
+                public_import=f"{INGEST_PACKAGE}:ProductionIngestor.capabilities",
             ),
             _special_entry(
                 TOOL_NAME,
@@ -73,7 +74,7 @@ def generated_public_surface() -> bytes:
                 documentation_anchor="10-verify-installed-command-parity",
             ),
             _special_entry(
-                f"{PACKAGE}.ingest.public-surface.json",
+                f"{INGEST_PACKAGE}.public-surface.json",
                 "resource",
                 compatibility="release_bound",
                 documentation_anchor="9-verify-a-consumer-uses-only-the-public-contract",
@@ -82,7 +83,7 @@ def generated_public_surface() -> bytes:
     )
     entries.extend(
         _special_entry(
-            f"{PACKAGE}.ingest.schemas.{filename}",
+            f"{INGEST_PACKAGE}.schemas.{filename}",
             "schema",
             schema_id=f"{SCHEMA_BASE}/{filename}",
             compatibility="serialized_contract",
@@ -113,9 +114,9 @@ def public_surface_parity(path: Path = PUBLIC_SURFACE_PATH) -> bool:
 
 def _root_entry(name: str, value: Any) -> dict[str, Any]:
     return _special_entry(
-        f"{PACKAGE}.ingest.{name}",
+        f"{INGEST_PACKAGE}.{name}",
         _entry_kind(value),
-        public_import=f"{PACKAGE}.ingest:{name}",
+        public_import=f"{INGEST_PACKAGE}:{name}",
         compatibility=(
             "serialized_contract"
             if name in {

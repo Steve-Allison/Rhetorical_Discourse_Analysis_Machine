@@ -1,1 +1,0 @@
-{"nodes": [{"id": "gum_corpus", "label": "GUM Corpus", "file_type": "concept", "source_file": "tests/fixtures/gum/README.md", "rationale": "Gold standard RST/eRST corpus used for training and evaluation."}], "edges": [], "hyperedges": []}

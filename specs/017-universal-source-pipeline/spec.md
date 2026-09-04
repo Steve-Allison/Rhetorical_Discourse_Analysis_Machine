@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-03
 
-**Status**: Draft
+**Status**: Implemented and verified, 2026-09-04 — see [verification evidence](evidence/gates.md)
 
 **Input**: Owner rulings 2026-09-02/03: "ingest and source content prep should be universal
 and EVERYTHING gets the same source input"; "move it to `rdam.ingest`"; "write the 017
@@ -13,17 +13,35 @@ without a split — make sure it is truly world-class".
 ## Context
 
 The machine runs seven techniques natively side by side. Its source preparation was built
-for one of them. Verified against the working tree on 2026-09-03:
+for one of them.
 
-| Observation | Evidence |
+**Every row below was re-measured on 2026-09-03 immediately before this revision.** An
+earlier draft of this section asserted that the machine had no concurrency; that had become
+false while the specification was being written. A Context row is a measurement with a
+date, and it is re-taken at T001 before implementation begins.
+
+| Observation | Evidence, 2026-09-03 |
 |---|---|
 | No machine-level ingest exists | `rdam/ingest` — no such directory |
 | Ingest is owned by the RST sub-package | `rdam/rst/ingest/`, 25 modules, 10,477 lines |
-| Only RST reaches it | of seven `provider.py` files, only `rdam/rst/provider.py` imports ingest; `sdrt`, `pdtb`, `toulmin`, `walton` read `request.text` directly |
+| Only RST reaches it | of seven `provider.py` files, only `rdam/rst/provider.py` imports ingest; `sdrt`, `pdtb`, `toulmin`, `walton` take `request.text` |
 | The machine cannot accept a file | `AggregateRequest` contains zero occurrences of `for_source` or `SourceArtifact` |
-| Providers run one at a time | `rdam/machine.py:115` — `for technique in request.techniques:`; no concurrency primitives in the module |
-| Model calls are never reused | `rdam/_llm.py` contains zero occurrences of `cache` |
-| Reach of the change | 109 code files, 29 documents reference `rst.ingest` |
+| Reach of the change | **111** code files, 29 documents reference `rst.ingest` |
+| Regression bar | **1596** tests collected; all seven techniques `available`; boundary `valid: true` |
+
+### What is already built, and is in scope to be held to this bar
+
+Three capabilities this feature was written to add already exist. They are **not** removed
+from scope: an implementation that exists but is unverified, or whose safety rests on an
+assumption, is not finished work. This specification governs them exactly as it governs
+what is still to be written.
+
+| Already implemented | Where | What this feature still owes it |
+|---|---|---|
+| Concurrent provider execution | `rdam/machine.py` — `ThreadPoolExecutor`, `copy_context().run`, ordered re-assembly by `request.techniques`, cancel-on-failure | the safety measurement that FR-035 requires, and equivalence proof (FR-034) |
+| Per-provider serialisation | `rdam/machine.py` — a process-wide `Lock` per provider instance, acquired on every `_call_provider` | it is **blanket and undeclared** (FR-040), and its registry leaks a provider that cannot be weak-referenced (FR-041) |
+| A result cache | `rdam/_result_cache.py`, keyed by `_cache_key`, single-flighted, validated on load | its key covers the instructions only *transitively*, via `provenance.source_revision` — correct today by accident of layout, asserted nowhere (FR-043) |
+| Bounded execution policy | `rdam/_execution.py` — `ExecutionPolicy(max_workers=4, cache_directory=None)` | the projection identity must enter the cache key (FR-028) |
 
 ### What is already strong, and must be preserved
 
@@ -254,16 +272,26 @@ below the serial sum with identical outcomes.
 
 - **FR-001**: Canonical source ingest MUST become a machine-level authority at
   `rdam.ingest`, owned by the machine rather than by any technique.
-- **FR-002**: `rdam.rst.ingest` MUST remain importable with the same public surface.
+- **FR-002**: `rdam.ingest` MUST be the only source-ingest import surface. Remove
+  `rdam.rst.ingest` and update callers; no compatibility shim is required
+  (owner ruling, 2026-09-04).
 - **FR-003**: The dependency direction MUST be machine → ingest and provider → ingest. The
-  machine layer MUST NOT import from any technique sub-package.
+  generic orchestration in `rdam/machine.py` MUST NOT import from any technique
+  sub-package. Concrete provider assembly belongs to `rdam/composition.py`, which may
+  import technique providers (owner-approved separation, 2026-09-04).
 - **FR-004**: Persisted contract identifiers MUST NOT change: `isanlp_rst.production`
   2.0.0, the schema `$id`s, and the runtime contract names. Changing them is a separate
   owner ruling.
 - **FR-005**: RST analytical behaviour MUST be preserved — the classified baseline
-  comparison MUST report zero analytical differences.
+  comparison MUST report zero unexplained regressions. The owner-approved source-ID
+  and DocLang table corrections MUST be independently verified against the source and
+  reported separately, not described as analytical equivalence. Historical baseline
+  files MUST remain unchanged (owner ruling, 2026-09-04).
 - **FR-006**: Contracts named for one technique MUST be renamed to what they actually
-  model, with the technique-named identifiers retained as aliases so no consumer breaks.
+  model: `PreparedDocument` and `AnalysisCapacity`, without aliases. `AnalysisPlan`
+  uses `capacity` in Python and JSON; old fields are not accepted. This intentional
+  wire-name change does not authorize changes to analysis behavior or FR-004 identifiers
+  (owner ruling, 2026-09-04).
 
 #### One inventory
 
@@ -347,7 +375,28 @@ below the serial sum with identical outcomes.
 - **FR-034**: Concurrent and sequential execution of one request MUST produce identical
   aggregate semantic digests.
 - **FR-035**: A provider whose runtime is not safe in parallel MUST be identified by
-  measurement and serialised, not run concurrently on assumption.
+  measurement and serialised, not run concurrently on assumption. Concurrency is already
+  live, so this measurement is owed against shipped behaviour rather than planned
+  behaviour: the RST parser has never been exercised concurrently, and nothing has been
+  exercised concurrently on MPS.
+- **FR-040**: Parallel safety MUST be **declared** by each provider and honoured by the
+  machine, not applied as a blanket lock. A blanket lock is safe but tells the reader
+  nothing about which provider actually needs it, silently serialises providers that are
+  pure and deterministic, and cannot be reasoned about as the provider set grows.
+- **FR-041**: The machine MUST NOT retain a provider beyond that provider's own lifetime.
+  A process-wide registry keyed by object identity MUST release its entry when the provider
+  is collected, and MUST NOT fall back to a strong reference that keeps the provider alive
+  for the life of the process.
+- **FR-042**: The distinction between a provider's typed failure and a bug MUST be explicit
+  under concurrency. A typed `ProviderError` never suppresses another provider's success
+  (FR-033). A non-`ProviderError` exception is a bug, propagates natively, and MAY abandon
+  in-flight work — that is fail-fast, and it MUST be stated rather than left as an emergent
+  property of the executor loop.
+- **FR-043**: Cache-key completeness MUST be asserted, not inherited. Where an element of
+  the analytical identity is covered transitively — the model instructions are covered today
+  only because they live in a file whose digest is `provenance.source_revision` — a test
+  MUST pin that relationship, so a later refactor that moves the instructions cannot
+  silently make stale entries answerable.
 - **FR-036**: A non-`ProviderError` exception MUST still propagate as a bug rather than
   being relabelled as a provider failure.
 
@@ -401,7 +450,11 @@ below the serial sum with identical outcomes.
   unattributable turns.
 - **SC-009**: Two providers declaring different capacity units over one source each receive
   a plan valid for their own capacity.
-- **SC-010**: The classified RST baseline comparison reports zero analytical differences.
+- **SC-010**: The classified RST baseline comparison reports
+  `no_unexplained_regressions: true`, with the two FR-005 corrections separately proven
+  and counted. It MUST reject incorrect or stale source references, missing or changed
+  cells, changed text or geometry, and unrelated changes. With corrections present,
+  `analytically_equivalent` MUST remain `false` (owner ruling, 2026-09-04).
 - **SC-011**: A repeated identical analysis against a configured cache performs zero model
   requests and returns a semantically identical result.
 - **SC-012**: Changing any single element of the analytical identity causes a miss,
@@ -416,6 +469,15 @@ below the serial sum with identical outcomes.
   tests covering every requirement above.
 - **SC-017**: Zero checker suppressions introduced; lint, strict typing, markdown lint,
   ontology validation, and the production boundary gate all pass.
+- **SC-018**: The persisted contract identifiers are unchanged, asserted directly rather
+  than inferred: `isanlp_rst.production` 2.0.0, every schema `$id`, and every runtime
+  contract name.
+- **SC-019**: Inventory coverage remains exact after relocation and per-requirement
+  projection — every source item classified, dispositioned, and accounted, with zero valid
+  content discarded, verified across all six source forms.
+- **SC-020**: Every provider declares its parallel safety, no provider is serialised
+  without a declaration, and a provider that cannot be weak-referenced is not retained after
+  collection.
 
 ## Assumptions
 
@@ -438,9 +500,15 @@ below the serial sum with identical outcomes.
   rather than defaulting one.
 - **Concurrency is in-process** — threads around the existing synchronous provider
   protocol. The scale ruling forbids more.
-- **The RST parser's parallel safety is unknown** and is established by measurement, not
-  assumed. If unsafe it is serialised while network-bound providers still run concurrently.
+- **The RST parser's parallel safety is unknown and concurrency is already enabled.** The
+  current blanket per-provider lock makes that safe in practice, which is why this is a
+  correctness debt rather than a live incident — but it is untested, and it is not what
+  FR-035 asks for. The measurement is owed against shipped behaviour.
 - **Six providers were built against raw text** in features 013–016 and are migrated here.
   Their native result contracts are expected to be unaffected; only their input changes.
-- **`rdam.rst.ingest` is retained indefinitely** as a re-export. Removing it is a separate
-  owner ruling.
+- **Work already implemented is in scope, not exempt.** Concurrency, per-provider
+  serialisation, and the result cache exist. Existing is not the same as finished: each is
+  held to the same requirements, gates, and evidence as code written for this feature.
+- **No backwards compatibility is required** (owner ruling, 2026-09-04). Callers use
+  canonical names directly. Historical baseline files remain unmodified evidence;
+  comparisons must distinguish the approved field rename from analytical differences.

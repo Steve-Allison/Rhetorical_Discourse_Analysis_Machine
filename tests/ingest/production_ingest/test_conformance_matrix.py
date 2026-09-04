@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from rdam.rst.ingest import (
+from rdam.ingest import (
     AnalysedOutcome,
     ProductionIngestor,
     SourceArtifact,

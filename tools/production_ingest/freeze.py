@@ -11,7 +11,7 @@ import tarfile
 import tempfile
 from io import BytesIO
 
-from rdam.rst.ingest.identity import semantic_sha256, sha256_file
+from rdam.ingest.identity import semantic_sha256, sha256_file
 from rdam.rst.model_loading import ParserCapacity, validate_model_release
 from tools.production_ingest.contracts import FreezeAuthority, GoldSetManifest
 from tools.production_ingest.gold import verify_gold_set

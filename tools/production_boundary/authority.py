@@ -36,6 +36,14 @@ class OwnershipAuthority:
                 ownership=OwnershipClass.PRODUCTION,
                 reason="the Rhetorical Discourse Analysis Machine and every promoted technique provider",
                 publishable=True,
+                excluded_prefixes=(PurePosixPath("rdam/ingest"),),
+            ),
+            OwnershipRule(
+                rule_id="rdam-ingest",
+                prefix=PurePosixPath("rdam/ingest"),
+                ownership=OwnershipClass.PRODUCTION,
+                reason="machine-owned canonical source inventory and preparation shared by all techniques",
+                publishable=True,
             ),
             OwnershipRule(
                 rule_id="ontology",
@@ -83,6 +91,7 @@ class OwnershipAuthority:
                 for name in (
                     ".agents",
                     ".claude",
+                    ".codex",
                     ".cursor",
                     ".github",
                     ".specify",
@@ -157,7 +166,11 @@ class OwnershipAuthority:
         )
         if relative.is_absolute():
             relative = PurePosixPath(Path(str(relative)).resolve().relative_to(self.root).as_posix())
-        return tuple(rule for rule in self.rules if relative == rule.prefix or relative.is_relative_to(rule.prefix))
+        return tuple(
+            rule for rule in self.rules
+            if (relative == rule.prefix or relative.is_relative_to(rule.prefix))
+            and not any(relative.is_relative_to(prefix) for prefix in rule.excluded_prefixes)
+        )
 
     def classify(self, path: Path | PurePosixPath | str) -> OwnershipClass:
         relative = (

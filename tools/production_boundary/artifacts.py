@@ -212,10 +212,10 @@ def _validate_wheel(path: Path, expected_source_commit: str | None, identity: Re
         required = {
             f"{package}/py.typed",
             f"{package}/build-provenance.json",
-            f"{package}/rst/ingest/public-surface.json",
+            f"{package}/ingest/public-surface.json",
         }
         missing = required - names
-        if missing or not any(name.startswith(f"{package}/rst/ingest/schemas/") for name in names):
+        if missing or not any(name.startswith(f"{package}/ingest/schemas/") for name in names):
             raise ValueError(f"wheel lacks required production contract resources: {sorted(missing)}")
         provenance = _validate_provenance(
             archive.read(f"{package}/build-provenance.json"),
@@ -223,7 +223,7 @@ def _validate_wheel(path: Path, expected_source_commit: str | None, identity: Re
             identity,
         )
         surface = json.loads(
-            archive.read(f"{package}/rst/ingest/public-surface.json").decode("utf-8", errors="strict")
+            archive.read(f"{package}/ingest/public-surface.json").decode("utf-8", errors="strict")
         )
         qualified = {entry["qualified_name"] for entry in surface["entries"]}
         if not _rst_console_surface() <= qualified:
@@ -254,14 +254,14 @@ def _validate_sdist(path: Path, expected_source_commit: str | None, identity: Re
         provenance = _validate_provenance(provenance_stream.read(), expected_source_commit, identity)
         required_suffixes = {
             f"/{package}/py.typed",
-            f"/{package}/rst/ingest/public-surface.json",
+            f"/{package}/ingest/public-surface.json",
         }
         missing = {
             suffix
             for suffix in required_suffixes
             if not any(name.endswith(suffix) for name in members)
         }
-        if missing or not any(f"/{package}/rst/ingest/schemas/" in name for name in members):
+        if missing or not any(f"/{package}/ingest/schemas/" in name for name in members):
             raise ValueError(f"sdist lacks required production contract resources: {sorted(missing)}")
     return {
         "metadata_name": metadata.get("Name"),

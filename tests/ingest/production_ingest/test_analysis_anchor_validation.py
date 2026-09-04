@@ -2,8 +2,8 @@
 
 import pytest
 
-from rdam.rst.ingest import ProductionIngestor, SourceArtifact
-from rdam.rst.ingest.parser_result import validate_parser_analysis_result
+from rdam.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest.parser_result import validate_parser_analysis_result
 
 from .conftest import ParserBuilder
 

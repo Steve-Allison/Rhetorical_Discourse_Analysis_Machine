@@ -10,13 +10,13 @@ from rdam.rst.contracts import RstAnalysis
 from rdam.rst.contracts.serialization import analysis_from_dict
 from rdam.rst.erst.converter import rs4_to_document_and_analysis
 from rdam.rst.erst.rs4 import RS4Reader
-from rdam.rst.ingest import (
+from rdam.ingest import (
     AnalysedOutcome,
     EmptyPrimaryAnalysisOutcome,
     PreparationOutcome,
     load_contract,
 )
-from rdam.rst.ingest.identity import sha256_bytes
+from rdam.ingest.identity import sha256_bytes
 from workbench.evaluation.rst import StandardParsevalScorer
 from tools.production_ingest.contracts import GoldSetManifest, SourceGateResult
 

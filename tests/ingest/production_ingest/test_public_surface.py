@@ -1,6 +1,6 @@
 """Machine-readable public-surface authority reconciliation."""
 
-from rdam.rst.ingest.public_surface import load_public_surface, reconcile_public_surface
+from rdam.ingest.public_surface import load_public_surface, reconcile_public_surface
 from tools.production_boundary.public_surface import public_surface_parity
 
 
@@ -28,11 +28,11 @@ def test_required_v2_boundary_members_are_supported() -> None:
     }
     assert {
         "rdam.rst.Parser.analyse_document",
-        "rdam.rst.ingest.ProductionIngestor.prepare",
-        "rdam.rst.ingest.ProductionIngestor.analyse",
-        "rdam.rst.ingest.describe_capabilities",
-        "rdam.rst.ingest.serialize_contract",
-        "rdam.rst.ingest.load_contract",
+        "rdam.ingest.ProductionIngestor.prepare",
+        "rdam.ingest.ProductionIngestor.analyse",
+        "rdam.ingest.describe_capabilities",
+        "rdam.ingest.serialize_contract",
+        "rdam.ingest.load_contract",
     } <= supported
 
 

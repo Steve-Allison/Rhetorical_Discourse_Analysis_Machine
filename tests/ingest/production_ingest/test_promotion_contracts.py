@@ -10,7 +10,7 @@ from tools.production_ingest.contracts import (
     PromotionDecision,
     SourceGateResult,
 )
-from rdam.rst.ingest.contracts import SourceForm
+from rdam.ingest.contracts import SourceForm
 
 
 def _candidate() -> CandidateIdentity:

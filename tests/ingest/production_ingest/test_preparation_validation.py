@@ -1,8 +1,8 @@
 """Preparation source mapping, transformation, anchor, boundary, and coverage tests."""
 
-from rdam.rst.ingest import ProductionIngestor, SourceArtifact
-from rdam.rst.ingest.contracts.source import DispositionDecision
-from rdam.rst.ingest.validation import validate_preparation_outcome
+from rdam.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest.contracts.source import DispositionDecision
+from rdam.ingest.validation import validate_preparation_outcome
 
 
 def test_segments_reconstruct_text_and_source_anchors_exactly() -> None:

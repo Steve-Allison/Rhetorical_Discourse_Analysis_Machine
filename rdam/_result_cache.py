@@ -1,4 +1,11 @@
-"""Private content-addressed cache for successful native technique results."""
+"""Private content-addressed cache for successful native technique results.
+
+Machine._cache_key covers source, projection, provider, contract, model, and
+instructions identities directly. Provenance additionally binds the instructions
+digest to the source revision; test_cache_key_completeness pins that relationship.
+test_cache exercises the external model boundary, exact reuse, and corrupt records.
+Dirty/unknown revisions still bypass persistence rather than hiding their status.
+"""
 
 from collections.abc import Callable, Generator
 from contextlib import contextmanager

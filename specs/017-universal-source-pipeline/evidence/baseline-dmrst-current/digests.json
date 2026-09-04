@@ -1,0 +1,11 @@
+{
+  "analyse-edus": "5a0684a6556a0b949c56d8d4289d8f0d3aa91fcb02fdf0f62d3516209b47f887",
+  "analyse-text": "3fb6facbc44ba251029ba6a5091d03df87e5ec6cbbaa54ca6680b094722a6d5b",
+  "capabilities": "a517c13d58c7a6739fedf6ccf786c38c961464112b53e42b5b42ddab90225ac5",
+  "prepare-doclang_archive": "e1dafd08f399add7c61ff63a273cdb131d999247a4f9cab1aace4fe3d586b6e4",
+  "prepare-doclang_xml": "81f9b536b54afeaf0112e5ad11f8dd81ffc11d7f6fc041b3f0139fc661c1db57",
+  "prepare-docling_json": "0aa8ac9766dc4b6a50a4eb69c6cec4aea4b8b9e7108e4dc8a62c2ce77a5a3e0b",
+  "prepare-edus": "1cb16c12158c7955dfd90b0c8612a3e15dc01d0aadbd1ab3fb434346894bfc18",
+  "prepare-markdown": "fe18819f8308a29f5cc4583c23e6a00bbb0e7c5f1d662033274b81352e934aa5",
+  "prepare-text": "c3d9b36b7af33eef82aec17fa713096f8ff8d0649dfc6e5989159e8fb1ddc46b"
+}

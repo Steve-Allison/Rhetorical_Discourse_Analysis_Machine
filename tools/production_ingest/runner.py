@@ -185,7 +185,7 @@ def module_exists(name):
 if module_exists("workbench") or module_exists("tools.production_ingest"):
     raise RuntimeError("production environment exposes repository-only evaluation modules")
 
-from rdam.rst.ingest import (
+from rdam.ingest import (
     DispositionDecision,
     ProductionIngestor,
     SourceArtifact,
@@ -221,7 +221,7 @@ for source in control["sources"]:
     preparation_ingestor = ingestor or ProductionIngestor()
     preparation = preparation_ingestor.prepare(
         artifact,
-        parser_capacity=(parser.analysis_capacity if ingestor is not None else None),
+        capacity=(parser.analysis_capacity if ingestor is not None else None),
     )
     semantic = preparation.semantic
     prepared = semantic.prepared_document

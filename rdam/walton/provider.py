@@ -11,6 +11,12 @@ one. The provider reports which questions are open; it never answers them.
 """
 
 from typing import Final
+from threading import Lock
+
+from rdam.ingest.contracts.preparation import ContentRequirement
+from rdam.ingest.contracts.source import ContentClass
+from rdam.ingest.requirements import llm_requirement
+from rdam.ingest.alignment import align_payload
 
 from rdam import (
     AvailableCapability,
@@ -87,6 +93,7 @@ class WaltonProvider:
 
     def __init__(self, *, model: str | None = None) -> None:
         self._model = resolved_model_identity(model)
+        self._build_lock = Lock()
         self._analyst: StructuredAnalyst[WaltonAnalysis] | None = None
 
     @property
@@ -124,18 +131,31 @@ class WaltonProvider:
                 package="rdam.walton",
                 model_identity=self._model,
                 licence=LICENCE,
+                instructions=INSTRUCTIONS,
             ),
             capability=capability,
             requires_structured_input=False,
+            content_requirement=self.content_requirement,
+            parallel_safety="concurrent",
+            instructions_identity=Sha256Identity(hex_digest=semantic_sha256(INSTRUCTIONS)),
+        )
+
+    @property
+    def content_requirement(self) -> ContentRequirement:
+        return llm_requirement(
+            "walton/attributed-evidence-v1",
+            (ContentClass.TITLE, ContentClass.HEADING, ContentClass.PARAGRAPH, ContentClass.LIST_ITEM, ContentClass.TURN, ContentClass.CAPTION, ContentClass.TABLE, ContentClass.TABLE_CELL, ContentClass.NOTE),
+            requires_speaker_identity=True,
         )
 
     def _built(self) -> StructuredAnalyst[WaltonAnalysis]:
-        if self._analyst is None:
-            self._analyst = StructuredAnalyst(
-                output_type=WaltonAnalysis,
-                instructions=INSTRUCTIONS,
-                model=self._model,
-            )
+        with self._build_lock:
+            if self._analyst is None:
+                self._analyst = StructuredAnalyst(
+                    output_type=WaltonAnalysis,
+                    instructions=INSTRUCTIONS,
+                    model=self._model,
+                )
         return self._analyst
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:
@@ -155,7 +175,10 @@ class WaltonProvider:
                     "formalism_not_declared", Retryability.NOT_RETRYABLE, "ValueError", str(request.formalism_id)
                 )
             )
-        text = require_llm_text(request.text, technique=Technique.WALTON, provider_id=self.provider_id)
+        text = require_llm_text(
+            request.projection.prepared_document.text if request.projection is not None else request.text,
+            technique=Technique.WALTON, provider_id=self.provider_id,
+        )
         try:
             extraction = self._built().extract(text)
         except SchemeError as error:
@@ -182,6 +205,7 @@ class WaltonProvider:
             provider_contract_version=CONTRACT_VERSION,
             source=request.source,
             payload=payload,
+            source_alignment=align_payload(extraction.structure.to_payload(), request.projection),
             provenance=declaration.provenance,
         )
 

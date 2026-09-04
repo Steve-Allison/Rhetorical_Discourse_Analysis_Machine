@@ -1,7 +1,7 @@
 import pytest
 
-from rdam.rst.ingest import ProductionIngestError, ProductionIngestor, SourceArtifact, SourceForm
-from rdam.rst.ingest.contracts.failure import FailureCategory, LifecycleStage
+from rdam.ingest import ProductionIngestError, ProductionIngestor, SourceArtifact, SourceForm
+from rdam.ingest.contracts.failure import FailureCategory, LifecycleStage
 
 
 def test_invalid_doclang_is_a_text_safe_typed_failure() -> None:

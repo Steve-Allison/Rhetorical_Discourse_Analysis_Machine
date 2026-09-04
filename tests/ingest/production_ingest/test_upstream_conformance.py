@@ -12,9 +12,9 @@ from lxml import etree
 import pytest
 
 from rdam.rst.doclang.errors import InvalidDoclangError
-from rdam.rst.ingest import SourceArtifact, SourceForm
-from rdam.rst.ingest.contracts import ContentClass
-from rdam.rst.ingest.prepare import inventory_source
+from rdam.ingest import SourceArtifact, SourceForm
+from rdam.ingest.contracts import ContentClass
+from rdam.ingest.prepare import inventory_source
 
 
 DOCLANG_FIXTURES = Path("tests/fixtures/doclang")

@@ -1,0 +1,30 @@
+# Graphify's outputs, build products, and managed environment are never source corpus.
+graphify-out/
+.pixi/
+dist/
+
+# Agent-distribution copies and Spec Kit implementation machinery duplicate
+# project authority already retained in AGENTS.md, CLAUDE.md, specs/, and the
+# project constitution. Current project rules and hooks remain in the corpus.
+.agents/skills/
+.claude/skills/
+.claude/memory/
+.codex/skills/
+.cursor/skills/
+.specify/integrations/
+.specify/scripts/
+.specify/templates/
+.specify/workflows/
+.specify/*.json
+.specify/memory/*.json
+.specify/.gitignore
+
+# Retired, generated, or third-party research material obscures RDAM's current
+# architecture. Keep workbench source code; exclude only archives, run outputs,
+# and the vendored raw corpus distribution.
+workbench/archive/
+workbench/corpora/
+workbench/experiments/**/runs/
+
+# Bundled third-party minified browser libraries are not RDAM source.
+rdam/rst/rstviewer/data/script/*.min.js

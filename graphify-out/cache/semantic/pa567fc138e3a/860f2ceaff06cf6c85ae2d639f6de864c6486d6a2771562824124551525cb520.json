@@ -1,1 +1,0 @@
-{"nodes": [{"id": "claude_rules_no_assumptions", "label": "No Assumptions", "file_type": "document", "source_file": ".claude/rules/no-assumptions.md", "rationale": "Hard rule: factual claims must be verified or marked as assumed."}], "edges": [], "hyperedges": []}

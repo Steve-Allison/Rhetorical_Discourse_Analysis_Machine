@@ -2,12 +2,14 @@
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from pathlib import Path
+from rdam.ingest.contracts.source import TableCoordinateAnchor
 
 from pydantic_ai import models
 from pydantic_ai.exceptions import ModelHTTPError, UnexpectedModelBehavior
 from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
-from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.models.openai import OpenAIResponsesModel
 import pytest
 
 from rdam import (
@@ -86,8 +88,8 @@ class _Result:
 class TestAttemptContract:
     def test_provider_sdk_retries_are_disabled_at_the_owned_boundary(self, with_credentials: None) -> None:
         model = ToulminProvider(model=MODEL)._built().agent.model
-        assert isinstance(model, OpenAIChatModel)
-        assert model._provider.client.max_retries == 0
+        assert isinstance(model, OpenAIResponsesModel)
+        assert model.client.max_retries == 0
 
     def test_transient_failures_are_bounded_and_counted(self, monkeypatch: pytest.MonkeyPatch) -> None:
         analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, transport_retries=2)
@@ -244,6 +246,21 @@ class TestAnalyseGuards:
 
 
 class TestThroughTheMachine:
+    def test_tabular_grounds_anchor_to_the_source_cell(self, with_credentials: None) -> None:
+        provider = ToulminProvider(model=MODEL)
+        proposal = {"claim": "Approve the replacement.", "grounds": ["80"],
+                    "warrant": "Prefer the lower operating cost when service is equal."}
+        with provider._built().agent.override(model=_proposing([proposal])):
+            result = Machine([provider]).analyse(AggregateRequest.for_source(
+                Path("tests/fixtures/pipeline/tabular-evidence.md"), (Technique.TOULMIN,),
+            ))
+        outcome = result.outcome_for(Technique.TOULMIN)
+        assert isinstance(outcome, ResultOutcome)
+        grounds = [alignment for alignment in outcome.result.source_alignment if alignment.payload_path == "/layouts/0/grounds/0"]
+        assert grounds
+        assert any(isinstance(anchor, TableCoordinateAnchor) and (anchor.row, anchor.column) == (2, 1)
+                   for alignment in grounds for anchor in alignment.source_anchors)
+
     def test_a_valid_proposal_becomes_a_native_result_with_attempt_evidence(self, with_credentials: None) -> None:
         provider = ToulminProvider(model=MODEL)
         with provider._built().agent.override(model=_proposing([VALID_LAYOUT])):

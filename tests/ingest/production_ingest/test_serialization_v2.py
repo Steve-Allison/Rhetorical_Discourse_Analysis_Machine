@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from rdam.rst.ingest.contracts.capabilities import ProductionCapabilities
-from rdam.rst.ingest.serialization import (
+from rdam.ingest.contracts.capabilities import ProductionCapabilities
+from rdam.ingest.serialization import (
     UnsupportedContractVersionError,
     canonical_json_bytes,
     load_contract,

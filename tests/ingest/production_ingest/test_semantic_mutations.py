@@ -1,7 +1,7 @@
 """Analysis request, result, and execution identity boundaries."""
 
-from rdam.rst.ingest import ProductionIngestor, SourceArtifact
-from rdam.rst.ingest.contracts.analysis import MarkerRefinementMode
+from rdam.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest.contracts.analysis import MarkerRefinementMode
 
 from .conftest import ParserBuilder
 

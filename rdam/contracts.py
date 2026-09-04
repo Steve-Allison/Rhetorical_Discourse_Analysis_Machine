@@ -9,6 +9,7 @@ object the machine never renames, removes, or reinterprets (FR-013).
 
 from collections.abc import Mapping
 from enum import StrEnum
+from pathlib import Path
 from typing import Annotated, Literal, Self, cast
 
 from pydantic import Field, field_serializer, field_validator, model_validator
@@ -16,6 +17,8 @@ from pydantic import Field, field_serializer, field_validator, model_validator
 from rdam._immutable_json import freeze_json_object, thaw_json
 from rdam._strict import JsonValue, SemanticVersion, Sha256Identity, StrictModel, semantic_sha256, sha256_bytes
 from rdam.frameworks import BOUNDARY_TECHNIQUES, STRUCTURED_INPUT_TECHNIQUES, Technique, technique_curie
+from rdam.ingest.contracts.preparation import ContentRequirement, PreparationReceipt, SourceProjection, PreparedRange
+from rdam.ingest.contracts.source import SourceArtifact, SourceForm, SourceAnchor
 
 AGGREGATE_CONTRACT: Literal["rdam.aggregate"] = "rdam.aggregate"
 CAPABILITIES_CONTRACT: Literal["rdam.capabilities"] = "rdam.capabilities"
@@ -99,9 +102,14 @@ class ProviderDeclaration(StrictModel):
     provenance: ProviderProvenance
     capability: CapabilityState
     requires_structured_input: bool
+    content_requirement: ContentRequirement | None = None
+    parallel_safety: Literal["concurrent", "serialized"] = "concurrent"
+    instructions_identity: Sha256Identity | None = None
 
     @model_validator(mode="after")
     def coherent_declaration(self) -> Self:
+        if self.requires_structured_input and self.content_requirement is not None:
+            raise ValueError("structured-input providers cannot declare content requirements")
         if self.technique not in BOUNDARY_TECHNIQUES:
             raise ValueError(f"{self.technique.value!r} is a formalism, not a technique boundary")
         expected = technique_curie(self.technique)
@@ -123,6 +131,8 @@ class ProviderDeclaration(StrictModel):
                 raise ValueError("available capability must name this provider")
             if self.capability.contract_version != self.contract_version:
                 raise ValueError("available capability must carry this provider's contract version")
+        if not self.requires_structured_input and self.content_requirement is None:
+            raise ValueError("text providers must declare a content requirement")
         return self
 
     def formalism(self, formalism_id: str) -> FormalismDeclaration | None:
@@ -147,8 +157,26 @@ class SourceIdentity(StrictModel):
         return cls.from_bytes(text.encode("utf-8"), source_name=source_name, media_type="text/plain; charset=utf-8")
 
 
+class ResultSourceAlignment(StrictModel):
+    """An exact native payload quote mapped to the shared source, without changing the payload."""
+
+    payload_path: str = Field(min_length=1)
+    prepared_range: PreparedRange
+    contributing_item_ids: tuple[str, ...] = Field(min_length=1)
+    source_anchors: tuple[SourceAnchor, ...] = Field(min_length=1)
+
+
+def _no_alignments(value: tuple[ResultSourceAlignment, ...]) -> bool:
+    return not value
+
+
 class NativeTechniqueResult(StrictModel):
-    """One technique's result in its own theory's terms. ``payload`` is opaque to the machine."""
+    """One technique's unchanged native payload, with analytical and artifact identities.
+
+    The provider declares exact execution-only object paths. The semantic digest
+    normalizes those values to null; the artifact digest still binds every byte of
+    their JSON values. No generic machine code interprets a technique's schema.
+    """
 
     contract: Literal["rdam.native_result"] = NATIVE_RESULT_CONTRACT
     contract_version: Literal["1.0.0"] = CONTRACT_VERSION
@@ -159,6 +187,9 @@ class NativeTechniqueResult(StrictModel):
     source: SourceIdentity
     payload: Mapping[str, JsonValue]
     provenance: ProviderProvenance
+    source_alignment: tuple[ResultSourceAlignment, ...] = Field(default=(), exclude_if=_no_alignments)
+    execution_fields: tuple[tuple[str, ...], ...] = ()
+    artifact_digest: Sha256Identity | None = None
     semantic_digest: Sha256Identity | None = None
 
     @field_validator("payload", mode="before")
@@ -177,7 +208,27 @@ class NativeTechniqueResult(StrictModel):
 
     @model_validator(mode="after")
     def complete_identity(self) -> Self:
-        expected = Sha256Identity(hex_digest=semantic_sha256(self.model_dump(exclude={"semantic_digest"})))
+        complete = self.model_dump(exclude={"semantic_digest", "artifact_digest"})
+        artifact = Sha256Identity(hex_digest=semantic_sha256(complete))
+        if self.artifact_digest is not None and self.artifact_digest != artifact:
+            raise ValueError("native result artifact digest mismatch")
+        object.__setattr__(self, "artifact_digest", artifact)
+        if len(set(self.execution_fields)) != len(self.execution_fields):
+            raise ValueError("execution field paths must be unique")
+        payload = cast(dict[str, object], complete["payload"])
+        for path in self.execution_fields:
+            if not path or any(not key for key in path):
+                raise ValueError("execution fields must name nonempty payload paths")
+            parent = payload
+            for key in path[:-1]:
+                value = parent.get(key)
+                if not isinstance(value, dict):
+                    raise ValueError("execution field path does not address a payload object")
+                parent = cast(dict[str, object], value)
+            if path[-1] not in parent:
+                raise ValueError("execution field path does not exist in payload")
+            parent[path[-1]] = None
+        expected = Sha256Identity(hex_digest=semantic_sha256(complete))
         if self.semantic_digest is not None and self.semantic_digest != expected:
             raise ValueError("native result semantic digest mismatch")
         object.__setattr__(self, "semantic_digest", expected)
@@ -255,10 +306,14 @@ class AggregateAnalysis(StrictModel):
     source: SourceIdentity
     outcomes: tuple[Outcome, ...] = Field(min_length=1)
     lineage: tuple[ProviderDependencyReference, ...] = ()
+    preparation: PreparationReceipt | None = None
     semantic_digest: Sha256Identity | None = None
 
     @model_validator(mode="after")
     def coherent_aggregate(self) -> Self:
+        if self.preparation is not None:
+            if self.preparation.inventory.source.byte_identity.hex_digest != self.source.source_id.hex_digest:
+                raise ValueError("preparation identity differs from aggregate source")
         techniques = [outcome_technique(item) for item in self.outcomes]
         if len(techniques) != len(set(techniques)):
             raise ValueError("an aggregate carries at most one outcome per technique")
@@ -288,7 +343,14 @@ class AggregateAnalysis(StrictModel):
                 raise ValueError("lineage upstream contract does not match the upstream result")
             if reference.upstream_model_identity != upstream.provenance.model_identity:
                 raise ValueError("lineage upstream model does not match the upstream result")
-        expected = Sha256Identity(hex_digest=semantic_sha256(self.model_dump(exclude={"semantic_digest"})))
+        semantic = self.model_dump(exclude={"semantic_digest", "outcomes"})
+        semantic["outcomes"] = tuple(
+            {"kind": item.kind, "result_identity": item.result.semantic_digest}
+            if isinstance(item, ResultOutcome)
+            else item.model_dump()
+            for item in self.outcomes
+        )
+        expected = Sha256Identity(hex_digest=semantic_sha256(semantic))
         if self.semantic_digest is not None and self.semantic_digest != expected:
             raise ValueError("aggregate semantic digest mismatch")
         object.__setattr__(self, "semantic_digest", expected)
@@ -390,6 +452,12 @@ class FormalismChoice(StrictModel):
     formalism_id: str = Field(pattern=_SNAKE)
 
 
+class SourceArtifactRef(StrictModel):
+    """An immutable materialized source; constructing it performs no inventory."""
+
+    artifact: SourceArtifact
+
+
 class AggregateRequest(StrictModel):
     """One source, the techniques to run on it, and — for formal techniques — their inputs.
 
@@ -400,7 +468,8 @@ class AggregateRequest(StrictModel):
     """
 
     source: SourceIdentity
-    text: str | None
+    text: str | None = None
+    source_artifact: SourceArtifactRef | None = None
     techniques: tuple[Technique, ...] = Field(min_length=1)
     structured_inputs: tuple[StructuredInput, ...] = ()
     formalisms: tuple[FormalismChoice, ...] = ()
@@ -414,8 +483,15 @@ class AggregateRequest(StrictModel):
             raise ValueError("only technique boundaries can be requested")
         if self.text is not None and self.source.source_id.hex_digest != sha256_bytes(self.text.encode("utf-8")):
             raise ValueError("source identity does not match the supplied text")
-        if self.text is None and any(technique not in STRUCTURED_INPUT_TECHNIQUES for technique in self.techniques):
-            raise ValueError("text is required for every requested technique that analyses text")
+        supplied = int(self.text is not None) + int(self.source_artifact is not None)
+        if supplied > 1 or (
+            supplied == 0 and any(technique not in STRUCTURED_INPUT_TECHNIQUES for technique in self.techniques)
+        ):
+            raise ValueError("exactly one text or source_artifact is required for text analysis")
+        if self.source_artifact is not None:
+            digest = self.source_artifact.artifact.raw_sha256
+            if digest is None or digest.hex_digest != self.source.source_id.hex_digest:
+                raise ValueError("source identity does not match supplied bytes")
         structured = [item.technique for item in self.structured_inputs]
         if len(structured) != len(set(structured)):
             raise ValueError("at most one structured input per technique")
@@ -461,6 +537,64 @@ class AggregateRequest(StrictModel):
             upstream_results=upstream_results,
         )
 
+    @classmethod
+    def for_source(
+        cls,
+        path: Path | str,
+        techniques: tuple[Technique, ...],
+        *,
+        source_form: SourceForm | None = None,
+        structured_inputs: tuple[StructuredInput, ...] = (),
+        formalisms: tuple[FormalismChoice, ...] = (),
+        upstream_results: tuple[NativeTechniqueResult, ...] = (),
+    ) -> Self:
+        artifact = SourceArtifact.from_path(Path(path), source_form=source_form)
+        return cls._for_artifact(artifact, techniques, structured_inputs, formalisms, upstream_results)
+
+    @classmethod
+    def for_bytes(
+        cls,
+        payload: bytes,
+        source_form: SourceForm,
+        source_name: str,
+        techniques: tuple[Technique, ...],
+        *,
+        structured_inputs: tuple[StructuredInput, ...] = (),
+        formalisms: tuple[FormalismChoice, ...] = (),
+        upstream_results: tuple[NativeTechniqueResult, ...] = (),
+    ) -> Self:
+        artifact = SourceArtifact.from_bytes(
+            payload,
+            source_form=source_form,
+            source_name=source_name,
+        )
+        return cls._for_artifact(artifact, techniques, structured_inputs, formalisms, upstream_results)
+
+    @classmethod
+    def _for_artifact(
+        cls,
+        artifact: SourceArtifact,
+        techniques: tuple[Technique, ...],
+        structured_inputs: tuple[StructuredInput, ...],
+        formalisms: tuple[FormalismChoice, ...],
+        upstream_results: tuple[NativeTechniqueResult, ...],
+    ) -> Self:
+        digest = artifact.raw_sha256
+        if digest is None:
+            raise ValueError("source artifact has no byte identity")
+        return cls(
+            source=SourceIdentity(
+                source_id=Sha256Identity(hex_digest=digest.hex_digest),
+                source_name=artifact.source_name,
+                media_type=artifact.media_type,
+            ),
+            source_artifact=SourceArtifactRef(artifact=artifact),
+            techniques=techniques,
+            structured_inputs=structured_inputs,
+            formalisms=formalisms,
+            upstream_results=upstream_results,
+        )
+
     def structured_input_for(self, technique: Technique) -> Mapping[str, JsonValue] | None:
         return next((item.payload for item in self.structured_inputs if item.technique is technique), None)
 
@@ -491,6 +625,19 @@ class ProviderRequest(StrictModel):
     structured_input: Mapping[str, JsonValue] | None
     formalism_id: str | None = Field(default=None, pattern=_SNAKE)
     derived_from: UpstreamResultReference | None = None
+    projection: SourceProjection | None = None
+    preparation: PreparationReceipt | None = None
+
+    @model_validator(mode="after")
+    def coherent_projection(self) -> Self:
+        if self.structured_input is not None and self.projection is not None:
+            raise ValueError("structured input cannot receive a source projection")
+        if self.projection is not None:
+            if self.projection.prepared_document.source.byte_identity.hex_digest != self.source.source_id.hex_digest:
+                raise ValueError("projection belongs to a different source")
+            if self.text != self.projection.prepared_document.text:
+                raise ValueError("provider text must equal its projection")
+        return self
 
     @field_validator("structured_input", mode="before")
     @classmethod
@@ -532,8 +679,10 @@ __all__ = [
     "ProviderProvenance",
     "ProviderRequest",
     "ResultOutcome",
+    "ResultSourceAlignment",
     "Retryability",
     "SourceIdentity",
+    "SourceArtifactRef",
     "StructuredInput",
     "TechniqueCapability",
     "UnavailableCapability",

@@ -38,13 +38,20 @@ def provider_provenance(
     package: str,
     licence: str,
     model_identity: str | None = None,
+    instructions: str | None = None,
 ) -> ProviderProvenance:
     """Build complete runtime provenance without provider-specific boilerplate."""
 
+    revision = resolve_source_revision()
+    if instructions is not None:
+        dirty = revision.endswith("-dirty")
+        revision = f"{revision.removesuffix('-dirty')}:instructions:{semantic_sha256(instructions)}"
+        if dirty:
+            revision += "-dirty"
     return ProviderProvenance(
         package=package,
         version=package_version(),
-        source_revision=resolve_source_revision(),
+        source_revision=revision,
         model_identity=model_identity,
         licence=licence,
     )

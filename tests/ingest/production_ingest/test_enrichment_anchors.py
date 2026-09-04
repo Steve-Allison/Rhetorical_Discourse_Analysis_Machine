@@ -2,9 +2,9 @@
 
 import pytest
 
-from rdam.rst.ingest import ProductionIngestor, SourceArtifact
-from rdam.rst.ingest.contracts.source import TextSpanAnchor
-from rdam.rst.ingest.enrichment import _anchors_for_range, _enrich_analysis_anchor
+from rdam.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest.contracts.source import TextSpanAnchor
+from rdam.ingest.enrichment import _anchors_for_range, _enrich_analysis_anchor
 
 from .conftest import ParserBuilder
 

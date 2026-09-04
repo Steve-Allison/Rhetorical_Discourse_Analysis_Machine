@@ -4,7 +4,7 @@ from importlib.metadata import version
 
 import rdam.rst
 from rdam.rst import _version
-from rdam.rst.ingest import INGEST_SCHEMA_NAME, INGEST_SCHEMA_VERSION
+from rdam.ingest import INGEST_SCHEMA_NAME, INGEST_SCHEMA_VERSION
 
 
 def test_installed_release_matches_package_authority() -> None:

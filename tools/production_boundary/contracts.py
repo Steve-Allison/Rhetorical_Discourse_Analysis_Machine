@@ -45,11 +45,14 @@ class OwnershipRule(StrictModel):
     ownership: OwnershipClass
     reason: str = Field(min_length=1)
     publishable: bool = False
+    excluded_prefixes: tuple[PurePosixPath, ...] = ()
 
     @model_validator(mode="after")
-    def publication_matches_ownership(self) -> "OwnershipRule":
+    def publication_matches_ownership(self) -> Self:
         if self.publishable != (self.ownership == OwnershipClass.PRODUCTION):
             raise ValueError("publishable is true exactly for production ownership")
+        if any(prefix == self.prefix or not prefix.is_relative_to(self.prefix) for prefix in self.excluded_prefixes):
+            raise ValueError("ownership exclusions must be strict descendants of the rule prefix")
         return self
 
 

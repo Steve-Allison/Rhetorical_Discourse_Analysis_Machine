@@ -2,7 +2,7 @@
 
 import pytest
 
-from rdam.rst.ingest import ProductionIngestor, SourceArtifact, SourceForm
+from rdam.ingest import ProductionIngestor, SourceArtifact, SourceForm
 
 
 @pytest.mark.parametrize("text", ("", "   \n\t"))

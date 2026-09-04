@@ -1,7 +1,7 @@
 import pytest
 
-from rdam.rst.ingest import SegmentKind, SourceArtifact, TextSpanAnchor
-from rdam.rst.ingest.service import ProductionIngestor
+from rdam.ingest import SegmentKind, SourceArtifact, TextSpanAnchor
+from rdam.ingest.service import ProductionIngestor
 
 
 @pytest.mark.parametrize(

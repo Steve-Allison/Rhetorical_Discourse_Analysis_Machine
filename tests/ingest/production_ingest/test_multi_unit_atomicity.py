@@ -6,11 +6,11 @@ from pathlib import Path
 import pytest
 
 from rdam.rst.contracts import RstDocument
-from rdam.rst.ingest import (
+from rdam.ingest import (
     AnalysisPolicy,
     CompositeAnalysisIdentity,
     ParserAnalysisResult,
-    ParserCapacity,
+    AnalysisCapacity,
     ProductionIngestError,
     ProductionIngestor,
     SourceArtifact,
@@ -27,7 +27,7 @@ class RecordingUnitParser:
     documents: list[RstDocument] = field(default_factory=list)
 
     @property
-    def analysis_capacity(self) -> ParserCapacity:
+    def analysis_capacity(self) -> AnalysisCapacity:
         return self.delegate.analysis_capacity
 
     @property

@@ -4,12 +4,12 @@
 
 `rdam` — the one production package — contains only code and resources required while
 a consumer performs analysis: the machine (`rdam`), the RST/eRST provider (`rdam.rst`),
-and the Dung and IBIS providers (`rdam.dung`, `rdam.ibis`). `workbench` owns corpus
+and the PDTB, SDRT, Toulmin, Walton, Dung and IBIS providers. `workbench` owns corpus
 construction, training, calibration, evaluation, benchmarking, research, and model releases.
 Provenance does not change that boundary: inherited inference code is production code
 and must meet the same Python 3.14 standard.
 
-`rdam.rst.ingest` is core production code. Docling, DocLang, and Markdown
+`rdam.ingest` is core production code. Docling, DocLang, and Markdown
 distributions are optional under the `formats` extra; their adapter modules are
 private implementation details. The core wheel can import, load schemas,
 serialize contracts, prepare text/EDUs, and discover all capability states
@@ -26,12 +26,12 @@ pip install "dist/6.0.0/rdam-6.0.0-py3-none-any.whl[formats]"
 
 # Repository development environments
 pixi install -e production
-pixi install -e offline
+pixi install
 ```
 
-The production environment runs inference and production-boundary checks. The
-offline environment adds test, lint, type-check, corpus, training, evaluation,
-research, and model-release dependencies.
+The `production` environment is the isolated consumer environment. The `default`
+environment includes formats, test, lint, type-check, corpus, training, evaluation,
+research, and model-release dependencies; everyday tasks need no environment flag.
 
 ## Capability and identity boundary
 
@@ -68,7 +68,7 @@ loader honours it only for the exact manifest it names.
 | The machine: declarations, capability states, outcomes | `rdam` | yes |
 | Parser facade and active inference runtime | `rdam.rst.parser`, predictors, segmenter | yes |
 | Machine-facing RST/eRST adapter | `rdam.rst.provider` | yes |
-| Strict source, preparation, analysis, inference, failure, and capability contracts | `rdam.rst.ingest` | yes |
+| Strict source, preparation, analysis, inference, failure, and capability contracts | `rdam.ingest` | yes |
 | Canonical schemas, public-surface inventory, and build provenance | package resources | yes |
 | Private Docling/DocLang/Markdown loaders | `rdam.rst.doclang`, `rdam.rst.markdown`, ingest harvest | yes, dependencies via `formats` |
 | eRST signal detection, scoring, decoding, checkpoint loading | `rdam.rst.erst`, `rdam.rst.english.erst` | yes |

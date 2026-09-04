@@ -1,1 +1,0 @@
-{"nodes": [{"id": "central_ontology", "label": "Central Ontology Lock", "file_type": "document", "source_file": "config/ontology/central.lock.yaml", "rationale": "Immutable mapping of fine-grained discourse relations to coarse concepts (Attribution, Cause, etc.)."}], "edges": [], "hyperedges": []}

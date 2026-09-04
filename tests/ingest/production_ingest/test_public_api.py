@@ -3,7 +3,7 @@
 from importlib.util import find_spec
 
 import rdam.rst.doclang as doclang_helpers
-import rdam.rst.ingest as ingest
+import rdam.ingest as ingest
 import rdam.rst.markdown as markdown_helpers
 
 
@@ -36,6 +36,6 @@ def test_obsolete_envelopes_and_entry_modules_are_absent() -> None:
         "rdam.rst.doclang._entry",
         "rdam.rst.doclang.schema",
         "rdam.rst.docling._entry",
-        "rdam.rst.ingest.compatibility",
+        "rdam.ingest.compatibility",
     )
     assert not any(_module_exists(module_name) for module_name in obsolete_modules)

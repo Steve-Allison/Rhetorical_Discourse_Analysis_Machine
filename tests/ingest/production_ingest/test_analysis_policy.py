@@ -3,8 +3,8 @@
 import pytest
 from pydantic import ValidationError
 
-from rdam.rst.ingest import EvidenceDetailPolicy, ProductionIngestor, SourceArtifact
-from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+from rdam.ingest import EvidenceDetailPolicy, ProductionIngestor, SourceArtifact
+from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
 
 from .conftest import ParserBuilder
 

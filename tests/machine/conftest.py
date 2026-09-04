@@ -3,6 +3,7 @@
 from collections.abc import Callable
 
 import pytest
+from tests.ingest.test_projection_contracts import prose_requirement
 
 from rdam import (
     AvailableCapability,
@@ -64,6 +65,7 @@ def rst_declaration(*, erst_loaded: bool = True, capability: CapabilityState | N
         provenance=PROVENANCE,
         capability=capability if capability is not None else available(provider_id),
         requires_structured_input=False,
+        content_requirement=prose_requirement(),
     )
 
 

@@ -2,9 +2,10 @@
 
 **Feature**: 017 | **Date**: 2026-09-03 | **Sources**: [spec.md](spec.md), [research.md](research.md)
 
-Every record is a strict contract model — frozen, `extra="forbid"`, RFC 8785 canonical JSON
-with a self-checking semantic digest — matching the existing ingest and machine contracts.
-Nothing here constrains a technique's native result payload.
+Every record is a strict contract model — frozen, `extra="forbid"`, and serializable as
+RFC 8785 canonical JSON. Identity-bearing records carry a self-checking digest; nested
+records are bound by their enclosing identity. Nothing here translates a technique's
+native result payload into a shared formalism.
 
 ## Unchanged, and load-bearing
 
@@ -58,7 +59,8 @@ enters a projection without a derivation (FR-015).
 ### AnalysisCapacity
 
 Generalises the existing `ParserCapacity`, whose name is narrower than what it models
-(FR-006). Same fields; `ParserCapacity` is retained as an alias.
+(FR-006). Same fields, no old-name alias. `AnalysisPlan` uses `capacity` in Python and
+JSON, with no historical-field acceptance (owner ruling, 2026-09-04).
 
 | Field | Type | Rules |
 |---|---|---|
@@ -75,6 +77,7 @@ The deterministic view of one inventory through one requirement (FR-013).
 | Field | Type | Rules |
 |---|---|---|
 | `projection_identity` | Sha256Identity | digest of inventory identity + requirement digest. Two aggregates sharing this value received byte-identical input |
+| `inventory_identity`, `requirement_identity` | Sha256Identity | the two independently recorded inputs to that digest |
 | `requirement_id` | `str` | which requirement produced it |
 | `prepared_document` | PreparedDocument | text, contiguous segments, structural boundaries |
 | `analysis_plan` | AnalysisPlan | planned against **this** requirement's capacity |
@@ -179,6 +182,19 @@ digest of the supplied bytes. Constructing performs no preparation and loads no 
 |---|---|
 | `preparation` | **new**, `PreparationReceipt \| None`. One per aggregate (FR-011) |
 | everything else | unchanged |
+
+### NativeTechniqueResult identity and alignment
+
+The technique-owned payload is not translated into a common formalism. The outer machine
+envelope adds `source_alignment` records naming a payload JSON pointer, prepared range,
+contributing inventory items, and original anchors. Exact source matches are recorded;
+paraphrases are not assigned invented offsets.
+
+`artifact_digest` verifies the complete persisted envelope. `execution_fields` names the
+provider-owned payload paths that are excluded from `semantic_digest`, without deleting
+them from the payload. The aggregate uses each result's semantic identity rather than its
+run-specific timing. Both digests are recomputed on load; historical incomplete machine
+identity envelopes are not accepted through a compatibility translation.
 
 ### PreparationReceipt
 

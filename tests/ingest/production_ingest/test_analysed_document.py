@@ -9,7 +9,7 @@ import torch
 
 from rdam.rst.contracts import Edu, TextSpan
 from rdam.rst.contracts.trace import ParserInputLimitError
-from rdam.rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest import ProductionIngestor, SourceArtifact
 
 from .conftest import ParserBuilder
 

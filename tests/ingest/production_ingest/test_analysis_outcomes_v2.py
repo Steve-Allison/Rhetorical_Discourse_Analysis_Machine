@@ -1,6 +1,6 @@
 """Discriminated, self-contained production analysis outcomes."""
 
-from rdam.rst.ingest import (
+from rdam.ingest import (
     AnalysedOutcome,
     EmptyPrimaryAnalysisOutcome,
     ProductionIngestor,

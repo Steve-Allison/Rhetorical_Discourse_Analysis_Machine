@@ -1,22 +1,29 @@
 # Production API contract
 
-`rdam` 6.0.0 exposes one provider-owned production source API at
-`rdam.rst.ingest`, plus the `rdam.rst.Parser` facade. The serialized family
+`rdam` exposes one machine-owned production source API at
+`rdam.ingest`, plus the `rdam.rst.Parser` facade. The serialized family
 is `isanlp_rst.production` 2.0.0 — the contract identifier is unchanged by the package
 rename. The package does not expose a CSM-specific adapter or recreate downstream data
 models.
 
 The exact symbol and resource authority is the packaged
-`rdam/rst/ingest/public-surface.json`. `rdam.rst.ingest.__all__`, installed
+`rdam/ingest/public-surface.json`. `rdam.ingest.__all__`, installed
 imports, JSON Schemas, the console command, and the loopback endpoints are
 reconciled against that file by the production-contract tests.
 
 ## Operations
 
+At the aggregate boundary, `AggregateRequest.for_text`, `.for_source`, and
+`.for_bytes` construct immutable requests. `Machine.analyse` inventories once,
+projects once per distinct provider requirement, and returns separate native
+outcomes plus one `PreparationReceipt`. `PreparedDocument` and `AnalysisCapacity`
+are the canonical Python names; the plan field is `capacity`. The previous
+ingest import path and contract-field aliases are not accepted.
+
 | Operation | Exact return | Success states | Failure |
 |---|---|---|---|
 | `SourceArtifact.from_path(path, *, source_form=None, original_source=None, conversion_provenance=())` | `SourceArtifact` | one validated source identity | constructor error before the service boundary |
-| `ProductionIngestor.prepare(source, *, policy=None, planning_policy=None, parser_capacity=None)` | `PreparationOutcome` | complete preparation, including empty or retained-only primary discourse | `ProductionIngestError` |
+| `ProductionIngestor.prepare(source, *, policy=None, planning_policy=None, capacity=None)` | `PreparationOutcome` | complete preparation, including empty or retained-only primary discourse | `ProductionIngestError` |
 | `ProductionIngestor.analyse(source, *, policy=None, planning_policy=None, analysis_policy=None, cache_directory=None, diagnostic_policy=None)` | `ProductionAnalysisOutcome` | `AnalysedOutcome` or `EmptyPrimaryAnalysisOutcome` | `ProductionIngestError` |
 | `Parser.analyse_document(document, *, analysis_policy=None)` | `ParserAnalysisResult` | validated parser-owned result | typed provider or validation failure through production ingest |
 | `describe_capabilities(parser=None)` | `ProductionCapabilities` | model-free or configured-parser capability evidence | contract validation error |

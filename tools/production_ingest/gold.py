@@ -10,8 +10,8 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from lxml import etree
 
-from rdam.rst.ingest.contracts import DispositionDecision, Sha256Identity, SourceForm
-from rdam.rst.ingest.identity import semantic_sha256, sha256_bytes, sha256_file
+from rdam.ingest.contracts import DispositionDecision, Sha256Identity, SourceForm
+from rdam.ingest.identity import semantic_sha256, sha256_bytes, sha256_file
 from tools.production_ingest.contracts import GoldSetManifest, GoldSource, ProvenanceClass
 
 
@@ -138,7 +138,7 @@ def adjudicate_gold_set(
 ) -> tuple[GoldSetManifest, dict[str, object]]:
     """Lock the directly inspected inventory/disposition authority without source text."""
 
-    from rdam.rst.ingest import ProductionIngestor, SourceArtifact
+    from rdam.ingest import ProductionIngestor, SourceArtifact
 
     root = gold_root.resolve()
     expectation_payloads: list[dict[str, object]] = []

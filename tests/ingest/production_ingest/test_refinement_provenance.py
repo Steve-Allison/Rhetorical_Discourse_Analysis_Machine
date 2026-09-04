@@ -3,9 +3,9 @@
 import pytest
 from pydantic import ValidationError
 
-from rdam.rst.ingest import SemanticVersion, Sha256Identity
-from rdam.rst.ingest.contracts.inference import RefinementRecord
-from rdam.rst.ingest.contracts.source import TextSpanAnchor
+from rdam.ingest import SemanticVersion, Sha256Identity
+from rdam.ingest.contracts.inference import RefinementRecord
+from rdam.ingest.contracts.source import TextSpanAnchor
 
 
 def test_refinement_requires_a_real_change_and_complete_trigger_links() -> None:

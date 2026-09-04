@@ -6,7 +6,7 @@ import pytest
 
 from rdam.rst import __version__
 from rdam.rst.cli import main
-from rdam.rst.ingest import SafeProductionFailureRecord, load_contract
+from rdam.ingest import SafeProductionFailureRecord, load_contract
 
 
 def test_cli_version_is_stable_json(capsysbinary: pytest.CaptureFixture[bytes]) -> None:

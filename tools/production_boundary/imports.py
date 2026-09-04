@@ -5,6 +5,7 @@ from collections import deque
 from pathlib import Path
 import time
 
+from rdam.frameworks import BOUNDARY_TECHNIQUES
 from tools.production_boundary.authority import OwnershipAuthority
 from tools.production_boundary.contracts import BoundaryReport, BoundaryViolation, OwnershipClass, ViolationKind
 
@@ -69,13 +70,23 @@ def validate_import_boundary(root: Path, authority: OwnershipAuthority | None = 
     modules = {module_name(repository, path): path for path in python_files}
     graph: dict[str, tuple[str, ...]] = {}
     forbidden: dict[str, tuple[str, ...]] = {}
+    violations: list[BoundaryViolation] = []
+    technique_roots = tuple(f"rdam.{technique.value}" for technique in BOUNDARY_TECHNIQUES)
     for name, path in modules.items():
         imports = imported_modules(path, name)
+        if name == "rdam.machine":
+            for target in technique_roots:
+                if any(imported == target or imported.startswith(target + ".") for imported in imports):
+                    violations.append(BoundaryViolation(
+                        kind=ViolationKind.FORBIDDEN_IMPORT,
+                        root=name,
+                        path=(name, target),
+                        detail="generic orchestration imports a technique; concrete provider assembly belongs to rdam.composition",
+                    ))
         graph[name] = tuple(target for imported in imports if (target := _local_target(imported, modules)))
         forbidden[name] = tuple(sorted({"workbench" for imported in imports if imported == "workbench" or imported.startswith("workbench.")}))
 
     production = {name for name, path in modules.items() if ownership.classify(ownership.relative(path)) == OwnershipClass.PRODUCTION}
-    violations: list[BoundaryViolation] = []
     for root_module in sorted(production):
         queue: deque[tuple[str, tuple[str, ...]]] = deque([(root_module, (root_module,))])
         visited = {root_module}

@@ -23,22 +23,22 @@ from rdam.rst.contracts import (
     PrimaryRelationEdge,
     TextSpan,
 )
-from rdam.rst.ingest.contracts import (
+from rdam.ingest.contracts import (
     AnalysisPolicy,
     CompositeAnalysisIdentity,
     ParserAnalysisResult,
-    ParserCapacity,
+    AnalysisCapacity,
     OutputFormalism,
     SemanticVersion,
     SourceArtifact,
     SourceForm,
 )
-from rdam.rst.ingest.contracts.preparation import CapacityUnit
-from rdam.rst.ingest.parser_result import (
+from rdam.ingest.contracts.preparation import CapacityUnit
+from rdam.ingest.parser_result import (
     build_parser_analysis_result,
     describe_analysis_components,
 )
-from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
 from rdam.rst.model_loading import ModelFile, ModelReleaseIdentity
 from rdam.rst.model_loading import ParserCapacity as ReleaseParserCapacity
 from rdam.rst.contracts.trace import (
@@ -66,7 +66,7 @@ class PrivateMarker:
 class DeterministicParser:
     """Small immutable parser double with stable capacity and model identity."""
 
-    analysis_capacity: ParserCapacity
+    analysis_capacity: AnalysisCapacity
     model_release_identity: ModelReleaseIdentity
 
     @property
@@ -223,7 +223,7 @@ def build_deterministic_parser(
 
     identity = build_model_identity(release_id=release_id, maximum=maximum)
     return DeterministicParser(
-        analysis_capacity=ParserCapacity(
+        analysis_capacity=AnalysisCapacity(
             unit=CapacityUnit.EDU_COUNT,
             maximum=identity.capacity.maximum,
             estimation_algorithm="provider_declared",

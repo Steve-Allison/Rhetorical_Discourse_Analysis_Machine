@@ -1,1 +1,0 @@
-{"nodes": [{"id": "speckit_clarify_skill", "label": "speckit-clarify", "file_type": "code", "source_file": ".claude/skills/speckit-clarify/SKILL.md", "rationale": "Identifies underspecified areas in feature specs by asking targeted clarification questions."}], "edges": [], "hyperedges": []}

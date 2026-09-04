@@ -1,11 +1,11 @@
 from importlib.metadata import version
 from pathlib import Path
 
-from rdam.rst.ingest import SourceArtifact, SourceForm
-from rdam.rst.ingest.contracts import ContentClass, PreparationPolicy
-from rdam.rst.ingest.contracts.source import DispositionDecision
-from rdam.rst.ingest.policy import DEFAULT_PREPARATION_POLICY
-from rdam.rst.ingest.service import ProductionIngestor
+from rdam.ingest import SourceArtifact, SourceForm
+from rdam.ingest.contracts import ContentClass, PreparationPolicy
+from rdam.ingest.contracts.source import DispositionDecision
+from rdam.ingest.policy import DEFAULT_PREPARATION_POLICY
+from rdam.ingest.service import ProductionIngestor
 
 
 FIXTURE = Path("tests/fixtures/docling/pptx.docling.json")

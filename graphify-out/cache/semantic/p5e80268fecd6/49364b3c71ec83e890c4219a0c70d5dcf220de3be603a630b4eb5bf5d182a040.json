@@ -1,1 +1,0 @@
-{"nodes": [], "edges": [], "hyperedges": [{"id": "speckit_core_flow", "label": "Spec-Kit SDD Lifecycle", "nodes": ["specify_skill", "plan_skill", "tasks_skill", "implement_skill", "clarify_skill", "converge_skill"], "relation": "participate_in", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": ".specify/workflows/speckit/workflow.yml"}]}

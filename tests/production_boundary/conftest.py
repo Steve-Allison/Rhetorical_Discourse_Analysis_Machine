@@ -29,7 +29,8 @@ def fixture_identity() -> ReleaseIdentity:
 @pytest.fixture(scope="session")
 def built_release_pair(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path, str]:
     root = tmp_path_factory.mktemp("release-source")
-    (root / "rdam/rst/ingest/schemas").mkdir(parents=True)
+    (root / "rdam/ingest/schemas").mkdir(parents=True)
+    (root / "rdam/rst").mkdir()
     (root / "rdam/__init__.py").write_text("", encoding="utf-8")
     (root / "rdam/py.typed").write_bytes(b"\n")
     (root / "rdam/rst/__init__.py").write_text(f'__version__ = "{FIXTURE_IDENTITY.version}"\n', encoding="utf-8")
@@ -37,12 +38,12 @@ def built_release_pair(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, 
         "def main() -> int:\n    return 0\n",
         encoding="utf-8",
     )
-    (root / "rdam/rst/ingest/__init__.py").write_text("", encoding="utf-8")
-    (root / "rdam/rst/ingest/schemas/capabilities.schema.json").write_text(
+    (root / "rdam/ingest/__init__.py").write_text("", encoding="utf-8")
+    (root / "rdam/ingest/schemas/capabilities.schema.json").write_text(
         "{}\n",
         encoding="utf-8",
     )
-    (root / "rdam/rst/ingest/public-surface.json").write_text(
+    (root / "rdam/ingest/public-surface.json").write_text(
         """{"contract":"isanlp_rst.public_surface","contract_version":"2.0.0","entries":[{"qualified_name":"rdam-rst"},{"qualified_name":"rdam-rst.local-http./analyse"},{"qualified_name":"rdam-rst.local-http./capabilities"},{"qualified_name":"rdam-rst.local-http./health"}]}\n""",
         encoding="utf-8",
     )

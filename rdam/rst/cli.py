@@ -14,7 +14,7 @@ import rfc8785
 
 from rdam.rst import Parser, __version__
 from rdam.rst._version import PACKAGE_NAME, TOOL_NAME
-from rdam.rst.ingest import (
+from rdam.ingest import (
     AnalysisPolicy,
     EvidenceDetailPolicy,
     FailureCategory,
@@ -32,12 +32,12 @@ from rdam.rst.ingest import (
     SafeCause,
     serialize_contract,
 )
-from rdam.rst.ingest.contracts.failure import (
+from rdam.ingest.contracts.failure import (
     AcquisitionCompletedEvidence,
     CompletedStageEvidence,
     NoCompletedEvidence,
 )
-from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
 
 _LOOPBACK_HOSTS: Final = {"127.0.0.1", "::1", "localhost"}
 _MEDIA_TYPES: Final = {

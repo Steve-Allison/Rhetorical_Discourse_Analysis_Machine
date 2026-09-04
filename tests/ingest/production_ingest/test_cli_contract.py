@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 import rdam.rst.cli as cli
-from rdam.rst.ingest import (
+from rdam.ingest import (
     ProductionAnalysisOutcome,
     SafeProductionFailureRecord,
     SourceArtifact,

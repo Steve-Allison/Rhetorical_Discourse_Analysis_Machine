@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 
 from rdam.rst.contracts import RstDocument
-from rdam.rst.ingest import AnalysisPolicy, AnalysisStatus, CacheStatus, ParserAnalysisResult, SourceArtifact
-from rdam.rst.ingest.service import ProductionIngestor
+from rdam.ingest import AnalysisPolicy, AnalysisStatus, CacheStatus, ParserAnalysisResult, SourceArtifact
+from rdam.ingest.service import ProductionIngestor
 
 from .conftest import DeterministicParser, ParserBuilder
 

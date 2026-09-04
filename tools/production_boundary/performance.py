@@ -2,7 +2,7 @@
 
 from time import perf_counter
 
-from rdam.rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest import ProductionIngestor, SourceArtifact
 
 from tools.production_boundary.contracts import (
     PreparationPerformanceCase,

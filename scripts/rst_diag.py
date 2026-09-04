@@ -1,6 +1,6 @@
 """RST quality diagnostics over production sources without gold labels.
 
-Every supported source is routed through :mod:`rdam.rst.ingest`; this tool
+Every supported source is routed through :mod:`rdam.ingest`; this tool
 does not own format-specific preparation policy or result envelopes.
 """
 
@@ -14,7 +14,7 @@ from statistics import mean, median
 import sys
 
 from rdam.rst.contracts import NodeKindEnum
-from rdam.rst.ingest import (
+from rdam.ingest import (
     ProductionAnalysisOutcome,
     ProductionIngestor,
     SourceArtifact,

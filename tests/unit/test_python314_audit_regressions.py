@@ -34,7 +34,7 @@ from rdam.rst.erst.checkpoint import resolve_default_erst_checkpoint
 from rdam.rst.erst.environment import load_repository_environment
 from rdam.rst.erst.rs4 import RS4Document
 from rdam.rst.graph import to_networkx_graph
-from rdam.rst.ingest.public_surface import _documentation_anchor_exists
+from rdam.ingest.public_surface import _documentation_anchor_exists
 from rdam.rst.ontology.loader import OntologyLockData
 from rdam.rst.rstviewer.main import Rs3ImportError, rs3tohtml
 from rdam.rst.universal_parser.src.parser.metrics import get_batch_metrics as unirst_batch_metrics

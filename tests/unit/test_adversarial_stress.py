@@ -8,6 +8,7 @@ Validates robust fail-closed and non-happy-path behavior across:
 """
 
 import pytest
+from pathlib import Path
 
 from rdam.rst.annotation_rst import DiscourseUnit
 from rdam.rst.contracts import (
@@ -40,7 +41,8 @@ from rdam.rst.relations.primer import DiscourseMarkerPrimer
 # ---------------------------------------------------------------------------
 
 
-def test_discourse_unit_slotted_attributes_strictly_enforced() -> None:
+@pytest.mark.parametrize("attribute", ("arbitrary_injected_field", "__dict__"))
+def test_discourse_unit_slotted_attributes_strictly_enforced(attribute: str) -> None:
     du = DiscourseUnit(
         id=1,
         left=None,
@@ -58,7 +60,7 @@ def test_discourse_unit_slotted_attributes_strictly_enforced() -> None:
 
     # Attempting to assign an unslotted attribute must raise AttributeError
     with pytest.raises(AttributeError):
-        du.arbitrary_injected_field = "malicious_payload"  # type: ignore[reportAttributeAccessIssue]
+        setattr(du, attribute, "malicious_payload")
 
 
 # ---------------------------------------------------------------------------
@@ -270,14 +272,11 @@ def test_multilingual_markers_unicode_coverage() -> None:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.slow
 def test_parser_documents_rejects_invalid_batch_size() -> None:
-    # Dummy mock predictor
-    class _MockPredictor:
-        _device = "cpu"
-
-    parser = Parser.__new__(Parser)
-    object.__setattr__(parser, "predictor", _MockPredictor())
-    object.__setattr__(parser, "erst_checkpoint", None)
+    parser = Parser.from_model_release(
+        Path.home() / ".cache/isanlp_rst/model-releases", "gumrrg-eb1d5745f3a1", device="cpu",
+    )
 
     doc = RstDocument(document_id="d1", text="Sample text")
 

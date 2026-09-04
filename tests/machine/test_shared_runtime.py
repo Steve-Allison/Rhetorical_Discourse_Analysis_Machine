@@ -37,6 +37,7 @@ from rdam import (
     technique_curie,
 )
 from rdam.machine import _cache_key
+from tests.ingest.test_projection_contracts import prose_requirement
 
 V1 = SemanticVersion(root="1.0.0")
 
@@ -72,6 +73,7 @@ def declaration(
         ),
         capability=capability,
         requires_structured_input=technique in STRUCTURED_INPUT_TECHNIQUES,
+        content_requirement=None if technique in STRUCTURED_INPUT_TECHNIQUES else prose_requirement(),
     )
 
 
@@ -179,7 +181,7 @@ class TestExecutionPolicy:
         guard = Lock()
         active = 0
         maximum = 0
-        declared = declaration(Technique.RST)
+        declared = declaration(Technique.RST).model_copy(update={"parallel_safety": "serialized"})
 
         def slow(request: ProviderRequest) -> NativeTechniqueResult:
             nonlocal active, maximum
@@ -416,19 +418,17 @@ def test_available_provider_requires_source_revision_but_historical_provenance_r
         Machine([provider(Technique.RST, revision=None)])
 
 
-def test_historical_native_result_without_source_revision_round_trips_byte_identically() -> None:
+def test_retired_native_identity_is_rejected_without_compatibility_translation() -> None:
     fixture = Path(__file__).parents[1] / "fixtures" / "machine" / "native-result-v1-no-source-revision.json"
     payload = fixture.read_bytes().rstrip(b"\n")
-    record = load(payload)
-    assert isinstance(record, NativeTechniqueResult)
-    assert record.provenance.source_revision is None
-    assert serialize(record) == payload
+    with pytest.raises(ValueError, match="native result semantic digest mismatch"):
+        load(payload)
 
 
 def test_machine_and_rst_share_byte_identical_canonical_serialization() -> None:
     from rdam import canonical_json_bytes as machine_canonical
-    from rdam.rst.ingest.identity import canonical_json_bytes as rst_identity_canonical
-    from rdam.rst.ingest.serialization import canonical_json_bytes as rst_serialization_canonical
+    from rdam.ingest.identity import canonical_json_bytes as rst_identity_canonical
+    from rdam.ingest.serialization import canonical_json_bytes as rst_serialization_canonical
 
     value = {"z": [3, {"é": True}], "a": {"number": 1.5, "none": None}}
     expected = machine_canonical(value)

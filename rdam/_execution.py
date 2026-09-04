@@ -15,7 +15,7 @@ class ExecutionPolicy:
 
     def __post_init__(self) -> None:
         if (
-            isinstance(self.max_workers, bool)
+            type(self.max_workers) is not int
             or not 1 <= self.max_workers <= len(BOUNDARY_TECHNIQUES)
         ):
             raise ValueError(f"max_workers must be between 1 and {len(BOUNDARY_TECHNIQUES)}")

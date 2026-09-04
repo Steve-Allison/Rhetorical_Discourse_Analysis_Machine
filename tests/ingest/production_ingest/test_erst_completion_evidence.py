@@ -9,8 +9,8 @@ from rdam.rst.contracts.erst import ErstDecoderConfig
 from rdam.rst.english.erst.completer import ErstCompletionTrace
 from rdam.rst.erst.candidates import SecondaryEdgeCandidate
 from rdam.rst.erst.decoder import ErstSecondaryEdgeDecoder
-from rdam.rst.ingest import SemanticVersion, Sha256Identity
-from rdam.rst.ingest.contracts.inference import (
+from rdam.ingest import SemanticVersion, Sha256Identity
+from rdam.ingest.contracts.inference import (
     ComponentFileIdentity,
     CompositeAnalysisIdentity,
     ConfidenceKind,
@@ -27,8 +27,8 @@ from rdam.rst.ingest.contracts.inference import (
     ScoreValue,
     SupportingSignalEvidence,
 )
-from rdam.rst.ingest.contracts.source import TextSpanAnchor
-from rdam.rst.ingest.parser_result import (
+from rdam.ingest.contracts.source import TextSpanAnchor
+from rdam.ingest.parser_result import (
     _decision_basis,
     _erst_evidence,
     _packaged_component,

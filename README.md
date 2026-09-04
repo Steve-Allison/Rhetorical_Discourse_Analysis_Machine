@@ -2,22 +2,19 @@
 
 ![Python](https://img.shields.io/badge/python-3.14%2B-blue) ![License](https://img.shields.io/badge/license-MIT_(code)_/_CC_BY--NC_4.0_(archived_weights)-orange) ![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-MPS-blueviolet)
 
-`rdam` runs several discourse and argumentation techniques on one text, natively and
+`rdam` runs several discourse and argumentation techniques on one source document, natively and
 side by side, and reports one explicit outcome per technique. It never collapses them
 into a common formalism, never generates or rewrites text, and never reports a technique as
 available when it cannot actually run. It serves one person on one local machine.
 
 ```text
-                       ┌────────────────────────────────────────────────┐
-  text ───────────────▶│  rdam.Machine                                  │
-  supplied structures ▶│   capabilities()  one state per technique      │
-                       │   analyse()       one outcome per technique    │
-                       └───┬──────────────┬──────────────┬─────────────┘
-                           ▼              ▼              ▼
-                    rdam.rst         rdam.dung       rdam.ibis         (sdrt, toulmin, walton, pdtb:
-                    RST / eRST       abstract        gIBIS              unavailable, no provider)
-                    DMRST / UniRST   argumentation   link grammar
-                    parsers          semantics
+  text / file / bytes → rdam.ingest → one complete inventory
+                                          ↓
+                                provider-specific projections
+                                          ↓
+                       RST · PDTB · SDRT · Toulmin · Walton
+                                          ↓
+  supplied structures → Dung · IBIS → separate native outcomes
 ```
 
 ## Contents
@@ -39,13 +36,17 @@ available when it cannot actually run. It serves one person on one local machine
 
 One distribution, one import package, every technique a sub-package.
 
-| Sub-package | Technique | Provides | State (2026-09-02) |
+| Sub-package | Technique | Provides | Availability requirement |
 |---|---|---|---|
 | `rdam` | the machine | `Machine`, `AggregateRequest`, typed provider declarations, capability states, native results, and outcomes | — |
-| `rdam.rst` | RST and Extended RST | DMRST and UniRST discourse parsers (Steve Allison's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, the RS3 viewer, the `rdam-rst` command, and the machine adapter | `available` |
+| `rdam.ingest` | shared source preparation | complete inventory, provider requirements, projections, source anchors, and receipts | source-form dependencies |
+| `rdam.rst` | RST and Extended RST | DMRST and UniRST discourse parsers, eRST completion, the RS3 viewer, the `rdam-rst` command, and the machine adapter | configured parser; eRST also needs a completion bundle |
 | `rdam.dung` | Dung abstract argumentation | grounded, complete, preferred, and stable extensions of a supplied argument–attack framework, exact by construction | `available` |
 | `rdam.ibis` | IBIS | issue–position–argument structures validated under the gIBIS link grammar and organised into a deliberation map | `available` |
-| — | SDRT, Toulmin, Walton, PDTB | nothing yet; the machine reports `unavailable(not_implemented)`. No stubs. | — |
+| `rdam.sdrt` | SDRT | validated SDRS graphs | configured language model |
+| `rdam.toulmin` | Toulmin | claims, grounds, warrants, backing, qualifiers and rebuttals | configured language model |
+| `rdam.walton` | Walton | scheme instances and critical questions | configured language model |
+| `rdam.pdtb` | PDTB | source-validated discourse relations and connective spans | configured language model |
 
 ## Design principles
 
@@ -184,6 +185,53 @@ print(machine.analyse(request).lineage)
 
 ## Capability and provenance
 
+### Documents and provider projections
+
+```python
+from pathlib import Path
+from rdam import AggregateRequest, Technique, production_machine
+
+machine = production_machine()
+request = AggregateRequest.for_source(
+    Path("tests/fixtures/pipeline/tabular-evidence.md"),
+    (Technique.RST, Technique.TOULMIN, Technique.WALTON),
+)
+aggregate = machine.analyse(request)
+assert aggregate.preparation is not None
+print(len(aggregate.preparation.inventory.items))
+print(len(aggregate.preparation.projections))
+```
+
+`for_bytes(payload, source_form, source_name, techniques)` accepts materialized bytes;
+`for_text` accepts a string. Construction identifies the exact bytes but does not
+inventory them or load a model. `rdam.ingest.describe_capabilities()` is the sole
+source-form authority, including optional-dependency availability.
+
+Each aggregate inventories once and computes one projection per distinct provider
+requirement. Toulmin and Walton admit table evidence, with cell coordinates and
+explicit linearisation records; RST retains tables without admitting them to prose
+analysis. Speakers are resolved from source evidence or explicitly unresolved.
+Dung and IBIS receive supplied structures, never text projections. Native findings
+can carry `source_alignment` references to shared items and anchors without merging
+their formalisms.
+
+### Execution and caching
+
+`ExecutionPolicy(max_workers=4)` is the default, bounded to one through seven
+in-process workers. Outcomes retain request order. Providers declaring concurrent
+safety are not locked; serialized providers share a lifetime-bounded lock across
+machine instances. Typed failures preserve other successes; programming errors
+propagate and no partial aggregate is returned.
+
+Caching is opt-in through `ExecutionPolicy(cache_directory=Path("cache"))`.
+The key binds source, projection, provider, contract, model and instructions
+identities. Dirty source revisions bypass caching. Invalid cache entries are
+reported and recomputed. Native `artifact_digest` covers execution details too;
+`semantic_digest` excludes only execution fields declared by the provider, so
+run timing does not change aggregate analytical identity.
+
+### Provider availability
+
 A technique is `available` when its provider can actually run, and `unavailable` with a
 stable reason otherwise. There are exactly three reasons:
 
@@ -195,7 +243,7 @@ stable reason otherwise. There are exactly three reasons:
 
 `rdam.dung` and `rdam.ibis` are exact and deterministic, so they are available whenever
 imported. `rdam.rst` is available when the configured parser version is one the façade
-knows how to load, or when the named local model release is present; neither check loads
+knows how to load, or when the named local model release validates; neither check loads
 a model or touches the network.
 
 Every provider declares its own provenance to the machine — package, version, source
@@ -267,7 +315,7 @@ precision (`tests/integration/test_integration.py` is the equivalence suite).
 
 ### Production source ingest
 
-`rdam.rst.ingest` is the one production boundary for real source material: plain text,
+`rdam.ingest` is the one production boundary for real source material: plain text,
 exact pre-segmented EDUs, Markdown, DoclingDocument JSON, and DocLang XML or `.dclx`
 archives.
 
@@ -275,7 +323,7 @@ archives.
 from pathlib import Path
 
 from rdam.rst import Parser
-from rdam.rst.ingest import ProductionIngestor, SourceArtifact, describe_capabilities, serialize_contract
+from rdam.ingest import ProductionIngestor, SourceArtifact, describe_capabilities, serialize_contract
 
 print(describe_capabilities().semantic.source_forms)   # all six forms and their availability, model-free
 
@@ -373,9 +421,11 @@ acceptability is the Dung provider's job, not this one's.
 
 ```text
 rdam/                        the distribution and import package — the machine
-├── contracts.py, machine.py, frameworks.py, serialization.py
+├── contracts.py, machine.py, composition.py, frameworks.py, serialization.py
 ├── resources/framework-identities.json   coe: identities projected from the vendored taxonomy
-├── rst/                     RST/eRST provider: parser, ingest, erst, rstviewer, cli, provider.py
+├── ingest/                  shared source inventory, projections, planning and anchors
+├── rst/                     RST/eRST provider: parser, erst, rstviewer, cli, provider.py
+├── pdtb/, sdrt/, toulmin/, walton/   independently validated model-backed techniques
 ├── dung/                    semantics.py, provider.py
 └── ibis/                    grammar.py, provider.py
 ontology/                    vendored Central distribution + the rdam LinkML profile (not shipped)
@@ -440,8 +490,10 @@ certified; the release record is in
 Persisted contract identifiers (`isanlp_rst.production` 2.0.0, `isanlp_rst.parser/dmrst-v1`,
 `isanlp_rst.parser/unirst-v1`) name immutable runtime contracts, not the package.
 
-Provider order thereafter: SDRT, then Toulmin and Walton, then PDTB if ever — each with
-its own decision-closed feature.
+SDRT, Toulmin, Walton and PDTB now have independent providers. Feature 017 extends
+the machine to real source documents; its task checklist and verification evidence
+are under `specs/017-universal-source-pipeline/`. A passing component test is not a
+claim that the whole feature's final gates have passed.
 
 ## Provenance and licence
 

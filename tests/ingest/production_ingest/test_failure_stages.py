@@ -5,8 +5,8 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from rdam.rst.ingest import ProductionIngestError, ProductionIngestor, SourceArtifact
-from rdam.rst.ingest.contracts.failure import (
+from rdam.ingest import ProductionIngestError, ProductionIngestor, SourceArtifact
+from rdam.ingest.contracts.failure import (
     FailureCategory,
     LifecycleStage,
     NoCompletedEvidence,
@@ -14,11 +14,11 @@ from rdam.rst.ingest.contracts.failure import (
     ProductionFailure,
     Retryability,
 )
-from rdam.rst.ingest.contracts.base import SemanticVersion
-from rdam.rst.ingest.contracts.preparation import CapacityUnit, ParserCapacity
-from rdam.rst.ingest.contracts.analysis import AnalysisPolicy
-from rdam.rst.ingest.contracts.inference import OutputFormalism
-from rdam.rst.ingest.service import DEFAULT_ANALYSIS_POLICY
+from rdam.ingest.contracts.base import SemanticVersion
+from rdam.ingest.contracts.preparation import CapacityUnit, AnalysisCapacity
+from rdam.ingest.contracts.analysis import AnalysisPolicy
+from rdam.ingest.contracts.inference import OutputFormalism
+from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
 
 from .conftest import ParserBuilder
 
@@ -69,7 +69,7 @@ def test_provider_unavailability_cannot_claim_immediate_retryability() -> None:
 
 
 def test_planning_failure_is_typed_at_the_planning_stage() -> None:
-    capacity = ParserCapacity(
+    capacity = AnalysisCapacity(
         unit=CapacityUnit.TOKEN_COUNT,
         maximum=2,
         estimation_algorithm="test",
@@ -79,7 +79,7 @@ def test_planning_failure_is_typed_at_the_planning_stage() -> None:
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor().prepare(
             SourceArtifact.from_text("one two three", source_name="source.txt"),
-            parser_capacity=capacity,
+            capacity=capacity,
         )
     assert raised.value.failure.failed_stage is LifecycleStage.PLANNING
     assert raised.value.failure.completed.kind == "acquisition"
@@ -92,7 +92,7 @@ def test_preparation_validation_failure_retains_complete_preparation(
     def invalid(_outcome: object) -> None:
         raise ValueError("PRIVATE validation detail")
 
-    monkeypatch.setattr("rdam.rst.ingest.prepare.validate_preparation_outcome", invalid)
+    monkeypatch.setattr("rdam.ingest.prepare.validate_preparation_outcome", invalid)
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor().prepare(
             SourceArtifact.from_text("content", source_name="source.txt")
@@ -132,7 +132,7 @@ def test_unexpected_internal_failure_is_classified_unknown(
     def unexpected(*_args: object, **_kwargs: object) -> None:
         raise RuntimeError("PRIVATE internal detail")
 
-    monkeypatch.setattr("rdam.rst.ingest.service.prepare_source", unexpected)
+    monkeypatch.setattr("rdam.ingest.service.prepare_source", unexpected)
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor().prepare(
             SourceArtifact.from_text("content", source_name="source.txt")
@@ -149,7 +149,7 @@ def test_harvest_io_error_is_internal_unknown_not_malformed(
     def unreadable(*_args: object) -> None:
         raise OSError("PRIVATE io detail")
 
-    monkeypatch.setattr("rdam.rst.ingest._harvest.inventory_source", unreadable)
+    monkeypatch.setattr("rdam.ingest._harvest.inventory_source", unreadable)
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor().prepare(
             SourceArtifact.from_text("content", source_name="source.txt")
@@ -166,7 +166,7 @@ def test_preparation_type_error_is_internal_unknown_not_validation(
     def broken(*_args: object) -> None:
         raise TypeError("PRIVATE bug detail")
 
-    monkeypatch.setattr("rdam.rst.ingest.prepare.apply_policy", broken)
+    monkeypatch.setattr("rdam.ingest.prepare.apply_policy", broken)
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor().prepare(
             SourceArtifact.from_text("content", source_name="source.txt")
@@ -219,11 +219,11 @@ def test_subdivided_erst_without_completion_support_is_typed_provider_unavailabl
     # analysis and recombination are not under test here, only the branch that
     # fires when the recombined parser lacks document-global eRST completion.
     monkeypatch.setattr(
-        "rdam.rst.ingest.service._analyse_parser_unit",
+        "rdam.ingest.service._analyse_parser_unit",
         lambda *_args, **_kwargs: unit_result,
     )
     monkeypatch.setattr(
-        "rdam.rst.ingest.recombination.recombine_parser_results",
+        "rdam.ingest.recombination.recombine_parser_results",
         lambda **_kwargs: unit_result,
     )
     ingestor = ProductionIngestor(parser=parser)
@@ -240,7 +240,7 @@ def test_validation_internal_failure_is_not_labelled_a_validation_verdict(
     parser_builder: ParserBuilder,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from rdam.rst.ingest import validation as validation_module
+    from rdam.ingest import validation as validation_module
 
     original = validation_module.build_analysis_validation_receipt
     calls = {"count": 0}
@@ -252,7 +252,7 @@ def test_validation_internal_failure_is_not_labelled_a_validation_verdict(
         return original(*args, **kwargs)
 
     monkeypatch.setattr(
-        "rdam.rst.ingest.validation.build_analysis_validation_receipt",
+        "rdam.ingest.validation.build_analysis_validation_receipt",
         broken_after_parser_internal_call,
     )
     ingestor = ProductionIngestor(parser=parser_builder())
@@ -268,7 +268,7 @@ def test_validation_internal_failure_is_not_labelled_a_validation_verdict(
 
 
 def test_safe_cause_rejects_free_text_message_templates() -> None:
-    from rdam.rst.ingest.contracts.failure import SafeCause
+    from rdam.ingest.contracts.failure import SafeCause
 
     with pytest.raises(ValidationError, match="string_pattern_mismatch"):
         SafeCause(
@@ -287,7 +287,7 @@ def test_unrelated_missing_module_is_not_blamed_on_a_distribution(
             name="definitely_not_installed",
         )
 
-    monkeypatch.setattr("rdam.rst.ingest._harvest.inventory_source", missing_unrelated)
+    monkeypatch.setattr("rdam.ingest._harvest.inventory_source", missing_unrelated)
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor().prepare(
             SourceArtifact.from_text("content", source_name="source.txt")
@@ -301,13 +301,13 @@ def test_unrelated_missing_module_is_not_blamed_on_a_distribution(
 def test_matching_missing_adapter_reports_the_true_distribution(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from rdam.rst.ingest import SourceForm
-    from rdam.rst.ingest.contracts.failure import MissingDistributionContext
+    from rdam.ingest import SourceForm
+    from rdam.ingest.contracts.failure import MissingDistributionContext
 
     def missing_adapter(*_args: object) -> None:
         raise ModuleNotFoundError("No module named 'markdown_it'", name="markdown_it")
 
-    monkeypatch.setattr("rdam.rst.ingest._harvest.inventory_source", missing_adapter)
+    monkeypatch.setattr("rdam.ingest._harvest.inventory_source", missing_adapter)
     source = SourceArtifact.from_bytes(
         b"# heading",
         source_form=SourceForm.MARKDOWN,
@@ -331,7 +331,7 @@ def test_enrichment_failure_claims_only_inference_completed(
     def broken(*_args: object) -> None:
         raise RuntimeError("PRIVATE enrichment bug")
 
-    monkeypatch.setattr("rdam.rst.ingest.enrichment.enrich_parser_evidence", broken)
+    monkeypatch.setattr("rdam.ingest.enrichment.enrich_parser_evidence", broken)
     ingestor = ProductionIngestor(parser=parser_builder())
     with pytest.raises(ProductionIngestError) as raised:
         ingestor.analyse(
@@ -394,7 +394,7 @@ def test_cli_boundary_failure_labels_follow_the_exception_kind() -> None:
     assert parse_failure.category is FailureCategory.MALFORMED_INPUT
     assert parse_failure.retryability is Retryability.NOT_RETRYABLE
 
-    from rdam.rst.ingest.contracts.failure import AcquisitionCompletedEvidence
+    from rdam.ingest.contracts.failure import AcquisitionCompletedEvidence
 
     source = SourceArtifact.from_text("content", source_name="source.txt")
     configured_failure = _safe_boundary_failure(

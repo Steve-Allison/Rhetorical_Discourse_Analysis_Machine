@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from rdam.rst.ingest import SourceArtifact, SourceForm
-from rdam.rst.ingest.contracts import ContentClass, DispositionDecision
-from rdam.rst.ingest.prepare import inventory_source
-from rdam.rst.ingest.service import ProductionIngestor
+from rdam.ingest import SourceArtifact, SourceForm
+from rdam.ingest.contracts import ContentClass, DispositionDecision
+from rdam.ingest.prepare import inventory_source
+from rdam.ingest.service import ProductionIngestor
 
 
 def test_doclang_empty_namespace_validates_under_current_contract() -> None:

@@ -1,12 +1,12 @@
 """Parser identity, formalism, evidence, and cache capability truth."""
 
-from rdam.rst.ingest import ProductionIngestor, describe_capabilities
-from rdam.rst.ingest.contracts.capabilities import (
+from rdam.ingest import ProductionIngestor, describe_capabilities
+from rdam.ingest.contracts.capabilities import (
     Availability,
     CacheEligibilityState,
     ModelIdentityState,
 )
-from rdam.rst.ingest.contracts.inference import EvidenceDetailPolicy, OutputFormalism
+from rdam.ingest.contracts.inference import EvidenceDetailPolicy, OutputFormalism
 
 from .conftest import ParserBuilder
 

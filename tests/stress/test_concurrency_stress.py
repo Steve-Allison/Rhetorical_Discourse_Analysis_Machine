@@ -1,11 +1,22 @@
 """Multi-threaded concurrency stress tests verifying thread-safety across all subsystems."""
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import json
+from pathlib import Path
+from threading import Barrier
 import pytest
 import torch
 
-from rdam.rst.ingest.contracts import SourceArtifact, SourceForm
-from rdam.rst.ingest.service import ProductionIngestor
+from rdam.rst.annotation_rst import DiscourseUnit
+from rdam.rst.dmrst_parser.predictor import PredictorDMRST
+from rdam.rst.model_loading import ModelReleaseError, load_model_release, peek_runtime_contract
+from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST
+from rdam.rst.parser import Parser
+from rdam.rst.universal_parser.predictor import PredictorUniRST
+from rdam import AvailableCapability, ProviderRequest, SourceIdentity
+from rdam.rst.provider import RstProvider
+from rdam.ingest.contracts import SourceArtifact, SourceForm
+from rdam.ingest.service import ProductionIngestor
 from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from workbench.hashing import (
     blake3_digest,
@@ -14,6 +25,118 @@ from workbench.hashing import (
 )
 
 pytestmark = pytest.mark.stress
+
+
+def _compatible_parser_release(family: str) -> tuple[Path, str]:
+    """Use a real, validated local release; missing evidence is a test failure."""
+    local = Path(__file__).resolve().parents[2] / "models" / "model-releases"
+    cached = Path.home() / ".cache" / "isanlp_rst" / "model-releases"
+    failures: list[str] = []
+    for store in (local, cached):
+        if not store.is_dir():
+            continue
+        for manifest in sorted(store.glob(f"*/{MODEL_RELEASE_MANIFEST}")):
+            release_id = manifest.parent.name
+            try:
+                if peek_runtime_contract(manifest.parent) != f"isanlp_rst.parser/{family}-v1":
+                    continue
+                load_model_release(store, release_id)
+            except ModelReleaseError as error:
+                failures.append(f"{release_id}: {error}")
+                continue
+            return store, release_id
+    pytest.fail(f"No compatible {family} release for a real concurrency measurement: {failures}")
+
+
+def _tree_bytes(tree: DiscourseUnit, text: str) -> bytes:
+    """Compare every semantic tree field, including probability and entropy."""
+    nodes: list[dict[str, str | int | float | None]] = []
+    pending = [tree]
+    while pending:
+        node = pending.pop()
+        assert node.start is not None and node.end is not None
+        assert 0 <= node.start <= node.end <= len(text)
+        assert node.text == text[node.start : node.end]
+        nodes.append(
+            {
+                "id": node.id,
+                "text": node.text,
+                "start": node.start,
+                "end": node.end,
+                "relation": node.relation,
+                "nuclearity": node.nuclearity,
+                "proba": node.proba,
+                "entropy": node.entropy,
+                "left": None if node.left is None else node.left.id,
+                "right": None if node.right is None else node.right.id,
+            }
+        )
+        if node.right is not None:
+            pending.append(node.right)
+        if node.left is not None:
+            pending.append(node.left)
+    return json.dumps(nodes, sort_keys=True, allow_nan=False, separators=(",", ":")).encode("utf-8")
+
+
+@pytest.mark.parametrize("family", ("dmrst", "unirst"))
+@pytest.mark.parametrize("device", ("cpu", "mps"))
+def test_real_parser_concurrency_matches_sequential_trees(family: str, device: str) -> None:
+    """T073: share loaded model state across four simultaneous calls on CPU and MPS."""
+    if device == "mps" and not torch.backends.mps.is_available():
+        pytest.skip("MPS hardware is unavailable; this is not evidence of MPS parallel safety")
+    store, release_id = _compatible_parser_release(family)
+    parser = Parser.from_model_release(
+        store,
+        release_id,
+        device=device,
+        relinventory="eng.erst.gum" if family == "unirst" else None,
+    )
+    expected_type = PredictorDMRST if family == "dmrst" else PredictorUniRST
+    assert isinstance(parser.predictor, expected_type)
+    texts = (
+        "Because it rained, the match stopped. The crowd left.",
+        "The survey supports the claim. However, the sample was small.",
+        "The cat sat on the mat. It was a black cat. The mat was red.",
+        "If the cost falls, we will proceed. Otherwise, the project will wait.",
+    )
+    expected = tuple(_tree_bytes(parser.parse_tree(text), text) for text in texts)
+    start = Barrier(len(texts))
+
+    def analyse(index: int) -> tuple[int, bytes]:
+        start.wait(timeout=30)
+        return index, _tree_bytes(parser.parse_tree(texts[index]), texts[index])
+
+    with ThreadPoolExecutor(max_workers=len(texts)) as executor:
+        for _ in range(3):
+            futures = [executor.submit(analyse, index) for index in range(len(texts))]
+            for future in as_completed(futures):
+                index, actual = future.result()
+                assert actual == expected[index], f"{family}@{device}, input {index}: concurrent tree changed"
+
+
+@pytest.mark.parametrize("family", ("dmrst", "unirst"))
+@pytest.mark.parametrize("device", ("cpu", "mps"))
+def test_real_provider_cold_initialization_and_analysis_are_concurrent(family: str, device: str) -> None:
+    if device == "mps" and not torch.backends.mps.is_available():
+        pytest.skip("MPS hardware is unavailable; this is not evidence of MPS parallel safety")
+    store, release_id = _compatible_parser_release(family)
+    provider = RstProvider(
+        store=store, release_id=release_id, device=device, relinventory="eng.erst.gum" if family == "unirst" else None
+    )
+    barrier = Barrier(4)
+    text = "Because it rained, the match stopped. The crowd left."
+    request = ProviderRequest(source=SourceIdentity.from_text(text), text=text, structured_input=None)
+
+    def analyse(_index: int):
+        barrier.wait(timeout=30)
+        assert isinstance(provider.declaration.capability, AvailableCapability)
+        return provider.analyse(request)
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        results = tuple(executor.map(analyse, range(4)))
+    sequential = provider.analyse(request)
+    assert all(result.semantic_digest == sequential.semantic_digest for result in results)
+    assert len({result.artifact_digest for result in results}) == 4
 
 
 def test_concurrent_blake3_and_sha256_hashing() -> None:
@@ -37,8 +160,7 @@ def test_concurrent_blake3_and_sha256_hashing() -> None:
 def test_concurrent_canonical_json_digest() -> None:
     """Verify RFC-8785 canonical JSON hashing has zero race conditions."""
     dict_payloads = [
-        {"thread_id": i, "data": [f"item_{j}" for j in range(20)], "nested": {"k": i * 42}}
-        for i in range(50)
+        {"thread_id": i, "data": [f"item_{j}" for j in range(20)], "nested": {"k": i * 42}} for i in range(50)
     ]
     expected_digests = [canonical_json_digest(d) for d in dict_payloads]
 

@@ -1,6 +1,6 @@
 # Production source ingest
 
-`isanlp_rst.ingest` is the production boundary for source acquisition,
+`rdam.ingest` is the production boundary for source acquisition,
 inventory, policy, reversible preparation, deterministic planning, parser
 analysis, source anchoring, validation, canonical persistence, and the optional
 local cache.
@@ -29,7 +29,7 @@ with the required `formats` extra, never a raw `ModuleNotFoundError`.
 ```python
 from pathlib import Path
 
-from isanlp_rst.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest import ProductionIngestor, SourceArtifact
 
 source = SourceArtifact.from_path(
     Path("example.md"),
@@ -69,16 +69,16 @@ provider actually has.
 ## Plan declaratively
 
 ```python
-from isanlp_rst.ingest import CapacityUnit, ParserCapacity, SemanticVersion
+from rdam.ingest import CapacityUnit, AnalysisCapacity, SemanticVersion
 
-capacity = ParserCapacity(
+capacity = AnalysisCapacity(
     unit=CapacityUnit.TOKEN_COUNT,
     maximum=8192,
-    estimation_algorithm="provider_declared",
-    estimation_version=SemanticVersion(root="2.0.0"),
-    source="release_manifest",
+    estimation_algorithm="whitespace_token_count",
+    estimation_version=SemanticVersion(root="1.0.0"),
+    source="application_input_budget",
 )
-planned = ProductionIngestor().prepare(source, parser_capacity=capacity)
+planned = ProductionIngestor().prepare(source, capacity=capacity)
 print(planned.semantic.analysis_plan.status)
 ```
 
@@ -91,7 +91,7 @@ planning failure.
 
 ```python
 from rdam.rst import Parser
-from rdam.rst.ingest import ProductionIngestor
+from rdam.ingest import ProductionIngestor
 
 parser = Parser.from_model_release(
     Path("/absolute/model-releases"),
@@ -144,7 +144,7 @@ they are never silently treated as a cache miss.
 ## Canonical persistence
 
 ```python
-from isanlp_rst.ingest import load_contract, serialize_contract
+from rdam.ingest import load_contract, serialize_contract
 
 payload = serialize_contract(result)
 reloaded = load_contract(payload)
@@ -160,7 +160,7 @@ contradictions are rejected.
 ## Failures
 
 ```python
-from isanlp_rst.ingest import ProductionIngestError, serialize_contract
+from rdam.ingest import ProductionIngestError, serialize_contract
 
 try:
     ProductionIngestor(parser=parser).analyse(source)
@@ -185,6 +185,6 @@ pixi run -e default typecheck
 pixi run -e default mdlint
 ```
 
-These source checks do not certify a wheel. Distribution certification also
-requires deterministic exact-commit artifacts, local clean installs, exact
-loaded-model evidence, and second-machine verification of the committed wheel.
+These source checks do not certify a wheel. When a release is requested, verify
+the built artifacts and a clean local installation using the repository's
+existing build and installation commands. No second-machine ceremony is required.

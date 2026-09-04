@@ -5,7 +5,7 @@ from typing import Any, Final, cast
 
 from pydantic import BaseModel
 
-from rdam._strict import Sha256Identity, canonical_json_bytes, semantic_sha256
+from rdam._strict import Sha256Identity, canonical_json_bytes
 from rdam.contracts import (
     AGGREGATE_CONTRACT,
     CAPABILITIES_CONTRACT,
@@ -33,9 +33,9 @@ def verify_semantic_digest(record: BaseModel) -> None:
     digest = getattr(record, "semantic_digest", None)
     if not isinstance(digest, Sha256Identity):
         raise ValueError("record has no semantic digest")
-    expected = semantic_sha256(record.model_dump(exclude={"semantic_digest"}))
-    if digest.hex_digest != expected:
-        raise ValueError("record semantic digest mismatch")
+    # Rebuild from data, not the model instance: this checks nested records too
+    # and applies each contract's own semantic-versus-execution identity rule.
+    type(record).model_validate(record.model_dump())
 
 
 def serialize(record: PersistedRecord) -> bytes:

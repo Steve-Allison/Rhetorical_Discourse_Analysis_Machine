@@ -8,7 +8,8 @@ package, every technique a sub-package:
 | Sub-package | Technique | State (2026-09-03) |
 |---|---|---|
 | `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.analyse()` returning one explicit outcome per technique | feature 007 |
-| `rdam.rst` | RST / eRST — DMRST and UniRST discourse parsers (Steve's evolution of Elena Chistova's IsaNLP RST Parser), canonical source ingest, eRST completion, viewer, the `rdam-rst` command, and the machine adapter `rdam.rst.provider.RstProvider` | `available` |
+| `rdam.ingest` | shared source inventory, provider-specific projections, capacity planning, speaker evidence and anchors | feature 017 |
+| `rdam.rst` | RST / eRST — DMRST and UniRST discourse parsers (Steve's evolution of Elena Chistova's IsaNLP RST Parser), eRST completion, viewer, the `rdam-rst` command, and the machine adapter `rdam.rst.provider.RstProvider` | `available` |
 | `rdam.pdtb` | PDTB-3 binary relations with exact source spans, all seven relation types, signal evidence, and canonical senses | `available` with a resolvable configured LLM model |
 | `rdam.sdrt` | SDRS graphs with EDUs, CDUs, coordinating/subordinating relations, and deterministic graph/right-frontier validation | `available` with a resolvable configured LLM model |
 | `rdam.toulmin` | Complete Toulmin layouts with claim, grounds, warrant, and optional qualifiers | `available` with a resolvable configured LLM model |
@@ -73,11 +74,22 @@ The promotion-evidence system (feature 008) was removed on 2026-09-02 by owner r
 
 ### Production source ingest
 
-Production source ingest has one public surface: `rdam.rst.ingest` — `ProductionIngestor.capabilities()`, `.prepare()`, and `.analyse()`. The accepted source forms and their availability are whatever `describe_capabilities()` reports; that call is the authority, not this file. The old format-specific parsing functions and result envelopes were removed rather than deprecated; no compatibility route remains.
+Production source ingest has one public surface: `rdam.ingest` — `ProductionIngestor.capabilities()`, `.prepare()`, and `.analyse()`. The accepted source forms and their availability are whatever `describe_capabilities()` reports; that call is the authority, not this file. `rdam.rst.ingest` has no compatibility shim. The old format-specific parsing functions and result envelopes were removed rather than deprecated; no compatibility route remains.
 
 The optional **`formats` extra** supplies `docling-core`, `doclang`, `markdown-it-py`, and `mdit-py-plugins`: `pip install rdam[formats]`. Core parser consumers avoid that dependency chain. `pixi install` includes `formats`; keep these dependencies outside `[project.dependencies]`.
 
-Canonical ingest inventories source content before applying the explicit `AUTHORED_PROSE_V1` relevance policy. Authored prose reaches the RST parser; tables, code, machine descriptions, furniture, and other non-prose remain traceable side channels unless a future named policy explicitly changes their role. Every decision is represented in the preparation receipt, source anchors survive into the analysis, long or structured material uses the governed subdivision/stitching path, and persistent cache identity includes the complete analytical pipeline fingerprint.
+Canonical ingest inventories source content once per aggregate. Each text provider's
+`ContentRequirement` controls a pure source projection and its capacity plan; identical
+requirements share one projection. `AUTHORED_PROSE_V1` remains RST's admission policy.
+Toulmin and Walton admit table evidence through explicit cell-anchored transformations.
+Speaker attribution is source-derived or explicitly unresolved. Dung and IBIS consume
+only caller-supplied structures. Native outputs stay separate, aligned through source
+anchors rather than merged into one formalism.
+
+`rdam/composition.py` lazily registers production providers; `rdam/machine.py` contains
+generic orchestration without technique imports. Execution uses four in-process workers
+by default, declaration-driven provider locking, request-ordered outcomes and an optional
+cache binding source, projection, provider, contract, model and instructions identities.
 
 Format code beneath `rdam.rst.doclang` and `rdam.rst.markdown` is private decoding support for the canonical service. Docling JSON is loaded directly with current `docling-core`. There is no independent format mapper, result schema, cache, or public entry point.
 
@@ -93,7 +105,7 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 - [`rdam/rst/cli.py`](rdam/rst/cli.py) — the `rdam-rst` command (parse, capabilities, serve, version).
 - [`rdam/rst/parser_annotator.py`](rdam/rst/parser_annotator.py), [`rdam/rst/universal_parser/`](rdam/rst/universal_parser/) — DMRST and UniRST production parser implementations.
 - [`rdam/rst/annotation_rst.py`](rdam/rst/annotation_rst.py) — native `DiscourseUnit` and RS3 XML serialization.
-- [`rdam/rst/ingest/`](rdam/rst/ingest/) — sole production source inventory, preparation, analysis, receipt, subdivision, and cache API.
+- [`rdam/ingest/`](rdam/ingest/) — sole production source inventory, preparation, projection, analysis, receipt, subdivision, and cache API.
 - [`rdam/rst/contracts/`](rdam/rst/contracts/) — typed contracts: `RstAnalysis`, `RstDocument`, `SecondaryRelationEdge`, `DiscourseSignal`, envelope serializations.
 - [`rdam/rst/erst/`](rdam/rst/erst/) — Extended RST (eRST): RS4 reader/writer, typed signals, complete candidates, and formally constrained `ErstSecondaryEdgeDecoder`.
 - [`rdam/rst/model_loading/release.py`](rdam/rst/model_loading/release.py) — immutable release manifests, and the manifest-bound `CompatibilityRedeclaration` sidecar by which a stored release is shown to run under a later package line.
@@ -109,3 +121,14 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 - [`tools/production_boundary/`](tools/production_boundary/) — boundary inspection, reproducible build, artifact validation, clean install, and the classified `rst-baseline` comparison; every tool derives name and version from `pyproject.toml` (`identity.py`).
 - [`workbench/`](workbench/) — offline workbench: corpus ingestion, training recipes, Parseval evaluation, model-store release tooling (`workbench/promotion/`), and the central audit ledger (`workbench/experiments/central_ledger.jsonl`).
 - [`docs/metrics/UniRST_Metrics.md`](docs/metrics/UniRST_Metrics.md) — per-corpus metrics for the archived multilingual research model.
+
+## graphify
+
+This project uses a knowledge graph under `graphify-out/`. Treat it as available only when `graphify-out/graph.json` exists; setup markers alone are not a built graph.
+
+Rules:
+
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).

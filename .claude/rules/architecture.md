@@ -1,6 +1,6 @@
 # Architecture
 
-## The machine (features 006–016; owner rulings 2026-09-02)
+## The machine (features 006–017; owner rulings 2026-09-02 and 2026-09-04)
 
 `specs/006-rhetorical-discourse-machine/` is the decision-closed authority for the
 machine's rules; `specs/007-…` to `specs/016-…` record what was built against them; the
@@ -15,8 +15,10 @@ feature wins.
 rdam/                  the distribution `rdam` and the import package `rdam` — the machine
 ├── contracts.py       provider/formalism declarations, capability states, native results, outcomes
 ├── machine.py         Machine.capabilities() (side-effect-free), Machine.analyse() (N outcomes)
+├── composition.py     lazy registration of the seven production providers
+├── ingest/            shared source inventory, provider projections, capacity plans and anchors
 ├── frameworks.py      Technique, coe: identities from resources/framework-identities.json
-├── rst/               RST/eRST provider: parser, ingest, eRST, viewer, cli (`rdam-rst`), provider.py
+├── rst/               RST/eRST provider: parser, eRST, viewer, cli (`rdam-rst`), provider.py
 ├── pdtb/              PDTB-3 native relations and LLM-backed provider
 ├── sdrt/              native SDRS graphs and LLM-backed provider
 ├── toulmin/           native Toulmin layouts and LLM-backed provider
@@ -42,12 +44,32 @@ tools/production_boundary/   boundary inspection, reproducible build, validation
 
 ### Capability means the provider can run
 
+`rdam.ingest` owns source material for every technique. `rdam.rst.ingest` has no
+compatibility shim. Generic machine orchestration imports no technique package;
+the separate composition module imports providers only when called. Requests for
+files or bytes carry immutable source material. Inventory and default disposition
+run once, followed by one pure projection per distinct content requirement.
+
+Text providers declare admitted classes, representation transformations, capacity,
+boundary preferences, normalization and speaker needs. Dung and IBIS declare no
+content requirement and receive no projection. The aggregate carries the complete
+inventory, distinct projections, transformation records and speaker coverage.
+
+Execution is in-process with four workers by default and request-ordered results.
+Provider-declared safety controls locking; locks never retain provider instances.
+RST CPU/MPS safety, including cold initialization, is measured in Feature 017's
+`evidence/parser-concurrency.md`. Other devices and eRST completion are serialized.
+Typed failures preserve other successes; non-provider exceptions propagate.
+The optional cache binds source, projection, provider, contract, model and
+instructions. Analytical identity excludes explicitly declared execution fields;
+native artifact integrity still covers those fields.
+
 > The promotion-evidence gate (feature 008) was removed on 2026-09-02 by owner ruling. It
 > was never requested and it reported working parsers as `unavailable`. Capability is now
 > exactly what it says: can this provider run?
 
 - `rdam.rst.provider.RstProvider` is `available` when the configured `hf_model_version` is
-  one the façade knows how to load, or when the named local release's manifest is present.
+  one the façade knows how to load, or when the named local release validates.
   The check loads no model and touches no network; the parser is built on first `analyse`.
 - `rdam.dung` and `rdam.ibis` are exact and deterministic, so they are `available`
   whenever imported. Each still reports the digest of its own source files as

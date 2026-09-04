@@ -40,6 +40,12 @@ def _result(declaration: ProviderDeclaration, formalism_id: str, source: SourceI
 
 
 class TestProviderDeclaration:
+    def test_text_provider_cannot_omit_its_content_requirement(self) -> None:
+        declaration = rst_declaration().model_dump()
+        declaration["content_requirement"] = None
+        with pytest.raises(ValidationError, match="must declare a content requirement"):
+            ProviderDeclaration.model_validate(declaration)
+
     def test_curie_must_be_the_canonical_identity(self) -> None:
         with pytest.raises(ValidationError, match="Central names"):
             ProviderDeclaration(
@@ -106,6 +112,47 @@ class TestProviderDeclaration:
 
 
 class TestNativeTechniqueResult:
+    def test_execution_identity_is_separate_from_artifact_integrity(self) -> None:
+        template = _result(rst_declaration(), "rst_tree", SourceIdentity.from_text("hello"))
+        inputs = template.model_dump(exclude={"semantic_digest", "artifact_digest", "payload"})
+        first = NativeTechniqueResult.model_validate(
+            {
+                **inputs,
+                "payload": {"claim": "hello", "run": {"duration": 1}},
+                "execution_fields": (("run", "duration"),),
+            }
+        )
+        second = NativeTechniqueResult.model_validate(
+            {
+                **inputs,
+                "payload": {"claim": "hello", "run": {"duration": 2}},
+                "execution_fields": (("run", "duration"),),
+            }
+        )
+        assert first.semantic_digest == second.semantic_digest
+        assert first.artifact_digest != second.artifact_digest
+        assert first.payload["run"] != second.payload["run"]
+        changed_claim = NativeTechniqueResult.model_validate(
+            {
+                **second.model_dump(exclude={"semantic_digest", "artifact_digest"}),
+                "payload": {"claim": "different", "run": {"duration": 2}},
+            }
+        )
+        assert first.semantic_digest != changed_claim.semantic_digest
+        with pytest.raises(ValidationError, match="artifact digest mismatch"):
+            NativeTechniqueResult.model_validate({**first.model_dump(), "payload": second.payload})
+
+    @pytest.mark.parametrize("paths", (((),), (("absent",),), (("nodes", "duration"),), (("nodes",), ("nodes",))))
+    def test_execution_paths_must_address_unique_existing_fields(self, paths: tuple[tuple[str, ...], ...]) -> None:
+        result = _result(rst_declaration(), "rst_tree", SourceIdentity.from_text("hello"))
+        with pytest.raises(ValidationError, match="execution field"):
+            NativeTechniqueResult.model_validate(
+                {
+                    **result.model_dump(exclude={"semantic_digest", "artifact_digest"}),
+                    "execution_fields": paths,
+                }
+            )
+
     def test_digest_is_computed_and_tamper_evident(self) -> None:
         source = SourceIdentity.from_text("hello")
         result = _result(rst_declaration(), "rst_tree", source)
@@ -256,7 +303,7 @@ class TestAggregateAnalysis:
 
 class TestAggregateRequest:
     def test_text_required_for_text_techniques(self) -> None:
-        with pytest.raises(ValidationError, match="text is required"):
+        with pytest.raises(ValidationError, match="exactly one text or source_artifact"):
             AggregateRequest(source=SourceIdentity.from_text("x"), text=None, techniques=(Technique.RST,))
 
     def test_structured_only_request_needs_no_text(self) -> None:

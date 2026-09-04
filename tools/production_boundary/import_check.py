@@ -30,9 +30,10 @@ _PUBLIC_MODULES = (
     "rdam.dung",
     "rdam.ibis",
     "rdam.machine",
+    "rdam.composition",
+    "rdam.ingest",
 )
 _FORMAT_MODULES = (
-    "rdam.rst.ingest",
     "rdam.rst.doclang",
     "rdam.rst.markdown",
 )
@@ -50,7 +51,7 @@ def _distribution_members() -> tuple[str, ...]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--formats", action="store_true", help="also import canonical ingest and its private format helpers")
+    parser.add_argument("--formats", action="store_true", help="also import private format helpers")
     parser.add_argument("--outside", type=Path, help="fail if rdam resolves beneath this source directory")
     args = parser.parse_args()
 
@@ -80,7 +81,7 @@ def main() -> int:
         json.dumps(
             {
                 "distribution_members": len(members),
-                "canonical_ingest": args.formats,
+                "canonical_ingest": "rdam.ingest" in sys.modules,
                 "editable_source": package_file.is_relative_to(Path.cwd().resolve()),
                 "package_file": str(package_file),
                 "valid": True,

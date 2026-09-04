@@ -4,9 +4,9 @@ from importlib.metadata import PackageNotFoundError
 
 import pytest
 
-from rdam.rst.ingest import SourceForm, describe_capabilities
-from rdam.rst.ingest.contracts import capabilities as capability_contracts
-from rdam.rst.ingest.contracts.capabilities import Availability
+from rdam.ingest import SourceForm, describe_capabilities
+from rdam.ingest.contracts import capabilities as capability_contracts
+from rdam.ingest.contracts.capabilities import Availability
 
 
 def test_every_source_form_has_complete_availability_and_media_type_evidence() -> None:
