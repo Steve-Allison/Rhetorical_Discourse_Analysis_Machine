@@ -4050,9 +4050,9 @@
     "semantic_hash": "b460b7e1e29ae7beed0886652024a7ef"
   },
   "specs/018-shared-runtime-hardening/evidence.md": {
-    "mtime": 1788520471.2055998,
-    "seen": 1788525205.47623,
-    "ast_hash": "2331a50c28a9d37a37df3e8f06d07ffc",
+    "mtime": 1788525446.8593836,
+    "seen": 1788525449.848921,
+    "ast_hash": "2fdc7c226838ab8b92791bb6b5717c19",
     "semantic_hash": ""
   },
   "specs/018-shared-runtime-hardening/plan.md": {
@@ -4074,15 +4074,15 @@
     "semantic_hash": ""
   },
   "specs/018-shared-runtime-hardening/spec.md": {
-    "mtime": 1788520471.206117,
-    "seen": 1788525205.476232,
-    "ast_hash": "935c33004d6c300afef602323457e3d6",
+    "mtime": 1788525425.581011,
+    "seen": 1788525449.848923,
+    "ast_hash": "55fe1bb0e355455e39f115e1eba859b0",
     "semantic_hash": ""
   },
   "specs/018-shared-runtime-hardening/tasks.md": {
-    "mtime": 1788520097.9273293,
-    "seen": 1788520106.624712,
-    "ast_hash": "b76f37acdeb22363ae306c2a27a5730d",
+    "mtime": 1788525425.5808082,
+    "seen": 1788525449.848923,
+    "ast_hash": "320f75d8b654ff872023f14a268676e5",
     "semantic_hash": ""
   },
   "tests/fixtures/doclang/README.md": {
@@ -5328,15 +5328,15 @@
     "semantic_hash": ""
   },
   "specs/018-shared-runtime-hardening/build-evidence/reproducible-build.json": {
-    "mtime": 1788519238.975056,
-    "seen": 1788520106.624442,
-    "ast_hash": "e6840352f5ee1839fc1c2e2987bbe0a4",
+    "mtime": 1788525229.6715655,
+    "seen": 1788525449.8486478,
+    "ast_hash": "5426a255700d39792e44c2324545957f",
     "semantic_hash": ""
   },
   "specs/018-shared-runtime-hardening/build-evidence/source-release.json": {
-    "mtime": 1788519238.974556,
-    "seen": 1788520106.6244428,
-    "ast_hash": "81b95c8bb0ca1de344bd93c91017f52c",
+    "mtime": 1788525229.6711366,
+    "seen": 1788525449.848649,
+    "ast_hash": "04ae1bce8dd01a519473353ba2128b5c",
     "semantic_hash": ""
   },
   "tests/llm/test_instruction_provenance.py": {
