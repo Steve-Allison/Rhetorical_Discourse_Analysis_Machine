@@ -43,9 +43,9 @@
 
 ## Phase 6: Certification
 
-- [ ] T023 Run lint, typecheck, test, stress, shared-runtime coverage/mutation, production API/boundary/import, build/artifact/clean-install, and diff checks against the corrected source
+- [X] T023 Run lint, typecheck, test, stress, shared-runtime coverage/mutation, production API/boundary/import, build/artifact/clean-install, and diff checks against the corrected source
 - [X] T024 Run `test-all` if the configured local model releases are available; otherwise record the exact prerequisite
-- [ ] T025 Record exact current gate output in `evidence.md` and complete the feature
+- [X] T025 Record exact current gate output in `evidence.md` and complete the feature
 
 ## Dependencies
 

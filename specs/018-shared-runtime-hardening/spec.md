@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-03
 
-**Status**: Implemented and source-tested; final build certification awaits a clean local commit (2026-09-04)
+**Status**: Complete — all 25 tasks and corrected-source build/install verification passed (2026-09-04); see [evidence.md](evidence.md)
 
 **Input**: Owner-approved Feature 018 plan to remediate shared services while explicitly deferring the universal source pipeline.
 
