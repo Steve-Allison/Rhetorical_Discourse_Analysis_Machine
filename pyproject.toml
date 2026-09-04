@@ -38,6 +38,7 @@ dependencies = [
   "openai>=3.7.0,<4",
   "httpx2>=2.12,<3",
   "pydantic-ai>=2.37.0,<3",
+  "tiktoken>=0.13,<0.14",
 ]
 
 [project.scripts]
@@ -77,7 +78,6 @@ offline = [
   "jsonnet>=0.21,<0.22",
   "nltk>=3.9,<4",
   "peft>=0.20,<0.21",
-  "tiktoken>=0.13,<0.14",
 ]
 
 # One distribution, one package (owner ruling 2026-09-02): `rdam` is the machine, and every
@@ -122,7 +122,7 @@ rdam = { path = ".", editable = true }
 # restating them.
 [tool.pixi.feature.production.tasks]
 production-artifacts = { cmd = "python -m tools.production_boundary --root . --release", description = "Boundary inspection plus full validation of the built dist/<version> pair (version from pyproject.toml)" }
-production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --root . --model-store models/model-releases --release-id modernbert-v1-a52b70fbc1a3 --full", description = "Wheel certification: pip-install the built dist/<version> wheel into fresh core and formats venvs, network disabled, full installed acceptance on the named release" }
+production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --root . --full", description = "Wheel certification: supply --model-store and --release-id for a local production release; install fresh core/formats venvs and run full installed acceptance with external network disabled" }
 
 [tool.pixi.feature.offline.dependencies]
 python = "3.14.*"
@@ -158,6 +158,11 @@ show_missing = true
 typeCheckingMode = "strict"
 include = [
   "rdam",
+  "tests/llm/test_instruction_provenance.py",
+  "tests/production_boundary/test_runtime_tokenizer_dependency.py",
+  "tests/production_boundary/test_shared_mutation_verdict.py",
+  "tools/shared_runtime_mutation_test.py",
+  "tools/production_boundary/installed_acceptance.py",
 ]
 exclude = [
   "**/__pycache__",
@@ -189,7 +194,7 @@ test-all = { cmd = "pytest -q", description = "Every test, including slow model-
 test-live-models = { cmd = "pytest -m live -q", description = "Opt-in live LLM checks; requires RDAM_RUN_LIVE_MODEL_TESTS=1 and valid configured credentials" }
 test-stress = { cmd = "pytest tests/stress -q", description = "Concurrency, megadoc, and memory-leak stress tests" }
 shared-runtime-test = { cmd = "pytest tests/machine tests/llm tests/pdtb/test_provider.py tests/sdrt/test_provider.py tests/toulmin/test_provider.py tests/walton/test_provider.py tests/dung/test_provider.py tests/ibis/test_provider.py tests/rst/test_provider.py -q -m 'not slow'", description = "Feature 018 canonical data, provenance, LLM boundary, parallel execution, and cache regressions" }
-shared-runtime-coverage = { cmd = "coverage erase && coverage run --branch --source=rdam._canonical,rdam._immutable_json,rdam._execution,rdam._result_cache,rdam._provenance,rdam._provider_provenance -m pytest tests/machine/test_shared_runtime.py tests/machine/test_shared_runtime_internals.py tests/machine/test_contracts.py tests/llm/test_provider_consistency.py -q && coverage report --fail-under=100 rdam/_canonical.py rdam/_immutable_json.py rdam/_execution.py rdam/_result_cache.py rdam/_provenance.py rdam/_provider_provenance.py", description = "100% statement and branch coverage for Feature 018 shared-runtime modules" }
+shared-runtime-coverage = { cmd = "coverage erase && coverage run --branch --source=rdam._canonical,rdam._immutable_json,rdam._execution,rdam._result_cache,rdam._provenance,rdam._provider_provenance -m pytest tests/machine/test_shared_runtime.py tests/machine/test_shared_runtime_internals.py tests/machine/test_contracts.py tests/llm/test_provider_consistency.py tests/llm/test_instruction_provenance.py -q && coverage report --fail-under=100 rdam/_canonical.py rdam/_immutable_json.py rdam/_execution.py rdam/_result_cache.py rdam/_provenance.py rdam/_provider_provenance.py", description = "100% statement and branch coverage for Feature 018 shared-runtime modules" }
 shared-runtime-mutation-test = { cmd = "python tools/shared_runtime_mutation_test.py", description = "Deterministic mutation gate for deep freeze, deadlines, cache identity and single flight, ordering, and provenance" }
 smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every parser release in the configured model releases store on every available device through the public façade" }
 lint = { cmd = "ruff check rdam workbench tests scripts tools", description = "Ruff" }

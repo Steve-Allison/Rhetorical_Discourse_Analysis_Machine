@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from xml.etree import ElementTree
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,6 +20,7 @@ class Mutant:
     replacement: str
     tests: tuple[str, ...]
     timeout_seconds: int = 30
+    timeout_is_failure: bool = False
 
 
 MUTANTS = (
@@ -39,6 +41,7 @@ MUTANTS = (
         replacement="            async with asyncio.timeout(None):",
         tests=("tests/llm/test_llm_boundary.py::TestExtraction::test_one_deadline_covers_an_active_model_request",),
         timeout_seconds=3,
+        timeout_is_failure=True,
     ),
     Mutant(
         name="structured-input-removed-from-cache-key",
@@ -80,6 +83,16 @@ MUTANTS = (
             "test_available_provider_requires_source_revision_but_historical_provenance_remains_valid",
         ),
     ),
+    Mutant(
+        name="instruction-bound-source-eligibility-removed",
+        source=Path("rdam/_result_cache.py"),
+        original='    source_revision = normalized.partition(INSTRUCTIONS_REVISION_SEPARATOR)[0].strip()',
+        replacement='    source_revision = normalized',
+        tests=(
+            "tests/machine/test_shared_runtime.py::TestResultCache::"
+            "test_uncacheable_source_revision_survives_instruction_binding",
+        ),
+    ),
 )
 
 
@@ -101,11 +114,23 @@ def _apply_mutant(workspace: Path, mutant: Mutant) -> None:
     source.write_text(content.replace(mutant.original, mutant.replacement), encoding="utf-8")
 
 
+def causal_failure(returncode: int, report: Path) -> bool:
+    """Count test-call failures, never collection, setup, or runner errors."""
+
+    if returncode != 1 or not report.is_file():
+        return False
+    suites = ElementTree.parse(report).getroot().iter("testsuite")
+    failures = errors = 0
+    for suite in suites:
+        failures += int(suite.get("failures", "0"))
+        errors += int(suite.get("errors", "0"))
+    return failures > 0 and errors == 0
+
+
 def _run_mutant(mutant: Mutant) -> tuple[bool, str]:
     with tempfile.TemporaryDirectory(prefix=f"rdam-shared-mutant-{mutant.name}-") as temporary:
         workspace = Path(temporary)
         _copy_test_workspace(workspace)
-        _apply_mutant(workspace, mutant)
         environment = os.environ.copy()
         environment["PYTHONPATH"] = str(workspace)
         preflight = subprocess.run(
@@ -124,9 +149,23 @@ def _run_mutant(mutant: Mutant) -> tuple[bool, str]:
         )
         if preflight.returncode != 0:
             return False, f"mutation workspace import preflight failed:\n{preflight.stderr}"
+        command = [sys.executable, "-m", "pytest", *mutant.tests, "-q"]
+        baseline = subprocess.run(
+            command,
+            cwd=workspace,
+            env=environment,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+        )
+        if baseline.returncode != 0:
+            return False, f"unmodified causal tests failed:\n{baseline.stdout}\n{baseline.stderr}"
+        _apply_mutant(workspace, mutant)
+        report = workspace / "mutant-results.xml"
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "pytest", *mutant.tests, "-q"],
+                [*command, f"--junitxml={report}"],
                 cwd=workspace,
                 env=environment,
                 capture_output=True,
@@ -135,9 +174,9 @@ def _run_mutant(mutant: Mutant) -> tuple[bool, str]:
                 timeout=mutant.timeout_seconds,
             )
         except subprocess.TimeoutExpired:
-            return True, "causal test timed out under the mutant"
+            return mutant.timeout_is_failure, "causal test timed out under the mutant"
         output = "\n".join(part for part in (result.stdout, result.stderr) if part).strip()
-        return result.returncode != 0, output
+        return causal_failure(result.returncode, report), output
 
 
 def main() -> int:

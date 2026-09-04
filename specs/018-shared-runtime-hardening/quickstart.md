@@ -27,10 +27,17 @@ pixi run shared-runtime-mutation-test
 pixi run production-api-contract
 pixi run production-boundary
 pixi run production-import-check
-pixi run build-production
+pixi run build-production --evidence-dir specs/018-shared-runtime-hardening/build-evidence
 pixi run validate-production-artifacts
-pixi run -e production production-clean-install
+pixi run -e production production-clean-install \
+  --model-store /Users/steveallison/.cache/isanlp_rst/model-releases \
+  --release-id gumrrg-eb1d5745f3a1
 git diff --check
 ```
 
 Run `pixi run test-all` only when the configured local model releases are present; report unavailable prerequisites explicitly.
+
+The build requires a clean committed checkout. The clean-install command takes
+an explicit local model store and release; the values above are the existing
+release used on this machine, not a hidden task default. Installation fetches
+dependencies, then acceptance runs with external network access disabled.

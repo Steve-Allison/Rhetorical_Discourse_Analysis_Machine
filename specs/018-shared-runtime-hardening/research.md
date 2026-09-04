@@ -1,5 +1,9 @@
 # Research: Shared Runtime Hardening
 
+These decisions record the original implementation. Feature 017 subsequently
+introduced the owner-approved clean ingest API break and declaration-driven
+parallel safety; current authority is reconciled in [spec.md](spec.md#current-authority-2026-09-04).
+
 ## Decisions
 
 ### Canonical identity
@@ -16,11 +20,30 @@ A stopwatch checked only before retry sleeps cannot bound an active request or s
 
 ### Parallelism
 
-Technique calls are independent, but completion order is not contract order. Futures therefore collect by technique and the aggregate is assembled from request order. Provider call locks are process-wide by concrete instance, so two machines sharing one provider cannot race its lazy/runtime state.
+Technique calls are independent, but completion order is not contract order. Futures therefore collect by technique and the aggregate is assembled from request order. Provider call locks are process-wide by concrete instance for providers declaring `serialized`; Feature 017 replaced the original blanket locking with measured, declared parallel safety.
 
 ### Cache
 
 Only a clean exact revision makes a successful result reproducible enough for reuse. The native result is already a canonical digest-verified envelope, so a second cache contract would be redundant. Atomic replace, owner-only permissions, per-key single flight, and full revalidation are sufficient at one-person/one-machine scale; TTLs and distributed coordination are unnecessary.
+
+The final pass found that appending an instructions digest could conceal an
+unknown source revision. Eligibility now checks the underlying source revision
+as well as the outer dirty marker. Deterministic clean/dirty/unknown tests cover
+instruction binding independently of the checkout's current Git state.
+
+### Dependency ownership
+
+The installed `pydantic-ai-slim` OpenAI extra requires `tiktoken`. It therefore
+belongs in core production dependencies, not the offline-only set. The boundary
+and clean-install checks now agree with installed requirement metadata; a
+regression test checks all three against the project dependency declaration.
+
+### Mutation evidence
+
+Each mutation runs only after the same causal tests pass unmodified in the
+isolated workspace. A normal kill requires a pytest test-call failure without
+collection/setup errors; an enforced timeout can kill the deadline mutant.
+Infrastructure failures are not evidence that a regression was detected.
 
 ## Rejected Alternatives
 

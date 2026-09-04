@@ -10,6 +10,7 @@ import subprocess
 from typing import Any, cast
 
 PACKAGE_NAME = "rdam"
+INSTRUCTIONS_REVISION_SEPARATOR = ":instructions:"
 PROVENANCE_FIELDS = frozenset(
     {
         "schema_name",

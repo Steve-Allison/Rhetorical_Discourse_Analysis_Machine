@@ -136,6 +136,8 @@ class OwnershipAuthority:
                 "pydantic-ai",
                 "openai",
                 "httpx2",
+                # Required by pydantic-ai-slim's OpenAI runtime extra.
+                "tiktoken",
             }
         )
         self.offline_dependencies = frozenset(
@@ -149,7 +151,6 @@ class OwnershipAuthority:
                 "pytest-cov",
                 "ruff",
                 "pyright",
-                "tiktoken",
                 "types-lxml",
                 "build",
             }

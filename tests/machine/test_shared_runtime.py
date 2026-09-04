@@ -265,8 +265,19 @@ class TestResultCache:
         assert S_IMODE(entries[0].stat().st_mode) == 0o600
         assert not tuple(tmp_path.glob(".*")), "atomic temporary files must not survive"
 
-    def test_dirty_revision_bypasses_the_cache(self, tmp_path: Path) -> None:
-        dirty = provider(Technique.RST, revision="abc-dirty")
+    @pytest.mark.parametrize(
+        "revision",
+        (
+            "abc-dirty",
+            "unknown",
+            "unknown:instructions:" + "a" * 64,
+            ":instructions:" + "a" * 64,
+            "abc-dirty:instructions:" + "a" * 64,
+            "abc:instructions:" + "a" * 64 + "-dirty",
+        ),
+    )
+    def test_uncacheable_source_revision_survives_instruction_binding(self, tmp_path: Path, revision: str) -> None:
+        dirty = provider(Technique.RST, revision=revision)
         machine = Machine([dirty], execution_policy=ExecutionPolicy(cache_directory=tmp_path))
         request = AggregateRequest.for_text("do not cache", (Technique.RST,))
         machine.analyse(request)

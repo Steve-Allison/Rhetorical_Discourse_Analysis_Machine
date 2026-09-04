@@ -16,10 +16,12 @@ import socket
 import subprocess
 import sys
 import tempfile
+from typing import cast
 import zipfile
 
 
-_OFFLINE_DISTRIBUTIONS = ("fire", "jsonnet", "nltk", "peft", "pytest", "tiktoken")
+# tiktoken is a required OpenAI runtime dependency, not an offline-only package.
+OFFLINE_DISTRIBUTIONS = ("fire", "jsonnet", "nltk", "peft", "pytest")
 _TEXT = "Because it rained, the match stopped. The crowd left."
 _EDUS = ("Because it rained, the match stopped.", "The crowd left.")
 _DOCLANG_ARCHIVE_DOCUMENT = b"<doclang><text>Installed archive acceptance.</text></doclang>"
@@ -38,13 +40,11 @@ def _disable_external_network() -> None:
     original_connect = socket.socket.connect
 
     def guarded_connect(instance: socket.socket, address: object) -> None:
-        if isinstance(address, tuple) and address and str(address[0]) in {
-            "127.0.0.1",
-            "::1",
-            "localhost",
-        }:
-            original_connect(instance, address)
-            return
+        if isinstance(address, tuple):
+            endpoint = cast(tuple[object, ...], address)
+            if endpoint and isinstance(endpoint[0], str) and endpoint[0] in {"127.0.0.1", "::1", "localhost"}:
+                original_connect(instance, endpoint)
+                return
         raise OSError("external network access is disabled during installed acceptance")
 
     socket.socket.connect = guarded_connect
@@ -52,7 +52,7 @@ def _disable_external_network() -> None:
 
 def _assert_offline_distributions_absent() -> None:
     present: list[str] = []
-    for name in _OFFLINE_DISTRIBUTIONS:
+    for name in OFFLINE_DISTRIBUTIONS:
         try:
             distribution(name)
         except PackageNotFoundError:

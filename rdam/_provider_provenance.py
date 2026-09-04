@@ -5,7 +5,7 @@ from importlib import resources
 from typing import Protocol
 
 from rdam._strict import sha256_bytes
-from rdam._provenance import installed_package_version, resolve_source_revision
+from rdam._provenance import INSTRUCTIONS_REVISION_SEPARATOR, installed_package_version, resolve_source_revision
 from rdam.contracts import (
     ProviderError,
     ProviderFailure,
@@ -33,6 +33,16 @@ def source_identity(package_name: str, source_files: tuple[str, ...]) -> Sha256I
     return Sha256Identity(hex_digest=digest)
 
 
+def instruction_revision(revision: str, instructions: str | None) -> str:
+    """Bind instruction identity without concealing the source's dirty status."""
+
+    if instructions is None:
+        return revision
+    dirty = revision.endswith("-dirty")
+    bound = f"{revision.removesuffix('-dirty')}{INSTRUCTIONS_REVISION_SEPARATOR}{semantic_sha256(instructions)}"
+    return f"{bound}-dirty" if dirty else bound
+
+
 def provider_provenance(
     *,
     package: str,
@@ -42,12 +52,7 @@ def provider_provenance(
 ) -> ProviderProvenance:
     """Build complete runtime provenance without provider-specific boilerplate."""
 
-    revision = resolve_source_revision()
-    if instructions is not None:
-        dirty = revision.endswith("-dirty")
-        revision = f"{revision.removesuffix('-dirty')}:instructions:{semantic_sha256(instructions)}"
-        if dirty:
-            revision += "-dirty"
+    revision = instruction_revision(resolve_source_revision(), instructions)
     return ProviderProvenance(
         package=package,
         version=package_version(),
@@ -139,6 +144,7 @@ def llm_provider_failure(
 
 
 __all__ = [
+    "instruction_revision",
     "llm_provider_failure",
     "package_version",
     "provider_failure",

@@ -12,7 +12,7 @@ Harden the existing aggregate runtime without changing native formalisms or sour
 **Primary Dependencies**: Pydantic 2.13, Pydantic AI 2.37, RFC 8785, `httpx2` 2.12
 **Testing**: pytest, coverage.py branch coverage, deterministic isolated-workspace mutation runner via Pixi
 **Target Platform**: one local macOS machine
-**Constraints**: aggregate/native `1.0.0`; historical readability; no provider base class; no hidden cache; no source-pipeline or trained-model changes
+**Constraints**: aggregate/native `1.0.0`; current canonical round-trips; no provider base class; no hidden cache; no source-pipeline or trained-model changes. Feature 017's subsequent owner-approved clean API break and declared parallel safety remain authoritative (see [spec.md](spec.md#current-authority-2026-09-04)).
 
 ## Architecture
 

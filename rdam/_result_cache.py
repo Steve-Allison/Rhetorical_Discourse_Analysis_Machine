@@ -16,6 +16,7 @@ from threading import Lock
 import warnings
 
 from rdam.contracts import NativeTechniqueResult
+from rdam._provenance import INSTRUCTIONS_REVISION_SEPARATOR
 from rdam.serialization import load, serialize
 
 _LOCK_REGISTRY_GUARD = Lock()
@@ -28,7 +29,13 @@ def revision_is_cacheable(revision: str | None) -> bool:
     if revision is None:
         return False
     normalized = revision.strip().lower()
-    return bool(normalized) and normalized != "unknown" and not normalized.endswith("-dirty")
+    source_revision = normalized.partition(INSTRUCTIONS_REVISION_SEPARATOR)[0].strip()
+    return (
+        bool(source_revision)
+        and source_revision != "unknown"
+        and not source_revision.endswith("-dirty")
+        and not normalized.endswith("-dirty")
+    )
 
 
 class ResultCache:

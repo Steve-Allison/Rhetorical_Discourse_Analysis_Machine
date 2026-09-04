@@ -28,7 +28,7 @@
 
 - [X] T012 Export and validate `ExecutionPolicy` with four-worker/no-cache defaults
 - [X] T013 Execute techniques concurrently with stable upstream/outcome/lineage ordering and native unexpected-exception propagation
-- [X] T014 Serialize calls to one provider instance across machines while permitting cross-provider overlap
+- [X] T014 Serialize calls to one provider instance across machines when declared `serialized`, preserving Feature 017's approved concurrent-provider behavior
 - [X] T015 Implement complete content-addressed cache identity and dirty/missing/unknown revision bypass
 - [X] T016 Implement per-key single flight, atomic owner-only writes, full hit validation, corruption recovery, and success-only caching
 - [X] T017 Add causal parallel/cache regression tests for every locked invariant
@@ -36,14 +36,14 @@
 ## Phase 5: Tooling and Documentation
 
 - [X] T018 Add focused shared-runtime test and 100% branch-coverage Pixi tasks
-- [X] T019 Add deterministic isolated-workspace mutation tests for all six critical mutations
+- [X] T019 Add deterministic isolated-workspace mutation tests for all seven critical mutations, with passing unmodified baselines and causal failure verdicts
 - [X] T020 Update Feature 006 shared-pattern and architecture ownership documents
 - [X] T021 Remove and ignore the Graphify query timestamp
 - [X] T022 Refresh Graphify and prove all production nodes resolve under `rdam/` with no obsolete source paths
 
 ## Phase 6: Certification
 
-- [X] T023 Run lint, typecheck, test, stress, shared-runtime coverage/mutation, production API/boundary/import, build/artifact/clean-install, and diff checks
+- [ ] T023 Run lint, typecheck, test, stress, shared-runtime coverage/mutation, production API/boundary/import, build/artifact/clean-install, and diff checks against the corrected source
 - [X] T024 Run `test-all` if the configured local model releases are available; otherwise record the exact prerequisite
 - [ ] T025 Record exact current gate output in `evidence.md` and complete the feature
 
