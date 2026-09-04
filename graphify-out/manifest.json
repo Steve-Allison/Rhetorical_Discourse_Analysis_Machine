@@ -4020,15 +4020,15 @@
     "semantic_hash": ""
   },
   "specs/017-universal-source-pipeline/spec.md": {
-    "mtime": 1788511474.3929574,
-    "seen": 1788511500.683291,
-    "ast_hash": "082680a97885ff0c6d5d6358dc5d7183",
+    "mtime": 1788512437.1259425,
+    "seen": 1788512554.893381,
+    "ast_hash": "ec4ac069b2e18aac4ee718cb54e52f2b",
     "semantic_hash": ""
   },
   "specs/017-universal-source-pipeline/tasks.md": {
-    "mtime": 1788511474.3941257,
-    "seen": 1788511500.683291,
-    "ast_hash": "107fa055f153d573783d69b01d8816e0",
+    "mtime": 1788512437.1261694,
+    "seen": 1788512554.8933818,
+    "ast_hash": "1c78bda1856f55ea6d8e9361ac695e0a",
     "semantic_hash": ""
   },
   "specs/018-shared-runtime-hardening/checklists/requirements.md": {
@@ -5322,9 +5322,9 @@
     "semantic_hash": ""
   },
   "specs/017-universal-source-pipeline/evidence/gates.md": {
-    "mtime": 1788512011.1137145,
-    "seen": 1788512019.121692,
-    "ast_hash": "57388f1b128a7fb2f43e6952f94a563d",
+    "mtime": 1788512437.1263793,
+    "seen": 1788512554.893377,
+    "ast_hash": "a52c3ea3f0e5b85680ceb23e7c05cd8c",
     "semantic_hash": ""
   }
 }

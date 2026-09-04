@@ -1,60 +1,60 @@
 # Graph Report - Rhetorical_Discourse_Analysis_Machine  (2026-09-04)
 
 ## Corpus Check
-- 823 files · ~869,964 words
+- 823 files · ~870,100 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 12337 nodes · 25805 edges · 1143 communities (415 shown, 708 thin omitted)
-- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 1757 edges (avg confidence: 0.94)
+- 12387 nodes · 25389 edges · 1165 communities (428 shown, 717 thin omitted)
+- Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 1741 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a856857f`
+- Built from commit: `0409816a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - ProductionIngestor
 - production_ingest/__main__.py
-- test_erst_checkpoint.py
-- rst/erst/__init__.py
+- contracts/erst.py
+- RS4Reader
 - legacy.py
 - ToulminProvider
-- research/erst/__init__.py
-- Machine
 - erst/contracts.py
-- NuclearityPatternEnum
+- Machine
+- systems/common.py
+- RstAnalysis
+- machine.py
 - ProviderRequest
-- WaltonProvider
 - candidates.py
 - OntologyAdapter
-- PdtbProvider
-- contracts/erst.py
+- pdtb/test_provider.py
+- SecondaryEdgeCandidate
 - serialize_contract
-- test_shared_runtime_internals.py
-- SemanticVersion
+- semantic_sha256
+- ingest/contracts/analysis.py
 - Parser
 - _llm.py
 - properties
-- erst/data.py
+- CorpusPartition
 - ArgumentationFramework
 - SchemeId
 - properties
-- Discourse Unit Graph
+- SdrtAnalysis
 - BasePredictor
 - technology.py
-- ContentClass
+- PreparationOutcome
 - properties
 - main.py
 - PDTB Analysis Models
-- service.py
+- test_neural_erst.py
 - grammar.py
 - diff_records
-- cli.py
+- doclang/loader.py
 - RSTWeb SQL Queries
 - properties
-- describe_capabilities
+- test_serialization.py
 - test_transformer_segmenter.py
 - _harvest.py
 - Educational Performance Markers
@@ -64,18 +64,18 @@
 - properties
 - DUConverter
 - properties
-- systems/common.py
+- completer.py
 - Universal Parser SpanNode
 - ingest/public_surface.py
 - dmrst/utils_rs3.py
 - rdam/ingest/__init__.py
 - properties
-- properties
+- type
 - properties
 - build.py
 - properties
 - unirst/common.py
-- protocol.py
+- .from_model_release
 - properties
 - RstProvider
 - Disposition
@@ -85,7 +85,7 @@
 - properties
 - properties
 - Path
-- test_python314_audit_regressions.py
+- DiscourseUnit
 - properties
 - properties
 - properties
@@ -97,29 +97,29 @@
 - DMRST Data Reader
 - dmrst_parser/src/parser/metrics.py
 - properties
-- performance.py
+- .identities_follow_lifecycle
 - PredictorUniRST
-- DungProvider
+- StructuredInput
 - Tensor
-- dmrst_parser/src/parser/modules.py
+- Tensor
 - properties
-- _version.py
+- promote.py
 - Tensor
 - universal_parser/src/parser/modules.py
 - test_production_boundary.py
 - Adversarial Calibration Tests
 - dmrst/utils_dis_thiago.py
 - Vocal Quality Markers
-- TrainingManager
-- ReleaseIdentity
-- technique_curie
+- resolved_model_identity
+- artifacts.py
+- NativeTechniqueResult
 - properties
 - CacheEligibility
-- model_validator
+- docling_rst_quality_check.py
 - OwnershipAuthority
-- model.py
+- PureTransformerParsingNet
 - properties
-- Sha256Identity
+- parser_result.py
 - ParsingNet
 - Tree Node Manipulation
 - required
@@ -132,7 +132,7 @@
 - FrozenEvaluationAdapter
 - Markdown Loader Parser
 - required
-- source_anchors
+- properties
 - properties
 - required
 - properties
@@ -141,9 +141,9 @@
 - properties
 - properties
 - properties
-- XmlElement
+- test_doclang_text_walker.py
 - required
-- test_predictor_args.py
+- ingest/identity.py
 - required
 - properties
 - properties
@@ -154,9 +154,9 @@
 - properties
 - DataManager
 - test_comparison_foundations.py
-- ExperimentRunner
+- erst/runner.py
 - Narrative Rhetorical Markers
-- SourceArtifact
+- service.py
 - ParsingNet
 - $defs
 - properties
@@ -172,7 +172,7 @@
 - properties
 - properties
 - PredictorDMRST
-- ModernTreeParserTrainer
+- train_tree_parser.py
 - properties
 - properties
 - $ref
@@ -189,18 +189,18 @@
 - required
 - properties
 - properties
-- .build
-- enrichment.py
-- PureTransformerParsingNet
+- .analyse_document
+- ParserAnalysisResult
+- test_integration.py
 - properties
-- RstAnalysis
+- RstDocument
 - properties
 - properties
 - MediaReferenceRepresentation
 - enum
 - $defs
 - test_viewer_classes.py
-- required
+- properties
 - properties
 - $defs
 - properties
@@ -214,7 +214,7 @@
 - properties
 - properties
 - semantic_digest
-- production_ingest/contracts.py
+- test_promotion_contracts.py
 - gold.py
 - semantic_digest
 - semantic_digest
@@ -224,8 +224,8 @@
 - ExactCoverage
 - CentralExperimentLedger
 - test_frameworks.py
-- ._guess_token_offsets
-- ._resolve_dtype
+- serialize
+- str2bool
 - properties
 - ArchiveMemberAnchor
 - ArchiveMemberAnchor
@@ -239,7 +239,7 @@
 - OperationCapability
 - required
 - required
-- final_data.py
+- run_final_evaluation.py
 - MetadataEntry
 - properties
 - rs3tohtml
@@ -250,22 +250,22 @@
 - text
 - required
 - Sha256Identity
-- _Predictor
+- render
 - enum
 - required
-- test_erst_decoder.py
+- test_parse_result.py
 - mapping
 - Parser Attention Tests
 - read_release_identity
 - production_boundary/contracts.py
 - Bottom-Up Parsing Network
 - SdrtProvider
-- semantic_sha256
+- Sha256Identity
 - text
 - text
-- test_concurrency_stress.py
+- test_real_parser_concurrency_matches_sequential_trees
 - properties
-- test_erst_environment.py
+- load_repository_environment
 - AdapterExecutionIdentity
 - RST Quality Diagnostics
 - Adobe Creative Cloud Products
@@ -288,16 +288,16 @@
 - required
 - DiscourseSignal
 - enum
-- ._detect_family_from_model_dir
+- ._resolve_family
 - Repository Cleanup Script
-- .relative_safe_path
+- CompatibilityRedeclaration
 - required
 - UniRST Experiment Runner
 - required
 - enum
-- dmrst_parser/predictor.py
+- dmrst_parser/src/parser/parsing_net.py
 - $defs
-- Counter
+- tree_stats
 - DocLang Fixture Parity Tests
 - Cleanup Script Tests
 - Offline Command Smoke Tests
@@ -305,14 +305,14 @@
 - Canonical Ontology Schemas
 - Prompt Engineering Techniques
 - RAG Pipeline Stages
-- ParserCapacity
+- GraphError
 - enum
-- test_release_metadata.py
+- _version.py
 - enum
 - enum
 - GoldSetManifest
 - test_clean_install_v2.py
-- to_png
+- production_boundary/public_surface.py
 - parseXML
 - test_baseline_corrections.py
 - freeze.py
@@ -325,8 +325,8 @@
 - enum
 - Workbench
 - production_boundary/parity.py
-- _RecordingTransformer
-- Release Tool Test Fixtures
+- test_python314_audit_regressions.py
+- production_boundary/conftest.py
 - RST Mutation Testing
 - Shared Runtime Mutation Testing
 - File Read Validation Script
@@ -334,7 +334,7 @@
 - AI and LLM Methods
 - Toulmin Argumentation Model
 - required
-- ._load_and_parse_all
+- ._detect_family_from_model_dir
 - Toulmin Provider Specifications
 - Walton Provider Specifications
 - SDRT Provider Specifications
@@ -348,7 +348,7 @@
 - DMRST Configuration Reader
 - UniRST Configuration Reader
 - Discourse Relation Senses
-- universal_parser/src/parser/segmenters.py
+- test_version_compat.py
 - enum
 - OutputFormalism
 - Markdown Linting Script
@@ -356,11 +356,11 @@
 - Discourse Parser Components
 - IBIS Provider Specifications
 - Public API Integration Tests
-- ModelFile
+- release.py
 - ArchiveMemberAnchor
-- test_all_source_forms.py
+- HierarchicalAdapter
 - Nucleus and Relation Tests
-- Artifact Receipt Validation
+- Self
 - Docling RST Output Planning
 - Information Retrieval Strategies
 - Aristotelian Rhetorical Appeals
@@ -378,21 +378,21 @@
 - Argument Conflict Types
 - Argument Link Types
 - Discourse Roles
-- resolve_dtype
+- test_model_promotion.py
 - classify
 - enum
 - mapping
-- test_source_entry_points.py
+- ModelReleaseManifest
 - DiscourseSignal
 - kind
-- test_release_versions.py
+- test_conformance_matrix.py
 - never_a_real_request
 - rst/contracts/__init__.py
 - CoordinateBoxAnchor
 - Production Ingestion Pipeline
-- Tasks: RST Provider Adapter
+- TemperatureCalibration
 - Markdown Parsing Fixtures
-- _FastTokenizerDouble
+- StructuralOnlyAdapter
 - LLM Test Mocking
 - Parser Isolation Tests
 - Prompt Instruction Tests
@@ -432,6 +432,7 @@
 - No Assumptions Script
 - .normalized_release_triplet
 - Cleanup Script
+- Discriminator
 - Build and Ingest Handoff
 - Adobe Data Collection
 - Adobe Edge Network
@@ -477,10 +478,13 @@
 - Evaluation Manifests
 - Ingest Contract Preparation
 - Gold Set Evidence
+- _GraphScorer
 - Feature Specification: Universal Source Pipeline
 - Aggregate Analysis Gate
 - RST Provider Gate
 - Tasks: Dung Abstract Argumentation Provider
+- enum
+- CrossEncoderConfig
 - Ingest Acceptance Tests
 - LLM Technique Tests
 - PDTB Provider Tests
@@ -501,6 +505,8 @@
 - Viewer Layout Decision
 - Python 3.14 Performance
 - Python 3.14 Audit
+- PromotionReceipt
+- framework_identities
 - Presentation Speaker Notes
 - Forensic Code Review
 - RST Performance Baseline
@@ -1097,16 +1103,21 @@
 - Rhetorical Discourse Analysis
 - NLP Ontology
 - RST Visualization
+- .classify
 - Research Protocols
 - Evidence Mapping
+- .family_for_runtime_contract
+- bench.py
 - Ownership Boundary Contracts
 - Boundary Violation Rules
 - Dependency Rules
 - Model Release Manifests
 - Ownership Rules
+- ProviderConfigurationError
 - CLI Release Contracts
 - Runtime API Contracts
 - Production Pattern Contracts
+- JsonValue
 - architecture
 - compatibility_range
 - created_at
@@ -1115,6 +1126,8 @@
 - schema_version
 - source_model_identity
 - source_revision
+- smoke_iterate
+- .deep_complete_authority
 - IBIS Provider Quickstart
 - Toulmin Provider Evidence
 - Toulmin Validation Quickstart
@@ -1138,26 +1151,35 @@
 - Contract Test Fixtures
 - transcript.md
 - unirst/span_node.py
+- .describe_analysis_identity
+- Model
+- device
+- dtype
+- ParsedRstTreeEvidence
+- ZipInfo
+- live
+- Module
+- datetime
 
 ## God Nodes (most connected - your core abstractions)
 1. `ProductionIngestor` - 222 edges
-2. `RstAnalysis` - 161 edges
-3. `StrictContractModel` - 153 edges
+2. `StrictContractModel` - 153 edges
+3. `RstAnalysis` - 125 edges
 4. `Sha256Identity` - 124 edges
-5. `Machine` - 121 edges
-6. `Parser` - 120 edges
-7. `RstDocument` - 110 edges
-8. `SourceArtifact` - 102 edges
-9. `semantic_sha256()` - 82 edges
-10. `ProviderRequest` - 81 edges
+5. `Machine` - 120 edges
+6. `Parser` - 114 edges
+7. `SourceArtifact` - 102 edges
+8. `semantic_sha256()` - 81 edges
+9. `ProviderRequest` - 80 edges
+10. `RstDocument` - 77 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `test_tracked_train_inventory_is_hash_valid_and_raw_to_concept_complete()` --uses--> `RawRelationInventory`  [INFERRED]
-  tests/integration/test_erst_relations.py → rdam/rst/contracts/erst.py
 - `test_quality_baseline_is_bound_to_the_current_default_parser_identity()` --uses--> `Parser`  [INFERRED]
   tests/offline/test_gum_gold.py → rdam/rst/parser.py
 - `RstProvider` --calls--> `ProductionIngestor`  [EXTRACTED]
   rdam/rst/provider.py → specs/002-production-source-ingest/quickstart.md
+- `test_tracked_train_inventory_is_hash_valid_and_raw_to_concept_complete()` --uses--> `RawRelationInventory`  [INFERRED]
+  tests/integration/test_erst_relations.py → rdam/rst/contracts/erst.py
 - `English RST Tree Visualization` --conceptually_related_to--> `English RST Capability Platform Plan`  [INFERRED]
   examples/example-image.png → docs/plans/2026-08-16-english-rst-quality.md
 - `Russian RST Tree Visualization` --conceptually_related_to--> `UniRST Metrics`  [INFERRED]
@@ -1213,99 +1235,99 @@
 - **Visual Styles** — ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_style_style, ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_style_design, ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_style_tone_of_voice [INFERRED 0.90]
 - **Acrobat Studio Knowledge Hubs & AI Capabilities** — ontology_vendor_central-configs_domains_adobe_products_acrobat_studio, ontology_vendor_central-configs_domains_adobe_products_acrobat_ai_assistant, ontology_vendor_central-configs_domains_adobe_products_pdf_spaces, ontology_vendor_central-configs_domains_adobe_products_acrobat_pdf_spaces, ontology_vendor_central-configs_domains_adobe_products_pdf_spaces_sharing [INFERRED 0.95]
 
-## Communities (1143 total, 708 thin omitted)
+## Communities (1165 total, 717 thin omitted)
 
 ### Community 0 - "ProductionIngestor"
 Cohesion: 0.03
-Nodes (152): BaseHTTPRequestHandler, ParserAnalysisResult, CompositeAnalysisIdentity, DiagnosticPolicy, FailureCategory, LifecycleStage, PreparationCompletedEvidence, ProductionFailure (+144 more)
+Nodes (165): MarkerRefinementMode, AcquisitionCompletedEvidence, FailureCategory, LifecycleStage, PreparationCompletedEvidence, ProductionFailure, StrEnum, Retryability (+157 more)
 
 ### Community 1 - "production_ingest/__main__.py"
-Cohesion: 0.24
-Nodes (13): inspect_candidate_outputs(), inspection_status_by_id(), Path, Fail-closed direct inspection of private candidate outputs., Inspect every persisted preparation/result without exporting source text., _segments_reconstruct(), _git(), main() (+5 more)
+Cohesion: 0.26
+Nodes (12): inspect_candidate_outputs(), inspection_status_by_id(), Path, Inspect every persisted preparation/result without exporting source text., _segments_reconstruct(), _git(), main(), _only_wheel() (+4 more)
 
-### Community 2 - "test_erst_checkpoint.py"
-Cohesion: 0.04
-Nodes (112): ErstCalibrationState, ErstCheckpointBuildSpec, ErstCheckpointComponent, ErstCheckpointFile, ErstCheckpointFileRole, ErstCheckpointLicenses, ErstCheckpointManifest, ErstCheckpointMetrics (+104 more)
+### Community 2 - "contracts/erst.py"
+Cohesion: 0.03
+Nodes (129): _canonical_model_hash(), ErstCalibrationState, ErstCheckpointBuildSpec, ErstCheckpointComponent, ErstCheckpointFile, ErstCheckpointFileRole, ErstCheckpointLicenses, ErstCheckpointManifest (+121 more)
 
-### Community 3 - "rst/erst/__init__.py"
-Cohesion: 0.06
-Nodes (55): analysis_to_rs4(), Conversion utilities between RS4 DOM, DiscourseUnit, and typed contracts., Convert an RstDocument and RstAnalysis back into an RS4Document., Convert an RS4Document into an RstDocument and an RstAnalysis., rs4_to_document_and_analysis(), RS4 XML processing, eRST data structures, and converters., Any, Path (+47 more)
+### Community 3 - "RS4Reader"
+Cohesion: 0.09
+Nodes (37): analysis_to_rs4(), Convert an RstDocument and RstAnalysis back into an RS4Document., Any, Path, Faithful RS4 XML reader and writer for GUM eRST and classical RST., Parse RS4 XML text into an RS4Document., Parse an RS4 XML file into an RS4Document., Writes RS4Document objects to well-formed RS4 XML. (+29 more)
 
 ### Community 4 - "legacy.py"
-Cohesion: 0.07
-Nodes (37): _analysis_semantic_payload(), AnalysisAnchor, AnalysisStatus, AnalysisUnit, CacheStatus, _canonical_edus(), ConversionActivity, Disposition (+29 more)
+Cohesion: 0.06
+Nodes (38): _analysis_semantic_payload(), AnalysisAnchor, AnalysisStatus, AnalysisUnit, CacheStatus, _canonical_edus(), ConversionActivity, Disposition (+30 more)
 
 ### Community 5 - "ToulminProvider"
 Cohesion: 0.03
-Nodes (82): Agent, AgentRunResult, ProviderFactory, Extraction, LlmError, RuntimeError, A typed failure at the LLM boundary, classified for the caller (never retried…, One accepted proposal, with the identity and effort that produced it. (+74 more)
+Nodes (70): Agent, AgentRunResult, live, ProviderFactory, Extraction, LlmError, RuntimeError, A typed failure at the LLM boundary, classified for the caller (never retried… (+62 more)
 
-### Community 6 - "research/erst/__init__.py"
-Cohesion: 0.08
-Nodes (33): _protocol(), Contract tests for executable eRST comparison evidence., _resource_evidence(), _successful_run(), test_champion_manifest_rejects_test_access(), test_failed_run_retains_typed_evidence_without_blocking_other_systems(), test_protocol_is_complete_hashed_and_test_isolated(), test_protocol_rejects_silently_dropped_system() (+25 more)
+### Community 6 - "erst/contracts.py"
+Cohesion: 0.05
+Nodes (81): _protocol(), Contract tests for executable eRST comparison evidence., _resource_evidence(), _successful_run(), test_champion_manifest_rejects_test_access(), test_failed_run_retains_typed_evidence_without_blocking_other_systems(), test_protocol_is_complete_hashed_and_test_isolated(), test_protocol_rejects_silently_dropped_system() (+73 more)
 
 ### Community 7 - "Machine"
 Cohesion: 0.04
-Nodes (58): ExecutionPolicy, Bounded execution settings for one local machine composition., Machine, Runs several techniques side by side without collapsing them into one formalism., build_deterministic_parser(), Build the shared no-model parser double for tests outside this fixture package., FakeProvider, Retryability (+50 more)
+Nodes (65): production_machine(), Assemble the supported providers without coupling orchestration to techniques., Construct the supported seven-technique production composition. Provider…, FormalismChoice, Path, Ask one requested technique for a specific declared formalism (e.g. RST's…, ExecutionPolicy, Bounded execution settings for one local machine composition. (+57 more)
 
-### Community 8 - "erst/contracts.py"
+### Community 8 - "systems/common.py"
 Cohesion: 0.03
-Nodes (114): load_repository_environment(), _nonempty_environment_value(), BaseModel, Path, Explicit, non-logging repository environment loading for eRST operations., Validated evidence for one explicit repository-root environment load., Load only ``<repository_root>/.env`` and resolve the supported HF token.…, RepositoryEnvironment (+106 more)
+Nodes (104): Explicit, non-logging repository environment loading for eRST operations., _candidate(), Focused system serialization and private candidate-cache contract tests., test_candidate_cache_round_trips_gold_fields_and_overlapping_signal_spans(), test_signal_aware_serialization_preserves_each_exact_overlapping_anchor(), test_text_only_serialization_contains_no_signal_or_structure_tokens(), canonical_threshold_grid(), Frozen development threshold grid, including the neutral 0.5 point. (+96 more)
 
-### Community 9 - "NuclearityPatternEnum"
+### Community 9 - "RstAnalysis"
+Cohesion: 0.03
+Nodes (96): Counter, DirectedSpanKey, K, DiscourseSignal, BaseModel, field_validator, Require unique non-negative token identifiers without reordering., Require valid half-open anchors while retaining overlap and order. (+88 more)
+
+### Community 10 - "machine.py"
+Cohesion: 0.03
+Nodes (124): PreparationReceipt, AggregateAnalysis, AggregateRequest, AvailableCapability, FailedOutcome, FormalismDeclaration, MachineCapabilities, _no_alignments() (+116 more)
+
+### Community 11 - "ProviderRequest"
 Cohesion: 0.06
-Nodes (36): NuclearityPatternEnum, Nuclearity pattern for primary relation edges., du_to_analysis(), Any, Convert an isanlp.annotation_rst.DiscourseUnit tree into a typed RstAnalysis., DummyPredictor, MonkeyPatch, Unit tests for Parser.parse_document integration. (+28 more)
-
-### Community 10 - "ProviderRequest"
-Cohesion: 0.04
-Nodes (141): LookupError, PreparationReceipt, AggregateAnalysis, AggregateRequest, AvailableCapability, FailedOutcome, FormalismChoice, FormalismDeclaration (+133 more)
-
-### Community 11 - "WaltonProvider"
-Cohesion: 0.08
-Nodes (15): production_machine(), Assemble the supported providers without coupling orchestration to techniques., Construct the supported seven-technique production composition. Provider…, Public execution policy for bounded local parallelism and opt-in caching., Sha256Identity, Side-effect-free: resolves a key, never opens a connection., Walton scheme analysis over raw text, backed by a language model., WaltonProvider (+7 more)
+Nodes (25): ProviderRequest, What the machine hands one provider: the shared source and that provider's…, DungProvider, input_origin(), Sha256Identity, ``supplied`` by the caller as-is, or ``explicitly_derived`` from a named…, Dung abstract argumentation semantics, declared to the machine., source_identity() (+17 more)
 
 ### Community 12 - "candidates.py"
-Cohesion: 0.06
-Nodes (49): DiGraph, ErstCompleter, Any, DiscourseSignal, eRST graph completer: secondary-edge candidate generation and signal anchoring., Completes classical RST trees into eRST graphs., Detect all anchored lexical and morphosyntactic signals as orphans., Project the evidence-complete completion trace to its final graph. (+41 more)
+Cohesion: 0.11
+Nodes (37): DiGraph, CandidateMode, compute_structural_features(), generate_secondary_edge_candidates(), iter_candidate_batches(), iter_secondary_edge_candidates(), _node_heads(), _overlaps() (+29 more)
 
 ### Community 13 - "OntologyAdapter"
-Cohesion: 0.07
-Nodes (29): OntologyAdapter, Resolve a predicted model class integer index into canonical label, concept,…, Ontology-resolved rhetorical relation., Return canonical Central ontology URI for a coarse discourse concept., Return canonical Central ontology URI for a nuclearity pattern., Return canonical document-scoped URI for a discourse unit node., Adapts and resolves model outputs and corpus labels against the pinned ontology., Strip embedded (-e) and nuclearity (-s/-n) suffixes from RST-DT labels. (+21 more)
+Cohesion: 0.05
+Nodes (48): Rhetorical relation annotation or model scheme., RelationSchemeEnum, Runtime projection of raw GUM eRST relations to ontology concepts., Project one raw GUM relation while preserving the caller's raw value., resolve_gum_relation_concept(), OntologyAdapter, Checked ontology adapters for model encodings and corpus label mappings., Resolve a predicted model class integer index into canonical label, concept,… (+40 more)
 
-### Community 14 - "PdtbProvider"
-Cohesion: 0.13
-Nodes (22): PdtbProvider, Sha256Identity, Produce validated native PDTB-3 relations from raw text., Describe capability without constructing a model client., source_identity(), never_a_real_request(), no_credentials(), proposing() (+14 more)
+### Community 14 - "pdtb/test_provider.py"
+Cohesion: 0.12
+Nodes (22): PdtbAnalysis, PdtbProvider, Sha256Identity, Produce validated native PDTB-3 relations from raw text., source_identity(), never_a_real_request(), no_credentials(), proposing() (+14 more)
 
-### Community 15 - "contracts/erst.py"
+### Community 15 - "SecondaryEdgeCandidate"
 Cohesion: 0.04
-Nodes (130): CandidateDocumentSelection, CandidateIdentityProbe, CandidateSelectionReceipt, CorpusAuthorityEntry, CorpusDocumentReceipt, CorpusFailureType, CorpusLicenseClass, CorpusLoadFailure (+122 more)
+Nodes (103): CandidateDocumentSelection, CandidateIdentityProbe, CandidateSelectionReceipt, CorpusAuthorityEntry, CorpusDocumentReceipt, CorpusFailureType, CorpusLicenseClass, CorpusLoadFailure (+95 more)
 
 ### Community 16 - "serialize_contract"
-Cohesion: 0.05
-Nodes (78): PersistedContract, ProductionIngestError, cache_entry_identity(), _cache_error(), ProductionIngestCache, Exception, Path, ProductionAnalysisOutcome (+70 more)
+Cohesion: 0.03
+Nodes (133): ArgumentParser, BaseHTTPRequestHandler, Namespace, PersistedContract, ProductionIngestError, cache_entry_identity(), _cache_error(), ProductionIngestCache (+125 more)
 
-### Community 17 - "test_shared_runtime_internals.py"
+### Community 17 - "semantic_sha256"
 Cohesion: 0.04
-Nodes (82): PersistedRecord, canonical_json_bytes(), json_projection(), Any, Path, One canonical JSON and SHA-256 kernel for every RDAM runtime contract., Project supported Python values onto the JSON data model without loss., Reject values outside the interoperable JSON subset used by contracts. (+74 more)
+Nodes (68): canonical_json_bytes(), json_projection(), Any, Path, One canonical JSON and SHA-256 kernel for every RDAM runtime contract., Project supported Python values onto the JSON data model without loss., Reject values outside the interoperable JSON subset used by contracts., Return RFC 8785 bytes for the canonical JSON projection of ``value``. (+60 more)
 
-### Community 18 - "SemanticVersion"
-Cohesion: 0.07
-Nodes (50): BoundaryPreference, model_validator, Self, Normalized public-contract version with no prerelease or local suffix., SemanticVersion, AnalysisCapacity, AnalysisPlan, AnalysisPlanStatus (+42 more)
+### Community 18 - "ingest/contracts/analysis.py"
+Cohesion: 0.05
+Nodes (82): AnchorTargetKind, AnalysedDocument, AnalysedEdu, AnalysedToken, AnalysisAnchor, AnalysisSemanticEvidence, AnalysisStatus, AnchorTargetKind (+74 more)
 
 ### Community 19 - "Parser"
-Cohesion: 0.02
-Nodes (109): DoclingDocument, FixtureRequest, PictureItem, ErstCapabilityError, RuntimeError, A requested eRST completion capability has no validated bundle., Parser, AnalysisPolicy (+101 more)
+Cohesion: 0.06
+Nodes (25): ParserCapacity, Parser, ModelReleaseIdentity, Return the safe recursive-analysis capacity in the parser's limiting unit., Declare the recursive limit without constructing or loading a parser., Return immutable released-model identity, or ``None`` for mutable/HF…, Public façade for the DMRST and UniRST discourse parser families. Examples: >>>…, batch_parser() (+17 more)
 
 ### Community 20 - "_llm.py"
-Cohesion: 0.04
-Nodes (50): Lock, Model, NonNegativeInt, configured_model(), load_dotenv(), _model_without_implicit_retries(), ModelIdentity, ModelIdentityError (+42 more)
+Cohesion: 0.05
+Nodes (41): configured_model(), load_dotenv(), _model_without_implicit_retries(), ModelIdentity, ModelIdentityError, _nearest_dotenv(), normalize_model_identity(), parse_model_identity() (+33 more)
 
 ### Community 21 - "properties"
 Cohesion: 0.06
 Nodes (37): properties, items, title, type, $ref, $ref, items, title (+29 more)
 
-### Community 22 - "erst/data.py"
-Cohesion: 0.06
-Nodes (45): _candidate(), Focused system serialization and private candidate-cache contract tests., test_candidate_cache_round_trips_gold_fields_and_overlapping_signal_spans(), test_signal_aware_serialization_preserves_each_exact_overlapping_anchor(), test_text_only_serialization_contains_no_signal_or_structure_tokens(), _ablate_candidate(), AblatedScreeningCorpusPayload, _build_cache() (+37 more)
+### Community 22 - "CorpusPartition"
+Cohesion: 0.05
+Nodes (77): CorpusPartition, PrivateCorpusVerificationReceipt, Official GUM document partitions., Full-source and sampled-candidate verification for the private corpus., ExperimentConfigurationBundle, Exact typed configuration for all ten mandatory systems., ExperimentDataIdentity, ExperimentDocumentIdentity (+69 more)
 
 ### Community 23 - "ArgumentationFramework"
 Cohesion: 0.07
@@ -1313,55 +1335,55 @@ Nodes (42): rdam.dung — Dung abstract argumentation provider for the Rhetorica
 
 ### Community 24 - "SchemeId"
 Cohesion: 0.06
-Nodes (33): rdam.walton — Walton argumentation-scheme provider for the Rhetorical Discourse…, CriticalQuestion, CriticalQuestionStatus, BaseModel, JsonValue, model_validator, Self, StrEnum (+25 more)
+Nodes (31): CriticalQuestion, CriticalQuestionStatus, BaseModel, JsonValue, model_validator, Self, StrEnum, ValueError (+23 more)
 
 ### Community 25 - "properties"
 Cohesion: 0.05
 Nodes (40): additionalProperties, properties, title, type, AnalysisAnchor, items, title, type (+32 more)
 
-### Community 26 - "Discourse Unit Graph"
-Cohesion: 0.08
-Nodes (45): _ClosedModel, ComplexDiscourseUnit, _connected(), _elementary_members(), ElementaryDiscourseUnit, GraphError, _has_cycle(), BaseModel (+37 more)
+### Community 26 - "SdrtAnalysis"
+Cohesion: 0.13
+Nodes (36): _ClosedModel, ComplexDiscourseUnit, _connected(), ElementaryDiscourseUnit, _has_cycle(), BaseModel, StrEnum, Native Segmented Discourse Representation Structure graph contracts. SDRT is a… (+28 more)
 
 ### Community 27 - "BasePredictor"
-Cohesion: 0.07
-Nodes (32): AbstractContextManager, BasePredictor, Any, T, Recursively remap ``.start``/``.end`` of leaf/internal nodes from the tokenized…, Map an inferred tree onto authoritative predefined-EDU spans. Transformer…, Given word span boundaries, recount for subwords., Validate untrusted input as a sequence of EDU strings. Typed ``object`` because… (+24 more)
+Cohesion: 0.04
+Nodes (52): AbstractContextManager, BasePredictor, Any, device, dtype, Path, T, Recursively remap ``.start``/``.end`` of leaf/internal nodes from the tokenized… (+44 more)
 
 ### Community 28 - "technology.py"
-Cohesion: 0.10
-Nodes (38): HfApi, Technology-matrix tests for completeness, evidence, and non-substitution., _required_revision(), test_frozen_live_matrix_has_weight_evidence_for_every_model_row(), test_hub_evidence_must_cover_every_model_and_preserve_revision_and_license(), test_matrix_rejects_dropped_system(), test_matrix_retains_all_systems_and_explicit_constraints(), freeze_matrix() (+30 more)
+Cohesion: 0.07
+Nodes (51): HfApi, Hashed Python/Transformers/MPS compatibility receipt for mandatory tokenizers., TokenizerCompatibilityReceipt, _encoding_payload(), main(), _payload_hash(), probe_mandatory_tokenizers(), _probe_target() (+43 more)
 
-### Community 29 - "ContentClass"
-Cohesion: 0.04
-Nodes (103): ItemAnchor, LegacySourceArtifact, LegacySourceContractIdentity, LineEndingParameters, PreparationPolicy, AuthorshipRole, ContentClass, ContentInventoryItem (+95 more)
+### Community 29 - "PreparationOutcome"
+Cohesion: 0.06
+Nodes (40): Disposition, LegacySourceArtifact, LegacySourceContractIdentity, PreparationOutcome, ContentInventoryItem, inventory_source(), _legacy_artifact(), PreparationValidationError (+32 more)
 
 ### Community 30 - "properties"
 Cohesion: 0.06
 Nodes (37): properties, items, title, type, $ref, $ref, items, title (+29 more)
 
 ### Community 31 - "main.py"
-Cohesion: 0.07
-Nodes (53): AsyncBrowser, AsyncPage, AsyncPlaywright, Browser, Page, Playwright, IO, Render an RST tree and, optionally, display it inline. This is a light-weight… (+45 more)
+Cohesion: 0.08
+Nodes (42): AsyncBrowser, AsyncPage, AsyncPlaywright, Browser, Page, Playwright, T, Render an ``.rs3`` file to PNG (works in both sync and async environments). (+34 more)
 
 ### Community 32 - "PDTB Analysis Models"
 Cohesion: 0.09
 Nodes (44): Native Penn Discourse Treebank 3.0 analysis., _ClosedModel, PdtbAnalysis, PdtbArgument, PdtbRelation, PdtbSense, BaseModel, JsonValue (+36 more)
 
-### Community 33 - "service.py"
-Cohesion: 0.08
-Nodes (43): AnalysisRequest, CacheStatus, Disposition, AnalysisExecutionEvidence, AnalysisRequest, AnalysisSemanticEvidence, CacheStatus, AcquisitionCompletedEvidence (+35 more)
+### Community 33 - "test_neural_erst.py"
+Cohesion: 0.06
+Nodes (36): PreTrainedTokenizerFast, Neural Secondary Edge Scorer with boundary-aware span pooling and asymmetric…, Any, Tensor, Runtime tensor encoding for eRST secondary-edge candidates., Encode candidate pairs for released eRST scorer inference., SecondaryEdgeInferenceDataset, Immutable upstream model revisions for production parsers. (+28 more)
 
 ### Community 34 - "grammar.py"
 Cohesion: 0.08
-Nodes (28): DeliberationMap, deliberation_map(), IbisStructure, _ids(), _is_link(), _is_node(), Link, Node (+20 more)
+Nodes (32): DeliberationMap, deliberation_map(), IbisStructure, _ids(), _is_link(), _is_node(), Link, Node (+24 more)
 
 ### Community 35 - "diff_records"
-Cohesion: 0.17
-Nodes (21): _difference_class(), parametrize, Path, Migration preservation evidence remains explicit and analytically strict., test_baseline_requires_an_explicit_model_instead_of_a_retired_default(), test_capacity_rename_does_not_allow_both_names(), test_capacity_rename_does_not_apply_to_other_fields(), test_capacity_rename_is_reported_without_hiding_its_values() (+13 more)
+Cohesion: 0.16
+Nodes (22): _difference_class(), parametrize, Path, Migration preservation evidence remains explicit and analytically strict., test_baseline_requires_an_explicit_model_instead_of_a_retired_default(), test_capacity_rename_does_not_allow_both_names(), test_capacity_rename_does_not_apply_to_other_fields(), test_capacity_rename_is_reported_without_hiding_its_values() (+14 more)
 
-### Community 36 - "cli.py"
-Cohesion: 0.07
-Nodes (48): ArgumentParser, Namespace, _add_model_arguments(), _analysis_policy(), cmd_capabilities(), cmd_parse(), cmd_serve(), cmd_version() (+40 more)
+### Community 36 - "doclang/loader.py"
+Cohesion: 0.09
+Nodes (24): _DefaultT, DoclangIngestError, InvalidDoclangError, ValueError, Failures raised by the private DocLang source loader., A DocLang archive violates bounded local ZIP safety invariants., Base class for DocLang validation and archive-loading failures., The XML file is not a valid DocLang document. (+16 more)
 
 ### Community 37 - "RSTWeb SQL Queries"
 Cohesion: 0.12
@@ -1371,81 +1393,81 @@ Nodes (53): add_node(), add_seg(), count_children(), count_multinuc_children(), 
 Cohesion: 0.05
 Nodes (40): additionalProperties, properties, title, type, AnalysisAnchor, items, title, type (+32 more)
 
-### Community 39 - "describe_capabilities"
-Cohesion: 0.09
-Nodes (36): describe_capabilities(), ParserDescriptor, Protocol, Model-free and parser-aware production capability discovery., Return installed capabilities without importing a model or optional adapter., Availability, CacheEligibility, CacheEligibilityState (+28 more)
+### Community 39 - "test_serialization.py"
+Cohesion: 0.13
+Nodes (25): Any, BaseModel, PydanticDiscourseUnit, Typed Pydantic model for RST trees. Mirrors…, Validated, JSON-serialisable representation of one DiscourseUnit RST tree node.…, Build a model from an arbitrarily deep, acyclic ``DiscourseUnit`` tree., Reconstruct an arbitrarily deep ``DiscourseUnit`` tree iteratively., JSON-serialisation helpers for the RST trees produced by ``rdam.rst``. The low-… (+17 more)
 
 ### Community 40 - "test_transformer_segmenter.py"
 Cohesion: 0.06
-Nodes (50): Dataset, inference_mode, Neural EDU discourse segmentation package., InvalidSegmenterCheckpointError, Any, PreTrainedModel, ValueError, Transformer-based neural Elementary Discourse Unit (EDU) segmenter. (+42 more)
+Nodes (53): Dataset, inference_mode, Neural EDU discourse segmentation package., InvalidSegmenterCheckpointError, Any, PreTrainedModel, ValueError, Transformer-based neural Elementary Discourse Unit (EDU) segmenter. (+45 more)
 
 ### Community 41 - "_harvest.py"
-Cohesion: 0.15
-Nodes (54): AnchorKind, AuthorshipRole, AnchorKind, AuthorshipRole, ContentClass, ContentInventoryItem, NativeAnchor, PreparedRange (+46 more)
+Cohesion: 0.14
+Nodes (55): AnchorKind, AuthorshipRole, DoclangArchiveMember, AnchorKind, AuthorshipRole, ContentClass, ContentInventoryItem, NativeAnchor (+47 more)
 
 ### Community 42 - "Educational Performance Markers"
 Cohesion: 0.10
 Nodes (53): Understand Verb, Unmeasurable Verb, Visual Content Format, Visual Quality Dimension, Webinar Format, Working Memory Marker, Accessibility Dimension, Alignment Marker (+45 more)
 
 ### Community 43 - "load_doclang_archive"
-Cohesion: 0.11
-Nodes (48): DoclangIngestError, InvalidDoclangError, ValueError, Failures raised by the private DocLang source loader., A DocLang archive violates bounded local ZIP safety invariants., Base class for DocLang validation and archive-loading failures., The XML file is not a valid DocLang document., UnsafeDoclangArchiveError (+40 more)
+Cohesion: 0.17
+Nodes (30): load_doclang_archive(), ZipInfo, Validate and read a bounded current-contract DocLang OPC package., _validate_archive_member(), _archive(), MonkeyPatch, parametrize, _raw_archive() (+22 more)
 
 ### Community 44 - "unirst/utils_rs3.py"
 Cohesion: 0.10
 Nodes (46): areAdjacent(), binarizeTreeGeneral(), buildNodes(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU(), cleanLonelyEDU(), cleanTree() (+38 more)
 
 ### Community 45 - "TrainingManager"
-Cohesion: 0.12
-Nodes (17): Any, Data, no_grad, Path, Tensor, Default DMRST method for linear learning rate adjustment (deprecated)., Trains the model. Returns: dict: best_metrics, Trains the model for one epoch. Args: epoch: Current epoch number. batches:… (+9 more)
+Cohesion: 0.06
+Nodes (27): Data, One batched parser example. Field order matches the historical constructor., _metrics_as_floats(), NpEncoder, Any, Data, no_grad, Path (+19 more)
 
 ### Community 46 - "properties"
 Cohesion: 0.06
 Nodes (36): anyOf, anyOf, properties, properties, anyOf, anyOf, exclusiveMinimum, title (+28 more)
 
 ### Community 47 - "DUConverter"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (17): DUConverter, Any, Parses the tree predictions given in a string format. Args: description: Tree…, Selects the discourse unit description for given constituent. Args: start: DU…, Constructs the DiscourseUnit binary tree. Args: root: Index of the root…, Takes the model outputs and converts them into isanlp binary trees. Returns:…, Produces EDUs in isanlp format from the model predictions. Args: tokens: List…, RelationDescription (+9 more)
 
 ### Community 48 - "properties"
 Cohesion: 0.05
 Nodes (44): anyOf, anyOf, additionalProperties, properties, title, type, properties, items (+36 more)
 
-### Community 49 - "systems/common.py"
-Cohesion: 0.04
-Nodes (71): DirectedSpanKey, K, ErstDecodeReceipt, Reconciled proof of threshold selection and formal eRST constraints., DecodedErstCandidate, DecodedErstEdges, ErstSecondaryEdgeDecoder, eRST-compliant secondary-edge decoding with formal constraints only. (+63 more)
+### Community 49 - "completer.py"
+Cohesion: 0.09
+Nodes (32): ErstDecodeReceipt, Reconciled proof of threshold selection and formal eRST constraints., ErstCompletionTrace, eRST graph completer: secondary-edge candidate generation and signal anchoring., Complete bounded scoring and decoding handoff for one graph completion., English eRST graph completion package., DecodedErstCandidate, DecodedErstEdges (+24 more)
 
 ### Community 50 - "Universal Parser SpanNode"
 Cohesion: 0.11
 Nodes (44): RST tree node used by the universal parser corpus readers., SpanNode, _apply_node_content(), binarizeTreeRight(), binarizeTreeRightThiago(), bTree(), buildTree(), buildTreeThiago() (+36 more)
 
 ### Community 51 - "ingest/public_surface.py"
-Cohesion: 0.06
-Nodes (44): CompatibilityGuarantee, _documentation_anchor_exists(), load_public_surface(), PublicEntryKind, PublicEntryStatus, PublicSurfaceEntry, PublicSurfaceInventory, PublicSurfaceReconciliation (+36 more)
+Cohesion: 0.09
+Nodes (27): CompatibilityGuarantee, _documentation_anchor_exists(), load_public_surface(), PublicEntryKind, PublicEntryStatus, PublicSurfaceEntry, PublicSurfaceInventory, PublicSurfaceReconciliation (+19 more)
 
 ### Community 52 - "dmrst/utils_rs3.py"
 Cohesion: 0.10
 Nodes (45): areAdjacent(), binarizeTreeGeneral(), buildNodes(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU(), cleanLonelyEDU(), cleanTree() (+37 more)
 
 ### Community 53 - "rdam/ingest/__init__.py"
-Cohesion: 0.05
-Nodes (126): ItemRelationship, LegacyAnchor, LegacyInventoryItem, AnalysedEdu, AnalysisStatus, AnalysisSubstrateTransformation, AnchorTargetKind, CheckClassification (+118 more)
+Cohesion: 0.04
+Nodes (154): ItemAnchor, ItemRelationship, LegacyAnchor, LegacyInventoryItem, LineEndingParameters, AnalysisExecutionEvidence, AnalysisRequest, AnalysisSubstrateTransformation (+146 more)
 
 ### Community 54 - "properties"
 Cohesion: 0.06
 Nodes (36): anyOf, anyOf, properties, properties, anyOf, anyOf, exclusiveMinimum, title (+28 more)
 
-### Community 55 - "properties"
-Cohesion: 0.05
-Nodes (41): title, type, $ref, properties, default, items, title, type (+33 more)
+### Community 55 - "type"
+Cohesion: 0.12
+Nodes (19): default, items, title, type, default, items, title, type (+11 more)
 
 ### Community 56 - "properties"
 Cohesion: 0.08
 Nodes (27): anyOf, anyOf, properties, properties, anyOf, $ref, anyOf, anyOf (+19 more)
 
 ### Community 57 - "build.py"
-Cohesion: 0.12
-Nodes (37): Path, Exact-commit, via-sdist, deterministic build tests., _run(), test_double_build_publishes_expected_pair(), test_rebuild_replaces_a_previous_pair_but_refuses_foreign_files(), test_source_release_record_identifies_exact_clean_commit(), test_tag_naming_another_version_is_an_error(), _archive_commit() (+29 more)
+Cohesion: 0.09
+Nodes (42): Path, Exact-commit, via-sdist, deterministic build tests., _run(), test_double_build_publishes_expected_pair(), test_rebuild_replaces_a_previous_pair_but_refuses_foreign_files(), test_source_release_record_identifies_exact_clean_commit(), test_tag_naming_another_version_is_an_error(), _archive_commit() (+34 more)
 
 ### Community 58 - "properties"
 Cohesion: 0.05
@@ -1455,9 +1477,9 @@ Nodes (44): anyOf, anyOf, additionalProperties, properties, title, type, propert
 Cohesion: 0.07
 Nodes (43): addLabels(), backprop(), BFTbin(), checkTree(), countLabels(), Document, __getforminfo(), getLabelMapping() (+35 more)
 
-### Community 60 - "protocol.py"
-Cohesion: 0.13
-Nodes (22): ExperimentConfigurationBundle, Exact typed configuration for all ten mandatory systems., build_experiment_protocol(), _environment_lock_sha256(), freeze_protocol_artifacts(), BaseModel, Path, Build and freeze the executable eRST experiment protocol. (+14 more)
+### Community 60 - ".from_model_release"
+Cohesion: 0.10
+Nodes (15): device, dtype, FixtureRequest, Any, Path, Validate and load one immutable child of the production model store., Parse a document using predefined EDUs., loaded() (+7 more)
 
 ### Community 61 - "properties"
 Cohesion: 0.06
@@ -1465,7 +1487,7 @@ Nodes (40): items, title, type, additionalProperties, properties, title, type, $
 
 ### Community 62 - "RstProvider"
 Cohesion: 0.07
-Nodes (23): ProductionIngestor, UnavailableCapability, Every boundary technique in exactly one state, from declarations alone., _execution_fields(), ProviderConfigurationError, JsonValue, Path, Retryability (+15 more)
+Nodes (25): ProductionIngestor, _execution_fields(), JsonValue, Retryability, Can this configuration produce a parser? Checked without loading one., Validate the configured immutable release once without constructing a parser., The terms the loaded weights carry, read from the release manifest when there…, Declare the native contract's execution-only fields without changing its… (+17 more)
 
 ### Community 63 - "Disposition"
 Cohesion: 0.06
@@ -1495,9 +1517,9 @@ Nodes (36): properties, items, title, type, type, items, minItems, title (+28 mo
 Cohesion: 0.09
 Nodes (16): associate_tree_edus(), Corpus, DisDocument, Document, getFiles(), Path, Offline UniRST corpus document conversion., Write the bracketed tree into a file Remove the original extension, keep only… (+8 more)
 
-### Community 70 - "test_python314_audit_regressions.py"
-Cohesion: 0.04
-Nodes (71): DiscourseUnit, Exporter, ForestExporter, Group, Path, Native Rhetorical Structure Theory (RST) tree annotations and RS3…, Populate text across an arbitrarily deep tree from character spans., Serialize this discourse tree to RS3 XML format. (+63 more)
+### Community 70 - "DiscourseUnit"
+Cohesion: 0.06
+Nodes (30): DiscourseUnit, Exporter, ForestExporter, Group, Path, Populate text across an arbitrarily deep tree from character spans., Serialize this discourse tree to RS3 XML format., An elementary discourse unit (EDU) leaf element for RS3 XML. (+22 more)
 
 ### Community 71 - "properties"
 Cohesion: 0.05
@@ -1524,8 +1546,8 @@ Cohesion: 0.06
 Nodes (31): enum, title, type, title, type, title, type, $defs (+23 more)
 
 ### Community 77 - "universal_parser/predictor.py"
-Cohesion: 0.07
-Nodes (26): ModuleType, _ensure_parent_module(), ensure_unirst_module_aliases(), import_relation_table_from_legacy_pickle(), load_relation_inventory_json(), parse_corpora_config(), Path, Relation-inventory I/O for UniRST. Native format is JSON (or a plain… (+18 more)
+Cohesion: 0.13
+Nodes (19): ModuleType, _ensure_parent_module(), ensure_unirst_module_aliases(), import_relation_table_from_legacy_pickle(), load_relation_inventory_json(), parse_corpora_config(), Path, Relation-inventory I/O for UniRST. Native format is JSON (or a plain… (+11 more)
 
 ### Community 78 - "dmrst/common.py"
 Cohesion: 0.08
@@ -1543,23 +1565,19 @@ Nodes (34): MetricQuadruple, calc_metrics(), get_batch_metrics(), get_eval_data_
 Cohesion: 0.06
 Nodes (37): properties, additionalProperties, properties, title, type, $ref, AnalysedToken, title (+29 more)
 
-### Community 82 - "performance.py"
-Cohesion: 0.12
-Nodes (17): parametrize, Reference-machine preparation performance acceptance., test_preparation_meets_reference_threshold_on_every_measured_run(), test_source_text_has_the_requested_character_count(), PreparationPerformanceCase, PreparationPerformanceEvidence, model_validator, Self (+9 more)
-
 ### Community 83 - "PredictorUniRST"
-Cohesion: 0.10
-Nodes (16): Parse explicit boolean spellings and reject ambiguous configuration., str2bool(), PredictorUniRST, Any, Data, device, dtype, txt (published) → JSON (native) → legacy pickle (labels only). (+8 more)
+Cohesion: 0.17
+Nodes (8): PredictorUniRST, device, dtype, Active relation table corresponding to relinventory_idx., txt (published) → JSON (native) → legacy pickle (labels only)., Load ``relation_table_<variant>.txt`` using corpus aliases., OOB idx must fail on config alone — never reach torch.load., TestUniRSTArgValidation
 
-### Community 84 - "DungProvider"
+### Community 84 - "StructuredInput"
 Cohesion: 0.06
-Nodes (23): DungProvider, input_origin(), Sha256Identity, ``supplied`` by the caller as-is, or ``explicitly_derived`` from a named…, Dung abstract argumentation semantics, declared to the machine., source_identity(), ValueError, The supplied structure is not an IBIS structure under the grammar. (+15 more)
+Nodes (27): model_validator, Self, SourceArtifact, SourceForm, A caller-supplied structure for a formal technique (FR-016, FR-017).…, StructuredInput, IbisProvider, gIBIS structural validation, declared to the machine. (+19 more)
 
 ### Community 85 - "Tensor"
 Cohesion: 0.10
 Nodes (10): CRF, LinearSegmenter, PointerSegmenter, device, Module, Tensor, Conditional random field. modified from https://github.com/kmkurn/pytorch-…, Compute the conditional negative log likelihood of a sequence of tags given… (+2 more)
 
-### Community 86 - "dmrst_parser/src/parser/modules.py"
+### Community 86 - "Tensor"
 Cohesion: 0.09
 Nodes (18): DecoderRNN, DefaultLabelClassifier, DefaultPlusBiMPMClassifier, EncoderRNN, PointerAtten, Any, device, Module (+10 more)
 
@@ -1567,9 +1585,9 @@ Nodes (18): DecoderRNN, DefaultLabelClassifier, DefaultPlusBiMPMClassifier, Enco
 Cohesion: 0.06
 Nodes (37): additionalProperties, properties, title, type, properties, $ref, AnalysedEdu, title (+29 more)
 
-### Community 88 - "_version.py"
-Cohesion: 0.09
-Nodes (31): sha256_file(), Canonical production package identity., Return distribution metadata, or ``unknown`` only when absent., resolve_installed_package_version(), test_manifest_is_strict_and_requires_honest_evaluation_evidence(), PromotionReceipt, BaseModel, model_validator (+23 more)
+### Community 88 - "promote.py"
+Cohesion: 0.15
+Nodes (19): sha256_file(), Offline creation and promotion of immutable production model releases., main(), migrate(), BaseModel, Path, PurePosixPath, Migrate cached upstream parser releases into the strict local model store. (+11 more)
 
 ### Community 89 - "Tensor"
 Cohesion: 0.10
@@ -1580,8 +1598,8 @@ Cohesion: 0.09
 Nodes (18): DecoderRNN, DefaultLabelClassifier, DefaultPlusBiMPMClassifier, EncoderRNN, PointerAtten, Any, device, Module (+10 more)
 
 ### Community 91 - "test_production_boundary.py"
-Cohesion: 0.12
-Nodes (36): parametrize, Path, Causal tests for the production/offline boundary authority., Only production syntax belongs to the production import-closure gate., D5 check (b): production wheels may carry the machine's import root and nothing…, Only ``rdam/`` may be shipped; a second top-level import name is a boundary…, D5 check (a) for the machine package itself: the walk from ``rdam`` never…, test_ambiguous_relevant_path_fails_closed() (+28 more)
+Cohesion: 0.14
+Nodes (30): parametrize, Path, Causal tests for the production/offline boundary authority., Only production syntax belongs to the production import-closure gate., D5 check (b): production wheels may carry the machine's import root and nothing…, Only ``rdam/`` may be shipped; a second top-level import name is a boundary…, D5 check (a) for the machine package itself: the walk from ``rdam`` never…, test_ambiguous_relevant_path_fails_closed() (+22 more)
 
 ### Community 92 - "Adversarial Calibration Tests"
 Cohesion: 0.09
@@ -1595,45 +1613,45 @@ Nodes (32): Offline DMRST corpus span node., RST tree node used by the DMRST cor
 Cohesion: 0.12
 Nodes (36): Confidence Technique, Delivery Rate Issue, Engagement Cue, Facilitation Technique, Filler Word, Nonverbal Cue, Pause Marker, Presentation Anxiety Marker (+28 more)
 
-### Community 95 - "TrainingManager"
-Cohesion: 0.15
-Nodes (8): _metrics_as_floats(), NpEncoder, Any, Data, no_grad, Path, TrainingManager, Offline DMRST and UniRST training orchestration.
-
-### Community 96 - "ReleaseIdentity"
+### Community 95 - "resolved_model_identity"
 Cohesion: 0.11
-Nodes (29): _DefaultT, Path, Wheel RECORD, content, metadata, and provenance validation tests., The artifact validator enforces the runtime reader's exact field set. A field…, test_built_pair_passes_complete_artifact_validation(), test_provenance_with_an_extra_field_fails_the_artifact_gate(), _archive_members(), _declared_dependencies() (+21 more)
+Nodes (13): Lock, NonNegativeInt, Retryability, Normalize valid explicit/default configuration while retaining invalid input…, resolved_model_identity(), Provider, _provider_lock(), Protocol (+5 more)
 
-### Community 97 - "technique_curie"
-Cohesion: 0.09
-Nodes (22): CapabilityState, model_validator, Self, The canonical ``coe:`` identifier for a technique., technique_curie(), available(), dung_declaration(), dung_provider() (+14 more)
+### Community 96 - "artifacts.py"
+Cohesion: 0.14
+Nodes (27): Path, Wheel RECORD, content, metadata, and provenance validation tests., The artifact validator enforces the runtime reader's exact field set. A field…, test_built_pair_passes_complete_artifact_validation(), test_provenance_with_an_extra_field_fails_the_artifact_gate(), _archive_members(), _declared_dependencies(), _forbidden() (+19 more)
+
+### Community 97 - "NativeTechniqueResult"
+Cohesion: 0.07
+Nodes (36): CapabilityState, NativeTechniqueResult, One technique's unchanged native payload, with analytical and artifact…, The canonical ``coe:`` identifier for a technique., technique_curie(), SemanticVersion, available(), dung_declaration() (+28 more)
 
 ### Community 98 - "properties"
 Cohesion: 0.06
-Nodes (37): items, title, type, properties, $ref, $ref, items, title (+29 more)
+Nodes (39): properties, $ref, $ref, items, title, type, $ref, $ref (+31 more)
 
 ### Community 99 - "CacheEligibility"
 Cohesion: 0.07
 Nodes (34): $ref, additionalProperties, properties, required, title, type, CacheEligibility, EvidenceCapability (+26 more)
 
-### Community 100 - "model_validator"
-Cohesion: 0.09
-Nodes (17): _canonical_model_hash(), model_validator, One pinned tokenizer's fast/parity/MPS compatibility evidence., Hashed Python/Transformers/MPS compatibility receipt for mandatory tokenizers., TokenizerCompatibilityReceipt, TokenizerProbeResult, _encoding_payload(), main() (+9 more)
+### Community 100 - "docling_rst_quality_check.py"
+Cohesion: 0.16
+Nodes (20): DoclingDocument, PictureItem, main(), Any, Phase 0 steps 6 and 7 — long-input smoke and determinism check. Step 6: parse a…, Build a structural signature of a tree for equality comparison. Captures…, tree_signature(), collect_leaves() (+12 more)
 
 ### Community 101 - "OwnershipAuthority"
-Cohesion: 0.11
-Nodes (25): test_authority_classifies_each_surface(), Path, Codex controls are repository tooling, never distributable production code., test_codex_controls_have_one_non_publishable_repository_owner(), Path, Shared ingest has one explicit owner; provider imports belong to composition., test_boundary_rejects_direct_technique_import_in_orchestration(), test_shared_ingest_has_exactly_one_machine_owned_production_rule() (+17 more)
+Cohesion: 0.13
+Nodes (30): Path, Codex controls are repository tooling, never distributable production code., test_codex_controls_have_one_non_publishable_repository_owner(), Path, Shared ingest has one explicit owner; provider imports belong to composition., test_boundary_rejects_direct_technique_import_in_orchestration(), test_shared_ingest_has_exactly_one_machine_owned_production_rule(), OwnershipAuthority (+22 more)
 
-### Community 102 - "model.py"
-Cohesion: 0.11
-Nodes (17): Authority constants for experimental workbench models., cky_discourse_tree_decode(), DeepBiaffineScorer, ParsedRstTreeEvidence, ParsedRstTreeSpan, Tensor, Vectorized deep biaffine attention and dynamic CKY discourse tree decoding., A constituent span in the decoded RST discourse tree. (+9 more)
+### Community 102 - "PureTransformerParsingNet"
+Cohesion: 0.08
+Nodes (26): cky_discourse_tree_decode(), DeepBiaffineScorer, ParsedRstTreeEvidence, ParsedRstTreeSpan, Tensor, Vectorized deep biaffine attention and dynamic CKY discourse tree decoding., A constituent span in the decoded RST discourse tree., Bounded provider scores for one selected constituent decision. (+18 more)
 
 ### Community 103 - "properties"
 Cohesion: 0.15
 Nodes (13): Apache-2.0, CC-BY-NC-4.0, MIT, enum, type, properties, licence, release_id (+5 more)
 
-### Community 104 - "Sha256Identity"
+### Community 104 - "parser_result.py"
 Cohesion: 0.05
-Nodes (129): AnchorTargetKind, ErstCandidateDecision, AnalysedDocument, AnalysisAnchor, AnalysisPolicy, FidelityClass, ParserAnalysisExecutionEvidence, ParserAnalysisSemanticEvidence (+121 more)
+Nodes (105): ErstCandidateDecision, ErstCompletionTrace, PredictorAnalysisTrace, describe_capabilities(), ParserDescriptor, Protocol, Model-free and parser-aware production capability discovery., Return installed capabilities without importing a model or optional adapter. (+97 more)
 
 ### Community 105 - "ParsingNet"
 Cohesion: 0.19
@@ -1648,24 +1666,24 @@ Cohesion: 0.06
 Nodes (40): required, required, required, required, additionalProperties, required, title, type (+32 more)
 
 ### Community 108 - "benchmark_modernbert.py"
-Cohesion: 0.13
-Nodes (23): main(), Path, Genuine held-out benchmark runner for Pure Transformer ModernBERT on GUM 12.1.0., Run genuine benchmark on held-out GUM split using a promoted model release., run_benchmark(), extract_edus_from_tree(), GUMDisNode, load_gum_splits() (+15 more)
+Cohesion: 0.10
+Nodes (29): main(), Path, Genuine held-out benchmark runner for Pure Transformer ModernBERT on GUM 12.1.0., Run genuine benchmark on held-out GUM split using a promoted model release., run_benchmark(), align_edus_with_tokenizer(), build_target_matrices(), extract_edus_from_tree() (+21 more)
 
 ### Community 109 - "test_blake3_hashing.py"
 Cohesion: 0.09
-Nodes (36): audit_technology_matrix(), LicenseAuditReceipt, main(), ModelLicenseRecord, BaseModel, Path, Verify commercial license compliance for candidate and released model weights.…, Audit the research technology matrix for license compliance. (+28 more)
+Nodes (38): audit_technology_matrix(), LicenseAuditReceipt, main(), ModelLicenseRecord, BaseModel, Path, Verify commercial license compliance for candidate and released model weights.…, Audit the research technology matrix for license compliance. (+30 more)
 
 ### Community 110 - "thaw_json"
 Cohesion: 0.11
 Nodes (19): field_serializer, Never, field_validator, JsonValue, freeze_json(), freeze_json_object(), FrozenJsonArray, FrozenJsonObject (+11 more)
 
 ### Community 111 - "ParserInput"
-Cohesion: 0.09
-Nodes (15): _extras(), ParserInput, Any, Path, Minimal legacy parser-input leaf record required for safe model inventory…, Mutable historical parser record with no corpus or training behavior., Return the parser's exact limiting-unit count for this materialized input., Unpickler that only reconstructs inventory leaf types + containers.… (+7 more)
+Cohesion: 0.12
+Nodes (10): _extras(), ParserInput, Any, Path, Minimal legacy parser-input leaf record required for safe model inventory…, Mutable historical parser record with no corpus or training behavior., Return the parser's exact limiting-unit count for this materialized input., Data (+2 more)
 
 ### Community 112 - "test_base_predictor.py"
-Cohesion: 0.15
-Nodes (28): _device_from_spec(), DeviceProbe, device, One authority for PyTorch import ordering, devices, and inference dtypes., Immutable accelerator-availability snapshot, injectable in tests., Resolve the canonical device API and its deprecated integer shim., resolve_device(), Unit tests for BasePredictor helpers — no model downloads, fast. (+20 more)
+Cohesion: 0.07
+Nodes (46): device, dtype, _device_from_spec(), DeviceProbe, device, dtype, One authority for PyTorch import ordering, devices, and inference dtypes., Resolve an inference dtype supported by the selected accelerator. (+38 more)
 
 ### Community 113 - "test_candidate_runner.py"
 Cohesion: 0.16
@@ -1683,13 +1701,13 @@ Nodes (28): MarkdownIt, build_parser(), load_markdown(), LoadResult, Tokenise a 
 Cohesion: 0.06
 Nodes (40): required, required, required, required, additionalProperties, required, title, type (+32 more)
 
-### Community 117 - "source_anchors"
+### Community 117 - "properties"
 Cohesion: 0.06
-Nodes (36): properties, additionalProperties, properties, title, type, $ref, AnalysedToken, title (+28 more)
+Nodes (37): properties, additionalProperties, properties, title, type, $ref, AnalysedToken, title (+29 more)
 
 ### Community 118 - "properties"
 Cohesion: 0.06
-Nodes (36): properties, items, title, type, properties, title, type, items (+28 more)
+Nodes (35): properties, items, title, type, properties, title, type, edu_ids (+27 more)
 
 ### Community 119 - "required"
 Cohesion: 0.08
@@ -1719,17 +1737,17 @@ Nodes (30): properties, $ref, minimum, title, type, minimum, title, type (+22 mo
 Cohesion: 0.08
 Nodes (26): properties, anyOf, default, $ref, title, type, minimum, title (+18 more)
 
-### Community 126 - "XmlElement"
-Cohesion: 0.11
-Nodes (19): local_path_index(), Protocol, Index canonical local-name paths for an element tree in one pass., Public structural type for the private lxml element implementation., XmlElement, body_text(), iter_body_text(), iter_sibling_body_text() (+11 more)
+### Community 126 - "test_doclang_text_walker.py"
+Cohesion: 0.22
+Nodes (14): body_text(), iter_body_text(), iter_sibling_body_text(), Exactly-once DocLang body-text traversal., Yield eligible text beneath ``element`` without its outer tail. The root is an…, Yield a sibling's eligible body plus its tail exactly once., Return normalized eligible body text for an explicitly selected root., Regression tests for the private exactly-once DocLang text walker. (+6 more)
 
 ### Community 127 - "required"
-Cohesion: 0.07
-Nodes (37): required, required, required, additionalProperties, required, title, type, AnalysisAnchor (+29 more)
+Cohesion: 0.06
+Nodes (42): required, additionalProperties, required, title, type, required, required, required (+34 more)
 
-### Community 128 - "test_predictor_args.py"
-Cohesion: 0.33
-Nodes (3): Argument-validation tests for the two predictor families. These DO NOT load…, ``True`` is a subclass of ``int`` — must still be rejected., TestCudaDeviceValidation
+### Community 128 - "ingest/identity.py"
+Cohesion: 0.16
+Nodes (20): analysis_outcome_semantic_identity(), analysis_outcome_semantic_projection(), _normalize_analysis_semantic(), parser_result_semantic_identity(), parser_result_semantic_projection(), preparation_semantic_identity(), preparation_semantic_projection(), Any (+12 more)
 
 ### Community 129 - "required"
 Cohesion: 0.06
@@ -1748,8 +1766,8 @@ Cohesion: 0.06
 Nodes (33): $ref, $ref, additionalProperties, properties, required, title, type, $ref (+25 more)
 
 ### Community 133 - "DataManager"
-Cohesion: 0.13
-Nodes (10): DataManager, Any, Node, Path, One-way import of a published HF pickle → relation labels only., :param corpus: str - from {'GUM', 'RST-DT', 'RuRSTB', 'RST-DT-tr',} :param…, Makes self.mixed_train_* versions with 100% train files from first language and…, Take all rs3 documents and save them in the same directory as *.edus and *.lisp… (+2 more)
+Cohesion: 0.10
+Nodes (13): DataManager, Any, Data, Node, Path, One-way import of a published HF pickle → relation labels only., :param corpus: str - from {'GUM', 'RST-DT', 'RuRSTB', 'RST-DT-tr',} :param…, :param number: int - fold number :param lang: str - (main) language :param… (+5 more)
 
 ### Community 134 - "Visual Narrative Elements"
 Cohesion: 0.21
@@ -1768,24 +1786,24 @@ Cohesion: 0.13
 Nodes (9): DataManager, Node, Path, :param corpus: str - from {'GUM', 'RST-DT', 'RuRSTB'} :param cross_validation:…, One-way import of a published HF pickle → relation labels only., Makes self.mixed_train_* versions with 100% train files from first language and…, Take all rs3 documents and save them in the same directory as *.edus and *.lisp…, Scatter examples on folds divided into train/val/test. Preserve subclasses… (+1 more)
 
 ### Community 138 - "test_comparison_foundations.py"
-Cohesion: 0.05
-Nodes (78): _protocol(), Regression tests for calibration, statistics, resources, and system constraints., _receipt(), _resource(), test_bootstrap_and_holm_are_reproducible_and_content_hashed(), test_generative_outcomes_are_unique_and_include_explicit_no_edge(), test_screening_completeness_requires_every_system_seed_disposition(), AblationDefinition (+70 more)
+Cohesion: 0.06
+Nodes (52): _protocol(), Regression tests for calibration, statistics, resources, and system constraints., _receipt(), _resource(), test_bootstrap_and_holm_are_reproducible_and_content_hashed(), test_generative_outcomes_are_unique_and_include_explicit_no_edge(), test_screening_completeness_requires_every_system_seed_disposition(), AblationAdapter (+44 more)
 
-### Community 139 - "ExperimentRunner"
+### Community 139 - "erst/runner.py"
 Cohesion: 0.07
-Nodes (20): PayloadT, test_disabled_mps_sampler_has_no_measurement_side_effect(), ExperimentIndex, ExperimentIndexEntry, Content-addressed location of one retained run receipt., Immutable, append-only inventory of successful and unsuccessful runs., MpsMemorySampler, Measured MPS allocation sampling for independent experiment runs. (+12 more)
+Nodes (35): PayloadT, test_disabled_mps_sampler_has_no_measurement_side_effect(), _data(), IncompatibleAdapter, _protocol(), Path, Execution-path tests for the isolated eRST technology-comparison harness., Synthetic measured incompatibility proving durable unsuccessful evidence. (+27 more)
 
 ### Community 140 - "Narrative Rhetorical Markers"
 Cohesion: 0.12
 Nodes (27): Transition Marker, Validated Outcome, Value Proposition, Visual Demonstration, Anaphora, Before After Comparison, Bluf Hook, Call To Action (+19 more)
 
-### Community 141 - "SourceArtifact"
+### Community 141 - "service.py"
 Cohesion: 0.04
-Nodes (94): ContentInventory, ContentRequirement, A provider-owned, content-addressed declaration of analysable source., The complete shared inventory, independent of provider projection and execution., SegmentKind, TableLinearisationParameters, UnmetRequirement, _canonical_edus() (+86 more)
+Nodes (122): BoundaryPreference, CacheStatus, CacheStatus, EmptyExecution, Shared invariants and identities for production contract 2.0.0., Normalized public-contract version with no prerelease or local suffix., Explicit empty execution section for non-executing contract records., SemanticVersion (+114 more)
 
 ### Community 142 - "ParsingNet"
-Cohesion: 0.13
-Nodes (15): DmrstParsingNet, ParsingNet, Any, device, Module, Tensor, Input: input_sentence: [batch_size, length] input_EDU_breaks: e.g.…, :param cur_encoder_outputs: torch.FloatTensor - EDU embeddings of shape… (+7 more)
+Cohesion: 0.20
+Nodes (9): ParsingNet, Any, device, Module, Tensor, Input: input_sentence: [batch_size, length] input_EDU_breaks: e.g.…, :param cur_encoder_outputs: torch.FloatTensor - EDU embeddings of shape…, :param token_ids: list - token ids of shape (n_tokens,) :param edu_breaks: list… (+1 more)
 
 ### Community 143 - "$defs"
 Cohesion: 0.05
@@ -1796,12 +1814,12 @@ Cohesion: 0.08
 Nodes (26): properties, $ref, minimum, title, type, minimum, title, type (+18 more)
 
 ### Community 145 - "test_unirst_pickle_security.py"
-Cohesion: 0.13
-Nodes (26): dump_relation_inventory(), _EvilReduce, _local_shell(), parametrize, Path, Adversarial / inventory-load tests for UniRST pickle handling. No HF downloads,…, A planted eval-gadget pickle must not load; loader returns None., Pickle-only packaging (no relation_table_*.txt) still yields labels. (+18 more)
+Cohesion: 0.12
+Nodes (28): dump_relation_inventory(), Unpickler that only reconstructs inventory leaf types + containers.…, RestrictedUnpickler, _EvilReduce, _local_shell(), parametrize, Path, Adversarial / inventory-load tests for UniRST pickle handling. No HF downloads,… (+20 more)
 
 ### Community 146 - "test_gum_gold.py"
 Cohesion: 0.08
-Nodes (33): quality, Immutable upstream model revisions for production parsers., GumCorpusValidationReport, Macro-averaged validation metrics across a corpus of GUM documents., _corpus_metrics(), gold_edus(), _gold_path(), parser_cpu() (+25 more)
+Nodes (32): quality, GumCorpusValidationReport, Macro-averaged validation metrics across a corpus of GUM documents., _corpus_metrics(), gold_edus(), _gold_path(), parser_cpu(), parser_quality_report() (+24 more)
 
 ### Community 147 - "XPath Element Loader"
 Cohesion: 0.14
@@ -1840,12 +1858,12 @@ Cohesion: 0.06
 Nodes (31): properties, $ref, anyOf, exclusiveMinimum, title, type, minimum, title (+23 more)
 
 ### Community 156 - "PredictorDMRST"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): PredictorDMRST, Any, Data, device, dtype, Path, Takes data with word level tokenization, run current transformer tokenizer and…, Splits a batch into multiple smaller with given size. (+8 more)
 
-### Community 157 - "ModernTreeParserTrainer"
-Cohesion: 0.14
-Nodes (12): ParsedGUMDocument, A fully parsed and token-aligned GUM discourse document., extract_bracket_spans_from_decoded_spans(), ModernTreeParserTrainer, ParsedRstTreeSpan, Path, Trainer for Pure Transformer Vectorized RST Parsers with SOTA optimization., Initialize cosine learning rate scheduler with warmup. (+4 more)
+### Community 157 - "train_tree_parser.py"
+Cohesion: 0.09
+Nodes (24): main(), End-to-end training and evaluation runner for Pure Transformer ModernBERT on…, BracketSpan, A single span tuple for Parseval comparison: (start_edu, end_edu, nuclearity,…, get_current_git_commit(), Get current git commit hash, or 'untracked' if git is unavailable., Authority constants for experimental workbench models., GUMTreebankDataset (+16 more)
 
 ### Community 158 - "properties"
 Cohesion: 0.07
@@ -1876,8 +1894,8 @@ Cohesion: 0.16
 Nodes (21): Document, _parse_rs3_dom(), NodeMap, Path, Utilities for parsing ``.rs3`` and text files into in-memory objects., Parse RS3 XML with a hardened lxml parser, then expose a minidom tree. Entity…, Parse an RS3 file into a representation that can be stored in SQLite.…, read_relfile() (+13 more)
 
 ### Community 165 - "test_analysed_document.py"
-Cohesion: 0.16
-Nodes (16): ParserInputLimitError, ValueError, The exact inference substrate exceeds a declared parser limit., SimpleNamespace, _MockPredictor, _Model, _predictor(), Any (+8 more)
+Cohesion: 0.15
+Nodes (17): ParserInputLimitError, ValueError, The exact inference substrate exceeds a declared parser limit., SimpleNamespace, _MockPredictor, _Model, _predictor(), Any (+9 more)
 
 ### Community 166 - ".__init__"
 Cohesion: 0.11
@@ -1911,25 +1929,25 @@ Nodes (28): title, type, properties, coordinate_system, x0, x0_resolution, x1, x
 Cohesion: 0.07
 Nodes (28): additionalProperties, properties, required, title, type, AnalysisPolicy, $ref, evidence_detail (+20 more)
 
-### Community 174 - ".build"
+### Community 174 - ".analyse_document"
+Cohesion: 0.09
+Nodes (25): CacheDirectoryBuilder, ModelIdentityBuilder, ParsedRstTreeEvidence, PrimaryRelationEdge, PrivateMarkerBuilder, RstNode, SourceArtifactBuilder, cache_directory_builder() (+17 more)
+
+### Community 175 - "ParserAnalysisResult"
+Cohesion: 0.06
+Nodes (46): AnalysedEdu, AnalysedToken, AnalysisRequest, PreparedSegment, ParserAnalysisResult, CompositeAnalysisIdentity, RstAnalysis, PreparedSegment (+38 more)
+
+### Community 176 - "test_integration.py"
 Cohesion: 0.16
-Nodes (14): CacheDirectoryBuilder, ModelIdentityBuilder, PrivateMarkerBuilder, SourceArtifactBuilder, cache_directory_builder(), model_identity_builder(), private_marker_builder(), fixture (+6 more)
-
-### Community 175 - "enrichment.py"
-Cohesion: 0.20
-Nodes (23): AnalysedEdu, AnalysedToken, PreparedSegment, AnalysedToken, PreparedSegment, _anchors_for_range(), _enrich_analysis_anchor(), _enrich_edu() (+15 more)
-
-### Community 176 - "PureTransformerParsingNet"
-Cohesion: 0.19
-Nodes (10): PureTransformerParsingNet, Any, ParsedRstTreeEvidence, ParsedRstTreeSpan, Tensor, Compute full discourse tree representations, biaffine scores, and multi-task…, Pure Transformer Vectorized Discourse Tree Parser (ParsingNetV5). Eliminates…, Decode a single document into an optimal projective RST discourse tree. (+2 more)
+Nodes (21): _assert_aligned(), _collect_leaf_units(), _collect_leaves(), dmrst_cpu(), fixture, parametrize, skipif, Integration tests that load real modern transformer models — marked slow. Run… (+13 more)
 
 ### Community 177 - "properties"
 Cohesion: 0.10
 Nodes (21): additionalProperties, properties, title, type, AnalysisPolicy, $ref, default, $ref (+13 more)
 
-### Community 178 - "RstAnalysis"
-Cohesion: 0.04
-Nodes (101): MultiDiGraph, Pattern, PreTrainedTokenizerFast, PrimaryRelationEdge, Complete discourse analysis result., Find the root node if present., Look up a node by its ID., A node in a discourse tree or graph. (+93 more)
+### Community 178 - "RstDocument"
+Cohesion: 0.11
+Nodes (30): MultiDiGraph, Lossless document representation for discourse parsing., RstDocument, Any, DiscourseSignal, Delegate every runtime mode to the canonical complete generator., Detect all anchored lexical and morphosyntactic signals as orphans., Project the evidence-complete completion trace to its final graph. (+22 more)
 
 ### Community 179 - "properties"
 Cohesion: 0.07
@@ -1952,12 +1970,12 @@ Cohesion: 0.06
 Nodes (30): additionalProperties, title, type, additionalProperties, title, type, enum, title (+22 more)
 
 ### Community 184 - "test_viewer_classes.py"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (17): get_depth(), get_left_right(), Node, NodeMap, RST tree node types and parent-chain attribute walks., EDU used by the segmenter, not by the structurer., Set graphical nesting depth of ``orig_node`` from the parent chain. RST…, Walk toward the root, expanding each ancestor's left/right EDU span. For EDUs… (+9 more)
 
-### Community 185 - "required"
-Cohesion: 0.15
-Nodes (13): additionalProperties, required, title, type, AnalysisSubstrateTransformation, affected_ranges, algorithm, algorithm_version (+5 more)
+### Community 185 - "properties"
+Cohesion: 0.08
+Nodes (24): items, title, type, title, type, $ref, additionalProperties, properties (+16 more)
 
 ### Community 186 - "properties"
 Cohesion: 0.07
@@ -2011,13 +2029,13 @@ Nodes (26): properties, anyOf, default, $ref, title, type, minimum, title (+18 m
 Cohesion: 0.08
 Nodes (25): additionalProperties, properties, required, title, type, const, default, title (+17 more)
 
-### Community 199 - "production_ingest/contracts.py"
-Cohesion: 0.20
-Nodes (17): _candidate(), parametrize, Promotion authority rejects mutable, contradictory, or waiver-bearing evidence., _source_result(), test_candidate_identity_rejects_changed_or_partial_digests(), test_promotion_decision_cannot_contradict_a_failed_gate_or_inspection(), CandidateIdentity, _EvidenceModel (+9 more)
+### Community 199 - "test_promotion_contracts.py"
+Cohesion: 0.22
+Nodes (14): _candidate(), parametrize, Promotion authority rejects mutable, contradictory, or waiver-bearing evidence., _source_result(), test_candidate_identity_rejects_changed_or_partial_digests(), test_promotion_decision_cannot_contradict_a_failed_gate_or_inspection(), CandidateIdentity, PromotionDecision (+6 more)
 
 ### Community 200 - "gold.py"
-Cohesion: 0.22
-Nodes (18): adjudicate_gold_set(), assemble_gold_set(), _copy(), _generated_archive(), _generated_markdown(), _identity_hex(), _Material, _materials() (+10 more)
+Cohesion: 0.25
+Nodes (15): assemble_gold_set(), _copy(), _generated_archive(), _generated_markdown(), _identity_hex(), _Material, _materials(), Path (+7 more)
 
 ### Community 201 - "semantic_digest"
 Cohesion: 0.08
@@ -2044,20 +2062,20 @@ Cohesion: 0.05
 Nodes (44): additionalProperties, properties, required, title, type, minimum, title, type (+36 more)
 
 ### Community 207 - "CentralExperimentLedger"
-Cohesion: 0.11
-Nodes (21): main(), End-to-end training and evaluation runner for Pure Transformer ModernBERT on…, Path, test_central_ledger_create_and_record(), test_central_ledger_multiple_runs(), CentralExperimentLedger, ExperimentRecord, get_current_git_commit() (+13 more)
+Cohesion: 0.16
+Nodes (13): Path, test_central_ledger_create_and_record(), test_central_ledger_multiple_runs(), CentralExperimentLedger, ExperimentRecord, Any, Path, Centralized, append-only experiment registry and audit ledger for discourse… (+5 more)
 
 ### Community 208 - "test_frameworks.py"
 Cohesion: 0.22
 Nodes (11): Framework identities resolve to Central and the packaged projection never…, test_all_eight_identities_resolve_to_the_scheme(), test_curies_are_exactly_the_vendored_concept_ids(), test_packaged_projection_equals_a_fresh_projection_of_the_vendored_taxonomy(), main(), project(), Any, Path (+3 more)
 
-### Community 209 - "._guess_token_offsets"
-Cohesion: 0.17
-Nodes (10): Best-effort alignment of already-tokenized `tokens` to raw `text`. Used when…, Build offset converter from word tokens and optional (start, end) pairs. If…, The fix: a missing token must raise rather than silently fall back., Token at the very end should match cleanly., test_guess_token_offsets_at_text_boundary(), test_guess_token_offsets_raises_on_miss(), test_guess_token_offsets_simple(), test_guess_token_offsets_token_longer_than_text() (+2 more)
+### Community 209 - "serialize"
+Cohesion: 0.18
+Nodes (15): PersistedRecord, Private content-addressed cache for successful native technique results.…, load(), Any, BaseModel, ValueError, Canonical persistence for machine-layer records, digest-verified on both…, The payload names a contract or version this runtime cannot read. (+7 more)
 
-### Community 210 - "._resolve_dtype"
-Cohesion: 0.12
-Nodes (16): device, dtype, Path, Load a PyTorch state dict with ``weights_only=True``. All checkpoints published…, Compatibility façade over the shared device-aware dtype resolver., parametrize, Default is fp32 on every device — measured fp32 wins on MPS for typical inputs;…, test_load_torch_weights_pure_tensors() (+8 more)
+### Community 210 - "str2bool"
+Cohesion: 0.11
+Nodes (14): Parse explicit boolean spellings and reject ambiguous configuration., str2bool(), Any, Data, Count distinct ``label_classifiers.<N>.*`` indices in a state dict. Returns…, Takes word-level tokenized data and converts it to transformer subword inputs., Splits a batch into multiple smaller batches of the given size. Note:…, Parse text into an RST tree. Args: text: Original document text. tokens:… (+6 more)
 
 ### Community 211 - "properties"
 Cohesion: 0.07
@@ -2080,8 +2098,8 @@ Cohesion: 0.25
 Nodes (8): enum, title, type, AuthorshipRole, authored, machine_generated, transcribed, unknown
 
 ### Community 216 - "assessor.py"
-Cohesion: 0.19
-Nodes (16): _analysis(), Promotion assessment protects EDU quality and structural-boundary gains., test_edu_boundary_f1_detects_regression_without_using_source_text(), test_preparation_identity_requires_exact_contract_preparation_and_text(), test_structural_gate_counts_pre_feature_cross_boundary_relation_and_macro_fix(), test_structural_gate_rejects_cross_boundary_relation_mislabelled_local(), assess_candidate_preparation(), _edu_boundary_f1() (+8 more)
+Cohesion: 0.17
+Nodes (17): _analysis(), Promotion assessment protects EDU quality and structural-boundary gains., test_edu_boundary_f1_detects_regression_without_using_source_text(), test_preparation_identity_requires_exact_contract_preparation_and_text(), test_structural_gate_counts_pre_feature_cross_boundary_relation_and_macro_fix(), test_structural_gate_rejects_cross_boundary_relation_mislabelled_local(), assess_candidate_preparation(), _edu_boundary_f1() (+9 more)
 
 ### Community 217 - "UniRST Binary Tree Conversion"
 Cohesion: 0.16
@@ -2111,9 +2129,9 @@ Nodes (18): required, active_parser_family, cache_eligibility, canonical_parser_
 Cohesion: 0.09
 Nodes (23): required, required, required, analysed_document, analysis, anchors, cache_request_identity, composite_identity (+15 more)
 
-### Community 224 - "final_data.py"
-Cohesion: 0.06
-Nodes (51): PrivateCorpusVerificationReceipt, Full-source and sampled-candidate verification for the private corpus., Train-derived raw eRST labels with explicit ontology projections., Return the exact class index for a raw GUM relation., RawRelationInventory, _data(), _protocol(), Path (+43 more)
+### Community 224 - "run_final_evaluation.py"
+Cohesion: 0.14
+Nodes (17): compare_prediction_artifacts(), _load_predictions(), Path, CPU/MPS decoded-graph and probability parity evidence., Require identical graph identities and measure the largest confidence delta., main(), Path, Execute the one-time untouched test/test2 evaluation for a frozen champion. (+9 more)
 
 ### Community 225 - "MetadataEntry"
 Cohesion: 0.11
@@ -2125,7 +2143,7 @@ Nodes (19): $ref, properties, $ref, $ref, $ref, $ref, $ref, $ref (+11 more)
 
 ### Community 227 - "rs3tohtml"
 Cohesion: 0.20
-Nodes (16): Convert an ``.rs3`` file into HTML. Parameters ---------- rs3_path: Path to the…, to_html(), rs3tohtml(), test_viewer_raises_the_rs3_import_failure(), Path, Viewer hardening: XXE posture, HTML escape, per-render SQLite., test_rs3tohtml_escapes_basename_in_header(), test_rs3tohtml_escapes_edu_text() (+8 more)
+Nodes (16): PathLike, Convert an ``.rs3`` file into HTML. Parameters ---------- rs3_path: Path to the…, to_html(), rs3tohtml(), Path, Viewer hardening: XXE posture, HTML escape, per-render SQLite., test_rs3tohtml_escapes_basename_in_header(), test_rs3tohtml_escapes_edu_text() (+8 more)
 
 ### Community 228 - "BinaryTree"
 Cohesion: 0.16
@@ -2155,9 +2173,9 @@ Nodes (21): additionalProperties, required, title, type, required, AnalysisPlan,
 Cohesion: 0.12
 Nodes (17): const, default, title, type, Sha256Identity, pattern, title, type (+9 more)
 
-### Community 235 - "_Predictor"
-Cohesion: 0.25
-Nodes (10): _FakeNode, _Predictor, Stand-in for isanlp.DiscourseUnit with the attributes used by remap., Minimal concrete subclass (BasePredictor is ABC)., Unary node = DUConverter bug; surface it rather than patch it., test_remap_tree_offsets_binary(), test_remap_tree_offsets_leaf(), test_remap_tree_offsets_unary_raises() (+2 more)
+### Community 235 - "render"
+Cohesion: 0.12
+Nodes (18): IO, Render an RST tree and, optionally, display it inline. This is a light-weight…, render(), IO, String subclass that cooperates with IPython display hooks., Render an RST tree and optionally display it inline., render(), RenderedRST (+10 more)
 
 ### Community 236 - "enum"
 Cohesion: 0.20
@@ -2167,9 +2185,9 @@ Nodes (10): enum, title, type, AnchorTargetKind, decision, edu, node, primary_ed
 Cohesion: 0.14
 Nodes (14): architecture, compatibility_range, created_at, files, licence, model_task, producer_version, release_id (+6 more)
 
-### Community 238 - "test_erst_decoder.py"
-Cohesion: 0.47
-Nodes (9): _analysis(), _candidate(), _decoder(), parametrize, Synthetic formal-conformance matrix for eRST secondary-edge decoding., test_formally_permitted_graph_shapes_are_accepted(), test_invalid_score_shapes_and_values_fail_instead_of_disappearing(), test_only_four_formal_constraints_reject_above_threshold_candidates() (+1 more)
+### Community 238 - "test_parse_result.py"
+Cohesion: 0.19
+Nodes (16): DiscourseUnit, Parse text and return a typed RST root instead of the legacy mapping payload.…, extract_root_tree(), ParseFailedError, RuntimeError, Helpers for unpacking ``Parser`` / predictor call results., Return ``result['rst'][0]``, or raise :class:`ParseFailedError`. Preferred over…, Raised when a parse result has no usable RST root tree. (+8 more)
 
 ### Community 239 - "mapping"
 Cohesion: 0.12
@@ -2184,20 +2202,20 @@ Cohesion: 0.22
 Nodes (14): parametrize, Path, The release identity is derived once and rejects contradictory project metadata., test_invalid_project_version_is_rejected(), test_project_import_identity_must_exactly_match_the_wheel_package(), test_repository_release_identity_is_exactly_the_declared_rdam_root(), test_safe_src_layout_derives_the_import_package_from_the_final_component(), test_unsafe_or_empty_wheel_package_path_is_rejected() (+6 more)
 
 ### Community 242 - "production_boundary/contracts.py"
-Cohesion: 0.13
-Nodes (27): BuiltArtifactIdentity, canonical_record_bytes(), CheckStatus, DependencyRule, EvidenceRecord, EvidenceState, GateResult, BaseModel (+19 more)
+Cohesion: 0.07
+Nodes (40): parametrize, Reference-machine preparation performance acceptance., test_preparation_meets_reference_threshold_on_every_measured_run(), test_source_text_has_the_requested_character_count(), ArtifactReceipt, canonical_record_bytes(), CheckStatus, DependencyRule (+32 more)
 
 ### Community 243 - "Bottom-Up Parsing Network"
 Cohesion: 0.23
 Nodes (8): ParsingNet, _Node, ParsingNetBottomUp, Any, Tensor, Bottom-up transition-based parser. This module reuses the encoder, segmenters…, Reconstructs the gold tree from pre-order traversal., Return gold transition sequence in postorder.
 
 ### Community 244 - "SdrtProvider"
-Cohesion: 0.12
-Nodes (22): Sha256Identity, Produce a validated native SDRS graph from raw text., Describe capability without constructing a model client., SdrtProvider, source_identity(), never_a_real_request(), no_credentials(), proposing() (+14 more)
+Cohesion: 0.13
+Nodes (20): Produce a validated native SDRS graph from raw text., SdrtProvider, SdrtAnalysis, never_a_real_request(), no_credentials(), proposing(), Any, fixture (+12 more)
 
-### Community 245 - "semantic_sha256"
-Cohesion: 0.05
-Nodes (38): Return the SHA-256 digest of a value's canonical JSON bytes., semantic_sha256(), model_validator, Self, T, _set_outcome_identity(), _preparation_identities(), CompletedStageEvidence (+30 more)
+### Community 245 - "Sha256Identity"
+Cohesion: 0.06
+Nodes (25): model_validator, Self, T, _set_outcome_identity(), Unambiguous SHA-256 identity used by every semantic digest field., Sha256Identity, model_validator, Self (+17 more)
 
 ### Community 246 - "text"
 Cohesion: 0.13
@@ -2207,17 +2225,17 @@ Nodes (15): additionalProperties, properties, required, title, type, AnnotationR
 Cohesion: 0.13
 Nodes (15): additionalProperties, properties, required, title, type, AnnotationRepresentation, label, title (+7 more)
 
-### Community 248 - "test_concurrency_stress.py"
-Cohesion: 0.17
-Nodes (14): _compatible_parser_release(), parametrize, Path, Multi-threaded concurrency stress tests verifying thread-safety across all…, Verify RFC-8785 canonical JSON hashing has zero race conditions., Verify NeuralSecondaryEdgeScorer thread-safety across concurrent batch…, Use a real, validated local release; missing evidence is a test failure., Compare every semantic tree field, including probability and entropy. (+6 more)
+### Community 248 - "test_real_parser_concurrency_matches_sequential_trees"
+Cohesion: 0.33
+Nodes (6): DiscourseUnit, parametrize, Compare every semantic tree field, including probability and entropy., T073: share loaded model state across four simultaneous calls on CPU and MPS., test_real_parser_concurrency_matches_sequential_trees(), _tree_bytes()
 
 ### Community 249 - "properties"
 Cohesion: 0.22
 Nodes (9): properties, title, type, $ref, title, type, artifact_identity, member_identity (+1 more)
 
-### Community 250 - "test_erst_environment.py"
-Cohesion: 0.32
-Nodes (13): HfTokenSource, StrEnum, Supported Hugging Face token environment variables in precedence order., _clear_hf_tokens(), CaptureFixture, MonkeyPatch, Path, Repository-root environment loading and Hugging Face credential precedence. (+5 more)
+### Community 250 - "load_repository_environment"
+Cohesion: 0.20
+Nodes (20): HfTokenSource, load_repository_environment(), _nonempty_environment_value(), BaseModel, Path, StrEnum, Supported Hugging Face token environment variables in precedence order., Validated evidence for one explicit repository-root environment load. (+12 more)
 
 ### Community 251 - "AdapterExecutionIdentity"
 Cohesion: 0.14
@@ -2245,7 +2263,7 @@ Nodes (14): additionalProperties, properties, required, title, type, AdapterExec
 
 ### Community 257 - "ComponentFileIdentity"
 Cohesion: 0.09
-Nodes (22): additionalProperties, properties, required, title, type, ComponentFileIdentity, $ref, path (+14 more)
+Nodes (22): additionalProperties, properties, required, title, type, ComponentFileIdentity, $ref, title (+14 more)
 
 ### Community 258 - "DocLang Fixture Verification"
 Cohesion: 0.22
@@ -2307,13 +2325,17 @@ Nodes (11): DiscourseSignal, additionalProperties, description, required, title,
 Cohesion: 0.18
 Nodes (11): DispositionReason, enum, title, type, authored_primary, exact_conversion_duplicate, invalid_source_item, machine_generated_primary (+3 more)
 
-### Community 273 - "._detect_family_from_model_dir"
-Cohesion: 0.11
-Nodes (6): Inspect a local checkpoint directory and infer the parser family. Returns…, If both signatures are present, UniRST wins (more specific)., When both family and version are set, version must belong to family., Explicit family must match detectable signatures when present., TestDetectFamilyFromModelDir, TestResolveFamily
+### Community 273 - "._resolve_family"
+Cohesion: 0.19
+Nodes (3): When both family and version are set, version must belong to family., Explicit family must match detectable signatures when present., TestResolveFamily
 
 ### Community 274 - "Repository Cleanup Script"
 Cohesion: 0.31
 Nodes (10): collect_junk(), _display(), is_junk_dir(), is_junk_file(), main(), Path, Remove regenerable junk from the repo: bytecode, tool caches, temp files. Does…, Delete ``paths``. Returns the number of paths acted on. (+2 more)
+
+### Community 275 - "CompatibilityRedeclaration"
+Cohesion: 0.33
+Nodes (4): CompatibilityRedeclaration, field_validator, PurePosixPath, An explicit, evidence-backed re-declaration of a release's package…
 
 ### Community 276 - "required"
 Cohesion: 0.12
@@ -2331,17 +2353,17 @@ Nodes (12): additionalProperties, required, title, type, AnalysisExecutionEviden
 Cohesion: 0.20
 Nodes (10): SourceForm, edus, text, enum, title, type, doclang_archive, doclang_xml (+2 more)
 
-### Community 280 - "dmrst_parser/predictor.py"
-Cohesion: 0.31
-Nodes (6): Data, getLabelOrdered(), nucs_and_rels(), ArrayLike, Get the right order of lable for stacks manner. E.g. [8,3,9,2,6,10,1,5,7,11,4]…, One batched parser example. Field order matches the historical constructor.
+### Community 280 - "dmrst_parser/src/parser/parsing_net.py"
+Cohesion: 0.21
+Nodes (8): getLabelOrdered(), nucs_and_rels(), ArrayLike, Get the right order of lable for stacks manner. E.g. [8,3,9,2,6,10,1,5,7,11,4]…, orthogonal_(), Tensor, Device-aware orthogonal weight initialisation for Apple Silicon MPS. PyTorch's…, Drop-in replacement for ``torch.nn.init.orthogonal_`` that is safe on Apple…
 
 ### Community 281 - "$defs"
-Cohesion: 0.06
-Nodes (33): additionalProperties, title, type, additionalProperties, title, type, enum, title (+25 more)
+Cohesion: 0.07
+Nodes (27): additionalProperties, title, type, additionalProperties, title, type, enum, title (+19 more)
 
-### Community 282 - "Counter"
-Cohesion: 0.16
-Nodes (15): Counter, find_cdu(), _is_leaf(), Any, Analytical helpers for parsed RST trees. These functions operate on…, Classify an RST relation label as subject-matter or presentational. Follows…, Compute structural diagnostics for an RST tree. Returned dict keys: ``depth``…, Locate the Central Discourse Unit (CDU) of an RST tree. Descends from the root… (+7 more)
+### Community 282 - "tree_stats"
+Cohesion: 0.27
+Nodes (10): find_cdu(), _is_leaf(), Any, Analytical helpers for parsed RST trees. These functions operate on…, Classify an RST relation label as subject-matter or presentational. Follows…, Compute structural diagnostics for an RST tree. Returned dict keys: ``depth``…, Locate the Central Discourse Unit (CDU) of an RST tree. Descends from the root…, relation_category() (+2 more)
 
 ### Community 283 - "DocLang Fixture Parity Tests"
 Cohesion: 0.20
@@ -2371,13 +2393,17 @@ Nodes (9): Chain Of Thought, Decomposition, Few Shot, Prompt Pattern, ReAct, Rol
 Cohesion: 0.22
 Nodes (9): Chunking, Embedding, Evaluation, Generation, Indexing, Ingestion, Pipeline Stage, Reranking (+1 more)
 
-### Community 290 - "ParserCapacity"
-Cohesion: 0.27
-Nodes (8): ParserCapacity, Stable safe unit capacity for recursive production analysis., Return the safe recursive-analysis capacity in the parser's limiting unit., Declare the recursive limit without constructing or loading a parser., Path, _release(), test_capacity_is_strict_and_uses_the_actual_unit(), test_validated_release_exposes_complete_analytical_identity()
+### Community 290 - "GraphError"
+Cohesion: 0.18
+Nodes (8): _elementary_members(), GraphError, model_validator, Self, ValueError, Resolve nested CDU membership once, without recursion., A proposed structure is not a valid native SDRS graph., Prove every EDU quote against the submitted source without repairing offsets.
 
 ### Community 291 - "enum"
 Cohesion: 0.18
 Nodes (11): description, enum, title, type, AnnotationStatusEnum, derived, gold, imported (+3 more)
+
+### Community 292 - "_version.py"
+Cohesion: 0.15
+Nodes (5): Canonical production package identity., Return distribution metadata, or ``unknown`` only when absent., resolve_installed_package_version(), Release metadata contract tests for the ``rdam`` 6.0.0 distribution., Release and canonical ingest-envelope version authority.
 
 ### Community 293 - "enum"
 Cohesion: 0.20
@@ -2388,16 +2414,16 @@ Cohesion: 0.20
 Nodes (10): enum, title, type, AnchorTargetKind, decision, edu, node, primary_edge (+2 more)
 
 ### Community 295 - "GoldSetManifest"
-Cohesion: 0.21
-Nodes (9): _source(), test_gold_manifest_enforces_depth_forms_risks_and_rst_gold(), test_gold_manifest_rejects_shallow_set(), GoldSetManifest, GoldSource, ProvenanceClass, model_validator, Self (+1 more)
+Cohesion: 0.22
+Nodes (13): datetime, _source(), test_gold_manifest_enforces_depth_forms_risks_and_rst_gold(), test_gold_manifest_rejects_shallow_set(), _EvidenceModel, GoldSetManifest, GoldSource, ProvenanceClass (+5 more)
 
 ### Community 296 - "test_clean_install_v2.py"
 Cohesion: 0.20
 Nodes (16): CaptureFixture, MonkeyPatch, Path, Genuine isolated-wheel mechanics before final release-artifact selection., _run(), test_fixture_wheel_installs_without_checkout_or_system_site_packages(), test_full_clean_install_requires_explicit_release_id(), test_full_clean_install_runs_inference_in_core_and_formats() (+8 more)
 
-### Community 297 - "to_png"
-Cohesion: 0.29
-Nodes (8): PathLike, T, Render an ``.rs3`` file to PNG (works in both sync and async environments)., Render an ``.rs3`` file to PDF. The viewer exposes only an asynchronous PDF…, Execute `coro` to completion and return its result, regardless of asyncio state., _run_coro_sync_result(), to_pdf(), to_png()
+### Community 297 - "production_boundary/public_surface.py"
+Cohesion: 0.17
+Nodes (17): _entry_kind(), generated_public_surface(), Any, Path, Generate the exact installed production public-surface authority., Write the generated authority to its package resource path., Return canonical bytes for every supported root export and installed resource., _root_entry() (+9 more)
 
 ### Community 298 - "parseXML"
 Cohesion: 0.22
@@ -2417,7 +2443,7 @@ Nodes (8): Tensor, Boundary-aware span representations for pure transformer disc
 
 ### Community 302 - "required"
 Cohesion: 0.14
-Nodes (14): additionalProperties, required, title, type, CompositeAnalysisIdentity, relation_inventory, calibration, erst_decoder (+6 more)
+Nodes (14): additionalProperties, required, title, type, CompositeAnalysisIdentity, calibration, erst_decoder, erst_detector (+6 more)
 
 ### Community 303 - "Archetypal Character Roles"
 Cohesion: 0.64
@@ -2447,13 +2473,13 @@ Nodes (3): Production Package and Offline Workbench Boundary, Raw-Material Inges
 Cohesion: 0.39
 Nodes (8): _analysis_payload(), _compare(), main(), Any, Run and compare deterministic production behavior across the codeline split., run(), _sha256_json(), _tree_payload()
 
-### Community 310 - "_RecordingTransformer"
-Cohesion: 0.40
-Nodes (3): Tensor, _RecordingTransformer, test_unirst_final_window_keeps_entity_inputs()
+### Community 310 - "test_python314_audit_regressions.py"
+Cohesion: 0.09
+Nodes (30): DmrstParsingNet, Module, _deep_rst_tree(), _dmrst_net(), _minimal_analysis(), Any, DiscourseUnit, MonkeyPatch (+22 more)
 
-### Community 311 - "Release Tool Test Fixtures"
-Cohesion: 0.36
-Nodes (7): TempPathFactory, built_release_pair(), fixture_identity(), fixture, Path, Deterministic release-tool fixtures. The fixture project mirrors the real…, _run()
+### Community 311 - "production_boundary/conftest.py"
+Cohesion: 0.31
+Nodes (8): TempPathFactory, built_release_pair(), fixture_identity(), fixture, Path, ReleaseIdentity, Deterministic release-tool fixtures. The fixture project mirrors the real…, _run()
 
 ### Community 312 - "RST Mutation Testing"
 Cohesion: 0.50
@@ -2483,9 +2509,9 @@ Nodes (7): Argument Role, Backing, Claim, Grounds, Qualifier, Rebuttal, Warrant
 Cohesion: 0.20
 Nodes (10): required, coordinate_system, x0, x0_resolution, x1, x1_resolution, y0, y0_resolution (+2 more)
 
-### Community 319 - "._load_and_parse_all"
-Cohesion: 0.28
-Nodes (7): align_edus_with_tokenizer(), build_target_matrices(), Path, PreTrainedTokenizerBase, Tensor, Construct (gold_splits, gold_nucs, gold_rels) target matrices from the gold…, Tokenize document text and compute exact token start/end offsets for each EDU.…
+### Community 319 - "._detect_family_from_model_dir"
+Cohesion: 0.19
+Nodes (4): Inspect a local checkpoint directory and infer the parser family. Returns…, Read ``path`` as JSON. Returns ``None`` if the file is missing, unreadable, or…, If both signatures are present, UniRST wins (more specific)., TestDetectFamilyFromModelDir
 
 ### Community 320 - "Toulmin Provider Specifications"
 Cohesion: 0.43
@@ -2535,9 +2561,9 @@ Nodes (4): ConfigReader, Any, Path, Offline UniRST training configuration reader
 Cohesion: 0.33
 Nodes (6): Discourse Relation Sense, Cause, Concession, Condition, Contrast, Instantiation
 
-### Community 333 - "universal_parser/src/parser/segmenters.py"
-Cohesion: 0.32
-Nodes (4): orthogonal_(), Tensor, Device-aware orthogonal weight initialisation for Apple Silicon MPS. PyTorch's…, Drop-in replacement for ``torch.nn.init.orthogonal_`` that is safe on Apple…
+### Community 333 - "test_version_compat.py"
+Cohesion: 0.17
+Nodes (15): parametrize, Path, Conformance guard: do we still ingest current Docling / DocLang output? The…, Return the XML namespace declared on a fixture's root element (or '')., Guard against the guard silently no-opping if fixtures are moved/renamed — an…, Each fixture's declared Docling schema version must equal the installed…, Current docling-core and canonical ingest must accept every fixture., The installed current validator must accept our namespaced specimen. (+7 more)
 
 ### Community 334 - "enum"
 Cohesion: 0.29
@@ -2567,21 +2593,25 @@ Nodes (6): Contract: IBIS Native Result, Data Model: IBIS Provider, Implementati
 Cohesion: 0.40
 Nodes (3): _module_exists(), The canonical ingest package is the only production source-ingest surface., test_obsolete_envelopes_and_entry_modules_are_absent()
 
-### Community 341 - "ModelFile"
-Cohesion: 0.09
-Nodes (17): ModelFile, ModelReleaseIdentity, BaseModel, model_validator, Complete released-model identity used by analytical caches., A release directory whose complete byte inventory has been checked., The range in force: a re-declaration for this exact manifest, else the…, Return the immutable identity consumed by production analysis. (+9 more)
+### Community 341 - "release.py"
+Cohesion: 0.13
+Nodes (18): ModelFile, ModelReleaseIdentity, ParserCapacity, BaseModel, Strict contracts and validation for immutable production model releases., Stable safe unit capacity for recursive production analysis., Complete released-model identity used by analytical caches., Return the immutable identity consumed by production analysis. (+10 more)
 
 ### Community 342 - "ArchiveMemberAnchor"
 Cohesion: 0.25
 Nodes (8): additionalProperties, required, title, type, ArchiveMemberAnchor, artifact_identity, member_identity, member_path
 
-### Community 343 - "test_all_source_forms.py"
-Cohesion: 0.25
-Nodes (7): MonkeyPatch, parametrize, SourceForm, The ingest capability report is the machine's source-form authority., test_available_form_enters_machine(), test_machine_has_no_second_source_form_registry(), test_malformed_form_fails_typed_at_classification()
+### Community 343 - "HierarchicalAdapter"
+Cohesion: 0.17
+Nodes (8): HierarchicalAdapter, _HierarchicalAdapterModel, device, Path, PreTrainedModel, PreTrainedTokenizerBase, Tensor, Train/evaluate the pinned XLM-R adapter without modifying backbone weights.
 
 ### Community 344 - "Nucleus and Relation Tests"
 Cohesion: 0.33
 Nodes (3): parametrize, DMRST ``nucs_and_rels`` must match UniRST ``rpartition`` semantics., test_dmrst_nucs_and_rels_matches_unirst()
+
+### Community 345 - "Self"
+Cohesion: 0.20
+Nodes (6): _canonical_edus(), _identify_path(), _media_type(), model_validator, Path, Self
 
 ### Community 346 - "Docling RST Output Planning"
 Cohesion: 0.90
@@ -2605,7 +2635,7 @@ Nodes (4): _OffsetToken, Protocol, Build offset converter from a list of `razdel
 
 ### Community 351 - "validate_model_release"
 Cohesion: 0.13
-Nodes (37): Production-safe released-model contracts and loaders., canonical_json_bytes(), compatibility_redeclaration_path(), CompatibilityRedeclaration, load_compatibility_redeclaration(), load_model_release(), ModelReleaseError, ModelReleaseManifest (+29 more)
+Nodes (20): Production-safe released-model contracts and loaders., load_compatibility_redeclaration(), load_model_release(), ModelReleaseError, peek_runtime_contract(), Path, RuntimeError, A release directory whose complete byte inventory has been checked. (+12 more)
 
 ### Community 352 - "EvidenceDetailPolicy"
 Cohesion: 0.33
@@ -2647,9 +2677,9 @@ Nodes (4): Argument Link Type, Addressed By, Rebutted By, Supports
 Cohesion: 0.50
 Nodes (4): Discourse Role, Background, Nucleus, Supportive
 
-### Community 363 - "resolve_dtype"
-Cohesion: 0.33
-Nodes (5): device, dtype, dtype, Resolve an inference dtype supported by the selected accelerator., resolve_dtype()
+### Community 363 - "test_model_promotion.py"
+Cohesion: 0.30
+Nodes (14): _candidate(), Path, Production model-release validation and offline promotion tests., An immutable release stays loadable under a later package line only through an…, test_compatibility_redeclaration_for_another_manifest_is_refused(), test_compatibility_redeclaration_widens_the_range_for_this_exact_manifest(), test_incompatible_contract_version_and_symlink_are_rejected(), test_loose_and_unpromoted_inputs_are_rejected() (+6 more)
 
 ### Community 364 - "classify"
 Cohesion: 0.24
@@ -2663,17 +2693,17 @@ Nodes (7): enum, title, type, CheckOutcome, failed, not_applicable, passed
 Cohesion: 0.29
 Nodes (7): discriminator, mapping, propertyName, immutable_release, mutable_instance, not_used, unidentified
 
-### Community 367 - "test_source_entry_points.py"
-Cohesion: 0.33
-Nodes (4): Path, Declarative source requests bind exact bytes without preparing content., test_file_and_bytes_bind_exact_payload(), test_request_rejects_two_sources_and_wrong_byte_identity()
-
-### Community 368 - "DiscourseSignal"
-Cohesion: 0.09
-Nodes (27): DiscourseSignal, BaseModel, field_validator, Require unique non-negative token identifiers without reordering., Require valid half-open anchors while retaining overlap and order., Require non-empty, unique raw relation labels., Immutable identity of the detector or source that produced a signal., Typed, anchored discourse signal; overlaps are explicitly permitted. (+19 more)
+### Community 367 - "ModelReleaseManifest"
+Cohesion: 0.21
+Nodes (11): canonical_json_bytes(), compatibility_redeclaration_path(), ModelReleaseManifest, model_validator, Where a release's compatibility re-declaration lives: beside, never inside, the…, Complete identity, compatibility, provenance, and byte inventory., main(), Path (+3 more)
 
 ### Community 369 - "kind"
 Cohesion: 0.40
 Nodes (5): const, default, title, type, kind
+
+### Community 370 - "test_conformance_matrix.py"
+Cohesion: 0.22
+Nodes (13): _archive(), _doclang(), _docling(), _edus(), _markdown(), parametrize, ParserBuilder, SourceArtifact (+5 more)
 
 ### Community 371 - "never_a_real_request"
 Cohesion: 0.60
@@ -2681,7 +2711,7 @@ Nodes (5): never_a_real_request(), no_credentials(), fixture, MonkeyPatch, with_
 
 ### Community 372 - "rst/contracts/__init__.py"
 Cohesion: 0.03
-Nodes (131): FormatRstAnalysis, Discourse analysis result models and graph structures., Execution timing profile in milliseconds., Composite analysis for structured documents (Docling, DocLang, Markdown)., A directed secondary rhetorical relation edge without nuclearity., SecondaryRelationEdge, TimingRecord, DocumentToken (+123 more)
+Nodes (170): Pattern, Native Rhetorical Structure Theory (RST) tree annotations and RS3…, Run inference and wrap exact substrate and parse evidence in…, FormatRstAnalysis, PrimaryRelationEdge, Discourse analysis result models and graph structures., Execution timing profile in milliseconds., Find the root node if present. (+162 more)
 
 ### Community 373 - "CoordinateBoxAnchor"
 Cohesion: 0.50
@@ -2691,17 +2721,17 @@ Nodes (4): additionalProperties, title, type, CoordinateBoxAnchor
 Cohesion: 0.50
 Nodes (4): ProductionIngestor, PreparedRstDocument, ProductionAnalysisResult, SourceArtifact
 
-### Community 375 - "Tasks: RST Provider Adapter"
-Cohesion: 0.67
-Nodes (4): Data Model: RST Provider Adapter, Implementation Plan: RST Provider Adapter, Feature Specification: RST Provider Adapter, Tasks: RST Provider Adapter
+### Community 375 - "TemperatureCalibration"
+Cohesion: 0.20
+Nodes (12): test_temperature_fit_is_deterministic_and_does_not_increase_development_nll(), apply_temperature(), _binary_nll(), fit_temperature(), BaseModel, model_validator, ndarray, Deterministic dev-only temperature and edge-threshold calibration. (+4 more)
 
 ### Community 376 - "Markdown Parsing Fixtures"
 Cohesion: 0.50
 Nodes (3): GFM-rich fixture, parse_markdown, process
 
-### Community 377 - "_FastTokenizerDouble"
-Cohesion: 0.50
-Nodes (3): _FastTokenizerDouble, Any, Tensor
+### Community 377 - "StructuralOnlyAdapter"
+Cohesion: 0.20
+Nodes (7): BaseModel, Tensor, Frozen finite optimization and decoding configuration., Train and score the structural control through the shared harness path., _StructuralClassifier, StructuralConfig, StructuralOnlyAdapter
 
 ### Community 378 - "LLM Test Mocking"
 Cohesion: 0.50
@@ -2835,6 +2865,14 @@ Nodes (6): Specification Quality Checklist: Shared Runtime Hardening, Contract: 
 Cohesion: 0.67
 Nodes (3): y1_resolution, title, type
 
+### Community 418 - "Discriminator"
+Cohesion: 0.18
+Nodes (6): Discriminator, device, Module, Tensor, (batch, colors, height, width) (5, 3, 20, 80) 16 * 19 * 1 = 304, Discriminator used in adversarial learning; Based on the code from…
+
+### Community 464 - "_GraphScorer"
+Cohesion: 0.23
+Nodes (5): _EdgeGraphAttentionLayer, _GraphScorer, Path, PreTrainedModel, Tensor
+
 ### Community 465 - "Feature Specification: Universal Source Pipeline"
 Cohesion: 0.09
 Nodes (26): Specification Quality Checklist: Universal Source Pipeline, Contract: Execution, Cache, and Alignment, Contract: Source Pipeline, Data Model: Universal Source Pipeline, Approved design decision — 2026-09-04, Feature 017 baseline — 2026-09-03, No-compatibility checkpoint — 2026-09-04, Relocation checkpoint — T006–T018 (+18 more)
@@ -2842,6 +2880,34 @@ Nodes (26): Specification Quality Checklist: Universal Source Pipeline, Contract
 ### Community 468 - "Tasks: Dung Abstract Argumentation Provider"
 Cohesion: 0.40
 Nodes (6): Contract: Dung Native Result, Implementation Plan: Dung Abstract Argumentation Provider, Quickstart: Dung Abstract Argumentation Provider, Dung Provider Research, Feature Specification: Dung Abstract Argumentation Provider, Tasks: Dung Abstract Argumentation Provider
+
+### Community 469 - "enum"
+Cohesion: 0.20
+Nodes (10): enum, title, type, ConfidenceKind, deterministic, entropy, logit, margin (+2 more)
+
+### Community 470 - "CrossEncoderConfig"
+Cohesion: 0.22
+Nodes (6): CrossEncoderConfig, BaseModel, model_validator, Path, PreTrainedModel, Frozen model, serialization, optimization, and decoding configuration.
+
+### Community 491 - "PromotionReceipt"
+Cohesion: 0.25
+Nodes (6): PromotionReceipt, BaseModel, model_validator, Self, Offline-only contracts for local model-promotion workflows., Immutable evidence for one successful local promotion.
+
+### Community 492 - "framework_identities"
+Cohesion: 0.29
+Nodes (7): LookupError, framework_identities(), FrameworkIdentity, FrameworkResolutionError, One framework concept exactly as registered in Central., A framework identity is absent from, or inconsistent with, the packaged…, Load the packaged projection once; every identity must match Central's id…
+
+### Community 1100 - ".family_for_runtime_contract"
+Cohesion: 0.33
+Nodes (3): Resolve canonical parser family from runtime contract string., Pin stored contract names directly, independently of analytical comparison., test_production_parser_runtime_names_are_unchanged()
+
+### Community 1101 - "bench.py"
+Cohesion: 0.47
+Nodes (5): main(), Performance benchmark for isanlp_rst across devices and dtypes. Usage: pixi run…, Run parser n times after a warm-up. Return median seconds and tree shape., _shape(), _time_parse()
+
+### Community 1107 - "ProviderConfigurationError"
+Cohesion: 0.40
+Nodes (4): ProviderConfigurationError, Path, ValueError, The provider was configured with neither a parser version nor a local release.
 
 ### Community 1112 - "architecture"
 Cohesion: 0.67
@@ -2875,25 +2941,33 @@ Nodes (3): source_model_identity, const, type
 Cohesion: 0.67
 Nodes (3): source_revision, pattern, type
 
+### Community 1120 - "smoke_iterate"
+Cohesion: 0.50
+Nodes (4): main(), Path, Smoke-iterate Docling JSON fixtures via docling-core's canonical walker. Phase…, smoke_iterate()
+
+### Community 1156 - ".describe_analysis_identity"
+Cohesion: 0.50
+Nodes (3): AnalysisPolicy, CompositeAnalysisIdentity, Return the exact composite runtime identity without running inference.
+
 ## Knowledge Gaps
-- **3441 isolated node(s):** `no-assumptions-check.sh script`, `cleanup.sh script`, `rdam`, `additionalProperties`, `title` (+3436 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 5737 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **708 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **3441 isolated node(s):** `rdam`, `additionalProperties`, `title`, `type`, `title` (+3436 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 5765 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **717 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `$defs` connect `$defs` to `AdapterExecutionIdentity`, `properties`, `required`, `MetadataEntry`, `ListRepresentation`, `AnnotationRepresentation`, `required`, `MetadataRepresentation`, `ExactCoverage`, `enum`, `mapping`, `enum`, `required`, `MediaReferenceRepresentation`, `enum`, `CrossReferenceRepresentation`, `kind`, `Disposition`?**
-  _High betweenness centrality (0.057) - this node is a cross-community bridge._
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
 - **Why does `ContentRepresentation` connect `mapping` to `$defs`, `rdam/ingest/__init__.py`?**
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
+- **Why does `_representation()` connect `rdam/ingest/__init__.py` to `_harvest.py`, `service.py`, `mapping`?**
   _High betweenness centrality (0.056) - this node is a cross-community bridge._
-- **Why does `_representation()` connect `rdam/ingest/__init__.py` to `_harvest.py`, `ContentClass`, `mapping`?**
-  _High betweenness centrality (0.054) - this node is a cross-community bridge._
 - **Are the 30 inferred relationships involving `ProductionIngestor` (e.g. with `ProductionIngestCache` and `AnalysedOutcome`) actually correct?**
   _`ProductionIngestor` has 30 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 4 inferred relationships involving `RstAnalysis` (e.g. with `ProvenanceRecord` and `FailureCodeEnum`) actually correct?**
   _`RstAnalysis` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 57 inferred relationships involving `Sha256Identity` (e.g. with `_cache_error()` and `ProductionIngestCache`) actually correct?**
   _`Sha256Identity` has 57 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 22 inferred relationships involving `Machine` (e.g. with `AggregateAnalysis` and `AggregateRequest`) actually correct?**
-  _`Machine` has 22 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 21 inferred relationships involving `Machine` (e.g. with `AggregateAnalysis` and `AggregateRequest`) actually correct?**
+  _`Machine` has 21 INFERRED edges - model-reasoned connections that need verification._
