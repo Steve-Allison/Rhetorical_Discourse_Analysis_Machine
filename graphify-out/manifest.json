@@ -4050,9 +4050,9 @@
     "semantic_hash": "b460b7e1e29ae7beed0886652024a7ef"
   },
   "specs/018-shared-runtime-hardening/evidence.md": {
-    "mtime": 1788520427.3545718,
-    "seen": 1788520435.410872,
-    "ast_hash": "e39a8e2fe3750d2e840733bc2c20dafc",
+    "mtime": 1788520471.2055998,
+    "seen": 1788525205.47623,
+    "ast_hash": "2331a50c28a9d37a37df3e8f06d07ffc",
     "semantic_hash": ""
   },
   "specs/018-shared-runtime-hardening/plan.md": {
@@ -4074,9 +4074,9 @@
     "semantic_hash": ""
   },
   "specs/018-shared-runtime-hardening/spec.md": {
-    "mtime": 1788520097.9262226,
-    "seen": 1788520106.6247108,
-    "ast_hash": "6113c64580e7f0f773074958ad7b43a5",
+    "mtime": 1788520471.206117,
+    "seen": 1788525205.476232,
+    "ast_hash": "935c33004d6c300afef602323457e3d6",
     "semantic_hash": ""
   },
   "specs/018-shared-runtime-hardening/tasks.md": {
