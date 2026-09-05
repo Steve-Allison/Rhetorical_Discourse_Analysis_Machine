@@ -147,9 +147,12 @@ class SourceArtifact(StrictContractModel):
             raise ValueError("provide exactly one source payload: raw_bytes or edus")
         if self.raw_bytes is not None and self.source_form is not SourceForm.DOCLANG_ARCHIVE:
             self.raw_bytes.decode("utf-8", errors="strict")
-        if self.raw_bytes is not None and self.edus is not None:
-            if self.source_form is not SourceForm.EDUS or json.loads(self.raw_bytes) != list(self.edus):
-                raise ValueError("raw EDU bytes must match the supplied EDUs")
+        if (
+            self.raw_bytes is not None
+            and self.edus is not None
+            and (self.source_form is not SourceForm.EDUS or json.loads(self.raw_bytes) != list(self.edus))
+        ):
+            raise ValueError("raw EDU bytes must match the supplied EDUs")
         if self.source_form is SourceForm.EDUS:
             if not self.edus:
                 raise ValueError("EDU source form requires at least one EDU")

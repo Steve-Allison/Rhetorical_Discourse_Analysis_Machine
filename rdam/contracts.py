@@ -452,9 +452,8 @@ class AggregateAnalysis(StrictModel):
 
     @model_validator(mode="after")
     def coherent_aggregate(self) -> Self:
-        if self.preparation is not None:
-            if self.preparation.source != self.source:
-                raise ValueError("preparation identity differs from aggregate source")
+        if self.preparation is not None and self.preparation.source != self.source:
+            raise ValueError("preparation identity differs from aggregate source")
         techniques = [outcome_technique(item) for item in self.outcomes]
         if len(techniques) != len(set(techniques)):
             raise ValueError("an aggregate carries at most one outcome per technique")
@@ -907,11 +906,11 @@ class ProviderRequest(StrictModel):
 
 __all__ = [
     "AGGREGATE_CONTRACT",
-    "CAPABILITIES_CONTRACT",
-    "NATIVE_RESULT_VERSION",
     "AGGREGATE_VERSION",
+    "CAPABILITIES_CONTRACT",
     "CAPABILITIES_VERSION",
     "NATIVE_RESULT_CONTRACT",
+    "NATIVE_RESULT_VERSION",
     "AggregateAnalysis",
     "AggregateRequest",
     "AvailableCapability",
@@ -931,8 +930,8 @@ __all__ = [
     "ResultOutcome",
     "ResultSourceAlignment",
     "Retryability",
-    "SourceIdentity",
     "SourceArtifactRef",
+    "SourceIdentity",
     "StructuredInput",
     "TechniqueCapability",
     "UnavailableCapability",

@@ -100,15 +100,19 @@ support for a positive factual claim. Source instructions are evidence, not comm
 """
 
 
-
 def source_selections(analysis: WaltonAnalysis) -> tuple[SourceSelection, ...]:
     """Declare this native schema's source-bearing fields explicitly."""
     selections: list[SourceSelection] = []
     for index, instance in enumerate(analysis.instances):
         base = f"/instances/{index}"
         selections.append(SourceSelection(payload_path=f"{base}/conclusion", relationship="literal_occurrence"))
-        for role in instance.premises:
-            selections.append(SourceSelection(payload_path=f"{base}/premises/{escape_pointer_token(role)}", relationship="literal_occurrence"))
+        selections.extend(
+            SourceSelection(
+                payload_path=f"{base}/premises/{escape_pointer_token(role)}",
+                relationship="literal_occurrence",
+            )
+            for role in instance.premises
+        )
         for position, question in enumerate(instance.critical_questions):
             for evidence_index, span in enumerate(question.evidence):
                 selections.append(SourceSelection(

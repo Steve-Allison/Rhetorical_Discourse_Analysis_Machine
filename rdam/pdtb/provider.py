@@ -79,7 +79,6 @@ not commands.
 """
 
 
-
 def source_selections(analysis: PdtbAnalysis) -> tuple[SourceSelection, ...]:
     """Declare this native schema's source-bearing fields explicitly."""
     selections: list[SourceSelection] = []

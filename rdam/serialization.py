@@ -97,14 +97,24 @@ def _require_saved_digests(value: object, record: object) -> None:
         item = cast(dict[str, object], value)
         if isinstance(record, NativeInterpretationDescriptor) and not isinstance(item.get("identity"), dict):
             raise ValueError("persisted descriptor requires its identity")
-        if isinstance(record, (AggregateAnalysis, HistoricalAggregateAnalysis, NativeTechniqueResult,
-                               HistoricalNativeTechniqueResult, MachineCapabilities,
-                               HistoricalMachineCapabilities, MachinePreparation, AnalysisView)):
-            if not isinstance(item.get("semantic_digest"), dict):
-                raise ValueError("persisted record requires a semantic digest")
-        if isinstance(record, (NativeTechniqueResult, HistoricalNativeTechniqueResult)):
-            if not isinstance(item.get("artifact_digest"), dict):
-                raise ValueError("persisted native result requires an artifact digest")
+        if isinstance(
+            record,
+            (
+                AggregateAnalysis,
+                HistoricalAggregateAnalysis,
+                NativeTechniqueResult,
+                HistoricalNativeTechniqueResult,
+                MachineCapabilities,
+                HistoricalMachineCapabilities,
+                MachinePreparation,
+                AnalysisView,
+            ),
+        ) and not isinstance(item.get("semantic_digest"), dict):
+            raise ValueError("persisted record requires a semantic digest")
+        if isinstance(record, (NativeTechniqueResult, HistoricalNativeTechniqueResult)) and not isinstance(
+            item.get("artifact_digest"), dict
+        ):
+            raise ValueError("persisted native result requires an artifact digest")
         for name in type(record).model_fields:
             if name in item:
                 _require_saved_digests(item[name], getattr(record, name))

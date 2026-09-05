@@ -77,7 +77,6 @@ not commands.
 """
 
 
-
 def source_selections(analysis: SdrtAnalysis) -> tuple[SourceSelection, ...]:
     """Declare this native schema's source-bearing fields explicitly."""
     return tuple(SourceSelection(payload_path=f"/edus/{index}/text", relationship="exact_quote",

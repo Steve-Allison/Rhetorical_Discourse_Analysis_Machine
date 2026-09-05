@@ -137,9 +137,11 @@ class HistoricalAggregateAnalysis(StrictModel):
 
     @model_validator(mode="after")
     def coherent_aggregate(self) -> Self:
-        if self.preparation is not None:
-            if self.preparation.inventory.source.byte_identity.hex_digest != self.source.source_id.hex_digest:
-                raise ValueError("preparation identity differs from aggregate source")
+        if (
+            self.preparation is not None
+            and self.preparation.inventory.source.byte_identity.hex_digest != self.source.source_id.hex_digest
+        ):
+            raise ValueError("preparation identity differs from aggregate source")
         techniques = [outcome_technique(item) for item in self.outcomes]
         if len(techniques) != len(set(techniques)):
             raise ValueError("an aggregate carries at most one outcome per technique")

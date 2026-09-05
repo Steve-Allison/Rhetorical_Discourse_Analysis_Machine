@@ -54,9 +54,9 @@
     "semantic_hash": ""
   },
   "rdam/__init__.py": {
-    "mtime": 1788541231.6325705,
-    "seen": 1788543522.4672132,
-    "ast_hash": "82b6dd2c487104224a9980b28f6c4bc9",
+    "mtime": 1788587101.2997396,
+    "seen": 1788587633.766849,
+    "ast_hash": "06769916c009435923b89d9548002240",
     "semantic_hash": ""
   },
   "rdam/_canonical.py": {
@@ -108,9 +108,9 @@
     "semantic_hash": "c5090fe2d87a462bd041a07ecdf23de6"
   },
   "rdam/contracts.py": {
-    "mtime": 1788543145.3880973,
-    "seen": 1788543522.467227,
-    "ast_hash": "d5614ec3bfe002c1799a3ad94034912d",
+    "mtime": 1788587101.3023245,
+    "seen": 1788587633.7668638,
+    "ast_hash": "09ad0b182ffeb252d4f3329183a6d10c",
     "semantic_hash": ""
   },
   "rdam/dung/__init__.py": {
@@ -168,9 +168,9 @@
     "semantic_hash": "0958335b87e870019e67516c7028850f"
   },
   "rdam/pdtb/provider.py": {
-    "mtime": 1788539904.9636881,
-    "seen": 1788543522.46728,
-    "ast_hash": "edbf47539988582125a74cae21196d17",
+    "mtime": 1788587101.299922,
+    "seen": 1788587633.766925,
+    "ast_hash": "c01c3fe208821ec14e5c2f9af9cf7567",
     "semantic_hash": ""
   },
   "rdam/pdtb/relations.py": {
@@ -732,15 +732,15 @@
     "semantic_hash": "70f8643ff8180818d48aa24808986ca9"
   },
   "rdam/sdrt/provider.py": {
-    "mtime": 1788539905.0371068,
-    "seen": 1788543522.4673228,
-    "ast_hash": "a6de45fea9fa9d8a4226391cde9261f0",
+    "mtime": 1788587101.2998817,
+    "seen": 1788587633.766967,
+    "ast_hash": "755735b5e84064cacbd57913f6044dc9",
     "semantic_hash": ""
   },
   "rdam/serialization.py": {
-    "mtime": 1788542780.9914181,
-    "seen": 1788543522.467324,
-    "ast_hash": "6f13e1e71e1abcef8ea8b143c2cc9f71",
+    "mtime": 1788587129.0232413,
+    "seen": 1788587633.766968,
+    "ast_hash": "35b7feb933a1bc8617f3cae978cea9a8",
     "semantic_hash": ""
   },
   "rdam/toulmin/__init__.py": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "rdam/toulmin/provider.py": {
-    "mtime": 1788543648.9673774,
-    "seen": 1788543715.409378,
-    "ast_hash": "b325240711644e6555c45b201f99ce70",
+    "mtime": 1788587129.0241296,
+    "seen": 1788587633.7669709,
+    "ast_hash": "e8fef2fbf1f8058d62401aa6c9a7e939",
     "semantic_hash": ""
   },
   "rdam/walton/__init__.py": {
@@ -768,9 +768,9 @@
     "semantic_hash": "59805ad0be116567979488e8a5ddb899"
   },
   "rdam/walton/provider.py": {
-    "mtime": 1788539904.8132625,
-    "seen": 1788543522.467329,
-    "ast_hash": "62b159b6357059868af2b0fb4e5a3a1e",
+    "mtime": 1788587129.0244238,
+    "seen": 1788587633.766973,
+    "ast_hash": "bec2632082d2a6d1910c8e7718389029",
     "semantic_hash": ""
   },
   "rdam/walton/schemes.py": {
@@ -4920,9 +4920,9 @@
     "semantic_hash": ""
   },
   "rdam/ingest/__init__.py": {
-    "mtime": 1788508411.191008,
-    "seen": 1788509846.931061,
-    "ast_hash": "0851547c3ca9eec5b0667f1992715c09",
+    "mtime": 1788587101.3004396,
+    "seen": 1788587633.7668722,
+    "ast_hash": "da0d49018bb82aa6e7cec8354ef51ff5",
     "semantic_hash": ""
   },
   "rdam/ingest/_harvest.py": {
@@ -4944,9 +4944,9 @@
     "semantic_hash": ""
   },
   "rdam/ingest/contracts/__init__.py": {
-    "mtime": 1788508411.198906,
-    "seen": 1788509846.9310641,
-    "ast_hash": "fec0068c47e975614962fa7ef6e667ce",
+    "mtime": 1788587101.3001277,
+    "seen": 1788587633.7668748,
+    "ast_hash": "457d89a19fb16191b9f10d8ba5977285",
     "semantic_hash": ""
   },
   "rdam/ingest/contracts/analysis.py": {
@@ -4986,15 +4986,15 @@
     "semantic_hash": ""
   },
   "rdam/ingest/contracts/preparation.py": {
-    "mtime": 1788508411.3586996,
-    "seen": 1788509846.931067,
-    "ast_hash": "2a6b263031229dc016f57e10d4251afb",
+    "mtime": 1788587101.3009548,
+    "seen": 1788587633.766879,
+    "ast_hash": "2eb10953908131e245e7732ccbc937f7",
     "semantic_hash": ""
   },
   "rdam/ingest/contracts/source.py": {
-    "mtime": 1788542780.9916499,
-    "seen": 1788543522.467242,
-    "ast_hash": "b499a746746b0ee8c36c20381c1a5fc2",
+    "mtime": 1788587129.0224042,
+    "seen": 1788587633.76688,
+    "ast_hash": "842b3f4aedaf0ff5e605e5a3ba1bb996",
     "semantic_hash": ""
   },
   "rdam/ingest/enrichment.py": {
@@ -5016,9 +5016,9 @@
     "semantic_hash": ""
   },
   "rdam/ingest/policy.py": {
-    "mtime": 1788507441.6193218,
-    "seen": 1788509846.9310699,
-    "ast_hash": "3ad2a40075f576e8e1b0adcba4dd9742",
+    "mtime": 1788587101.299916,
+    "seen": 1788587633.766882,
+    "ast_hash": "f93c00ca4b3b6776ba4baabcd3a5cef4",
     "semantic_hash": ""
   },
   "rdam/ingest/prepare.py": {
@@ -5472,9 +5472,9 @@
     "semantic_hash": ""
   },
   "rdam/_contract_types.py": {
-    "mtime": 1788542804.7480211,
-    "seen": 1788543522.4672158,
-    "ast_hash": "9c4a8d7956c1707543b48493a9135585",
+    "mtime": 1788587101.2999225,
+    "seen": 1788587633.766853,
+    "ast_hash": "d85dcbd6ede8cd2e3984666f0fa7527c",
     "semantic_hash": ""
   },
   "rdam/_errors.py": {
@@ -5532,9 +5532,9 @@
     "semantic_hash": ""
   },
   "rdam/historical.py": {
-    "mtime": 1788542804.7482226,
-    "seen": 1788543522.4672298,
-    "ast_hash": "3d5fd4f467ed3c9a301caab0e3510d3a",
+    "mtime": 1788587129.0193362,
+    "seen": 1788587633.7668679,
+    "ast_hash": "9e5e77fd066278237f21026e8d46f938",
     "semantic_hash": ""
   },
   "rdam/http.py": {
@@ -5916,9 +5916,9 @@
     "semantic_hash": ""
   },
   "rdam/summary.py": {
-    "mtime": 1788542804.7482405,
-    "seen": 1788543522.467324,
-    "ast_hash": "08a04524b4a9905674d401521a1ccc8e",
+    "mtime": 1788587129.0238445,
+    "seen": 1788587633.766968,
+    "ast_hash": "0e1f46464813ac2a11a766a891a2c7c9",
     "semantic_hash": ""
   },
   "rdam/toulmin/interpretation.py": {

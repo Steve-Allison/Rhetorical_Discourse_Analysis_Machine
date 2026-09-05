@@ -66,8 +66,10 @@ def summarise(
 def _preparation_lines(record: MachinePreparation) -> list[str]:
     evidence = record.preparation
     lines = [f"inventory items: {len(evidence.inventory)}"]
-    for name in ("inventory_coverage", "primary_coverage", "retained_coverage", "mapping_coverage"):
-        lines.append(f"{name}: {getattr(evidence, name).model_dump_json()}")
+    lines.extend(
+        f"{name}: {getattr(evidence, name).model_dump_json()}"
+        for name in ("inventory_coverage", "primary_coverage", "retained_coverage", "mapping_coverage")
+    )
     lines.append("warnings: " + ", ".join(item.value for item in evidence.warnings))
     lines.extend(f"projection binding {item.technique.value}: {item.kind}" for item in record.bindings)
     return lines

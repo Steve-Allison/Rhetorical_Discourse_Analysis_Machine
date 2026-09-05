@@ -545,3 +545,43 @@ Successful eRST inference (A06) remains unverified because its trained completio
 bundle is absent. Its executable acceptance test explicitly skips in that case;
 invalid supplied bundles fail. T044 and T052 remain unchecked, not waived.
 No commit, tag, push or external publication was performed.
+
+### Production-readiness repair — 2026-09-05
+
+A post-implementation readiness audit ran the repository's dedicated Python 3.14
+production-modernization gate, which found 20 unsuppressed issues: seven export
+order findings, five collapsible conditions, four excess-blank-line findings and
+four list-construction findings across 15 `rdam/` files. These were real gate
+failures despite the ordinary Ruff suite being green. All were repaired without
+changing analytical contracts, retry policy or inference behavior.
+
+Current evidence after the repairs:
+
+- `pixi run lint-production-modern`: All checks passed.
+- `pixi run lint`: All checks passed.
+- `pixi run typecheck`: 0 errors, 0 warnings, 0 informations.
+- Focused interfaces, persistence, public-surface and affected-provider suite:
+  1007 passed, 20 deselected in 327.83s.
+- Full fast suite in three disjoint partitions: 145 CLI tests, 24 parity tests
+  and 2516 remaining tests passed; total 2685 passed, 165 deselected, zero
+  failures. The remaining visible warning is the upstream Google SDK Python
+  3.17 deprecation already documented above.
+- Fresh actual-model run: 10 passed, 6 deterministic controls deselected in
+  109.99s using `openai:gpt-5.6-sol`.
+- Fresh real local RST/eRST check: RST passed; eRST skipped because the resolver
+  returned no trained completion bundle (1 passed, 1 skipped in 31.07s).
+- Fresh wheel and source archive built. Core, core+http, formats and
+  formats+http isolated installs all passed with external networking disabled,
+  real CPU RST inference, 52 schemas and Python/CLI/HTTP parity where installed.
+- All 248 packaged `rdam` files in both the wheel and source archive are
+  byte-identical to the repaired checkout.
+- Production boundary: valid=true, 176 production modules, zero violations.
+  Production import check: valid=true. Markdown: 263 files, zero issues.
+- Required Graphify AST update completed without model calls.
+
+The supported Python, unified CLI and optional local HTTP code is ready for solo
+local production use. eRST graph completion is not operational until a valid
+trained bundle is supplied; capability discovery reports that absence rather
+than advertising false availability. A06, T044 and T052 therefore remain
+explicitly incomplete. No external package publication was requested or
+performed.
