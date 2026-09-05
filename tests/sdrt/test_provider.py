@@ -156,7 +156,8 @@ def test_source_mismatch_is_a_native_typed_failure(with_credentials: None) -> No
             Machine([provider]).analyse(AggregateRequest.for_text(TEXT, (Technique.SDRT,))).outcome_for(Technique.SDRT)
         )
     assert isinstance(outcome, FailedOutcome)
-    assert outcome.failure.code == "invalid_sdrs_source"
+    assert outcome.failure.code == "llm_output_failed_validation"
+    assert ("output_attempts", "3") in outcome.failure.message_parameters
 
 
 def test_withholding_sdrt_does_not_change_toulmin_capability(with_credentials: None) -> None:

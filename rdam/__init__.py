@@ -9,9 +9,18 @@ from importlib.metadata import PackageNotFoundError, version
 
 from rdam._strict import SemanticVersion, Sha256Identity, StrictModel, canonical_json_bytes, semantic_sha256
 from rdam._execution import ExecutionPolicy
+from rdam.configuration import MachineConfig, LlmSettings, TechniqueModels, RstSettings, PublishedRstModel, LocalRstModel, ExecutionSettings
+from rdam.ingest.contracts.evidence import SourceEvidenceSpan
 from rdam.contracts import (
     AggregateAnalysis,
     AggregateRequest,
+    PreparationRequest,
+    MachinePreparation,
+    ProviderConfiguration,
+    BoundaryConfiguration,
+    OperationFailure,
+    OperationError,
+    VersionInfo,
     AvailableCapability,
     CapabilityState,
     FailedOutcome,
@@ -51,7 +60,11 @@ from rdam.frameworks import (
 )
 from rdam.machine import Machine, Provider
 from rdam.composition import production_machine
-from rdam.serialization import PersistedRecord, UnsupportedRecordError, load, serialize
+from rdam.serialization import (PersistedRecord, UnsupportedRecordError, load, serialize, load_config, serialize_config,
+    load_request, serialize_request, load_preparation_request, serialize_preparation_request,
+    load_view_request, serialize_view_request, version_info, schema)
+from rdam.interpretation import AnalysisReadingGuide, NativeInterpretationDescriptor, AnalysisView, ViewRequest, select_analysis
+from rdam.summary import summarise
 
 try:
     __version__ = version("rdam")
@@ -59,6 +72,12 @@ except PackageNotFoundError:
     __version__ = "unknown"
 
 __all__ = [
+    "schema",
+    "MachineConfig", "LlmSettings", "TechniqueModels", "RstSettings", "PublishedRstModel", "LocalRstModel", "ExecutionSettings",
+    "SourceEvidenceSpan", "PreparationRequest", "MachinePreparation", "ProviderConfiguration", "BoundaryConfiguration",
+    "OperationFailure", "OperationError", "VersionInfo", "AnalysisReadingGuide", "NativeInterpretationDescriptor",
+    "AnalysisView", "ViewRequest", "select_analysis", "summarise", "load_config", "serialize_config", "load_request", "serialize_request",
+    "load_preparation_request", "serialize_preparation_request", "load_view_request", "serialize_view_request", "version_info",
     "BOUNDARY_TECHNIQUES",
     "FRAMEWORK_SCHEME",
     "STRUCTURED_INPUT_TECHNIQUES",

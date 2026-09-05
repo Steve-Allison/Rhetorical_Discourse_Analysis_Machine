@@ -1,0 +1,1 @@
+{"nodes":[{"id":"issue","kind":"issue","text":"When should the workshop open?"},{"id":"position","kind":"position","text":"Open after the safety briefing."},{"id":"argument","kind":"argument","text":"Participants will know the safety procedure."}],"links":[{"from":"position","relation":"responds_to","to":"issue"},{"from":"argument","relation":"supports","to":"position"}]}

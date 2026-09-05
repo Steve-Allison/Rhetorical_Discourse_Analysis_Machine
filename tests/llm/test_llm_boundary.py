@@ -27,6 +27,7 @@ from rdam._llm import (
     MODEL_ENV,
     LlmError,
     StructuredAnalyst,
+    _model_without_implicit_retries,
     configured_model,
     load_dotenv,
     normalize_model_identity,
@@ -288,9 +289,12 @@ class TestFailureAlgebra:
 
 class TestNoHiddenNetwork:
     def test_openai_uses_responses_for_reasoning_with_function_tools(self) -> None:
-        model = _analyst().agent.model
-        assert isinstance(model, OpenAIResponsesModel)
-        assert model.client.max_retries == 0
+        async def scenario() -> None:
+            async with _model_without_implicit_retries("openai:test", timeout_seconds=1.0) as model:
+                assert isinstance(model, OpenAIResponsesModel)
+                assert model.client.max_retries == 0
+
+        asyncio.run(scenario())
 
     def test_constructing_an_analyst_opens_no_connection(self) -> None:
         analyst = StructuredAnalyst(output_type=Finding, instructions="i", model="openai:gpt-5.6-sol")

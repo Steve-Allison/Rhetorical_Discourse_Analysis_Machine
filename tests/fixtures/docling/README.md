@@ -1,8 +1,23 @@
 # Docling JSON fixtures
 
-Real-world Docling JSON files used to test the Docling JSON source form through the sole public production API, `isanlp_rst.ingest`. Docling deserialization is a private implementation detail. All four files are publicly available. All claims below were verified via `jq` on the actual fixtures on 2026-05-15.
+Real-world Docling JSON files used to test the Docling JSON source form through
+the shared public production ingest API, `rdam.ingest`. Docling deserialization
+is a private implementation detail. The file-by-file observations below record
+the fixture inspection performed on 2026-05-15; they are not universal Docling
+schema guarantees. Source filenames are recorded under Provenance; public
+availability and redistribution permission have not been independently verified
+in the 2026-09-04 preflight.
 
-## File-by-file verified facts
+## Current loading check — 2026-09-04
+
+All four fixtures loaded with Docling Core 2.94.1 using
+`DoclingDocument.load_from_json`. Each stores schema 1.10.0 and loaded as 1.10.0.
+Traversal with `with_groups=True`, `traverse_pictures=True` and all `ContentLayer`
+values yielded 63 items for Markdown, 767 for PDF, 43 for PPTX and 38 for VTT.
+These are fixture-specific observations. Full preflight scope and test results
+are recorded in [Feature 019 research](../../../specs/019-unified-machine-interfaces/research.md).
+
+## Historical file-by-file observations — 2026-05-15
 
 ### `pptx.docling.json` — 333 KB
 

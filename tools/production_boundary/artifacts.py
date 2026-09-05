@@ -189,9 +189,9 @@ def _rst_console_surface() -> frozenset[str]:
     return frozenset(
         {
             TOOL_NAME,
-            f"{TOOL_NAME}.local-http./analyse",
-            f"{TOOL_NAME}.local-http./capabilities",
-            f"{TOOL_NAME}.local-http./health",
+            f"{TOOL_NAME}.local-http./v1/analyse",
+            f"{TOOL_NAME}.local-http./v1/capabilities",
+            f"{TOOL_NAME}.local-http./v1/version",
         }
     )
 
@@ -207,8 +207,10 @@ def _validate_wheel(path: Path, expected_source_commit: str | None, identity: Re
         _validate_metadata(metadata, identity)
         _verify_record(archive, record_name)
         entry_points = archive.read(entry_points_name).decode("utf-8", errors="strict")
-        if f"{TOOL_NAME} = {package}.rst.cli:main" not in entry_points:
+        if f"{TOOL_NAME} = {package}.cli:main" not in entry_points:
             raise ValueError(f"wheel does not install the canonical {TOOL_NAME} command")
+        if "rdam-rst" in entry_points or f"{package}/rst/cli.py" in names:
+            raise ValueError("wheel retains the obsolete RST-only command")
         required = {
             f"{package}/py.typed",
             f"{package}/build-provenance.json",

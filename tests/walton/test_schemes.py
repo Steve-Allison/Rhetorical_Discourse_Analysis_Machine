@@ -23,6 +23,10 @@ EXPERT = {
         "domain": "structural engineering",
         "assertion": "the bridge cannot carry its rated load",
     },
+    "critical_questions": [
+        {"index": index, "status": "open"}
+        for index in range(len(SCHEMES[SchemeId.EXPERT_OPINION].critical_questions))
+    ],
 }
 
 
@@ -39,7 +43,32 @@ def _filled(scheme_id: SchemeId) -> dict[str, object]:
         "scheme_id": scheme_id.value,
         "conclusion": "some conclusion",
         "premises": _premises(scheme_id),
+        "critical_questions": _questions(scheme_id),
     }
+
+
+def _question_source(scheme_id: SchemeId, addressed: tuple[int, ...]) -> str:
+    """An authored passage taking up exactly the selected catalogue questions."""
+
+    return "\n".join(f"The speaker asks: {SCHEMES[scheme_id].critical_questions[index]}" for index in addressed)
+
+
+def _questions(scheme_id: SchemeId, addressed: tuple[int, ...] = ()) -> list[dict[str, object]]:
+    source = _question_source(scheme_id, addressed)
+    questions: list[dict[str, object]] = []
+    for index, question in enumerate(SCHEMES[scheme_id].critical_questions):
+        if index in addressed:
+            quote = f"The speaker asks: {question}"
+            start = source.index(quote)
+            questions.append({
+                "index": index,
+                "status": "addressed",
+                "note": "The passage explicitly takes up this catalogue question.",
+                "evidence": [{"start": start, "end": start + len(quote), "text": quote}],
+            })
+        else:
+            questions.append({"index": index, "status": "open"})
+    return questions
 
 
 class TestTheSchemeTable:
@@ -116,14 +145,17 @@ class TestPremiseRoles:
 
 
 class TestCriticalQuestions:
-    def test_unreported_questions_are_open_by_default(self) -> None:
-        instance = SchemeInstance.model_validate(EXPERT)
-        assert len(instance.open_questions) == len(SCHEMES[SchemeId.EXPERT_OPINION].critical_questions)
+    def test_unreported_questions_are_rejected_not_defaulted_open(self) -> None:
+        with pytest.raises(ValidationError) as caught:
+            SchemeInstance.model_validate({key: value for key, value in EXPERT.items() if key != "critical_questions"})
+        assert caught.value.errors()[0]["loc"] == ("critical_questions",)
+        assert caught.value.errors()[0]["type"] == "missing"
 
-    def test_an_addressed_question_leaves_the_rest_open(self) -> None:
+    def test_an_addressed_question_preserves_explicitly_open_remainder(self) -> None:
         instance = SchemeInstance.model_validate(
-            {**EXPERT, "critical_questions": [{"index": 0, "status": "addressed", "note": "names her chair"}]}
+            {**EXPERT, "critical_questions": _questions(SchemeId.EXPERT_OPINION, (0,))}
         )
+        WaltonAnalysis(instances=[instance]).validate_source(_question_source(SchemeId.EXPERT_OPINION, (0,)))
         total = len(SCHEMES[SchemeId.EXPERT_OPINION].critical_questions)
         assert len(instance.open_questions) == total - 1
 
@@ -132,15 +164,16 @@ class TestCriticalQuestions:
         instance = SchemeInstance.model_validate(
             {
                 **_filled(scheme_id),
-                "critical_questions": [{"index": 0, "status": "addressed", "note": "the source addresses it"}],
+                "critical_questions": _questions(scheme_id, (0,)),
             }
         )
         scheme = SCHEMES[scheme_id]
         assert instance.open_questions == scheme.critical_questions[1:]
+        WaltonAnalysis(instances=[instance]).validate_source(_question_source(scheme_id, (0,)))
 
     def test_an_addressed_question_must_say_how(self) -> None:
-        with pytest.raises(ValidationError):
-            CriticalQuestion(index=0, status=CriticalQuestionStatus.ADDRESSED, note=None)
+        with pytest.raises(ValidationError, match="must say how"):
+            CriticalQuestion.model_validate({**_questions(SchemeId.EXPERT_OPINION, (0,))[0], "note": None})
 
     def test_an_open_question_needs_no_note(self) -> None:
         assert CriticalQuestion(index=0, status=CriticalQuestionStatus.OPEN).note is None
@@ -152,7 +185,7 @@ class TestCriticalQuestions:
                 status=CriticalQuestionStatus.OPEN,
                 note="The source should have answered yes.",
             )
-        assert "open critical question" in str(caught.value)
+        assert "open question cannot carry note or evidence" in str(caught.value)
 
     def test_an_out_of_range_question_index_is_refused(self) -> None:
         count = len(SCHEMES[SchemeId.EXPERT_OPINION].critical_questions)
@@ -171,7 +204,7 @@ class TestCriticalQuestions:
                     **EXPERT,
                     "critical_questions": [
                         {"index": 1, "status": "open"},
-                        {"index": 1, "status": "addressed", "note": "n"},
+                        {"index": 1, "status": "open"},
                     ],
                 }
             )
@@ -180,27 +213,26 @@ class TestCriticalQuestions:
     @pytest.mark.parametrize("scheme_id", list(SchemeId))
     def test_marking_every_question_addressed_leaves_none_open(self, scheme_id: SchemeId) -> None:
         scheme = SCHEMES[scheme_id]
+        addressed = tuple(range(len(scheme.critical_questions)))
         instance = SchemeInstance.model_validate(
             {
                 **_filled(scheme_id),
-                "critical_questions": [
-                    {"index": index, "status": "addressed", "note": "the passage takes this up"}
-                    for index in range(len(scheme.critical_questions))
-                ],
+                "critical_questions": _questions(scheme_id, addressed),
             }
         )
         assert instance.open_questions == ()
+        WaltonAnalysis(instances=[instance]).validate_source(_question_source(scheme_id, addressed))
 
 
 class TestPayload:
     def test_the_payload_pairs_each_reported_question_with_its_text(self) -> None:
         instance = SchemeInstance.model_validate(
-            {**EXPERT, "critical_questions": [{"index": 1, "status": "addressed", "note": "she is a structural engineer"}]}
+            {**EXPERT, "critical_questions": _questions(SchemeId.EXPERT_OPINION, (1,))}
         )
         payload = instance.to_payload()
         reported = payload["critical_questions"]
         assert isinstance(reported, list)
-        entry = reported[0]
+        entry = reported[1]
         assert isinstance(entry, dict)
         assert entry["question"] == SCHEMES[SchemeId.EXPERT_OPINION].critical_questions[1]
         assert entry["status"] == "addressed"

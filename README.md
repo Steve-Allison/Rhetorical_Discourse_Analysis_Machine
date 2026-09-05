@@ -38,9 +38,9 @@ One distribution, one import package, every technique a sub-package.
 
 | Sub-package | Technique | Provides | Availability requirement |
 |---|---|---|---|
-| `rdam` | the machine | `Machine`, `AggregateRequest`, typed provider declarations, capability states, native results, and outcomes | — |
+| `rdam` | the machine | Python API, unified `rdam` CLI, optional HTTP API, shared requests and native results | — |
 | `rdam.ingest` | shared source preparation | complete inventory, provider requirements, projections, source anchors, and receipts | source-form dependencies |
-| `rdam.rst` | RST and Extended RST | DMRST and UniRST discourse parsers, eRST completion, the RS3 viewer, the `rdam-rst` command, and the machine adapter | configured parser; eRST also needs a completion bundle |
+| `rdam.rst` | RST and Extended RST | DMRST and UniRST discourse parsers, eRST completion, the RS3 viewer, and the machine adapter | configured parser; eRST also needs a completion bundle |
 | `rdam.dung` | Dung abstract argumentation | grounded, complete, preferred, and stable extensions of a supplied argument–attack framework, exact by construction | `available` |
 | `rdam.ibis` | IBIS | issue–position–argument structures validated under the gIBIS link grammar and organised into a deliberation map | `available` |
 | `rdam.sdrt` | SDRT | validated SDRS graphs | configured language model |
@@ -58,9 +58,11 @@ One distribution, one import package, every technique a sub-package.
 - **One outcome per technique, always.** `analyse()` returns exactly one of
   `ResultOutcome`, `UnavailableOutcome(reason)`, or `FailedOutcome(failure)` for every
   requested technique. A failure in one technique never hides a result in another; the
-  machine never retries; internal bugs propagate instead of being relabelled.
-- **Capability means it can run.** A provider is `available` when its code is present
-  and its model, where it has one, resolves. Otherwise it is `unavailable` with one of
+  machine never adds retries; internal bugs propagate instead of being relabelled.
+  Native model boundaries retain their explicit bounded retry policies.
+- **Capabilities state what was checked.** A provider is `available` when its local
+  prerequisites resolve. No remote model probe is performed: credentials or a
+  known model name do not prove a remote call will succeed. Otherwise it is `unavailable` with one of
   three stable reasons — `not_implemented`, `model_unavailable`,
   `missing_structured_input` — and never a stub.
 - **Structure in, structure out.** Formal techniques (Dung, IBIS) take a supplied
@@ -94,6 +96,32 @@ No model weight ships in the wheel. RST inference uses either published models (
 Development uses the `default` environment (`pixi install`, then `pixi run test`).
 
 ## Using the machine
+
+The primary entry point is `production_machine(config=MachineConfig(...))`.
+Python, `rdam` and optional `rdam[http]` all use this same engine. Configuration
+is explicit and immutable; per-technique model choices override the shared
+model. Discovery reports configuration without probing model availability on the
+network (`model_probe: not_performed`). Analysis supplies the runtime verdict.
+
+```python
+from rdam import AggregateRequest, LlmSettings, MachineConfig, Technique, production_machine, serialize
+
+machine = production_machine(config=MachineConfig(llm=LlmSettings(model="openai:gpt-5.6-sol")))
+request = AggregateRequest.for_text("Because it rained, the match stopped.", (Technique.TOULMIN, Technique.WALTON))
+analysis = machine.analyse(request)
+json_bytes = serialize(analysis)
+```
+
+For immediate AI consumption, read `status`, `requested_techniques`, and the
+embedded `reading_guide`, then the corresponding complete native outcomes.
+Guides explain native meanings, source-evidence roles and limitations; they are
+not confidence or truth scores. Walton questions explicitly distinguish
+`addressed`, `open` and `not_assessable`. Toulmin warrants distinguish
+`explicit`, `reconstructed` and `undetermined`, with source evidence or a reason.
+Supporting text is not proof that an inference is correct. Retained upstream
+results are separate from requested outcomes and cannot improve completion status.
+
+For custom provider composition:
 
 ```python
 from pathlib import Path
@@ -140,11 +168,9 @@ if isinstance(rst, ResultOutcome):
 
 ```python
 framework = {"arguments": ["a", "b", "c"], "attacks": [["a", "b"], ["b", "c"]]}
-request = AggregateRequest(
-    source=SourceIdentity.from_bytes(b"framework", media_type="application/json"),
-    text=None,
+request = AggregateRequest.for_structured(
+    (StructuredInput(technique=Technique.DUNG, payload=framework),),
     techniques=(Technique.DUNG,),
-    structured_inputs=(StructuredInput(technique=Technique.DUNG, payload=framework),),
 )
 dung = machine.analyse(request).outcome_for(Technique.DUNG)
 if isinstance(dung, ResultOutcome):
@@ -232,8 +258,9 @@ run timing does not change aggregate analytical identity.
 
 ### Provider availability
 
-A technique is `available` when its provider can actually run, and `unavailable` with a
-stable reason otherwise. There are exactly three reasons:
+A technique is `available` when its checked local prerequisites resolve, and
+`unavailable` with a stable reason otherwise. Discovery does not certify remote
+service availability. There are exactly three reasons:
 
 | reason | meaning |
 |---|---|
@@ -262,17 +289,29 @@ RS4) as a second formalism with its own capability state.
 
 ```bash
 # Canonical analysis of text, or of a Markdown / Docling JSON / DocLang / plain-text file
-rdam-rst parse --text "Because it rained, the match stopped."
-rdam-rst parse report.md --output analysis.json          # RFC 8785 canonical JSON
-rdam-rst parse report.md --format summary                # presentation-only counts
-
-rdam-rst capabilities                                    # model-free discovery
-rdam-rst serve --port 8080
-rdam-rst version
+rdam analyse --text "Because it rained, the match stopped." --techniques rst
+rdam analyse report.md --techniques rst,toulmin,walton --output analysis.json
+rdam summary analysis.json                              # separate readable summary
+rdam view analysis.json --techniques walton              # whole native result, no rerun
+rdam prepare report.md                                  # complete inventory, no inference
+rdam capabilities                                      # model-free discovery
+rdam schema request                                    # machine-readable JSON Schema
+rdam serve --port 8080                                  # requires rdam[http]
+rdam version
 ```
 
-`serve` binds only to a loopback host and exposes `POST /analyse`, `GET /capabilities`,
-and `GET /health` with the same canonical contract as the command.
+Files or stdin (`-`) go in; canonical JSON goes to stdout and diagnostics to stderr.
+Analysis exits are 0 complete, 3 partial and 4 unsuccessful; operational failures
+exit 1, invalid input 2, interruption 130 and broken pipe 141. File output is
+atomic and refuses replacement unless `--force` is explicit; inputs can never be
+overwritten. Dung and IBIS take `--structured dung=framework.json` and
+`--structured ibis=map.json`, never inferred graphs.
+
+`serve` binds only to `127.0.0.1` or `::1`. Routes are `POST /v1/prepare`,
+`/v1/analyse`, `/v1/view`, `/v1/summary` and `GET /v1/capabilities`,
+`/v1/version`, `/v1/schemas/{record}`. JSON routes use the Python codecs.
+One POST is admitted at a time; discovery stays responsive. No model or source
+configuration is accepted from HTTP requests.
 
 ### Python
 
@@ -424,7 +463,8 @@ rdam/                        the distribution and import package — the machine
 ├── contracts.py, machine.py, composition.py, frameworks.py, serialization.py
 ├── resources/framework-identities.json   coe: identities projected from the vendored taxonomy
 ├── ingest/                  shared source inventory, projections, planning and anchors
-├── rst/                     RST/eRST provider: parser, erst, rstviewer, cli, provider.py
+├── cli.py, http.py           thin terminal and optional loopback interfaces
+├── rst/                     RST/eRST provider: parser, erst, rstviewer, provider.py
 ├── pdtb/, sdrt/, toulmin/, walton/   independently validated model-backed techniques
 ├── dung/                    semantics.py, provider.py
 └── ibis/                    grammar.py, provider.py

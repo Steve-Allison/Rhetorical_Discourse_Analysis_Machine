@@ -1,0 +1,18 @@
+{
+  "walton-omitted-v1.json": {
+    "semantic_digest": "9c0b33e36ff56d01a3ba185b481107cc3c0b6b067468ad29a536dc48df559fd6",
+    "artifact_digest": "9c0b33e36ff56d01a3ba185b481107cc3c0b6b067468ad29a536dc48df559fd6"
+  },
+  "walton-partial-v1.json": {
+    "semantic_digest": "136a9e084d30647d04d70ac8d0694f23ca1cf9fc89e319df7ccb87997c4a6d3d",
+    "artifact_digest": "136a9e084d30647d04d70ac8d0694f23ca1cf9fc89e319df7ccb87997c4a6d3d"
+  },
+  "toulmin-v1.json": {
+    "semantic_digest": "a08224b85f5d001f8ba9df3ef14ba9723fb202b9b0ffbd344aa8b28d14718cdf",
+    "artifact_digest": "a08224b85f5d001f8ba9df3ef14ba9723fb202b9b0ffbd344aa8b28d14718cdf"
+  },
+  "aggregate-v1.json": {
+    "semantic_digest": "3424a84f2285d7c2822bd5349eb2c12aea810bdd2df49766a1f7b7675f5dab3b",
+    "artifact_digest": null
+  }
+}

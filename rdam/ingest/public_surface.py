@@ -4,6 +4,7 @@ from collections.abc import Mapping
 from enum import StrEnum
 from importlib import import_module, resources
 import inspect
+import json
 from pathlib import Path
 import re
 from typing import Self, cast
@@ -175,9 +176,12 @@ def _resolve_import(public_import: str) -> tuple[object, str, str]:
 
 
 def _schema_exists(schema_id: str) -> bool:
-    name = schema_id.rsplit("/", 1)[-1]
-    resource = resources.files("rdam.ingest").joinpath("schemas", name)
-    return resource.is_file()
+    for resource in resources.files("rdam.ingest").joinpath("schemas").iterdir():
+        if resource.is_file() and resource.name.endswith(".schema.json"):
+            document: object = json.loads(resource.read_bytes())
+            if isinstance(document, dict) and cast(Mapping[str, object], document).get("$id") == schema_id:
+                return True
+    return False
 
 
 def _documentation_anchor_exists(anchor: str) -> bool:

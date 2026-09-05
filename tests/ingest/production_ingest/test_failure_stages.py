@@ -371,38 +371,23 @@ def test_identity_contradiction_carries_completed_inference_evidence(
     assert raised.value.failure.completed.kind == "inference"
 
 
-def test_cli_boundary_failure_labels_follow_the_exception_kind() -> None:
-    from rdam.rst.cli import _safe_boundary_failure
+def test_cli_boundary_failure_labels_follow_the_exception_kind(tmp_path: Any) -> None:
+    import subprocess
+    import sys
 
-    io_failure = _safe_boundary_failure(
-        OSError("disk momentarily unavailable"),
-        stage=LifecycleStage.ACQUISITION,
-        category=FailureCategory.MALFORMED_INPUT,
-        code="cli_source_acquisition_failed",
-        message_template="cli_source_could_not_be_acquired",
-    )
-    assert io_failure.category is FailureCategory.INTERNAL_PROCESSING_FAILURE
-    assert io_failure.retryability is Retryability.UNKNOWN
+    from rdam import OperationFailure, load
 
-    parse_failure = _safe_boundary_failure(
-        ValueError("bad value"),
-        stage=LifecycleStage.ACQUISITION,
-        category=FailureCategory.MALFORMED_INPUT,
-        code="cli_source_acquisition_failed",
-        message_template="cli_source_could_not_be_acquired",
-    )
-    assert parse_failure.category is FailureCategory.MALFORMED_INPUT
-    assert parse_failure.retryability is Retryability.NOT_RETRYABLE
-
-    from rdam.ingest.contracts.failure import AcquisitionCompletedEvidence
-
-    source = SourceArtifact.from_text("content", source_name="source.txt")
-    configured_failure = _safe_boundary_failure(
-        ValueError("bad release"),
-        stage=LifecycleStage.INFERENCE,
-        category=FailureCategory.PROVIDER_UNAVAILABLE,
-        code="cli_provider_configuration_failed",
-        message_template="configured_parser_could_not_be_created",
-        completed=AcquisitionCompletedEvidence(source=source.summary()),
-    )
-    assert configured_failure.completed.kind == "acquisition"
+    for arguments, status, category in (
+        (["prepare", str(tmp_path / "PRIVATE-missing.txt")], 1, "source_unavailable"),
+        (["prepare", "--edus", "PRIVATE-invalid-json"], 2, "invalid_request"),
+    ):
+        completed = subprocess.run(
+            [sys.executable, "-m", "rdam", *arguments], capture_output=True, check=False
+        )
+        assert completed.returncode == status
+        assert completed.stdout == b""
+        assert b"PRIVATE" not in completed.stderr
+        record = load(completed.stderr)
+        assert isinstance(record, OperationFailure)
+        assert record.category == category
+        assert record.retryability.value == "not_retryable"

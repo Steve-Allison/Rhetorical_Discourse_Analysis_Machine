@@ -1,12 +1,14 @@
 """Source, inventory, representation, relationship, and anchor contracts."""
 
 from collections.abc import Sequence
+import base64
+import binascii
 from enum import StrEnum
 import json
 from pathlib import Path
 from typing import Annotated, Literal, Self, cast
 
-from pydantic import Field, model_validator
+from pydantic import Field, ValidationInfo, field_serializer, field_validator, model_validator
 
 from rdam.ingest.contracts.base import SemanticVersion, Sha256Identity, StrictContractModel
 from rdam.ingest.identity import semantic_sha256, sha256_bytes
@@ -112,7 +114,7 @@ class SourceArtifact(StrictContractModel):
     encoding: Literal["utf-8"] | None = None
     raw_sha256: Sha256Identity | None = None
     raw_size_bytes: int = Field(default=-1, ge=-1)
-    raw_bytes: bytes | None = None
+    raw_bytes: bytes | None = Field(default=None, json_schema_extra={"contentEncoding": "base64"})
     edus: tuple[str, ...] | None = None
     declared_artifact_id: str | None = None
     declared_origin: str | None = None
@@ -120,16 +122,40 @@ class SourceArtifact(StrictContractModel):
     conversion_provenance: tuple[ConversionActivity, ...] = ()
     raw_contract: RawContractDeclaration | None = None
 
+    @field_validator("raw_bytes", mode="before")
+    @classmethod
+    def decode_standard_base64(cls, value: object, info: ValidationInfo) -> object:
+        if info.mode != "json" or value is None:
+            return value
+        if not isinstance(value, str):
+            raise ValueError("raw_bytes must be standard padded base64")
+        try:
+            decoded = base64.b64decode(value, validate=True)
+        except (ValueError, binascii.Error) as error:
+            raise ValueError("invalid standard base64") from error
+        if base64.b64encode(decoded).decode("ascii") != value:
+            raise ValueError("base64 must use canonical padding and alphabet")
+        return decoded
+
+    @field_serializer("raw_bytes", when_used="json")
+    def encode_standard_base64(self, value: bytes | None) -> str | None:
+        return None if value is None else base64.b64encode(value).decode("ascii")
+
     @model_validator(mode="after")
     def complete_identity(self) -> Self:
         if self.raw_bytes is None and self.edus is None:
             raise ValueError("provide exactly one source payload: raw_bytes or edus")
+        if self.raw_bytes is not None and self.source_form is not SourceForm.DOCLANG_ARCHIVE:
+            self.raw_bytes.decode("utf-8", errors="strict")
         if self.raw_bytes is not None and self.edus is not None:
             if self.source_form is not SourceForm.EDUS or json.loads(self.raw_bytes) != list(self.edus):
                 raise ValueError("raw EDU bytes must match the supplied EDUs")
         if self.source_form is SourceForm.EDUS:
-            if self.edus is None:
-                raise ValueError("EDU source form requires edus")
+            if not self.edus:
+                raise ValueError("EDU source form requires at least one EDU")
+            for index, edu in enumerate(self.edus):
+                if not edu.strip():
+                    raise ValueError(f"EDU at index {index} must be a non-empty string")
         elif self.raw_bytes is None:
             raise ValueError("non-EDU source form requires raw_bytes")
         payload = self.raw_bytes if self.raw_bytes is not None else _canonical_edus(self.edus or ())
@@ -611,7 +637,7 @@ def _raw_contract(data: bytes, source_form: SourceForm) -> RawContractDeclaratio
                 version=version if isinstance(version, str) else None,
             )
     if source_form is SourceForm.DOCLANG_XML:
-        prefix = data[:4096].decode("utf-8", errors="strict")
+        prefix = data.decode("utf-8", errors="strict")[:4096]
         namespace = prefix.split('xmlns="', 1)[1].split('"', 1)[0] if 'xmlns="' in prefix else None
         return RawContractDeclaration(namespace=namespace)
     return None
@@ -619,6 +645,8 @@ def _raw_contract(data: bytes, source_form: SourceForm) -> RawContractDeclaratio
 
 def _identify_path(path: Path, data: bytes) -> SourceForm:
     name = path.name.casefold()
+    if name.endswith((".txt", ".text")):
+        return SourceForm.TEXT
     if name.endswith((".md", ".markdown")):
         return SourceForm.MARKDOWN
     if name.endswith((".dclg", ".dclg.xml")):

@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 import pytest
+from rdam.configuration import MachineConfig, LlmSettings
 
 from rdam import (
     BOUNDARY_TECHNIQUES,
@@ -197,7 +198,7 @@ class TestConfiguration:
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-used")
-        complete = production_machine(model="openai:gpt-5.6-sol")
+        complete = production_machine(config=MachineConfig(llm=LlmSettings(model="openai:gpt-5.6-sol")))
         without_rst = Machine(
             provider
             for technique, provider in complete.providers.items()
@@ -351,7 +352,7 @@ class TestAnalyseGuards:
         ))
         assert isinstance(result.outcome_for(Technique.RST), ResultOutcome)
         assert result.preparation is not None
-        inventory = {item.item_id: item for item in result.preparation.inventory.items}
+        inventory = {item.item_id: item for item in result.preparation.preparation.inventory}
         assert any(item.classification is ContentClass.TABLE_CELL for item in inventory.values())
         projection = result.preparation.projections[0]
         contributors = {item_id for segment in projection.prepared_document.segments

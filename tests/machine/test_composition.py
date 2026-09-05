@@ -5,15 +5,16 @@ from pathlib import Path
 import subprocess
 import sys
 
-from rdam import BOUNDARY_TECHNIQUES, ExecutionPolicy, production_machine
+from rdam import BOUNDARY_TECHNIQUES, production_machine
+from rdam.configuration import MachineConfig, ExecutionSettings
 from rdam.composition import production_machine as assemble
 
 
 def test_production_entry_points_preserve_all_providers_and_policy() -> None:
-    policy = ExecutionPolicy(max_workers=1)
+    config = MachineConfig(execution=ExecutionSettings(max_workers=1))
     assert production_machine is assemble
     for factory in (production_machine, assemble):
-        machine = factory(execution_policy=policy)
+        machine = factory(config=config)
         assert tuple(machine.providers) == BOUNDARY_TECHNIQUES
         assert tuple(item.technique for item in machine.capabilities().techniques) == BOUNDARY_TECHNIQUES
 

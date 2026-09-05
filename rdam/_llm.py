@@ -31,9 +31,11 @@ the reason. Nothing retries silently.
 """
 
 import asyncio
-from collections.abc import Mapping
+from collections.abc import AsyncGenerator, Callable, Mapping
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 import os
+from math import isfinite
 from pathlib import Path
 import random
 from threading import Lock
@@ -42,9 +44,10 @@ from typing import Final, cast
 from anthropic import AsyncAnthropic
 from dotenv import dotenv_values
 from dotenv import load_dotenv as load_dotenv_file
+from httpx2 import AsyncClient
 from openai import AsyncOpenAI
 from pydantic import BaseModel, NonNegativeInt
-from pydantic_ai import Agent, AgentRunResult
+from pydantic_ai import Agent, AgentRunResult, ModelRetry, RunContext
 from pydantic_ai.exceptions import (
     AgentRunError,
     ModelAPIError,
@@ -200,11 +203,15 @@ def unavailable_reason(model: str | None = None) -> UnavailableReason | None:
     return None if file_value else UnavailableReason.MODEL_UNAVAILABLE
 
 
-def _model_without_implicit_retries(model: str, *, timeout_seconds: float) -> Model:
+@asynccontextmanager
+async def _model_without_implicit_retries(model: str, *, timeout_seconds: float) -> AsyncGenerator[Model]:
     """Build a supported model whose SDK performs one HTTP attempt per agent request.
 
     ``StructuredAnalyst`` owns retries and evidence. Provider SDK defaults retry twice
     invisibly, which would violate that ownership and make attempt counts false.
+    Explicit SDK clients belong to this context, not to Pydantic AI. Create and close
+    them on the running loop so successive synchronous calls never share a connection
+    pool bound to an already-closed loop.
     """
 
     load_dotenv()
@@ -214,31 +221,31 @@ def _model_without_implicit_retries(model: str, *, timeout_seconds: float) -> Mo
         raise ValueError(f"model provider {identity.provider!r} is not configured")
     match identity.provider:
         case "openai":
-            client = AsyncOpenAI(api_key=api_key, max_retries=0, timeout=timeout_seconds)
-            return OpenAIResponsesModel(
-                cast(OpenAIModelName, identity.model),
-                provider=OpenAIProvider(openai_client=client),
-            )
+            async with AsyncOpenAI(api_key=api_key, max_retries=0, timeout=timeout_seconds) as client:
+                yield OpenAIResponsesModel(
+                    cast(OpenAIModelName, identity.model),
+                    provider=OpenAIProvider(openai_client=client),
+                )
         case "anthropic":
-            client = AsyncAnthropic(api_key=api_key, max_retries=0, timeout=timeout_seconds)
-            return AnthropicModel(
-                cast(AnthropicModelName, identity.model),
-                provider=AnthropicProvider(anthropic_client=client),
-            )
+            async with AsyncAnthropic(api_key=api_key, max_retries=0, timeout=timeout_seconds) as client:
+                yield AnthropicModel(
+                    cast(AnthropicModelName, identity.model),
+                    provider=AnthropicProvider(anthropic_client=client),
+                )
         case "google" | "google-gla" | "google-vertex":
-            from httpx2 import AsyncClient
             from google.genai.types import HttpRetryOptions
             from pydantic_ai.models.google import GoogleModel, GoogleModelName
             from pydantic_ai.providers.google import GoogleProvider
 
-            return GoogleModel(
-                cast(GoogleModelName, identity.model),
-                provider=GoogleProvider(
+            async with AsyncClient(timeout=timeout_seconds) as http_client:
+                provider = GoogleProvider(
                     api_key=api_key,
-                    http_client=AsyncClient(timeout=timeout_seconds),
+                    http_client=http_client,
                     retry_options=HttpRetryOptions(attempts=1),
-                ),
-            )
+                )
+                with provider.client:
+                    async with provider.client.aio:
+                        yield GoogleModel(cast(GoogleModelName, identity.model), provider=provider)
         case _:
             raise AssertionError("model identity parser admitted an unsupported provider")
 
@@ -257,8 +264,8 @@ class StructuredAnalyst[StructureT: BaseModel]:
     """Asks one model for one technique's native structure, typed by that technique.
 
     ``output_type`` is the technique's own Pydantic contract, so a proposal that is not a
-    well-formed instance of the formalism never reaches the provider. Constructing this
-    object builds an agent; it does not call the model.
+    well-formed instance of the formalism never reaches the provider. Construction
+    stores configuration only; each run owns its model client's asynchronous lifetime.
     """
 
     def __init__(
@@ -270,10 +277,11 @@ class StructuredAnalyst[StructureT: BaseModel]:
         output_retries: int = DEFAULT_OUTPUT_RETRIES,
         transport_retries: int = DEFAULT_TRANSPORT_RETRIES,
         transport_deadline_seconds: float = DEFAULT_TRANSPORT_DEADLINE_SECONDS,
+        source_validator: Callable[[StructureT, str], object] | None = None,
     ) -> None:
-        if output_retries < 0 or transport_retries < 0:
+        if type(output_retries) is not int or type(transport_retries) is not int or output_retries < 0 or transport_retries < 0:
             raise ValueError("retry counts must be non-negative")
-        if transport_deadline_seconds <= 0:
+        if isinstance(transport_deadline_seconds, bool) or not isfinite(transport_deadline_seconds) or transport_deadline_seconds <= 0:
             raise ValueError("transport deadline must be positive")
         self._model = resolved_model_identity(model)
         self._output_type = output_type
@@ -281,7 +289,8 @@ class StructuredAnalyst[StructureT: BaseModel]:
         self._transport_retries = transport_retries
         self._transport_deadline_seconds = transport_deadline_seconds
         self._instructions = instructions
-        self._agent: Agent[None, StructureT] | None = None
+        self._source_validator = source_validator
+        self._agent: Agent[str, StructureT] | None = None
         self._agent_lock = Lock()
 
     @property
@@ -289,36 +298,48 @@ class StructuredAnalyst[StructureT: BaseModel]:
         return self._model
 
     @property
-    def agent(self) -> Agent[None, StructureT]:
+    def agent(self) -> Agent[str, StructureT]:
         """The configured agent, built on first access.
 
         Public so tests can drive this boundary through Pydantic AI's own
         ``Agent.override(model=...)`` seam instead of reaching into privates. Building it
-        opens no connection.
+        creates no model client and opens no connection.
         """
 
         return self._built()
 
-    def _built(self) -> Agent[None, StructureT]:
+    def _built(self) -> Agent[str, StructureT]:
         if self._agent is not None:
             return self._agent
         with self._agent_lock:
             if self._agent is None:
                 self._agent = Agent(
-                    _model_without_implicit_retries(
-                        self._model,
-                        timeout_seconds=self._transport_deadline_seconds,
-                    ),
                     output_type=self._output_type,
+                    deps_type=str,
                     instructions=self._instructions,
                     retries=self._output_retries,
                 )
+                self._agent.output_validator(self._validate_output)
         return self._agent
+
+    def _validate_output(self, context: RunContext[str], output: StructureT) -> StructureT:
+        if self._source_validator is not None:
+            try:
+                self._source_validator(output, context.deps)
+            except ValueError as error:
+                raise ModelRetry(
+                    "Source evidence must match the exact input text and declared character offsets. "
+                    f"{error}"
+                ) from error
+        return output
 
     async def _run(self, text: str) -> AgentRunResult[StructureT]:
         """One agent run. Kept as the causal external-boundary seam for tests."""
 
-        return await self._built().run(text)
+        async with _model_without_implicit_retries(
+            self._model, timeout_seconds=self._transport_deadline_seconds
+        ) as model:
+            return await self._built().run(text, deps=text, model=model)
 
     def extract(self, text: str) -> Extraction[StructureT]:
         """Return the validated structure, or raise :class:`LlmError` with its class."""

@@ -37,12 +37,12 @@ dependencies = [
   "safetensors>=0.8,<0.9",
   "openai>=3.7.0,<4",
   "httpx2>=2.12,<3",
-  "pydantic-ai>=2.37.0,<3",
+  "pydantic-ai-slim[openai,anthropic,google]>=2.37.0,<3",
   "tiktoken>=0.13,<0.14",
 ]
 
 [project.scripts]
-rdam-rst = "rdam.rst.cli:main"
+rdam = "rdam.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine"
@@ -50,6 +50,11 @@ Repository = "https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Mac
 Issues = "https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine/issues"
 
 [project.optional-dependencies]
+http = [
+  "starlette>=1.6,<2",
+  "uvicorn>=0.52,<0.53",
+  "h11>=0.16,<0.17",
+]
 dev = [
   "build>=1.6,<2",
   "coverage>=7.16,<8",
@@ -122,14 +127,14 @@ rdam = { path = ".", editable = true }
 # restating them.
 [tool.pixi.feature.production.tasks]
 production-artifacts = { cmd = "python -m tools.production_boundary --root . --release", description = "Boundary inspection plus full validation of the built dist/<version> pair (version from pyproject.toml)" }
-production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --root . --full", description = "Wheel certification: supply --model-store and --release-id for a local production release; install fresh core/formats venvs and run full installed acceptance with external network disabled" }
+production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --root . --full", description = "Wheel certification: supply --model-store and --release-id for a local production release; install fresh core/core+http/formats/formats+http venvs and run full installed acceptance with external network disabled" }
 
 [tool.pixi.feature.offline.dependencies]
 python = "3.14.*"
 markdownlint-cli2 = ">=0.14"
 
 [tool.pixi.feature.offline.pypi-dependencies]
-rdam = { path = ".", editable = true, extras = ["dev", "formats", "offline"] }
+rdam = { path = ".", editable = true, extras = ["dev", "formats", "offline", "http"] }
 linkml = ">=1.11.1, <2"
 graphifyy = { version = "==0.9.53", extras = ["gemini"] }
 
@@ -158,6 +163,8 @@ show_missing = true
 typeCheckingMode = "strict"
 include = [
   "rdam",
+  "tests/interfaces",
+  "tests/llm/test_client_lifecycle.py",
   "tests/llm/test_instruction_provenance.py",
   "tests/production_boundary/test_runtime_tokenizer_dependency.py",
   "tests/production_boundary/test_shared_mutation_verdict.py",

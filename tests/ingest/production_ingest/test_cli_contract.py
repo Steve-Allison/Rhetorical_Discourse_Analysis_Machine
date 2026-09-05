@@ -1,134 +1,80 @@
-"""CLI parity with the canonical Python production contract."""
+"""Real CLI acquisition and canonical Python operations preserve identical source data."""
 
-from dataclasses import dataclass, field
+import json
 from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
-import rdam.rst.cli as cli
-from rdam.ingest import (
-    ProductionAnalysisOutcome,
-    SafeProductionFailureRecord,
-    SourceArtifact,
-    SourceForm,
-    load_contract,
-    serialize_contract,
-)
-
-from .conftest import ParserBuilder
+from rdam.composition import production_machine
+from rdam.contracts import AggregateRequest, PreparationRequest, StructuredInput
+from rdam.frameworks import Technique
+from rdam.ingest.contracts.source import SourceForm
+from rdam.serialization import serialize, serialize_request
+from tests.ingest.test_inventory_completeness import source_case
+from tests.interfaces.test_cli import diagnostic, json_array, json_object, record, run_cli
 
 
-@dataclass(slots=True)
-class _RecordingIngestor:
-    outcome: ProductionAnalysisOutcome
-    sources: list[SourceArtifact] = field(default_factory=list)
-
-    def analyse(self, source: SourceArtifact, **_: object) -> ProductionAnalysisOutcome:
-        self.sources.append(source)
-        return self.outcome
-
-
-def test_cli_canonical_json_is_byte_identical_and_runs_one_inference(
-    parser_builder: ParserBuilder,
-    monkeypatch: pytest.MonkeyPatch,
-    capsysbinary: pytest.CaptureFixture[bytes],
-) -> None:
-    source = SourceArtifact.from_text("First. Second.", source_name="cli-text")
-    outcome = cli.ProductionIngestor(parser=parser_builder()).analyse(source)
-    recording = _RecordingIngestor(outcome)
-    monkeypatch.setattr(cli, "_configured_ingestor", lambda _args: recording)
-
-    assert cli.main(
-        [
-            "parse",
-            "--text",
-            source.raw_bytes.decode("utf-8") if source.raw_bytes is not None else "",
-            "--model-store",
-            "/model-store",
-            "--release-id",
-            "release",
-        ]
-    ) == 0
-    captured = capsysbinary.readouterr()
-    assert captured.out == serialize_contract(outcome) + b"\n"
-    assert captured.err == b""
-    assert len(recording.sources) == 1
+def test_cli_canonical_json_is_byte_identical_and_runs_one_inference() -> None:
+    request = AggregateRequest.for_structured((StructuredInput(technique=Technique.DUNG,
+        payload={"arguments": ["a", "b"], "attacks": [["a", "b"]]}),))
+    expected = production_machine().analyse(request)
+    # Observe the real provider, rather than replacing the engine with a recorder.
+    script = """
+import sys
+from rdam.cli import main
+calls = 0
+def profile(frame, event, argument):
+    global calls
+    if event == 'call' and frame.f_globals.get('__name__') == 'rdam.dung.provider' and frame.f_code.co_name == 'analyse':
+        calls += 1
+sys.setprofile(profile)
+import threading
+threading.setprofile(profile)
+status = main(['analyse', '--request', '-'])
+sys.setprofile(None)
+threading.setprofile(None)
+assert calls == 1, calls
+raise SystemExit(status)
+"""
+    result = subprocess.run([sys.executable, "-c", script], input=serialize_request(request), capture_output=True,
+                            check=False, timeout=30)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == serialize(expected) + b"\n"
+    assert result.stderr == b""
 
 
-@pytest.mark.parametrize(
-    ("filename", "payload", "source_form"),
-    (
-        ("source.txt", b"Text.", SourceForm.TEXT),
-        ("source.md", b"# Heading\n\nText.", SourceForm.MARKDOWN),
-        ("source.docling.json", b'{"schema_name":"DoclingDocument","version":"1.10.0"}', SourceForm.DOCLING_JSON),
-        ("source.dclg", b'<document xmlns="https://doclang.net/spec/v1.0"><text>Text.</text></document>', SourceForm.DOCLANG_XML),
-        ("source.dclx", b"PK\x05\x06" + b"\x00" * 18, SourceForm.DOCLANG_ARCHIVE),
-    ),
-)
-def test_cli_routes_path_source_forms_through_source_artifact(
-    filename: str,
-    payload: bytes,
-    source_form: SourceForm,
-    tmp_path: Path,
-    parser_builder: ParserBuilder,
-    monkeypatch: pytest.MonkeyPatch,
-    capsysbinary: pytest.CaptureFixture[bytes],
-) -> None:
-    outcome = cli.ProductionIngestor(parser=parser_builder()).analyse(
-        SourceArtifact.from_text("First. Second.", source_name="fixture")
-    )
-    recording = _RecordingIngestor(outcome)
-    monkeypatch.setattr(cli, "_configured_ingestor", lambda _args: recording)
+@pytest.mark.parametrize(("filename", "source_form"), (
+    ("source.txt", SourceForm.TEXT), ("source.md", SourceForm.MARKDOWN),
+    ("source.docling.json", SourceForm.DOCLING_JSON), ("source.dclg", SourceForm.DOCLANG_XML),
+    ("source.dclx", SourceForm.DOCLANG_ARCHIVE),
+))
+def test_cli_routes_path_source_forms_through_source_artifact(filename: str, source_form: SourceForm, tmp_path: Path) -> None:
+    artifact, expected_inventory = source_case(source_form)
+    assert artifact.raw_bytes is not None
     path = tmp_path / filename
-    path.write_bytes(payload)
-
-    assert cli.main(
-        ["parse", str(path), "--model-store", "/store", "--release-id", "release"]
-    ) == 0
-    capsysbinary.readouterr()
-    assert [source.source_form for source in recording.sources] == [source_form]
-
-
-def test_cli_routes_presegmented_edus_without_flattening(
-    parser_builder: ParserBuilder,
-    monkeypatch: pytest.MonkeyPatch,
-    capsysbinary: pytest.CaptureFixture[bytes],
-) -> None:
-    outcome = cli.ProductionIngestor(parser=parser_builder()).analyse(
-        SourceArtifact.from_text("First. Second.", source_name="fixture")
-    )
-    recording = _RecordingIngestor(outcome)
-    monkeypatch.setattr(cli, "_configured_ingestor", lambda _args: recording)
-    assert cli.main(
-        [
-            "parse",
-            "--edus",
-            '["First.","Second."]',
-            "--model-store",
-            "/store",
-            "--release-id",
-            "release",
-        ]
-    ) == 0
-    capsysbinary.readouterr()
-    assert recording.sources[0].source_form is SourceForm.EDUS
-    assert recording.sources[0].edus == ("First.", "Second.")
+    path.write_bytes(artifact.raw_bytes)
+    request = PreparationRequest.for_source(path)
+    expected = production_machine().prepare(request)
+    result = run_cli("prepare", str(path))
+    payload = record(result)
+    assert result.stdout == serialize(expected) + b"\n"
+    preparation = json_object(payload["preparation"])
+    assert {json_object(item)["item_id"] for item in json_array(preparation["inventory"])} == expected_inventory
+    assert json_object(preparation["source"])["source_form"] == source_form.value
 
 
-def test_cli_malformed_input_is_a_canonical_safe_failure(
-    capsysbinary: pytest.CaptureFixture[bytes],
-) -> None:
-    assert cli.main(
-        [
-            "parse",
-            "--edus",
-            "not-json",
-            "--model-store",
-            "/store",
-            "--release-id",
-            "release",
-        ]
-    ) == 2
-    captured = capsysbinary.readouterr()
-    assert captured.out == b""
-    assert isinstance(load_contract(captured.err), SafeProductionFailureRecord)
+def test_cli_routes_presegmented_edus_without_flattening() -> None:
+    edus = ("First.", "Second.")
+    request = PreparationRequest.for_edus(edus, source_name="cli-edus")
+    expected = production_machine().prepare(request)
+    result = run_cli("prepare", "--edus", json.dumps(edus))
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == serialize(expected) + b"\n"
+    assert len(expected.preparation.inventory) == len(edus)
+    assert tuple(item.text for item in expected.preparation.inventory) == edus
+
+
+def test_cli_malformed_input_is_a_canonical_safe_failure() -> None:
+    diagnostic(run_cli("prepare", "--edus", "not-json"))

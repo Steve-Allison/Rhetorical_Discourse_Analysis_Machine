@@ -35,7 +35,8 @@ def test_transcript_has_zero_invented_speakers() -> None:
     assert len(projection.unmet_requirements) == 1
     assert projection.unmet_requirements[0].affected_item_ids == (turns[4].item_id, turns[6].item_id)
     result = Machine().analyse(AggregateRequest.for_source(Path("tests/fixtures/pipeline/transcript.md"), (Technique.SDRT,)))
-    assert result.preparation is not None and result.preparation.speaker_coverage == coverage
+    assert result.preparation is not None
+    assert result.preparation.receipt().speaker_coverage == coverage
 
 
 def test_equal_display_names_do_not_merge_explicit_participants() -> None:

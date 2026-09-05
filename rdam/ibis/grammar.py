@@ -29,6 +29,8 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Final, Self, TypeGuard, cast
+from pydantic import Field, model_validator
+from rdam._strict import StrictModel
 
 
 def _non_empty_string(value: object) -> TypeGuard[str]:
@@ -164,6 +166,8 @@ class IbisStructure:
     def from_payload(cls, payload: Mapping[str, object]) -> Self:
         """Validate ``{"nodes": [{"id", "kind", "text"}], "links": [{"from", "relation", "to"}]}`` against the grammar."""
 
+        if set(payload) != {"nodes", "links"}:
+            raise StructureError("structure requires exactly nodes and links")
         raw_nodes = payload.get("nodes")
         raw_links = payload.get("links")
         if not isinstance(raw_nodes, list) or not raw_nodes:
@@ -176,6 +180,8 @@ class IbisStructure:
             if not isinstance(item, dict):
                 raise StructureError("every node must be an object")
             node_payload = cast(dict[str, object], item)
+            if set(node_payload) != {"id", "kind", "text"}:
+                raise StructureError("node requires exactly id, kind and text")
             node_id, kind, text = node_payload.get("id"), node_payload.get("kind"), node_payload.get("text")
             if not isinstance(node_id, str) or not node_id:
                 raise StructureError("every node needs a non-empty string id")
@@ -193,6 +199,8 @@ class IbisStructure:
             if not isinstance(item, dict):
                 raise StructureError("every link must be an object")
             link_payload = cast(dict[str, object], item)
+            if set(link_payload) != {"from", "relation", "to"}:
+                raise StructureError("link requires exactly from, relation and to")
             source, relation, target = (
                 link_payload.get("from"),
                 link_payload.get("relation"),
@@ -255,6 +263,30 @@ class IbisStructure:
 
 def _ids(nodes: Iterable[Node]) -> list[str]:
     return [node.node_id for node in nodes]
+
+
+class IbisInputNode(StrictModel):
+    id: str = Field(min_length=1)
+    kind: NodeKind
+    text: str = Field(min_length=1)
+
+
+class IbisInputLink(StrictModel):
+    source: str = Field(alias="from", min_length=1)
+    relation: Relation
+    target: str = Field(alias="to", min_length=1)
+
+
+class IbisInput(StrictModel):
+    """Caller-authored JSON shape, validated by the actual gIBIS grammar."""
+
+    nodes: tuple[IbisInputNode, ...] = Field(min_length=1)
+    links: tuple[IbisInputLink, ...]
+
+    @model_validator(mode="after")
+    def valid_structure(self) -> Self:
+        IbisStructure.from_payload(self.model_dump(mode="json", by_alias=True))
+        return self
 
 
 def deliberation_map(structure: IbisStructure) -> DeliberationMap:

@@ -3,18 +3,36 @@
 from functools import cache
 from importlib import resources
 from typing import Protocol
+from collections.abc import Mapping
+from pydantic import BaseModel
 
-from rdam._strict import sha256_bytes
+from rdam._strict import JsonValue, sha256_bytes
 from rdam._provenance import INSTRUCTIONS_REVISION_SEPARATOR, installed_package_version, resolve_source_revision
 from rdam.contracts import (
     ProviderError,
     ProviderFailure,
     ProviderProvenance,
+    ProviderConfiguration,
     Retryability,
     Sha256Identity,
     Technique,
     semantic_sha256,
 )
+
+
+def llm_configuration(
+    model: str, output_type: type[BaseModel], *, output_retries: int,
+    transport_retries: int, transport_deadline_seconds: float, evidence_policy: str,
+) -> ProviderConfiguration:
+    """Bind actual model, output schema, evidence policy and retry settings."""
+    settings: Mapping[str, JsonValue] = {
+        "model": model, "output_retries": output_retries, "transport_retries": transport_retries,
+        "transport_deadline_seconds": transport_deadline_seconds,
+        "output_schema_identity": semantic_sha256(output_type.model_json_schema()),
+        "evidence_policy": evidence_policy,
+    }
+    return ProviderConfiguration(settings=settings, cache_eligible=True,
+                                 cache_reason="explicit_model_schema_and_policy_identity")
 
 
 @cache

@@ -12,6 +12,8 @@ from rdam import (AggregateRequest, AvailableCapability, ExecutionPolicy, Formal
 from rdam._llm import StructuredAnalyst
 from rdam.toulmin.argument import ToulminAnalysis
 from rdam.toulmin.provider import ToulminProvider
+from rdam.contracts import ProviderConfiguration
+from tests.machine.conftest import fixture_descriptor
 
 
 class AnalystProvider:
@@ -31,6 +33,9 @@ class AnalystProvider:
                                           model_identity=self.analyst.model, licence="test fixture"),
             capability=capability, requires_structured_input=False,
             content_requirement=ToulminProvider().content_requirement,
+            configuration=ProviderConfiguration(settings={"model": self.analyst.model}, cache_eligible=True,
+                cache_reason="fixed_external_model_fixture"),
+            interpretations=(fixture_descriptor("toulmin_layout", Technique.TOULMIN, version),),
         )
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:
@@ -67,7 +72,7 @@ def test_hit_makes_no_model_request_and_damaged_entries_reanalyse(
         entry = next(tmp_path.glob("*.json"))
         payload = entry.read_bytes()
         entry.write_bytes(b"garbage" if damage == "corrupt" else payload[:len(payload)//2] if damage == "truncated"
-                          else payload.replace(b'"contract_version":"1.0.0"', b'"contract_version":"9.0.0"', 1))
+                          else payload.replace(b'"contract_version":"2.0.0"', b'"contract_version":"9.0.0"', 1))
         with pytest.warns(RuntimeWarning, match="discarded corrupt"), provider.analyst.agent.override(model=FunctionModel(respond)):
             assert machine.analyse(request) == first
         assert calls == 2
@@ -120,6 +125,8 @@ def test_each_identity_change_causes_one_real_cache_miss(
             declaration["capability"]["contract_version"] = "2.0.0"
             for formalism in declaration["formalisms"]:
                 formalism["capability"]["contract_version"] = "2.0.0"
+            declaration["interpretations"] = (fixture_descriptor("toulmin_layout", Technique.TOULMIN,
+                SemanticVersion(root="2.0.0")).model_dump(),)
         elif element == "model":
             declaration["provenance"]["model_identity"] = "fixture/changed-model"
         else:

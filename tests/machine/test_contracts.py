@@ -22,7 +22,10 @@ from rdam import (
     UnavailableReason,
     technique_curie,
 )
-from tests.machine.conftest import PROVENANCE, V1, available, dung_declaration, formalism, rst_declaration
+from rdam.contracts import BoundaryConfiguration, ProviderConfiguration, outcome_technique
+from rdam.interpretation import reading_guide
+from rdam.machine import Machine
+from tests.machine.conftest import PROVENANCE, V1, available, dung_declaration, formalism, rst_declaration, fixture_descriptor
 
 
 def _result(declaration: ProviderDeclaration, formalism_id: str, source: SourceIdentity) -> NativeTechniqueResult:
@@ -36,6 +39,21 @@ def _result(declaration: ProviderDeclaration, formalism_id: str, source: SourceI
         source=source,
         payload={"nodes": [1, 2], "edges": [{"from": 1, "to": 2, "relation": "elaboration"}]},
         provenance=declaration.provenance,
+    )
+
+
+def _aggregate(*, source: SourceIdentity, outcomes: tuple[ResultOutcome | UnavailableOutcome, ...],
+               upstream_results: tuple[NativeTechniqueResult, ...] = (),
+               lineage: tuple[ProviderDependencyReference, ...] = ()) -> AggregateAnalysis:
+    declarations = {Technique.RST: rst_declaration(), Technique.DUNG: dung_declaration()}
+    successes = sum(isinstance(item, ResultOutcome) for item in outcomes)
+    return AggregateAnalysis(
+        source=source, outcomes=outcomes, upstream_results=upstream_results, lineage=lineage,
+        requested_techniques=tuple(outcome_technique(item) for item in outcomes),
+        configurations=tuple(BoundaryConfiguration(technique=item.technique, provider_id=item.result.provider_id,
+            configuration=declarations[item.technique].configuration) for item in outcomes if isinstance(item, ResultOutcome)),
+        status="complete" if successes == len(outcomes) else "partial" if successes else "unsuccessful",
+        reading_guide=reading_guide(outcomes, upstream_results, declarations),
     )
 
 
@@ -53,6 +71,8 @@ class TestProviderDeclaration:
                 technique=Technique.RST,
                 technique_curie="coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/pdtb",
                 formalisms=(formalism("rst_tree", Technique.RST, available("p")),),
+                configuration=ProviderConfiguration(settings={}, cache_eligible=False, cache_reason="validation_fixture"),
+                interpretations=(fixture_descriptor("rst_tree", Technique.RST),),
                 contract_version=V1,
                 provenance=PROVENANCE,
                 capability=available("p"),
@@ -66,6 +86,8 @@ class TestProviderDeclaration:
                 technique=Technique.ERST,
                 technique_curie=technique_curie(Technique.ERST),
                 formalisms=(formalism("erst_graph", Technique.ERST, available("p")),),
+                configuration=ProviderConfiguration(settings={}, cache_eligible=False, cache_reason="validation_fixture"),
+                interpretations=(fixture_descriptor("erst_graph", Technique.ERST),),
                 contract_version=V1,
                 provenance=PROVENANCE,
                 capability=available("p"),
@@ -79,6 +101,8 @@ class TestProviderDeclaration:
                 technique=Technique.RST,
                 technique_curie=technique_curie(Technique.RST),
                 formalisms=(formalism("erst_graph", Technique.ERST, available("p")),),
+                configuration=ProviderConfiguration(settings={}, cache_eligible=False, cache_reason="validation_fixture"),
+                interpretations=(fixture_descriptor("erst_graph", Technique.ERST),),
                 contract_version=V1,
                 provenance=PROVENANCE,
                 capability=available("p"),
@@ -92,6 +116,8 @@ class TestProviderDeclaration:
                 technique=Technique.DUNG,
                 technique_curie=technique_curie(Technique.DUNG),
                 formalisms=(formalism("dung_extensions", Technique.DUNG, available("p")),),
+                configuration=ProviderConfiguration(settings={}, cache_eligible=False, cache_reason="validation_fixture"),
+                interpretations=(fixture_descriptor("dung_extensions", Technique.DUNG),),
                 contract_version=V1,
                 provenance=PROVENANCE,
                 capability=available("p"),
@@ -209,7 +235,7 @@ class TestAggregateAnalysis:
     def test_at_most_one_outcome_per_technique(self) -> None:
         source = SourceIdentity.from_text("x")
         with pytest.raises(ValidationError, match="at most one outcome per technique"):
-            AggregateAnalysis(
+            _aggregate(
                 source=source,
                 outcomes=(
                     UnavailableOutcome(technique=Technique.PDTB, reason=UnavailableReason.NOT_IMPLEMENTED),
@@ -219,9 +245,9 @@ class TestAggregateAnalysis:
 
     def test_every_result_is_about_the_aggregate_source(self) -> None:
         with pytest.raises(ValidationError, match="about the aggregate's source"):
-            AggregateAnalysis(
+            _aggregate(
                 source=SourceIdentity.from_text("a"),
-                outcomes=(ResultOutcome(result=_result(rst_declaration(), "rst_tree", SourceIdentity.from_text("b"))),),
+                outcomes=(ResultOutcome(technique=Technique.RST, result=_result(rst_declaration(), "rst_tree", SourceIdentity.from_text("b"))),),
             )
 
     def test_lineage_must_name_a_result_of_this_aggregate(self) -> None:
@@ -229,9 +255,10 @@ class TestAggregateAnalysis:
         rst = _result(rst_declaration(), "rst_tree", source)
         dung = _result(dung_declaration(), "dung_extensions", source)
         assert rst.semantic_digest is not None
-        good = AggregateAnalysis(
+        good = _aggregate(
             source=source,
-            outcomes=(ResultOutcome(result=rst), ResultOutcome(result=dung)),
+            outcomes=(ResultOutcome(technique=Technique.DUNG, result=dung),),
+            upstream_results=(rst,),
             lineage=(
                 ProviderDependencyReference(
                     consumer_technique=Technique.DUNG,
@@ -246,9 +273,10 @@ class TestAggregateAnalysis:
         )
         assert len(good.lineage) == 1
         with pytest.raises(ValidationError, match="not a result of this aggregate"):
-            AggregateAnalysis(
+            _aggregate(
                 source=source,
-                outcomes=(ResultOutcome(result=rst), ResultOutcome(result=dung)),
+                outcomes=(ResultOutcome(technique=Technique.DUNG, result=dung),),
+                upstream_results=(rst,),
                 lineage=(
                     ProviderDependencyReference(
                         consumer_technique=Technique.DUNG,
@@ -294,9 +322,10 @@ class TestAggregateAnalysis:
         )
         mutated = reference.model_copy(update={field: value})
         with pytest.raises(ValidationError, match=message):
-            AggregateAnalysis(
+            _aggregate(
                 source=source,
-                outcomes=(ResultOutcome(result=rst), ResultOutcome(result=dung)),
+                outcomes=(ResultOutcome(technique=Technique.DUNG, result=dung),),
+                upstream_results=(rst,),
                 lineage=(mutated,),
             )
 
@@ -350,6 +379,7 @@ class TestMachineCapabilities:
     def test_must_list_every_boundary_once_in_spec_order(self) -> None:
         with pytest.raises(ValidationError, match="every technique boundary exactly once"):
             MachineCapabilities(
+                **Machine().capabilities().model_dump(exclude={"techniques", "semantic_digest"}),
                 techniques=(
                     TechniqueCapability(
                         technique=Technique.RST,

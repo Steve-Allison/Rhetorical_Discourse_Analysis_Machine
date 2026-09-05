@@ -195,25 +195,29 @@ def _analyse_with_release(
     erst_checkpoint: Path | None,
     device: str,
 ) -> dict[str, object]:
-    from rdam.rst import Parser
+    from rdam import AggregateRequest, MachineConfig, ResultOutcome, Technique, production_machine
+    from rdam.configuration import LocalRstModel, RstSettings
+    from rdam.serialization import load, serialize
+    from rdam.rst.output import RstOutput
     from rdam.ingest import (
         AnalysedOutcome,
         ParserAnalysisResult,
-        ProductionIngestor,
-        SourceArtifact,
-        load_contract,
-        serialize_contract,
     )
 
-    parser = Parser.from_model_release(
-        model_store,
-        release_id,
-        device=device,
-        erst_scorer_checkpoint=erst_checkpoint,
-    )
-    ingestor = ProductionIngestor(parser=parser)
-    source = SourceArtifact.from_text(_TEXT, source_name="installed-analysis.txt")
-    outcome = ingestor.analyse(source)
+    config = MachineConfig(rst=RstSettings(
+        model=LocalRstModel(store=model_store, release_id=release_id),
+        device=device, erst_checkpoint=erst_checkpoint,
+    ))
+    machine = production_machine(config=config)
+    aggregate = machine.analyse(AggregateRequest.for_text(
+        _TEXT, (Technique.RST,), source_name="installed-analysis.txt"
+    ))
+    result = aggregate.outcome_for(Technique.RST)
+    if not isinstance(result, ResultOutcome):
+        raise AssertionError("installed RST machine outcome was not successful")
+    outcome = RstOutput.model_validate_json(json.dumps(
+        result.result.model_dump(mode="json")["payload"]
+    )).root
     if not isinstance(outcome, AnalysedOutcome):
         raise AssertionError("non-empty installed analysis did not return AnalysedOutcome")
     parser_result = outcome.semantic.parser_result
@@ -223,8 +227,8 @@ def _analyse_with_release(
         raise AssertionError("installed analysis omitted loaded-component receipts")
     if not outcome.semantic.validation or not outcome.semantic.validation.passed:
         raise AssertionError("installed analysis did not pass complete validation")
-    encoded = serialize_contract(outcome)
-    if serialize_contract(load_contract(encoded)) != encoded:
+    encoded = serialize(aggregate)
+    if serialize(load(encoded)) != encoded:
         raise AssertionError("installed analysis failed canonical round-trip")
 
     from rdam.rst._version import TOOL_NAME
@@ -233,7 +237,9 @@ def _analyse_with_release(
         output = Path(directory) / "result.json"
         command = [
             str(Path(sys.executable).with_name(TOOL_NAME)),
-            "parse",
+            "analyse",
+            "--techniques",
+            "rst",
             "--text",
             _TEXT,
             "--source-name",
@@ -250,8 +256,8 @@ def _analyse_with_release(
         if erst_checkpoint is not None:
             command.extend(("--erst-checkpoint", str(erst_checkpoint)))
         subprocess.run(command, check=True, env=os.environ.copy())
-        cli = load_contract(output.read_bytes())
-        if cli.semantic_digest != outcome.semantic_digest:
+        cli = load(output.read_bytes())
+        if getattr(cli, "semantic_digest", None) != aggregate.semantic_digest:
             raise AssertionError("installed CLI semantic result differs from Python API")
     return {
         "outcome_identity": _required_digest(outcome.semantic_digest, "analysis outcome"),
@@ -265,6 +271,75 @@ def _analyse_with_release(
     }
 
 
+def _machine_interfaces(*, http: bool) -> dict[str, object]:
+    """Check the installed machine and both thin transports without model calls."""
+    from importlib.util import find_spec
+    from rdam import AggregateRequest, ResultOutcome, StructuredInput, Technique, production_machine
+    from rdam.serialization import load, schema, schema_models, serialize, serialize_request
+
+    scripts = {point.name for point in distribution("rdam").entry_points if point.group == "console_scripts"}
+    if "rdam" not in scripts or "rdam-rst" in scripts:
+        raise AssertionError("installed command declarations are not the unified interface")
+    if find_spec("rdam.rst.cli") is not None:
+        raise AssertionError("obsolete RST-only CLI module remains installed")
+    if (find_spec("uvicorn") is not None) != http or (find_spec("starlette") is not None) != http:
+        raise AssertionError("HTTP dependency availability contradicts installed extras")
+    machine = production_machine()
+    if machine.capabilities().http_available != http:
+        raise AssertionError("capabilities contradict installed HTTP availability")
+    request = AggregateRequest.for_structured((StructuredInput(
+        technique=Technique.DUNG, payload={"arguments": ["a", "b"], "attacks": [["a", "b"]]}
+    ),), techniques=(Technique.DUNG,))
+    result = machine.analyse(request)
+    if not isinstance(result.outcome_for(Technique.DUNG), ResultOutcome):
+        raise AssertionError("installed Dung did not produce a native result")
+    command = str(Path(sys.executable).with_name("rdam"))
+    cli = subprocess.run([command, "analyse", "--request", "-"], input=serialize_request(request),
+                         capture_output=True, check=True)
+    parsed = load(cli.stdout)
+    if getattr(parsed, "semantic_digest", None) != result.semantic_digest:
+        raise AssertionError("installed Python/CLI analytical identities differ")
+    for name in schema_models():
+        for mode in ("validation", "serialization"):
+            resource = resources.files("rdam.ingest").joinpath("schemas", f"machine-{name}.{mode}.schema.json")
+            if json.loads(resource.read_bytes()) != schema(name, mode=mode):
+                raise AssertionError(f"installed schema differs from runtime: {name}/{mode}")
+    if http:
+        import threading
+        import time
+        import urllib.request
+        import uvicorn
+        from rdam.http import create_app
+
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            listener.listen(8)
+            port = listener.getsockname()[1]
+            server = uvicorn.Server(uvicorn.Config(create_app(machine, port=port),
+                loop="asyncio", http="h11", ws="none", log_level="error", access_log=False))
+            worker = threading.Thread(target=lambda: server.run(sockets=[listener]), daemon=True)
+            worker.start()
+            try:
+                deadline = time.monotonic() + 10
+                while not server.started and worker.is_alive() and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                if not server.started:
+                    raise AssertionError("installed HTTP server did not start")
+                message = urllib.request.Request(f"http://127.0.0.1:{port}/v1/analyse",
+                    data=serialize_request(request), headers={"Content-Type": "application/json"})
+                with urllib.request.urlopen(message, timeout=10) as response:
+                    received = load(response.read())
+                if getattr(received, "semantic_digest", None) != result.semantic_digest:
+                    raise AssertionError("installed HTTP analytical identity differs")
+            finally:
+                server.should_exit = True
+                worker.join(timeout=15)
+                if worker.is_alive():
+                    raise AssertionError("installed HTTP server did not stop")
+    return {"cli_parity": True, "http_parity": http, "schemas": len(schema_models()) * 2,
+            "canonical_roundtrip": serialize(load(serialize(result))) == serialize(result)}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, required=True)
@@ -274,6 +349,7 @@ def main() -> int:
     parser.add_argument("--erst-checkpoint", type=Path)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--formats", action="store_true")
+    parser.add_argument("--http", action="store_true")
     parser.add_argument("--full", action="store_true")
     parser.add_argument("--markdown", type=Path)
     parser.add_argument("--doclang", type=Path)
@@ -324,6 +400,7 @@ def main() -> int:
         "network_disabled": True,
         "offline_distributions_absent": True,
         "public_surface_entries": len(entries),
+        "machine_interfaces": _machine_interfaces(http=args.http),
         "source_contract": _prepare_sources(
             markdown=args.markdown if formats else None,
             doclang=args.doclang if formats else None,

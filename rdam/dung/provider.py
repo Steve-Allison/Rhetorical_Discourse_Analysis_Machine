@@ -7,6 +7,8 @@ result. Reporting capability computes a digest of two source files and nothing e
 """
 
 from typing import Final
+from rdam.contracts import ProviderConfiguration
+from rdam.dung.interpretation import describe
 
 from rdam import (
     AvailableCapability,
@@ -83,6 +85,9 @@ class DungProvider:
             ),
             capability=capability,
             requires_structured_input=True,
+            configuration=ProviderConfiguration(settings={"capacity": self._capacity},
+                cache_eligible=True, cache_reason="deterministic_supplied_framework"),
+            interpretations=(describe(FORMALISM_ID, str(CONTRACT_VERSION)),),
         )
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:

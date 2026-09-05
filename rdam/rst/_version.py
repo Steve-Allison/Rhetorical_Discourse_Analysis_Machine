@@ -4,7 +4,7 @@ from functools import cache
 from importlib.metadata import PackageNotFoundError, version as distribution_version
 
 PACKAGE_NAME = "rdam"
-TOOL_NAME = "rdam-rst"
+TOOL_NAME = "rdam"
 
 
 @cache

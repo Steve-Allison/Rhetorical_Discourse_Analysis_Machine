@@ -1,10 +1,11 @@
 # Production API contract
 
-`rdam` exposes one machine-owned production source API at
-`rdam.ingest`, plus the `rdam.rst.Parser` facade. The serialized family
-is `isanlp_rst.production` 2.0.0 — the contract identifier is unchanged by the package
-rename. The package does not expose a CSM-specific adapter or recreate downstream data
-models.
+`rdam` exposes one analysis engine through Python, the `rdam` command and
+optional loopback HTTP. All three use `Machine`, immutable requests/configuration,
+and the same canonical codecs. `rdam.ingest` supplies shared preparation;
+`rdam.rst.Parser` remains the native parser facade. Its nested serialized family
+is `isanlp_rst.production` 2.0.0, independent of the machine envelope version.
+There is no downstream-specific adapter or recreated consumer data model.
 
 The exact symbol and resource authority is the packaged
 `rdam/ingest/public-surface.json`. `rdam.ingest.__all__`, installed
@@ -16,12 +17,21 @@ reconciled against that file by the production-contract tests.
 At the aggregate boundary, `AggregateRequest.for_text`, `.for_source`, and
 `.for_bytes` construct immutable requests. `Machine.analyse` inventories once,
 projects once per distinct provider requirement, and returns separate native
-outcomes plus one `PreparationReceipt`. `PreparedDocument` and `AnalysisCapacity`
+outcomes plus full `MachinePreparation` evidence. `.for_edus` preserves exact EDUs;
+`.for_structured` identifies a supplied Dung/IBIS bundle without invented text.
+`Machine.prepare(PreparationRequest)` performs no inference. `PreparedDocument` and `AnalysisCapacity`
 are the canonical Python names; the plan field is `capacity`. The previous
 ingest import path and contract-field aliases are not accepted.
 
 | Operation | Exact return | Success states | Failure |
 |---|---|---|---|
+| `production_machine(*, config=None)` | `Machine` | configured providers, no inference | invalid configuration |
+| `Machine.prepare(request)` | `MachinePreparation` | complete inventory and selected projections | `OperationError` for expected preparation failure |
+| `Machine.analyse(request)` | `AggregateAnalysis` | `complete`, `partial`, `unsuccessful` | typed per-technique outcomes; unexpected defects propagate |
+| `Machine.capabilities()` | `MachineCapabilities` | source forms, providers, effective configuration, contracts | no model probe or inference |
+| `serialize(record)` / `load(payload)` | canonical `bytes` / typed record | digest-checked current or historical record | damaged/unsupported record |
+| `select_analysis(analysis, *, techniques)` | `AnalysisView` | whole selected outcomes and original context | invalid selection |
+| `summarise(record)` | `str` | readable saved-record summary | unsupported record |
 | `SourceArtifact.from_path(path, *, source_form=None, original_source=None, conversion_provenance=())` | `SourceArtifact` | one validated source identity | constructor error before the service boundary |
 | `ProductionIngestor.prepare(source, *, policy=None, planning_policy=None, capacity=None)` | `PreparationOutcome` | complete preparation, including empty or retained-only primary discourse | `ProductionIngestError` |
 | `ProductionIngestor.analyse(source, *, policy=None, planning_policy=None, analysis_policy=None, cache_directory=None, diagnostic_policy=None)` | `ProductionAnalysisOutcome` | `AnalysedOutcome` or `EmptyPrimaryAnalysisOutcome` | `ProductionIngestError` |
@@ -67,6 +77,24 @@ parser is a typed failure.
 Schemas are Draft 2020-12 serialization-mode projections. They and the public
 surface are generated from runtime models and must be byte-identical to their
 committed package resources.
+
+Machine records additionally publish validation and serialization schemas as
+`machine-{name}.{mode}.schema.json`. Discover names through `rdam schema` help
+and contract metadata; retrieve one with `rdam schema request`. Native output
+schemas include every formalism, corrected Toulmin/Walton v2 and historical v1;
+`dung-input` and `ibis-input` describe supplied structures. Machine aggregate,
+native envelope and capabilities write v2 and read v1 without upgrading its
+meaning. Request, configuration, preparation, view and operation-error contracts
+are independently versioned at v1. Raw source bytes use canonical padded base64.
+
+The aggregate `reading_guide` is directly consumable by AI: each entry identifies
+its native formalism/version, JSON pointers, section availability, evidence
+meaning and interpretation limits. Read requested outcomes separately from
+`upstream_results`; retained successes cannot improve `status`. Walton records
+every catalogue question as addressed/open/not_assessable. Toulmin records
+explicit/reconstructed/undetermined warrant origin. Evidence uses exact Unicode
+character spans; `supporting_passage` does not mean a finding was quoted verbatim.
+Neither guide text nor a valid span proves truth or argument strength.
 
 ## Evidence retained in one analysis outcome
 
@@ -148,29 +176,42 @@ identity or durable semantic-cache eligibility.
 
 ## Installed projections
 
-`rdam-rst parse` uses `SourceArtifact`, an immutable model release, a closed
-analysis policy, and `ProductionIngestor`. Canonical JSON is the same serialized
-contract as Python. `summary` is labelled as presentation-only and never claims
-contract completeness.
+`rdam analyse source.md --techniques rst,toulmin,walton` invokes the same
+`Machine.analyse` contract as Python. `rdam prepare` inventories without
+inference. `rdam summary analysis.json` and `rdam view analysis.json --techniques
+walton` read saved results without rerunning models or resolving configuration.
+`rdam capabilities`, `rdam schema request` and `rdam version` support discovery.
 
-The optional local service binds only to `127.0.0.1`, `::1`, or `localhost`:
+Files or stdin (`-`) are accepted. Canonical JSON goes to stdout, safe diagnostics
+to stderr. Analysis exits: 0 complete, 3 partial, 4 unsuccessful; operational
+error 1, invalid input 2, interrupt 130, broken pipe 141. File publication is
+atomic, no-clobber by default; `--force` never permits overwriting an input alias.
+For full flag syntax and defaults, use each command's `--help`.
+
+The optional `rdam[http]` service binds only to `127.0.0.1` or `::1`:
 
 | Endpoint | Contract |
 |---|---|
-| `POST /analyse` | canonical analysis outcome or canonical safe failure |
-| `GET /capabilities` | canonical `ProductionCapabilities` |
-| `GET /health` | presentation health derived from capability identity |
+| `POST /v1/prepare` | `PreparationRequest` → `MachinePreparation` |
+| `POST /v1/analyse` | `AggregateRequest` → `AggregateAnalysis` |
+| `POST /v1/view` | `ViewRequest` → `AnalysisView` |
+| `POST /v1/summary` | saved supported record → readable text |
+| `GET /v1/capabilities` | `MachineCapabilities` |
+| `GET /v1/version` | installed package and contract versions |
+| `GET /v1/schemas/{record}?mode=validation` | generated JSON Schema; serialization mode also supported |
 
-One request invokes inference at most once. Malformed CLI and HTTP input is
-also represented by a safe typed production failure; arbitrary exception text
-does not cross either boundary.
+One POST is admitted at a time. Body limits/deadlines apply before execution;
+discovery stays responsive. Disconnect does not pretend to cancel an already
+running native thread; its slot remains held and shutdown drains accepted work.
+Application failures use `OperationFailure`; pre-ASGI HTTP-parser rejections are
+server responses, not RDAM JSON. Arbitrary exception text does not cross either
+boundary. All analytical completion states return HTTP 200; inspect `status`.
 
 ## Compatibility
 
-Python symbols follow package SemVer; 6.0.0 renamed the import path from
-`isanlp_rst` to `rdam.rst` and the command from `isanlp-rst` to `rdam-rst` without
-changing any serialized contract. The serialized 2.0.0 contract and schemas are
-version-dispatched independently. The 6.0.0 write version reads 2.0.0 only.
+Python symbols follow package SemVer. The unified command replaces the old
+RST-only command without a compatibility wrapper. The nested RST production
+2.0.0 contract and machine v1/v2 contracts are version-dispatched independently.
 Unsupported future versions and unknown discriminators fail before payload use.
 Removed format-specific parse functions and envelopes have no compatibility
 aliases.

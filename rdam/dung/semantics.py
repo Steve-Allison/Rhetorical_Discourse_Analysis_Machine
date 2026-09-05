@@ -26,7 +26,9 @@ refused with a typed failure rather than approximated.
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import Final, Self, TypeGuard, cast
+from typing import Annotated, Final, Self, TypeGuard, cast
+from pydantic import Field, model_validator
+from rdam._strict import StrictModel
 
 DEFAULT_CAPACITY: Final = 14
 """Maximum number of arguments the exhaustive enumeration accepts (2^14 candidate sets)."""
@@ -82,6 +84,8 @@ class ArgumentationFramework:
     def from_payload(cls, payload: Mapping[str, object]) -> Self:
         """Validate ``{"arguments": [...], "attacks": [[from, to], ...]}``."""
 
+        if set(payload) != {"arguments", "attacks"}:
+            raise FrameworkError("framework requires exactly arguments and attacks")
         raw_arguments = payload.get("arguments")
         raw_attacks = payload.get("attacks")
         if not isinstance(raw_arguments, list) or not raw_arguments:
@@ -189,15 +193,27 @@ class Semantics:
         }
 
 
+class DungInput(StrictModel):
+    """Caller-authored JSON shape; native reference/uniqueness rules still apply."""
+
+    arguments: tuple[Annotated[str, Field(min_length=1)], ...] = Field(min_length=1)
+    attacks: tuple[tuple[str, str], ...]
+
+    @model_validator(mode="after")
+    def valid_framework(self) -> Self:
+        ArgumentationFramework.from_payload(self.model_dump(mode="json"))
+        return self
+
+
 def _ordered(framework: ArgumentationFramework, extensions: Iterable[frozenset[str]]) -> tuple[frozenset[str], ...]:
     order = {argument: index for index, argument in enumerate(framework.arguments)}
     return tuple(sorted(extensions, key=lambda item: (len(item), sorted(order[argument] for argument in item))))
 
 
-def validate_capacity(capacity: int) -> int:
+def validate_capacity(capacity: object) -> int:
     """Return a valid exhaustive-enumeration capacity or reject invalid configuration."""
 
-    if isinstance(capacity, bool) or capacity <= 0:
+    if isinstance(capacity, bool) or not isinstance(capacity, int) or capacity <= 0:
         raise ValueError("exhaustive capacity must be a positive integer")
     return capacity
 

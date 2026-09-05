@@ -25,12 +25,18 @@ from rdam.toulmin import ToulminProvider
 from rdam.walton import SCHEMES, SCHEME_SET_ID, PROVIDER_ID_PREFIX, SchemeId, WaltonProvider, source_identity
 
 MODEL = "openai:gpt-5.6-sol"
+SOURCE_TEXT = "Dr Okonkwo, chair of structural engineering, says the bridge cannot carry its load."
 
 VALID_INSTANCE = {
     "scheme_id": "expert_opinion",
     "conclusion": "The bridge is unsafe.",
     "premises": {"source": "Dr Okonkwo", "domain": "structural engineering", "assertion": "it cannot carry its load"},
-    "critical_questions": [{"index": 0, "status": "addressed", "note": "the passage names her chair"}],
+    "critical_questions": [
+        {"index": 0, "status": "addressed", "note": "the passage names her chair",
+         "evidence": [{"start": 0, "end": len(SOURCE_TEXT), "text": SOURCE_TEXT}]},
+        *({"index": index, "status": "open"}
+          for index in range(1, len(SCHEMES[SchemeId.EXPERT_OPINION].critical_questions))),
+    ],
 }
 
 
@@ -144,7 +150,7 @@ class TestThroughTheMachine:
             outcome = (
                 Machine([provider])
                 .analyse(
-                    AggregateRequest.for_text("Dr Okonkwo says the bridge cannot carry its load.", (Technique.WALTON,))
+                    AggregateRequest.for_text(SOURCE_TEXT, (Technique.WALTON,))
                 )
                 .outcome_for(Technique.WALTON)
             )
@@ -183,7 +189,7 @@ class TestThroughTheMachine:
         with provider._built().agent.override(model=_proposing([broken])):
             outcome = (
                 Machine([provider])
-                .analyse(AggregateRequest.for_text("some passage", (Technique.WALTON,)))
+                .analyse(AggregateRequest.for_text(SOURCE_TEXT, (Technique.WALTON,)))
                 .outcome_for(Technique.WALTON)
             )
         assert isinstance(outcome, FailedOutcome)

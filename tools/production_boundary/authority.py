@@ -133,7 +133,10 @@ class OwnershipAuthority:
                 "mdit-py-plugins",
                 # The LLM boundary (006 FR-032): the Toulmin, Walton, SDRT, and PDTB providers
                 # are model-backed, so their client is production runtime, not tooling.
-                "pydantic-ai",
+                "pydantic-ai-slim",
+                "starlette",
+                "uvicorn",
+                "h11",
                 "openai",
                 "httpx2",
                 # Required by pydantic-ai-slim's OpenAI runtime extra.

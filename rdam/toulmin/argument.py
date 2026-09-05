@@ -29,11 +29,12 @@ condition on the step. Both are recorded against the element they qualify so the
 stays a layout and not a bag of sentences.
 """
 
-from typing import Annotated, Self
+from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 from rdam._strict import JsonValue
+from rdam.ingest.contracts.evidence import SourceEvidenceSpan
 
 type NonEmpty = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
@@ -78,13 +79,27 @@ class ToulminLayout(BaseModel):
             "or the grounds here — if there is genuinely no licence connecting them, this is not an argument."
         )
     )
+    warrant_origin: Literal["explicit", "reconstructed", "undetermined"] = Field(
+        description=("Provenance of the inference licence: stated in the source, inferred as the bridge required "
+                     "by a visible grounds-to-claim step, or genuinely unresolved because context is damaged or ambiguous.")
+    )
+    warrant_evidence: tuple[SourceEvidenceSpan, ...] = Field(
+        description=("Exact source support for classifying the licence: its wording when explicit, or the visible "
+                     "grounds-to-claim inference when reconstructed.")
+    )
+    warrant_origin_reason: Literal["insufficient_context", "ambiguous_source"] | None = Field(
+        default=None,
+        description="Why damaged or ambiguous context prevents deciding whether the licence is stated or inferred.",
+    )
     backing: list[NonEmpty] = Field(
         default_factory=lambda: list[NonEmpty](),
         description="What stands behind the warrant and makes it credible. Backs the warrant, not the claim.",
     )
     qualifier: NonEmpty | None = Field(
         default=None,
-        description="The force attached to the claim, such as 'presumably', 'in most cases', 'necessarily'.",
+        description=("The epistemic/inferential force attached to the claim, such as 'presumably', "
+                     "'in most cases', 'necessarily'. Permission, obligation or ability asserted by the claim "
+                     "is not inferential qualification; a modal verb alone is insufficient."),
     )
     rebuttals: list[Rebuttal] = Field(
         default_factory=lambda: list[Rebuttal](),
@@ -99,6 +114,11 @@ class ToulminLayout(BaseModel):
             raise IncompleteLayoutError("the warrant restates the claim; no inference licence was identified")
         if any(self.warrant.strip().casefold() == ground.strip().casefold() for ground in self.grounds):
             raise IncompleteLayoutError("the warrant restates a ground; no inference licence was identified")
+        if self.warrant_origin == "undetermined":
+            if self.warrant_origin_reason is None:
+                raise LayoutError("undetermined warrant origin requires a reason")
+        elif self.warrant_origin_reason is not None or not self.warrant_evidence:
+            raise LayoutError("explicit/reconstructed origin requires evidence and no unresolved reason")
         return self
 
     @property
@@ -125,6 +145,9 @@ class ToulminLayout(BaseModel):
             "claim": self.claim,
             "grounds": list(self.grounds),
             "warrant": self.warrant,
+            "warrant_origin": self.warrant_origin,
+            "warrant_evidence": [span.model_dump() for span in self.warrant_evidence],
+            "warrant_origin_reason": self.warrant_origin_reason,
             "backing": list(self.backing),
             "qualifier": self.qualifier,
             "rebuttals": [{"condition": item.condition, "source_text": item.source_text} for item in self.rebuttals],
@@ -146,11 +169,22 @@ class ToulminAnalysis(BaseModel):
         ),
     )
 
+    def validate_source(self, text: str) -> None:
+        failures: list[tuple[str, ValueError]] = []
+        for layout_index, layout in enumerate(self.layouts):
+            for evidence_index, span in enumerate(layout.warrant_evidence):
+                try:
+                    span.validate_source(text)
+                except ValueError as error:
+                    failures.append((f"/layouts/{layout_index}/warrant_evidence/{evidence_index}", error))
+        if failures:
+            raise LayoutError("\n".join(f"{path}: {error}" for path, error in failures)) from failures[0][1]
+
     def to_payload(self) -> dict[str, JsonValue]:
         return {
             "layouts": [layout.to_payload() for layout in self.layouts],
             "layout_count": len(self.layouts),
-            "fully_qualified_count": sum(layout.is_qualified for layout in self.layouts),
+            "qualified_layout_count": sum(layout.is_qualified for layout in self.layouts),
         }
 
 

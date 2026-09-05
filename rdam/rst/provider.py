@@ -23,7 +23,11 @@ from time import perf_counter
 import sys
 
 from rdam.rst import Parser
-from rdam.rst.erst.checkpoint import resolve_default_erst_checkpoint
+from rdam.rst.erst.checkpoint import resolve_default_erst_checkpoint, validate_erst_checkpoint_bundle
+from rdam.contracts import ProviderConfiguration
+from rdam.rst.interpretation import describe
+from rdam.ingest.contracts.analysis import MarkerRefinementMode
+from rdam.ingest.contracts.inference import EvidenceDetailPolicy
 from rdam.ingest import (
     WRITE_CONTRACT_VERSION,
     AnalysisPolicy,
@@ -100,7 +104,12 @@ class RstProvider:
         device: str = "auto",
         erst_scorer_checkpoint: Path | None = None,
         cache_directory: Path | None = None,
+        default_formalism: str = RST_TREE,
+        evidence_detail: EvidenceDetailPolicy = DEFAULT_ANALYSIS_POLICY.evidence_detail,
+        marker_refinement: MarkerRefinementMode = DEFAULT_ANALYSIS_POLICY.marker_refinement,
     ) -> None:
+        if default_formalism not in _FORMALISM_OUTPUT:
+            raise ProviderConfigurationError("unknown default RST formalism")
         if (store is None) != (release_id is None):
             raise ProviderConfigurationError("a local release needs both store and release_id")
         if store is not None and hf_model_version is not None:
@@ -114,6 +123,11 @@ class RstProvider:
         self._device = device
         self._erst_checkpoint = erst_scorer_checkpoint
         self._cache_directory = cache_directory
+        self._default_formalism = default_formalism
+        self._evidence_detail = evidence_detail
+        self._marker_refinement = marker_refinement
+        self._erst_checkpoint = resolve_default_erst_checkpoint(erst_scorer_checkpoint)
+        self._erst_manifest = None if self._erst_checkpoint is None else validate_erst_checkpoint_bundle(self._erst_checkpoint)
         self._parser: Parser | None = None
         self._initialization_lock = RLock()
         self._local_release_checked = False
@@ -178,7 +192,7 @@ class RstProvider:
         reason = self._unavailable_reason()
         available = AvailableCapability(provider_id=self.provider_id, contract_version=contract_version)
         capability = available if reason is None else UnavailableCapability(reason=reason)
-        erst_bundle = resolve_default_erst_checkpoint(self._erst_checkpoint) is not None
+        erst_bundle = self._erst_manifest is not None
         erst_capability = (
             available
             if reason is None and erst_bundle
@@ -211,6 +225,8 @@ class RstProvider:
             capability=capability,
             requires_structured_input=False,
             content_requirement=self.content_requirement,
+            configuration=self._configuration(),
+            interpretations=tuple(describe(formalism, str(contract_version)) for formalism in _FORMALISM_OUTPUT),
             # T073/T082 measured full cold initialization and inference on CPU
             # and MPS. Other devices and eRST completion remain unmeasured.
             parallel_safety=(
@@ -220,6 +236,31 @@ class RstProvider:
                 else "serialized"
             ),
         )
+
+    def _configuration(self) -> ProviderConfiguration:
+        release = self._inspect_local_release() if self._store is not None else None
+        return ProviderConfiguration(
+            settings={
+                "model_identity": self.model_identity,
+                "model_manifest": None if release is None else release.manifest.manifest_sha256,
+                "erst_manifest": None if self._erst_manifest is None else self._erst_manifest.model_dump(mode="json"),
+                "relinventory": self._relinventory, "device": self._device,
+                "default_formalism": self._default_formalism,
+                "evidence_detail": self._evidence_detail.value,
+                "marker_refinement": self._marker_refinement.value,
+                "analysis_policy": self._analysis_policy(self._default_formalism).model_dump(mode="json"),
+            },
+            cache_eligible=release is not None,
+            cache_reason="validated_immutable_local_release" if release is not None else "published_weights_not_immutably_identified",
+        )
+
+    def _analysis_policy(self, formalism_id: str) -> AnalysisPolicy:
+        return AnalysisPolicy.model_validate({
+            **DEFAULT_ANALYSIS_POLICY.model_dump(exclude={"semantic_digest"}),
+            "output_formalism": _FORMALISM_OUTPUT[formalism_id],
+            "evidence_detail": self._evidence_detail,
+            "marker_refinement": self._marker_refinement,
+        })
 
     def _licence(self) -> str:
         """The terms the loaded weights carry, read from the release manifest when there is one."""
@@ -231,7 +272,7 @@ class RstProvider:
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:
         declaration = self.declaration
-        formalism_id = request.formalism_id or RST_TREE
+        formalism_id = request.formalism_id or self._default_formalism
         formalism = declaration.formalism(formalism_id)
         if formalism is None:
             raise ProviderError(
@@ -261,12 +302,7 @@ class RstProvider:
                     str(error),
                 )
             ) from error
-        policy = AnalysisPolicy.model_validate(
-            {
-                **DEFAULT_ANALYSIS_POLICY.model_dump(exclude={"semantic_digest"}),
-                "output_formalism": _FORMALISM_OUTPUT[formalism_id],
-            }
-        )
+        policy = self._analysis_policy(formalism_id)
         try:
             ingestor = ProductionIngestor(parser=parser)
             if request.projection is not None and request.preparation is not None:

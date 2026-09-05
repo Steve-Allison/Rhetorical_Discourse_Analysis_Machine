@@ -37,6 +37,9 @@ from rdam import (
     technique_curie,
 )
 from rdam.machine import _cache_key
+from rdam.configuration import MachineConfig, LlmSettings
+from rdam.contracts import ProviderConfiguration
+from tests.machine.conftest import fixture_descriptor
 from tests.ingest.test_projection_contracts import prose_requirement
 
 V1 = SemanticVersion(root="1.0.0")
@@ -74,6 +77,9 @@ def declaration(
         capability=capability,
         requires_structured_input=technique in STRUCTURED_INPUT_TECHNIQUES,
         content_requirement=None if technique in STRUCTURED_INPUT_TECHNIQUES else prose_requirement(),
+        configuration=ProviderConfiguration(settings={"model": model}, cache_eligible=True,
+            cache_reason="deterministic_fixture_with_explicit_revision"),
+        interpretations=(fixture_descriptor(f"{technique.value}_native", technique, contract),),
     )
 
 
@@ -449,6 +455,6 @@ def test_machine_and_rst_share_byte_identical_canonical_serialization() -> None:
 
 def test_production_composition_covers_all_seven_source_revisions(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-used")
-    machine = production_machine(model="openai:gpt-5.6-sol")
+    machine = production_machine(config=MachineConfig(llm=LlmSettings(model="openai:gpt-5.6-sol")))
     assert len(machine.providers) == 7
     assert all(item.declaration.provenance.source_revision for item in machine.providers.values())

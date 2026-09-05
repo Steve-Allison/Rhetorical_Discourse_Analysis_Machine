@@ -3,6 +3,9 @@
 from collections.abc import Callable
 
 import pytest
+from rdam._interpretation_types import NativeInterpretationDescriptor
+from rdam.contracts import ProviderConfiguration
+from rdam.frameworks import STRUCTURED_INPUT_TECHNIQUES
 from tests.ingest.test_projection_contracts import prose_requirement
 
 from rdam import (
@@ -45,6 +48,18 @@ def formalism(formalism_id: str, technique: Technique, capability: CapabilitySta
     )
 
 
+def fixture_descriptor(formalism_id: str, technique: Technique, version: SemanticVersion = V1) -> NativeInterpretationDescriptor:
+    return NativeInterpretationDescriptor(
+        formalism_id=formalism_id, native_contract_version="2.0.0", provider_contract_version=str(version),
+        purpose="Exercise orchestration with explicit deterministic fixture behaviour.",
+        input_basis="caller_structure" if technique in STRUCTURED_INPUT_TECHNIQUES else "source_projection",
+        method="deterministic_computation", sections=(), evidence_rules=(),
+        validation_scope=("Machine envelope and supplied fixture assertions only.",),
+        limitations=("This fixture does not implement a production analytical formalism.",),
+        empty_result_meaning="The fixture returned no analytical content.",
+    )
+
+
 def rst_declaration(*, erst_loaded: bool = True, capability: CapabilityState | None = None) -> ProviderDeclaration:
     provider_id = "fake-rst"
     return ProviderDeclaration(
@@ -66,6 +81,8 @@ def rst_declaration(*, erst_loaded: bool = True, capability: CapabilityState | N
         capability=capability if capability is not None else available(provider_id),
         requires_structured_input=False,
         content_requirement=prose_requirement(),
+        configuration=ProviderConfiguration(settings={}, cache_eligible=False, cache_reason="uncached_fixture"),
+        interpretations=tuple(fixture_descriptor(name, Technique.RST) for name in ("rst_tree", "erst_graph")),
     )
 
 
@@ -80,6 +97,8 @@ def dung_declaration(*, capability: CapabilityState | None = None) -> ProviderDe
         provenance=PROVENANCE,
         capability=capability if capability is not None else available(provider_id),
         requires_structured_input=True,
+        configuration=ProviderConfiguration(settings={}, cache_eligible=False, cache_reason="uncached_fixture"),
+        interpretations=(fixture_descriptor("dung_extensions", Technique.DUNG),),
     )
 
 

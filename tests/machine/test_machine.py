@@ -4,6 +4,7 @@ import pytest
 from pydantic import ValidationError
 
 from rdam.rst.provider import RstProvider
+from rdam.configuration import MachineConfig, LlmSettings
 from rdam import (
     BOUNDARY_TECHNIQUES,
     AggregateRequest,
@@ -70,7 +71,7 @@ class TestCapabilities:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-used")
-        machine = production_machine(model="openai:gpt-5.6-sol")
+        machine = production_machine(config=MachineConfig(llm=LlmSettings(model="openai:gpt-5.6-sol")))
         assert tuple(machine.providers) == BOUNDARY_TECHNIQUES
         for item in machine.capabilities().techniques:
             assert item.capability.state == "available"
@@ -273,8 +274,8 @@ class TestLineage:
         assert upstream.semantic_digest is not None
         aggregate = Machine([dung_provider]).analyse(self._derived_request(upstream))
 
-        re_emitted = aggregate.outcome_for(Technique.RST)
-        assert isinstance(re_emitted, ResultOutcome) and re_emitted.result == upstream, "the upstream artifact is carried verbatim"
+        assert aggregate.outcome_for(Technique.RST) is None
+        assert aggregate.upstream_results == (upstream,), "the upstream artifact is carried verbatim"
         consumer = aggregate.outcome_for(Technique.DUNG)
         assert isinstance(consumer, ResultOutcome)
         assert consumer.result.payload["structured"] == {"arguments": ["a", "b"], "attacks": [["a", "b"]]}
@@ -351,7 +352,7 @@ class TestSerialization:
         "mutation",
         (
             ('"contract":"rdam.capabilities"', '"contract":"rdam.unknown"'),
-            ('"contract_version":"1.0.0"', '"contract_version":"2.0.0"'),
+            ('"contract_version":"2.0.0"', '"contract_version":"9.0.0"'),
         ),
     )
     def test_unknown_contract_or_version_is_rejected_before_digest_validation(

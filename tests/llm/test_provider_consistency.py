@@ -11,7 +11,6 @@ from rdam import (
     SourceIdentity,
     Technique,
     UnavailableCapability,
-    UnavailableReason,
 )
 from rdam._llm import LlmError, StructuredAnalyst
 from rdam._provider_provenance import llm_provider_failure
@@ -64,13 +63,12 @@ def test_bare_model_identity_is_normalized_in_identity_and_provenance(
 
 
 @pytest.mark.parametrize(("factory", "_technique"), PROVIDERS)
-def test_malformed_identity_reports_unavailable_without_constructing_a_client(
+def test_malformed_identity_is_rejected_before_constructing_a_client(
     factory: ProviderFactory,
     _technique: Technique,
 ) -> None:
-    provider = factory(model="openai:")
-    assert provider.declaration.capability == UnavailableCapability(reason=UnavailableReason.MODEL_UNAVAILABLE)
-    assert provider._analyst is None
+    with pytest.raises(ValueError, match="model identity"):
+        factory(model="openai:")
 
 
 def test_attempt_evidence_has_one_parameter_order_for_every_llm_provider() -> None:
@@ -91,5 +89,6 @@ def test_attempt_evidence_has_one_parameter_order_for_every_llm_provider() -> No
 
 def test_invalid_identity_raises_precisely_when_client_construction_is_attempted() -> None:
     analyst = StructuredAnalyst(output_type=UnavailableCapability, instructions="test", model="openai:")
+    assert analyst.agent.model is None, "agent configuration alone must not construct a client"
     with pytest.raises(ValueError, match="model identity"):
-        _ = analyst.agent
+        analyst.extract("source")

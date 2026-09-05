@@ -98,7 +98,9 @@ def test_full_clean_install_runs_inference_in_core_and_formats(
     assert clean_install.main() == 0
     assert observed == [
         ("core", True, "dmrst-v1-gumrrg"),
+        ("core+http", True, "dmrst-v1-gumrrg"),
         ("formats", True, "dmrst-v1-gumrrg"),
+        ("formats+http", True, "dmrst-v1-gumrrg"),
     ]
     assert json.loads(capsys.readouterr().out)["valid"] is True
 

@@ -25,11 +25,12 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 from types import MappingProxyType
-from typing import Annotated, Final, Self
+from typing import Annotated, Final, Literal, Self
 
 from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 from rdam._strict import JsonValue
+from rdam.ingest.contracts.evidence import SourceEvidenceSpan
 
 type NonEmpty = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
@@ -65,6 +66,9 @@ class CriticalQuestionStatus(StrEnum):
 
     OPEN = "open"
     """The passage leaves it unaddressed. This is a finding, not a defect."""
+
+    NOT_ASSESSABLE = "not_assessable"
+    """The source is insufficient or ambiguous for this assessment."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -235,19 +239,25 @@ class CriticalQuestion(BaseModel):
 
     model_config = {"extra": "forbid"}
 
-    index: int = Field(ge=0, description="Zero-based index into the scheme's critical questions.")
+    index: int = Field(ge=0, strict=True, description="Zero-based index into the scheme's critical questions.")
     status: CriticalQuestionStatus = Field(description="Whether the passage addresses this question or leaves it open.")
     note: NonEmpty | None = Field(
         default=None,
-        description="How the passage addresses it, quoting the passage. Required when status is 'addressed'.",
+        description="How the passage takes up the question; interpretation, not a source quotation.",
     )
+    evidence: tuple[SourceEvidenceSpan, ...] = ()
+    reason: Literal["insufficient_context", "ambiguous_source"] | None = None
 
     @model_validator(mode="after")
     def addressed_questions_say_how(self) -> Self:
         if self.status is CriticalQuestionStatus.ADDRESSED and not self.note:
             raise SchemeError("a critical question marked addressed must say how the passage addresses it")
-        if self.status is CriticalQuestionStatus.OPEN and self.note is not None:
-            raise SchemeError("an open critical question cannot carry a provider-authored note")
+        if self.status is CriticalQuestionStatus.ADDRESSED and not self.evidence:
+            raise SchemeError("addressed questions require source evidence")
+        if self.status is CriticalQuestionStatus.OPEN and (self.note is not None or self.evidence):
+            raise SchemeError("an open question cannot carry note or evidence")
+        if (self.status is CriticalQuestionStatus.NOT_ASSESSABLE) != (self.reason is not None):
+            raise SchemeError("only not_assessable requires a reason")
         return self
 
 
@@ -265,8 +275,7 @@ class SchemeInstance(BaseModel):
         )
     )
     critical_questions: list[CriticalQuestion] = Field(
-        default_factory=lambda: list[CriticalQuestion](),
-        description="The scheme's critical questions, each marked addressed or open by the passage.",
+        description="Every catalogue question exactly once: addressed, open or not_assessable.",
     )
 
     @model_validator(mode="after")
@@ -289,6 +298,9 @@ class SchemeInstance(BaseModel):
             if question.index in seen:
                 raise SchemeError(f"critical question {question.index} is reported twice")
             seen.add(question.index)
+        if seen != set(range(len(scheme.critical_questions))):
+            raise SchemeError("every catalogue critical question requires an explicit assessment")
+        self.critical_questions.sort(key=lambda item: item.index)
         return self
 
     @property
@@ -303,7 +315,7 @@ class SchemeInstance(BaseModel):
         return tuple(
             text
             for index, text in enumerate(self.scheme.critical_questions)
-            if reported.get(index, CriticalQuestionStatus.OPEN) is CriticalQuestionStatus.OPEN
+            if reported[index] is CriticalQuestionStatus.OPEN
         )
 
     def to_payload(self) -> dict[str, JsonValue]:
@@ -318,11 +330,16 @@ class SchemeInstance(BaseModel):
                     "question": self.scheme.critical_questions[item.index],
                     "status": item.status.value,
                     "note": item.note,
+                    "evidence": [span.model_dump() for span in item.evidence],
+                    "reason": item.reason,
                 }
                 for item in self.critical_questions
             ],
             "open_questions": list(self.open_questions),
             "open_question_count": len(self.open_questions),
+            "question_count": len(self.critical_questions),
+            "addressed_count": sum(q.status is CriticalQuestionStatus.ADDRESSED for q in self.critical_questions),
+            "not_assessable_count": sum(q.status is CriticalQuestionStatus.NOT_ASSESSABLE for q in self.critical_questions),
         }
 
 
@@ -339,11 +356,29 @@ class WaltonAnalysis(BaseModel):
         ),
     )
 
+    def validate_source(self, text: str) -> None:
+        failures: list[tuple[str, ValueError]] = []
+        for instance_index, instance in enumerate(self.instances):
+            for question in instance.critical_questions:
+                for evidence_index, span in enumerate(question.evidence):
+                    try:
+                        span.validate_source(text)
+                    except ValueError as error:
+                        failures.append((
+                            f"/instances/{instance_index}/critical_questions/{question.index}/evidence/{evidence_index}", error,
+                        ))
+        if failures:
+            raise SchemeError("\n".join(f"{path}: {error}" for path, error in failures)) from failures[0][1]
+
     def to_payload(self) -> dict[str, JsonValue]:
         return {
             "instances": [instance.to_payload() for instance in self.instances],
             "instance_count": len(self.instances),
             "total_open_questions": sum(len(instance.open_questions) for instance in self.instances),
+            "question_count": sum(len(instance.critical_questions) for instance in self.instances),
+            "addressed_count": sum(q.status is CriticalQuestionStatus.ADDRESSED for i in self.instances for q in i.critical_questions),
+            "open_question_count": sum(len(instance.open_questions) for instance in self.instances),
+            "not_assessable_count": sum(q.status is CriticalQuestionStatus.NOT_ASSESSABLE for i in self.instances for q in i.critical_questions),
             "scheme_set": SCHEME_SET_ID,
         }
 

@@ -15,6 +15,10 @@ private implementation details. The core wheel can import, load schemas,
 serialize contracts, prepare text/EDUs, and discover all capability states
 without those distributions installed.
 
+Starlette, Uvicorn and h11 belong to the independent `http` extra. Core Python,
+CLI, schemas and saved-result operations do not require it. Install `[formats,http]`
+when both document adapters and HTTP are wanted.
+
 ## Install boundaries
 
 ```bash
@@ -85,7 +89,7 @@ loader honours it only for the exact manifest it names.
 The artifact validator rejects workbench, tests, scripts, specs, corpora,
 experiments, cache files, secrets, pickles, Python bytecode, model-weight
 extensions, and any import root other than `rdam/` in the wheel. It verifies wheel
-`RECORD`, metadata, the `rdam-rst` console entry point, schemas, public surface,
+`RECORD`, metadata, the `rdam` console entry point, schemas, public surface,
 `py.typed`, and packaged provenance — all against the name and version declared in
 `pyproject.toml`.
 
@@ -108,8 +112,10 @@ temporary directory, rejects imports from the checkout, checks the installed and
 versions against the version in the wheel's filename, disables external network access
 for acceptance, runs `pip check`, and retains `pip inspect`.
 
-Core acceptance proves unavailable optional forms yield typed provider
-failures. Formats acceptance covers all six source forms. Full acceptance also
+The four installs are core, core+http, formats and formats+http. Core acceptance
+proves unavailable optional forms yield typed provider failures. HTTP installs
+exercise a real loopback server; all installs exercise the real unified CLI,
+schema resources and native Dung semantics. Formats covers all six source forms. Full acceptance also
 requires the exact stored model release and checks canonical parser
 results, loaded-component receipts, validation, and CLI semantic parity.
 

@@ -2,6 +2,7 @@
 
 from enum import EnumType
 import inspect
+import json
 from pathlib import Path
 from typing import Any, Final
 
@@ -9,7 +10,8 @@ import rfc8785
 
 from rdam.rst._version import TOOL_NAME
 import rdam.ingest as ingest
-from tools.production_boundary.schemas import SCHEMA_BASE, generated_schemas
+import rdam
+from tools.production_boundary.schemas import generated_schemas
 
 # The resource lives inside the package wherever the package lives in the repository.
 PUBLIC_SURFACE_PATH: Final = Path(str(ingest.__file__)).parent / "public-surface.json"
@@ -24,6 +26,10 @@ def generated_public_surface() -> bytes:
     """Return canonical bytes for every supported root export and installed resource."""
 
     entries = [_root_entry(name, getattr(ingest, name)) for name in sorted(ingest.__all__)]
+    entries.extend(
+        _special_entry(f"rdam.{name}", _entry_kind(getattr(rdam, name)), public_import=f"rdam:{name}")
+        for name in sorted(rdam.__all__)
+    )
     entries.extend(
         (
             _special_entry(
@@ -52,23 +58,23 @@ def generated_public_surface() -> bytes:
             _special_entry(
                 TOOL_NAME,
                 "console_command",
-                public_import=f"{PACKAGE}.cli:main",
+                public_import="rdam.cli:main",
                 documentation_anchor="10-verify-installed-command-parity",
             ),
             _special_entry(
-                f"{TOOL_NAME}.local-http./analyse",
+                f"{TOOL_NAME}.local-http./v1/analyse",
                 "local_endpoint",
                 compatibility="serialized_contract",
                 documentation_anchor="10-verify-installed-command-parity",
             ),
             _special_entry(
-                f"{TOOL_NAME}.local-http./capabilities",
+                f"{TOOL_NAME}.local-http./v1/capabilities",
                 "local_endpoint",
                 compatibility="serialized_contract",
                 documentation_anchor="10-verify-installed-command-parity",
             ),
             _special_entry(
-                f"{TOOL_NAME}.local-http./health",
+                f"{TOOL_NAME}.local-http./v1/version",
                 "local_endpoint",
                 compatibility="semver",
                 documentation_anchor="10-verify-installed-command-parity",
@@ -82,14 +88,19 @@ def generated_public_surface() -> bytes:
         )
     )
     entries.extend(
+        _special_entry(f"{TOOL_NAME}.local-http./v1/{route}", "local_endpoint",
+                       compatibility="serialized_contract")
+        for route in ("prepare", "view", "summary", "schemas/{record}")
+    )
+    entries.extend(
         _special_entry(
             f"{INGEST_PACKAGE}.schemas.{filename}",
             "schema",
-            schema_id=f"{SCHEMA_BASE}/{filename}",
+            schema_id=json.loads(payload)["$id"],
             compatibility="serialized_contract",
             documentation_anchor="7-persist-and-reload-canonically",
         )
-        for filename in sorted(generated_schemas())
+        for filename, payload in sorted(generated_schemas().items())
     )
     payload = {
         "contract": "isanlp_rst.public_surface",

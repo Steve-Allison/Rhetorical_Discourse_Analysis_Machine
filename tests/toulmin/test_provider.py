@@ -1,5 +1,6 @@
 """The Toulmin provider through the machine: native validity plus evidenced attempts."""
 
+import asyncio
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -29,15 +30,20 @@ from rdam import (
 )
 from rdam.toulmin import PROVIDER_ID_PREFIX, ToulminProvider, source_identity
 from rdam.toulmin.argument import ToulminAnalysis
-from rdam._llm import LlmError, StructuredAnalyst
+from rdam._llm import LlmError, StructuredAnalyst, _model_without_implicit_retries
+from rdam.contracts import PreparationRequest
 from rdam.walton import WaltonProvider
 
 MODEL = "openai:gpt-5.6-sol"
+SOURCE_TEXT = "The site is unstable, so reject the proposal."
 
 VALID_LAYOUT = {
     "claim": "The council should reject the proposal.",
     "grounds": ["The site is unstable."],
     "warrant": "A council should reject construction proposals for unstable sites.",
+    "warrant_origin": "reconstructed",
+    "warrant_evidence": [{"start": 0, "end": len(SOURCE_TEXT), "text": SOURCE_TEXT}],
+    "warrant_origin_reason": None,
 }
 
 
@@ -87,9 +93,14 @@ class _Result:
 
 class TestAttemptContract:
     def test_provider_sdk_retries_are_disabled_at_the_owned_boundary(self, with_credentials: None) -> None:
-        model = ToulminProvider(model=MODEL)._built().agent.model
-        assert isinstance(model, OpenAIResponsesModel)
-        assert model.client.max_retries == 0
+        analyst = ToulminProvider(model=MODEL)._built()
+
+        async def scenario() -> None:
+            async with _model_without_implicit_retries(analyst.model, timeout_seconds=1.0) as model:
+                assert isinstance(model, OpenAIResponsesModel)
+                assert model.client.max_retries == 0
+
+        asyncio.run(scenario())
 
     def test_transient_failures_are_bounded_and_counted(self, monkeypatch: pytest.MonkeyPatch) -> None:
         analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, transport_retries=2)
@@ -248,8 +259,14 @@ class TestAnalyseGuards:
 class TestThroughTheMachine:
     def test_tabular_grounds_anchor_to_the_source_cell(self, with_credentials: None) -> None:
         provider = ToulminProvider(model=MODEL)
+        source = Path("tests/fixtures/pipeline/tabular-evidence.md")
+        prepared = Machine([provider]).prepare(PreparationRequest.for_source(source, (Technique.TOULMIN,)))
+        text = prepared.projections[0].prepared_document.text
+        start = text.index("80")
         proposal = {"claim": "Approve the replacement.", "grounds": ["80"],
-                    "warrant": "Prefer the lower operating cost when service is equal."}
+                    "warrant": "Prefer the lower operating cost when service is equal.",
+                    "warrant_origin": "reconstructed", "warrant_origin_reason": None,
+                    "warrant_evidence": [{"start": start, "end": start + len("80"), "text": "80"}]}
         with provider._built().agent.override(model=_proposing([proposal])):
             result = Machine([provider]).analyse(AggregateRequest.for_source(
                 Path("tests/fixtures/pipeline/tabular-evidence.md"), (Technique.TOULMIN,),
@@ -267,7 +284,7 @@ class TestThroughTheMachine:
             outcome = (
                 Machine([provider])
                 .analyse(
-                    AggregateRequest.for_text("The site is unstable, so reject the proposal.", (Technique.TOULMIN,))
+                    AggregateRequest.for_text(SOURCE_TEXT, (Technique.TOULMIN,))
                 )
                 .outcome_for(Technique.TOULMIN)
             )
@@ -283,7 +300,7 @@ class TestThroughTheMachine:
         with provider._built().agent.override(model=_proposing([broken])):
             outcome = (
                 Machine([provider])
-                .analyse(AggregateRequest.for_text("Some argument.", (Technique.TOULMIN,)))
+                .analyse(AggregateRequest.for_text(SOURCE_TEXT, (Technique.TOULMIN,)))
                 .outcome_for(Technique.TOULMIN)
             )
         assert isinstance(outcome, FailedOutcome)

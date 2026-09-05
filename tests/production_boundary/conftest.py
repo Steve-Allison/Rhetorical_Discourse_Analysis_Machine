@@ -34,7 +34,7 @@ def built_release_pair(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, 
     (root / "rdam/__init__.py").write_text("", encoding="utf-8")
     (root / "rdam/py.typed").write_bytes(b"\n")
     (root / "rdam/rst/__init__.py").write_text(f'__version__ = "{FIXTURE_IDENTITY.version}"\n', encoding="utf-8")
-    (root / "rdam/rst/cli.py").write_text(
+    (root / "rdam/cli.py").write_text(
         "def main() -> int:\n    return 0\n",
         encoding="utf-8",
     )
@@ -44,7 +44,7 @@ def built_release_pair(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, 
         encoding="utf-8",
     )
     (root / "rdam/ingest/public-surface.json").write_text(
-        """{"contract":"isanlp_rst.public_surface","contract_version":"2.0.0","entries":[{"qualified_name":"rdam-rst"},{"qualified_name":"rdam-rst.local-http./analyse"},{"qualified_name":"rdam-rst.local-http./capabilities"},{"qualified_name":"rdam-rst.local-http./health"}]}\n""",
+        """{"contract":"isanlp_rst.public_surface","contract_version":"2.0.0","entries":[{"qualified_name":"rdam"},{"qualified_name":"rdam.local-http./v1/analyse"},{"qualified_name":"rdam.local-http./v1/capabilities"},{"qualified_name":"rdam.local-http./v1/version"}]}\n""",
         encoding="utf-8",
     )
     (root / "pixi.lock").write_text("fixture-lock\n", encoding="utf-8")
@@ -61,7 +61,7 @@ requires-python = ">=3.14"
 import-names = ["rdam"]
 
 [project.scripts]
-rdam-rst = "rdam.rst.cli:main"
+rdam = "rdam.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["rdam"]

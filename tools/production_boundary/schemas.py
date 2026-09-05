@@ -8,6 +8,7 @@ from pydantic import BaseModel, TypeAdapter
 import rfc8785
 
 import rdam.ingest as ingest
+from rdam.serialization import schema as machine_schema, schema_models
 from rdam.ingest.contracts.analysis import (
     AnalysedOutcome,
     EmptyPrimaryAnalysisOutcome,
@@ -46,6 +47,11 @@ def generated_schemas() -> dict[str, bytes]:
         schema["$schema"] = "https://json-schema.org/draft/2020-12/schema"
         schema["$id"] = f"{SCHEMA_BASE}/{filename}"
         generated[filename] = rfc8785.dumps(schema) + b"\n"
+    for name in schema_models():
+        for mode in ("validation", "serialization"):
+            generated[f"machine-{name}.{mode}.schema.json"] = rfc8785.dumps(
+                machine_schema(name, mode=mode)
+            ) + b"\n"
     return generated
 
 

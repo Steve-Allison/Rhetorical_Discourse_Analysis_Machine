@@ -7,6 +7,8 @@ provider is available whenever it is imported.
 """
 
 from typing import Final
+from rdam.contracts import ProviderConfiguration
+from rdam.ibis.interpretation import describe
 
 from rdam import (
     AvailableCapability,
@@ -63,6 +65,9 @@ class IbisProvider:
             ),
             capability=capability,
             requires_structured_input=True,
+            configuration=ProviderConfiguration(settings={}, cache_eligible=True,
+                cache_reason="deterministic_supplied_structure"),
+            interpretations=(describe(FORMALISM_ID, str(CONTRACT_VERSION)),),
         )
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:

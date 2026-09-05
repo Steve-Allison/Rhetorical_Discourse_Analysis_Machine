@@ -31,6 +31,7 @@ from types import MappingProxyType
 from typing import Protocol
 from weakref import ReferenceType, ref
 from contextlib import nullcontext
+from importlib.util import find_spec
 
 from rdam._execution import ExecutionPolicy
 from rdam._result_cache import ResultCache, revision_is_cacheable
@@ -38,6 +39,13 @@ from rdam._strict import semantic_sha256
 from rdam.contracts import (
     AggregateAnalysis,
     AggregateRequest,
+    BoundaryConfiguration,
+    MachinePreparation,
+    PreparationRequest,
+    ProjectedPreparationBinding,
+    StructuredPreparationBinding,
+    UnavailablePreparationBinding,
+    NATIVE_RESULT_VERSION,
     AvailableCapability,
     FailedOutcome,
     MachineCapabilities,
@@ -55,7 +63,7 @@ from rdam.contracts import (
     UnavailableReason,
 )
 from rdam.frameworks import BOUNDARY_TECHNIQUES, STRUCTURED_INPUT_TECHNIQUES, Technique, technique_curie
-from rdam.ingest.contracts.preparation import ContentInventory, PreparationReceipt, SourceProjection, SpeakerCoverage
+from rdam.ingest.contracts.preparation import PreparationReceipt, SourceProjection
 from rdam.ingest.contracts.source import SourceArtifact
 
 _PROVIDER_LOCKS_GUARD = Lock()
@@ -128,7 +136,18 @@ class Machine:
                     requires_structured_input=declaration.requires_structured_input,
                 )
             )
-        return MachineCapabilities(techniques=tuple(techniques))
+        from rdam.ingest.capabilities import describe_capabilities
+        from rdam.serialization import contract_support
+        return MachineCapabilities(
+            techniques=tuple(techniques), source_forms=describe_capabilities().semantic.source_forms,
+            configurations=self._configurations(BOUNDARY_TECHNIQUES), contracts=contract_support(),
+            http_available=find_spec("starlette") is not None and find_spec("uvicorn") is not None,
+        )
+
+    def _configurations(self, techniques: tuple[Technique, ...]) -> tuple[BoundaryConfiguration, ...]:
+        return tuple(BoundaryConfiguration(technique=technique, provider_id=self._providers[technique].declaration.provider_id,
+                     configuration=self._providers[technique].declaration.configuration)
+                     for technique in techniques if technique in self._providers)
 
     def analyse(self, request: AggregateRequest) -> AggregateAnalysis:
         """One explicit outcome per requested technique; successes are preserved untouched.
@@ -137,9 +156,6 @@ class Machine:
         derivation whose consumer produced a result becomes one lineage reference.
         """
 
-        outcomes: list[ResultOutcome | UnavailableOutcome | FailedOutcome] = [
-            ResultOutcome(result=upstream) for upstream in request.upstream_results
-        ]
         preparation, projections = self._prepare(request)
         executor = ThreadPoolExecutor(
             max_workers=min(self._execution_policy.max_workers, len(request.techniques)),
@@ -147,7 +163,8 @@ class Machine:
         )
         futures = {
             executor.submit(
-                copy_context().run, self._analyse_one, technique, request, preparation, projections.get(technique)
+                copy_context().run, self._analyse_one, technique, request,
+                None if preparation is None else preparation.receipt(), projections.get(technique)
             ): technique
             for technique in request.techniques
         }
@@ -160,7 +177,7 @@ class Machine:
                 for future in futures:
                     future.cancel()
             executor.shutdown(wait=True, cancel_futures=True)
-        outcomes.extend(requested_outcomes[technique] for technique in request.techniques)
+        outcomes = tuple(requested_outcomes[technique] for technique in request.techniques)
         lineage: list[ProviderDependencyReference] = []
         for technique in request.techniques:
             outcome = requested_outcomes[technique]
@@ -182,17 +199,29 @@ class Machine:
                     upstream_model_identity=upstream.provenance.model_identity,
                 )
             )
+        from rdam.interpretation import reading_guide
+        successes = sum(isinstance(outcome, ResultOutcome) for outcome in outcomes)
         return AggregateAnalysis(
-            source=request.source, outcomes=tuple(outcomes), lineage=tuple(lineage), preparation=preparation
+            source=request.source, outcomes=outcomes, lineage=tuple(lineage), preparation=preparation,
+            requested_techniques=request.techniques, upstream_results=request.upstream_results,
+            configurations=self._configurations(request.techniques),
+            status="complete" if successes == len(outcomes) else "partial" if successes else "unsuccessful",
+            reading_guide=reading_guide(outcomes, request.upstream_results,
+                                       {key: provider.declaration for key, provider in self._providers.items()}),
         )
+
+    def prepare(self, request: PreparationRequest) -> MachinePreparation:
+        preparation, _ = self._prepare(request)
+        if preparation is None:
+            raise ValueError("preparation requires a materialized source")
+        return preparation
 
     def _prepare(
         self,
-        request: AggregateRequest,
-    ) -> tuple[PreparationReceipt | None, dict[Technique, SourceProjection]]:
+        request: AggregateRequest | PreparationRequest,
+    ) -> tuple[MachinePreparation | None, dict[Technique, SourceProjection]]:
         if request.text is None and request.source_artifact is None:
             return None, {}
-        from rdam.ingest.projection import project
         from rdam.ingest.service import ProductionIngestor
 
         source = (
@@ -200,38 +229,35 @@ class Machine:
             if request.source_artifact is not None
             else SourceArtifact.from_text(request.text or "", source_name=request.source.source_name or "rdam-source")
         )
-        prepared = ProductionIngestor().prepare(source)
-        inventory = ContentInventory.from_preparation(prepared)
-        by_digest: dict[str, SourceProjection] = {}
-        projections: dict[Technique, SourceProjection] = {}
+        from rdam.ingest.contracts.failure import ProductionIngestError, FailureCategory
+        from rdam._errors import error
+        try:
+            prepared = ProductionIngestor().prepare(source)
+        except ProductionIngestError as cause:
+            operation = "prepare" if isinstance(request, PreparationRequest) else "analyse"
+            missing = cause.failure.category is FailureCategory.PROVIDER_UNAVAILABLE
+            raise error(operation, "dependency_unavailable" if missing else "preparation_failed",
+                        "dependency_unavailable" if missing else "preparation_failed") from cause
+        bindings: list[dict[str, object]] = []
         for technique in request.techniques:
             provider = self._providers.get(technique)
             if provider is None:
+                bindings.append(UnavailablePreparationBinding(technique=technique).model_dump())
                 continue
             requirement = provider.declaration.content_requirement
             if requirement is None:
+                bindings.append(StructuredPreparationBinding(technique=technique).model_dump())
                 continue
-            if requirement.semantic_digest is None:
-                raise ValueError("provider requirement has no identity")
-            key = requirement.semantic_digest.hex_digest
-            if key not in by_digest:
-                by_digest[key] = project(inventory, requirement)
-            projections[technique] = by_digest[key]
-        semantic = prepared.semantic
-        transformations = {
-            record.semantic_digest: record for projection in by_digest.values() for record in projection.transformations
-        }
-        receipt = PreparationReceipt(
-            inventory=inventory,
-            inventory_coverage=semantic.inventory_coverage,
-            primary_coverage=semantic.primary_coverage,
-            retained_coverage=semantic.retained_coverage,
-            mapping_coverage=semantic.mapping_coverage,
-            projections=tuple(by_digest.values()),
-            transformations=tuple(transformations.values()),
-            speaker_coverage=SpeakerCoverage.from_items(inventory.items),
-        )
-        return receipt, projections
+            bindings.append({"kind": "projected", "technique": technique, "requirement": requirement,
+                             "capability": provider.declaration.capability})
+        result = MachinePreparation.model_validate({
+            "source": request.source, "preparation": prepared.semantic, "bindings": tuple(bindings),
+        })
+        by_identity = {projection.projection_identity.hex_digest: projection for projection in result.projections
+                       if projection.projection_identity is not None}
+        projections = {binding.technique: by_identity[binding.projection_identity.hex_digest]
+                       for binding in result.bindings if isinstance(binding, ProjectedPreparationBinding)}
+        return result, projections
 
     def _analyse_one(
         self,
@@ -265,7 +291,7 @@ class Machine:
             formalism_id=chosen,
             derived_from=request.derivation_for(technique),
         )
-        if self._cache is not None and revision_is_cacheable(declaration.provenance.source_revision):
+        if self._cache is not None and declaration.configuration.cache_eligible and revision_is_cacheable(declaration.provenance.source_revision):
             cache_key = _cache_key(technique, declaration, provider_request)
             with self._cache.single_flight(cache_key):
                 cached = self._cache.load(
@@ -273,7 +299,7 @@ class Machine:
                     validate=lambda result: _result_contract_violation(declaration, provider_request, result),
                 )
                 if cached is not None:
-                    return ResultOutcome(result=cached)
+                    return ResultOutcome(technique=technique, result=cached)
                 outcome = self._call_provider(technique, provider, declaration, provider_request)
                 if isinstance(outcome, ResultOutcome):
                     self._cache.store(cache_key, outcome.result)
@@ -313,7 +339,7 @@ class Machine:
                     violation=violation,
                 )
             )
-        return ResultOutcome(result=result)
+        return ResultOutcome(technique=technique, result=result)
 
 
 def _result_contract_violation(
@@ -340,6 +366,10 @@ def _result_contract_violation(
         return "result_technique_differs_from_its_formalism"
     if not isinstance(formalism.capability, AvailableCapability):
         return "result_formalism_is_declared_unavailable"
+    try:
+        result.validate_alignment(request.projection)
+    except ValueError:
+        return "result_source_alignment_differs_from_projection"
     return None
 
 
@@ -394,6 +424,8 @@ def _cache_key(
             "provenance": declaration.provenance,
             "model_identity": declaration.provenance.model_identity,
             "instructions_identity": declaration.instructions_identity,
+            "native_contract_version": NATIVE_RESULT_VERSION,
+            "configuration_identity": declaration.configuration.identity,
         }
     )
 

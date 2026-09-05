@@ -22,7 +22,11 @@ def test_path_detection_is_bounded(tmp_path: Path) -> None:
     markdown.write_text("# Heading\n\nText", encoding="utf-8")
     assert SourceArtifact.from_path(markdown).source_form is SourceForm.MARKDOWN
 
-    ambiguous = tmp_path / "source.txt"
+    text = tmp_path / "source.txt"
+    text.write_text("Text", encoding="utf-8")
+    assert SourceArtifact.from_path(text).source_form is SourceForm.TEXT
+
+    ambiguous = tmp_path / "source.unknown"
     ambiguous.write_text("Text", encoding="utf-8")
     with pytest.raises(ValueError, match="source_form"):
         SourceArtifact.from_path(ambiguous)
@@ -36,3 +40,11 @@ def test_bytes_require_explicit_form_and_strict_utf8() -> None:
             source_name="bad.txt",
             media_type="text/plain",
         )
+
+
+def test_doclang_prefix_does_not_split_a_valid_unicode_character() -> None:
+    prefix = "<doclang><text>"
+    payload = (prefix + "a" * (4095 - len(prefix.encode())) + "é" + "</text></doclang>").encode()
+    assert payload[4095:4097] == "é".encode()
+    source = SourceArtifact.from_bytes(payload, source_form=SourceForm.DOCLANG_XML, source_name="unicode.dclg")
+    assert source.raw_bytes == payload

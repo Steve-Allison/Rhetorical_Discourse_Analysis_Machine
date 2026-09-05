@@ -16,6 +16,7 @@ from threading import Lock
 import warnings
 
 from rdam.contracts import NativeTechniqueResult
+from rdam.historical import HistoricalNativeTechniqueResult
 from rdam._provenance import INSTRUCTIONS_REVISION_SEPARATOR
 from rdam.serialization import load, serialize
 
@@ -75,6 +76,8 @@ class ResultCache:
             return None
         try:
             record = load(path.read_bytes())
+            if isinstance(record, HistoricalNativeTechniqueResult):
+                return None
             if not isinstance(record, NativeTechniqueResult):
                 raise ValueError("cache entry is not a native technique result")
             if violation := validate(record):

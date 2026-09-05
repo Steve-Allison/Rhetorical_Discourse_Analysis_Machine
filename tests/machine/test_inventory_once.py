@@ -19,7 +19,7 @@ from rdam.dung import DungProvider
 from rdam.ibis import IbisProvider
 from rdam.ingest.contracts.preparation import ContentRequirement
 from rdam.rst.provider import RstProvider
-from tests.machine.conftest import FakeProvider, echo_result, rst_declaration, formalism
+from tests.machine.conftest import FakeProvider, echo_result, rst_declaration, formalism, fixture_descriptor
 
 
 @pytest.mark.parametrize("count", range(1, 8))
@@ -39,7 +39,7 @@ def test_inventory_and_disposition_once(count: int) -> None:
     assert calls["inventory_source"] == 1
     assert calls["apply_policy"] == 1
     assert result.preparation is not None
-    assert result.preparation.inventory_coverage.covered_units == len(result.preparation.inventory.items)
+    assert result.preparation.preparation.inventory_coverage.covered_units == len(result.preparation.preparation.inventory)
 
 
 def test_identical_requirements_receive_one_projection_object() -> None:
@@ -51,6 +51,7 @@ def test_identical_requirements_receive_one_projection_object() -> None:
             "technique": Technique.TOULMIN,
             "technique_curie": technique_curie(Technique.TOULMIN),
             "formalisms": (formalism("toulmin_argument", Technique.TOULMIN, first.capability),),
+            "interpretations": (fixture_descriptor("toulmin_argument", Technique.TOULMIN),),
         }
     )
     providers = [FakeProvider(first, echo_result("rst_tree")), FakeProvider(second, echo_result("toulmin_argument"))]

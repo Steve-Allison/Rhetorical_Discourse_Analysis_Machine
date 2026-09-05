@@ -59,7 +59,8 @@ def _install_and_run(
         root = Path(directory)
         subprocess.run([str(base_python), "-m", "venv", str(root)], check=True)
         python = _venv_python(root)
-        requirement = f"{wheel}[formats]" if name == "formats" else str(wheel)
+        extras = tuple(extra for extra in ("formats", "http") if extra in name)
+        requirement = f"{wheel}[{','.join(extras)}]" if extras else str(wheel)
         install = [str(python), "-m", "pip", "install", requirement]
         _run(install, cwd=root)
         command = [
@@ -79,7 +80,9 @@ def _install_and_run(
             command.extend(("--release-id", release_id))
         if erst_checkpoint is not None:
             command.extend(("--erst-checkpoint", str(erst_checkpoint)))
-        if name == "formats":
+        if "http" in extras:
+            command.append("--http")
+        if "formats" in extras:
             command.extend(
                 [
                     "--formats",
@@ -177,7 +180,7 @@ def main() -> int:
             ),
             expected_version=str(wheel_version),
         )
-        for name in ("core", "formats")
+        for name in ("core", "core+http", "formats", "formats+http")
     )
     print(json.dumps({"install_receipts": receipts, "valid": True}, indent=2, sort_keys=True))
     return 0

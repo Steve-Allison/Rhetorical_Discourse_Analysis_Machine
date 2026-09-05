@@ -11,7 +11,7 @@ from pydantic_ai import models
 from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 
-from rdam import AggregateRequest, Machine, Technique, ResultOutcome
+from rdam import AggregateRequest, Machine, OperationError, Technique, ResultOutcome
 from rdam.toulmin import ToulminProvider
 from rdam.ingest import describe_capabilities
 from rdam.ingest.contracts.capabilities import Availability
@@ -36,14 +36,17 @@ def test_available_form_enters_machine(form: SourceForm, monkeypatch: pytest.Mon
         result = Machine([provider]).analyse(request)
     assert isinstance(result.outcome_for(Technique.TOULMIN), ResultOutcome)
     assert result.preparation is not None
-    assert {item.item_id for item in result.preparation.inventory.items} == expected
+    assert {item.item_id for item in result.preparation.preparation.inventory} == expected
 
 
 def test_malformed_form_fails_typed_at_classification() -> None:
     request = AggregateRequest.for_bytes(b"{}", SourceForm.DOCLING_JSON, "invalid.json", (Technique.RST,))
-    with pytest.raises(ProductionIngestError) as raised:
+    with pytest.raises(OperationError) as raised:
         Machine().analyse(request)
-    assert raised.value.failure.failed_stage is LifecycleStage.CLASSIFICATION
+    assert raised.value.failure.category == "preparation_failed"
+    cause = raised.value.__cause__
+    assert isinstance(cause, ProductionIngestError)
+    assert cause.failure.failed_stage is LifecycleStage.CLASSIFICATION
 
 
 def test_unavailable_form_fails_typed_before_inventory(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -60,10 +63,13 @@ def test_unavailable_form_fails_typed_before_inventory(monkeypatch: pytest.Monke
     artifact, _ = source_case(SourceForm.DOCLING_JSON)
     assert artifact.raw_bytes is not None
     request = AggregateRequest.for_bytes(artifact.raw_bytes, SourceForm.DOCLING_JSON, artifact.source_name, (Technique.RST,))
-    with pytest.raises(ProductionIngestError) as raised:
+    with pytest.raises(OperationError) as raised:
         Machine().analyse(request)
-    assert raised.value.failure.failed_stage is LifecycleStage.CLASSIFICATION
-    assert "docling-core" in str(raised.value.failure)
+    assert raised.value.failure.category == "dependency_unavailable"
+    cause = raised.value.__cause__
+    assert isinstance(cause, ProductionIngestError)
+    assert cause.failure.failed_stage is LifecycleStage.CLASSIFICATION
+    assert "docling-core" in str(cause.failure)
 
 
 def test_machine_has_no_second_source_form_registry() -> None:
