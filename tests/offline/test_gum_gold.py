@@ -6,15 +6,22 @@ wikiHow, fiction, essays, letters, podcasts, or reddit).
 """
 
 from dataclasses import replace
+import json
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 import pytest
 from lxml import etree
 from pydantic import BaseModel, ConfigDict, Field
 
+from rdam.configuration import DEFAULT_RST_MODEL_VERSION
 from rdam.rst.contracts import NodeKindEnum, OutputFormalismEnum, RstAnalysis
-from rdam.rst.model_authority import DEFAULT_ENCODER_MODEL_ID, DEFAULT_ENCODER_REVISION
+from rdam.rst.model_authority import (
+    PUBLISHED_RST_REVISIONS,
+    XLM_ROBERTA_LARGE_MODEL_ID,
+    XLM_ROBERTA_LARGE_REVISION,
+)
+from rdam.rst.model_loading import load_model_release
 from rdam.rst.parser import Parser
 from .gum_validator import (
     GOLD_FIXTURE_NAMES,
@@ -46,8 +53,10 @@ class _QualityModelIdentity(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     parser: Literal["dmrst"]
-    hf_model_name: str
-    hf_model_version: str
+    release_id: str
+    manifest_sha256: str
+    source_model_identity: str
+    source_revision: str
     encoder_model_id: str
     encoder_revision: str
     device: Literal["cpu"]
@@ -57,7 +66,7 @@ class _QualityModelIdentity(BaseModel):
 class _QualityBaseline(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    schema_version: Literal["rdam.rst.gum-quality-baseline/v1"]
+    schema_version: Literal["rdam.rst.gum-quality-baseline/v2"]
     measured_at: str
     model: _QualityModelIdentity
     floor_policy: str
@@ -79,6 +88,8 @@ GOLD_DOCUMENTS: dict[str, int] = {
 QUALITY_BASELINE = _QualityBaseline.model_validate_json(
     (GUM_FIXTURES_DIR / "quality-baseline.json").read_text(encoding="utf-8")
 )
+MODEL_STORE = Path.home() / ".cache/isanlp_rst/model-releases"
+QUALITY_RELEASE_ID = "gumrrg-eb1d5745f3a1"
 
 _SECURE_PARSER = etree.XMLParser(
     resolve_entities=False,
@@ -106,7 +117,7 @@ def validator() -> GumGoldValidator:
 
 @pytest.fixture(scope="module")
 def parser_cpu() -> Parser:
-    return Parser(device="cpu")
+    return Parser.from_model_release(MODEL_STORE, QUALITY_RELEASE_ID, device="cpu")
 
 
 @pytest.fixture(scope="module")
@@ -189,7 +200,7 @@ def test_validator_gold_against_gold_is_perfect_f1(validator: GumGoldValidator, 
 @pytest.mark.parametrize("doc_id", GOLD_FIXTURE_NAMES)
 def test_gum_gold_fixture_structural_soundness(validator: GumGoldValidator, doc_id: str) -> None:
     """Verify structural validity and root reachability of vendored GUM gold fixtures."""
-    doc, analysis, rs4 = validator.load_gold_fixture(doc_id)
+    doc, analysis, _rs4 = validator.load_gold_fixture(doc_id)
 
     assert doc.document_id == doc_id
     assert len(doc.text) > 100
@@ -223,12 +234,26 @@ def test_validator_detects_structural_corruption(validator: GumGoldValidator) ->
     assert any("no nodes" in err for err in report.structural_errors)
 
 
-def test_quality_baseline_is_bound_to_the_current_default_parser_identity() -> None:
+@pytest.mark.slow
+@pytest.mark.quality
+def test_quality_baseline_is_bound_to_the_default_published_checkpoint() -> None:
+    release = load_model_release(MODEL_STORE, QUALITY_RELEASE_ID)
+    config_member = release.one_file_for_role("runtime-configuration")
+    config = cast(
+        dict[str, object],
+        json.loads((release.path / config_member.path).read_text(encoding="utf-8")),
+    )
+    model_config = cast(dict[str, object], config["model"])
+    transformer_config = cast(dict[str, object], model_config["transformer"])
     assert QUALITY_BASELINE.documents.keys() == GOLD_DOCUMENTS.keys()
-    assert QUALITY_BASELINE.model.hf_model_name == Parser._DEFAULT_HF_MODEL_NAME
-    assert QUALITY_BASELINE.model.hf_model_version == Parser._DEFAULT_HF_MODEL_VERSION
-    assert QUALITY_BASELINE.model.encoder_model_id == DEFAULT_ENCODER_MODEL_ID
-    assert QUALITY_BASELINE.model.encoder_revision == DEFAULT_ENCODER_REVISION
+    assert QUALITY_BASELINE.model.release_id == release.manifest.release_id
+    assert QUALITY_BASELINE.model.manifest_sha256 == release.manifest.manifest_sha256
+    assert QUALITY_BASELINE.model.source_model_identity == release.manifest.source_model_identity
+    assert QUALITY_BASELINE.model.source_revision == release.manifest.source_revision
+    assert QUALITY_BASELINE.model.source_revision == PUBLISHED_RST_REVISIONS[DEFAULT_RST_MODEL_VERSION]
+    assert transformer_config["model_name"] == XLM_ROBERTA_LARGE_MODEL_ID
+    assert QUALITY_BASELINE.model.encoder_model_id == XLM_ROBERTA_LARGE_MODEL_ID
+    assert QUALITY_BASELINE.model.encoder_revision == XLM_ROBERTA_LARGE_REVISION
 
 
 def test_quality_gate_rejects_a_structurally_valid_wrong_tree(validator: GumGoldValidator) -> None:

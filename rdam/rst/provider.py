@@ -48,6 +48,7 @@ from rdam.ingest.contracts.preparation import (
 from rdam.ingest.policy import DEFAULT_PLANNING_POLICY, DEFAULT_PREPARATION_POLICY
 from rdam.ingest.projection import project, bind_preparation
 from rdam.rst.model_loading import ModelReleaseError, ValidatedModelRelease, load_model_release
+from rdam.rst.model_authority import PUBLISHED_RST_REVISIONS
 from rdam import (
     AvailableCapability,
     FormalismDeclaration,
@@ -239,9 +240,15 @@ class RstProvider:
 
     def _configuration(self) -> ProviderConfiguration:
         release = self._inspect_local_release() if self._store is not None else None
+        model_source_revision = (
+            release.manifest.source_revision
+            if release is not None
+            else PUBLISHED_RST_REVISIONS.get(str(self._hf_model_version))
+        )
         return ProviderConfiguration(
             settings={
                 "model_identity": self.model_identity,
+                "model_source_revision": model_source_revision,
                 "model_manifest": None if release is None else release.manifest.manifest_sha256,
                 "erst_manifest": None if self._erst_manifest is None else self._erst_manifest.model_dump(mode="json"),
                 "relinventory": self._relinventory, "device": self._device,
@@ -251,7 +258,11 @@ class RstProvider:
                 "analysis_policy": self._analysis_policy(self._default_formalism).model_dump(mode="json"),
             },
             cache_eligible=release is not None,
-            cache_reason="validated_immutable_local_release" if release is not None else "published_weights_not_immutably_identified",
+            cache_reason=(
+                "validated_immutable_local_release"
+                if release is not None
+                else "published_source_commit_pinned_without_local_manifest"
+            ),
         )
 
     def _analysis_policy(self, formalism_id: str) -> AnalysisPolicy:

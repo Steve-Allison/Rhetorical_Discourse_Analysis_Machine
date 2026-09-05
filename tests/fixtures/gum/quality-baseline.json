@@ -1,12 +1,14 @@
 {
-  "schema_version": "rdam.rst.gum-quality-baseline/v1",
-  "measured_at": "2026-09-02",
+  "schema_version": "rdam.rst.gum-quality-baseline/v2",
+  "measured_at": "2026-09-05",
   "model": {
     "parser": "dmrst",
-    "hf_model_name": "tchewik/isanlp_rst_v3",
-    "hf_model_version": "gumrrg",
-    "encoder_model_id": "roberta-base",
-    "encoder_revision": "e2da8e2f811d1448a5b465c236feacd80ffbac7b",
+    "release_id": "gumrrg-eb1d5745f3a1",
+    "manifest_sha256": "ea5ee95394050ee73856b1daf171ba4e30e95e270965fc9034c082b97b64cac0",
+    "source_model_identity": "tchewik/isanlp_rst_v3:gumrrg",
+    "source_revision": "eb1d5745f3a18b8894ce72abad3c2a76442d1107",
+    "encoder_model_id": "xlm-roberta-large",
+    "encoder_revision": "c23d21b0620b635a76227c604d44e43a9f0ee389",
     "device": "cpu",
     "gold_edu_boundaries": true
   },

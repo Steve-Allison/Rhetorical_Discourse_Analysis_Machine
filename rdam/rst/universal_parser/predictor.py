@@ -13,6 +13,11 @@ from tqdm import tqdm
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
 from rdam.rst.base_predictor import BasePredictor, resolve_device, str2bool
+from rdam.rst.model_authority import (
+    XLM_ROBERTA_LARGE_MODEL_ID,
+    XLM_ROBERTA_LARGE_REVISION,
+    published_rst_revision,
+)
 from rdam.rst.utils.du_converter import DUConverter
 
 from .inventory import (
@@ -62,15 +67,16 @@ class PredictorUniRST(BasePredictor):
             self.model_dir = None
             self.hf_model_name = hf_model_name
             self.hf_model_version = hf_model_version
+            self.hf_model_revision = published_rst_revision(hf_model_version)
             self.model_file = hf_hub_download(
                 repo_id=hf_model_name,
                 filename=model_filename,
-                revision=hf_model_version,
+                revision=self.hf_model_revision,
             )
             self.config_path = hf_hub_download(
                 repo_id=hf_model_name,
                 filename=config_filename,
-                revision=hf_model_version,
+                revision=self.hf_model_revision,
             )
         else:
             raise ValueError("Pass either `model_dir` or `hf_model_name`.")
@@ -143,7 +149,7 @@ class PredictorUniRST(BasePredictor):
             return hf_hub_download(
                 repo_id=self.hf_model_name,
                 filename=relative_path,
-                revision=self.hf_model_version,
+                revision=self.hf_model_revision,
             )
         except EntryNotFoundError:
             return None
@@ -235,8 +241,15 @@ class PredictorUniRST(BasePredictor):
         return (max(indices) + 1) if indices else None
 
     def _load_model(self) -> None:
+        encoder_model = str(self.config["model"]["transformer"]["model_name"])
+        if encoder_model != XLM_ROBERTA_LARGE_MODEL_ID:
+            raise ValueError(
+                "UniRST production releases require the trained xlm-roberta-large encoder; "
+                f"the release configuration declared {encoder_model!r}."
+            )
         self.tokenizer: Any = cast(Any, AutoTokenizer).from_pretrained(
-            self.config["model"]["transformer"]["model_name"],
+            encoder_model,
+            revision=XLM_ROBERTA_LARGE_REVISION,
             use_fast=True,
         )
         self.tokenizer.model_max_length = int(
@@ -244,12 +257,15 @@ class PredictorUniRST(BasePredictor):
         )  # The parser relies on a sliding window encoding, so we'll suppress the max_len warning this way.
 
         transformer_config: Any = cast(Any, AutoConfig).from_pretrained(
-            self.config["model"]["transformer"]["model_name"]
+            encoder_model,
+            revision=XLM_ROBERTA_LARGE_REVISION,
         )
         transformer: Any = cast(Any, AutoModel).from_config(transformer_config).to(self._device)
 
         self.tokenizer.add_tokens(["<P>"])
-        transformer.resize_token_embeddings(len(self.tokenizer))
+        # The released state dict immediately replaces the complete resized table,
+        # including <P>; random/mean initialization is therefore unused work.
+        transformer.resize_token_embeddings(len(self.tokenizer), mean_resizing=False)
 
         # Load weights ONCE, up front. The classifier count in the trained
         # checkpoint is the source of truth for the architecture — we use it

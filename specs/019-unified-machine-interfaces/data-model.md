@@ -54,7 +54,7 @@ with no usable credential is a capability limitation, not a configuration typo.
 
 | Field | Type | Meaning/default |
 |---|---|---|
-| `model` | `PublishedRstModel \| LocalRstModel \| null` | Null resolves the existing published default, not an unidentified backend |
+| `model` | `PublishedRstModel \| LocalRstModel \| null` | Omitted or null resolves `gumrrg` at its pinned source commit; a local manifest-validated release remains an explicit high-assurance option |
 | `relinventory` | nonempty string or null | Explicit native inventory; provider default if absent |
 | `device` | nonempty validated device string | `auto`; include existing `cpu`, `mps`, `cuda`, `cuda:N` semantics |
 | `erst_checkpoint` | Path or null | Existing bundle resolution; no new download behavior |

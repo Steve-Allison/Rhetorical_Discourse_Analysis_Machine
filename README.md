@@ -91,7 +91,13 @@ pip install "rdam @ git+https://github.com/Steve-Allison/Rhetorical_Discourse_An
 pip install "rdam[formats] @ git+https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine.git"
 ```
 
-No model weight ships in the wheel. RST inference uses either published models (e.g. `gumrrg`, `unirst`) or an immutable local model release (`models/model-releases/<release_id>/` or `~/.cache/isanlp_rst/model-releases/<release_id>/` with its manifest); releases include DMRST models (`gumrrg-eb1d5745f3a1`, `rstdt-cc01afde1232`) and UniRST models (`unirst-9407970f1d9d`). Dung and IBIS need nothing beyond the package.
+No model weight ships in the wheel. The machine defaults to the published `gumrrg`
+DMRST checkpoint at its pinned source commit, using the encoder it was trained with:
+`xlm-roberta-large` at a pinned revision. A manifest- and hash-validated local release
+can be selected explicitly when complete local component receipts are required.
+Available local releases include DMRST models
+(`gumrrg-eb1d5745f3a1`, `rstdt-cc01afde1232`) and UniRST models
+(`unirst-9407970f1d9d`). Dung and IBIS need nothing beyond the package.
 
 Development uses the `default` environment (`pixi install`, then `pixi run test`).
 
