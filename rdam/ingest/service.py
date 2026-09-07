@@ -1,4 +1,4 @@
-"""Canonical v2 production source preparation and analysis orchestration."""
+"""Canonical production source preparation and analysis orchestration."""
 
 from pathlib import Path
 from time import perf_counter
@@ -6,6 +6,7 @@ from typing import Final, Protocol, runtime_checkable
 from uuid import uuid4
 
 from rdam.rst._provenance import resolve_package_version, resolve_source_revision
+from rdam.rst._version import PACKAGE_NAME
 from rdam.rst.contracts import Edu, RstDocument
 from rdam.ingest.contracts.analysis import (
     AnalysedOutcome,
@@ -23,7 +24,7 @@ from rdam.ingest.contracts.analysis import (
     RelationInterpretationPolicy,
     ValidationPolicy,
 )
-from rdam.ingest.contracts.base import SemanticVersion, Sha256Identity
+from rdam.ingest.contracts.base import SemanticVersion, Sha256Identity, WRITE_CONTRACT_VERSION
 from rdam.ingest.contracts.capabilities import ProductionCapabilities
 from rdam.ingest.contracts.failure import (
     AcquisitionCompletedEvidence,
@@ -109,19 +110,6 @@ class AnalysisParser(Protocol):
         document: RstDocument,
         *,
         analysis_policy: AnalysisPolicy | None = None,
-    ) -> ParserAnalysisResult: ...
-
-
-@runtime_checkable
-class ErstCompletionParser(Protocol):
-    """Optional extension required for document-global subdivided eRST completion."""
-
-    def complete_erst_document(
-        self,
-        document: RstDocument,
-        primary_result: ParserAnalysisResult,
-        *,
-        analysis_policy: AnalysisPolicy,
     ) -> ParserAnalysisResult: ...
 
 
@@ -316,6 +304,8 @@ class ProductionIngestor:
         source = preparation.semantic.source
         capacity = preparation.semantic.analysis_plan.capacity
         resolved_policy = analysis_policy or DEFAULT_ANALYSIS_POLICY
+        if resolved_policy.output_formalism is not OutputFormalism.RST_TREE:
+            raise ValueError("production ingest supports rst_tree; eRST evaluation belongs in the workbench")
         if not preparation.semantic.prepared_document.text:
             empty = _empty_outcome(
                 source,
@@ -385,13 +375,6 @@ class ProductionIngestor:
                 return _with_cache_execution(cached, CacheStatus.HIT, started=started)
         if plan.status is AnalysisPlanStatus.SUBDIVIDED:
             unit_policy = resolved_policy
-            if resolved_policy.output_formalism is OutputFormalism.ERST_GRAPH:
-                unit_policy = AnalysisPolicy.model_validate(
-                    {
-                        **resolved_policy.model_dump(exclude={"semantic_digest"}),
-                        "output_formalism": OutputFormalism.RST_TREE,
-                    }
-                )
             unit_ranges = tuple(
                 (
                     prepared_document.segments[unit.first_segment_order].prepared_range.start,
@@ -437,40 +420,6 @@ class ProductionIngestor:
                     cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
                 )
                 raise ProductionIngestError(failure) from exc
-            if resolved_policy.output_formalism is OutputFormalism.ERST_GRAPH:
-                if not isinstance(parser, ErstCompletionParser):
-                    failure = ProductionFailure(
-                        failed_stage=LifecycleStage.INFERENCE,
-                        category=FailureCategory.PROVIDER_UNAVAILABLE,
-                        code="erst_completion_unsupported",
-                        retryability=Retryability.NOT_RETRYABLE,
-                        message_template="subdivided_erst_requires_document_global_completion_support",
-                        completed=PreparationCompletedEvidence(preparation=preparation),
-                    )
-                    raise ProductionIngestError(failure)
-                try:
-                    parser_result = parser.complete_erst_document(
-                        _rst_document(
-                            prepared_document,
-                            source.source_form,
-                            document_id=source.source_id,
-                        ),
-                        parser_result,
-                        analysis_policy=resolved_policy,
-                    )
-                except ProductionIngestError:
-                    raise
-                except Exception as exc:
-                    failure = ProductionFailure(
-                        failed_stage=LifecycleStage.INFERENCE,
-                        category=FailureCategory.INTERNAL_PROCESSING_FAILURE,
-                        code="document_global_erst_completion_failed",
-                        retryability=Retryability.UNKNOWN,
-                        message_template="erst_completion_failed_after_primary_recombination",
-                        completed=PreparationCompletedEvidence(preparation=preparation),
-                        cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
-                    )
-                    raise ProductionIngestError(failure) from exc
         else:
             document = _rst_document(
                 prepared_document,
@@ -483,11 +432,11 @@ class ProductionIngestor:
                 resolved_policy,
                 preparation,
             )
-        from rdam.ingest.enrichment import enrich_parser_evidence
+        from rdam.ingest.enrichment import enrich_parser_document
         from rdam.ingest.validation import build_analysis_validation_receipt
 
         try:
-            analysed_document, anchors = enrich_parser_evidence(preparation, parser_result)
+            analysed_document = enrich_parser_document(preparation, parser_result)
         except Exception as exc:
             # Inference is the last pipeline stage proven complete here; the
             # parser-internal receipt is unit-level evidence, not the pipeline
@@ -508,7 +457,7 @@ class ProductionIngestor:
                 analysed_document,
                 parser_result.semantic.primary_inference,
                 parser_result.semantic.erst_completion,
-                anchors,
+                None,
                 policy=parser_result.semantic.policy,
                 composite=parser_result.semantic.composite_identity,
                 recombination=parser_result.semantic.recombination,
@@ -556,16 +505,8 @@ class ProductionIngestor:
         semantic = AnalysisSemanticEvidence(
             preparation=preparation,
             request=request,
-            policy=parser_result.semantic.policy,
-            analysed_document=analysed_document,
-            composite_identity=composite_identity,
             parser_result=parser_result,
             status=AnalysisStatus.ANALYSED,
-            analysis=parser_result.semantic.analysis,
-            primary_inference=parser_result.semantic.primary_inference,
-            erst_completion=parser_result.semantic.erst_completion,
-            anchors=anchors,
-            recombination=parser_result.semantic.recombination,
             validation=validation,
             cache_request_identity=request.semantic_digest,
         )
@@ -623,21 +564,13 @@ def _empty_outcome(
         parser_capacity_identity=None,
         composite_analysis_identity=composite,
         pipeline_version=SemanticVersion(root="2.0.0"),
-        production_contract_version=SemanticVersion(root="2.0.0"),
+        production_contract_version=SemanticVersion(root=WRITE_CONTRACT_VERSION),
     )
     semantic = AnalysisSemanticEvidence(
         preparation=preparation,
         request=request,
-        policy=policy,
-        analysed_document=None,
-        composite_identity=composite,
         parser_result=None,
         status=AnalysisStatus.EMPTY_PRIMARY_DISCOURSE,
-        analysis=None,
-        primary_inference=None,
-        erst_completion=None,
-        anchors=(),
-        recombination=None,
         validation=None,
         cache_request_identity=_required_identity(request.semantic_digest, "analysis request"),
     )
@@ -677,7 +610,7 @@ def _analysis_request(
         ),
         composite_analysis_identity=composite,
         pipeline_version=SemanticVersion(root="2.0.0"),
-        production_contract_version=SemanticVersion(root="2.0.0"),
+        production_contract_version=SemanticVersion(root=WRITE_CONTRACT_VERSION),
     )
 
 
@@ -833,7 +766,7 @@ def _source_requirement(source: SourceArtifact) -> tuple[str, str | None]:
         SourceForm.DOCLANG_XML: "doclang",
         SourceForm.DOCLANG_ARCHIVE: "doclang",
     }.get(source.source_form)
-    return (requirement or "isanlp-rst", "formats" if requirement is not None else None)
+    return (requirement or PACKAGE_NAME, "formats" if requirement is not None else None)
 
 
 def _resolve_empty_cache(
@@ -894,13 +827,14 @@ def _required_identity(
 
 
 def declared_capacity(value: object) -> AnalysisCapacity:
-    """Translate a concrete runtime's declared limit into the shared capacity contract."""
+    """Preserve a runtime's declared bound or its explicit unknown numerical capacity."""
     if isinstance(value, AnalysisCapacity):
         return value
     unit = getattr(value, "unit", None)
-    maximum = getattr(value, "maximum", None)
+    maximum = getattr(value, "maximum", object())
     source = getattr(value, "source", None)
-    if not isinstance(unit, str) or not isinstance(maximum, int) or not isinstance(source, str):
+    if (not isinstance(unit, str) or not isinstance(source, str)
+            or (maximum is not None and (not isinstance(maximum, int) or isinstance(maximum, bool)))):
         raise TypeError("parser analysis_capacity does not satisfy the public capacity contract")
     return AnalysisCapacity(
         unit=CapacityUnit(unit),
@@ -915,7 +849,6 @@ __all__ = [
     "DEFAULT_ANALYSIS_POLICY",
     "AnalysisIdentityProvider",
     "AnalysisParser",
-    "ErstCompletionParser",
     "ProductionIngestor",
     "declared_capacity",
 ]

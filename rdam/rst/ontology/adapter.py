@@ -1,7 +1,13 @@
-"""Checked ontology adapters for model encodings and corpus label mappings."""
+"""Resolve trained local mappings and explicitly scoped Central vocabulary labels.
+
+The bundled legacy inventory provides local coarse projections. It is not a
+canonical Central_Configs crosswalk. Central alignment is a separate operation
+requiring a declared corpus label scheme.
+"""
 
 from dataclasses import dataclass
 import re
+from types import MappingProxyType
 from typing import Literal, overload
 
 from rdam.rst.contracts.enums import (
@@ -10,11 +16,12 @@ from rdam.rst.contracts.enums import (
     RelationSchemeEnum,
 )
 from rdam.rst.ontology.loader import OntologyLockData, load_ontology_lock
+from rdam.ontology import ObservedVocabularyAlignment, observed_vocabulary_alignment
 
 
 @dataclass(frozen=True, slots=True)
 class ResolvedRelation:
-    """Ontology-resolved rhetorical relation."""
+    """A model class resolved within the local inventory."""
 
     canonical_label: str
     concept: str
@@ -22,7 +29,7 @@ class ResolvedRelation:
 
 
 class OntologyAdapter:
-    """Adapts and resolves model outputs and corpus labels against the pinned ontology."""
+    """Resolve model outputs and corpus labels against the bundled local mappings."""
 
     def __init__(self, lock_data: OntologyLockData | None = None) -> None:
         self.lock_data = lock_data or load_ontology_lock()
@@ -33,12 +40,37 @@ class OntologyAdapter:
             if existing is not None and existing != mapping.concept:
                 raise ValueError(f"GUM ontology category {category!r} maps to conflicting concepts")
             gum_category_to_concept[category] = mapping.concept
-        self.gum_category_to_concept = gum_category_to_concept
+        self.gum_category_to_concept = MappingProxyType(gum_category_to_concept)
+        self.coarse_concepts_by_label = MappingProxyType({
+            concept.casefold(): concept for concept in self.lock_data.coarse_concepts
+        })
+
+    @staticmethod
+    def central_alignment(raw_labels: tuple[str, ...], scheme: RelationSchemeEnum) -> ObservedVocabularyAlignment:
+        """Resolve corpus labels separately from the trained local class encoding."""
+        match scheme:
+            case RelationSchemeEnum.RST_DT_FINE:
+                vocabulary = "coe:artifact/narrative/rst_dt_relations"
+            case RelationSchemeEnum.RST_DT_COARSE_18:
+                vocabulary = "coe:artifact/narrative/descriptive_rst_taxonomy"
+            case RelationSchemeEnum.GUM_ERST_FINE:
+                vocabulary = "coe:artifact/narrative/gum_erst_relations"
+            case RelationSchemeEnum.GUM_ERST_COARSE:
+                vocabulary = "coe:artifact/narrative/gum_erst_groups"
+            case _:
+                raise ValueError(f"No Central label crosswalk registered for {scheme.value}")
+        return observed_vocabulary_alignment(vocabulary, raw_labels)
 
     @staticmethod
     def normalize_rst_dt_alias(raw_label: str) -> str:
-        """Strip embedded (-e) and nuclearity (-s/-n) suffixes from RST-DT labels."""
+        """Project suffix variants while preserving negative attribution.
+
+        RST-DT's attribution-n is a negation label, not a nuclearity suffix.
+        The original raw label remains necessary for other directional variants.
+        """
         lab = raw_label.lower().strip()
+        if lab in {"attribution-n", "attribution-n-e"}:
+            return "attribution-negative"
         # Remove trailing -e, -n, -s, -n-e, -s-e
         lab = re.sub(r"-(n-e|s-e|e|n|s)$", "", lab)
         if lab == "textualorganization":
@@ -84,14 +116,22 @@ class OntologyAdapter:
 
         match scheme:
             case RelationSchemeEnum.RST_DT_FINE | RelationSchemeEnum.RST_DT_COARSE_18:
+                coarse = self.coarse_concepts_by_label.get(normalized)
+                if scheme is RelationSchemeEnum.RST_DT_COARSE_18 and coarse is not None:
+                    return coarse, coarse
                 alias_norm = self.normalize_rst_dt_alias(normalized)
                 if alias_norm in self.lock_data.rst_dt_fine_to_coarse:
                     concept = self.lock_data.rst_dt_fine_to_coarse[alias_norm]
                     return alias_norm, concept
-                if normalized.capitalize() in self.lock_data.coarse_concepts:
-                    return normalized.capitalize(), normalized.capitalize()
+                coarse = self.coarse_concepts_by_label.get(normalized)
+                if coarse is not None:
+                    return coarse, coarse
 
             case RelationSchemeEnum.GUM_ERST_FINE | RelationSchemeEnum.GUM_ERST_COARSE:
+                if scheme is RelationSchemeEnum.GUM_ERST_COARSE:
+                    coarse = self.gum_category_to_concept.get(normalized)
+                    if coarse is not None:
+                        return normalized, coarse
                 if normalized in self.lock_data.gum_fine_to_coarse:
                     category = self.lock_data.gum_fine_to_coarse[normalized]
                     concept = self.gum_category_to_concept.get(category)
@@ -172,20 +212,3 @@ class OntologyAdapter:
             concept=mapping.concept,
             nuclearity=nuc,
         )
-
-    def get_concept_uri(
-        self, concept: str, base_prefix: str = "http://example.org/central/ontology/DiscourseRelation#"
-    ) -> str:
-        """Return canonical Central ontology URI for a coarse discourse concept."""
-        normalized = concept.strip()
-        return f"{base_prefix}{normalized}"
-
-    def get_nuclearity_uri(
-        self, nuclearity: NuclearityPatternEnum, base_prefix: str = "http://example.org/central/ontology/Nuclearity#"
-    ) -> str:
-        """Return canonical Central ontology URI for a nuclearity pattern."""
-        return f"{base_prefix}{nuclearity.name}"
-
-    def get_node_uri(self, document_id: str, node_id: int, base_prefix: str = "http://example.org/documents/") -> str:
-        """Return canonical document-scoped URI for a discourse unit node."""
-        return f"{base_prefix}{document_id}#node_{node_id}"

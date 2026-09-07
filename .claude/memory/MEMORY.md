@@ -1,23 +1,26 @@
-# MEMORY.md — isanlp_rst
+# MEMORY.md — RDAM project notes
 
-Index of project-local memories. One line per entry.
+Index of project-local notes. The format-design and upstream investigations are
+historical snapshots, not current API instructions. See [current documentation](../../docs/README.md)
+and [production ingest](../../docs/production-source-ingest.md). The package is
+`rdam`, the command is `rdam`, and eRST work is suspended as of 2026-09-06.
 
 ## Project framing
 
 - [Project status & ownership](project_status.md) — Steve's evolution of Elena's RST parser; not a tracking fork.
 - [Licensing constraints](licensing.md) — MIT source / CC BY-NC 4.0 weights; commercial use requires weight replacement.
 
-## Verified facts (Docling work)
+## Dated observations (Docling work)
 
 - [Docling-core API contract](verified_docling_core_api.md) — `iterate_items`, `load_from_json`, default content-layer filter; with file:line citations.
 - [Docling JSON schema uniformity](verified_docling_schema.md) — `DoclingDocument` v1.10.0 uniform across pptx / pdf / vtt / markdown; populated-vs-empty field differences only.
 
-## Verified facts (DocLang work)
+## Dated observations (DocLang work)
 
 - [DocLang 0.7 spec](verified_doclang_spec.md) — XML-based; lock `doclang[schematron-saxon]>=0.7,<0.8` (PyPI 0.7.3 as of 2026-08-16); no stable element IDs; `<layer>` ∈ {body, background, furniture}; no slide concept. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md). Historical notes in that file still mention 0.5; fixtures remirrored 2026-08-16 (42 files).
 - [DocLang fixture verifications (Phase 1)](verified_doclang_fixtures.md) — Q1–Q6 verified against the then-40 valid fixtures. Remirror 2026-08-16 added `ok_description_element_head` and `ok_namespaced_and_versioned`.
 
-## Design decisions (Docling work)
+## Historical format-design decisions
 
 - [One tree per Docling JSON](decision_one_tree_per_document.md) — one Parser call, one DiscourseUnit tree, boundary metadata as annotation.
 - [Consumer-agnostic framing](decision_consumer_agnostic.md) — work is "Docling JSON in → RST relations indexed by self_ref → out"; no single-consumer coupling.
@@ -40,7 +43,7 @@ Index of project-local memories. One line per entry.
 
 - [Upstream issue 14 — bug fixes offer to tchewik/isanlp_rst](upstream_issue_14.md) — Filed 2026-05-09; tracks PR-extraction plan if Elena signals interest. Moved 2026-05-15 from machine-local auto-memory into the repo per Steve's project-memory-lives-in-repo pattern.
 
-## Open design questions
+## Historical open design questions
 
 - [RST real-world quality](open_rst_real_world_quality.md) — biggest blind spot: RST was developed for prose; quality on slides / transcripts / long mixed docs is unverified. Also: which relation inventory to default to.
 - [Schema-detail verifications](open_schema_detail_verifications.md) — slide-notes content_layer (RESOLVED: `"notes"`, not `"furniture"`), level distribution, OCR-PDF shape, VTT voice reliability, table cell structure, TextItem.orig vs .text, non-body content layers (FURNITURE / NOTES / BACKGROUND / INVISIBLE).

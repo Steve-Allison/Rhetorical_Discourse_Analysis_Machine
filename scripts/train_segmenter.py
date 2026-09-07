@@ -16,7 +16,7 @@ from transformers import (
     get_cosine_schedule_with_warmup,
 )
 
-from rdam.rst.model_authority import DEFAULT_ENCODER_MODEL_ID, DEFAULT_ENCODER_REVISION
+from workbench.erst.model_authority import DEFAULT_ENCODER_MODEL_ID, DEFAULT_ENCODER_REVISION
 from workbench.training.segmentation.dataset import (
     EduSegmentationDataset,
     SegmentedSentence,

@@ -5,6 +5,16 @@ metadata:
   type: reference
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+> Current inventory includes all layers, groups and picture descendants;
+> the default BODY-only traversal described below is not the complete ingest.
+
 Investigated 2026-05-15 against `docling-project/docling-core` `main`. Findings used by the Docling-native RST plan.
 
 **Loader:** `DoclingDocument.load_from_json(filename: str | Path) -> DoclingDocument` at `docling_core/types/doc/document.py:5778`. Pydantic-validated.
@@ -35,4 +45,4 @@ Slide notes in real PPTX output are in the `NOTES` layer (verified on `tests/fix
 - Don't roll our own walker. Anchor on `iterate_items()`.
 - The default `with_groups=False` + `traverse_pictures=False` is correct for v1 of the Docling-native entry point — we want leaf-ish text-carrying items, not group markers, and we explicitly skip picture-caption recursion in v1.
 
-Related: [[verified-docling-schema]], [[decision-use-docling-core]].
+Related: [verified-docling-schema](verified_docling_schema.md), [decision-use-docling-core](decision_use_docling_core.md).

@@ -17,7 +17,7 @@ def test_preparation_outcome_contains_complete_semantic_and_execution_sections()
     )
     assert outcome.kind == "preparation_outcome"
     assert outcome.contract == "isanlp_rst.production"
-    assert outcome.contract_version == "2.0.0"
+    assert outcome.contract_version == "3.0.0"
     assert outcome.semantic.source.source_name == "source.txt"
     assert outcome.semantic.source_contract.adapter
     assert outcome.semantic.inventory

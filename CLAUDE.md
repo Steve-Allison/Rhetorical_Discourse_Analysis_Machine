@@ -5,11 +5,11 @@ analysis-only machine that runs several discourse and argumentation techniques n
 side by side, without collapsing them into a common formalism. One distribution, one
 package, every technique a sub-package:
 
-| Sub-package | Technique | State (2026-09-03) |
+| Sub-package | Technique | State (2026-09-06) |
 |---|---|---|
-| `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.analyse()` returning one explicit outcome per technique | feature 007 |
+| `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.prepare()` and `Machine.analyse()`, unified CLI and optional HTTP | features 007, 017–019 |
 | `rdam.ingest` | shared source inventory, provider-specific projections, capacity planning, speaker evidence and anchors | feature 017 |
-| `rdam.rst` | RST / eRST — DMRST and UniRST discourse parsers (Steve's evolution of Elena Chistova's IsaNLP RST Parser), eRST completion, viewer, the `rdam-rst` command, and the machine adapter `rdam.rst.provider.RstProvider` | `available` |
+| `rdam.rst` | RST — DMRST and UniRST discourse parsers (Steve's evolution of Elena Chistova's IsaNLP RST Parser), viewer, and the machine adapter `rdam.rst.provider.RstProvider` | RST available with a configured model |
 | `rdam.pdtb` | PDTB-3 binary relations with exact source spans, all seven relation types, signal evidence, and canonical senses | `available` with a resolvable configured LLM model |
 | `rdam.sdrt` | SDRS graphs with EDUs, CDUs, coordinating/subordinating relations, and deterministic graph/right-frontier validation | `available` with a resolvable configured LLM model |
 | `rdam.toulmin` | Complete Toulmin layouts with claim, grounds, warrant, and optional qualifiers | `available` with a resolvable configured LLM model |
@@ -31,7 +31,7 @@ Single remote: `origin` → `Steve-Allison/Rhetorical_Discourse_Analysis_Machine
 
 ## Pixi commands
 
-Two environments: **`default`** (everything for daily work; active without `-e`) and **`production`** (isolated clean-room environment; its installed distribution is the editable source). The task table in `pyproject.toml` is the authority — `pixi task list` shows every task with its description, and [`commands.md`](.claude/rules/commands.md) says when to use which. Adding dependencies: `pixi add <package>`. Never `pip install`.
+Two environment roles, with an additional explicit `offline` alias: **`default`** (everything for daily work; active without `-e`) and **`production`** (isolated clean-room environment; its installed distribution is the editable source). The task table in `pyproject.toml` is the authority — `pixi task list` shows every task with its description, and [`commands.md`](.claude/rules/commands.md) says when to use which. Adding dependencies: `pixi add <package>`. Use Pixi for repository work; wheel installation instructions for other projects are in the README.
 
 CI (`.github/workflows/ci.yml`) runs lint, typecheck, mdlint, and the fast tests on macOS arm64 with the pixi lock (**Python 3.14**; `requires-python` is `>=3.14`); the slow suite runs nightly. The model smoke is local-only because weights are not in git: `pixi run smoke`.
 
@@ -56,9 +56,9 @@ CI (`.github/workflows/ci.yml`) runs lint, typecheck, mdlint, and the fast tests
 ## Layout and identity (owner rulings, 2026-09-02)
 
 - **One production package at the repository root, `rdam/`, shipped as one wheel** (`rdam` 6.0.0). Every technique is a sub-package of it. This supersedes the per-technique top-level boundary roster of feature 006 (`machine/`, `rst/`, `dung/`, …); the supersession is recorded in [`specs/010-repository-migration/spec.md`](specs/010-repository-migration/spec.md) and noted at the top of the 006 boundary contract.
-- `isanlp_rst` is not a protected name. The RST provider is `rdam.rst`; the console command is `rdam-rst`.
-- **Persisted contract identifiers are unchanged**: `isanlp_rst.production` 2.0.0 (the ingest envelope), `isanlp_rst.parser/modernbert-v1` (the runtime contract named by the immutable release manifests), `isanlp_rst.build_provenance`, `isanlp_rst.public_surface`, the schema `$id`s, and `ISANLP_RST_ERST_CHECKPOINT`. They name contracts and stored releases, not the package. Renaming them is a separate owner ruling.
-- `ontology/` stays a top-level repository directory (vendored Central distribution and the LinkML profile); only the projected `rdam/resources/framework-identities.json` ships in the wheel.
+- `isanlp_rst` is not a protected name. The RST provider is `rdam.rst`; the console command is `rdam`.
+- **Persisted contract names retain their existing identity**: `isanlp_rst.production` (current ingest writing uses 3.0.0 with historical reading handled separately), `isanlp_rst.parser/modernbert-v1` (a historical immutable manifest identity, not the active model architecture), `isanlp_rst.build_provenance`, `isanlp_rst.public_surface`, the schema `$id`s, and `ISANLP_RST_ERST_CHECKPOINT`. They name contracts and stored releases, not the package. Renaming them is a separate owner ruling.
+- `ontology/` stays a top-level repository directory (vendored Central distribution and the LinkML profile). The wheel ships generated framework, discourse and technique projections under `rdam/resources/`, the consumer Walton crosswalk, and digest-identified ontology/profile snapshots for historical resolution.
 - Exactly one `workbench/`; production code never imports it (enforced by `pixi run -e default production-boundary`).
 
 ## Active roadmap
@@ -68,15 +68,21 @@ single-package migration, and repository rename. Features 013–016 decision-clo
 verify Toulmin, Walton, SDRT, and PDTB. `rdam.production_machine()` is the supported
 composition of all seven provider boundaries; each provider remains directly callable.
 
-The promotion-evidence system (feature 008) was removed on 2026-09-02 by owner ruling: it was never requested, and it made the machine report `unavailable` for parsers that ran correctly. Capability now means one thing — the provider can run.
+The promotion-evidence system (feature 008) was removed on 2026-09-02 by owner ruling: it was never requested, and it made the machine report `unavailable` for parsers that ran correctly. Discovery checks local prerequisites without probing a remote model; actual analysis determines runtime success.
 
-**Owner ruling outstanding**: whether the persisted contract identifiers above should also move to the `rdam` name.
+Persisted identifiers remain unchanged unless the owner explicitly authorizes a contract migration.
+
+Features 017–019 implement shared source preparation, runtime hardening and unified
+Python/CLI/HTTP interfaces. eRST is workbench-only by owner instruction on 2026-09-06.
+The current seven-technique verification and its limits are recorded in
+[Feature 019 tasks](specs/019-unified-machine-interfaces/tasks.md); dated research
+records do not establish current runtime or SOTA quality. See [documentation guide](docs/README.md).
 
 ### Production source ingest
 
 Production source ingest has one public surface: `rdam.ingest` — `ProductionIngestor.capabilities()`, `.prepare()`, and `.analyse()`. The accepted source forms and their availability are whatever `describe_capabilities()` reports; that call is the authority, not this file. `rdam.rst.ingest` has no compatibility shim. The old format-specific parsing functions and result envelopes were removed rather than deprecated; no compatibility route remains.
 
-The optional **`formats` extra** supplies `docling-core`, `doclang`, `markdown-it-py`, and `mdit-py-plugins`: `pip install rdam[formats]`. Core parser consumers avoid that dependency chain. `pixi install` includes `formats`; keep these dependencies outside `[project.dependencies]`.
+The optional **`formats` extra** supplies `docling-core`, `doclang`, `markdown-it-py`, and `mdit-py-plugins`: install the local wheel with `[formats]`. Core parser consumers avoid that dependency chain. `pixi install` includes `formats`; keep these dependencies outside `[project.dependencies]`.
 
 Canonical ingest inventories source content once per aggregate. Each text provider's
 `ContentRequirement` controls a pure source projection and its capacity plan; identical
@@ -91,7 +97,7 @@ generic orchestration without technique imports. Execution uses four in-process 
 by default, declaration-driven provider locking, request-ordered outcomes and an optional
 cache binding source, projection, provider, contract, model and instructions identities.
 
-Format code beneath `rdam.rst.doclang` and `rdam.rst.markdown` is private decoding support for the canonical service. Docling JSON is loaded directly with current `docling-core`. There is no independent format mapper, result schema, cache, or public entry point.
+Format code beneath `rdam.rst.doclang` and `rdam.rst.markdown` is private decoding support for the canonical service. Docling JSON is loaded directly with the supported `docling-core` version in `pyproject.toml`. There is no independent format mapper, result schema, cache, or public entry point.
 
 Quality measurement: `pixi run rst-diag <paths>` ([`scripts/rst_diag.py`](scripts/rst_diag.py)) — preparation coverage, content-class decisions, anchor integrity, tree structure, relation distribution, subdivision, and timing across the canonical source forms.
 
@@ -101,13 +107,13 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 
 - [`rdam/machine.py`](rdam/machine.py), [`rdam/contracts.py`](rdam/contracts.py) — the machine and its typed contracts.
 - [`rdam/rst/parser.py`](rdam/rst/parser.py) — RST public entry point; production families are DMRST and UniRST, loaded from an immutable local release or HF version.
-- [`rdam/rst/provider.py`](rdam/rst/provider.py) — the machine-facing RST/eRST adapter: capability from whether the configured parser can run; the ingest outcome envelope is handed to the machine verbatim.
-- [`rdam/rst/cli.py`](rdam/rst/cli.py) — the `rdam-rst` command (parse, capabilities, serve, version).
-- [`rdam/rst/parser_annotator.py`](rdam/rst/parser_annotator.py), [`rdam/rst/universal_parser/`](rdam/rst/universal_parser/) — DMRST and UniRST production parser implementations.
+- [`rdam/rst/provider.py`](rdam/rst/provider.py) — the machine-facing RST adapter: capability from whether the configured parser can run; the ingest outcome envelope is handed to the machine verbatim.
+- [`rdam/cli.py`](rdam/cli.py), [`rdam/http.py`](rdam/http.py) — the unified `rdam` command and optional loopback `/v1/` routes.
+- [`rdam/rst/dmrst_parser/predictor.py`](rdam/rst/dmrst_parser/predictor.py), [`rdam/rst/universal_parser/`](rdam/rst/universal_parser/) — DMRST and UniRST production parser implementations.
 - [`rdam/rst/annotation_rst.py`](rdam/rst/annotation_rst.py) — native `DiscourseUnit` and RS3 XML serialization.
 - [`rdam/ingest/`](rdam/ingest/) — sole production source inventory, preparation, projection, analysis, receipt, subdivision, and cache API.
 - [`rdam/rst/contracts/`](rdam/rst/contracts/) — typed contracts: `RstAnalysis`, `RstDocument`, `SecondaryRelationEdge`, `DiscourseSignal`, envelope serializations.
-- [`rdam/rst/erst/`](rdam/rst/erst/) — Extended RST (eRST): RS4 reader/writer, typed signals, complete candidates, and formally constrained `ErstSecondaryEdgeDecoder`.
+- [`workbench/erst/`](workbench/erst/) — experimental Extended RST (eRST), excluded from production: RS4 reader/writer, typed signals, complete candidates, and formally constrained `ErstSecondaryEdgeDecoder`.
 - [`rdam/rst/model_loading/release.py`](rdam/rst/model_loading/release.py) — immutable release manifests, and the manifest-bound `CompatibilityRedeclaration` sidecar by which a stored release is shown to run under a later package line.
 - [`rdam/rst/hierarchical/stitcher.py`](rdam/rst/hierarchical/stitcher.py) — `HierarchicalSectionStitcher`: two-stage hierarchical section/macro tree stitching for long documents.
 - [`rdam/rst/rstviewer/`](rdam/rst/rstviewer/) — visualizer and HTML/PNG export engine.

@@ -9,7 +9,7 @@ import re
 
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import InvalidVersion, Version
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
 from rdam.rst._version import PACKAGE_NAME, resolve_installed_package_version
 
@@ -136,10 +136,10 @@ class CompatibilityRedeclaration(_StrictModel):
 
 
 class ParserCapacity(_StrictModel):
-    """Stable safe unit capacity for recursive production analysis."""
+    """Declared planning bound; null means no verified numerical capacity is established."""
 
     unit: str = Field(pattern=r"^(edu_count|token_count)$")
-    maximum: int = Field(gt=1)
+    maximum: int | None = Field(gt=1, description="Verified planning maximum, or null when not established; null is not a claim of unlimited resources.")
     source: str = Field(min_length=1)
 
 
@@ -227,7 +227,7 @@ def load_compatibility_redeclaration(
         raise ModelReleaseError("compatibility re-declaration exceeds the 4 MiB control-file limit")
     try:
         redeclaration = CompatibilityRedeclaration.model_validate_json(path.read_bytes())
-    except Exception as exc:
+    except (OSError, ValidationError) as exc:
         raise ModelReleaseError("compatibility re-declaration is invalid") from exc
     if redeclaration.release_id != manifest.release_id or redeclaration.manifest_sha256 != manifest.manifest_sha256:
         raise ModelReleaseError(
@@ -259,7 +259,7 @@ def validate_model_release(
         raise ModelReleaseError("model release manifest exceeds the 4 MiB control-file limit")
     try:
         manifest = ModelReleaseManifest.model_validate_json(manifest_path.read_bytes())
-    except Exception as exc:
+    except (OSError, ValidationError) as exc:
         raise ModelReleaseError("model release manifest is invalid") from exc
 
     if require_release_name and release.name != manifest.release_id:

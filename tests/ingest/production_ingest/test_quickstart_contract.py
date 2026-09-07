@@ -25,7 +25,7 @@ from .conftest import ParserBuilder
 def test_model_free_capability_and_preparation_quickstart() -> None:
     capabilities = describe_capabilities()
     assert capabilities.semantic.package_version == "6.0.0"
-    assert capabilities.contract_version == "2.0.0"
+    assert capabilities.contract_version == "3.0.0"
     assert capabilities.semantic.parser_identity_state is ModelIdentityState.NOT_CONFIGURED
     assert all(
         isinstance(item.availability, Availability)

@@ -73,14 +73,14 @@ pixi run validate-production-artifacts
 ```
 
 ```bash
-pixi run -e production production-clean-install
+pixi run -e production production-clean-install --model-store <store> --release-id <id>
 ```
 
 Expected: wheel and sdist build reproducibly from the one wheel package directory
 `pyproject.toml` declares (`packages = ["rdam"]`; `"reproducible": true`, provenance
 in both); the artifact validator
 reports `valid: true`; the clean-room install pip-installs the **wheel** into fresh
-`core` and `formats` venvs outside the source tree with the network disabled, imports the
+core, core+http, formats and formats+http venvs outside the source tree with the network disabled, imports the
 package from `site-packages`, and passes full installed acceptance including CLI/Python
 semantic parity. This gate discharges the research-D2 `ASSUMED` marker and precedes every
 other migration completion claim.
@@ -110,9 +110,9 @@ git status --porcelain workbench/
 
 Expected: no protected workbench processes; every run directory and the central ledger
 reconciled (committed, archived, or owner-marked discardable); the owner's dated
-confirmation recorded in the migration feature's evidence directory. As of planning time
-this gate is **failing by design** — four untracked run directories and a modified
-ledger exist — which is precisely why FR-026 blocks migration today.
+confirmation recorded in the migration feature's evidence directory. At the historical planning checkpoint
+this gate was **failing by design** — four untracked run directories and a modified
+ledger exist — which is precisely why FR-026 blocked migration at that time. That observation is not a current blocker.
 
 ## V7 — Ontology identity binding (FR-002)
 

@@ -5,6 +5,14 @@ metadata:
   type: project
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 **The biggest blind spot in the Docling-native plan.** RST (Rhetorical Structure Theory; Mann & Thompson 1988) was developed for written prose. The published parser models were trained on:
 
 - **RST-DT** (`rstdt`): Wall Street Journal articles — long, monologic, written prose.
@@ -42,4 +50,4 @@ Docling-native input includes:
 - Resolve inventory-default question before Phase 1: `gumrrg` (English-only, prose-trained) vs `unirst` with `relinventory="eng.erst.gum"` (multilingual capable, may degrade on pure English). Empirically choose.
 - Document the limits honestly in the public docs. Don't oversell RST on slides if the empirical answer is "produces a tree but treat with caution".
 
-Related: [[decision-one-tree-per-document]], [[open-schema-detail-verifications]].
+Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-schema-detail-verifications](open_schema_detail_verifications.md).

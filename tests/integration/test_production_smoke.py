@@ -8,7 +8,6 @@ import torch
 
 from rdam.rst.annotation_rst import DiscourseUnit
 from rdam.rst.contracts import OutputFormalismEnum, RstDocument, analysis_from_json, to_json
-from rdam.rst.erst import ErstCapabilityError
 from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST, ModelReleaseError
 from rdam.rst.parser import Parser
 
@@ -164,11 +163,8 @@ class TestReleaseSmoke:
         serialized = to_json(analysis)
         assert to_json(analysis_from_json(serialized)) == serialized
 
-    def test_erst_graph_is_real_or_refused_never_fabricated(self, loaded: tuple[Parser, str, str]) -> None:
+    def test_erst_graph_is_rejected_in_production(self, loaded: tuple[Parser, str, str]) -> None:
         parser, _, _ = loaded
         document = RstDocument.from_text(SAMPLE_TEXT, document_id="smoke-erst")
-        if parser.erst_checkpoint is None:
-            with pytest.raises(ErstCapabilityError, match="validated completion bundle"):
-                parser.parse_document(document, output="erst_graph")
-            return
-        assert parser.parse_document(document, output="erst_graph").formalism is OutputFormalismEnum.ERST_GRAPH
+        with pytest.raises(ValueError, match="workbench"):
+            parser.parse_document(document, output="erst_graph")

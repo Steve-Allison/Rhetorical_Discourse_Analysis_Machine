@@ -4,9 +4,6 @@ from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Final
 
-# Retained for the separately frozen eRST scorer; these are not primary-RST defaults.
-DEFAULT_ENCODER_MODEL_ID = "roberta-base"
-DEFAULT_ENCODER_REVISION = "e2da8e2f811d1448a5b465c236feacd80ffbac7b"
 XLM_ROBERTA_LARGE_MODEL_ID: Final = "xlm-roberta-large"
 XLM_ROBERTA_LARGE_REVISION: Final = "c23d21b0620b635a76227c604d44e43a9f0ee389"
 PUBLISHED_RST_REVISIONS: Final[Mapping[str, str]] = MappingProxyType({
@@ -24,6 +21,7 @@ def published_rst_revision(version: str | None) -> str | None:
     if version is None:
         return None
     return PUBLISHED_RST_REVISIONS.get(version, version)
+
 
 __all__ = [
     "PUBLISHED_RST_REVISIONS",

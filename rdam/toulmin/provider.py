@@ -32,10 +32,12 @@ from rdam import (
     Sha256Identity,
     Technique,
     UnavailableCapability,
+    canonical_json_bytes,
     semantic_sha256,
     technique_curie,
 )
 from rdam.toulmin.interpretation import describe
+from rdam.toulmin.output import ToulminOutput
 from rdam._llm import DEFAULT_OUTPUT_RETRIES, DEFAULT_TRANSPORT_RETRIES, DEFAULT_TRANSPORT_DEADLINE_SECONDS
 from rdam._llm import LlmError, StructuredAnalyst, resolved_model_identity, unavailable_reason
 from rdam._provider_provenance import (
@@ -254,6 +256,7 @@ class ToulminProvider:
                 "instructions_digest": semantic_sha256(INSTRUCTIONS),
             },
         }
+        ToulminOutput.model_validate_json(canonical_json_bytes(payload))
         return NativeTechniqueResult(
             technique=Technique.TOULMIN,
             formalism_id=FORMALISM_ID,

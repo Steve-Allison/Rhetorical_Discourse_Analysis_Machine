@@ -1,0 +1,428 @@
+{
+  "authority": "Central_Configs",
+  "concepts": {
+    "coe:concept/discourse_argumentation_taxonomy/argument_component_state": {
+      "description": "Whether an argument component is asserted by the source itself or absent from it, so that unstated components are recorded as fact rather than authored",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_component_state",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Argument Component State",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_component_state/stated": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_component_state"
+      ],
+      "description": "The source asserts the component in its own words",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_component_state/stated",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Stated",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_component_state/unstated": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_component_state"
+      ],
+      "description": "The source does not assert the component; its absence is the recorded fact",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_component_state/unstated",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Unstated",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type": {
+      "description": "How one position attacks another, using the ASPIC+ attack-type trio verbatim; typing a conflict never adjudicates it",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Argument Conflict Type",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/rebuts": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type"
+      ],
+      "description": "Denies the other position's conclusion",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/rebuts",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Rebuts",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/undercuts": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type"
+      ],
+      "description": "Denies the inference connecting the other position's evidence to its conclusion",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/undercuts",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Undercuts",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/undermines": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type"
+      ],
+      "description": "Denies the evidence or premises the other position rests on",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/undermines",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Undermines",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_link_type": {
+      "description": "The typed connection between two claims in a macro-argument, profiled from argument mining's support and attack relations",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_link_type",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Argument Link Type",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_link_type/addressed_by": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_link_type"
+      ],
+      "description": "The objection or caveat this claim carries is answered by the target",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_link_type/addressed_by",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Addressed By",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_link_type/rebutted_by": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_link_type"
+      ],
+      "description": "The target claim attacks this claim",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_link_type/rebutted_by",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Rebutted By",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_link_type/supports": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_link_type"
+      ],
+      "description": "This claim gives support to the target claim",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_link_type/supports",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Supports",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_role": {
+      "close_match": [
+        "https://www.wikidata.org/wiki/Q1323298"
+      ],
+      "description": "The functional role a component plays in one argument, using Toulmin's (1958) complete six-element layout verbatim — claim, grounds, warrant, backing, qualifier, rebuttal. The set is closed; membership grows only by registered amendment",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation",
+        "coe:decision/rdam-006/narrative/argument_role_backing_amendment"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Argument Role",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_role/backing": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+      ],
+      "description": "The field-specific support for the warrant itself — the body of fact, statute, experience, or theory on which the warrant rests",
+      "evidence_ids": [
+        "coe:decision/rdam-006/narrative/argument_role_backing_amendment",
+        "coe:source/nine-frameworks-research-45b6a77f"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/backing",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Backing",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_role/claim": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+      ],
+      "description": "The assertion or conclusion the argument establishes",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/claim",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Claim",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_role/grounds": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+      ],
+      "description": "The facts, evidence, or reasons offered in support of the claim",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/grounds",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Grounds",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_role/qualifier": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+      ],
+      "description": "The modal force with which the claim is advanced",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/qualifier",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Qualifier",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_role/rebuttal": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+      ],
+      "description": "The condition of exception under which the claim does not hold",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/rebuttal",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Rebuttal",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/argument_role/warrant": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+      ],
+      "description": "The general licence connecting the grounds to the claim",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/warrant",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Warrant",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness": {
+      "description": "Whether a typed discourse relation is overtly signalled in the source or inferred by the reader, following the PDTB explicit and implicit method in which an implied relation records the connective that would make it explicit",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Discourse Relation Explicitness",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness/explicit": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness"
+      ],
+      "description": "The relation is overtly signalled by connective or construction text quotable from the source",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness/explicit",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Explicit",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness/implied": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness"
+      ],
+      "description": "The relation is unsignalled and inferred; the single inserted connective sentence that would make it explicit is recorded as its basis",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness/implied",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Implied",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense": {
+      "description": "The typed sense of a discourse relation between two stated spans of source content, profiled from the PDTB 3.0 sense hierarchy at Level-2 granularity",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Discourse Relation Sense",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/cause": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+      ],
+      "description": "One span gives the reason for, or the result of, the other",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/cause",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Cause",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/concession": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+      ],
+      "description": "One span creates an expectation the other denies while both stand",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/concession",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Concession",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/condition": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+      ],
+      "description": "One span holds only under the circumstance the other states",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/condition",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Condition",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/contrast": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+      ],
+      "description": "The spans are set against each other on a shared dimension of difference",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/contrast",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Contrast",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/instantiation": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+      ],
+      "description": "One span gives a specific instance of the generalisation the other states",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/instantiation",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Instantiation",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_role": {
+      "description": "The structural standing of one content unit relative to a stated purpose, decided by the deletion test from rhetorical structure theory's nuclearity",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_role",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Discourse Role",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_role/background": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_role"
+      ],
+      "description": "Context that orients without carrying the purpose's substance",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_role/background",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Background",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_role/nucleus": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_role"
+      ],
+      "description": "Central to the purpose; what is kept when one unit must be deleted",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_role/nucleus",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Nucleus",
+      "status": "canonical"
+    },
+    "coe:concept/discourse_argumentation_taxonomy/discourse_role/supportive": {
+      "broader": [
+        "coe:concept/discourse_argumentation_taxonomy/discourse_role"
+      ],
+      "description": "Ancillary material serving a nucleus with evidence, elaboration, or explanation",
+      "evidence_ids": [
+        "coe:decision/specs-016/narrative/discourse_argumentation"
+      ],
+      "home_domain": "narrative",
+      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_role/supportive",
+      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+      "label": "Supportive",
+      "status": "canonical"
+    }
+  },
+  "description": "Classification of discourse and argumentation constructs by relation sense (PDTB Level-2 profile), relation explicitness, Toulmin argument role, component state, ASPIC+ conflict type, rhetorical discourse role, and argument link type",
+  "last_updated": "2026-09-01",
+  "scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
+  "source": "ontology/vendor/central-configs/domains/narrative/discourse_argumentation.yaml",
+  "source_sha256": "456db679c9194b63b262ffdbbdf880cc9bc64e3d917710ee17179556704a92d3"
+}

@@ -10,6 +10,7 @@ from rdam.ingest.contracts.analysis import ProductionAnalysisOutcome, Validation
 from rdam.ingest.contracts.base import (
     PRODUCTION_CONTRACT,
     WRITE_CONTRACT_VERSION,
+    CurrentContractVersion,
     Sha256Identity,
     StrictContractModel,
 )
@@ -217,7 +218,7 @@ class SafeFailureSemanticEvidence(StrictContractModel):
 
 class SafeProductionFailureRecord(StrictContractModel):
     contract: Literal["isanlp_rst.production"] = PRODUCTION_CONTRACT
-    contract_version: Literal["2.0.0"] = WRITE_CONTRACT_VERSION
+    contract_version: CurrentContractVersion = WRITE_CONTRACT_VERSION
     kind: Literal["safe_production_failure"] = "safe_production_failure"
     semantic: SafeFailureSemanticEvidence
     execution: FailureExecutionEvidence
@@ -239,7 +240,7 @@ class DiagnosticFailureSemanticEvidence(StrictContractModel):
 
 class DiagnosticProductionFailureRecord(StrictContractModel):
     contract: Literal["isanlp_rst.production"] = PRODUCTION_CONTRACT
-    contract_version: Literal["2.0.0"] = WRITE_CONTRACT_VERSION
+    contract_version: CurrentContractVersion = WRITE_CONTRACT_VERSION
     kind: Literal["diagnostic_production_failure"] = "diagnostic_production_failure"
     semantic: DiagnosticFailureSemanticEvidence
     execution: FailureExecutionEvidence

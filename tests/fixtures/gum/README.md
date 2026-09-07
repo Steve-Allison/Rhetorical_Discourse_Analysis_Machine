@@ -18,6 +18,16 @@ can be compared and benchmarked against known-good gold standard analyses.
 
 Copied **verbatim** from [amir-zeldes/gum](https://github.com/amir-zeldes/gum/) (`rst/rstweb/`). No transformation.
 
+Verified byte-for-byte against upstream revision
+`22fdf87f9c71c96bcc771461d06e689b1f90020d` on 2026-09-05.
+The [upstream manifest](upstream-manifest.json) records fixture hashes and the
+official split inventory from that revision. These fixtures include two training,
+three development and five test documents; Dvořák belongs to the test partition.
+The combined `quality-baseline.json` is a mixed-partition regression baseline,
+not a held-out corpus evaluation. A corpus test designation alone does not prove
+that a particular model excluded the document during training; model overlap
+remains to be verified before reporting held-out quality.
+
 GUM annotations are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). All vendored underlying texts are CC BY / CC BY-SA / Public Domain.
 
 Credit: Zeldes, Amir (2017). The GUM Corpus: Creating Multilayer Resources in the Classroom. *Language Resources and Evaluation* 51(3), 581–612. Annotators: [GUM project](https://gucorpling.org/gum/).

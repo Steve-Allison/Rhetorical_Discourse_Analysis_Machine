@@ -1,16 +1,15 @@
-"""Offline paper-defined eRST and discourse-signal evaluation."""
+"""Paper-defined secondary Parseval and prealigned signal-count diagnostics."""
 
 from collections import Counter
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TypeAlias
 
 from rdam.rst.contracts.analysis import DiscourseSignal, RstAnalysis
 
 ERST_SCORER_AUTHORITY = "https://aclanthology.org/2025.cl-1.3.pdf#page=30"
-EndpointYield: TypeAlias = tuple[int, int]
-UnorderedSpanKey: TypeAlias = tuple[EndpointYield, EndpointYield]
-DirectedSpanKey: TypeAlias = tuple[EndpointYield, EndpointYield]
+type EndpointYield = tuple[int, int]
+type UnorderedSpanKey = tuple[EndpointYield, EndpointYield]
+type DirectedSpanKey = tuple[EndpointYield, EndpointYield]
 
 
 @dataclass(frozen=True, slots=True)
@@ -233,46 +232,49 @@ class ErstScorer:
         self,
         gold_signals: Sequence[DiscourseSignal],
         pred_signals: Sequence[DiscourseSignal],
+        *, identities_prealigned: bool = False,
     ) -> SignalMetrics:
-        """Score predicted discourse signals and token anchors."""
+        """Count attached signals and token-edge incidences with shared identities.
+
+        Each gold occurrence can contribute at most once to each metric. Detection
+        counts signal occurrences per aligned edge; type and subtype refine that
+        key. Token scoring counts aligned token-edge incidences with multiplicity.
+        Unattached predictions never match each other merely because both lack an
+        edge. These are prealigned diagnostics, not raw parser signal accuracy.
+        """
         gold_count = len(gold_signals)
         pred_count = len(pred_signals)
 
-        # Index gold signals by edge_id
-        gold_by_edge: dict[str | None, list[DiscourseSignal]] = {}
-        total_gold_tokens = 0
-        for g in gold_signals:
-            gold_by_edge.setdefault(g.edge_id, []).append(g)
-            total_gold_tokens += len(g.token_ids)
+        if (gold_signals or pred_signals) and not identities_prealigned:
+            raise ValueError("signal scoring requires verified shared edge and token identities")
 
-        total_pred_tokens = sum(len(p.token_ids) for p in pred_signals)
-        total_matched_tokens = 0
+        def counters(signals: Sequence[DiscourseSignal]) -> tuple[
+            Counter[str], Counter[tuple[str, str]], Counter[tuple[str, str, str]], Counter[tuple[str, int]],
+        ]:
+            detected: Counter[str] = Counter()
+            typed: Counter[tuple[str, str]] = Counter()
+            subtyped: Counter[tuple[str, str, str]] = Counter()
+            tokens: Counter[tuple[str, int]] = Counter()
+            for signal in signals:
+                if len(set(signal.token_ids)) != len(signal.token_ids):
+                    raise ValueError("signal token identities must be unique within an occurrence")
+                if signal.edge_id is None:
+                    continue
+                edge = signal.edge_id
+                signal_type, subtype = signal.signal_type.casefold(), signal.signal_subtype.casefold()
+                detected[edge] += 1
+                typed[edge, signal_type] += 1
+                subtyped[edge, signal_type, subtype] += 1
+                tokens.update((edge, token) for token in signal.token_ids)
+            return detected, typed, subtyped, tokens
 
-        matched_detection = 0
-        matched_type = 0
-        matched_subtype = 0
-
-        for p in pred_signals:
-            candidates = gold_by_edge.get(p.edge_id, [])
-            if candidates:
-                matched_detection += 1
-                if any(c.signal_type.lower() == p.signal_type.lower() for c in candidates):
-                    matched_type += 1
-                if any(
-                    c.signal_type.lower() == p.signal_type.lower()
-                    and c.signal_subtype.lower() == p.signal_subtype.lower()
-                    for c in candidates
-                ):
-                    matched_subtype += 1
-
-                # Token anchor overlap against matching candidates
-                p_tokens = set(p.token_ids)
-                best_token_overlap = 0
-                for c in candidates:
-                    overlap = len(p_tokens.intersection(set(c.token_ids)))
-                    if overlap > best_token_overlap:
-                        best_token_overlap = overlap
-                total_matched_tokens += best_token_overlap
+        gold_counts, pred_counts = counters(gold_signals), counters(pred_signals)
+        matched_detection = (gold_counts[0] & pred_counts[0]).total()
+        matched_type = (gold_counts[1] & pred_counts[1]).total()
+        matched_subtype = (gold_counts[2] & pred_counts[2]).total()
+        total_matched_tokens = (gold_counts[3] & pred_counts[3]).total()
+        total_gold_tokens = sum(len(signal.token_ids) for signal in gold_signals)
+        total_pred_tokens = sum(len(signal.token_ids) for signal in pred_signals)
 
         det_p, det_r, det_f1 = _calc_prf(matched_detection, pred_count, gold_count)
         typ_p, typ_r, typ_f1 = _calc_prf(matched_type, pred_count, gold_count)
@@ -303,8 +305,11 @@ class ErstScorer:
         self,
         gold: RstAnalysis,
         pred: RstAnalysis,
+        *, signal_identities_prealigned: bool = False,
     ) -> tuple[SecondaryEdgeMetrics, SignalMetrics]:
         """Score secondary edges and signals from complete RstAnalysis objects."""
         sec_metrics = self.score_secondary_edges(gold, pred)
-        sig_metrics = self.score_signals(gold.signals, pred.signals)
+        sig_metrics = self.score_signals(
+            gold.signals, pred.signals, identities_prealigned=signal_identities_prealigned,
+        )
         return sec_metrics, sig_metrics

@@ -13,6 +13,8 @@ from tqdm import tqdm
 from transformers import AutoConfig, AutoModel, AutoTokenizer
 
 from rdam.rst.base_predictor import BasePredictor, resolve_device, str2bool
+from rdam.rst.contracts.document import DocumentToken
+from rdam.rst.inference_evidence import NetworkStructureDecision
 from rdam.rst.model_authority import (
     XLM_ROBERTA_LARGE_MODEL_ID,
     XLM_ROBERTA_LARGE_REVISION,
@@ -26,6 +28,7 @@ from .inventory import (
     load_relation_inventory_json,
     parse_corpora_config,
     relation_table_from_txt,
+    resolve_inventory_index,
 )
 from .src.parser.data import Data
 from .src.parser.parsing_net import ParsingNet
@@ -93,13 +96,7 @@ class PredictorUniRST(BasePredictor):
                     f"dataset_names ({self.dataset_names})."
                 )
         else:
-            key = self.relinventory.strip().lower()
-            try:
-                self.relinventory_idx = self.dataset_names.index(key)
-            except ValueError as exc:
-                raise ValueError(
-                    f"Unknown relinventory {self.relinventory!r}. Available datasets: {self.dataset_names}."
-                ) from exc
+            self.relinventory_idx = resolve_inventory_index(self.dataset_names, self.relinventory)
 
         self.relation_tables: list[list[str]] = []
         for corpus_name in self.dataset_names:
@@ -450,7 +447,7 @@ class PredictorUniRST(BasePredictor):
 
         return config
 
-    def tokenize(self, data: Data) -> Data:
+    def tokenize(self, data: Data, *, captured_offsets: list[list[tuple[int, int]]] | None = None) -> Data:
         """Takes word-level tokenized data and converts it to transformer subword inputs."""
 
         # (word_start_char, word_end_char+1) for each token
@@ -468,6 +465,8 @@ class PredictorUniRST(BasePredictor):
 
         texts = [" ".join(cast(list[str], line)).strip() for line in data.input_sentences]
         tokens: dict[str, Any] = self.tokenizer(texts, add_special_tokens=False, return_offsets_mapping=True)
+        if captured_offsets is not None:
+            captured_offsets.extend(tokens["offset_mapping"])
         tokens["entity_ids"] = None
         tokens["entity_position_ids"] = None
 
@@ -550,6 +549,8 @@ class PredictorUniRST(BasePredictor):
         text: str,
         tokens: Sequence[str] | None = None,
         token_offsets: Sequence[tuple[int, int]] | None = None,
+        *,
+        capture_evidence: bool = False,
     ) -> dict[str, Any]:
         """Parse text into an RST tree.
 
@@ -568,12 +569,17 @@ class PredictorUniRST(BasePredictor):
 
             word_tokens = list(tokens)
             offsets = self._guess_token_offsets(text, word_tokens) if token_offsets is None else list(token_offsets)
+            analysis_tokens = self.capture_word_tokens(text, word_tokens, offsets)
             offset_positions, original_offsets = self.build_offset_converter_from_words(text, word_tokens, offsets)
 
             if len(word_tokens) < 3:
                 tree = DUConverter.dummy_tree(word_tokens)
                 self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
-                return {"rst": [tree]}
+                return {
+                    "rst": [tree],
+                    "analysis_tokens": analysis_tokens,
+                    **({"network_decisions": ()} if capture_evidence else {}),
+                }
 
             input_data = Data(
                 input_sentences=cast(list[list[str] | list[int]], [word_tokens]),
@@ -590,7 +596,9 @@ class PredictorUniRST(BasePredictor):
                 "true_spans": [],
                 "true_edu_breaks": [],
             }
-            batch = self.tokenize(input_data)
+            subword_offsets: list[list[tuple[int, int]]] = []
+            batch = self.tokenize(input_data, captured_offsets=subword_offsets)
+            decision_traces: list[list[NetworkStructureDecision]] | None = [] if capture_evidence else None
             dataset_index = batch.dataset_index
             if dataset_index is None:
                 raise ValueError("Data.dataset_index is None; call `tokenize` before parse.")
@@ -607,6 +615,7 @@ class PredictorUniRST(BasePredictor):
                     generate_tree=True,
                     use_pred_segmentation=True,
                     dataset_index=dataset_index,
+                    decision_traces=decision_traces,
                 )
 
             predictions["tokens"] += [self.tokenizer.convert_ids_to_tokens(sent) for sent in batch.input_sentences]
@@ -617,13 +626,21 @@ class PredictorUniRST(BasePredictor):
             predictions["true_spans"] += batch.golden_metric
             predictions["true_edu_breaks"] += batch.edu_breaks
 
-            tree = DUConverter(predictions, tokenization_type="default").collect(tokens=[word_tokens])[0]
-            self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
-            return {"rst": [tree]}
+            tree = DUConverter(predictions, tokenization_type="default").collect()[0]
+            spans = self.predicted_edu_source_spans(
+                predict_edu_breaks[0], subword_offsets[0], offset_positions, original_offsets, text,
+            )
+            self.remap_tree_to_edu_spans(tree, spans, text)
+            result: dict[str, Any] = {"rst": [tree], "analysis_tokens": analysis_tokens}
+            if decision_traces is not None:
+                result["network_decisions"] = tuple(decision_traces[0])
+            return result
 
-        return self.parse_rst_batch([text], batch_size=1)[0]
+        return self.parse_rst_batch([text], batch_size=1, capture_evidence=capture_evidence)[0]
 
-    def parse_rst_batch(self, texts: Sequence[str], batch_size: int = 16) -> list[dict[str, Any]]:
+    def parse_rst_batch(
+        self, texts: Sequence[str], batch_size: int = 16, *, capture_evidence: bool = False
+    ) -> list[dict[str, Any]]:
         """Parses multiple texts in batched forward passes using UniRST.
 
         Args:
@@ -651,23 +668,31 @@ class PredictorUniRST(BasePredictor):
             model_input_sentences: list[list[str]] = []
             chunk_offset_positions: list[list[int]] = []
             chunk_original_offsets: list[list[int]] = []
+            chunk_analysis_tokens: list[tuple[DocumentToken, ...]] = []
 
             for local_idx, text in enumerate(chunk_texts):
                 global_idx = chunk_start + local_idx
                 razdel_tokens = list(razdel.tokenize(text))
                 word_tokens = [token.text for token in razdel_tokens]
+                analysis_tokens = self.capture_word_tokens(
+                    text, word_tokens, [(token.start, token.stop) for token in razdel_tokens]
+                )
                 offsets = [(token.start, token.stop) for token in razdel_tokens]
                 offset_positions, original_offsets = self.build_offset_converter_from_words(text, word_tokens, offsets)
 
                 if len(word_tokens) < 3:
                     tree = DUConverter.dummy_tree(word_tokens)
                     self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
-                    results[global_idx] = {"rst": [tree]}
+                    trivial_result: dict[str, Any] = {"rst": [tree], "analysis_tokens": analysis_tokens}
+                    if capture_evidence:
+                        trivial_result["network_decisions"] = ()
+                    results[global_idx] = trivial_result
                 else:
                     model_indices.append(global_idx)
                     model_input_sentences.append(word_tokens)
                     chunk_offset_positions.append(offset_positions)
                     chunk_original_offsets.append(original_offsets)
+                    chunk_analysis_tokens.append(analysis_tokens)
 
             if not model_indices:
                 continue
@@ -680,7 +705,9 @@ class PredictorUniRST(BasePredictor):
                 parsing_breaks=[[] for _ in model_input_sentences],
                 golden_metric=[[] for _ in model_input_sentences],
             )
-            batch = self.tokenize(input_data)
+            subword_offsets: list[list[tuple[int, int]]] = []
+            batch = self.tokenize(input_data, captured_offsets=subword_offsets)
+            decision_traces: list[list[NetworkStructureDecision]] | None = [] if capture_evidence else None
             dataset_index = batch.dataset_index
             if dataset_index is None:
                 raise ValueError("Data.dataset_index is None; call `tokenize` before parse.")
@@ -697,6 +724,7 @@ class PredictorUniRST(BasePredictor):
                     generate_tree=True,
                     use_pred_segmentation=True,
                     dataset_index=dataset_index,
+                    decision_traces=decision_traces,
                 )
 
             if span_batch is None:
@@ -711,25 +739,40 @@ class PredictorUniRST(BasePredictor):
                 "true_edu_breaks": batch.edu_breaks,
             }
 
-            trees = DUConverter(predictions, tokenization_type="default").collect(tokens=model_input_sentences)
+            trees = DUConverter(predictions, tokenization_type="default").collect()
+            if decision_traces is not None and len(decision_traces) != len(model_indices):
+                raise RuntimeError("network evidence did not produce one trace per model input")
 
-            for g_idx, tree, offset_pos, orig_off in zip(
-                model_indices, trees, chunk_offset_positions, chunk_original_offsets, strict=True
+            for local_index, (g_idx, tree, offset_pos, orig_off) in enumerate(
+                zip(model_indices, trees, chunk_offset_positions, chunk_original_offsets, strict=True)
             ):
-                self.remap_tree_offsets(tree, offset_pos, orig_off, texts[g_idx])
-                results[g_idx] = {"rst": [tree]}
+                spans = self.predicted_edu_source_spans(
+                    predict_edu_breaks[local_index], subword_offsets[local_index],
+                    offset_pos, orig_off, texts[g_idx],
+                )
+                self.remap_tree_to_edu_spans(tree, spans, texts[g_idx])
+                model_result: dict[str, Any] = {
+                    "rst": [tree],
+                    "analysis_tokens": chunk_analysis_tokens[local_index],
+                }
+                if decision_traces is not None:
+                    model_result["network_decisions"] = tuple(decision_traces[local_index])
+                results[g_idx] = model_result
 
         if any(result is None for result in results):
             raise RuntimeError("batch parsing did not produce a result for every input")
         return [result for result in results if result is not None]
 
     @override
-    def parse_from_edus(self, edus: Sequence[str]) -> dict[str, Any]:
+    def parse_from_edus(self, edus: Sequence[str], *, capture_evidence: bool = False) -> dict[str, Any]:
         normalized_edus = self._validate_edus(edus)
         text, spans = self._compute_edu_char_spans(normalized_edus)
 
         razdel_tokens = list(razdel.tokenize(text))
         word_tokens = [token.text for token in razdel_tokens]
+        analysis_tokens = self.capture_word_tokens(
+            text, word_tokens, [(token.start, token.stop) for token in razdel_tokens]
+        )
         offsets = [(token.start, token.stop) for token in razdel_tokens]
 
         offset_positions, original_offsets = self.build_offset_converter_from_words(text, word_tokens, offsets)
@@ -746,6 +789,8 @@ class PredictorUniRST(BasePredictor):
                 raise ValueError("Failed to align the provided EDU with the parser output.")
             return {
                 "rst": [tree],
+                "analysis_tokens": analysis_tokens,
+                **({"network_decisions": ()} if capture_evidence else {}),
             }
 
         edu_breaks = self._char_spans_to_token_breaks(offsets, spans)
@@ -772,6 +817,7 @@ class PredictorUniRST(BasePredictor):
         }
 
         batch = self.tokenize(data)
+        decision_traces: list[list[NetworkStructureDecision]] | None = [] if capture_evidence else None
         dataset_index = batch.dataset_index
         if dataset_index is None:
             raise ValueError("Data.dataset_index is None; call `tokenize` before parse.")
@@ -794,6 +840,7 @@ class PredictorUniRST(BasePredictor):
                 generate_tree=True,
                 use_pred_segmentation=False,
                 dataset_index=dataset_index,
+                decision_traces=decision_traces,
             )
 
         predictions["tokens"] += [self.tokenizer.convert_ids_to_tokens(text) for text in batch.input_sentences]
@@ -804,14 +851,15 @@ class PredictorUniRST(BasePredictor):
         predictions["true_spans"] += batch.golden_metric
         predictions["true_edu_breaks"] += batch.edu_breaks
 
-        tree = DUConverter(predictions, tokenization_type="default").collect(tokens=[word_tokens])[0]
-        self.remap_tree_offsets(tree, offset_positions, original_offsets, text)
+        tree = DUConverter(predictions, tokenization_type="default").collect()[0]
+        self.remap_tree_to_edu_spans(tree, spans, text)
 
         leaves: list[str] = []
         self._collect_leaf_texts(tree, leaves)
         if leaves != normalized_edus:
             raise ValueError("The produced segmentation does not match the provided EDUs.")
 
-        return {
-            "rst": [tree],
-        }
+        result: dict[str, Any] = {"rst": [tree], "analysis_tokens": analysis_tokens}
+        if decision_traces is not None:
+            result["network_decisions"] = tuple(decision_traces[0])
+        return result

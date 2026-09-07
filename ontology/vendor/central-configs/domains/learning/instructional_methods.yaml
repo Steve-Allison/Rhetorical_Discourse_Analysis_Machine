@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/learning/instructional_methods
   title: Learning — Instructional Methods
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: learning
@@ -127,7 +127,6 @@ entity_collections:
     description: References to facilitated discussion activities in learning content
     home_domain: learning
     status: canonical
-    ner_label: DISCUSSION_ACTIVITY
     examples:
     - facilitated discussion on best practices
     - think-pair-share activity
@@ -138,7 +137,6 @@ entity_collections:
     anti_examples:
     - discussion board post
     - the discussion continues
-    confidence_threshold: 0.7
     evidence_ids: &id002
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/learning/instructional_methods
@@ -234,7 +232,6 @@ entity_collections:
     description: References to roleplay, simulation, and scenario-based practice activities
     home_domain: learning
     status: canonical
-    ner_label: ROLEPLAY_ACTIVITY
     examples:
     - sales roleplay exercise
     - customer scenario simulation
@@ -245,7 +242,6 @@ entity_collections:
     anti_examples:
     - role of the manager
     - play a role in
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/collaborative_activity
@@ -360,7 +356,6 @@ entity_collections:
     description: References to group-based collaborative learning activities
     home_domain: learning
     status: canonical
-    ner_label: COLLABORATIVE_ACTIVITY
     examples:
     - case study analysis in groups
     - collaborative problem-solving exercise
@@ -371,7 +366,6 @@ entity_collections:
     anti_examples:
     - collaboration tool
     - case study document
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/demonstration_activity
@@ -500,7 +494,6 @@ entity_collections:
     description: References to instructor demonstration and modelling activities
     home_domain: learning
     status: canonical
-    ner_label: DEMONSTRATION_ACTIVITY
     examples:
     - live product demonstration
     - worked example walkthrough
@@ -511,7 +504,6 @@ entity_collections:
     anti_examples:
     - demonstrate knowledge
     - product demonstration video
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/quiz_activity
@@ -615,7 +607,6 @@ entity_collections:
     description: References to quiz, knowledge check, and test activities
     home_domain: learning
     status: canonical
-    ner_label: QUIZ_ACTIVITY
     examples:
     - end-of-module quiz
     - knowledge check
@@ -626,7 +617,6 @@ entity_collections:
     anti_examples:
     - quiz show
     - quiz night
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/scenario_activity
@@ -790,7 +780,6 @@ entity_collections:
     description: References to scenario-based and branching learning activities
     home_domain: learning
     status: canonical
-    ner_label: SCENARIO_ACTIVITY
     examples:
     - branching scenario exercise
     - decision tree activity
@@ -800,7 +789,6 @@ entity_collections:
     anti_examples:
     - worst-case scenario
     - scenario planning meeting
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/reflection_activity
@@ -905,7 +893,6 @@ entity_collections:
     description: References to reflection, journaling, and metacognitive activities
     home_domain: learning
     status: canonical
-    ner_label: REFLECTION_ACTIVITY
     examples:
     - reflection journal entry
     - self-assessment activity
@@ -916,7 +903,6 @@ entity_collections:
     anti_examples:
     - reflective surface
     - self-assessment tax form
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/practice_activity
@@ -1031,7 +1017,6 @@ entity_collections:
     description: References to hands-on practice, application, and skill-building exercises
     home_domain: learning
     status: canonical
-    ner_label: PRACTICE_ACTIVITY
     examples:
     - guided practice exercise
     - hands-on lab
@@ -1042,7 +1027,6 @@ entity_collections:
     anti_examples:
     - practice makes perfect
     - best practice
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/live_demonstration_activity
     label: Live Demonstration Activity
@@ -1050,7 +1034,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: LIVE_DEMONSTRATION
     examples:
     - live product demo
     - instructor walkthrough
@@ -1058,7 +1041,6 @@ entity_collections:
     - real-time feature demo
     anti_examples:
     - demonstration of good faith
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/technical_hackathon
     label: Technical Hackathon
@@ -1066,7 +1048,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: TECHNICAL_HACKATHON
     examples:
     - technical hackathon
     - hack day
@@ -1074,7 +1055,6 @@ entity_collections:
     - prototype challenge
     anti_examples:
     - hacking into systems
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/peer_instruction
     label: Peer Instruction
@@ -1082,7 +1062,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PEER_INSTRUCTION
     examples:
     - peer instruction activity
     - teach-back exercise
@@ -1090,7 +1069,6 @@ entity_collections:
     - learner-led mini-lesson
     anti_examples:
     - instructor feedback
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/fishbowl_exercise
     label: Fishbowl Exercise
@@ -1098,14 +1076,12 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: FISHBOWL_EXERCISE
     examples:
     - fishbowl discussion
     - fishbowl exercise
     - inner circle outer circle activity
     anti_examples:
     - fishbowl aquarium
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/objection_handling_drill
     label: Objection Handling Drill
@@ -1114,14 +1090,12 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: OBJECTION_HANDLING_DRILL
     examples:
     - objection handling drill
     - pushback practice
     - handling tough questions exercise
     anti_examples:
     - legal objection filed
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/branching_scenario
     label: Branching Scenario
@@ -1130,7 +1104,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: BRANCHING_SCENARIO
     examples:
     - branching scenario simulation
     - choose-your-own-adventure exercise
@@ -1138,7 +1111,6 @@ entity_collections:
     - interactive branching module
     anti_examples:
     - branching out into new markets
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/virtual_lab
     label: Virtual Lab
@@ -1146,7 +1118,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: VIRTUAL_LAB
     examples:
     - virtual lab exercise
     - sandbox environment
@@ -1154,16 +1125,14 @@ entity_collections:
     - hands-on lab activity
     anti_examples:
     - laboratory research
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/microlearning_nugget
     label: Microlearning Nugget
-    description: References to very short, focused learning units (typically 2-5 minutes, 7 at most) targeting a single concept
-      or skill
+    description: References to very short, focused learning units targeting a single concept or skill; the unit duration
+      band is library knowledge
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: MICROLEARNING_NUGGET
     examples:
     - microlearning nugget
     - bite-size learning module
@@ -1171,7 +1140,6 @@ entity_collections:
     - 5-minute how-to video
     anti_examples:
     - gold nugget
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/documentation_treasure_hunt
     label: Documentation Treasure Hunt
@@ -1180,14 +1148,12 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: DOCUMENTATION_TREASURE_HUNT
     examples:
     - documentation treasure hunt
     - product knowledge scavenger hunt
     - knowledge base exploration challenge
     anti_examples:
     - treasure island
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/cop_activity
     label: Cop Activity
@@ -1195,7 +1161,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: COMMUNITY_OF_PRACTICE
     examples:
     - community of practice
     - peer learning forum
@@ -1203,7 +1168,6 @@ entity_collections:
     - tips and tricks community
     anti_examples:
     - community service
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/reflective_journal
     label: Reflective Journal
@@ -1212,7 +1176,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: REFLECTIVE_JOURNAL
     examples:
     - reflective journal entry
     - learning diary
@@ -1220,7 +1183,6 @@ entity_collections:
     - weekly reflection prompt
     anti_examples:
     - journal publication
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/demo_recording_analysis
     label: Demo Recording Analysis
@@ -1228,7 +1190,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: DEMO_RECORDING_ANALYSIS
     examples:
     - demo recording analysis
     - video self-review exercise
@@ -1236,7 +1197,6 @@ entity_collections:
     - expert demo comparison
     anti_examples:
     - recording studio setup
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/action_learning_project
     label: Action Learning Project
@@ -1245,7 +1205,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ACTION_LEARNING_PROJECT
     examples:
     - action learning project
     - team-based capstone project
@@ -1253,7 +1212,6 @@ entity_collections:
     - cohort project with weekly check-ins
     anti_examples:
     - action plan document
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/skill_based_scenario
     label: Skill Based Scenario
@@ -1261,7 +1219,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SKILL_SCENARIO
     evidence_ids: *id002
   - id: coe:entity/problem_based_scenario
     label: Problem Based Scenario
@@ -1269,7 +1226,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PROBLEM_SCENARIO
     evidence_ids: *id002
   - id: coe:entity/issue_based_scenario
     label: Issue Based Scenario
@@ -1277,7 +1233,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ISSUE_SCENARIO
     evidence_ids: *id002
   - id: coe:entity/speculative_scenario
     label: Speculative Scenario
@@ -1285,7 +1240,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SPECULATIVE_SCENARIO
     evidence_ids: *id002
   - id: coe:entity/gaming_scenario
     label: Gaming Scenario
@@ -1293,7 +1247,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: GAMING_SCENARIO
     evidence_ids: *id002
   - id: coe:entity/brain_dump_activity
     label: Brain Dump Activity
@@ -1302,7 +1255,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: BRAIN_DUMP
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/formative_assessment
@@ -1421,7 +1373,6 @@ entity_collections:
     description: Assessment conducted during the learning process to monitor progress and adjust instruction
     home_domain: learning
     status: canonical
-    ner_label: FORMATIVE_ASSESSMENT
     examples:
     - mid-module knowledge check
     - in-class polling
@@ -1433,7 +1384,6 @@ entity_collections:
     anti_examples:
     - final exam
     - certification test
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/summative_assessment
@@ -1488,7 +1438,6 @@ entity_collections:
     description: Assessment conducted at the end of a learning unit to evaluate overall achievement
     home_domain: learning
     status: canonical
-    ner_label: SUMMATIVE_ASSESSMENT
     examples:
     - final exam
     - end-of-course assessment
@@ -1500,7 +1449,6 @@ entity_collections:
     anti_examples:
     - practice test
     - self-assessment
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/kirkpatrick_level
@@ -1646,7 +1594,6 @@ entity_collections:
     description: References to Kirkpatrick's four levels of training evaluation
     home_domain: learning
     status: canonical
-    ner_label: KIRKPATRICK_LEVEL
     examples:
     - 'Level 1: Reaction'
     - 'Level 2: Learning'
@@ -1658,7 +1605,6 @@ entity_collections:
     anti_examples:
     - level playing field
     - reaction time
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/rubric_component
@@ -1785,7 +1731,6 @@ entity_collections:
     description: Structural elements of assessment rubrics including criteria, levels, and descriptors
     home_domain: learning
     status: canonical
-    ner_label: RUBRIC_COMPONENT
     examples:
     - 'criterion: clarity of explanation'
     - 'performance level: proficient'
@@ -1796,7 +1741,6 @@ entity_collections:
     anti_examples:
     - Rubik's cube
     - anchor text
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/proficiency_level
@@ -1848,7 +1792,6 @@ entity_collections:
     description: Named competency or proficiency tiers used in learner assessment
     home_domain: learning
     status: canonical
-    ner_label: PROFICIENCY_LEVEL
     examples:
     - Novice
     - Developing
@@ -1861,7 +1804,6 @@ entity_collections:
     anti_examples:
     - advanced settings
     - expert mode
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/feedback_modality
@@ -1940,7 +1882,6 @@ entity_collections:
     description: Types of feedback delivery in learning assessment contexts
     home_domain: learning
     status: canonical
-    ner_label: FEEDBACK_MODALITY
     examples:
     - peer review
     - written instructor feedback
@@ -1952,7 +1893,6 @@ entity_collections:
     anti_examples:
     - feedback loop
     - audio feedback
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/assessment_item_type
@@ -2031,7 +1971,6 @@ entity_collections:
     description: Specific question or task formats used in assessments
     home_domain: learning
     status: canonical
-    ner_label: ASSESSMENT_ITEM
     examples:
     - multiple choice question
     - true/false item
@@ -2044,7 +1983,6 @@ entity_collections:
     anti_examples:
     - multiple options
     - true story
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/hinge_question
@@ -2068,11 +2006,10 @@ entity_collections:
     id: coe:entity/hinge_question
     label: Hinge Question
     description: A single diagnostic question at a critical decision point that reveals whether learners hold a specific misconception
-      before instruction proceeds. Takes 1-2 minutes; if most answer correctly, the class moves on; if not, re-teaching is
-      required.
+      before instruction proceeds; if most answer correctly the class moves on and if not re-teaching is required, and the
+      time it takes to administer is library knowledge.
     home_domain: learning
     status: canonical
-    ner_label: HINGE_QUESTION
     examples:
     - hinge question to check understanding before moving on
     - diagnostic question revealing common misconception
@@ -2081,7 +2018,6 @@ entity_collections:
     anti_examples:
     - door hinge
     - hinge on the outcome
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/meaningful_distractor
@@ -2108,7 +2044,6 @@ entity_collections:
       count. Each distractor should reveal a particular misunderstanding when selected.
     home_domain: learning
     status: canonical
-    ner_label: MEANINGFUL_DISTRACTOR
     examples:
     - distractor designed to catch common calculation error
     - wrong option that reveals confusion between two similar concepts
@@ -2117,7 +2052,6 @@ entity_collections:
     - obviously wrong answer
     - joke option
     - all of the above
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/catalytic_feedback
@@ -2144,7 +2078,6 @@ entity_collections:
       archived for review, and aggregated to inform instructional improvement.
     home_domain: learning
     status: canonical
-    ner_label: CATALYTIC_FEEDBACK
     examples:
     - immediate feedback explaining why the correct answer works and why the chosen answer fails
     - specific corrective feedback identifying the exact error and providing a path to correct understanding
@@ -2153,7 +2086,6 @@ entity_collections:
     - correct or incorrect only
     - generic encouragement
     - delayed end-of-course feedback
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/kirkpatrick_model
     label: Kirkpatrick Model
@@ -2161,7 +2093,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: KIRKPATRICK
     evidence_ids: *id002
   - id: coe:entity/ltem_tier_mapping
     label: Ltem Tier Mapping
@@ -2170,7 +2101,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: LTEM_MAPPING
     evidence_ids: *id002
   - id: coe:entity/critical_impact_of_failure
     label: Critical Impact Of Failure
@@ -2179,7 +2109,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: CIF_SCALE
     evidence_ids: *id002
   - id: coe:entity/performance_based_assessment
     label: Performance Based Assessment
@@ -2188,7 +2117,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PBA
     evidence_ids: *id002
   - id: coe:entity/assessment_of_learning
     label: Assessment Of Learning
@@ -2197,7 +2125,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: AOL
     evidence_ids: *id002
   - id: coe:entity/assessment_for_learning
     label: Assessment For Learning
@@ -2206,7 +2133,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: AFL
     evidence_ids: *id002
   - id: coe:entity/assessment_as_learning
     label: Assessment As Learning
@@ -2214,7 +2140,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: AAL
     evidence_ids: *id002
   - id: coe:entity/item_response_theory
     label: Item Response Theory
@@ -2223,7 +2148,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: IRT
     evidence_ids: *id002
   - id: coe:entity/differential_item_functioning
     label: Differential Item Functioning
@@ -2232,7 +2156,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: DIF
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/extraneous_load_marker
@@ -2361,7 +2284,6 @@ entity_collections:
     description: References to extraneous cognitive load — unnecessary processing caused by poor design
     home_domain: learning
     status: canonical
-    ner_label: EXTRANEOUS_LOAD
     examples:
     - the slide is cluttered with unnecessary detail
     - split attention between the legend and the chart
@@ -2372,7 +2294,6 @@ entity_collections:
     anti_examples:
     - the content is inherently complex
     - the topic is difficult
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/intrinsic_load_marker
@@ -2433,7 +2354,6 @@ entity_collections:
     description: References to intrinsic cognitive load — inherent difficulty of the material being learned
     home_domain: learning
     status: canonical
-    ner_label: INTRINSIC_LOAD
     examples:
     - the material is inherently complex
     - high element interactivity makes this topic difficult
@@ -2443,7 +2363,6 @@ entity_collections:
     anti_examples:
     - the design is confusing
     - too much text on the slide
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/germane_load_marker
@@ -2477,7 +2396,6 @@ entity_collections:
     description: References to germane cognitive load — productive effort spent on schema construction and deep processing
     home_domain: learning
     status: canonical
-    ner_label: GERMANE_LOAD
     examples:
     - schema construction through worked examples
     - productive struggle with the material
@@ -2487,7 +2405,6 @@ entity_collections:
     anti_examples:
     - passive reading
     - surface memorisation
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/mayer_extraneous_principle
@@ -2732,7 +2649,6 @@ entity_collections:
       spatial contiguity, temporal contiguity'
     home_domain: learning
     status: canonical
-    ner_label: MAYER_EXTRANEOUS
     examples:
     - violates the coherence principle
     - add signalling cues to highlight key content
@@ -2743,7 +2659,6 @@ entity_collections:
     anti_examples:
     - coherent argument structure
     - consistent signalling
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/mayer_essential_principle
@@ -2945,7 +2860,6 @@ entity_collections:
     description: 'References to Mayer''s principles for managing essential processing: segmenting, pre-training, modality'
     home_domain: learning
     status: canonical
-    ner_label: MAYER_ESSENTIAL
     examples:
     - segment this content into shorter modules
     - pre-training on key terms before the lesson
@@ -2955,7 +2869,6 @@ entity_collections:
     anti_examples:
     - training module
     - audio modality
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/mayer_generative_principle
@@ -3111,7 +3024,6 @@ entity_collections:
       image, embodiment, immersion, generativity'
     home_domain: learning
     status: canonical
-    ner_label: MAYER_GENERATIVE
     examples:
     - apply the multimedia principle — words and pictures
     - personalisation — use conversational language
@@ -3122,7 +3034,6 @@ entity_collections:
     anti_examples:
     - multimedia content
     - personal voice
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/working_memory_marker
@@ -3247,7 +3158,6 @@ entity_collections:
     description: References to working memory limitations, Miller's Law, and capacity constraints in instructional design
     home_domain: learning
     status: canonical
-    ner_label: WORKING_MEMORY
     examples:
     - exceeds working memory capacity
     - Miller's Law limits to 7 plus or minus 2
@@ -3258,7 +3168,6 @@ entity_collections:
     anti_examples:
     - memory of the event
     - in memory of
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/expertise_reversal_marker
@@ -3333,7 +3242,6 @@ entity_collections:
       learners
     home_domain: learning
     status: canonical
-    ner_label: EXPERTISE_REVERSAL
     examples:
     - expertise reversal effect — novices benefit but experts are slowed
     - too much scaffolding for experienced learners
@@ -3343,7 +3251,6 @@ entity_collections:
     anti_examples:
     - reverse engineering
     - expert system
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/progressive_disclosure_marker
@@ -3527,7 +3434,6 @@ entity_collections:
     description: References to progressive disclosure, staged revelation, and layered complexity in content design
     home_domain: learning
     status: canonical
-    ner_label: PROGRESSIVE_DISCLOSURE
     examples:
     - use progressive disclosure to reveal details
     - build the diagram progressively
@@ -3538,7 +3444,6 @@ entity_collections:
     anti_examples:
     - disclosure requirements
     - financial disclosure
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/cognitive_debt_marker
     label: Cognitive Debt Marker
@@ -3547,14 +3452,12 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: COGNITIVE_DEBT
     examples:
     - this slide creates too much cognitive debt
     - the complexity compounds across these slides
     anti_examples:
     - technical debt in the codebase
     - financial debt
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - id: coe:entity/slide_anti_patterns
     label: Slide Anti Patterns
@@ -3562,7 +3465,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SLIDE_ANTI_PATTERNS
     evidence_ids: *id002
   - id: coe:entity/mayers_multimedia_principles
     label: Mayers Multimedia Principles
@@ -3585,7 +3487,6 @@ entity_collections:
       - coe:source/legacy-file/9621ebddcda28741
       - coe:source/legacy-file/c74fa337caf6512b
       - coe:decision/curation/2026-09-01/relational-completeness
-    ner_label: MAYERS_PRINCIPLES
     close_match:
     - https://www.wikidata.org/wiki/Q5819925
     evidence_ids: *id002
@@ -3595,7 +3496,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PID
     evidence_ids: *id002
   - id: coe:entity/coherence_principle
     label: Coherence Principle
@@ -3603,7 +3503,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: COHERENCE_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/signalling_principle
     label: Signalling Principle
@@ -3611,7 +3510,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SIGNALLING_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/redundancy_principle
     label: Redundancy Principle
@@ -3619,7 +3517,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: REDUNDANCY_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/spatial_contiguity_principle
     label: Spatial Contiguity Principle
@@ -3627,7 +3524,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SPATIAL_CONTIGUITY
     evidence_ids: *id002
   - id: coe:entity/temporal_contiguity_principle
     label: Temporal Contiguity Principle
@@ -3635,7 +3531,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: TEMPORAL_CONTIGUITY
     evidence_ids: *id002
   - id: coe:entity/segmenting_principle
     label: Segmenting Principle
@@ -3643,7 +3538,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SEGMENTING_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/pre_training_principle
     label: Pre Training Principle
@@ -3651,7 +3545,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PRE_TRAINING
     evidence_ids: *id002
   - id: coe:entity/modality_principle
     label: Modality Principle
@@ -3659,7 +3552,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: MODALITY_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/personalization_principle
     label: Personalization Principle
@@ -3667,7 +3559,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PERSONALIZATION_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/voice_principle
     label: Voice Principle
@@ -3677,7 +3568,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: VOICE_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/image_principle
     label: Image Principle
@@ -3685,7 +3575,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: IMAGE_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/embodiment_principle
     label: Embodiment Principle
@@ -3693,7 +3582,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: EMBODIMENT_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/immersion_principle
     label: Immersion Principle
@@ -3701,7 +3589,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: IMMERSION_PRINCIPLE
     evidence_ids: *id002
   - id: coe:entity/generative_activity_principle
     label: Generative Activity Principle
@@ -3709,7 +3596,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: GENERATIVE_ACTIVITY
     evidence_ids: *id002
   - id: coe:entity/storage_strength
     label: Storage Strength
@@ -3717,7 +3603,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: STORAGE_STRENGTH
     evidence_ids: *id002
   - id: coe:entity/retrieval_strength
     label: Retrieval Strength
@@ -3726,7 +3611,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: RETRIEVAL_STRENGTH
     evidence_ids: *id002
   - id: coe:entity/dual_coding_theory
     label: Dual Coding Theory
@@ -3735,7 +3619,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: DUAL_CODING
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/planning_artefact_marker
@@ -3877,7 +3760,6 @@ entity_collections:
       screenplans, and design documents
     home_domain: learning
     status: canonical
-    ner_label: PLANNING_ARTEFACT
     examples:
     - the wireframe outlines the video structure
     - refer to the content map for module alignment
@@ -3889,7 +3771,6 @@ entity_collections:
     - the building blueprint
     - the street map
     - the wire fence
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/content_structure_marker
@@ -4104,7 +3985,6 @@ entity_collections:
       ID system for disambiguation per course_structure_hierarchy_corpus_research.
     home_domain: learning
     status: canonical
-    ner_label: CONTENT_STRUCTURE
     examples:
     - divide the course into four modules
     - each segment should be 5-10 minutes
@@ -4118,7 +3998,6 @@ entity_collections:
     - a module of code
     - the screen resolution
     - a movie scene
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/pedagogical_sequence_marker
@@ -4327,7 +4206,6 @@ entity_collections:
       instruction, practice, summary, assessment, closure
     home_domain: learning
     status: canonical
-    ner_label: PEDAGOGICAL_SEQUENCE
     examples:
     - open with a hook to grab attention
     - provide an advance organiser before the main content
@@ -4339,7 +4217,6 @@ entity_collections:
     - hook the cable
     - advance the slider
     - open the file
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/delivery_modality_marker
@@ -4402,7 +4279,6 @@ entity_collections:
       eLearning, live session, job aid, infographic
     home_domain: learning
     status: canonical
-    ner_label: DELIVERY_MODALITY
     examples:
     - use talking head for the introduction
     - switch to narrated animation for the process
@@ -4414,7 +4290,6 @@ entity_collections:
     - head of department
     - talking about the project
     - screen the candidates
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/interaction_element_marker
@@ -4505,7 +4380,6 @@ entity_collections:
       drag-and-drop, branching paths, discussion prompts
     home_domain: learning
     status: canonical
-    ner_label: INTERACTION_ELEMENT
     examples:
     - insert a knowledge check after each segment
     - add a poll to gauge understanding
@@ -4517,7 +4391,6 @@ entity_collections:
     - check the settings
     - poll the database
     - branch of the company
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/alignment_marker
@@ -4603,7 +4476,6 @@ entity_collections:
       objective-to-assessment alignment
     home_domain: learning
     status: canonical
-    ner_label: ALIGNMENT
     examples:
     - align the activity to learning objective 2
     - map each module to business outcomes
@@ -4615,7 +4487,6 @@ entity_collections:
     - alignment of the text
     - wheel alignment
     - political alignment
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/chunking_presentation
@@ -4632,13 +4503,11 @@ entity_collections:
     description: Chunking operationalized for presentation content architecture
     home_domain: learning
     status: canonical
-    ner_label: CHUNKING_PRESENTATION
     examples:
     - one idea per slide with progressive disclosure
     - content chunked into 5-7 minute segments
     anti_examples:
     - chunking vegetables for cooking
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - id: coe:entity/synchronous_delivery_block
     label: Synchronous Delivery Block
@@ -4646,7 +4515,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SYNCHRONOUS_DELIVERY_BLOCK
     examples:
     - synchronous session block
     - live instructor-led segment
@@ -4654,7 +4522,6 @@ entity_collections:
     - real-time workshop segment
     anti_examples:
     - synchronous motor
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/asynchronous_delivery_block
     label: Asynchronous Delivery Block
@@ -4662,7 +4529,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ASYNCHRONOUS_DELIVERY_BLOCK
     examples:
     - asynchronous learning block
     - self-paced module
@@ -4670,7 +4536,6 @@ entity_collections:
     - e-learning delivery block
     anti_examples:
     - asynchronous programming
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/blended_learning_sequence
     label: Blended Learning Sequence
@@ -4679,7 +4544,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: BLENDED_LEARNING_SEQUENCE
     examples:
     - blended learning sequence
     - hybrid learning programme
@@ -4687,7 +4551,6 @@ entity_collections:
     - mixed-mode delivery path
     anti_examples:
     - blended coffee
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/formative_assessment_checkpoint
     label: Formative Assessment Checkpoint
@@ -4696,7 +4559,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: FORMATIVE_ASSESSMENT_CHECKPOINT
     examples:
     - formative checkpoint after section 2
     - embedded knowledge check
@@ -4704,7 +4566,6 @@ entity_collections:
     - reflection prompt at timestamp 3:45
     anti_examples:
     - airport security checkpoint
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/summative_assessment_capstone
     label: Summative Assessment Capstone
@@ -4713,7 +4574,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SUMMATIVE_ASSESSMENT_CAPSTONE
     examples:
     - summative capstone demonstration
     - graded case analysis submission
@@ -4721,7 +4581,6 @@ entity_collections:
     - final assessment scenario
     anti_examples:
     - capstone of a column
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/polyhierarchy
     label: Polyhierarchy
@@ -4729,7 +4588,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: POLYHIERARCHY
     evidence_ids: *id002
   - id: coe:entity/dag_hierarchy
     label: Dag Hierarchy
@@ -4737,7 +4595,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: DAG_HIERARCHY
     evidence_ids: *id002
   - id: coe:entity/facet_analysis
     label: Facet Analysis
@@ -4746,7 +4603,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: FACET_ANALYSIS
     evidence_ids: *id002
   - id: coe:entity/information_ecology
     label: Information Ecology
@@ -4754,7 +4610,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: INFO_ECOLOGY
     evidence_ids: *id002
   - id: coe:entity/competency_questions
     label: Competency Questions
@@ -4762,7 +4617,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: COMPETENCY_QUESTIONS
     evidence_ids: *id002
   - id: coe:entity/most_specific_placement_rule
     label: Most Specific Placement Rule
@@ -4771,7 +4625,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SPECIFIC_PLACEMENT
     evidence_ids: *id002
   - id: coe:entity/unyk_rule
     label: Unyk Rule
@@ -4779,7 +4632,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: UNYK_RULE
     evidence_ids: *id002
   - id: coe:entity/performance_support_pyramid
     label: Performance Support Pyramid
@@ -4787,7 +4639,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PS_PYRAMID
     evidence_ids: *id002
   - id: coe:entity/doco_spar_framework
     label: Doco Spar Framework
@@ -4796,7 +4647,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: DOCO
     evidence_ids: *id002
   - id: coe:entity/tbox_abox_distinction
     label: Tbox Abox Distinction
@@ -4804,7 +4654,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: TBOX_ABOX
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/course_format
@@ -4938,7 +4787,6 @@ entity_collections:
     description: References to structured course or programme formats
     home_domain: learning
     status: canonical
-    ner_label: COURSE_FORMAT
     examples:
     - full online course
     - 3-module learning programme
@@ -4950,7 +4798,6 @@ entity_collections:
     - of course
     - course of action
     - course correction
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/webinar_format
@@ -5012,7 +4859,6 @@ entity_collections:
     description: References to webinar, broadcast, and live online event formats
     home_domain: learning
     status: canonical
-    ner_label: WEBINAR_FORMAT
     examples:
     - live webinar
     - recorded webinar
@@ -5023,7 +4869,6 @@ entity_collections:
     anti_examples:
     - web page
     - online store
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/microlearning_format
@@ -5157,7 +5002,6 @@ entity_collections:
     description: References to short-form and bite-sized learning content
     home_domain: learning
     status: canonical
-    ner_label: MICROLEARNING_FORMAT
     examples:
     - 2-minute explainer video
     - bite-sized learning module
@@ -5169,7 +5013,6 @@ entity_collections:
     anti_examples:
     - micro management
     - small bite
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/job_aid_format
@@ -5270,7 +5113,6 @@ entity_collections:
     description: References to job aids, checklists, quick reference guides, and decision tools
     home_domain: learning
     status: canonical
-    ner_label: JOB_AID_FORMAT
     examples:
     - pre-call checklist
     - quick reference guide
@@ -5282,7 +5124,6 @@ entity_collections:
     anti_examples:
     - job application
     - first aid
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/visual_content_format
@@ -5344,7 +5185,6 @@ entity_collections:
     description: References to visual content formats like infographics, slide decks, and data visualisations
     home_domain: learning
     status: canonical
-    ner_label: VISUAL_FORMAT
     examples:
     - infographic summary
     - slide deck
@@ -5355,7 +5195,6 @@ entity_collections:
     anti_examples:
     - visual acuity
     - slide rule
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/enablement_format
@@ -5390,7 +5229,6 @@ entity_collections:
     description: References to sales enablement and internal communication content formats
     home_domain: learning
     status: canonical
-    ner_label: ENABLEMENT_FORMAT
     examples:
     - competitive battle card
     - sales enablement deck
@@ -5402,7 +5240,6 @@ entity_collections:
     anti_examples:
     - enable the feature
     - battle plan
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/remember_verb
@@ -5469,7 +5306,6 @@ entity_collections:
     description: Bloom's Level 1 action verbs indicating recall-level learning objectives
     home_domain: learning
     status: canonical
-    ner_label: REMEMBER_VERB
     examples:
     - define the key terms
     - list the five stages
@@ -5479,7 +5315,6 @@ entity_collections:
     anti_examples:
     - define your own approach
     - list and evaluate options
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/understand_verb
@@ -5521,7 +5356,6 @@ entity_collections:
     description: Bloom's Level 2 action verbs indicating comprehension-level learning objectives
     home_domain: learning
     status: canonical
-    ner_label: UNDERSTAND_VERB
     examples:
     - explain the difference between
     - describe how the process works
@@ -5531,7 +5365,6 @@ entity_collections:
     anti_examples:
     - explain and then create
     - compare prices
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/apply_verb
@@ -5599,7 +5432,6 @@ entity_collections:
     description: Bloom's Level 3 action verbs indicating application-level learning objectives
     home_domain: learning
     status: canonical
-    ner_label: APPLY_VERB
     examples:
     - apply the framework to a scenario
     - demonstrate the workflow
@@ -5609,7 +5441,6 @@ entity_collections:
     anti_examples:
     - apply for a job
     - use caution
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/analyze_verb
@@ -5696,7 +5527,6 @@ entity_collections:
     description: Bloom's Level 4 action verbs indicating analysis-level learning objectives
     home_domain: learning
     status: canonical
-    ner_label: ANALYZE_VERB
     examples:
     - analyze a customer presentation
     - examine the root cause
@@ -5706,7 +5536,6 @@ entity_collections:
     anti_examples:
     - analyze later
     - examine the room
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/evaluate_verb
@@ -5765,7 +5594,6 @@ entity_collections:
     description: Bloom's Level 5 action verbs indicating evaluation-level learning objectives
     home_domain: learning
     status: canonical
-    ner_label: EVALUATE_VERB
     examples:
     - evaluate the presentation against the rubric
     - justify the choice of approach
@@ -5775,7 +5603,6 @@ entity_collections:
     anti_examples:
     - evaluate the cost
     - judge the competition
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/create_verb
@@ -5835,7 +5662,6 @@ entity_collections:
     description: Bloom's Level 6 action verbs indicating creation-level learning objectives
     home_domain: learning
     status: canonical
-    ner_label: CREATE_VERB
     examples:
     - create a customer value story
     - design an onboarding sequence
@@ -5845,7 +5671,6 @@ entity_collections:
     anti_examples:
     - create an account
     - design team
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/unmeasurable_verb
@@ -5880,7 +5705,6 @@ entity_collections:
     description: Vague or unmeasurable verbs that indicate poorly-written learning objectives
     home_domain: learning
     status: canonical
-    ner_label: UNMEASURABLE_VERB
     examples:
     - understand the importance of
     - know the different types
@@ -5891,7 +5715,6 @@ entity_collections:
     anti_examples:
     - understand is not measurable
     - know your audience
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/objective_stem
@@ -5958,7 +5781,6 @@ entity_collections:
     description: Standard stems that introduce a learning objective statement
     home_domain: learning
     status: canonical
-    ner_label: OBJECTIVE_STEM
     examples:
     - By the end of this module, learners will be able to
     - After completing this course, participants will
@@ -5967,7 +5789,6 @@ entity_collections:
     anti_examples:
     - by the end of the day
     - the learner profile
-    confidence_threshold: 0.85
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/cdt_performance_levels
@@ -5984,13 +5805,11 @@ entity_collections:
     description: CDT Performance Level Classification for learning objectives
     home_domain: learning
     status: canonical
-    ner_label: CDT_PERFORMANCE_LEVELS
     examples:
     - CDT remember level for factual recall
     - CDT use level for procedural application
     anti_examples:
     - performance level review meeting
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/instructional_strategy
@@ -6194,7 +6013,6 @@ entity_collections:
     description: Teaching strategies, approaches, and methods
     home_domain: learning
     status: canonical
-    ner_label: INSTRUCTIONAL_STRATEGY
     examples:
     - microlearning
     - problem-centred learning
@@ -6215,7 +6033,6 @@ entity_collections:
     - business strategy
     - marketing approach
     - sales method
-    confidence_threshold: 0.6
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/learning_principle
@@ -6329,7 +6146,6 @@ entity_collections:
     description: Fundamental principles and laws of learning from cognitive science
     home_domain: learning
     status: canonical
-    ner_label: LEARNING_PRINCIPLE
     examples:
     - prior knowledge activation
     - cognitive load
@@ -6354,7 +6170,6 @@ entity_collections:
     - business principle
     - first principles
     - moral principle
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/assessment_type
@@ -6396,7 +6211,6 @@ entity_collections:
     description: Types of assessments and evaluation methods
     home_domain: learning
     status: canonical
-    ner_label: ASSESSMENT_TYPE
     examples:
     - formative assessment
     - summative assessment
@@ -6419,7 +6233,6 @@ entity_collections:
     - risk assessment
     - property assessment
     - tax assessment
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/learning_objective
@@ -6554,7 +6367,6 @@ entity_collections:
     description: Stated learning goals, outcomes, or competencies
     home_domain: learning
     status: canonical
-    ner_label: LEARNING_OBJECTIVE
     examples:
     - Learners will analyse data patterns
     - Apply Bloom's Taxonomy to objectives
@@ -6566,7 +6378,6 @@ entity_collections:
     - business objective
     - sales goal
     - marketing objective
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/cognitive_level
@@ -6680,7 +6491,6 @@ entity_collections:
     description: Bloom's Taxonomy cognitive levels and thinking skills
     home_domain: learning
     status: canonical
-    ner_label: COGNITIVE_LEVEL
     examples:
     - Remember
     - Understand
@@ -6688,7 +6498,6 @@ entity_collections:
     - Analyse
     - Evaluate
     - Create
-    confidence_threshold: 0.8
     close_match:
     - https://www.wikidata.org/wiki/Q1774565
     evidence_ids: *id002
@@ -6808,7 +6617,6 @@ entity_collections:
     description: Characteristics and profiles of target learners
     home_domain: learning
     status: canonical
-    ner_label: LEARNER_CHARACTERISTIC
     examples:
     - adult learners
     - self-directed learners
@@ -6823,7 +6631,6 @@ entity_collections:
     - Gen Z learners
     - remote workers
     - frontline employees
-    confidence_threshold: 0.6
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/delivery_mode
@@ -6906,7 +6713,6 @@ entity_collections:
     description: Methods and modalities for delivering instruction
     home_domain: learning
     status: canonical
-    ner_label: DELIVERY_MODE
     examples:
     - asynchronous learning
     - synchronous learning
@@ -6924,7 +6730,6 @@ entity_collections:
     - e-learning
     - hybrid
     - on-demand
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/instructional_event
@@ -7066,7 +6871,6 @@ entity_collections:
     description: Gagné's Nine Events of Instruction and instructional phases
     home_domain: learning
     status: canonical
-    ner_label: INSTRUCTIONAL_EVENT
     examples:
     - gain attention
     - state objectives
@@ -7077,7 +6881,6 @@ entity_collections:
     - provide feedback
     - assess performance
     - enhance retention
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/motivation_element
@@ -7121,7 +6924,6 @@ entity_collections:
     description: ARCS model and SDT motivation components
     home_domain: learning
     status: canonical
-    ner_label: MOTIVATION_ELEMENT
     examples:
     - attention grabber
     - relevance statement
@@ -7132,7 +6934,6 @@ entity_collections:
     - autonomy support
     - competence feedback
     - relatedness
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/educational_standard
@@ -7149,7 +6950,6 @@ entity_collections:
     description: Educational standards, frameworks, and compliance requirements
     home_domain: learning
     status: canonical
-    ner_label: EDUCATIONAL_STANDARD
     examples:
     - SCORM
     - xAPI
@@ -7160,7 +6960,6 @@ entity_collections:
     - cmi5
     - LTI
     - QM standards
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/pedagogical_model
@@ -7278,7 +7077,6 @@ entity_collections:
     description: Instructional design models and educational frameworks
     home_domain: learning
     status: canonical
-    ner_label: PEDAGOGICAL_MODEL
     examples:
     - ADDIE
     - SAM
@@ -7295,7 +7093,6 @@ entity_collections:
     - business model
     - revenue model
     - operating model
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/linear_flow
     label: Linear Flow
@@ -7303,7 +7100,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: LINEAR_FLOW
     evidence_ids: *id002
   - id: coe:entity/core_and_spoke_flow
     label: Core And Spoke Flow
@@ -7311,7 +7107,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: CORE_SPOKE_FLOW
     evidence_ids: *id002
   - id: coe:entity/network_flow
     label: Network Flow
@@ -7320,7 +7115,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: NETWORK_FLOW
     evidence_ids: *id002
   - id: coe:entity/hyflex_mode
     label: Hyflex Mode
@@ -7328,7 +7122,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: HYFLEX
     evidence_ids: *id002
   - id: coe:entity/behaviourism
     label: Behaviourism
@@ -7337,7 +7130,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: BEHAVIOURISM
     evidence_ids: *id002
   - id: coe:entity/cognitivism
     label: Cognitivism
@@ -7346,7 +7138,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: COGNITIVISM
     evidence_ids: *id002
   - id: coe:entity/constructivism
     label: Constructivism
@@ -7355,7 +7146,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: CONSTRUCTIVISM
     evidence_ids: *id002
   - id: coe:entity/solo_taxonomy
     label: Solo Taxonomy
@@ -7364,7 +7154,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SOLO_TAXONOMY
     evidence_ids: *id002
   - id: coe:entity/zpd
     label: Zpd
@@ -7373,7 +7162,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ZPD
     evidence_ids: *id002
   - id: coe:entity/abcd_method
     label: Abcd Method
@@ -7381,7 +7169,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ABCD_METHOD
     evidence_ids: *id002
   - id: coe:entity/four_mat_model
     label: Four Mat Model
@@ -7391,7 +7178,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: 4MAT
     evidence_ids: *id002
   - id: coe:entity/addie_iterative
     label: Addie Iterative
@@ -7400,7 +7186,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ADDIE_ITERATIVE
     evidence_ids: *id002
   - id: coe:entity/triple_constraints
     label: Triple Constraints
@@ -7408,7 +7193,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: TRIPLE_CONSTRAINTS
     evidence_ids: *id002
   - id: coe:entity/asynchronous_learning
     label: Asynchronous Learning
@@ -7416,7 +7200,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ASYNC_LEARNING
     evidence_ids: *id002
   - id: coe:entity/synchronous_learning
     label: Synchronous Learning
@@ -7424,7 +7207,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SYNC_LEARNING
     evidence_ids: *id002
   - id: coe:entity/flipped_classroom
     label: Flipped Classroom
@@ -7433,7 +7215,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: FLIPPED_CLASSROOM
     evidence_ids: *id002
   - id: coe:entity/sam_model
     label: Sam Model
@@ -7441,25 +7222,23 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SAM
     evidence_ids: *id002
   - id: coe:entity/strip_card_methodology
     label: Strip Card Methodology
-    description: Hierarchical design system using Strips (3-5 min) and Cards (30-90 sec) to manage cognitive load and flow.
+    description: Hierarchical design system using strips and their component cards to manage cognitive load and flow; their
+      duration bands are library knowledge.
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: STRIP_CARD
     evidence_ids: *id002
   - id: coe:entity/ten_two_rule
     label: Ten Two Rule
-    description: 'Webinar design principle: 10 minutes of instruction followed by 2 minutes of active retrieval. The retrieval
-      breaks are supported by interpolated-testing evidence; the fixed 10-minute cadence inherits the contested
-      lecture-attention-span claim, which has no direct empirical support as a hard attention limit.'
+    description: 'Webinar design principle alternating a block of instruction with a short block of active retrieval, in the
+      proportions its name fixes. The retrieval breaks are supported by interpolated-testing evidence; the fixed cadence
+      inherits the contested lecture-attention-span claim, which has no direct empirical support as a hard attention limit.'
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: 10_2_RULE
     evidence_ids: *id002
   - id: coe:entity/wpw_facilitation
     label: Wpw Facilitation
@@ -7467,7 +7246,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: WPW
     evidence_ids: *id002
   - id: coe:entity/enhanced_5_phase_cycle
     label: Enhanced 5 Phase Cycle
@@ -7475,7 +7253,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ENHANCED_5_PHASE
     evidence_ids: *id002
   - id: coe:entity/social_learning_card
     label: Social Learning Card
@@ -7483,7 +7260,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SOCIAL_CARD
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/five_phase_cycle
@@ -7496,11 +7272,10 @@ entity_collections:
       evidence_ids: *id001
     id: coe:entity/five_phase_cycle
     label: Five Phase Cycle
-    description: 'Five-phase pedagogical timing cycle: Foundation (10-15%), Development (40-50%), Integration (25-30%), Consolidation
-      (10-15%), Assessment (Continuous).'
+    description: 'Five-phase pedagogical timing cycle — Foundation, Development, Integration, Consolidation and continuous
+      Assessment; the share of session time each phase takes is library knowledge.'
     home_domain: learning
     status: canonical
-    ner_label: FIVE_PHASE_CYCLE
     evidence_ids: *id002
   - id: coe:entity/hybrid_design_philosophy
     label: Hybrid Design Philosophy
@@ -7509,7 +7284,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: HYBRID_PHILOSOPHY
     evidence_ids: *id002
   - id: coe:entity/wcag_2_2_standard
     label: Wcag 2 2 Standard
@@ -7517,7 +7291,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: WCAG_2_2
     evidence_ids: *id002
   - id: coe:entity/reflective_agent_pattern
     label: Reflective Agent Pattern
@@ -7526,7 +7299,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: REFLECTIVE_PATTERN
     evidence_ids: *id002
   - id: coe:entity/prov_o_model
     label: Prov O Model
@@ -7534,7 +7306,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PROV_O
     evidence_ids: *id002
   - id: coe:entity/thematic_analysis
     label: Thematic Analysis
@@ -7543,7 +7314,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: THEMATIC_ANALYSIS
     evidence_ids: *id002
   - id: coe:entity/card_sorting
     label: Card Sorting
@@ -7552,7 +7322,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: CARD_SORTING
     evidence_ids: *id002
   - id: coe:entity/grounded_theory
     label: Grounded Theory
@@ -7561,7 +7330,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: GROUNDED_THEORY
     evidence_ids: *id002
   - id: coe:entity/five_consecutive_rule
     label: Five Consecutive Rule
@@ -7569,7 +7337,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SATURATION_5
     evidence_ids: *id002
   - id: coe:entity/procedure_vs_execution
     label: Procedure Vs Execution
@@ -7577,7 +7344,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PROC_EXEC_DISTINCTION
     evidence_ids: *id002
   - id: coe:entity/five_moments_of_need
     label: Five Moments Of Need
@@ -7586,7 +7352,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: 5MON
     evidence_ids: *id002
   - id: coe:entity/enable_methodology
     label: Enable Methodology
@@ -7594,16 +7359,14 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ENABLE
     evidence_ids: *id002
   - id: coe:entity/two_click_ten_second_rule
     label: Two Click Ten Second Rule
-    description: 'Usability heuristic for performance support: solutions must be accessible within 2 clicks and actionable
-      within 10 seconds.'
+    description: 'Usability heuristic for performance support: a solution must be reachable within the click count and
+      actionable within the seconds its name fixes.'
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: 2_CLICK_10_SEC
     evidence_ids: *id002
   - id: coe:entity/tone_prompt_dictionary
     label: Tone Prompt Dictionary
@@ -7612,7 +7375,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: TONE_DICTIONARY
     evidence_ids: *id002
   - id: coe:entity/ai_optimization_methodology
     label: Ai Optimization Methodology
@@ -7621,7 +7383,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: AI_OPTIMIZATION
     evidence_ids: *id002
   - id: coe:entity/compaction_technique
     label: Compaction Technique
@@ -7630,16 +7391,14 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: COMPACTION
     evidence_ids: *id002
   - id: coe:entity/glance_test
     label: Glance Test
-    description: 'Design heuristic for speaker-led slides: the audience should be able to decode the slide''s meaning in 3
-      seconds or less.'
+    description: 'Design heuristic for speaker-led slides: the audience should be able to decode the slide''s meaning at a
+      glance; the decode-time ceiling is library knowledge.'
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: GLANCE_TEST
     evidence_ids: *id002
   - id: coe:entity/action_title_principle
     label: Action Title Principle
@@ -7647,7 +7406,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ACTION_TITLE
     evidence_ids: *id002
   - id: coe:entity/collections_ontology
     label: Collections Ontology
@@ -7655,7 +7413,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: COLLECTIONS_ONT
     evidence_ids: *id002
   - id: coe:entity/testing_effect
     label: Testing Effect
@@ -7664,16 +7421,14 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: TESTING_EFFECT
     evidence_ids: *id002
   - id: coe:entity/eighty_five_percent_rule
     label: Eighty Five Percent Rule
-    description: 'Calibration heuristic: retrieval tasks should target an 85% success rate to maintain optimal challenge (desirable
-      difficulty).'
+    description: 'Calibration heuristic named for its target success rate: retrieval tasks should succeed often enough to
+      reinforce and fail often enough to expose gaps, the balance called desirable difficulty.'
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: 85_PCT_RULE
     evidence_ids: *id002
   - id: coe:entity/knowledge_tracing
     label: Knowledge Tracing
@@ -7681,7 +7436,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: KNOWLEDGE_TRACING
     evidence_ids: *id002
   - id: coe:entity/situated_learning_theory
     label: Situated Learning Theory
@@ -7690,7 +7444,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SLT
     evidence_ids: *id002
   - id: coe:entity/legitimate_peripheral_participation
     label: Legitimate Peripheral Participation
@@ -7699,7 +7452,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: LPP
     evidence_ids: *id002
   - id: coe:entity/feedback_bridge
     label: Feedback Bridge
@@ -7707,7 +7459,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: FEEDBACK_BRIDGE
     evidence_ids: *id002
   - id: coe:entity/big_idea_framework
     label: Big Idea Framework
@@ -7716,7 +7467,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: BIG_IDEA
     evidence_ids: *id002
   - id: coe:entity/gibbs_reflective_cycle
     label: Gibbs Reflective Cycle
@@ -7725,7 +7475,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: GIBBS_CYCLE
     evidence_ids: *id002
   - id: coe:entity/dialogic_pedagogy
     label: Dialogic Pedagogy
@@ -7733,7 +7482,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: DIALOGIC
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/clarity_dimension
@@ -7820,7 +7568,6 @@ entity_collections:
     description: Reference to clarity, simplicity, or comprehensibility as a quality dimension
     home_domain: learning
     status: canonical
-    ner_label: CLARITY_DIMENSION
     examples:
     - The message lacks clarity.
     - Very easy to understand.
@@ -7828,7 +7575,6 @@ entity_collections:
     - The language is accessible.
     - Simply stated and legible.
     - Comprehensible to a general audience.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/structure_dimension
@@ -7870,7 +7616,6 @@ entity_collections:
     description: Reference to structure, organisation, or narrative flow as a quality dimension
     home_domain: learning
     status: canonical
-    ner_label: STRUCTURE_DIMENSION
     examples:
     - The structure is logical.
     - Well-organised from start to finish.
@@ -7878,7 +7623,6 @@ entity_collections:
     - Lacks a coherent narrative arc.
     - Good sequencing of ideas.
     - The content progresses naturally.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/engagement_dimension
@@ -7939,7 +7683,6 @@ entity_collections:
     description: Reference to engagement, interest, or audience connection as a quality dimension
     home_domain: learning
     status: canonical
-    ner_label: ENGAGEMENT_DIMENSION
     examples:
     - Highly engaging throughout.
     - The content is compelling.
@@ -7947,7 +7690,6 @@ entity_collections:
     - A strong hook at the start.
     - Very memorable phrasing.
     - Resonates with the target audience.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/evidence_quality_dimension
@@ -7990,7 +7732,6 @@ entity_collections:
     description: Reference to evidence quality, credibility, or substantiation as a quality dimension
     home_domain: learning
     status: canonical
-    ner_label: EVIDENCE_QUALITY_DIMENSION
     examples:
     - Claims are well-supported.
     - Lacks sufficient evidence.
@@ -7998,7 +7739,6 @@ entity_collections:
     - References are not cited.
     - Strong use of customer proof.
     - The argument is substantiated.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/visual_quality_dimension
@@ -8050,7 +7790,6 @@ entity_collections:
     description: Reference to visual design, layout, or aesthetic quality as a scoring dimension
     home_domain: learning
     status: canonical
-    ner_label: VISUAL_QUALITY_DIMENSION
     examples:
     - The slide design is clean.
     - Poor use of typography.
@@ -8058,7 +7797,6 @@ entity_collections:
     - The imagery is high quality.
     - Colour contrast is insufficient.
     - The layout is professional.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/cognitive_load_dimension
@@ -8139,7 +7877,6 @@ entity_collections:
     description: Reference to cognitive load, information density, or processing burden as a quality dimension
     home_domain: learning
     status: canonical
-    ner_label: COGNITIVE_LOAD_DIMENSION
     examples:
     - Too much information on one slide.
     - The cognitive load is high.
@@ -8147,7 +7884,6 @@ entity_collections:
     - The slide is cluttered.
     - Complex but digestible.
     - Text-heavy and hard to process.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/accessibility_dimension
@@ -8217,7 +7953,6 @@ entity_collections:
     description: Reference to accessibility, inclusion, or compliance as a quality dimension
     home_domain: learning
     status: canonical
-    ner_label: ACCESSIBILITY_DIMENSION
     examples:
     - Fails WCAG colour contrast standards.
     - Alt text is missing.
@@ -8225,7 +7960,6 @@ entity_collections:
     - Good use of plain language.
     - Accessible to colour-blind users.
     - The content is inclusive.
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/narrative_quality_dimension
@@ -8268,7 +8002,6 @@ entity_collections:
     description: Reference to narrative architecture quality — action titles, SCQA, BLUF, and claim-evidence coherence
     home_domain: learning
     status: canonical
-    ner_label: NARRATIVE_QUALITY_DIMENSION
     examples:
     - The action title is weak — topic label only.
     - Strong SCQA structure throughout.
@@ -8278,7 +8011,6 @@ entity_collections:
     - Missing the complication in the problem setup.
     - Bottom Line Up Front is present.
     - The dot-dash logic is broken on slide 4.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/clt_compliance_dimension
@@ -8305,7 +8037,6 @@ entity_collections:
       and design efficiency
     home_domain: learning
     status: canonical
-    ner_label: CLT_COMPLIANCE_DIMENSION
     examples:
     - Split-attention effect present.
     - Wall of text violates CLT principles.
@@ -8315,7 +8046,6 @@ entity_collections:
     - Text and visuals are split — forces eye movement.
     - 25% cognitive load reduction achieved.
     - Germane load optimised through scaffolding.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/semiotic_coherence_dimension
@@ -8351,7 +8081,6 @@ entity_collections:
       conflict
     home_domain: learning
     status: canonical
-    ner_label: SEMIOTIC_COHERENCE_DIMENSION
     examples:
     - Semiotic conflict between title and visual.
     - Visual coding is inconsistent across slides.
@@ -8361,7 +8090,6 @@ entity_collections:
     - Colour coding shifts meaning mid-deck.
     - Ideal/Real layout used correctly.
     - The image contradicts the title message.
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/positive_qualifier
@@ -8387,7 +8115,6 @@ entity_collections:
     description: Language signalling a high score or strong performance across any dimension
     home_domain: learning
     status: canonical
-    ner_label: POSITIVE_QUALIFIER
     examples:
     - Excellent use of narrative structure.
     - Outstanding visual clarity.
@@ -8395,7 +8122,6 @@ entity_collections:
     - Exceptional engagement throughout.
     - World-class execution.
     - Highly effective delivery.
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/negative_qualifier
@@ -8430,7 +8156,6 @@ entity_collections:
     description: Language signalling a low score or weak performance across any dimension
     home_domain: learning
     status: canonical
-    ner_label: NEGATIVE_QUALIFIER
     examples:
     - Poor narrative structure.
     - Lacks clarity throughout.
@@ -8438,7 +8163,6 @@ entity_collections:
     - Missing a clear call to action.
     - Confusing and hard to follow.
     - Needs significant improvement.
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/developmental_qualifier
@@ -8463,7 +8187,6 @@ entity_collections:
     description: Language signalling a mid-range or developing performance level
     home_domain: learning
     status: canonical
-    ner_label: DEVELOPMENTAL_QUALIFIER
     examples:
     - Adequate but not compelling.
     - Developing in the right direction.
@@ -8471,7 +8194,6 @@ entity_collections:
     - Approaching the expected standard.
     - With more work, this could be excellent.
     - Partially effective.
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - id: coe:entity/bars_rubric
     label: Bars Rubric
@@ -8480,7 +8202,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: BARS
     evidence_ids: *id002
   - id: coe:entity/modified_angoff_method
     label: Modified Angoff Method
@@ -8489,7 +8210,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ANGOFF
     evidence_ids: *id002
   - id: coe:entity/borderline_regression_method
     label: Borderline Regression Method
@@ -8498,7 +8218,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: BRM
     evidence_ids: *id002
   - id: coe:entity/generalizability_theory
     label: Generalizability Theory
@@ -8507,7 +8226,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: G_THEORY
     evidence_ids: *id002
   - id: coe:entity/analytic_rubric
     label: Analytic Rubric
@@ -8515,7 +8233,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ANALYTIC_RUBRIC
     evidence_ids: *id002
   - id: coe:entity/single_point_rubric
     label: Single Point Rubric
@@ -8524,7 +8241,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SINGLE_POINT_RUBRIC
     evidence_ids: *id002
   - id: coe:entity/norming_session
     label: Norming Session
@@ -8532,7 +8248,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: NORMING_SESSION
     evidence_ids: *id002
   - id: coe:entity/discrimination_index
     label: Discrimination Index
@@ -8541,7 +8256,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: D_INDEX
     evidence_ids: *id002
   - id: coe:entity/standard_error_measurement
     label: Standard Error Measurement
@@ -8550,7 +8264,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SEM
     evidence_ids: *id002
   home_domain: learning
   status: canonical
@@ -8785,7 +8498,6 @@ entity_collections:
     description: Training delivery formats and modality types
     home_domain: learning
     status: canonical
-    ner_label: DELIVERY_MODALITY
     examples:
     - instructor-led training (ILT)
     - virtual instructor-led training (VILT)
@@ -8797,7 +8509,6 @@ entity_collections:
     anti_examples:
     - delivery service
     - virtual reality
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/session_structure_marker
@@ -8950,7 +8661,6 @@ entity_collections:
     description: Structural elements of a live training session including openings, transitions, and closings
     home_domain: learning
     status: canonical
-    ner_label: SESSION_STRUCTURE
     examples:
     - icebreaker activity
     - agenda review
@@ -8963,7 +8673,6 @@ entity_collections:
     anti_examples:
     - ice cream
     - session timeout
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/round_robin_demo
     label: Round Robin Demo
@@ -8972,14 +8681,12 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ROUND_ROBIN_DEMO
     examples:
     - round-robin demo session
     - rotating presentation exercise
     - each person presents then receives feedback
     anti_examples:
     - robin bird
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/debrief_discussion
     label: Debrief Discussion
@@ -8988,7 +8695,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: DEBRIEF_DISCUSSION
     examples:
     - post-activity debrief
     - structured debrief discussion
@@ -8996,7 +8702,6 @@ entity_collections:
     - group reflection after exercise
     anti_examples:
     - security debriefing
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/scaffolded_difficulty_progression
     label: Scaffolded Difficulty Progression
@@ -9005,7 +8710,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SCAFFOLDED_DIFFICULTY_PROGRESSION
     examples:
     - scaffolded difficulty across modules
     - graduated challenge progression
@@ -9013,7 +8717,6 @@ entity_collections:
     - fading support across sessions
     anti_examples:
     - building scaffolding on construction site
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/embodied_cognition_presentation
@@ -9030,13 +8733,11 @@ entity_collections:
     description: Speaking and movement aid memory encoding in delivery (Goldin-Meadow, 2014)
     home_domain: learning
     status: canonical
-    ner_label: EMBODIED_COGNITION_PRESENTATION
     examples:
     - using gestures to reinforce key points
     - gaze anchoring to direct audience attention
     anti_examples:
     - cognitive embodiment theory discussion
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - id: coe:entity/fishbowl_facilitation
     label: Fishbowl Facilitation
@@ -9045,14 +8746,12 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: FISHBOWL_FACILITATION
     examples:
     - fishbowl facilitation technique
     - inner circle performs while outer circle observes
     - rotating fishbowl exercise
     anti_examples:
     - fishbowl aquarium display
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/peer_feedback_moderation
     label: Peer Feedback Moderation
@@ -9061,14 +8760,12 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PEER_FEEDBACK_MODERATION
     examples:
     - facilitator-moderated peer feedback
     - structured peer critique session
     - rubric-guided peer review
     anti_examples:
     - content moderation on social media
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/simulation_role_management
     label: Simulation Role Management
@@ -9077,13 +8774,11 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SIMULATION_ROLE_MANAGEMENT
     examples:
     - managing roles during simulation exercise
     - facilitating scenario role assignments
     - controlling simulation progression and debrief
     anti_examples:
     - role management in HR
-    confidence_threshold: 0.7
     evidence_ids: *id002
   evidence_ids: *id002

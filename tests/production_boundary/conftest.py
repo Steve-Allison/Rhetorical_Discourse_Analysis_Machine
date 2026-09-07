@@ -40,7 +40,9 @@ def built_release_pair(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, 
     )
     (root / "rdam/ingest/__init__.py").write_text("", encoding="utf-8")
     (root / "rdam/ingest/schemas/capabilities.schema.json").write_text(
-        "{}\n",
+        '{"$defs":{"ContractVersion":{"const":"4.2.0","type":"string"}},'
+        '"properties":{"contract":{"const":"isanlp_rst.production"},'
+        '"contract_version":{"$ref":"#/$defs/ContractVersion"}}}\n',
         encoding="utf-8",
     )
     (root / "rdam/ingest/public-surface.json").write_text(

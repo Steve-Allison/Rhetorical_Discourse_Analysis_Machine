@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/products
   title: Adobe — Products
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -20,7 +20,6 @@ entity_collections:
       asset management (Assets) to build, manage, and deliver web, mobile, and headless experiences.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/experience_manager
       predicate: coe:contains
@@ -51,7 +50,6 @@ entity_collections:
       including headless delivery and Edge Delivery Services for high-performance pages.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/experience_manager_sites
       predicate: coe:contains
@@ -76,7 +74,6 @@ entity_collections:
       approved assets at enterprise scale, with Dynamic Media renditions for channel-ready delivery.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/experience_manager_assets
       predicate: coe:contains
@@ -101,7 +98,6 @@ entity_collections:
       communications connected to backend workflows and e-signature.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/experience_manager_forms
       predicate: coe:contains
@@ -126,7 +122,6 @@ entity_collections:
       from the same content platform as web channels.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/experience_manager_screens
       predicate: coe:contains
@@ -151,7 +146,6 @@ entity_collections:
       as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/target
@@ -160,7 +154,6 @@ entity_collections:
       personalisation of digital experiences.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/campaign
@@ -169,7 +162,6 @@ entity_collections:
       campaigns — email at the core, with direct mail, SMS, and push.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/audience_manager
@@ -178,7 +170,6 @@ entity_collections:
       for advertising activation.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/experience_platform
@@ -188,7 +179,6 @@ entity_collections:
       Customer Journey Analytics run.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/journey_optimizer
@@ -198,7 +188,6 @@ entity_collections:
       Profile.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/journey_optimizer
       predicate: coe:contains
@@ -215,7 +204,6 @@ entity_collections:
       into actionable Real-Time Customer Profiles and activating audiences to destinations under governance controls.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/real_time_cdp
       predicate: coe:contains
@@ -232,7 +220,6 @@ entity_collections:
       into a single journey view queryable in Analysis Workspace, without the schema limits of traditional Analytics.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/customer_journey_analytics
       predicate: coe:contains
@@ -249,7 +236,6 @@ entity_collections:
       management, workflows, approvals, and resource management with real-time visibility.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/workfront
       predicate: coe:enables
@@ -266,7 +252,6 @@ entity_collections:
       account-based marketing tied to CRM.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/commerce
@@ -275,7 +260,6 @@ entity_collections:
       and deep extensibility.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/advertising_cloud
@@ -284,7 +268,6 @@ entity_collections:
       across search, display, and connected TV — continued as Adobe Advertising.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/genstudio
@@ -293,7 +276,6 @@ entity_collections:
       and Content Analytics.'
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/genstudio
       predicate: coe:enables
@@ -310,7 +292,6 @@ entity_collections:
       campaign assets across paid media, email, and display ads.'
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/genstudio_for_performance_marketing
       predicate: coe:enables
@@ -328,7 +309,6 @@ entity_collections:
       plans, projects, assets, and performance — into one view with actionable insights across the chain.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/genstudio_foundation
       predicate: coe:enables
@@ -345,7 +325,6 @@ entity_collections:
       camera-to-cloud uploads connecting production to post.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/express
@@ -353,7 +332,6 @@ entity_collections:
     description: Adobe Express content-creation product used across creative-production and digital-experience contexts.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/express
       predicate: coe:specialises
@@ -378,7 +356,6 @@ entity_collections:
       licensable directly inside Creative Cloud applications.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/success_studio
@@ -387,7 +364,6 @@ entity_collections:
       Optimizer; the name persists in field materials as an alias for that product.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/federated_search
@@ -397,7 +373,6 @@ entity_collections:
       search index.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/mix_modeler
@@ -407,7 +382,6 @@ entity_collections:
       aggregate-level data.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/product_analytics
@@ -416,7 +390,6 @@ entity_collections:
       cohort analysis, and funnels — for optimising digital product experience rather than marketing traffic.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/learning_manager
@@ -425,7 +398,6 @@ entity_collections:
       employees.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/journey_optimizer_b2b_edition
@@ -434,7 +406,6 @@ entity_collections:
       coordination with Marketo Engage, and hosting the B2B agents including the Sales Qualifier add-on.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/journey_optimizer_b2b_edition
       predicate: coe:contains
@@ -451,7 +422,6 @@ entity_collections:
       opportunities for account-based segmentation and activation.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/real_time_cdp_b2b_edition
       predicate: coe:contains
@@ -468,7 +438,6 @@ entity_collections:
       tied into CRM and the marketing platform.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/experience_manager_guides
@@ -477,7 +446,6 @@ entity_collections:
       authoring, reviewing, and publishing technical documentation.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/experience_manager_guides
       predicate: coe:contains
@@ -503,7 +471,6 @@ entity_collections:
       performance, accessibility, SEO, and engagement.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/experience_manager_sites_optimizer
       predicate: coe:contains
@@ -530,7 +497,6 @@ entity_collections:
       auto-optimize workflow and dashboards for brand presence, agentic traffic, and LLM referral traffic.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/experience_manager_edge_delivery_services
@@ -539,7 +505,6 @@ entity_collections:
       compiled to pre-rendered pages served from the edge for maximum Core Web Vitals scores.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/experience_manager_edge_delivery_services
       predicate: coe:contains
@@ -565,7 +530,6 @@ entity_collections:
       records for end-to-end marketing-operations visibility.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/workfront_planning
       predicate: coe:enables
@@ -582,7 +546,6 @@ entity_collections:
       search, display, and connected TV.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/customer_journey_analytics_b2b_edition
@@ -591,7 +554,6 @@ entity_collections:
       up to buying groups and accounts.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/customer_journey_analytics_b2b_edition
       predicate: coe:contains
@@ -608,7 +570,6 @@ entity_collections:
       across teams.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/workfront_workflow
       predicate: coe:enables
@@ -626,7 +587,6 @@ entity_collections:
       recommendations in real time.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/content_analytics
@@ -636,7 +596,6 @@ entity_collections:
       revenue, and which characteristics explain why.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/real_time_cdp_collaboration
@@ -645,7 +604,6 @@ entity_collections:
       campaign outcomes without exchanging their underlying customer databases.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/real_time_cdp_collaboration
       predicate: coe:contains
@@ -662,7 +620,6 @@ entity_collections:
       results by audience, and accelerating the design of new tests; home of the Experimentation Agent.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/journey_optimizer_experimentation_accelerator
       predicate: coe:contains
@@ -679,7 +636,6 @@ entity_collections:
       continuous updates; composable and API-first, with the storefront built on Edge Delivery Services.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/genstudio_for_content_marketing
@@ -688,7 +644,6 @@ entity_collections:
       content-marketing assets — briefs to on-brand marketing content — rather than to paid-media ads.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/genstudio_for_content_marketing
       predicate: coe:enables
@@ -706,7 +661,6 @@ entity_collections:
       real-time visitor dialogues, qualifying leads, booking meetings, and syncing scores and routing back to Marketo.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/commerce_optimizer
@@ -715,7 +669,6 @@ entity_collections:
       — AI-driven personalisation, testing, and real-time analytics layered onto a commerce backend.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/photoshop
@@ -724,7 +677,6 @@ entity_collections:
       Firefly generative editing.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/photoshop
       predicate: coe:enables
@@ -743,7 +695,6 @@ entity_collections:
       paths rather than pixels.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/illustrator
       predicate: coe:enables
@@ -762,7 +713,6 @@ entity_collections:
       magazines, brochures, and interactive PDFs.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/indesign
       predicate: coe:enables
@@ -781,7 +731,6 @@ entity_collections:
       film, broadcast, and online video.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/premiere_pro
       predicate: coe:enables
@@ -800,7 +749,6 @@ entity_collections:
       Premiere family's editing model in a touch-first form.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/premiere_mobile
       predicate: coe:enables
@@ -817,7 +765,6 @@ entity_collections:
       composited scenes for video.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     exact_match:
     - https://www.wikidata.org/wiki/Q246104
@@ -828,7 +775,6 @@ entity_collections:
       interactive prototypes.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/lightroom
@@ -837,7 +783,6 @@ entity_collections:
       web, and mobile.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/lightroom_classic
@@ -846,7 +791,6 @@ entity_collections:
       output for photographers who keep originals on disk.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_pro
@@ -855,7 +799,6 @@ entity_collections:
       Assistant and e-sign features included.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/animate
@@ -864,7 +807,6 @@ entity_collections:
       for web, games, and broadcast.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/audition
@@ -873,7 +815,6 @@ entity_collections:
       podcast, video, and broadcast sound.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/dimension
@@ -882,7 +823,6 @@ entity_collections:
       materials, and lighting without a full 3D pipeline.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/dreamweaver
@@ -891,7 +831,6 @@ entity_collections:
       and JavaScript.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/character_animator
@@ -900,7 +839,6 @@ entity_collections:
       lip-sync included.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/fresco
@@ -909,7 +847,6 @@ entity_collections:
       that behave like physical media.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/substance_3d_designer
@@ -918,7 +855,6 @@ entity_collections:
       parametric materials.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/substance_3d_painter
@@ -927,7 +863,6 @@ entity_collections:
       onto 3D models.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/substance_3d_sampler
@@ -935,7 +870,6 @@ entity_collections:
     description: The Substance 3D application for converting photographs and captures into usable 3D materials.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/substance_3d_stager
@@ -944,7 +878,6 @@ entity_collections:
       cameras into finished product shots.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/firefly
@@ -954,7 +887,6 @@ entity_collections:
       to partner models.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/incopy
@@ -963,7 +895,6 @@ entity_collections:
       parallel with designers.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/bridge
@@ -972,7 +903,6 @@ entity_collections:
       Creative Cloud applications.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/media_encoder
@@ -981,7 +911,6 @@ entity_collections:
       formats in the background.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/capture
@@ -990,7 +919,6 @@ entity_collections:
       shapes, and patterns synced to Creative Cloud Libraries.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/photoshop_express
@@ -998,7 +926,6 @@ entity_collections:
     description: The lightweight mobile photo-editing application for quick corrections, filters, and social-ready output.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/photoshop_express
       predicate: coe:enables
@@ -1014,7 +941,6 @@ entity_collections:
     description: The website builder for personal creative portfolios, included with Creative Cloud membership.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/fonts
@@ -1023,7 +949,6 @@ entity_collections:
       and on the web.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/color
@@ -1032,7 +957,6 @@ entity_collections:
       applications.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/photoshop_web
@@ -1040,7 +964,6 @@ entity_collections:
     description: The browser edition of Photoshop — editing PSDs and quick generative edits without a desktop install.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/photoshop_web
       predicate: coe:enables
@@ -1056,7 +979,6 @@ entity_collections:
     description: The browser edition of Illustrator — vector editing for lightweight and collaborative workflows.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges:
     - subject_id: coe:entity/adobe/illustrator_web
       predicate: coe:enables
@@ -1072,7 +994,6 @@ entity_collections:
     description: The browser edition of Lightroom — viewing, culling, and editing synced photos from any machine.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/firefly_services
@@ -1081,7 +1002,6 @@ entity_collections:
       generating variants, localising, and refreshing assets programmatically at scale.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/firefly_custom_models
@@ -1090,7 +1010,6 @@ entity_collections:
       that generate on-brand imagery usable in Firefly, Express, and GenStudio.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/firefly_foundry
@@ -1099,7 +1018,6 @@ entity_collections:
       business's own content across image, video, audio, vector, and 3D — the step beyond self-serve custom models.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/firefly_creative_production
@@ -1108,7 +1026,6 @@ entity_collections:
       integrations that automate repetitive production and generate consistent on-brand variations at scale.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/firefly_design_intelligence
@@ -1117,7 +1034,6 @@ entity_collections:
       that global creators then apply to produce design-compliant, contextually adapted assets.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_desktop
@@ -1126,7 +1042,6 @@ entity_collections:
       on Windows and macOS.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_web
@@ -1135,7 +1050,6 @@ entity_collections:
       without an install.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_mobile
@@ -1143,7 +1057,6 @@ entity_collections:
     description: The mobile surface of Acrobat — reading, annotating, filling, and signing PDFs on phones and tablets.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_reader
@@ -1152,7 +1065,6 @@ entity_collections:
       Acrobat features.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_sign
@@ -1161,7 +1073,6 @@ entity_collections:
       cloud workflow.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/scan
@@ -1169,7 +1080,6 @@ entity_collections:
     description: The mobile scanning application that captures paper documents as searchable, OCR-processed PDFs.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/document_cloud
@@ -1178,7 +1088,6 @@ entity_collections:
       cloud services.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/pdf_services_api
@@ -1187,7 +1096,6 @@ entity_collections:
       inside applications and pipelines.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_standard
@@ -1196,7 +1104,6 @@ entity_collections:
       features.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_studio
@@ -1205,7 +1112,6 @@ entity_collections:
       creation — users build PDF Spaces from their documents and turn document insight into shareable content.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_ai_assistant
@@ -1214,7 +1120,6 @@ entity_collections:
       selectable personas and natural-language PDF actions.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/pdf_spaces
@@ -1223,7 +1128,6 @@ entity_collections:
       question-answering grounded in the sources, auto-generated overviews, and insight cards.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_services
@@ -1232,7 +1136,6 @@ entity_collections:
       workflows into applications.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_pdf_spaces
@@ -1241,7 +1144,6 @@ entity_collections:
       within Acrobat.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_generate_presentation
@@ -1250,7 +1152,6 @@ entity_collections:
       prompt and source documents, fitted to Adobe Express templates.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/pdf_spaces_sharing
@@ -1259,7 +1160,6 @@ entity_collections:
       AI insights is worked on together.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/audio_overview
@@ -1268,7 +1168,6 @@ entity_collections:
       for listening instead of reading.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/generate_podcast
@@ -1277,7 +1176,6 @@ entity_collections:
       podcast, with condensed and deep-dive script styles.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   - id: coe:entity/adobe/acrobat_express
@@ -1286,7 +1184,6 @@ entity_collections:
       designed, shareable graphics and social posts.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_PRODUCT
     edges: []
     evidence_ids: *id002
   home_domain: adobe

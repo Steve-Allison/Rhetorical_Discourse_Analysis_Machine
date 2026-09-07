@@ -14,7 +14,7 @@ import torch.nn.functional as functional
 from transformers import AutoModel, AutoTokenizer, PreTrainedModel, PreTrainedTokenizerBase
 
 from rdam.rst.contracts.analysis import PrimaryRelationEdge, RstAnalysis
-from rdam.rst.erst.environment import load_repository_environment
+from workbench.erst.environment import load_repository_environment
 from workbench.research.erst.configuration import GraphAttentionConfig
 from workbench.research.erst.contracts import AblationName, MandatoryExperimentSystem
 from workbench.research.erst.data import CandidateShard, HarnessCandidate, ScreeningCorpusPayload

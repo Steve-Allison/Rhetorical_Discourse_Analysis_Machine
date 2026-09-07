@@ -1,8 +1,10 @@
 # Offline workbench
 
-This is the single offline ownership surface for corpus preparation, training, evaluation, benchmarking, and local model promotion. It imports the installed `isanlp_rst` production package and production-owned contracts; production never imports this package.
+This is the single offline ownership surface for corpus preparation, training, evaluation, benchmarking, and local model promotion. It imports the installed `rdam` production package and production-owned contracts; production never imports this package.
 
 ## Subsystems
+
+- [`workbench/erst/`](erst/README.md): experimental eRST inference, RS4, checkpoint and research contracts.
 
 - `workbench/corpus/`: GUM and RST corpus reading, validation, and candidate sampling.
 - `workbench/training/`: Training recipes for DMRST, UniRST, and eRST neural scorers.
@@ -12,3 +14,9 @@ This is the single offline ownership surface for corpus preparation, training, e
 - `workbench/corpora/`: Local gold reference treebanks (GUM 12.1.0, RST-DT, DISRPT).
 - `workbench/experiments/`: Central append-only audit ledger (`central_ledger.jsonl`) and reproducible run trackers.
 - `workbench/hashing.py`: High-throughput BLAKE3 and NIST SHA-256 hybrid cryptographic hashing engine.
+
+Research results do not establish production availability or SOTA quality. The
+active production families are DMRST and UniRST; candidate ModernBERT work remains
+offline. eRST is retained here for testing and evaluation as of 2026-09-06; it
+is excluded from production. Training and accuracy improvement remain suspended. Current usage and
+verification pointers are in the [root README](../README.md).

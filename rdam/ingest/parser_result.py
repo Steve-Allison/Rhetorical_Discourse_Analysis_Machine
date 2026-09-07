@@ -1,8 +1,7 @@
 """Construction of evidence-complete parser-owned production results."""
 
 from bisect import bisect_left, bisect_right
-from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 import math
 from pathlib import Path
@@ -11,9 +10,7 @@ from uuid import uuid4
 
 from rdam.rst._provenance import resolve_package_version
 from rdam.rst._version import PACKAGE_NAME
-from rdam.rst.contracts import RstAnalysis, RstDocument
-from rdam.rst.contracts.erst import DecodeRejectionReason
-from rdam.rst.english.erst.completer import ErstCompletionTrace
+from rdam.rst.contracts import DocumentToken, RstAnalysis, RstDocument
 from rdam.ingest.contracts.analysis import (
     AnalysedDocument,
     AnalysedEdu,
@@ -27,7 +24,6 @@ from rdam.ingest.contracts.analysis import (
     ParserAnalysisResult,
     ParserAnalysisSemanticEvidence,
     PreparedRange,
-    TokenMapping,
     UnitExecutionReceipt,
 )
 from rdam.ingest.contracts.base import CoverageUnit, ExactCoverage, SemanticVersion, Sha256Identity
@@ -36,17 +32,13 @@ from rdam.ingest.contracts.inference import (
     ComponentIdentity,
     CompositeAnalysisIdentity,
     ConfidenceKind,
-    ErstCandidateDecision,
-    ErstCompletionEvidence,
-    ErstDecision,
-    ErstDecodeReceipt,
     EvidenceDetailPolicy,
     ImmutableComponentIdentity,
     LabelledScore,
+    JointRelationNuclearityEvidence,
     LoadedComponentReceipt,
     MappingStatus,
     MutableComponentIdentity,
-    NamedCount,
     NormalizedDistribution,
     NotUsedComponentIdentity,
     OutputFormalism,
@@ -56,7 +48,6 @@ from rdam.ingest.contracts.inference import (
     RelationInterpretation,
     ScoreValue,
     SegmentationDecisionEvidence,
-    SupportingSignalEvidence,
 )
 from rdam.ingest.contracts.source import TextSpanAnchor
 from rdam.ingest.identity import semantic_sha256, sha256_file
@@ -65,6 +56,7 @@ from rdam.ingest.validation import (
     validate_parser_analysis_result,
 )
 from rdam.rst.contracts.trace import PredictorAnalysisTrace
+from rdam.ingest.vocabulary import capture_runtime_vocabulary
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,26 +64,24 @@ class _AnchorIndex:
     tokens: tuple[AnalysedToken, ...]
     starts: tuple[int, ...]
     ends: tuple[int, ...]
-    edu_ids_by_token: dict[str, tuple[str, ...]]
-    edu_order: dict[str, int]
+    edu_ids: tuple[str, ...]
+    edu_starts: tuple[int, ...]
+    edu_ends: tuple[int, ...]
 
     @classmethod
     def build(cls, analysed: AnalysedDocument) -> _AnchorIndex:
-        linked: dict[str, list[str]] = {}
-        for edu in analysed.edus:
-            for token_id in edu.token_ids:
-                linked.setdefault(token_id, []).append(edu.edu_id)
         return cls(
             tokens=analysed.tokens,
             starts=tuple(token.character_range.start for token in analysed.tokens),
             ends=tuple(token.character_range.end for token in analysed.tokens),
-            edu_ids_by_token={token_id: tuple(edu_ids) for token_id, edu_ids in linked.items()},
-            edu_order={edu.edu_id: index for index, edu in enumerate(analysed.edus)},
+            edu_ids=tuple(edu.edu_id for edu in analysed.edus),
+            edu_starts=tuple(edu.character_range.start for edu in analysed.edus),
+            edu_ends=tuple(edu.character_range.end for edu in analysed.edus),
         )
 
-    def within(self, start: int, end: int) -> tuple[str, ...]:
-        first = bisect_left(self.starts, start)
-        stop = bisect_right(self.ends, end)
+    def overlapping_range(self, start: int, end: int) -> tuple[str, ...]:
+        first = bisect_right(self.ends, start)
+        stop = bisect_left(self.starts, end)
         return tuple(token.token_id for token in self.tokens[first:stop])
 
     def overlapping(self, spans: Sequence[tuple[int, int]]) -> tuple[str, ...]:
@@ -102,9 +92,11 @@ class _AnchorIndex:
             indexes.update(range(first, stop))
         return tuple(self.tokens[index].token_id for index in sorted(indexes))
 
-    def edus_for(self, token_ids: Sequence[str]) -> tuple[str, ...]:
-        linked = {edu_id for token_id in token_ids for edu_id in self.edu_ids_by_token.get(token_id, ())}
-        return tuple(sorted(linked, key=self.edu_order.__getitem__))
+    def edus_overlapping(self, spans: Sequence[tuple[int, int]]) -> tuple[str, ...]:
+        indexes: set[int] = set()
+        for start, end in spans:
+            indexes.update(range(bisect_right(self.edu_ends, start), bisect_left(self.edu_starts, end)))
+        return tuple(self.edu_ids[index] for index in sorted(indexes))
 
 
 def build_parser_analysis_result(
@@ -115,7 +107,6 @@ def build_parser_analysis_result(
     policy: AnalysisPolicy,
     model_analysis: RstAnalysis,
     final_analysis: RstAnalysis,
-    erst_trace: ErstCompletionTrace | None,
     duration_ms: float,
 ) -> ParserAnalysisResult:
     """Build the canonical parser result from exact backend handoff evidence."""
@@ -135,27 +126,16 @@ def build_parser_analysis_result(
         marker_component_digest=component_digest_for(composite.marker_refiner),
         document_identity=document.document_id,
     )
-    erst = (
-        _erst_evidence(
-            erst_trace,
-            composite,
-            document_identity=document.document_id,
-        )
-        if erst_trace is not None
-        else None
-    )
-    anchors = analysis_anchors(
-        final_analysis,
-        analysed_document,
-        primary,
-        document_identity=document.document_id,
-    )
+    primary = PrimaryInferenceEvidence.model_validate({
+        **primary.model_dump(),
+        "relation_vocabulary": capture_runtime_vocabulary(parser.predictor, trace.relation_inventory),
+    })
     validation = build_validation_receipt(
         final_analysis,
         analysed_document,
         primary,
-        erst,
-        anchors,
+        None,
+        None,
         policy=policy,
         composite=composite,
         recombination=None,
@@ -165,9 +145,8 @@ def build_parser_analysis_result(
             policy=policy,
             analysed_document=analysed_document,
             analysis=final_analysis,
-            anchors=anchors,
             primary_inference=primary,
-            erst_completion=erst,
+            erst_completion=None,
             composite_identity=composite,
             loaded_components=loaded,
             recombination=None,
@@ -190,70 +169,6 @@ def build_parser_analysis_result(
     return result
 
 
-def complete_parser_analysis_result_with_erst(
-    parser: Any,
-    document: RstDocument,
-    primary_result: ParserAnalysisResult,
-    erst_trace: ErstCompletionTrace,
-    *,
-    policy: AnalysisPolicy,
-) -> ParserAnalysisResult:
-    """Complete one validated primary result with document-global eRST evidence."""
-
-    if policy.output_formalism is not OutputFormalism.ERST_GRAPH:
-        raise ValueError("document-global eRST completion requires the eRST output formalism")
-    primary_semantic = primary_result.semantic
-    if primary_semantic.policy.output_formalism is not OutputFormalism.RST_TREE:
-        raise ValueError("document-global eRST completion requires an RST primary result")
-    segmentation_source = _segmentation_source_from_composite(primary_semantic.composite_identity.segmenter)
-    composite, loaded = _composite_identity(parser, segmentation_source, policy)
-    previous_composite = primary_semantic.composite_identity
-    if (
-        composite.primary_parser != previous_composite.primary_parser
-        or composite.segmenter != previous_composite.segmenter
-        or composite.marker_refiner != previous_composite.marker_refiner
-    ):
-        raise ValueError("eRST completion runtime differs from primary-analysis components")
-    erst = _erst_evidence(
-        erst_trace,
-        composite,
-        document_identity=document.document_id,
-    )
-    anchors = analysis_anchors(
-        erst_trace.analysis,
-        primary_semantic.analysed_document,
-        primary_semantic.primary_inference,
-        document_identity=document.document_id,
-    )
-    validation = build_validation_receipt(
-        erst_trace.analysis,
-        primary_semantic.analysed_document,
-        primary_semantic.primary_inference,
-        erst,
-        anchors,
-        policy=policy,
-        composite=composite,
-        recombination=primary_semantic.recombination,
-    )
-    result = ParserAnalysisResult(
-        semantic=ParserAnalysisSemanticEvidence(
-            policy=policy,
-            analysed_document=primary_semantic.analysed_document,
-            analysis=erst_trace.analysis,
-            anchors=anchors,
-            primary_inference=primary_semantic.primary_inference,
-            erst_completion=erst,
-            composite_identity=composite,
-            loaded_components=loaded,
-            recombination=primary_semantic.recombination,
-            validation=validation,
-        ),
-        execution=primary_result.execution,
-    )
-    validate_parser_analysis_result(result)
-    return result
-
-
 def describe_analysis_components(
     parser: Any,
     *,
@@ -270,8 +185,8 @@ def _analysed_document(
     trace: PredictorAnalysisTrace,
 ) -> AnalysedDocument:
     token_ids = {token.token_id: f"token:{token.token_id:06d}" for token in trace.tokens}
+    trace_tokens = {token.token_id: token for token in trace.tokens}
     edu_ids = {edu.edu_id: f"edu:{edu.edu_id:06d}" for edu in trace.edus}
-    token_to_edu = {token_id: edu for edu in trace.edus for token_id in edu.token_ids}
     tokens = tuple(
         AnalysedToken(
             token_id=token_ids[token.token_id],
@@ -279,8 +194,8 @@ def _analysed_document(
             text=token.text,
             character_range=PreparedRange(start=token.start, end=token.end),
             source_anchors=(_span_anchor(document.document_id, token.start, token.end, document.text),),
-            sentence_id=f"sentence:{token.sentence_id or 0:04d}",
-            paragraph_id=f"paragraph:{token.paragraph_id or 0:04d}",
+            sentence_id=f"sentence:{_membership(trace_tokens, (token.token_id,), 'sentence_id'):04d}",
+            paragraph_id=f"paragraph:{_membership(trace_tokens, (token.token_id,), 'paragraph_id'):04d}",
         )
         for order, token in enumerate(trace.tokens)
     )
@@ -289,44 +204,27 @@ def _analysed_document(
             edu_id=edu_ids[edu.edu_id],
             order=order,
             text=edu.text,
+            character_range=PreparedRange(start=edu.start, end=edu.end),
             token_ids=tuple(token_ids[token_id] for token_id in edu.token_ids),
-            sentence_id=f"sentence:{_membership(trace.tokens, edu.token_ids, 'sentence_id'):04d}",
-            paragraph_id=f"paragraph:{_membership(trace.tokens, edu.token_ids, 'paragraph_id'):04d}",
+            sentence_id=f"sentence:{_membership(trace_tokens, edu.token_ids, 'sentence_id'):04d}",
+            paragraph_id=f"paragraph:{_membership(trace_tokens, edu.token_ids, 'paragraph_id'):04d}",
             prepared_segment_ids=("document:segment:0000",),
             source_anchors=(_span_anchor(document.document_id, edu.start, edu.end, document.text),),
         )
         for order, edu in enumerate(trace.edus)
     )
 
-    def _edu_id_for_token(tok: Any) -> str:
-        if tok.token_id in token_to_edu:
-            return edu_ids[token_to_edu[tok.token_id].edu_id]
-        if trace.edus:
-            closest = min(trace.edus, key=lambda e: min(abs(e.start - tok.start), abs(e.end - tok.end)))
-            return edu_ids[closest.edu_id]
-        return "edu:000001"
-
-    mappings = tuple(
-        TokenMapping(
-            token_id=token_ids[token.token_id],
-            edu_id=_edu_id_for_token(token),
-            sentence_id=f"sentence:{token.sentence_id or 0:04d}",
-            paragraph_id=f"paragraph:{token.paragraph_id or 0:04d}",
-        )
-        for token in trace.tokens
-    )
     return AnalysedDocument(
         text=document.text,
         tokens=tokens,
         edus=edus,
-        mappings=mappings,
         sentence_boundaries=tuple(
             PreparedRange(start=boundary.start, end=boundary.end) for boundary in trace.sentence_boundaries
         ),
         paragraph_boundaries=tuple(
             PreparedRange(start=boundary.start, end=boundary.end) for boundary in trace.paragraph_boundaries
         ),
-        structural_boundary_ids=tuple(f"paragraph:{index:04d}" for index, _ in enumerate(trace.paragraph_boundaries)),
+        structural_boundary_ids=tuple(f"paragraph:{index:04d}" for index, _ in enumerate(trace.paragraph_boundaries, start=1)),
         prepared_segment_ids=("document:segment:0000",),
         source_anchors=(_span_anchor(document.document_id, 0, len(document.text), document.text),),
         transformations=(),
@@ -366,9 +264,14 @@ def _primary_evidence(
             decision_id=f"segmentation:{edu.edu_id:06d}",
             boundary_id=f"boundary:{edu.start:08d}",
             selected_boundary=True,
-            decision_basis=_decision_basis(trace.segmentation_source),
+            decision_basis=segmentation_decision_basis(trace.segmentation_source),
             confidence=None,
             distribution=None,
+            scores_unavailable_reason=(
+                "presegmented_input" if trace.segmentation_source == "presegmented"
+                else "not_captured_by_backend" if trace.segmentation_source == "model"
+                else "deterministic_boundary_rule"
+            ),
             token_ids=tuple(f"token:{token_id:06d}" for token_id in edu.token_ids),
             resulting_edu_ids=(f"edu:{edu.edu_id:06d}",),
             producing_component_identity=segmenter_component_digest,
@@ -381,39 +284,41 @@ def _primary_evidence(
         edges_by_parent.setdefault(edge.parent_id, []).append(edge.edge_id)
     structures: list[PrimaryStructureDecisionEvidence] = []
     for index, decision in enumerate(trace.structure_decisions):
-        span = decision.span
-        node = nodes_by_span.get((span.start + 1, span.end + 1))
+        node = nodes_by_span.get((decision.start + 1, decision.end + 1))
         if node is None:
-            raise ValueError(f"decoded span {(span.start, span.end)} has no final graph node")
-        split_distribution = _distribution(
-            tuple(str(value) for value in decision.split_candidates),
-            decision.split_logits,
-            component_digest,
-        )
-        nuclearity_distribution = _distribution(
-            tuple(parser_label for parser_label in ("NS", "SN", "NN")),
-            decision.nuclearity_logits,
-            component_digest,
-        )
+            raise ValueError(f"decoded span {(decision.start, decision.end)} has no final graph node")
+        raw_relation, _, nuclearity = decision.joint_labels[decision.selected_class].rpartition("_")
+        nuclearity = nuclearity.upper()
+        joint_weights = _exponential_weights(decision.joint_log_probabilities)
+        joint_total = math.fsum(joint_weights)
         relation_labels = trace.relation_inventory
-        relation_distribution = _distribution(
-            relation_labels,
-            decision.relation_logits,
-            component_digest,
+        relations = tuple(label.rpartition("_")[0] for label in decision.joint_labels)
+        nuclearities = tuple(label.rpartition("_")[2].upper() for label in decision.joint_labels)
+        relation_probabilities = tuple(
+            math.fsum(value for label, value in zip(relations, joint_weights, strict=True) if label == relation)
+            / joint_total
+            for relation in relation_labels
         )
-        selected_split_probability = _selected_probability(
-            decision.split_candidates,
-            decision.split_logits,
-            span.split,
+        nuclearity_probabilities = tuple(
+            math.fsum(value for label, value in zip(nuclearities, joint_weights, strict=True) if label == pattern)
+            / joint_total
+            for pattern in ("NS", "SN", "NN")
         )
-        selected_nuclearity_probability = _selected_probability(
-            ("NS", "SN", "NN"),
-            decision.nuclearity_logits,
-            span.nuclearity,
+        split_distribution = (
+            _distribution(
+                tuple(str(value) for value in range(decision.start, decision.end)),
+                decision.split_log_probabilities,
+                component_digest,
+            )
+            if decision.split_log_probabilities is not None
+            else None
         )
-        relation_index = _relation_index(trace.relation_inventory, span.relation)
-        selected_relation_probability = _softmax(decision.relation_logits)[relation_index]
-        confidence = selected_split_probability * selected_nuclearity_probability * selected_relation_probability
+        relation_distribution = _probability_distribution(relation_labels, relation_probabilities, component_digest)
+        nuclearity_distribution = _probability_distribution(
+            ("NS", "SN", "NN"), nuclearity_probabilities, component_digest
+        )
+        selected_relation_probability = relation_probabilities[_relation_index(relation_labels, raw_relation)]
+        confidence = math.exp(decision.joint_log_probabilities[decision.selected_class])
         structures.append(
             PrimaryStructureDecisionEvidence(
                 decision_id=f"primary:{index:06d}",
@@ -421,21 +326,40 @@ def _primary_evidence(
                 primary_edge_ids=tuple(edges_by_parent.get(node.node_id, ())),
                 analysed_start=node.char_span[0],
                 analysed_end=node.char_span[1],
-                selected_split=span.split,
-                nuclearity=span.nuclearity,
-                relation=RelationInterpretation(
-                    raw_label=span.relation,
+                selected_split=decision.split,
+                nuclearity=nuclearity,
+                relation=interpret_native_relation(
+                    policy=policy,
+                    raw_label=raw_relation,
                     relation_scheme="provider_native",
                     inventory_identity=relation_inventory_identity,
-                    selected_ontology_concept=span.relation,
-                    mapping_status=MappingStatus.IDENTITY_ONLY,
                     confidence=_probability_score(
                         selected_relation_probability,
                         component_digest,
                     ),
                 ),
                 confidence=_probability_score(confidence, component_digest),
-                split_entropy=_entropy_score(decision.split_logits, component_digest),
+                confidence_basis="joint_relation_nuclearity_given_selected_split",
+                joint=JointRelationNuclearityEvidence(
+                    labels=decision.joint_labels,
+                    log_probabilities=tuple(
+                        value if math.isfinite(value) else None for value in decision.joint_log_probabilities
+                    ),
+                    selected_class=decision.selected_class,
+                ),
+                split_basis=(
+                    "bottom_up_transitions"
+                    if decision.transitions
+                    else "pointer"
+                    if decision.split_log_probabilities is not None
+                    else "forced_two_edu"
+                ),
+                transitions=decision.transitions,
+                split_entropy=(
+                    _entropy_score(decision.split_log_probabilities, component_digest)
+                    if decision.split_log_probabilities is not None
+                    else None
+                ),
                 split_distribution=(
                     split_distribution
                     if policy.evidence_detail is EvidenceDetailPolicy.NORMALIZED_DISTRIBUTIONS
@@ -516,120 +440,34 @@ def _refinements(
     return tuple(records)
 
 
-def _erst_evidence(
-    trace: ErstCompletionTrace,
-    composite: CompositeAnalysisIdentity,
+def interpret_native_relation(
     *,
-    document_identity: str,
-) -> ErstCompletionEvidence:
-    scorer_digest = component_digest_for(composite.erst_scorer)
-    calibration_digest = component_digest_for(composite.calibration)
-    inventory_digest = component_digest_for(composite.relation_inventory)
-    decisions: list[ErstCandidateDecision] = []
-    for decoded in trace.decoded.decisions:
-        reason = decoded.rejection_reason
-        if reason is None:
-            decision = ErstDecision.ACCEPTED
-        elif reason == "below_threshold":
-            decision = ErstDecision.REJECTED_SCORE
-        elif reason == "insufficient_signal":
-            decision = ErstDecision.REJECTED_INSUFFICIENT_SIGNAL
-        else:
-            decision = ErstDecision.REJECTED_CONSTRAINT
-        decisions.append(
-            ErstCandidateDecision(
-                candidate_id=_candidate_id(decoded.candidate),
-                source_node_id=decoded.candidate.source_id,
-                target_node_id=decoded.candidate.target_id,
-                supporting_signal_ids=decoded.candidate.signal_ids,
-                edge_probability=_probability_score(decoded.edge_probability, scorer_digest),
-                relation=RelationInterpretation(
-                    raw_label=decoded.relation_raw,
-                    relation_scheme="gum_erst",
-                    inventory_identity=inventory_digest,
-                    selected_ontology_concept=decoded.relation_raw,
-                    mapping_status=MappingStatus.IDENTITY_ONLY,
-                ),
-                relation_probability=_probability_score(
-                    decoded.relation_probability,
-                    scorer_digest,
-                ),
-                joint_selection_score=_probability_score(decoded.joint_score, scorer_digest),
-                calibration_identity=calibration_digest,
-                decision=decision,
-                decoder_order=decoded.decoder_order,
-                secondary_edge_id=decoded.accepted_edge_id,
-            )
-        )
-    edge_ids_by_signal: dict[str, list[str]] = {}
-    candidate_ids_by_signal: dict[str, list[str]] = {}
-    for decision in decisions:
-        for signal_id in decision.supporting_signal_ids:
-            candidate_ids_by_signal.setdefault(signal_id, []).append(decision.candidate_id)
-            if decision.secondary_edge_id is not None:
-                edge_ids_by_signal.setdefault(signal_id, []).append(decision.secondary_edge_id)
-    # Detected signals with no candidate (single-node analyses, unattached
-    # triggers) stay in analysis.signals; supporting-signal evidence records
-    # only signals that actually support at least one candidate.
-    persisted_signals: list[SupportingSignalEvidence] = []
-    orphan_signal_count = 0
-    for signal in trace.signals:
-        signal_candidate_ids = tuple(candidate_ids_by_signal.get(signal.signal_id, ()))
-        if not signal_candidate_ids:
-            orphan_signal_count += 1
-            continue
-        persisted_signals.append(
-            SupportingSignalEvidence(
-                signal_id=signal.signal_id,
-                signal_type=f"{signal.signal_type}:{signal.signal_subtype}",
-                anchors=tuple(_span_anchor(document_identity, start, end, "") for start, end in signal.char_spans),
-                candidate_ids=signal_candidate_ids,
-                edge_ids=tuple(edge_ids_by_signal.get(signal.signal_id, ())),
-            )
-        )
-    signals = tuple(persisted_signals)
-    rejection_counts = Counter(
-        decision.decision.value for decision in decisions if decision.decision is not ErstDecision.ACCEPTED
-    )
-    # The decoder short-circuits its constraint chain: each constraint is
-    # checked only on candidates that survived every earlier check.
-    decoder_receipt = trace.decoded.receipt
-    checked_sufficient_signal = decoder_receipt.candidate_count - decoder_receipt.below_threshold_count
-    checked_no_self_loop = (
-        checked_sufficient_signal - decoder_receipt.formal_rejections[DecodeRejectionReason.INSUFFICIENT_SIGNAL]
-    )
-    checked_existing_endpoints = (
-        checked_no_self_loop - decoder_receipt.formal_rejections[DecodeRejectionReason.SELF_LOOP]
-    )
-    checked_unique_directed_pair = (
-        checked_existing_endpoints - decoder_receipt.formal_rejections[DecodeRejectionReason.INVENTED_NODE]
-    )
-    decode_receipt = ErstDecodeReceipt(
-        policy="four_formal_erst_constraints",
-        policy_version=SemanticVersion(root="2.0.0"),
-        candidate_decision_ids=tuple(decision.candidate_id for decision in decisions),
-        input_count=len(decisions),
-        accepted_count=sum(decision.decision is ErstDecision.ACCEPTED for decision in decisions),
-        rejected_count=sum(decision.decision is not ErstDecision.ACCEPTED for decision in decisions),
-        constraint_checks=(
-            NamedCount(name="sufficient_signal", count=checked_sufficient_signal),
-            NamedCount(name="no_self_loop", count=checked_no_self_loop),
-            NamedCount(name="existing_endpoints", count=checked_existing_endpoints),
-            NamedCount(name="unique_directed_pair", count=checked_unique_directed_pair),
-        ),
-        rejection_reasons=tuple(NamedCount(name=name, count=count) for name, count in sorted(rejection_counts.items())),
-        ordering_identity=Sha256Identity(
-            hex_digest=semantic_sha256(tuple(decision.candidate_id for decision in decisions))
-        ),
-        warnings=((f"orphan_signals_without_candidates:{orphan_signal_count}",) if orphan_signal_count else ()),
-    )
-    return ErstCompletionEvidence(
-        signals=signals,
-        candidate_decisions=tuple(decisions),
-        decode_receipt=decode_receipt,
-        scorer_identity=composite.erst_scorer,
-        calibration_identity=composite.calibration,
-        relation_inventory_identity=composite.relation_inventory,
+    policy: AnalysisPolicy,
+    raw_label: str,
+    relation_scheme: str,
+    inventory_identity: Sha256Identity,
+    confidence: ScoreValue | None = None,
+) -> RelationInterpretation:
+    """Apply the requested mapping policy without inventing a canonical crosswalk."""
+    mode = policy.relation_interpretation.ontology_mapping
+    status = {
+        "disabled": MappingStatus.NOT_MAPPED,
+        "identity_only": MappingStatus.IDENTITY_ONLY,
+        "provider_mapping": MappingStatus.NOT_AVAILABLE,
+    }[mode]
+    reason = {
+        "disabled": "ontology_mapping_disabled",
+        "identity_only": None,
+        "provider_mapping": "authoritative_crosswalk_unavailable",
+    }[mode]
+    return RelationInterpretation(
+        raw_label=raw_label,
+        relation_scheme=relation_scheme,
+        inventory_identity=inventory_identity,
+        selected_ontology_concept=raw_label if status is MappingStatus.IDENTITY_ONLY else None,
+        mapping_status=status,
+        mapping_reason=reason,
+        confidence=confidence,
     )
 
 
@@ -683,9 +521,12 @@ def analysis_anchors(
         token_ids = (
             decision.token_ids
             if isinstance(decision, SegmentationDecisionEvidence)
-            else index.within(decision.analysed_start, decision.analysed_end)
+            else index.overlapping_range(decision.analysed_start, decision.analysed_end)
         )
-        edu_ids = index.edus_for(token_ids)
+        edu_ids = (
+            decision.resulting_edu_ids if isinstance(decision, SegmentationDecisionEvidence)
+            else index.edus_overlapping(((decision.analysed_start, decision.analysed_end),))
+        )
         source_anchors = tuple(anchor for edu_id in edu_ids for anchor in edu_by_id[edu_id].source_anchors)
         anchors.append(
             AnalysisAnchor(
@@ -701,7 +542,7 @@ def analysis_anchors(
         )
     for signal in analysis.signals:
         tokens = index.overlapping(signal.char_spans)
-        edu_ids = index.edus_for(tokens)
+        edu_ids = index.edus_overlapping(signal.char_spans)
         source_anchors = tuple(
             _span_anchor(document_identity, start, end, analysed.text) for start, end in signal.char_spans
         )
@@ -728,8 +569,8 @@ def _node_anchor(
     *,
     document_identity: str,
 ) -> AnalysisAnchor:
-    tokens = index.within(*node.char_span)
-    edus = index.edus_for(tokens)
+    tokens = index.overlapping_range(*node.char_span)
+    edus = index.edus_overlapping((node.char_span,))
     return AnalysisAnchor(
         target_id=str(node.node_id),
         target_kind=AnchorTargetKind.NODE,
@@ -771,8 +612,8 @@ def _endpoint(
     *,
     document_identity: str,
 ) -> EndpointAnchor:
-    tokens = index.within(*node.char_span)
-    edus = index.edus_for(tokens)
+    tokens = index.overlapping_range(*node.char_span)
+    edus = index.edus_overlapping((node.char_span,))
     return EndpointAnchor(
         node_id=node.node_id,
         token_ids=tokens,
@@ -787,6 +628,10 @@ def _composite_identity(
     segmentation_source: str,
     policy: AnalysisPolicy,
 ) -> tuple[CompositeAnalysisIdentity, tuple[LoadedComponentReceipt, ...]]:
+    if policy.output_formalism is not OutputFormalism.RST_TREE:
+        raise ValueError("production component discovery supports rst_tree only")
+    if policy.relation_interpretation.relation_scheme != "provider_native":
+        raise ValueError("RST analysis supports only the provider_native relation scheme")
     loaded: list[LoadedComponentReceipt] = []
     release = parser.model_release_identity
     if release is None:
@@ -841,13 +686,13 @@ def _composite_identity(
                 )
                 loaded.append(receipt)
         else:
-            segmenter, receipt = _packaged_component(
+            segmenter, receipt = packaged_component_identity(
                 "segmenter",
                 ("dmrst_parser/predictor.py",),
             )
             loaded.append(receipt)
     else:
-        segmenter, receipt = _packaged_component(
+        segmenter, receipt = packaged_component_identity(
             "segmenter",
             ("dmrst_parser/predictor.py",),
         )
@@ -858,7 +703,7 @@ def _composite_identity(
             reason="analysis policy disabled marker refinement",
         )
     else:
-        marker, receipt = _packaged_component(
+        marker, receipt = packaged_component_identity(
             "marker_refiner",
             ("relations/primer.py", "relations/multilingual_markers.py"),
         )
@@ -868,47 +713,23 @@ def _composite_identity(
         component="ontology_mapping",
         reason="provider-native relation identity policy does not invoke ontology mapping",
     )
-    if policy.output_formalism is OutputFormalism.ERST_GRAPH:
-        checkpoint = parser.erst_checkpoint
-        if checkpoint is None:
-            raise ValueError("eRST policy requires a loaded checkpoint")
-        roles = {
-            "erst_scorer": ("scorer_state", "scorer_config", "encoder_config", "tokenizer"),
-            "erst_detector": ("signal_config",),
-            "erst_decoder": ("decoder_config",),
-            "calibration": ("calibration",),
-            "relation_inventory": ("relation_inventory",),
-            "ontology_mapping": ("ontology_mapping",),
-        }
-        components: dict[str, ComponentIdentity] = {}
-        for component, selected_roles in roles.items():
-            identity = _checkpoint_component(checkpoint, component, selected_roles)
-            components[component] = identity
-            loaded.append(_loaded_receipt(identity))
-        detector = components["erst_detector"]
-        scorer = components["erst_scorer"]
-        decoder = components["erst_decoder"]
-        calibration = components["calibration"]
-        relation_inventory = components["relation_inventory"]
-        ontology = components["ontology_mapping"]
+    detector = NotUsedComponentIdentity(component="erst_detector", reason="RST tree requested")
+    scorer = NotUsedComponentIdentity(component="erst_scorer", reason="RST tree requested")
+    decoder = NotUsedComponentIdentity(component="erst_decoder", reason="RST tree requested")
+    calibration = NotUsedComponentIdentity(component="calibration", reason="RST tree requested")
+    if release is None:
+        relation_inventory, receipt = packaged_component_identity(
+            "relation_inventory",
+            ("dmrst_parser/predictor.py",),
+        )
     else:
-        detector = NotUsedComponentIdentity(component="erst_detector", reason="RST tree requested")
-        scorer = NotUsedComponentIdentity(component="erst_scorer", reason="RST tree requested")
-        decoder = NotUsedComponentIdentity(component="erst_decoder", reason="RST tree requested")
-        calibration = NotUsedComponentIdentity(component="calibration", reason="RST tree requested")
-        if release is None:
-            relation_inventory, receipt = _packaged_component(
-                "relation_inventory",
-                ("dmrst_parser/predictor.py",),
-            )
-        else:
-            relation_inventory, receipt = _released_runtime_component(
-                "relation_inventory",
-                parser.predictor,
-                release,
-                selected_roles=("relation_inventory", "relation-inventory"),
-            )
-        loaded.append(receipt)
+        relation_inventory, receipt = _released_runtime_component(
+            "relation_inventory",
+            parser.predictor,
+            release,
+            selected_roles=("relation_inventory", "relation-inventory"),
+        )
+    loaded.append(receipt)
     composite = CompositeAnalysisIdentity(
         primary_parser=primary,
         segmenter=segmenter,
@@ -923,7 +744,7 @@ def _composite_identity(
     return composite, tuple(loaded)
 
 
-def _packaged_component(
+def packaged_component_identity(
     component: str,
     relative_paths: Sequence[str],
 ) -> tuple[ImmutableComponentIdentity, LoadedComponentReceipt]:
@@ -983,32 +804,6 @@ def _released_runtime_component(
     return identity, _loaded_receipt(identity)
 
 
-def _checkpoint_component(
-    checkpoint: Any,
-    component: str,
-    roles: Sequence[str],
-) -> ImmutableComponentIdentity:
-    selected = tuple(item for item in checkpoint.manifest.files if item.role.value in roles)
-    if not selected:
-        raise ValueError(f"eRST checkpoint has no files for component {component!r}")
-    files = tuple(
-        ComponentFileIdentity(
-            path=item.path,
-            role=item.role.value,
-            size_bytes=item.size_bytes,
-            identity=Sha256Identity(hex_digest=item.sha256),
-        )
-        for item in selected
-    )
-    return ImmutableComponentIdentity(
-        component=component,
-        release_id=f"erst-{checkpoint.manifest.manifest_sha256[:16]}",
-        manifest_identity=Sha256Identity(hex_digest=checkpoint.manifest.manifest_sha256),
-        architecture=checkpoint.manifest.architecture,
-        files=files,
-    )
-
-
 def _loaded_receipt(identity: ImmutableComponentIdentity) -> LoadedComponentReceipt:
     return LoadedComponentReceipt(
         component=identity.component,
@@ -1037,20 +832,29 @@ def _span_anchor(
     )
 
 
-def _membership(tokens: Sequence[Any], token_ids: Sequence[int], field: str) -> int:
-    values = [getattr(token, field) for token in tokens if token.token_id in token_ids]
-    valid = [v for v in values if v is not None]
-    if not valid:
-        return 1
-    return int(valid[0])
+def _membership(
+    tokens: Mapping[int, DocumentToken], token_ids: Sequence[int], field: Literal["sentence_id", "paragraph_id"],
+) -> int:
+    """Identify the first overlapping token's actual group, without a fallback."""
+    if not token_ids or token_ids[0] not in tokens:
+        raise ValueError("source group membership requires an identified input token")
+    value = getattr(tokens[token_ids[0]], field)
+    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+        raise ValueError(f"input token has no valid {field} source group")
+    return value
+
+
+def _exponential_weights(logits: Sequence[float]) -> tuple[float, ...]:
+    """Keep unnormalized mass so a marginal cannot exceed its total by rounding."""
+    if not logits or any(math.isnan(value) or value == math.inf for value in logits) or max(logits) == -math.inf:
+        raise ValueError("provider scores must contain a finite value and no NaN or positive infinity")
+    maximum = max(logits)
+    return tuple(math.exp(value - maximum) for value in logits)
 
 
 def _softmax(logits: Sequence[float]) -> tuple[float, ...]:
-    if not logits or any(not math.isfinite(value) for value in logits):
-        raise ValueError("provider logits must be finite and non-empty")
-    maximum = max(logits)
-    values = tuple(math.exp(value - maximum) for value in logits)
-    total = sum(values)
+    values = _exponential_weights(logits)
+    total = math.fsum(values)
     return tuple(value / total for value in values)
 
 
@@ -1073,16 +877,17 @@ def _distribution(
     )
 
 
-def _selected_probability(
-    labels: Sequence[Any],
-    logits: Sequence[float],
-    selected: Any,
-) -> float:
-    try:
-        index = tuple(labels).index(selected)
-    except ValueError as exc:
-        raise ValueError(f"selected provider value {selected!r} is absent from logits") from exc
-    return _softmax(logits)[index]
+def _probability_distribution(
+    labels: Sequence[str],
+    probabilities: Sequence[float],
+    component_identity: Sha256Identity,
+) -> NormalizedDistribution:
+    return NormalizedDistribution(
+        entries=tuple(
+            LabelledScore(label=label, score=_probability_score(value, component_identity))
+            for label, value in zip(labels, probabilities, strict=True)
+        )
+    )
 
 
 def _relation_index(inventory: Sequence[str], relation: str) -> int:
@@ -1118,7 +923,7 @@ def _entropy_score(logits: Sequence[float], component_identity: Sha256Identity) 
     )
 
 
-def _decision_basis(
+def segmentation_decision_basis(
     segmentation_source: str,
 ) -> Literal["model", "presegmented", "deterministic_rule"]:
     if segmentation_source == "presegmented":
@@ -1128,7 +933,7 @@ def _decision_basis(
     return "deterministic_rule"
 
 
-def _segmentation_source_from_composite(segmenter: ComponentIdentity) -> str:
+def segmentation_source_from_composite(segmenter: ComponentIdentity) -> str:
     """Recover the primary run's segmentation source from its recorded identity.
 
     ``_composite_identity`` builds the segmenter identity from exactly three
@@ -1147,16 +952,15 @@ def _segmentation_source_from_composite(segmenter: ComponentIdentity) -> str:
     return "model"
 
 
-def _candidate_id(candidate: Any) -> str:
-    return f"candidate:{candidate.document_id}:{candidate.source_id}:{candidate.target_id}"
-
-
 __all__ = [
     "analysis_anchors",
     "build_parser_analysis_result",
     "build_validation_receipt",
-    "complete_parser_analysis_result_with_erst",
     "component_digest_for",
     "describe_analysis_components",
+    "interpret_native_relation",
+    "packaged_component_identity",
+    "segmentation_decision_basis",
+    "segmentation_source_from_composite",
     "validate_parser_analysis_result",
 ]

@@ -14,7 +14,8 @@ Two licences govern this project, with different scopes:
 
 - Any commercial use of this codebase that touches the model weights (i.e. any actual parsing run) is licence-non-compliant unless weights are replaced.
 - "Replaced" means either (a) retraining new weights from scratch under a permissive licence, or (b) using a different RST model with a permissive licence.
-- The CC BY-NC 4.0 constraint flows through to anything derived from the model output — derivatives are also research / non-commercial only.
+- `LICENSE_MODELS` covers the Models and their derived artifacts. This note does
+  not establish that every analysis output automatically inherits that licence.
 
 **How to apply:**
 
@@ -23,4 +24,4 @@ Two licences govern this project, with different scopes:
 - The MIT licence permits us to modify, redistribute, and commercialise the *code* without restriction — only the *weights* carry the NC clause.
 - If the project ever ships pre-trained weights of our own, they go under a separate (permissive) licence and replace the HF download path.
 
-Related: [[project-status]].
+Related: [project-status](project_status.md).

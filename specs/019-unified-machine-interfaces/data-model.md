@@ -1,6 +1,7 @@
 # Data Model: Unified Machine Interfaces
 
-**Status**: Normative design for Feature 019; not the current runtime schema.
+**Status**: Implemented design for the active seven-technique scope; generated
+installed schemas remain the exact runtime authority. eRST is suspended.
 
 The tables specify fields and invariants, not a second implementation. Python
 models are the implementation authority; installed JSON Schemas are generated
@@ -15,7 +16,7 @@ Native technique payloads remain governed by their own contracts.
 | `rdam.request` | `1.0.0` | `AggregateRequest` | v1 only; there was no previously registered persisted request |
 | `rdam.preparation_request` | `1.0.0` | `PreparationRequest` | v1 only |
 | `rdam.configuration` | `1.0.0` | `MachineConfig` | v1 only |
-| `rdam.preparation` | `1.0.0` | `MachinePreparation` | v1 only |
+| `rdam.preparation` | `2.0.0` | `MachinePreparation` | v2 current; v1 retained as a distinct historical model |
 | `rdam.aggregate` | `2.0.0` | `AggregateAnalysis` | v1 retained as a distinct historical model; v2 current |
 | `rdam.capabilities` | `2.0.0` | `MachineCapabilities` | v1 historical; v2 current |
 | `rdam.native_result` | `2.0.0` | `NativeTechniqueResult` | v1 retained as HistoricalNativeTechniqueResult; new evidence typing in v2 |
@@ -25,7 +26,8 @@ Native technique payloads remain governed by their own contracts.
 | `rdam.view_request` | `1.0.0` | `ViewRequest` | v1 only |
 
 All rows carry literal `contract` and `contract_version`. Existing
-`isanlp_rst.production` records and their identifiers remain unchanged. Dispatch
+`isanlp_rst.production` records retain their family identifier; the current writer
+is v3 and the historical v2 reader preserves original meaning. Dispatch
 is by `(contract, version)`, never one shared version constant across unrelated
 records. Unknown versions fail explicitly; no silent coercion or migration.
 `load()`/`serialize()` support result-like records; dedicated request/config
@@ -44,7 +46,8 @@ loaders narrow the accepted union and never execute source paths.
 `LlmSettings` fields: `model: str | None = None`, `output_retries: int >= 0`,
 `transport_retries: int >= 0`, `transport_deadline_seconds: finite float > 0`.
 Retry/deadline defaults derive from `_llm` constants at composition, currently
-2, 2, 60 seconds. Null model resolves once from `RDAM_LLM_MODEL`, otherwise the
+two output retries and two transport retries. The total deadline derives from
+the installed OpenAI SDK read timeout (600 seconds in the verified environment). Null model resolves once from `RDAM_LLM_MODEL`, otherwise the
 existing package default; it never means to select a model anew on each call.
 Bare model names normalize using the existing model-identity parser. Malformed
 explicit model identities are configuration errors; a valid configured identity
@@ -208,7 +211,8 @@ payloads, upstream results or analysis formalisms are accepted here.
   custom Machine boundary. An unavailable model alone does not prevent a provider
   from declaring a requirement and obtaining an inspectable projection.
 
-The new preparation record contains one canonical inventory, not duplicate
+The v2 preparation record stores projection derivations against one canonical
+inventory; Python reconstructs the typed `projections` view. It does not store duplicate
 persisted inventory/receipt copies. A private conversion derives the existing
 provider-facing PreparationReceipt from this data without re-harvesting. Receipt
 validation, mappings, policies and all projection derivations must reconcile.

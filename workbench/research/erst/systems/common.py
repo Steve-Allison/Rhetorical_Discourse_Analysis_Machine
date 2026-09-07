@@ -13,9 +13,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from safetensors.numpy import load_file, save_file
 
 from rdam.rst.contracts.analysis import RstAnalysis, SecondaryRelationEdge
-from rdam.rst.contracts.erst import ErstDecoderConfig
-from rdam.rst.erst.decoder import ErstSecondaryEdgeDecoder
-from rdam.rst.erst.relations import resolve_gum_relation_concept
+from workbench.erst.contracts import ErstDecoderConfig
+from workbench.erst.decoder import ErstSecondaryEdgeDecoder
+from workbench.erst.relations import resolve_gum_relation_concept
 from workbench.evaluation.rst.erst_scorer import ErstScorer, SecondaryEdgeMetrics
 from workbench.research.erst.contracts import DocumentScore, ExperimentMetrics
 from workbench.research.erst.calibration import (

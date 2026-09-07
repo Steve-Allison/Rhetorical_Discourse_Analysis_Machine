@@ -5,6 +5,14 @@ metadata:
   type: feedback
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 The Docling-native RST entry point produces **one `DiscourseUnit` tree per input Docling JSON**, serialised as a flat `relations[]` + `edus[]` with `left_id` / `right_id` so consumers can reconstruct the hierarchy. Boundary metadata (slide / page / section / turn / table) is layered on top as `boundary_memberships` annotations on each relation; it doesn't affect which RST relations are emitted.
 
 **Why:** the natural output of `isanlp_rst.Parser(...)` is one `DiscourseUnit` tree per input. Forcing the input into per-boundary chunks and emitting a flat relations list under per-boundary trees is non-standard, loses hierarchical structure, and discards cross-boundary relations that may be meaningful (deck narrative arc, cross-turn elaboration in a conversation, section-to-section discourse).
@@ -24,4 +32,4 @@ Two architectures considered and rejected:
 
 Empirical question to close in Phase 0: does the parser handle long, structurally-diverse single inputs gracefully? Sliding-window encoding is mentioned in `dmrst_parser/predictor.py:271` source comment (`tokenizer.model_max_length = int(1e9) # The parser relies on a sliding window encoding`). Whether the encoding actually produces good results on 50K+-char inputs is UNVERIFIED — to test in Phase 0 step 6.
 
-Related: [[decision-consumer-agnostic]], [[decision-use-docling-core]], [[decision-overlap-rule]], [[open-parser-facade-unverified]].
+Related: [decision-consumer-agnostic](decision_consumer_agnostic.md), [decision-use-docling-core](decision_use_docling_core.md), [decision-overlap-rule](decision_overlap_rule.md), [open-parser-facade-unverified](open_parser_facade_unverified.md).

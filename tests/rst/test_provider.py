@@ -40,12 +40,20 @@ from rdam.ingest import (
 from rdam.ingest.serialization import PersistedContract, serialize_contract
 from rdam.ingest.contracts.preparation import PreparationOutcome
 from rdam.ingest.contracts.source import ContentClass
-from rdam.rst.provider import ERST_GRAPH, RST_TREE, ProviderConfigurationError, RstProvider
+from rdam.rst.provider import RST_TREE, ProviderConfigurationError, RstProvider
 from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST
 from tests.ingest.production_ingest.conftest import build_deterministic_parser
 
 ROOT = Path(__file__).resolve().parents[2]
 STORE = ROOT / "models" / "model-releases"
+
+
+class ObservableRstProvider(RstProvider):
+    """Expose initialization state for the model-free declaration assertions."""
+
+    @property
+    def parser_loaded(self) -> bool:
+        return self._parser is not None
 
 
 def _local_release(
@@ -89,17 +97,17 @@ def _local_release(
 
 class TestConfiguration:
     def test_the_default_configuration_is_the_default_parser_version(self) -> None:
-        provider = RstProvider()
+        provider = ObservableRstProvider()
         assert provider.model_identity == "gumrrg"
         assert provider.provider_id == "rdam.rst/gumrrg"
 
     def test_a_published_version_is_available_without_loading_a_model(self) -> None:
-        provider = RstProvider(hf_model_version="gumrrg")
+        provider = ObservableRstProvider(hf_model_version="gumrrg")
         declaration = provider.declaration
         assert declaration.technique is Technique.RST
         assert declaration.technique_curie == technique_curie(Technique.RST)
         assert isinstance(declaration.capability, AvailableCapability)
-        assert provider._parser is None, "declaring capability must not load a model"
+        assert not provider.parser_loaded, "declaring capability must not load a model"
 
     def test_an_unknown_version_is_unavailable_with_a_stable_reason(self) -> None:
         declaration = RstProvider(hf_model_version="not-a-version").declaration
@@ -112,11 +120,11 @@ class TestConfiguration:
     def test_a_valid_local_release_is_fully_validated_without_loading_a_parser(self, tmp_path: Path) -> None:
         store = tmp_path / "store"
         _local_release(store)
-        provider = RstProvider(store=store, release_id="local-rst")
+        provider = ObservableRstProvider(store=store, release_id="local-rst")
         declaration = provider.declaration
         assert isinstance(declaration.capability, AvailableCapability)
         assert declaration.provenance.licence == "Fixture-RST-Licence"
-        assert provider._parser is None
+        assert not provider.parser_loaded
 
     @pytest.mark.parametrize(
         "defect",
@@ -149,18 +157,18 @@ class TestConfiguration:
         elif defect == "hash_mismatch":
             original = (release / "model.bin").read_bytes()
             (release / "model.bin").write_bytes(b"x" * len(original))
-        provider = RstProvider(store=store, release_id="local-rst")
+        provider = ObservableRstProvider(store=store, release_id="local-rst")
         assert provider.declaration.capability == UnavailableCapability(reason=UnavailableReason.MODEL_UNAVAILABLE)
         assert "CC BY-NC" not in provider.declaration.provenance.licence
-        assert provider._parser is None
+        assert not provider.parser_loaded
 
     def test_release_id_cannot_escape_the_configured_store(self, tmp_path: Path) -> None:
         store = tmp_path / "store"
         store.mkdir()
         _local_release(tmp_path, release_id="escaped")
-        provider = RstProvider(store=store, release_id="../escaped")
+        provider = ObservableRstProvider(store=store, release_id="../escaped")
         assert provider.declaration.capability == UnavailableCapability(reason=UnavailableReason.MODEL_UNAVAILABLE)
-        assert provider._parser is None
+        assert not provider.parser_loaded
 
     def test_local_release_validation_is_cached_per_provider(
         self,
@@ -179,7 +187,7 @@ class TestConfiguration:
             return real_load(store_path, release_id)
 
         monkeypatch.setattr("rdam.rst.provider.load_model_release", counted_load)
-        provider = RstProvider(store=store, release_id="local-rst")
+        provider = ObservableRstProvider(store=store, release_id="local-rst")
         assert isinstance(provider.declaration.capability, AvailableCapability)
         assert isinstance(provider.declaration.capability, AvailableCapability)
         assert calls == 1
@@ -218,48 +226,44 @@ class TestConfiguration:
 
 
 class TestFormalisms:
-    def test_erst_is_declared_with_its_own_identity_and_state(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr("rdam.rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
+    def test_erst_is_absent_from_production(self) -> None:
         declaration = RstProvider(hf_model_version="gumrrg").declaration
         rst_tree = declaration.formalism(RST_TREE)
-        erst = declaration.formalism(ERST_GRAPH)
         assert rst_tree is not None and isinstance(rst_tree.capability, AvailableCapability)
-        assert erst is not None and erst.technique is Technique.ERST
-        assert erst.technique_curie == technique_curie(Technique.ERST)
-        assert isinstance(erst.capability, UnavailableCapability)
+        assert declaration.formalism("erst_graph") is None
 
-    def test_asking_for_erst_without_a_bundle_is_unavailable_not_failed(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr("rdam.rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
-        machine = Machine([RstProvider(hf_model_version="gumrrg")])
+    def test_asking_for_erst_is_rejected_before_loading(self) -> None:
+        provider = ObservableRstProvider(hf_model_version="gumrrg")
+        machine = Machine([provider])
         request = AggregateRequest.for_text(
-            "The cat sat.",
-            (Technique.RST,),
-            formalisms=(FormalismChoice(technique=Technique.RST, formalism_id=ERST_GRAPH),),
+            "The cat sat.", (Technique.RST,),
+            formalisms=(FormalismChoice(technique=Technique.RST, formalism_id="erst_graph"),),
         )
         outcome = machine.analyse(request).outcome_for(Technique.RST)
         assert isinstance(outcome, UnavailableOutcome)
-        assert outcome.reason is UnavailableReason.MODEL_UNAVAILABLE
+        assert outcome.reason is UnavailableReason.NOT_IMPLEMENTED
+        assert not provider.parser_loaded
 
 
 class TestAnalyseGuards:
     def test_unavailable_provider_refuses_to_analyse_with_a_typed_failure(self) -> None:
-        provider = RstProvider(hf_model_version="not-a-version")
+        provider = ObservableRstProvider(hf_model_version="not-a-version")
         with pytest.raises(ProviderError) as caught:
             provider.analyse(ProviderRequest(source=SourceIdentity.from_text("t"), text="t", structured_input=None))
         assert caught.value.failure.code == "provider_not_available"
         assert caught.value.failure.message_parameters == (("detail", "model_unavailable"),)
 
     def test_text_is_required_before_any_model_load(self) -> None:
-        provider = RstProvider(hf_model_version="gumrrg")
+        provider = ObservableRstProvider(hf_model_version="gumrrg")
         with pytest.raises(ProviderError) as caught:
             provider.analyse(ProviderRequest(source=SourceIdentity.from_bytes(b"x"), text=None, structured_input=None))
         assert caught.value.failure.code == "text_required"
-        assert provider._parser is None
+        assert not provider.parser_loaded
 
     def test_release_changed_after_declaration_is_a_typed_failure(self, tmp_path: Path) -> None:
         store = tmp_path / "store"
         release = _local_release(store)
-        provider = RstProvider(store=store, release_id="local-rst")
+        provider = ObservableRstProvider(store=store, release_id="local-rst")
         assert isinstance(provider.declaration.capability, AvailableCapability)
         (release / "model.bin").write_bytes(b"changed after declaration")
 
@@ -273,13 +277,13 @@ class TestAnalyseGuards:
             )
         assert caught.value.failure.code == "model_release_invalid"
         assert caught.value.failure.retryability.value == "not_retryable"
-        assert provider._parser is None
+        assert not provider.parser_loaded
 
     def test_canonical_ingest_bytes_are_the_exact_native_payload(
         self,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        provider = RstProvider(hf_model_version="gumrrg")
+        provider = ObservableRstProvider(hf_model_version="gumrrg")
         parser = build_deterministic_parser()
         monkeypatch.setattr(provider, "_load_parser", lambda: parser)
         serialized: list[bytes] = []
@@ -304,6 +308,7 @@ class TestAnalyseGuards:
         assert outcome.result.formalism_id == RST_TREE
         assert outcome.result.provider_id == provider.declaration.provider_id
         assert outcome.result.provider_contract_version == provider.declaration.contract_version
+        assert outcome.result.payload["contract_version"] == str(provider.declaration.contract_version)
         assert outcome.result.provenance == provider.declaration.provenance
         assert outcome.result.source == request.source
 
@@ -311,7 +316,7 @@ class TestAnalyseGuards:
         self,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        provider = RstProvider(hf_model_version="gumrrg")
+        provider = ObservableRstProvider(hf_model_version="gumrrg")
         monkeypatch.setattr(provider, "_load_parser", build_deterministic_parser)
         ingest_failure = ProductionFailure(
             failed_stage=LifecycleStage.INFERENCE,
@@ -345,7 +350,7 @@ class TestAnalyseGuards:
     def test_declared_projection_excludes_tables_without_losing_inventory(
         self, monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        provider = RstProvider(device="cpu")
+        provider = ObservableRstProvider(device="cpu")
         monkeypatch.setattr(provider, "_load_parser", build_deterministic_parser)
         result = Machine([provider]).analyse(AggregateRequest.for_source(
             ROOT / "tests/fixtures/pipeline/tabular-evidence.md", (Technique.RST,),
@@ -368,7 +373,7 @@ class TestAnalyseGuards:
         self,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        provider = RstProvider(hf_model_version="gumrrg")
+        provider = ObservableRstProvider(hf_model_version="gumrrg")
         monkeypatch.setattr(provider, "_load_parser", build_deterministic_parser)
 
         def break_ingest(
@@ -394,7 +399,6 @@ class TestRealParser:
     """Through the real published parser: the machine receives rdam.rst's own envelope."""
 
     def test_machine_gets_the_rst_outcome_envelope_as_the_native_payload(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr("rdam.rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
         machine = Machine([RstProvider(hf_model_version="gumrrg", device="cpu")])
         text = "The cat sat on the mat. It was a black cat. The mat was red."
         aggregate = machine.analyse(AggregateRequest.for_text(text, (Technique.RST, Technique.DUNG)))
@@ -409,7 +413,11 @@ class TestRealParser:
         semantic = payload["semantic"]
         assert isinstance(semantic, Mapping)
         assert semantic["status"] == "analysed"
-        analysis = semantic["analysis"]
+        parser_result = semantic["parser_result"]
+        assert isinstance(parser_result, Mapping)
+        parser_semantic = parser_result["semantic"]
+        assert isinstance(parser_semantic, Mapping)
+        analysis = parser_semantic["analysis"]
         assert isinstance(analysis, Mapping)
         nodes = analysis["nodes"]
         assert isinstance(nodes, list) and nodes, "the native payload is rdam.rst's own analysed outcome, verbatim"

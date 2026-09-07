@@ -2,12 +2,11 @@
 
 import asyncio
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
 from pathlib import Path
 from rdam.ingest.contracts.source import TableCoordinateAnchor
 
 from pydantic_ai import models
-from pydantic_ai.exceptions import ModelHTTPError, UnexpectedModelBehavior
+from pydantic_ai.exceptions import ModelHTTPError
 from pydantic_ai.messages import ModelMessage, ModelResponse, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 from pydantic_ai.models.openai import OpenAIResponsesModel
@@ -77,18 +76,14 @@ def _proposing(layouts: object) -> FunctionModel:
     return FunctionModel(behaviour)
 
 
-@dataclass
-class _Usage:
-    requests: int
+def _sequence(outcomes: list[Exception | dict[str, object]]) -> FunctionModel:
+    def behaviour(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        item = outcomes.pop(0)
+        if isinstance(item, Exception):
+            raise item
+        return ModelResponse(parts=[ToolCallPart(tool_name=info.output_tools[0].name, args=item)])
 
-
-@dataclass
-class _Result:
-    output: ToulminAnalysis
-    request_count: int = 1
-
-    def usage(self) -> _Usage:
-        return _Usage(requests=self.request_count)
+    return FunctionModel(behaviour)
 
 
 class TestAttemptContract:
@@ -104,74 +99,54 @@ class TestAttemptContract:
 
     def test_transient_failures_are_bounded_and_counted(self, monkeypatch: pytest.MonkeyPatch) -> None:
         analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, transport_retries=2)
-        outcomes: list[object] = [
+        outcomes: list[Exception | dict[str, object]] = [
             ModelHTTPError(503, MODEL, headers={"retry-after": "0"}),
             ModelHTTPError(503, MODEL),
-            _Result(ToulminAnalysis()),
+            {"layouts": []},
         ]
         delays: list[float] = []
-
-        async def run(_text: str):
-            item = outcomes.pop(0)
-            if isinstance(item, Exception):
-                raise item
-            return item
 
         async def sleep(delay: float) -> None:
             delays.append(delay)
 
-        monkeypatch.setattr(analyst, "_run", run)
         monkeypatch.setattr("rdam._llm.asyncio.sleep", sleep)
         monkeypatch.setattr("rdam._llm.random.uniform", lambda _low, high: high)
-        extraction = analyst.extract("text")
+        with analyst.agent.override(model=_sequence(outcomes)):
+            extraction = analyst.extract("text")
         assert extraction.output_attempts == 1
         assert extraction.transport_attempts == 3
         assert len(delays) == 2 and delays[0] == 0.0
 
     def test_retry_after_is_honoured(self, monkeypatch: pytest.MonkeyPatch) -> None:
         analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, transport_retries=1)
-        outcomes: list[object] = [ModelHTTPError(429, MODEL, headers={"retry-after": "2"}), _Result(ToulminAnalysis())]
+        outcomes: list[Exception | dict[str, object]] = [ModelHTTPError(429, MODEL, headers={"retry-after": "2"}), {"layouts": []}]
         delays: list[float] = []
-
-        async def run(_text: str):
-            item = outcomes.pop(0)
-            if isinstance(item, Exception):
-                raise item
-            return item
 
         async def sleep(delay: float) -> None:
             delays.append(delay)
 
-        monkeypatch.setattr(analyst, "_run", run)
         monkeypatch.setattr("rdam._llm.asyncio.sleep", sleep)
-        extraction = analyst.extract("text")
+        with analyst.agent.override(model=_sequence(outcomes)):
+            extraction = analyst.extract("text")
         assert extraction.transport_attempts == 2
         assert delays == [2.0]
 
     def test_exhaustion_reports_the_exact_transport_attempts(self, monkeypatch: pytest.MonkeyPatch) -> None:
         analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, transport_retries=1)
 
-        async def fail(_text: str):
-            raise ModelHTTPError(503, MODEL)
-
         async def no_wait(_delay: float) -> None:
             return None
 
-        monkeypatch.setattr(analyst, "_run", fail)
         monkeypatch.setattr("rdam._llm.asyncio.sleep", no_wait)
-        with pytest.raises(LlmError) as caught:
+        with analyst.agent.override(model=_sequence([ModelHTTPError(503, MODEL), ModelHTTPError(503, MODEL)])), pytest.raises(LlmError) as caught:
             analyst.extract("text")
         assert caught.value.code == "llm_request_rejected"
         assert caught.value.transport_attempts == 2
         assert caught.value.output_attempts == 0
 
-    def test_output_exhaustion_is_not_mislabeled_as_transport_retry(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_output_exhaustion_is_not_mislabeled_as_transport_retry(self) -> None:
         analyst = StructuredAnalyst(output_type=ToulminAnalysis, instructions="test", model=MODEL, output_retries=2)
-        async def invalid(_text: str):
-            raise UnexpectedModelBehavior("invalid output")
-
-        monkeypatch.setattr(analyst, "_run", invalid)
-        with pytest.raises(LlmError) as caught:
+        with analyst.agent.override(model=_proposing("invalid layouts")), pytest.raises(LlmError) as caught:
             analyst.extract("text")
         assert caught.value.code == "llm_output_failed_validation"
         assert caught.value.output_attempts == 3
@@ -186,11 +161,7 @@ class TestAttemptContract:
             transport_deadline_seconds=0.01,
         )
 
-        async def rejected(_text: str):
-            raise ModelHTTPError(429, MODEL, headers={"retry-after": "2"})
-
-        monkeypatch.setattr(analyst, "_run", rejected)
-        with pytest.raises(LlmError) as caught:
+        with analyst.agent.override(model=_sequence([ModelHTTPError(429, MODEL, headers={"retry-after": "2"})])), pytest.raises(LlmError) as caught:
             analyst.extract("text")
         assert caught.value.code == "llm_transport_deadline_exceeded"
         assert caught.value.transport_attempts == 1

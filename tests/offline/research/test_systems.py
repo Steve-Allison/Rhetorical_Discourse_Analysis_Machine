@@ -1,6 +1,6 @@
 """Focused system serialization and private candidate-cache contract tests."""
 
-from rdam.rst.erst.candidates import SecondaryEdgeCandidate
+from workbench.erst.candidates import SecondaryEdgeCandidate
 from workbench.research.erst.data import CandidateRecord, HarnessCandidate
 from workbench.research.erst.systems.cross_encoder import serialize_candidate
 

@@ -67,5 +67,6 @@ PY
 ```
 
 All four records printed `canonical round-trip and fixed digests verified`; exit
-status was 0. T015 must retain these checks under the explicit historical reader
-and add damaged-record/cache cases; that later work is not complete.
+status was 0. T015 subsequently implemented the explicit historical reader and damaged-record
+checks; current completion evidence is in [Feature 019 tasks](../../../../specs/019-unified-machine-interfaces/tasks.md).
+The observations above remain the original v1 capture, not current provider behavior.

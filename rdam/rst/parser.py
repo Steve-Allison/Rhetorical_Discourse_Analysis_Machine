@@ -51,7 +51,6 @@ class Parser:
         dtype: str | torch.dtype | None = None,
         segmenter: Any | None = None,
         segmenter_model: str | None = None,
-        erst_scorer_checkpoint: str | Path | None = None,
         _validated_model_release: Any | None = None,
     ) -> None:
         if model_dir is not None and hf_model_name is not None and hf_model_name != self._DEFAULT_HF_MODEL_NAME:
@@ -123,30 +122,19 @@ class Parser:
         else:
             self.segmenter = None
 
-        from rdam.rst.erst.checkpoint import load_erst_checkpoint_bundle, resolve_default_erst_checkpoint
-
-        resolved_erst = resolve_default_erst_checkpoint(erst_scorer_checkpoint)
-        if resolved_erst is not None:
-            self.erst_checkpoint = load_erst_checkpoint_bundle(
-                resolved_erst,
-                device=self.predictor._device,
-            )
-        else:
-            self.erst_checkpoint = None
-
     @property
     def analysis_capacity(self) -> ParserCapacity:
-        """Return the safe recursive-analysis capacity in the parser's limiting unit."""
+        """Return the runtime's declared capacity state."""
 
         return self.declared_analysis_capacity()
 
     @staticmethod
     def declared_analysis_capacity() -> ParserCapacity:
-        """Declare the recursive limit without constructing or loading a parser."""
+        """No checkpoint- or runtime-derived EDU maximum has been established."""
 
         from rdam.rst.model_loading import ParserCapacity
 
-        return ParserCapacity(unit="edu_count", maximum=512, source="isanlp_rst.parser/recursive-v1")
+        return ParserCapacity(unit="edu_count", maximum=None, source="isanlp_rst.parser/edu_capacity_not_established-v1")
 
     @property
     def model_release_identity(self) -> ModelReleaseIdentity | None:
@@ -185,7 +173,6 @@ class Parser:
         dtype: str | torch.dtype | None = None,
         segmenter: Any | None = None,
         segmenter_model: str | None = None,
-        erst_scorer_checkpoint: str | Path | None = None,
     ) -> Parser:
         """Validate and load one immutable child of the production model store."""
 
@@ -213,7 +200,6 @@ class Parser:
             dtype=dtype,
             segmenter=segmenter,
             segmenter_model=segmenter_model,
-            erst_scorer_checkpoint=erst_scorer_checkpoint,
             _validated_model_release=release,
         )
 
@@ -345,7 +331,6 @@ class Parser:
 
         import time
 
-        from rdam.rst.english.erst.completer import CompleterConfig, ErstCompleter
         from rdam.ingest.contracts.analysis import (
             AnalysisPolicy,
             MarkerRefinementMode,
@@ -356,10 +341,8 @@ class Parser:
         from rdam.rst.relations.primer import DiscourseMarkerPrimer
 
         policy = AnalysisPolicy.model_validate((analysis_policy or DEFAULT_ANALYSIS_POLICY).model_dump())
-        if policy.output_formalism is OutputFormalism.ERST_GRAPH and self.erst_checkpoint is None:
-            from rdam.rst.erst.checkpoint import ErstCapabilityError
-
-            raise ErstCapabilityError("output_formalism='erst_graph' requires a validated completion bundle")
+        if policy.output_formalism is not OutputFormalism.RST_TREE:
+            raise ValueError("eRST is available only through workbench.erst.parser.Parser")
         started = time.perf_counter()
         segmentation_source: str | None = None
         edus = document.edus
@@ -380,28 +363,10 @@ class Parser:
             model_id=self.hf_model_version or str(getattr(self.predictor, "model_dir", "unknown")),
         )
         if policy.marker_refinement is MarkerRefinementMode.EVIDENCE_PRESERVING:
-            primary_analysis = DiscourseMarkerPrimer().prime_analysis(model_analysis, document)
+            primary_analysis = DiscourseMarkerPrimer().prime_analysis(model_analysis, document, tokens=trace.tokens)
         else:
             primary_analysis = model_analysis
-        erst_trace = None
         final_analysis = primary_analysis
-        if policy.output_formalism is OutputFormalism.ERST_GRAPH:
-            checkpoint = self.erst_checkpoint
-            if checkpoint is None:
-                raise RuntimeError("validated eRST checkpoint disappeared during analysis")
-            completer = ErstCompleter(
-                config=CompleterConfig(
-                    min_confidence_threshold=checkpoint.decoder_config.edge_threshold,
-                ),
-                signal_detector=checkpoint.signal_detector,
-                decoder_config=checkpoint.decoder_config,
-            )
-            erst_trace = completer.complete_graph_with_evidence(
-                document,
-                primary_analysis,
-                neural_scorer=checkpoint.scorer,
-            )
-            final_analysis = erst_trace.analysis
         duration_ms = (time.perf_counter() - started) * 1_000.0
         return build_parser_analysis_result(
             self,
@@ -410,7 +375,6 @@ class Parser:
             policy=policy,
             model_analysis=model_analysis,
             final_analysis=final_analysis,
-            erst_trace=erst_trace,
             duration_ms=duration_ms,
         )
 
@@ -436,42 +400,6 @@ class Parser:
             }
         )
         return self.analyse_document(document, analysis_policy=policy).semantic.analysis
-
-    def complete_erst_document(
-        self,
-        document: RstDocument,
-        primary_result: ParserAnalysisResult,
-        *,
-        analysis_policy: AnalysisPolicy,
-    ) -> ParserAnalysisResult:
-        """Add global eRST evidence to a complete validated primary result."""
-
-        from rdam.rst.english.erst.completer import CompleterConfig, ErstCompleter
-        from rdam.rst.erst.checkpoint import ErstCapabilityError
-        from rdam.ingest.parser_result import complete_parser_analysis_result_with_erst
-
-        checkpoint = self.erst_checkpoint
-        if checkpoint is None:
-            raise ErstCapabilityError("output_formalism='erst_graph' requires a validated completion bundle")
-        completer = ErstCompleter(
-            config=CompleterConfig(
-                min_confidence_threshold=checkpoint.decoder_config.edge_threshold,
-            ),
-            signal_detector=checkpoint.signal_detector,
-            decoder_config=checkpoint.decoder_config,
-        )
-        trace = completer.complete_graph_with_evidence(
-            document,
-            primary_result.semantic.analysis,
-            neural_scorer=checkpoint.scorer,
-        )
-        return complete_parser_analysis_result_with_erst(
-            self,
-            document,
-            primary_result,
-            trace,
-            policy=analysis_policy,
-        )
 
     def describe_analysis_identity(
         self,
@@ -502,7 +430,7 @@ class Parser:
         Args:
             documents: Sequence of RstDocument instances to parse.
             batch_size: Maximum batch size per forward pass.
-            output: Formalism alias ('rst_tree' or 'erst_graph').
+            output: Production formalism ('rst_tree').
             prime_markers: Whether to apply lexical discourse marker priming.
 
         Returns:
@@ -511,8 +439,7 @@ class Parser:
         import time
         from rdam.rst._provenance import resolve_package_version, resolve_source_revision
         from rdam.rst.contracts import OutputFormalismEnum, ProvenanceRecord, RstAnalysis, TimingRecord
-        from rdam.rst.erst.checkpoint import ErstCapabilityError
-        from rdam.rst.erst.converter import du_to_analysis
+        from rdam.rst.converter import du_to_analysis
         from rdam.rst.relations.primer import DiscourseMarkerPrimer
 
         if not documents:
@@ -521,11 +448,8 @@ class Parser:
             raise ValueError(f"batch_size must be positive, got {batch_size}")
 
         formalism = OutputFormalismEnum(output)
-        erst_checkpoint = getattr(self, "erst_checkpoint", None)
-        if formalism == OutputFormalismEnum.ERST_GRAPH and erst_checkpoint is None:
-            raise ErstCapabilityError(
-                "output='erst_graph' requires a validated completion bundle via Parser(erst_scorer_checkpoint=...)"
-            )
+        if formalism is not OutputFormalismEnum.RST_TREE:
+            raise ValueError("eRST is available only through workbench.erst.parser.Parser")
 
         segmenter = getattr(self, "segmenter", None)
         parse_rst_batch_fn = getattr(self.predictor, "parse_rst_batch", None)
@@ -538,19 +462,6 @@ class Parser:
 
             results: list[RstAnalysis] = []
             primer = DiscourseMarkerPrimer() if prime_markers else None
-            completer = None
-            if formalism == OutputFormalismEnum.ERST_GRAPH:
-                from rdam.rst.english.erst.completer import CompleterConfig, ErstCompleter
-
-                if erst_checkpoint is None:
-                    raise RuntimeError("validated eRST checkpoint disappeared during parsing")
-                completer = ErstCompleter(
-                    config=CompleterConfig(
-                        min_confidence_threshold=erst_checkpoint.decoder_config.edge_threshold,
-                    ),
-                    signal_detector=erst_checkpoint.signal_detector,
-                    decoder_config=erst_checkpoint.decoder_config,
-                )
             for doc, raw_res in zip(documents, batch_raw_res, strict=True):
                 root_unit = extract_root_tree(raw_res)
                 base_analysis = du_to_analysis(root_unit, document_id=doc.document_id)
@@ -560,7 +471,6 @@ class Parser:
                     software_version=resolve_package_version(),
                     source_revision=resolve_source_revision(),
                     model_id=self.hf_model_version or str(getattr(self.predictor, "model_dir", "unknown")),
-                    ontology_version="4.1.0-discourse",
                 )
                 timing = TimingRecord(parsing_ms=average_parsing_ms, total_ms=average_parsing_ms)
 
@@ -578,16 +488,7 @@ class Parser:
                 )
 
                 if primer is not None:
-                    analysis = primer.prime_analysis(analysis, doc)
-
-                if formalism == OutputFormalismEnum.ERST_GRAPH:
-                    if completer is None or erst_checkpoint is None:
-                        raise RuntimeError("validated eRST completion runtime disappeared during parsing")
-                    analysis = completer.complete_graph(
-                        doc,
-                        analysis,
-                        neural_scorer=erst_checkpoint.scorer,
-                    )
+                    analysis = primer.prime_analysis(analysis, doc, tokens=raw_res["analysis_tokens"])
 
                 results.append(analysis)
             return results
@@ -645,7 +546,6 @@ def _analysis_with_document_identity(
             software_version=resolve_package_version(),
             source_revision=resolve_source_revision(),
             model_id=model_id,
-            ontology_version="4.1.0-discourse",
         ),
         timing=TimingRecord(parsing_ms=elapsed_ms, total_ms=elapsed_ms),
         warnings=analysis.warnings,

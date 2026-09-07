@@ -1,5 +1,11 @@
 # Verification Quickstart
 
+> **Historical quickstart.** The following commands and APIs belong to this
+> earlier feature design and are not current execution instructions. Use the
+> [current quickstart](../019-unified-machine-interfaces/quickstart.md) and
+> [production ingest guide](../../docs/production-source-ingest.md). The package
+> and command are now `rdam`; eRST work is suspended as of 2026-09-06.
+
 This is an operator sequence, not proof of success. Every command must be run and its actual output
 captured in the release ledger before “passing” or “complete” is claimed.
 

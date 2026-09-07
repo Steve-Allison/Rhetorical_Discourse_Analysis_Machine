@@ -1,4 +1,6 @@
-"""Unit tests for DiscourseMarkerPrimer and relation classification refinement."""
+"""Marker candidates preserve predictions and carry no invented probabilities."""
+
+from pathlib import Path
 
 import pytest
 
@@ -34,6 +36,7 @@ def test_primer_cue_matching() -> None:
     rule2, start2, end2 = match2
     assert rule2.cue == "as a result"
     assert rule2.coarse_concept == "Cause"
+    assert "As a result, production halted."[start2:end2].lower() == rule2.cue
 
     # Leading whitespace and punctuation
     match3 = primer.find_cue_in_text("  ; in contrast to prior findings")
@@ -41,13 +44,60 @@ def test_primer_cue_matching() -> None:
     rule3, start3, end3 = match3
     assert rule3.cue == "in contrast"
     assert rule3.coarse_concept == "Contrast"
+    assert "  ; in contrast to prior findings"[start3:end3] == rule3.cue
 
     # No connective
     match4 = primer.find_cue_in_text("The sky is blue today.")
     assert match4 is None
 
 
-def test_primer_primes_low_confidence_and_generic_edges() -> None:
+def test_unicode_case_matching_keeps_original_character_coordinates() -> None:
+    text = "İ. However, this follows."
+    match = DiscourseMarkerPrimer().find_cue_in_text(text)
+    assert match is not None
+    assert text[match[1] : match[2]] == "However"
+    assert match[1] == text.index("However")
+
+
+def test_nested_constituents_do_not_multiply_a_cue_or_rewrite_span_links() -> None:
+    text = "A. However B. C."
+    document = RstDocument.from_text(text, document_id="nested")
+    nodes = (
+        RstNode(1, NodeKindEnum.EDU, (1, 1), (0, 2), text[:2]),
+        RstNode(2, NodeKindEnum.EDU, (2, 2), (3, 13), text[3:13]),
+        RstNode(3, NodeKindEnum.EDU, (3, 3), (14, 16), text[14:16]),
+        RstNode(4, NodeKindEnum.ROOT, (1, 2), (0, 13), text[:13]),
+        RstNode(5, NodeKindEnum.ROOT, (1, 3), (0, 16), text),
+    )
+    edges = (
+        PrimaryRelationEdge("e1", 4, 1, "span", "span", NuclearityPatternEnum.NS),
+        PrimaryRelationEdge("e2", 4, 2, "elaboration", "elaboration", NuclearityPatternEnum.NS),
+        PrimaryRelationEdge("e3", 5, 4, "span", "span", NuclearityPatternEnum.NS),
+        PrimaryRelationEdge("e4", 5, 3, "cause", "cause", NuclearityPatternEnum.NS),
+    )
+    analysis = RstAnalysis("nested", OutputFormalismEnum.RST_TREE, nodes, edges)
+    primer = DiscourseMarkerPrimer()
+    primed = primer.prime_analysis(analysis, document)
+    assert primed.primary_edges == edges
+    assert len(primed.signals) == 1
+    signal = primed.signals[0]
+    assert signal.char_spans == ((3, 10),)
+    assert signal.edge_id == "e2"
+    assert signal.attachment_candidates == ("e2",)
+    assert signal.attachment_basis == "smallest_enclosing_constituent"
+    assert primer.prime_analysis(primed, document) == primed
+
+
+def test_repeated_lexical_occurrences_survive_without_invented_attachments() -> None:
+    text = "However A. However B."
+    document = RstDocument.from_text(text, document_id="unattached")
+    analysis = RstAnalysis("unattached", OutputFormalismEnum.RST_TREE, (), ())
+    primed = DiscourseMarkerPrimer().prime_analysis(analysis, document)
+    assert [signal.char_spans for signal in primed.signals] == [((0, 7),), ((11, 18),)]
+    assert all(signal.edge_id is None and not signal.attachment_candidates for signal in primed.signals)
+
+
+def test_primer_preserves_low_confidence_and_generic_edges() -> None:
     primer = DiscourseMarkerPrimer()
 
     doc = RstDocument(
@@ -103,19 +153,17 @@ def test_primer_primes_low_confidence_and_generic_edges() -> None:
 
     primed = primer.prime_analysis(initial_analysis, doc)
 
-    # Assert relation was refined to Contrast
-    assert len(primed.primary_edges) == 1
-    edge = primed.primary_edges[0]
-    assert edge.relation_concept == "Contrast"
-    assert edge.relation_raw == "contrast"
-    assert edge.calibrated is True
-    assert edge.confidence == 0.88
+    assert primed.primary_edges == initial_analysis.primary_edges
+    assert primed.nodes == initial_analysis.nodes
 
     # Assert signal was created and anchored to token 4 ("However,")
     assert len(primed.signals) == 1
     sig = primed.signals[0]
     assert sig.signal_type == "dm"
-    assert sig.signal_subtype == "dm"
+    assert sig.signal_subtype == "lexical_candidate"
+    assert sig.confidence is None
+    assert not sig.sufficient
+    assert sig.attachment_candidates == ("e1",)
     assert sig.edge_id == "e1"
     assert 4 in sig.token_ids
 
@@ -154,14 +202,15 @@ def test_primer_respects_high_confidence_predictions() -> None:
         ),
     )
 
-    # With min_model_confidence_to_override=0.90, confidence 0.98 is NOT overridden
-    primed = primer.prime_analysis(initial_analysis, doc, min_model_confidence_to_override=0.90)
+    primed = primer.prime_analysis(initial_analysis, doc)
     assert primed.primary_edges[0].relation_concept == "CustomDomain"
 
 
 @pytest.mark.slow
 def test_parser_parse_document_with_marker_priming() -> None:
-    parser = Parser(device="cpu")
+    parser = Parser.from_model_release(
+        Path.home() / ".cache/isanlp_rst/model-releases", "gumrrg-eb1d5745f3a1", device="cpu"
+    )
     doc = RstDocument.from_text(
         "The algorithm ran efficiently. Because the dataset was pre-cached, latency stayed low."
     )
@@ -170,6 +219,8 @@ def test_parser_parse_document_with_marker_priming() -> None:
 
     assert analysis.document_id == doc.document_id
     assert len(analysis.nodes) >= 2
-    # Check that at least one edge has Cause or Explanation or Contrast relation
-    concepts = {e.relation_concept for e in analysis.primary_edges}
-    assert any(c in {"Cause", "Explanation", "Contrast", "Elaboration"} for c in concepts)
+    unprimed = parser.parse_document(doc, prime_markers=False)
+    assert analysis.primary_edges == unprimed.primary_edges
+    assert analysis.signals
+    assert all(signal.confidence is None and not signal.sufficient for signal in analysis.signals)
+    assert all(signal.token_ids for signal in analysis.signals)

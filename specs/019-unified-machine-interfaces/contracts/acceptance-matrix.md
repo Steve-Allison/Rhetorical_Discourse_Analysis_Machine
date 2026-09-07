@@ -1,6 +1,8 @@
 # Acceptance Matrix
 
-**Status**: Required implementation checks; none is marked passed by this plan.
+**Status**: Acceptance requirements; actual results and failures are recorded
+in [tasks.md](../tasks.md). A06’s successful eRST execution portion is suspended
+by the owner as of 2026-09-06; it is not counted as passed.
 
 P = direct Python; C = installed CLI subprocess; H = real loopback HTTP.
 Fixtures live under tests/interfaces/fixtures/ unless a native suite owns them.

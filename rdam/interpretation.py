@@ -1,6 +1,7 @@
 """Pure binding of native-owned descriptions to actual persisted records."""
 
 from collections.abc import Mapping
+import json
 from typing import Literal, Self
 from typing import cast
 from pydantic import Field, model_validator
@@ -27,10 +28,56 @@ from rdam.contracts import (
     BoundaryConfiguration,
     ProviderDependencyReference,
     MachinePreparation,
+    HistoricalMachinePreparation,
     ProjectedPreparationBinding,
 )
 from rdam.frameworks import Technique
 from rdam.historical import HistoricalNativeTechniqueResult
+from rdam.ontology import ObservedVocabularyAlignment, observed_vocabulary_alignment, walton_profile_alignment
+
+
+def _observed_section(
+    record: Mapping[str, object], pointer: str, recorded: ObservedVocabularyAlignment | None = None,
+) -> ObservedVocabularyAlignment | None:
+    """Derive vocabulary observations from the actual typed native payload."""
+    payload = record["payload"]
+    snapshot = recorded.projection_identity if recorded is not None else None
+    if record["technique"] == Technique.SDRT and pointer == "/payload/relations":
+        from rdam.sdrt.output import SdrtOutput
+
+        output = SdrtOutput.model_validate_json(json.dumps(payload))
+        return observed_vocabulary_alignment(
+            "coe:artifact/narrative/sdrt_vocabulary", tuple(relation.label for relation in output.relations),
+            projection_identity=snapshot,
+        )
+    if record["technique"] == Technique.WALTON and pointer == "/payload/instances":
+        from rdam.walton.output import WaltonOutput
+
+        output = WaltonOutput.model_validate_json(json.dumps(payload))
+        return walton_profile_alignment(
+            tuple(instance.scheme_id for instance in output.instances), projection_identity=snapshot,
+            consumer_profile_identity=recorded.consumer_profile_identity if recorded is not None else None,
+        )
+    if record["technique"] == Technique.PDTB and pointer == "/payload/relations":
+        from rdam.pdtb.output import PdtbOutput
+
+        output = PdtbOutput.model_validate_json(json.dumps(payload))
+        return observed_vocabulary_alignment(
+            "coe:artifact/narrative/pdtb3_relation_types", tuple(relation.relation_type.value for relation in output.relations),
+            projection_identity=snapshot,
+        )
+    return None
+
+
+def validate_observed_section(record: Mapping[str, object], section: NativeSectionDescription) -> None:
+    """Reject vocabulary metadata that does not describe the selected native data."""
+    if section.observed_vocabulary is None:
+        return
+    if section.availability != "present":
+        raise ValueError("Unrecorded sections cannot carry observed vocabulary")
+    expected = _observed_section(record, section.pointer, section.observed_vocabulary)
+    if section.observed_vocabulary != expected:
+        raise ValueError("Observed vocabulary differs from the native section")
 
 
 def bind_descriptor(result: NativeTechniqueResult, declaration: ProviderDeclaration) -> NativeInterpretationDescriptor:
@@ -42,6 +89,9 @@ def bind_descriptor(result: NativeTechniqueResult, declaration: ProviderDeclarat
         except ValueError:
             sections.append(section.model_copy(update={"availability": "not_recorded"}))
         else:
+            observation = _observed_section(result.model_dump(), section.pointer)
+            if observation is not None:
+                section = section.model_copy(update={"observed_vocabulary": observation})
             sections.append(section)
     return NativeInterpretationDescriptor.model_validate(
         {
@@ -136,7 +186,7 @@ class AnalysisView(StrictModel):
     upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...]
     lineage: tuple[ProviderDependencyReference, ...]
     configurations: tuple[BoundaryConfiguration, ...]
-    preparation: MachinePreparation | None
+    preparation: MachinePreparation | HistoricalMachinePreparation | None
     reading_guide: AnalysisReadingGuide
     omitted_content: Literal["unselected_outcomes_only"] = "unselected_outcomes_only"
     semantic_digest: Sha256Identity | None = None
@@ -188,6 +238,9 @@ class AnalysisView(StrictModel):
                                            if item.projection_identity is not None and
                                            item.projection_identity.hex_digest == binding.projection_identity.hex_digest), None)
                 outcome.result.validate_alignment(projection)
+                from rdam.serialization import validate_native_result
+
+                validate_native_result(outcome.result)
         if any(result.source != self.source for result in self.upstream_results):
             raise ValueError("retained result has a different source")
         retained = tuple(boundary_for(item.technique) for item in self.upstream_results)
@@ -242,6 +295,7 @@ class AnalysisView(StrictModel):
                 ) != (target["formalism_id"], target["contract_version"], target["provider_contract_version"]):
                     raise ValueError("view descriptor differs from native record")
                 for section in entry.descriptor.sections:
+                    validate_observed_section(target, section)
                     if section.availability == "present":
                         resolve_pointer(record, section.pointer)
         semantic = self.model_dump(exclude={"semantic_digest", "outcomes", "upstream_results"})

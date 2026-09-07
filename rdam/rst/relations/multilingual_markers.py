@@ -1,4 +1,4 @@
-"""Multilingual discourse connective lexical inventories mapped to Central ontology concepts."""
+"""Local multilingual lexical hypotheses; canonical mappings belong to Central_Configs."""
 
 from dataclasses import dataclass
 
@@ -7,7 +7,7 @@ from rdam.rst.contracts.enums import NuclearityPatternEnum
 
 @dataclass(frozen=True, slots=True)
 class MarkerRule:
-    """A discourse connective rule mapping lexical cues to canonical relation concepts."""
+    """A lexical hypothesis; labels and nuclearity are not authoritative model overrides."""
 
     cue: str
     coarse_concept: str
@@ -16,7 +16,7 @@ class MarkerRule:
     is_multiword: bool = False
 
 
-# Canonical multilingual connective inventories
+# Local lexical inventories, pending empirical and canonical-mapping evaluation
 MULTILINGUAL_MARKER_RULES: dict[str, tuple[MarkerRule, ...]] = {
     "en": (
         # Contrast / Adversative

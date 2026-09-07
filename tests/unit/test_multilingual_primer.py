@@ -12,7 +12,7 @@ from rdam.rst.contracts import (
 from rdam.rst.relations.primer import DiscourseMarkerPrimer
 
 
-def test_multilingual_marker_cue_detection():
+def test_multilingual_marker_cue_detection() -> None:
     # Russian
     ru_primer = DiscourseMarkerPrimer(language="ru")
     cue_ru = ru_primer.find_cue_in_text("Однако это не помогло.")
@@ -49,7 +49,7 @@ def test_multilingual_marker_cue_detection():
     assert cue_zh[0].cue == "但是"
 
 
-def test_multilingual_prime_analysis():
+def test_multilingual_prime_analysis() -> None:
     doc = RstDocument(
         document_id="ru_doc",
         text="Первое предложение. Однако второе предложение продолжается.",
@@ -66,14 +66,14 @@ def test_multilingual_prime_analysis():
         node_id=2,
         kind=NodeKindEnum.EDU,
         edu_span=(2, 2),
-        char_span=(21, 60),
+        char_span=(doc.text.index("Однако"), len(doc.text)),
         text="Однако второе предложение продолжается.",
     )
     root = RstNode(
         node_id=3,
         kind=NodeKindEnum.ROOT,
         edu_span=(1, 2),
-        char_span=(0, 60),
+        char_span=(0, len(doc.text)),
         text=doc.text,
     )
     edge = PrimaryRelationEdge(
@@ -97,5 +97,6 @@ def test_multilingual_prime_analysis():
 
     assert len(primed.signals) == 1
     assert primed.signals[0].signal_type == "dm"
-    assert primed.primary_edges[0].relation_concept == "Contrast"
-    assert primed.primary_edges[0].calibrated is True
+    assert primed.primary_edges == analysis.primary_edges
+    assert primed.signals[0].confidence is None
+    assert not primed.signals[0].sufficient

@@ -3,7 +3,7 @@
 import argparse
 from pathlib import Path
 
-from rdam.rst.contracts.erst import CorpusPartition, PrivateCorpusVerificationReceipt
+from workbench.erst.contracts import CorpusPartition, PrivateCorpusVerificationReceipt
 from workbench.research.erst.configuration import ExperimentConfigurationBundle
 from workbench.research.erst.contracts import (
     EvaluationSetting,

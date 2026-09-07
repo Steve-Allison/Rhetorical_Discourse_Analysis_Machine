@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/brand_concepts
   title: Adobe — Brand Concepts
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -20,7 +20,6 @@ entity_collections:
       Delivery & Activation, and Reporting & Insights.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: &id001
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/adobe/brand_concepts
@@ -30,7 +29,6 @@ entity_collections:
       managing, activating, and measuring marketing content at enterprise scale.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/workflows_planning_metadata
     label: Workflows, Planning & Metadata
@@ -38,7 +36,6 @@ entity_collections:
       metadata standards that keep content findable and traceable downstream — the phase Adobe Workfront serves.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/creation_production
     label: Creation & Production
@@ -46,7 +43,6 @@ entity_collections:
       the Creative Cloud applications, Adobe Express, and Firefly generative AI.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/delivery_activation
     label: Delivery & Activation
@@ -54,7 +50,6 @@ entity_collections:
       campaigns — served by Adobe Experience Manager and the Experience Cloud delivery applications.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/reporting_insights
     label: Reporting & Insights
@@ -62,7 +57,6 @@ entity_collections:
       planning — served by Adobe Analytics, Customer Journey Analytics, and Content Analytics.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/digital_experience
     label: Digital Experience
@@ -71,7 +65,6 @@ entity_collections:
       production and document workflows.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/dxp
     label: DXP
@@ -79,7 +72,6 @@ entity_collections:
       managing, personalising, and optimising digital experiences across channels; Adobe Experience Cloud is Adobe's DXP.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/customer_data_platform
     label: Customer Data Platform
@@ -87,7 +79,6 @@ entity_collections:
       available for segmentation and activation; realised in Adobe's portfolio by Real-Time CDP.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/cdp
     label: CDP
@@ -95,7 +86,6 @@ entity_collections:
       activatable profiles; realised in Adobe's portfolio by Real-Time CDP.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/real_time_customer_profile
     label: Real-Time Customer Profile
@@ -103,7 +93,6 @@ entity_collections:
       sources merge into a single profile that updates in real time and powers segmentation, journeys, and personalisation.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/identity_graph
     label: Identity Graph
@@ -111,7 +100,6 @@ entity_collections:
       Experience Platform Identity Service maintains so fragmented records across channels resolve to one individual.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/data_governance
     label: Data Governance
@@ -120,7 +108,6 @@ entity_collections:
       policy.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/headless_cms
     label: Headless CMS
@@ -129,7 +116,6 @@ entity_collections:
       content through Content Fragments and GraphQL.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/digital_asset_management
     label: Digital Asset Management
@@ -138,7 +124,6 @@ entity_collections:
       Assets.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/dam
     label: DAM
@@ -146,7 +131,6 @@ entity_collections:
       digital assets; realised in Adobe's portfolio by Experience Manager Assets.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/marketing_automation
     label: Marketing Automation
@@ -154,7 +138,6 @@ entity_collections:
       and campaign triggers — across the funnel; realised in Adobe's portfolio by Marketo Engage and Adobe Campaign.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/omnichannel_marketing
     label: Omnichannel Marketing
@@ -162,7 +145,6 @@ entity_collections:
       mobile, paid media, in-person — as one continuous experience rather than running channels in isolation.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/personalization_engine
     label: Personalization Engine
@@ -170,7 +152,6 @@ entity_collections:
       profile and behavioural data; realised in Adobe's portfolio by Adobe Target and Journey Optimizer decisioning.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/a_b_testing
     label: A/B Testing
@@ -178,7 +159,6 @@ entity_collections:
       performs better against a defined goal metric before rolling the winner out; a core Adobe Target capability.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/multivariate_testing
     label: Multivariate Testing
@@ -187,7 +167,6 @@ entity_collections:
       Target.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/journey_orchestration
     label: Journey Orchestration
@@ -196,7 +175,6 @@ entity_collections:
       Optimizer.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/campaign_management
     label: Campaign Management
@@ -205,7 +183,6 @@ entity_collections:
       Engage.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/lead_scoring
     label: Lead Scoring
@@ -213,7 +190,6 @@ entity_collections:
       convert; a core Marketo Engage capability feeding sales-and-marketing alignment.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/attribution_modeling
     label: Attribution Modeling
@@ -222,7 +198,6 @@ entity_collections:
       Customer Journey Analytics, Marketo Measure, and Mix Modeler.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/customer_journey_mapping
     label: Customer Journey Mapping
@@ -230,7 +205,6 @@ entity_collections:
       expose gaps, friction, and the moments that decide the relationship.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/audience_segmentation
     label: Audience Segmentation
@@ -238,7 +212,6 @@ entity_collections:
       with relevant experiences; in Adobe Experience Platform, performed over Real-Time Customer Profile data.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/predictive_analytics
     label: Predictive Analytics
@@ -246,7 +219,6 @@ entity_collections:
       churn risk, conversion propensity, lifetime value — so action can be taken before the outcome occurs.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/customer_experience
     label: Customer Experience
@@ -254,7 +226,6 @@ entity_collections:
       support — the outcome quantity the Experience Cloud portfolio exists to improve.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/cx
     label: CX
@@ -262,7 +233,6 @@ entity_collections:
       interaction.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/customer_engagement_platform
     label: Customer Engagement Platform
@@ -270,7 +240,6 @@ entity_collections:
       offers, and journeys responding to individual behaviour; realised in Adobe's portfolio by Adobe Journey Optimizer.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/cep
     label: CEP
@@ -278,7 +247,6 @@ entity_collections:
       in Adobe's portfolio by Adobe Journey Optimizer.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/cdn
     label: CDN
@@ -287,7 +255,6 @@ entity_collections:
       and the Experience Platform Edge Network follows the same distribution principle.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/spa
     label: SPA
@@ -296,7 +263,6 @@ entity_collections:
       Manager provides dedicated SPA authoring and rendering support.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/pwa
     label: PWA
@@ -305,7 +271,6 @@ entity_collections:
       Commerce storefront architecture.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/api_first
     label: API-First
@@ -314,7 +279,6 @@ entity_collections:
       of headless Experience Manager delivery.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/cloud_native
     label: Cloud-Native
@@ -323,7 +287,6 @@ entity_collections:
       Service and Adobe Experience Platform.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_CONCEPT
     evidence_ids: *id001
   - id: coe:entity/adobe/cxo
     label: Customer Experience Orchestration (CXO)
@@ -331,7 +294,6 @@ entity_collections:
       Engagement, and Content Supply Chain.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_STRATEGY_PILLAR
     edges:
     - subject_id: coe:entity/adobe/cxo
       predicate: coe:contains

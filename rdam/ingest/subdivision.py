@@ -45,8 +45,10 @@ def build_analysis_plan(
             recombination=RecombinationPlan(links=()),
         )
 
-    available = capacity.maximum - policy.capacity_margin
-    if available <= 0:
+    if capacity.maximum is None and policy.capacity_margin:
+        raise AnalysisPlanningError("a capacity margin requires an established numerical capacity")
+    available = None if capacity.maximum is None else capacity.maximum - policy.capacity_margin
+    if available is not None and available <= 0:
         raise AnalysisPlanningError("planning capacity margin leaves no usable parser capacity")
     if not prepared.segments:
         return AnalysisPlan(
@@ -60,13 +62,13 @@ def build_analysis_plan(
     groups: list[tuple[int, int, int]] = []
     demands = tuple(_estimated_demand(segment.text, segment.kind, capacity) for segment in prepared.segments)
     for segment, demand in zip(prepared.segments, demands, strict=True):
-        if demand > available:
+        if available is not None and demand > available:
             raise AnalysisPlanningError(f"prepared segment {segment.segment_id!r} exceeds usable parser capacity")
     start = 0
     while start < len(prepared.segments):
         end = start
         demand = 0
-        while end < len(demands) and demand + demands[end] <= available:
+        while end < len(demands) and (available is None or demand + demands[end] <= available):
             demand += demands[end]
             end += 1
         if end < len(demands):

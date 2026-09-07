@@ -25,7 +25,7 @@ the file started as research code.
 - `@cache` from `functools`, not `lru_cache(maxsize=None)`
 - Modern stdlib: `itertools.batched`, `pairwise`, `chain.from_iterable`; `operator.attrgetter` / `itemgetter` over lambdas
 - `datetime.now(UTC)`, never `datetime.utcnow()`
-- Native exception propagation; no `Result[T, E]` for internal flow; no defensive returns; no internal retry loops — failures are classified (see the `Retryability` contract in `rdam/rst/ingest/contracts/failure.py`) and propagated, never silently re-attempted.
+- Native exception propagation; no `Result[T, E]` for internal flow; no defensive returns; no silent retries — native LLM output and transport retries are explicitly bounded; failures are classified (see the `Retryability` contract in `rdam/ingest/contracts/failure.py`) and propagated when their declared retry policy is exhausted.
 - `type X = ...` (PEP 695, 3.12+), not `TypeAlias`
 - `def f[T](...)`, not `TypeVar` declarations
 - `@override` decorator on subclass overrides
@@ -35,15 +35,15 @@ Do not change trained architecture or inference maths in the name of style.
 ## Mode B — retired
 
 The old “inherited research, surgical only, no aesthetic sweeps” split is
-**retired**. There is no second, lower bar. `tool.ruff.extend-exclude` in
-`pyproject.toml` is a lint-backlog list, not permission to leave bugs.
+**retired**. There is no second, lower bar. The current Ruff task covers all declared project roots; provenance grants no
+exception from that scope.
 
 ## Lint and type scope
 
 | Tool | Strict on |
 |---|---|
 | ruff | `rdam/` (including `rstviewer`), `workbench/`, `tests/`, `scripts/`, `tools/` |
-| pyright | the same set (`tool.pyright.include` in `pyproject.toml`) |
+| pyright | `rdam/` plus the explicitly listed tests and tools in `tool.pyright.include`; not the entire workbench/test tree |
 
 If new code lands outside `tool.pyright.include`, add it to that list.
 
@@ -69,6 +69,6 @@ If new code lands outside `tool.pyright.include`, add it to that list.
 - **`numpy>=1.26.4`** tracks latest (resolves to 2.5.0 as of 2026-06-27). The old `==1.26.4` exact pin was lifted after verifying numpy 2.x is green across the full suite; transformers 5.x only requires `numpy>=1.17`.
 - **HF revisions are the version channel.** `hf_model_version` maps to a git ref on the HF repo — switching versions re-downloads weights / config / relation table.
 - **`<P>` token** is added to the tokenizer at load time (`tokenizer.add_tokens(['<P>'])`) and the transformer embeddings are resized accordingly. Anything that re-instantiates the tokenizer must replicate this.
-- **`tokenizer.model_max_length = 1e9`** is intentional — sliding-window encoding, this suppresses HF's max-length warning. Don't "fix" it.
+- **Existing tokenizer sentinel:** the DMRST/UniRST predictors set `model_max_length` to `int(1e9)` to bypass tokenizer warnings before sliding-window encoding. This is not a measured or declared model capacity and must not be reported as one. Capacity evidence must come from the actual model/runtime contract.
 - **Razdel** does the initial word-level tokenisation regardless of language; the transformer subword tokenisation runs on top.
-- **Pydantic field annotations:** if the project ever picks up Pydantic v2, do NOT move field types into `TYPE_CHECKING` blocks (`TC001` / `TC002` / `TC003` should be ignored in Pydantic-using modules because the model resolves types at runtime).
+- **Pydantic field annotations:** the project uses Pydantic v2; do NOT move field types into `TYPE_CHECKING` blocks (the model resolves these types at runtime; keep the imports available).

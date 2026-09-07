@@ -5,6 +5,14 @@ metadata:
   type: project
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 The Docling-native plan introduces a `boundaries[]` list and `boundary_memberships` annotation on each relation. Several specifics need design decisions before Phase 1.
 
 ## `boundary_memberships` semantics
@@ -79,7 +87,7 @@ A turn-N boundary with one short utterance → RST input is one EDU, parser prod
 
 A Docling JSON with only `TableItem`s and no other body text. Harvest is empty; parser receives empty string. Current spec silent.
 
-**Decision:** raise `EmptyHarvestError`. Tables alone don't enter the RST input by design (see [[decision-one-tree-per-document]] and the tables-as-grids exclusion). A document with nothing but tables has no RST output by definition.
+**Decision:** raise `EmptyHarvestError`. Tables alone don't enter the RST input by design (see [decision-one-tree-per-document](decision_one_tree_per_document.md) and the tables-as-grids exclusion). A document with nothing but tables has no RST output by definition.
 
 ### `coalesce_speaker_turns=False`
 
@@ -91,4 +99,4 @@ Every VTT turn becomes its own boundary. With short turns, each boundary has one
 
 Resolve each of these design questions before Phase 1 starts. Update the proposal and build plan accordingly. Each decision lands as a clarification in the output-schema spec or the harvester docstring.
 
-Related: [[decision-one-tree-per-document]], [[open-rst-real-world-quality]], [[open-output-schema-specifics]].
+Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-rst-real-world-quality](open_rst_real_world_quality.md), [open-output-schema-specifics](open_output_schema_specifics.md).

@@ -241,25 +241,14 @@ classes:
       examples:
         multivalued: true
         slot_uri: skos:example
-        description: Positive instances that fall under this entity, calibrating recognition
-          and extraction.
+        description: Positive instances that fall under this entity, sharpening its boundary.
       anti_examples:
         multivalued: true
         slot_uri: coe:antiExample
         description: Near-miss instances that do not fall under this entity, marking its
           boundary against confusable neighbours.
-      confidence_threshold:
-        range: float
-        slot_uri: coe:confidenceThreshold
-        description: Minimum extraction confidence, from 0 to 1, below which a consumer
-          must not assert recognition of this entity.
-      ner_label:
-        range: string
-        slot_uri: coe:nerLabel
-        description: Named-entity-recognition label consumers emit when tagging spans of
-          this entity.
     description: One named, evidence-grounded unit of domain meaning — the entity that recognition,
-      retrieval, and semantic edges attach to. Distinguished from Concept by standing alone
+      retrieval, and semantic edges attach to; how to recognise it in text is library knowledge. Distinguished from Concept by standing alone
       rather than as a member of a governed taxonomy.
 enums:
   OntologyDomainEnum:
@@ -300,14 +289,11 @@ enums:
   FileAuthorityEnum:
     permissible_values:
       Central_Configs:
-        description: This repository — the sole shared ontology authority.
-      AI_Skills:
-        description: Consumer repository owning skill definitions and application profiles.
-      Knowledge_Machine:
-        description: Consumer repository owning knowledge-extraction applications.
-      Content_Creation_Machine:
-        description: Consumer repository owning content-production applications.
-    description: Repositories authorised to own authored files in the ecosystem.
+        description: This repository — the sole authority for every file authored under
+          ontology/; no other value exists because Central describes only what it owns.
+    description: Repository authorised to own a file authored in this repository. The
+      vocabulary is closed at Central itself; a consuming project's file metadata is
+      defined by that project's own application profile, never here.
   FileScopeEnum:
     permissible_values:
       domain:
@@ -321,10 +307,11 @@ enums:
       schema:
         description: Reserved for schema-scoped records; LinkML schema files themselves use
           native SchemaDefinition metadata, never _meta.
-      application:
-        description: Consumer-owned application record; never authored in this repository.
-    description: Kinds of authored root a file may declare; domain roots additionally name
-      their owning domain.
+      library:
+        description: LibraryModule or LibraryDistribution root under library/ — shared craft
+          knowledge keyed to ontology identifiers, authored in this repository beside the ontology.
+    description: Kinds of authored root a file in this repository may declare; domain roots
+      additionally name their owning domain.
   RelationshipWeightEnum:
     permissible_values:
       required:

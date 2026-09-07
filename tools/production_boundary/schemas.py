@@ -8,6 +8,7 @@ from pydantic import BaseModel, TypeAdapter
 import rfc8785
 
 import rdam.ingest as ingest
+from rdam.ingest.contracts.base import WRITE_CONTRACT_VERSION
 from rdam.serialization import schema as machine_schema, schema_models
 from rdam.ingest.contracts.analysis import (
     AnalysedOutcome,
@@ -24,7 +25,7 @@ from rdam.ingest.contracts.preparation import PreparationOutcome
 
 # Schemas are package resources; locate them from the package, not from a repository path.
 SCHEMA_ROOT: Final = Path(str(ingest.__file__)).parent / "schemas"
-SCHEMA_BASE: Final = "https://schemas.isanlp-rst.local/production/2.0.0"
+SCHEMA_BASE: Final = f"https://schemas.isanlp-rst.local/production/{WRITE_CONTRACT_VERSION}"
 
 _MODELS: Final[Mapping[str, type[BaseModel] | TypeAdapter[Any]]] = {
     "analysed-outcome.schema.json": AnalysedOutcome,

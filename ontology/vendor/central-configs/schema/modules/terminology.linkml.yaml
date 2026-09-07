@@ -69,10 +69,6 @@ classes:
       usage_note:
         slot_uri: skos:scopeNote
         description: When to use this sense rather than its siblings.
-      recognition_patterns:
-        multivalued: true
-        slot_uri: coe:recognitionPattern
-        description: Surface recognition patterns for this sense; successor home of entity-level recognition patterns.
       synonyms:
         range: Synonym
         multivalued: true

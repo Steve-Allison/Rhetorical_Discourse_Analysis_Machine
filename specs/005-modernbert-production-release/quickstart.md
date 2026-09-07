@@ -1,5 +1,11 @@
 # Quickstart: ModernBERT Pure Transformer Discourse Parser
 
+> **Historical quickstart.** The following commands and APIs belong to this
+> earlier feature design and are not current execution instructions. Use the
+> [current quickstart](../019-unified-machine-interfaces/quickstart.md) and
+> [production ingest guide](../../docs/production-source-ingest.md). The package
+> and command are now `rdam`; eRST work is suspended as of 2026-09-06.
+
 **Purpose**: Runnable validation scenarios that verify the feature end-to-end from training through release promotion, independent benchmarking, and clean-room certification.
 
 **Prerequisites**:

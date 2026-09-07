@@ -7,7 +7,7 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from rdam.rst.contracts.analysis import DiscourseSignal
-from rdam.rst.contracts.erst import (
+from workbench.erst.contracts import (
     ErstDecoderConfig,
     PrivateCorpusVerificationReceipt,
 )

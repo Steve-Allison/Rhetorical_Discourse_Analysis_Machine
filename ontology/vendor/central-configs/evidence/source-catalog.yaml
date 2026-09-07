@@ -1,12 +1,118 @@
 _meta:
   file_id: coe:file/evidence/source-catalog
   title: Central Configs Evidence Catalogue
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-05'
   authority: Central_Configs
   scope: evidence
   governing_class: coe:SourceCatalog
 catalog_id: coe:catalog/evidence/4.0.0
 sources:
+- id: coe:source/araucaria-walton-schemes-1996
+  label: Araucaria Walton Scheme Set
+  description: Original Araucaria implementation of Walton's presumptive reasoning schemes, with explicitly scoped premises and questions.
+  source_kind: published_external_source
+  content_uri: https://arg.tech/~chris/araucaria/schemesets/walton.scm
+  content_sha256: af56f7ca680111ee45450dba309510d5ee25e035573aac959f2576629495eab9
+  media_type: application/xml
+  citation: Reed and Rowe, Araucaria scheme-set resource attributed by the project homepage to Walton (1996), Argumentation Schemes for Presumptive Reasoning. Retrieved 2026-09-05 and read in full. This software profile is not the later Walton, Reed and Macagno (2008) compendium.
+- id: coe:source/walton-verbal-classification-2008
+  label: Arguing from Definition to Verbal Classification
+  description: Primary account separating property attribution, classification strength and supporting arguments from definitions.
+  source_kind: published_external_source
+  content_uri: https://informallogic.ca/index.php/informal_logic/article/download/550/510
+  content_sha256: 340785f47d2bc9c6f74228f1db9e5c1b39c12143902fb7409a36ff837c6f4d56
+  media_type: application/pdf
+  citation: Walton (2008), Informal Logic 28(2), pages 129-154, section 6, page 139; DOI 10.22329/il.v28i2.550. Retrieved 2026-09-05 and read in full.
+- id: coe:source/godden-walton-schemes-critical-questions-2007
+  label: Advances in the Theory of Argumentation Schemes and Critical Questions
+  description: Primary account distinguishing practical alternatives from option selection and explaining critical-question assessment.
+  source_kind: published_external_source
+  content_uri: https://informallogic.ca/index.php/informal_logic/article/download/485/453
+  content_sha256: b4f1ce4eb8a7a415a268b5b45be524e79cc214111df2aea487a61e5f42b48193
+  media_type: application/pdf
+  citation: Godden and Walton (2007), Informal Logic 27(3), pages 267-292, section 7.2, page 285; DOI 10.22329/il.v27i3.485. Retrieved 2026-09-05 and read in full.
+- id: coe:source/walton-argument-mining-2021
+  label: Argumentation Schemes and their Application in Argument Mining
+  description: Walton's chapter on scheme identification, source knowledge, practical inference and slippery slopes.
+  source_kind: published_external_source
+  content_uri: https://windsor.scholarsportal.info/omp/index.php/wsia/catalog/download/106/106/1086?inline=1
+  content_sha256: 1f5605952eb92da1b7915f74cb3a8b00c9ee7f89013dc784f2b346617fa0317a
+  media_type: application/pdf
+  citation: Studies in Critical Thinking, second edition, chapter 11, pages 153-179, sections 2, 3 and 5; retrieved 2026-09-05 and read in full.
+- id: coe:source/walton-reed-diagramming-2002
+  label: Diagramming, Argumentation Schemes and Critical Questions
+  description: Author manuscript distinguishing scheme variables, premises, warrants and critical questions, with sign and expert-opinion formulations.
+  source_kind: published_external_source
+  content_uri: https://arg-tech.org/people/chris/publications/2002/issa2002.pdf
+  content_sha256: 666ebbfffa16d88c01f1f0ec9ac698c88903af0875498785a8fa61224b5528f8
+  media_type: application/pdf
+  citation: Walton and Reed (2002), ISSA manuscript, sections 2-3, pages 5-9; retrieved 2026-09-05 and read in full.
+- id: coe:source/walton-macagno-common-knowledge-2005
+  label: Common Knowledge in Argumentation
+  description: Author manuscript presenting expert opinion and popular-opinion argument variants, premises and critical questions.
+  source_kind: published_external_source
+  content_uri: https://fabriziomacagno.wordpress.com/wp-content/uploads/2011/01/16_waltonetmacagno_corrected.pdf
+  content_sha256: 2a767ae2ed29abe214634acd4157323059fda1b3caacb8a12a0ab797bf622780
+  media_type: application/pdf
+  citation: Walton and Macagno (2005), Common Knowledge in Argumentation, section 2.3, manuscript pages 14-16; retrieved 2026-09-05.
+- id: coe:source/rst-dt-manual-2001
+  label: RST Discourse Treebank Tagging Reference Manual
+  description: Carlson and Marcu's corpus annotation manual, including coarse groupings, relation direction and structural conventions.
+  source_kind: published_external_source
+  content_uri: https://gucorpling.org/gum/RSTDT-tagging-ref-manual.pdf
+  content_sha256: b53a69ec63e05efc85ffc16612500130f7d3cc8c8764f2b775f52bb1225486a0
+  media_type: application/pdf
+  citation: Carlson and Marcu (2001), Discourse Tagging Reference Manual, section 4.1 and Appendix II; retrieved 2026-09-05 from the Georgetown mirror.
+- id: coe:source/discor-manual-2007
+  label: DISCOR Annotation Manual
+  description: Primary annotation manual defining SDRT discourse units and the DISCOR relation inventory.
+  source_kind: published_external_source
+  content_uri: https://www.juliejhunter.com/uploads/3/9/6/1/39617901/discor_manual.pdf
+  content_sha256: 3ae891cd52e05659dbf4646cebe358be22956b0815fedabba33f15a44a189c7e
+  media_type: application/pdf
+  citation: Reese, Hunter, Asher, Denis and Baldridge (2007), Reference Manual for the Analysis and Annotation of Rhetorical Structure, version 1.0, sections 2 and 3 and Table 1; retrieved 2026-09-05.
+- id: coe:source/gum-erst-guidelines
+  label: GUM and GENTLE eRST Guidelines
+  description: Georgetown corpus linguistics guidelines defining corpus-scoped eRST relations and signals.
+  source_kind: published_external_source
+  content_uri: https://gucorpling.org/erst/
+  content_sha256: 2d3d46bbe35da46e785e0de7e3df6c84d22ca7d1143f551a5228d6dd0c8508ea
+  media_type: text/html
+  citation: Zeldes, GUM and GENTLE eRST annotation guidelines, relation definitions and same-unit structural convention; retrieved 2026-09-05.
+- id: coe:source/discourse-frameworks-reference-5475d9fa
+  label: Discourse and argumentation frameworks reference
+  description: Local research synthesis used for qualitative scheme and discourse-structure definitions, not for empirical claims or complete published inventories.
+  source_kind: content_addressed_local_source
+  repository_url: https://github.com/Steve-Allison/knowledge
+  original_location: raw/Research - discourse-argumentation-frameworks-reference.md
+  content_uri: urn:sha256:5475d9fabc0d13925a83dea00ac014117b039d3de866a1b01b9ca71c3296c422
+  content_sha256: 5475d9fabc0d13925a83dea00ac014117b039d3de866a1b01b9ca71c3296c422
+  media_type: text/markdown
+  citation: Discourse and argumentation frameworks reference, sections on Walton and SDRT; local research synthesis retrieved 2026-09-05.
+- id: coe:source/pdtb3-annotation-manual
+  label: Penn Discourse Treebank Annotation Manual
+  description: Published annotation specification defining the PDTB sense hierarchy, argument direction and relation types.
+  source_kind: published_external_source
+  content_uri: https://catalog.ldc.upenn.edu/docs/LDC2019T05/PDTB3-Annotation-Manual.pdf
+  content_sha256: 15f12df435ae03670f11fd3f2bf547cd603038111810a5e0376f02c708e17756
+  media_type: application/pdf
+  citation: Webber, Prasad, Lee and Joshi, The Penn Discourse Treebank 3.0 Annotation Manual, Table 1 and sections 2.7, 4.2 and 8.1; retrieved 2026-09-05.
+- id: coe:source/dung-acceptability-1995
+  label: Dung on the acceptability of arguments
+  description: Original abstract argumentation paper defining attack, acceptability, admissibility and extension semantics.
+  source_kind: published_external_source
+  content_uri: https://cse-robotics.engr.tamu.edu/dshell/cs631/papers/dung95acceptability.pdf
+  content_sha256: c78ee6d0864ca18a882e6cf79bb1356efd86f1d32b38b55570fb572e4651fba3
+  media_type: application/pdf
+  citation: 'Dung (1995), On the acceptability of arguments and its fundamental role in nonmonotonic reasoning, logic programming and n-person games. Artificial Intelligence 77, 321–357, section 2. DOI: 10.1016/0004-3702(94)00041-X; retrieved 2026-09-05.'
+- id: coe:source/conklin-begeman-gibis-1988
+  label: Conklin and Begeman gIBIS
+  description: Original gIBIS paper defining the issue, position and argument vocabulary and legal rhetorical moves.
+  source_kind: published_external_source
+  content_uri: https://csis.pace.edu/~marchese/CS835/Readings/p303-conklin_gibis.pdf
+  content_sha256: cfbd0b956a256b164839f5d0b7e629ab1af340e2c059a426d4963eeb08d48065
+  media_type: application/pdf
+  citation: Conklin and Begeman (1988), gIBIS, A Hypertext Tool for Exploratory Policy Discussion. ACM Transactions on Office Information Systems 6(4), 303–331, section 2 and Figure 1; retrieved 2026-09-05.
 - id: coe:source/central-configs-legacy-f6eb98ff
   label: Central Configs legacy authority at f6eb98ff
   description: Immutable Git revision containing the 184 legacy library assets migrated into v4.
@@ -4418,7 +4524,7 @@ governance_decisions:
     values recovered from the immutable legacy sources.
   decision_date: '2026-09-01'
   authority: Central_Configs
-  decision_status: ratified
+  decision_status: superseded
   statement: coe:Threshold requires a numeric target_value, minimum_value, or maximum_value (at least one), a unit, and a
     real description. The previously valueless or stringly-typed thresholds in the six scoring modules (visual_communication/design_quality_gates,
     business/commercial_rubrics, narrative/quality_rubrics, language_editorial/accessibility, learning/assessment_rubrics,
@@ -4705,3 +4811,354 @@ governance_decisions:
     deterministic id scheme keeps the new terms indistinguishable from migrated ones, so no consumer needs a special
     case; ambiguous short initialisms (CAT, AES, CDM, IAA) deliberately receive no alias pattern because their
     collision surface outweighs their recall value.
+- id: coe:decision/curation/2026-09-02/canon-without-consumers
+  label: The canon carries no knowledge of its consumers
+  description: Curation decision removing downstream-facing vocabulary and scope from the schema and confining the
+    metadata standard to this repository.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: FileAuthorityEnum admits exactly one value, Central_Configs; FileScopeEnum has no application value;
+    governance/METADATA_STANDARD.md governs files authored under ontology/ and nothing outside this repository. A
+    file stamped with any other authority is rejected, proven by
+    ontology/examples/invalid/DomainModule-foreign-authority.yaml.
+  rationale: Central creates the shared ontology and downstream projects use it; the schema had grown three consumer
+    names in an enum, a scope defined only for files Central never authors, and a standard addressed to the whole
+    ecosystem, each of which made the canon's validity depend on knowing who consumes it. Removing them makes every
+    enum value and scope describe something Central actually owns.
+- id: coe:decision/curation/2026-09-02/definitions-carry-no-measurements
+  label: Definitions state meaning, never measured values
+  description: Curation decision separating what a resource means from what has been measured about it.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: The description of an entity, concept or sense defines the thing without stating a measured value for
+    it; empirical figures — rates, durations, percentages found by a study or an analysis — live in the evidence
+    the resource cites or in the knowledge library keyed to the resource. coe:entity/target_speaking_rate is
+    re-authored on this rule; the remaining delivery descriptions and edge prose that still quote figures
+    (coe:entity/strategic_pause, coe:entity/jitter_metric, coe:entity/shimmer_metric, coe:entity/delivery/term/hook
+    and the digit-bearing edges of presence_rubrics) are curated in the library phase that follows.
+  rationale: A definition that embeds a figure conflates meaning with measurement, so two figures from two studies
+    read as a contradiction in the ontology when they are simply two findings about two contexts. The ontology owns
+    the meaning; the wiki owns the findings; the library and the measuring tool own the numbers.
+- id: coe:decision/curation/2026-09-02/distribution-scope
+  label: Distribution stage excludes Central-only constraints
+  description: Curation decision fixing what the staged distribution carries and why the SHACL constraints are not
+    part of it.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: The staged distribution is exactly the schema import closure, the eight manifests, every module named
+    in distribution.yaml, the evidence catalogue, and distribution.yaml; ontology/constraints/relationships.shacl.ttl
+    is excluded because it validates the merged generated graph that only Central builds.
+  rationale: The README described the stage without saying whether the constraints file belonged to it; stating the
+    scope once, in the ontology's own evidence, removes the ambiguity from the distribution.
+- id: coe:decision/curation/2026-09-02/rst-inventory-ownership
+  label: RST relation inventories are framework-native, not canonical
+  description: Curation decision fixing which discourse-relation meaning Central owns and which stays with the
+    framework that defines it.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: Central owns the abstract relation classes coe:concept/descriptive_rst_taxonomy/relation_class/{attribution,
+    background, cause, comparison, condition, contrast, elaboration, enablement, evaluation, explanation, joint,
+    manner_means, same_unit, summary, temporal, textual_organization, topic_change, topic_comment}, the PDTB-profiled
+    senses coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/{cause, concession, condition,
+    instantiation, contrast}, and the discourse roles coe:concept/discourse_argumentation_taxonomy/discourse_role/{nucleus,
+    supportive, background}; it authors no native RST relation set. A native inventory (RST-DT, GUM, eRST or any
+    parser's own) is the property of the framework that defines it, and where one of its relations matches a listed
+    concept the match is recorded against that concept id; no coe identifier is minted for a native relation.
+  rationale: Rhetorical Structure Theory inventories differ by corpus and parser, so no single set is shared meaning;
+    the analytical_frameworks taxonomy already rules that each framework's native inventories, profiles and
+    vocabularies remain owned by their registering modules or providers. Stating which abstract layer Central owns
+    closes the gap that left the boundary implicit.
+- id: coe:decision/curation/2026-09-02/deck-vocabulary-home
+  label: Presentation-methodology vocabulary is Central-owned
+  description: Curation decision on where the deck-type, false-friend-axis, and framework vocabulary formerly defined
+    in governance/TAXONOMY.md lives.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: The vocabulary defined by governance/TAXONOMY.md, TAXONOMY.yaml and GLOSSARY.md at revision dc06243^ is
+    shared meaning owned by Central Configs — terms and senses in coe:module/language_editorial/lexicon, denoted
+    entities in the narrative and visual_communication terminology modules. Of the 110 distinct terms inventoried on
+    2026-09-02 (the two deck types, seven prefixed homonyms, thirty glossary terms, five Merrill content types, eleven
+    slide purposes, six audience roles, five Dreyfus levels, three rhetorical modes, four delivery contexts, twenty-nine
+    framework names, four Kirkpatrick levels and two pacing modes), seven already exist as lexicon surface forms and
+    103 do not; 57 of those are named nowhere in the domain modules and 46 appear only as words inside other resources.
+    The absent terms are authored in a dedicated curation batch citing this decision; the prefixed homonym forms are
+    authored as distinct senses of one term rather than as prefixed surface forms.
+  rationale: The vocabulary names how a presentation is typed, axed and framed — meaning that must be the same wherever
+    a deck is planned — and it was defined nowhere after the canon file was retired with the legacy corpus. It is
+    recoverable from Git history, which is why it is not pinned as a source record.
+- id: coe:decision/curation/2026-09-02/knowledge-library-restored
+  label: The knowledge library is restored as a second authored authority
+  description: Curation decision re-establishing library/ for shared craft knowledge keyed to ontology identifiers, and
+    confining the ontology to meaning.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: The repository holds two authored authorities — ontology/ for what things are and library/ for thresholds,
+    rubric scoring, principle evidence, prescriptions, recognition calibration and layout specifications about those
+    things. Every library record names ontology identifiers it is about and evidence it rests on; the ontology carries
+    no measured value, threshold, weight, score, confidence or extraction label. Legacy library content returns only
+    where it is demonstrably used; the rest stays retired and recoverable from dc06243^.
+  rationale: The v4 migration deleted the library and squeezed part of it into the ontology as typed thresholds,
+    extraction fields and figures in definitions, so shared knowledge had no home and was re-authored divergently
+    wherever it was needed, while definitions carried measurements they cannot own. Two authorities with a placement
+    test restore a single source for each kind of statement.
+- id: coe:decision/curation/2026-09-02/delivery-knowledge-slice
+  label: Delivery knowledge moves from the ontology into the library
+  description: Curation decision recording which delivery thresholds, scoring knowledge and recognition calibration were
+    authored in library/data/delivery, from which sources, and which quantities were withheld for want of an ontology
+    anchor.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: Four library modules carry the delivery domain's numbers. lib:module/delivery/vocal_pacing holds thirty
+    thresholds for speaking rate by delivery context, articulation rate, the pause-duration taxonomy, silence ratio,
+    filler and hedge rates in both units, pitch variability and range, and uptalk detection. lib:module/delivery/voice_quality
+    holds the jitter, shimmer, harmonics-to-noise and cepstral-peak-prominence norms with their sustained-vowel and
+    running-speech contexts. lib:module/delivery/presence holds the body, gaze, gesture, engagement-interval, talk-share
+    and tier-band thresholds and lib:scoring_model/delivery/performance_delivery_rubric, the legacy delivery rubric's six
+    weighted dimensions, thirty score levels, twenty-five rubric-local thresholds, sixteen penalties and thirteen bonuses,
+    keyed to the delivery entities its dimensions judge because the ontology defines no delivery rubric artifact.
+    lib:module/delivery/recognition holds twenty-seven recognition calibrations, one per delivery entity that carried a
+    confidence threshold or an informative extraction label; the five label-only entities receive the curation default
+    confidence floor of 0.7, matching the silent default the extraction contract already assumed. Values follow the
+    conflict procedure of the library plan, wiki page first, so the narrated-instruction band, the power-pause band, the
+    presenter-to-camera band and the eye-contact floor take the wiki's value with the legacy alternatives named in the
+    record and the tier contested. In the ontology, coe:entity/strategic_pause, coe:entity/jitter_metric,
+    coe:entity/shimmer_metric, coe:entity/say_show_support_model and coe:entity/delivery/term/hook are re-described
+    without measurements, thirty-nine edge descriptions in presence_rubrics state their relationship without the figure,
+    and every confidence_threshold and ner_label leaves the delivery modules. Withheld for want of an ontology anchor —
+    fundamental-frequency bands, the spectral-tilt family including H1–H2, maximum phonation time, the s/z ratio, the
+    Acoustic Voice Quality Index, linguistic style matching, lexical diversity, verb agency, passive-voice share and
+    anterior-posterior sway path — and recorded for the anchors register. The library-references gate now draws its
+    identifier set from ontology/data/evidence as well as the domains and manifests, so cited sources and decisions are
+    checked like subjects.
+  rationale: The delivery domain was where the ontology held the most measured values and where four repositories had
+    diverged on the same knowledge; moving it first proves the placement test on the hardest domain. Taking the wiki's
+    value where it rules, and recording each legacy alternative rather than averaging or choosing silently, keeps every
+    number traceable to a page a reader can open.
+- id: coe:decision/curation/2026-09-02/learning-knowledge-slice
+  label: Learning knowledge moves from the ontology into the library
+  description: Curation decision recording which learning effect sizes, rubric scoring, thresholds and recognition
+    calibration were authored in library/data/learning, from which sources, and which quantities were withheld.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: Six library modules carry the learning domain's numbers. lib:module/learning/mayer_principles holds one
+    principle-evidence record per multimedia principle, valued from the wiki's Mayer and narration pages where they state
+    a figure and from the legacy Mayer summary otherwise, every record tiered contested because the wiki flags the early
+    same-lab figures, with the legacy alternatives named, plus the compliance scoring model with its fifteen weights and
+    three anchors. lib:module/learning/retrieval_and_spacing holds the testing and spacing effects, the spacing ladder
+    valued from the wiki's spaced-repetition page with the legacy one-seven-thirty and microlearning ladders as
+    alternatives, the booster, nudge, retrieval and interaction intervals, desirable difficulty, and the microlearning
+    specification. lib:module/learning/objectives_and_assessment holds objective quantities per course, module, topic,
+    lesson, terminal and strip, the Bloom floor, the transfer-evaluation tier crosswalk and windows, Kirkpatrick floors and
+    timing, the pass mark, item-analysis flags, rater agreement, multi-source feedback limits, feedback delay, option
+    count, hinge timing, the score-tier bands, and the assessment-frameworks scoring model. lib:module/learning/cognitive_load
+    holds the cognitive-load scoring model with its fourteen moved thresholds, element bands, text density by deck
+    variant, typography, readability and plain-language pass, fifteen penalties and ten bonuses, plus the content-modality
+    caps and the working-memory chunk target. lib:module/learning/instructional_design holds the instructional-design
+    scoring model with its five weights, twenty-five level criteria, six rubric thresholds, eighteen penalties and sixteen
+    bonuses, the module, topic, strip, card and stage durations valued from the wiki's learning-design-hierarchy and
+    gold-standard pages with legacy alternatives named, the duration-band bounds, the five-phase shares, and the mandatory
+    Gagné events and strip card coverage as prescriptions. lib:module/learning/recognition holds two hundred and
+    twenty-eight calibrations generated from the entities' own fields, one per entity that carried a confidence threshold
+    or an extraction label differing from its identifier, with the curation default floor of 0.7 on the sixty-nine that
+    carried no threshold. In the ontology, the three scoring models lose their thresholds and score levels, every
+    confidence_threshold and ner_label leaves the learning modules, twenty-eight taxonomy concepts and nine entities are
+    re-described without measurements, and the three named-numeric rules keep their numbers only in their names. Withheld
+    for want of an anchor — reading speed, interleaving gain, needs-assessment input completeness thresholds, generational
+    modality preferences and the activity-duration catalogue — and recorded for the anchors register, as is the multimedia
+    principle itself, which has no entity of its own, so its evidence record and compliance dimension are keyed to the
+    parent Mayer entity with a context constraint. The
+    instructional_methods module, at nine thousand lines, was edited from a machine census and targeted windows rather
+    than a full read; the strip was verified by diff as deletions only.
+  rationale: The learning domain held the most rubric numbers and the only effect-size catalogue, and four legacy files
+    disagreed on the Mayer figures; recording one wiki-ruled value per principle with every alternative named ends the
+    divergence without inventing a consensus the sources do not contain.
+- id: coe:decision/curation/2026-09-02/visual-knowledge-slice
+  label: Visual communication knowledge moves from the ontology into the library
+  description: Curation decision recording which visual rubric scoring, thresholds, layout specifications and recognition
+    calibration were authored in library/data/visual_communication, from which sources, and which quantities were
+    withheld.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: Seven library modules carry the visual communication domain's numbers.
+    lib:module/visual_communication/data_visualisation holds the data-visualisation scoring model with its five weights,
+    twenty-five level criteria, eighteen moved thresholds, fourteen penalties and ten bonuses, plus the lie factor,
+    on-slide category cap, highlight share, chart-family limits and annotation text floors, and the rotated-text reading
+    cost as principle evidence. lib:module/visual_communication/video_multimedia holds the video scoring model with its
+    five weights, twenty-five level criteria, twenty moved thresholds, sixteen penalties and twelve bonuses, the segment
+    lengths by video type, the audio processing bands, safe areas, script rules and the engagement median as principle
+    evidence; the two narration-pace thresholds were not moved because the delivery library already holds the scripted
+    video rate, and the model refers to it. lib:module/visual_communication/visual_design holds the visual-design scoring
+    model with its twenty-eight level criteria, eleven moved thresholds, twenty-seven penalties and thirteen bonuses, the
+    live and leave-behind typography ladders valued from the wiki's slide-design page, venue font floors, the type-size
+    ladder, measure and leading, palette limits, whitespace and spacing, the glance decode time, builds per slide and the
+    single-effect duration from the wiki's deck-motion page with the legacy motion-physics bands recorded separately by
+    animation class, the Slide Cognitive Score bands and image resolution floors, and the all-caps reading penalty as
+    principle evidence. lib:module/visual_communication/accessibility holds the accessibility scoring model with its
+    twelve level criteria, five moved thresholds, thirteen penalties and ten bonuses, the enhanced contrast floors, the
+    large-text boundaries, the candidate perceptual-contrast floors marked contested, focus and target sizes, the
+    clinical flash thresholds from the wiki's motion page, corporate transition and build ceilings, text-density onsets,
+    and the colour-vision-deficiency and photosensitivity prevalences as principle evidence.
+    lib:module/visual_communication/presentation_profiles holds the presentation-profiles base model with thirteen moved
+    thresholds, eighteen penalties and thirteen bonuses, five type-specific weight-set models, and the deck-type, venue and
+    analysis-profile thresholds; every pace and slide-count figure is marked contested because the wiki's Visual-Story
+    Model rejects seconds-per-slide and slide-count formulas, and the profiles whitespace band was not moved because the
+    visual-design module holds it. lib:module/visual_communication/layout_specs holds thirteen layout specifications
+    carried verbatim from the thirteen layout-spec entities, each specification a dot-path text block because the schema
+    types it as text. lib:module/visual_communication/recognition holds eighty calibrations generated from the entities'
+    own fields with the curation default floor of 0.7 on the twenty-two that carried none. In the ontology, the five
+    scoring models lose their thresholds and score levels, every confidence_threshold and ner_label leaves the two entity
+    modules, four rubric dimensions, three entities, the thirteen layout-spec entities and ten edges are re-described
+    without measurements. Withheld for want of an anchor — the visual-analysis composite weights, severity impacts and
+    CLIP alignment minima from the legacy scoring reference, the SOAR-stage visual requirements, the timing multipliers
+    whose unit the legacy file leaves ambiguous, the per-slide point deductions that duplicate the fractional penalties,
+    the typographic scale ratios and the colour-universal palette hex values, which are consumer tokens — and recorded
+    for the anchors register. The slide_archetypes module was edited from a machine census and targeted windows rather
+    than a full read; the strip was verified by diff as deletions only.
+  rationale: The visual domain's rubrics were the only ones fully typed in the ontology, so moving them proves the library
+    can carry a complete scoring model; recording the wiki's typography and motion values with the legacy alternatives
+    named, and marking the pace formulas contested against the wiki's own critique, keeps the rubrics operable without
+    asserting numbers the wiki has rejected.
+- id: coe:decision/curation/2026-09-02/language-narrative-business-knowledge-slice
+  label: Language, narrative and business knowledge moves from the ontology into the library
+  description: Curation decision recording which editorial, narrative and commercial rubric scoring, thresholds, stance
+    weights, sense patterns and recognition calibration were authored in library/data, from which sources, and which
+    quantities were withheld.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: Thirteen library modules carry the language and editorial, narrative, business, Adobe and AI domains'
+    numbers. lib:module/language_editorial/writing_quality holds the writing quality scoring model with its six weights,
+    thirty level criteria, twenty-six nested thresholds, sixteen penalties and twelve bonuses, the instructional-tone and
+    inclusion scoring models, the linguistic-style tiers for verb dynamism, inclusive pronoun share, style matching and
+    lexical diversity, the active-voice, paragraph, benefit-position, micro-narrative, action-title, readability-pyramid,
+    podcast and alt-text bounds, and five editorial prescriptions. lib:module/language_editorial/readability holds the
+    eight thresholds moved from the accessibility language rubric, the audience zones for Flesch-Kincaid, reading ease,
+    Fog, SMOG and Coleman-Liau, and the grade bands the four readability-target concepts previously stated in their
+    descriptions, with the general-audience band marked contested across the rubric, the frameworks, the accessibility
+    rubric and the wiki's writing-for-learning page. lib:module/language_editorial/sense_patterns holds eight hundred and
+    twenty-eight sense calibrations carrying the one thousand seven hundred and ninety-three surface patterns that left
+    the lexicon, each keyed to its sense and denoted resource, with the confidence floor taken from the library's
+    recognition record for the denoted resource on seven hundred and sixty-five and the curation default of 0.7 on
+    sixty-three. lib:module/narrative/argument_scoring holds the narrative quality scoring model with its six weights,
+    six moved thresholds with the late-stage evidence share now a sales-stage context, the benefit, proof, call-to-action
+    and vision-balance checks by stage, fourteen penalties and ten bonuses, the framework-signal point adjustments, the
+    evidence specificity gate, action-title scoring, the Toulmin link, completeness, diversity, stance-balance, locality,
+    overlap and duplicate bounds, the evidence composite bands and recency, hedge density, the opening, authority,
+    short-form and headline windows, the HOOK-SCAN and attention composites, the motivated-sequence stage shares, the
+    slide dwell times the four slide-density concepts previously stated, and the pyramid argument band.
+    lib:module/narrative/discourse_coherence holds the coherence scoring model with its five weights, twenty-five level
+    criteria, fifteen moved thresholds, sixteen penalties and twelve bonuses, the over-use, interruption, antecedent,
+    slide-gap, repetition and density bounds, twenty-six per-marker overuse ceilings keyed by marker context, and the
+    treebank relation shares and the five signal-typology shares as principle evidence, the semantic share confirmed by
+    the wiki's rhetorical-structure-theory page. lib:module/narrative/stance_certainty holds thirty-one certainty weights,
+    one per hedge or boost marker, keyed by marker context. lib:module/business/elevator_pitch holds the elevator pitch
+    scoring model with its five weights, twenty-five level criteria, fifteen nested thresholds, fifteen penalties and
+    eleven bonuses, the pitch duration and written length from the wiki's elevator-pitch page, the stage-one and
+    stage-two SOAR element shares, and two proof prescriptions. lib:module/business/audience_alignment holds the
+    audience alignment scoring model with its five weights, thirty level criteria, twelve nested thresholds, fifteen
+    penalties and twelve bonuses, the executive and practitioner deck lengths and acronym caps keyed to the economic,
+    technical and user buyer personas, and the depth-by-buying-role prescription. Five recognition modules hold
+    calibrations generated from the entities' own fields — forty-six for language and editorial with twenty-seven
+    defaults, one hundred and seventy-five for narrative with thirty-five, twenty-two for business with eight, one
+    hundred and eighty-four for Adobe all defaulted because the Adobe entities carried labels only, and twenty-one for AI
+    with none; the business module was added beyond the plan's file list because the buyer-persona calibrations needed a
+    home. In the ontology, the three rubric artifacts lose their thresholds, with the two classifier-confidence floors in
+    the narrative rubric dropped as pipeline settings; every confidence_threshold and ner_label leaves twelve modules
+    across five domains; every recognition_patterns list leaves the lexicon; four readability-target concepts, ten
+    narrative concepts, the validated-outcome entity and nine edges are re-described without measurements; and the
+    accessibility language rubric's description, which duplicated the visual rubric's, now names its own scope. Withheld
+    for want of an anchor or as consumer settings — the evidence composite weights and the narrative scoring reference's
+    dimension weights, severity impacts and score bands, the concept-evidence-proposition overlap, the pause-node share,
+    the cognitive-debt point penalties, the loss-aversion bonus, the per-persona SOAR weights, proof preferences,
+    objections and acronym caps for the legacy marketing, creative and operations personas, the senior-leadership deck
+    tier, the pitch speaking pace and the idea-density targets that the delivery library already covers, the pipeline
+    settings for topic relevance, human review and model temperature, the worked-example interval, the slide bullet and
+    slidedoc word caps that belong to the visual library, and the virtual-classroom cadences, e-learning chunk and video
+    scene timings that belong to other slices — and recorded for the anchors register together with the missing
+    entities for the situation and result stages, loss aversion, benefit statements, topic sentences, paragraph unity,
+    the given-new contract, audience objections and pain points, audience experience level and the executive, technical
+    and novice audiences. The hollow stance and register shells in tone_archetypes keep their calibrations in the
+    library and their shells in the ontology for the follow-on curation batch. The argument_structures module and the
+    lexicon were edited from a machine census and targeted windows rather than a full read; every strip was verified by
+    diff as deletions only and the lexicon removal by structural equality of the loaded document.
+  rationale: These three domains held the ontology's largest remaining store of measured values and its entire
+    surface-pattern inventory; moving them completes the library's coverage of every scoring model the ontology names,
+    and keying the per-marker weights and ceilings by context constraint records the legacy tables without inventing
+    marker entities the ontology does not define.
+- id: coe:decision/curation/2026-09-02/data-classes-leave-the-ontology
+  label: The data classes and extraction fields leave the ontology schema
+  description: Curation decision removing the Threshold and ScoreLevel classes, the criterion weight and score bounds,
+    the scoring-model thresholds slot, the entity confidence threshold and extraction label, and the sense recognition
+    patterns from the ontology schema, superseding the threshold-typing decision of the previous day.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: The knowledge module no longer defines Threshold or ScoreLevel, Criterion carries no weight, minimum or
+    maximum score, ScoringDimension carries no score levels, and ScoringModel carries no thresholds; the core module's
+    OntologyEntity carries no confidence threshold or extraction label, and its examples are described as boundary
+    sharpeners rather than recognition calibration; the terminology module's TermSense carries no recognition patterns.
+    Every one of those fields is now a library record keyed to the ontology identifier it is knowledge about, as the
+    four knowledge-slice decisions of this date record. The census over every ontology instance returned zero uses of
+    each removed field before the schema changed, except ten dimension weights in the visual design-quality-gates
+    module that the census expression missed because they open a list item; schema validation caught them after the
+    change and they were removed, since the library's data-visualisation and video models already carry the same
+    weights. The two counterexamples that proved the threshold bound and
+    threshold value-type rules are deleted because the rules no longer exist here; the library's own counterexamples
+    prove them. The validate-layout task drops its threshold-stub description check for the same reason. The
+    threshold-typing decision of the previous day, which typed thresholds inside the ontology, is marked superseded.
+    A scratch copy of a domain module carrying confidence_threshold was rejected by the schema after the change, so the
+    removal is enforced rather than advisory.
+  rationale: The ontology holds meaning and the library holds knowledge about it; a class whose every instance is a
+    measured value, and a field whose value is an extractor setting, define nothing and belonged in the library from the
+    start. Removing them from the schema makes the placement a validated invariant instead of a convention.
+- id: coe:decision/curation/2026-09-02/library-anchors-missing
+  label: Register of the ontology anchors the library still needs
+  description: Curation decision listing every quantity withheld from the library during the four knowledge slices
+    because the ontology defines no resource it could be knowledge about, together with the consumer-facing needs the
+    Phase 0b survey found unanchored; nothing is minted here, and the list is the next ontology curation batch.
+  decision_date: '2026-09-02'
+  authority: Central_Configs
+  decision_status: ratified
+  statement: The library holds no record about a subject the ontology does not define, so the following knowledge
+    waits on an anchor. Delivery, from the voice and presence corpora — fundamental-frequency mean and habitual bands,
+    the spectral-tilt family including the first-two-harmonics difference, formants and vowel-space area, maximum
+    phonation time, the s-to-z ratio, the Acoustic Voice Quality Index, integrated loudness, recording quality as
+    reverberation time and signal-to-noise, anterior-posterior sway path and postural sway, gesture-speech synchrony
+    bands, temporal arc shares, the four-pillars, gravitas and vocal-archetype composites, coherence and emotional
+    density, surprisal and lexical bundles; linguistic style matching, lexical diversity, pronoun share, verb dynamism
+    and passive share, withheld from the delivery slice, were anchored by the language and editorial slice to the
+    linguistic-style-metrics and passive-voice entities and are no longer missing. Learning — reading speed, the
+    interleaving gain, needs-assessment input completeness, generational modality preferences, the activity-duration
+    catalogue, the individual multimedia principles beyond the three category entities, the individual transfer-
+    evaluation tiers and Beck vocabulary tiers, threshold concepts as a kind, Earl's assessment intents, the transfer
+    baseline, and Merrill, Gagné and Kolb as named models. Visual communication — the visual-analysis composite weights,
+    severity impacts and image-text alignment minima, the SOAR-stage visual requirements, the timing multipliers of
+    ambiguous unit, the per-slide point deductions, the typographic scale ratios, the colour-universal palette values,
+    the deck pass thresholds and their weights, reviewer agreement bands, and the breathing-slide cadence. Language,
+    narrative and business — the evidence composite weights and the narrative scoring reference's dimension weights,
+    severity impacts and score bands, the concept-evidence-proposition overlap, the pause-node share, the cognitive-debt
+    point penalties, the loss-aversion bonus, the per-persona SOAR weights, proof preferences, objections and acronym
+    caps for the marketing, creative and operations personas, the senior-leadership deck tier, the worked-example
+    interval, and the virtual-classroom cadences, e-learning chunk and video scene timings that no slice owned. The
+    entities those quantities need are the situation and result stage markers, loss aversion, the benefit statement,
+    the topic sentence, paragraph unity, the given-new contract, audience objections and pain points, audience
+    experience level and an audience scheme naming executive, technical and novice audiences, the marketing, creative
+    and operations personas, the multimedia principles, the transfer-evaluation and vocabulary tiers, and the named
+    instructional models. Consumer implementation parameters — extraction windows, clustering and bootstrap settings,
+    model choice and temperature, classifier confidence floors and composite score floors — are not on this list because
+    they are not knowledge about a thing and never enter either authority. In the same pass the forty-two lexicon
+    senses whose denoted resources the four slices re-described were re-synced to those descriptions, and the one
+    remaining illustrative figure in a rubric dimension was removed, so the digit census over every described or defined
+    resource in the ontology now returns nothing.
+  rationale: A library record without a defined subject would be a number floating free of meaning, which is the
+    condition the two-authority split exists to end; listing the gaps as one register keeps the next curation batch
+    scoped and stops any slice from minting an entity merely to house a value.

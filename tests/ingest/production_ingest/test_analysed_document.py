@@ -1,15 +1,14 @@
 """Exact analysed token, EDU, sentence, paragraph, and source mapping."""
 
-from dataclasses import dataclass
-from types import SimpleNamespace
-from typing import Any
+from pathlib import Path
+from typing import Literal
 
 import pytest
-import torch
 
-from rdam.rst.contracts import Edu, TextSpan
-from rdam.rst.contracts.trace import ParserInputLimitError
+from rdam.rst.contracts import NodeKindEnum, RstDocument
+from rdam.rst.parser import Parser
 from rdam.ingest import ProductionIngestor, SourceArtifact
+from rdam.ingest.contracts.analysis import AnalysedDocument
 
 from .conftest import ParserBuilder
 
@@ -35,113 +34,50 @@ def test_analysed_substrate_is_exact_and_lossless(
         assert edu.token_ids
         assert edu.prepared_segment_ids
         assert edu.source_anchors
+    assert "mappings" not in document.model_dump()
+    restored = AnalysedDocument.model_validate_json(document.model_dump_json())
+    assert restored.mappings == document.mappings
+    token_owners = {token_id: edu.edu_id for edu in restored.edus for token_id in edu.token_ids}
+    assert all(mapping.edu_id == token_owners[mapping.token_id] for mapping in restored.mappings)
 
 
-@dataclass(slots=True)
-class _Tokenizer:
-    offsets: list[tuple[int, int]]
-    special: list[int]
-    model_max_length: int = 8192
-    is_fast: bool = True
-
-    def __call__(self, text: str, **_: object) -> dict[str, torch.Tensor]:
-        del text
-        length = len(self.offsets)
-        return {
-            "input_ids": torch.zeros((1, length), dtype=torch.long),
-            "attention_mask": torch.ones((1, length), dtype=torch.long),
-            "offset_mapping": torch.tensor([self.offsets], dtype=torch.long),
-            "special_tokens_mask": torch.tensor([self.special], dtype=torch.long),
-        }
-
-
-class _Model:
-    def __init__(self, limit: int = 8192) -> None:
-        self.dev = torch.device("cpu")
-        self.raw_relation_inventory = ("same-unit",)
-        self.encoder = SimpleNamespace(config=SimpleNamespace(max_position_embeddings=limit))
-
-    def decode_document_tree_with_evidence(self, **_: object) -> object:
-        raise RuntimeError("decoder reached with complete uncapped substrate")
-
-
-class _MockPredictor:
-    def __init__(self, tokenizer: _Tokenizer, model: _Model) -> None:
-        self.tokenizer = tokenizer
-        self.model = model
-
-    def analyse_with_evidence(
-        self,
-        text: str,
-        edus: tuple[Edu, ...] | None = None,
-        sentence_boundaries: tuple[TextSpan, ...] = (),
-        paragraph_boundaries: tuple[TextSpan, ...] = (),
-        segmentation_source: str | None = None,
-    ) -> Any:
-        encoded = self.tokenizer(text)
-        length = encoded["input_ids"].shape[1]
-        max_pos = getattr(getattr(self.model, "encoder", None), "config", SimpleNamespace(max_position_embeddings=8192)).max_position_embeddings
-        if length > max_pos:
-            raise ParserInputLimitError(f"{length} tokens; limit is {max_pos}")
-        if edus is not None and len(edus) > 512:
-            raise ParserInputLimitError("input exceeds 512-EDU limit")
-        if text == "xy":
-            raise ValueError("omit non-whitespace input")
-        if text == "a b" and self.tokenizer.offsets == [(0, 3)]:
-            raise ValueError("has no exact tokenizer-aligned tokens")
-        return self.model.decode_document_tree_with_evidence()
-
-
-def _predictor(tokenizer: _Tokenizer, *, limit: int = 8192) -> _MockPredictor:
-    return _MockPredictor(tokenizer, _Model(limit))
-
-
-def test_parser_rejects_tokenizer_overflow_instead_of_truncating() -> None:
-    tokenizer = _Tokenizer(offsets=[(0, 0)] * 8193, special=[1] * 8193)
-    with pytest.raises(ParserInputLimitError, match="8193 tokens; limit is 8192"):
-        _predictor(tokenizer).analyse_with_evidence("x")
-
-
-def test_parser_rejects_more_than_512_edus_without_capping() -> None:
-    text = " ".join("x" for _ in range(513))
-    edus = tuple(
-        Edu(edu_id=index + 1, text="x", start=index * 2, end=index * 2 + 1)
-        for index in range(513)
+@pytest.mark.slow
+@pytest.mark.parametrize("release_id", ("gumrrg-eb1d5745f3a1", "unirst-9407970f1d9d"))
+@pytest.mark.parametrize("edu_count", (129, 513))
+def test_real_parser_preserves_edus_across_obsolete_capacity_boundaries(release_id: str, edu_count: int) -> None:
+    parser = Parser.from_model_release(
+        Path.home() / ".cache/isanlp_rst/model-releases", release_id, device="cpu",
     )
-    with pytest.raises(ParserInputLimitError, match="512-EDU"):
-        _predictor(_Tokenizer(offsets=[(0, 1)], special=[0])).analyse_with_evidence(
-            text,
-            edus=edus,
-        )
+    document = RstDocument.from_edus(["Word."] * edu_count, document_id=f"uncapped-{edu_count}")
+    result = parser.analyse_document(document)
+    substrate = result.analysed_document
+    assert len(substrate.edus) == edu_count
+    assert substrate.text == document.text
+    assert len([node for node in result.analysis.nodes if node.kind == NodeKindEnum.EDU]) == edu_count
+    assert len(result.semantic.primary_inference.structure_decisions) == edu_count - 1
+    assert substrate.edus[0].text == substrate.edus[-1].text == "Word."
+    assert substrate.tokens[-1].character_range.end == len(document.text)
 
 
-def test_parser_does_not_apply_the_archived_128_edu_cap() -> None:
-    text = " ".join("x" for _ in range(129))
-    offsets = [(index * 2, index * 2 + 1) for index in range(129)]
-    edus = tuple(
-        Edu(edu_id=index + 1, text="x", start=start, end=end)
-        for index, (start, end) in enumerate(offsets)
+@pytest.mark.parametrize("mutation", ("missing_membership", "shared_token", "unknown_token", "duplicate_token"))
+def test_canonical_membership_rejects_missing_or_ambiguous_owners(
+    parser_builder: ParserBuilder,
+    mutation: Literal["missing_membership", "shared_token", "unknown_token", "duplicate_token"],
+) -> None:
+    outcome = ProductionIngestor(parser=parser_builder()).analyse(
+        SourceArtifact.from_text("First claim. Second claim.", source_name="membership.txt")
     )
-    with pytest.raises(RuntimeError, match="decoder reached with complete uncapped substrate"):
-        _predictor(_Tokenizer(offsets=offsets, special=[0] * 129)).analyse_with_evidence(
-            text,
-            edus=edus,
-        )
-
-
-def test_parser_rejects_missing_and_cross_boundary_tokenizer_alignment() -> None:
-    with pytest.raises(ValueError, match="omit non-whitespace input"):
-        _predictor(_Tokenizer(offsets=[(0, 1)], special=[0])).analyse_with_evidence("xy")
-
-    text = "a b"
-    edus = (
-        Edu(edu_id=1, text="a", start=0, end=1),
-        Edu(edu_id=2, text="b", start=2, end=3),
-    )
-    with pytest.raises(ValueError, match="has no exact tokenizer-aligned tokens"):
-        _predictor(_Tokenizer(offsets=[(0, 3)], special=[0])).analyse_with_evidence(
-            text,
-            edus=edus,
-            sentence_boundaries=(TextSpan(start=0, end=3, text=text),),
-            paragraph_boundaries=(TextSpan(start=0, end=3, text=text),),
-        )
+    document = outcome.semantic.analysed_document
+    assert document is not None
+    payload = document.model_dump(exclude={"semantic_digest"})
+    match mutation:
+        case "missing_membership":
+            payload["edus"][0]["token_ids"] = document.edus[0].token_ids[1:]
+        case "shared_token":
+            payload["edus"][0]["token_ids"] += (document.edus[1].token_ids[0],)
+        case "unknown_token":
+            payload["edus"][0]["token_ids"] += ("token:invented",)
+        case "duplicate_token":
+            payload["tokens"][1]["token_id"] = document.tokens[0].token_id
+    with pytest.raises(ValueError, match="overlaps|cover every|unique"):
+        AnalysedDocument.model_validate(payload)

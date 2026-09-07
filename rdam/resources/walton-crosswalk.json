@@ -1,0 +1,374 @@
+{
+  "profile": "walton-reed-macagno-2008-subset-v1",
+  "description": "Consumer crosswalk from RDAM's native adaptation to registered Central concepts. Broader mappings preserve a canonical question with wider scope; absent mappings do not establish equivalence. Native premise fields can be argument variables rather than premise propositions.",
+  "mappings": {
+    "practical_reasoning/question/0": {
+      "native_text": "Are there alternative means to the same goal?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/alternative_means",
+      "relationship": "exact"
+    },
+    "expert_opinion/premise/source": {
+      "native_text": "source",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/expert_opinion/source",
+      "relationship": "exact"
+    },
+    "expert_opinion/premise/domain": {
+      "native_text": "domain",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/expert_opinion/domain",
+      "relationship": "exact"
+    },
+    "sign/premise/finding": {
+      "native_text": "finding",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/sign/observation",
+      "relationship": "exact"
+    },
+    "sign/premise/indicated": {
+      "native_text": "indicated",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/sign/indicated_proposition",
+      "relationship": "exact"
+    },
+    "expert_opinion/premise/assertion": {
+      "native_text": "assertion",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/assertion",
+      "relationship": "exact"
+    },
+    "analogy/premise/source_case": {
+      "native_text": "source_case",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/source_case",
+      "relationship": "exact"
+    },
+    "analogy/premise/target_case": {
+      "native_text": "target_case",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/target_case",
+      "relationship": "exact"
+    },
+    "analogy/premise/similarity": {
+      "native_text": "similarity",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/relevant_similarity",
+      "relationship": "exact"
+    },
+    "practical_reasoning/premise/goal": {
+      "native_text": "goal",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/goal",
+      "relationship": "exact"
+    },
+    "expert_opinion/question/0": {
+      "native_text": "How credible is the source as an expert?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/expertise",
+      "relationship": "exact"
+    },
+    "expert_opinion/question/1": {
+      "native_text": "Is the source an expert in the domain the assertion falls under?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/field",
+      "relationship": "exact"
+    },
+    "expert_opinion/question/2": {
+      "native_text": "What did the source actually assert?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/assertion",
+      "relationship": "exact"
+    },
+    "expert_opinion/question/3": {
+      "native_text": "Is the source personally reliable as a source?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/trustworthiness",
+      "relationship": "exact"
+    },
+    "expert_opinion/question/4": {
+      "native_text": "Is the assertion consistent with what other experts say?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/consistency",
+      "relationship": "exact"
+    },
+    "expert_opinion/question/5": {
+      "native_text": "Is the assertion based on evidence?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/evidence",
+      "relationship": "exact"
+    },
+    "analogy/question/1": {
+      "native_text": "Is the property in the source case true as stated?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/source_case",
+      "relationship": "broader"
+    },
+    "analogy/question/2": {
+      "native_text": "Are there relevant differences that defeat the analogy?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/difference",
+      "relationship": "exact"
+    },
+    "analogy/question/3": {
+      "native_text": "Is there a third case more similar to the target that points the other way?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/counteranalogy",
+      "relationship": "exact"
+    },
+    "practical_reasoning/question/1": {
+      "native_text": "Is this means the most efficient one?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/alternatives",
+      "relationship": "broader"
+    },
+    "practical_reasoning/question/2": {
+      "native_text": "Is the goal itself acceptable?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/goal_legitimacy",
+      "relationship": "exact"
+    },
+    "practical_reasoning/question/3": {
+      "native_text": "Are there conflicting goals that should take priority?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/consequences",
+      "relationship": "broader"
+    },
+    "practical_reasoning/question/4": {
+      "native_text": "Does the means have side effects that outweigh the goal?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/consequences",
+      "relationship": "broader"
+    },
+    "position_to_know/premise/source": {
+      "native_text": "source",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/position_to_know/source",
+      "relationship": "exact"
+    },
+    "position_to_know/premise/assertion": {
+      "native_text": "assertion",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/position_to_know/assertion",
+      "relationship": "exact"
+    },
+    "position_to_know/question/0": {
+      "native_text": "Is the source in a position to know about the situation?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/position_to_know/access",
+      "relationship": "exact"
+    },
+    "position_to_know/question/1": {
+      "native_text": "Is the source honest and reliable?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/position_to_know/reliability",
+      "relationship": "exact"
+    },
+    "position_to_know/question/2": {
+      "native_text": "Did the source actually assert this?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/position_to_know/assertion",
+      "relationship": "exact"
+    },
+    "slippery_slope/premise/first_step": {
+      "native_text": "first_step",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/slippery_slope/first_step",
+      "relationship": "exact"
+    },
+    "slippery_slope/premise/sequence": {
+      "native_text": "sequence",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/slippery_slope/recursive",
+      "relationship": "exact"
+    },
+    "slippery_slope/premise/outcome": {
+      "native_text": "outcome",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/slippery_slope/bad_outcome",
+      "relationship": "exact"
+    },
+    "verbal_classification/question/0": {
+      "native_text": "Does the individual really have the property?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/verbal_classification/individual_property",
+      "relationship": "exact"
+    },
+    "verbal_classification/question/1": {
+      "native_text": "Does having the property really place it in the class as defined?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/verbal_classification/classification_strength",
+      "relationship": "broader"
+    },
+    "verbal_classification/question/2": {
+      "native_text": "Is the classification vague or contestable in this case?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/verbal_classification/classification_strength",
+      "relationship": "broader"
+    },
+    "popular_opinion/premise/proposition": {
+      "native_text": "proposition",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/popular_opinion/proposition",
+      "relationship": "exact"
+    },
+    "popular_opinion/premise/acceptance": {
+      "native_text": "acceptance",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/popular_opinion/acceptance",
+      "relationship": "exact"
+    },
+    "analogy/premise/conclusion_property": {
+      "native_text": "conclusion_property",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/analogy/conclusion_property",
+      "relationship": "exact"
+    },
+    "analogy/question/0": {
+      "native_text": "Are the two cases similar in the respect claimed?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/claimed_similarity",
+      "relationship": "exact"
+    },
+    "example/premise/example": {
+      "native_text": "example",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/example/instance",
+      "relationship": "exact"
+    },
+    "example/question/0": {
+      "native_text": "Is the example actually true?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/example/truth",
+      "relationship": "exact"
+    },
+    "example/question/1": {
+      "native_text": "Does the example genuinely instance the generalisation?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/example/instantiation",
+      "relationship": "exact"
+    },
+    "example/question/2": {
+      "native_text": "Is the example typical, or is it special in some way?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/example/typicality",
+      "relationship": "exact"
+    },
+    "example/question/3": {
+      "native_text": "How strong is the generalisation given how many examples support it?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/example/strength",
+      "relationship": "broader"
+    },
+    "sign/question/0": {
+      "native_text": "How strongly does the finding indicate what is claimed?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/sign/correlation_strength",
+      "relationship": "exact"
+    },
+    "cause_to_effect/premise/cause": {
+      "native_text": "cause",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/cause_to_effect/cause",
+      "relationship": "exact"
+    },
+    "cause_to_effect/premise/effect": {
+      "native_text": "effect",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/cause_to_effect/effect",
+      "relationship": "exact"
+    },
+    "cause_to_effect/premise/causal_generalisation": {
+      "native_text": "causal_generalisation",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/cause_to_effect/generalisation",
+      "relationship": "exact"
+    },
+    "cause_to_effect/question/0": {
+      "native_text": "How strong is the causal generalisation?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/cause_to_effect/strength",
+      "relationship": "exact"
+    },
+    "cause_to_effect/question/1": {
+      "native_text": "Is the evidence for the causal relation strong enough?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/cause_to_effect/evidence",
+      "relationship": "exact"
+    },
+    "cause_to_effect/question/2": {
+      "native_text": "Are there other causal factors that could interfere?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/cause_to_effect/interference",
+      "relationship": "exact"
+    },
+    "consequences/premise/action": {
+      "native_text": "action",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/consequences/action",
+      "relationship": "exact"
+    },
+    "consequences/question/0": {
+      "native_text": "How likely is the consequence if the action is taken?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/consequences/likelihood",
+      "relationship": "exact"
+    },
+    "consequences/question/1": {
+      "native_text": "What evidence supports that this consequence would follow?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/consequences/evidence",
+      "relationship": "exact"
+    },
+    "consequences/question/2": {
+      "native_text": "Are there opposite consequences that should be weighed against it?",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/consequences/opposite_value",
+      "relationship": "exact"
+    }
+  },
+  "unmapped": {
+    "position_to_know/premise/situation": {
+      "native_text": "situation",
+      "explanation": "The native situation field does not distinguish the proposition at issue from the informant-access premise. The reviewed Walton mining chapter and Araucaria profile do not establish a unique equivalent."
+    },
+    "popular_opinion/question/0": {
+      "native_text": "What evidence is there that the proposition really is generally accepted?",
+      "explanation": "The Araucaria popular-opinion scheme has no critical-question list. Walton and Macagno discuss questions for distinct popular-opinion variants; those do not establish this general native question as an equivalent scoped term."
+    },
+    "popular_opinion/question/1": {
+      "native_text": "Does general acceptance give any reason to think it true?",
+      "explanation": "The Araucaria popular-opinion scheme states a defeasible presumption but supplies no corresponding critical-question term. A premise and a question challenging it are distinct concepts."
+    },
+    "popular_opinion/question/2": {
+      "native_text": "Is there other evidence that counts against it?",
+      "explanation": "The reviewed popular-opinion sources do not establish this unrestricted counterevidence question as a distinct equivalent in the general scheme; expert-opinion variant questions are not substituted."
+    },
+    "example/premise/generalisation": {
+      "native_text": "generalisation",
+      "explanation": "The Araucaria example scheme places the generalisation in its conclusion. RDAM names it as a premise role without specifying whether it is the conclusion proposition or a separate warrant; no unique premise equivalence is established."
+    },
+    "example/question/4": {
+      "native_text": "Are there counter-examples?",
+      "explanation": "The Araucaria example questions address properties, instantiation, typicality, strength and exceptional circumstances. The native counter-example question is not identical to the exceptional-circumstances question."
+    },
+    "sign/question/1": {
+      "native_text": "Could the finding indicate something else instead?",
+      "explanation": "Araucaria asks whether an alternative accounts for the observed sign more reliably. RDAM asks whether the sign could indicate anything else, omitting that comparative condition; exact or broader canonical correspondence is not established."
+    },
+    "cause_to_effect/question/3": {
+      "native_text": "Could the correlation be coincidence, or the causation run the other way?",
+      "explanation": "This native question combines coincidence and reverse causation. The reviewed Araucaria profile treats correlation-to-cause separately from cause-to-effect and does not supply this combined question under cause-to-effect."
+    },
+    "consequences/premise/consequence": {
+      "native_text": "consequence",
+      "explanation": "The canonical scheme asserts an action-to-consequence conditional. Naming a consequence alone does not establish that premise or identify whether the native field contains the outcome or the full conditional."
+    },
+    "consequences/premise/valence": {
+      "native_text": "valence",
+      "explanation": "The native field records an evaluation of a consequence. The reviewed scheme distinguishes good and bad consequences but does not establish this extraction field as a separate premise proposition."
+    },
+    "practical_reasoning/premise/means": {
+      "native_text": "means",
+      "explanation": "Walton distinguishes the action from the means-goal premise. The native means field does not specify which it represents, so it is not forced onto either canonical concept."
+    },
+    "practical_reasoning/premise/conclusion_action": {
+      "native_text": "conclusion_action",
+      "explanation": "The native field combines a conclusion role and an action variable. The reviewed practical-inference formulation distinguishes recommending the action from naming it."
+    },
+    "verbal_classification/premise/individual": {
+      "native_text": "individual",
+      "explanation": "The native field names an entity. Walton 2008 states a premise attributing a property to that entity; an entity value alone is not equivalent to the premise."
+    },
+    "verbal_classification/premise/property": {
+      "native_text": "property",
+      "explanation": "The native field names a property. Walton 2008 distinguishes that parameter from the proposition attributing it to an individual; the field does not establish the latter."
+    },
+    "verbal_classification/premise/classification": {
+      "native_text": "classification",
+      "explanation": "The native field could denote a class, a classification rule or its application. Walton 2008 distinguishes these, so the underspecified field has no unique canonical target."
+    },
+    "slippery_slope/question/0": {
+      "native_text": "What are the intervening steps, and is each one plausible?",
+      "explanation": "The native question combines identifying steps and assessing their plausibility. Araucaria separates these challenges across distinct slippery-slope formulations; no single equivalent question is established."
+    },
+    "slippery_slope/question/1": {
+      "native_text": "What keeps the sequence from being stopped part-way?",
+      "explanation": "Araucaria includes a stopping question for the verbal-vagueness variant. RDAM declares a general slippery-slope scheme, so that subtype-specific question is not substituted."
+    },
+    "slippery_slope/question/2": {
+      "native_text": "How likely is the final outcome given the first step?",
+      "explanation": "The native question asks about the whole-chain likelihood. Araucaria separately assesses causal links, outcome plausibility and outcome value; the reviewed formulations do not establish an equivalent general question."
+    },
+    "ad_hominem/premise/person": {
+      "native_text": "person",
+      "explanation": "RDAM uses a general attack-against-person profile. The reviewed Araucaria set distinguishes circumstantial, ethotic and bias arguments; identifying a person does not select one of their premise propositions."
+    },
+    "ad_hominem/premise/attack": {
+      "native_text": "attack",
+      "explanation": "An unspecified allegation cannot be equated with the different inconsistency, character or bias premises in the reviewed Araucaria formulations."
+    },
+    "ad_hominem/premise/claim_attacked": {
+      "native_text": "claim_attacked",
+      "explanation": "The target claim is a parameter of RDAM extraction. The reviewed subtype formulations do not establish it as an equivalent independent premise."
+    },
+    "ad_hominem/question/0": {
+      "native_text": "Is the attack on the person relevant to the claim at all?",
+      "explanation": "Araucaria scopes character-relevance questions to ethotic argument and different challenges to circumstantial argument. RDAM does not distinguish those subtypes, preventing an exact general correspondence."
+    },
+    "ad_hominem/question/1": {
+      "native_text": "Is what is alleged about the person actually true?",
+      "explanation": "The native question covers any allegation. Araucaria asks subtype-specific questions about character, bias or circumstances; none is established as an equivalent or broader general question."
+    },
+    "ad_hominem/question/2": {
+      "native_text": "Even if true, does it bear on the truth of the claim?",
+      "explanation": "The native question asks about the truth of the target claim after accepting any allegation. The reviewed Araucaria formulations assess subtype-specific presumptions and relevance, without an equivalent general question."
+    }
+  }
+}

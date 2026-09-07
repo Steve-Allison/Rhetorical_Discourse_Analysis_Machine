@@ -56,9 +56,8 @@ def test_requirement_is_self_checking_and_closed() -> None:
 
 @pytest.mark.parametrize("device, safety", (("cpu", "concurrent"), ("mps", "concurrent"), ("cuda", "serialized")))
 def test_rst_declares_requirement_and_parallel_safety_without_loading(
-    device: str, safety: str, monkeypatch: pytest.MonkeyPatch,
+    device: str, safety: str,
 ) -> None:
-    monkeypatch.setattr("rdam.rst.provider.resolve_default_erst_checkpoint", lambda _path: None)
     provider = RstProvider(device=device)
     declaration = provider.declaration
     assert declaration.content_requirement == provider.content_requirement

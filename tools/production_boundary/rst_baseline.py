@@ -19,6 +19,8 @@ every difference is classified before a verdict is given:
 * ``contract_field_rename`` — the owner-approved Feature 017 rename of
   ``analysis_plan.parser_capacity`` to ``analysis_plan.capacity``, only when the
   complete capacity value is identical and neither record contains both names.
+* ``contract_version_transition`` — the preparation envelope's explicit v2-to-v3
+  version change. Every content field is still compared independently.
 * ``source_identity_correction`` and ``doclang_table_correction`` — the separately
   proven, owner-approved Feature 017 repairs. These change analytical records and
   are not called equivalent; acceptance requires zero unexplained regressions.
@@ -44,6 +46,7 @@ from packaging.version import InvalidVersion, Version
 
 from rdam.rst import Parser
 from rdam.rst._version import PACKAGE_NAME
+from rdam.ingest.contracts.base import PRODUCTION_CONTRACT, WRITE_CONTRACT_VERSION
 from rdam.ingest import (
     ProductionIngestor,
     SourceArtifact,
@@ -101,6 +104,7 @@ class DifferenceClass(StrEnum):
     PACKAGE_SOURCE_IDENTITY = "package_source_identity"
     DERIVED_DIGEST = "derived_digest"
     CONTRACT_FIELD_RENAME = "contract_field_rename"
+    CONTRACT_VERSION_TRANSITION = "contract_version_transition"
     SOURCE_IDENTITY_CORRECTION = "source_identity_correction"
     DOCLANG_TABLE_CORRECTION = "doclang_table_correction"
     ANALYTICAL = "analytical"
@@ -246,6 +250,14 @@ def classify(path: JsonPath, baseline: dict[JsonPath, Any], actual: dict[JsonPat
 
     if not path:
         return DifferenceClass.ANALYTICAL
+    if (
+        path == ("contract_version",)
+        and baseline.get(path) == "2.0.0"
+        and actual.get(path) == WRITE_CONTRACT_VERSION == "3.0.0"
+        and baseline.get(("contract",)) == actual.get(("contract",)) == PRODUCTION_CONTRACT
+        and baseline.get(("kind",)) == actual.get(("kind",)) == "preparation_outcome"
+    ):
+        return DifferenceClass.CONTRACT_VERSION_TRANSITION
     if "execution" in path or _TIMING_CONTAINER in path:
         return DifferenceClass.EXECUTION
     leaf = path[-1]

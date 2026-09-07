@@ -1,9 +1,10 @@
 """Cross-field production inventory, preparation, analysis, and evidence validation."""
 
 from itertools import pairwise
+from bisect import bisect_left, bisect_right
 
-from rdam.rst.contracts import RstAnalysis
-from rdam.rst.contracts.enums import NodeKindEnum
+from rdam.rst.contracts import PrimaryRelationEdge, RstAnalysis
+from rdam.rst.contracts.enums import NodeKindEnum, NuclearityPatternEnum, RelationStructureEnum
 from rdam.ingest.contracts.analysis import (
     AnalysedDocument,
     AnalysisAnchor,
@@ -23,6 +24,8 @@ from rdam.ingest.contracts.inference import (
     ErstCompletionEvidence,
     ImmutableComponentIdentity,
     PrimaryInferenceEvidence,
+    MappingStatus,
+    RelationInterpretation,
 )
 from rdam.ingest.contracts.source import (
     ContentInventoryItem,
@@ -49,7 +52,7 @@ def build_analysis_validation_receipt(
     analysed: AnalysedDocument,
     primary: PrimaryInferenceEvidence,
     erst: ErstCompletionEvidence | None,
-    anchors: tuple[AnalysisAnchor, ...],
+    anchors: tuple[AnalysisAnchor, ...] | None,
     *,
     policy: AnalysisPolicy,
     composite: CompositeAnalysisIdentity,
@@ -57,14 +60,21 @@ def build_analysis_validation_receipt(
 ) -> ValidationReceipt:
     """Validate every required analysis invariant and return its stable receipt."""
 
+    anchor_count = len(anchors) if anchors is not None else (
+        len(analysed.edus) + len(analysis.nodes) + len(analysis.primary_edges) + len(analysis.secondary_edges)
+        + len(primary.segmentation_decisions) + len(primary.structure_decisions) + len(analysis.signals)
+    )
     validators = {
         "source_substrate_identity": lambda: _validate_analysed_document(analysed),
         "primary_tree": lambda: _validate_primary_tree(analysis),
         "erst_formal_rules": lambda: _validate_erst(analysis, erst),
-        "decision_evidence": lambda: _validate_decisions(analysis, primary, erst),
-        "analysis_anchors": lambda: _validate_anchors(analysis, analysed, anchors),
+        "decision_evidence": lambda: _validate_decisions(analysis, primary, erst, policy),
+        "analysis_anchors": lambda: (
+            validate_canonical_anchors(analysis, analysed, primary) if anchors is None
+            else _validate_anchors(analysis, analysed, primary, anchors)
+        ),
         "component_identity": lambda: _validate_composite(composite),
-        "semantic_identity": lambda: None,
+        "semantic_identity": lambda: _validate_evidence_identities(analysed, erst),
     }
     checks: list[ValidationCheckReceipt] = []
     for check_id in policy.validation.required_checks:
@@ -77,7 +87,7 @@ def build_analysis_validation_receipt(
                 check_id=check_id,
                 classification=CheckClassification.REQUIRED,
                 outcome=CheckOutcome.PASSED,
-                checked_count=_analysis_checked_count(check_id, analysis, anchors, primary),
+                checked_count=_analysis_checked_count(check_id, analysis, anchor_count, primary, composite, erst),
                 affected_ids=(),
             )
         )
@@ -103,7 +113,7 @@ def build_analysis_validation_receipt(
         checks=tuple(checks),
         passed=True,
         graph_coverage=ExactCoverage(covered_units=graph_count, total_units=graph_count, unit=CoverageUnit.ITEMS),
-        anchor_coverage=ExactCoverage(covered_units=len(anchors), total_units=len(anchors), unit=CoverageUnit.ANCHORS),
+        anchor_coverage=ExactCoverage(covered_units=anchor_count, total_units=anchor_count, unit=CoverageUnit.ANCHORS),
         evidence_coverage=ExactCoverage(
             covered_units=evidence_count, total_units=evidence_count, unit=CoverageUnit.ITEMS
         ),
@@ -120,7 +130,7 @@ def validate_parser_analysis_result(result: ParserAnalysisResult) -> None:
         semantic.analysed_document,
         semantic.primary_inference,
         semantic.erst_completion,
-        semantic.anchors,
+        None,
         policy=semantic.policy,
         composite=semantic.composite_identity,
         recombination=semantic.recombination,
@@ -179,12 +189,14 @@ def _validate_analysed_document(document: AnalysedDocument) -> None:
 
 
 def _validate_primary_tree(analysis: RstAnalysis) -> None:
+    nodes = {node.node_id: node for node in analysis.nodes}
     node_ids = {node.node_id for node in analysis.nodes}
     if len(node_ids) != len(analysis.nodes) or not node_ids:
         raise ValueError("primary graph requires unique nodes")
     children: dict[int, list[int]] = {}
     child_ids: set[int] = set()
     edge_ids: set[str] = set()
+    edges_by_parent: dict[int, list[PrimaryRelationEdge]] = {}
     for edge in analysis.primary_edges:
         if edge.edge_id in edge_ids or edge.parent_id not in node_ids or edge.child_id not in node_ids:
             raise ValueError("primary edge identity or endpoint is invalid")
@@ -195,6 +207,41 @@ def _validate_primary_tree(analysis: RstAnalysis) -> None:
         edge_ids.add(edge.edge_id)
         child_ids.add(edge.child_id)
         children.setdefault(edge.parent_id, []).append(edge.child_id)
+        edges_by_parent.setdefault(edge.parent_id, []).append(edge)
+    for parent_id, siblings in edges_by_parent.items():
+        siblings.sort(key=lambda edge: nodes[edge.child_id].edu_span)
+        patterns = {edge.nuclearity for edge in siblings}
+        if len(patterns) != 1:
+            raise ValueError("primary siblings have contradictory nuclearity patterns")
+        pattern = siblings[0].nuclearity
+        if len(siblings) < 2 or (pattern is not NuclearityPatternEnum.NN and len(siblings) != 2):
+            raise ValueError("primary constituent has an invalid number of arguments")
+        spans = [nodes[edge.child_id].edu_span for edge in siblings]
+        if any(left[1] + 1 != right[0] for left, right in pairwise(spans)) or nodes[parent_id].edu_span != (
+            spans[0][0],
+            spans[-1][1],
+        ):
+            raise ValueError("primary child EDU spans do not partition their parent")
+        rhetorical_labels: set[str] = set()
+        for index, edge in enumerate(siblings):
+            structural = (pattern is NuclearityPatternEnum.NS and index == 0) or (
+                pattern is NuclearityPatternEnum.SN and index == 1
+            )
+            if (edge.relation_raw.casefold() == "span") != structural:
+                raise ValueError("structural span link contradicts constituent nuclearity")
+            expected_structure = (
+                RelationStructureEnum.STRUCTURAL_PSEUDO
+                if structural
+                else RelationStructureEnum.MULTINUCLEAR
+                if pattern is NuclearityPatternEnum.NN
+                else RelationStructureEnum.MONONUCLEAR
+            )
+            if edge.relation_structure is not expected_structure:
+                raise ValueError("primary relation structural metadata is inconsistent")
+            if not structural:
+                rhetorical_labels.add(edge.relation_raw.casefold())
+        if len(rhetorical_labels) != 1:
+            raise ValueError("primary constituent has conflicting rhetorical labels")
     roots = node_ids - child_ids
     if len(roots) != 1 or len(analysis.primary_edges) != len(node_ids) - 1:
         raise ValueError("primary graph is not a single rooted tree")
@@ -242,7 +289,8 @@ def _validate_erst(analysis: RstAnalysis, evidence: ErstCompletionEvidence | Non
 
 
 def _validate_decisions(
-    analysis: RstAnalysis, primary: PrimaryInferenceEvidence, erst: ErstCompletionEvidence | None
+    analysis: RstAnalysis, primary: PrimaryInferenceEvidence, erst: ErstCompletionEvidence | None,
+    policy: AnalysisPolicy,
 ) -> None:
     node_ids = {node.node_id for node in analysis.nodes}
     edge_ids = {edge.edge_id for edge in analysis.primary_edges}
@@ -253,10 +301,50 @@ def _validate_decisions(
         raise ValueError("primary decisions do not cover every created non-EDU node and edge")
     if any(node_id not in node_ids for node_id in linked_nodes):
         raise ValueError("primary decision references an absent node")
+    nodes = {node.node_id: node for node in analysis.nodes}
+    edges = {edge.edge_id: edge for edge in analysis.primary_edges}
+    edges_by_parent: dict[int, list[PrimaryRelationEdge]] = {}
+    for edge in edges.values():
+        edges_by_parent.setdefault(edge.parent_id, []).append(edge)
+    seen_decisions: set[str] = set()
+    seen_nodes: set[int] = set()
+    for decision in primary.structure_decisions:
+        type(decision).model_validate(decision.model_dump())
+        _validate_relation_policy(decision.relation, policy)
+        if decision.decision_id in seen_decisions or len(decision.node_ids) != 1:
+            raise ValueError("primary decision must have a unique identity and exactly one constituent")
+        seen_decisions.add(decision.decision_id)
+        node_id = decision.node_ids[0]
+        if node_id in seen_nodes:
+            raise ValueError("primary constituent has duplicate decisions")
+        seen_nodes.add(node_id)
+        node = nodes[node_id]
+        if (decision.analysed_start, decision.analysed_end) != node.char_span:
+            raise ValueError("primary decision character span differs from its constituent")
+        siblings = sorted(
+            edges_by_parent.get(node_id, ()),
+            key=lambda edge: nodes[edge.child_id].edu_span,
+        )
+        if set(decision.primary_edge_ids) != {edge.edge_id for edge in siblings}:
+            raise ValueError("primary decision edges do not belong to its constituent")
+        if any(edge.nuclearity.value != decision.nuclearity for edge in siblings):
+            raise ValueError("primary decision nuclearity differs from its tree")
+        if any(
+            edge.relation_raw.casefold() != decision.relation.raw_label.casefold()
+            for edge in siblings
+            if edge.relation_structure is not RelationStructureEnum.STRUCTURAL_PSEUDO
+        ):
+            raise ValueError("primary decision relation differs from its tree")
+        if decision.joint is not None and (
+            len(siblings) != 2 or decision.selected_split != nodes[siblings[0].child_id].edu_span[1] - 1
+        ):
+            raise ValueError("primary decision split differs from its tree")
     for refinement in primary.refinements:
         if not refinement.trigger_signal_ids or not set(refinement.graph_element_ids) <= edge_ids:
             raise ValueError("refinement lacks trigger evidence or graph linkage")
     if erst is not None:
+        for candidate in erst.candidate_decisions:
+            _validate_relation_policy(candidate.relation, policy)
         candidate_ids = {decision.candidate_id for decision in erst.candidate_decisions}
         if (
             tuple(decision.candidate_id for decision in erst.candidate_decisions)
@@ -268,15 +356,42 @@ def _validate_decisions(
                 raise ValueError("eRST signal is orphaned or references an absent candidate")
 
 
-def _validate_anchors(analysis: RstAnalysis, analysed: AnalysedDocument, anchors: tuple[AnalysisAnchor, ...]) -> None:
+def _validate_relation_policy(relation: RelationInterpretation, policy: AnalysisPolicy) -> None:
+    RelationInterpretation.model_validate(relation.model_dump())
+    allowed = {
+        "disabled": {MappingStatus.NOT_MAPPED},
+        "identity_only": {MappingStatus.IDENTITY_ONLY},
+        "provider_mapping": {MappingStatus.MAPPED, MappingStatus.NOT_MAPPED, MappingStatus.NOT_AVAILABLE},
+    }[policy.relation_interpretation.ontology_mapping]
+    if relation.mapping_status not in allowed:
+        raise ValueError("relation mapping contradicts the requested ontology policy")
+
+
+def _validate_anchors(
+    analysis: RstAnalysis, analysed: AnalysedDocument,
+    primary: PrimaryInferenceEvidence, anchors: tuple[AnalysisAnchor, ...],
+) -> None:
     expected: set[tuple[str, AnchorTargetKind]] = {
         (str(node.node_id), AnchorTargetKind.NODE) for node in analysis.nodes
     }
     expected.update((edge.edge_id, AnchorTargetKind.PRIMARY_EDGE) for edge in analysis.primary_edges)
     expected.update((edge.edge_id, AnchorTargetKind.SECONDARY_EDGE) for edge in analysis.secondary_edges)
     actual = {(anchor.target_id, anchor.target_kind) for anchor in anchors}
+    if len(actual) != len(anchors):
+        raise ValueError("analysis anchors contain duplicate target identities")
     if not expected <= actual:
         raise ValueError("analysis anchors do not cover every graph element")
+    graph_kinds = {AnchorTargetKind.NODE, AnchorTargetKind.PRIMARY_EDGE, AnchorTargetKind.SECONDARY_EDGE}
+    if {target for target in actual if target[1] in graph_kinds} != expected:
+        raise ValueError("analysis anchor references an absent graph element")
+    expected_evidence = {(str(edu.edu_id), AnchorTargetKind.EDU) for edu in analysed.edus}
+    expected_evidence.update(
+        (decision.decision_id, AnchorTargetKind.DECISION)
+        for decision in (*primary.segmentation_decisions, *primary.structure_decisions)
+    )
+    evidence_kinds = {AnchorTargetKind.EDU, AnchorTargetKind.DECISION}
+    if {target for target in actual if target[1] in evidence_kinds} != expected_evidence:
+        raise ValueError("analysis anchors do not exactly cover every EDU and primary decision")
     token_ids = {token.token_id for token in analysed.tokens}
     edu_ids = {edu.edu_id for edu in analysed.edus}
     for anchor in anchors:
@@ -284,12 +399,113 @@ def _validate_anchors(analysis: RstAnalysis, analysed: AnalysedDocument, anchors
             raise ValueError("analysis anchor references an absent analysed token or EDU")
         if not anchor.source_anchors:
             raise ValueError("analysis anchor lacks source reconstruction anchors")
+    signal_anchors = {anchor.target_id: anchor for anchor in anchors if anchor.target_kind is AnchorTargetKind.SUPPORTING_SIGNAL}
+    signal_ids = {signal.signal_id for signal in analysis.signals}
+    if len(signal_ids) != len(analysis.signals) or set(signal_anchors) != signal_ids:
+        raise ValueError("supporting signal identities and anchors do not agree")
+    primary_edge_ids = {edge.edge_id for edge in analysis.primary_edges}
+    for signal in analysis.signals:
+        type(signal).model_validate(signal.model_dump())
+        if not set(signal.attachment_candidates) <= primary_edge_ids:
+            raise ValueError("signal attachment candidate references an absent primary edge")
+        if any(start < 0 or end > len(analysed.text) for start, end in signal.char_spans):
+            raise ValueError("signal character span lies outside the analysed document")
+        expected_tokens = tuple(token.token_id for token in analysed.tokens if any(
+            token.character_range.start < end and start < token.character_range.end
+            for start, end in signal.char_spans
+        ))
+        if signal_anchors[signal.signal_id].token_ids != expected_tokens:
+            raise ValueError("signal anchor tokens do not match its character spans")
+
+
+def validate_canonical_anchors(
+    analysis: RstAnalysis, analysed: AnalysedDocument, primary: PrimaryInferenceEvidence,
+) -> None:
+    """Check the inputs of derived anchors without expanding descendant lists."""
+    tokens = {token.token_id: token for token in analysed.tokens}
+    edus = {edu.edu_id: edu for edu in analysed.edus}
+    if len(tokens) != len(analysed.tokens) or len(edus) != len(analysed.edus):
+        raise ValueError("canonical anchor token or EDU identities are duplicated")
+    starts = tuple(token.character_range.start for token in analysed.tokens)
+    ends = tuple(token.character_range.end for token in analysed.tokens)
+    if any(left > right for left, right in zip(ends[:-1], starts[1:], strict=True)):
+        raise ValueError("canonical anchor tokens must be ordered and non-overlapping")
+
+    def check_range(start: int, end: int) -> None:
+        if start < 0 or end <= start or end > len(analysed.text):
+            raise ValueError("canonical anchor range lies outside analysed text")
+        if bisect_right(ends, start) >= bisect_left(starts, end):
+            raise ValueError("canonical anchor range overlaps no analysed token")
+
+    for token in analysed.tokens:
+        check_range(token.character_range.start, token.character_range.end)
+    for edu in analysed.edus:
+        if not edu.source_anchors or not set(edu.token_ids) <= tokens.keys():
+            raise ValueError("canonical EDU anchor has absent tokens or source mappings")
+    mapped_tokens = {token_id for edu in analysed.edus for token_id in edu.token_ids}
+    mapped_prefix = [0]
+    for token in analysed.tokens:
+        mapped_prefix.append(mapped_prefix[-1] + int(token.token_id in mapped_tokens))
+    node_ids = {node.node_id for node in analysis.nodes}
+    for node in analysis.nodes:
+        check_range(*node.char_span)
+        if node.kind is NodeKindEnum.EDU:
+            first, last = node.edu_span
+            if first != last or not 1 <= first <= len(analysed.edus):
+                raise ValueError("canonical EDU node does not identify one analysed EDU")
+            span = analysed.edus[first - 1].character_range
+            if node.char_span != (span.start, span.end):
+                raise ValueError("canonical EDU node range differs from its analysed EDU")
+    identities = [(str(node.node_id), AnchorTargetKind.NODE) for node in analysis.nodes]
+    for edges, kind in ((analysis.primary_edges, AnchorTargetKind.PRIMARY_EDGE),
+                        (analysis.secondary_edges, AnchorTargetKind.SECONDARY_EDGE)):
+        identities.extend((edge.edge_id, kind) for edge in edges)
+    identities.extend((edu.edu_id, AnchorTargetKind.EDU) for edu in analysed.edus)
+    for edge in analysis.primary_edges:
+        if edge.parent_id not in node_ids or edge.child_id not in node_ids or edge.parent_id == edge.child_id:
+            raise ValueError("canonical edge anchor has invalid endpoints")
+    for edge in analysis.secondary_edges:
+        if edge.source_id not in node_ids or edge.target_id not in node_ids or edge.source_id == edge.target_id:
+            raise ValueError("canonical edge anchor has invalid endpoints")
+    for decision in primary.segmentation_decisions:
+        identities.append((decision.decision_id, AnchorTargetKind.DECISION))
+        if not decision.token_ids or not set(decision.token_ids) <= tokens.keys():
+            raise ValueError("canonical decision anchor has absent analysed tokens")
+        if not mapped_tokens.intersection(decision.token_ids):
+            raise ValueError("canonical decision anchor lacks source reconstruction anchors")
+    for decision in primary.structure_decisions:
+        identities.append((decision.decision_id, AnchorTargetKind.DECISION))
+        check_range(decision.analysed_start, decision.analysed_end)
+        first = bisect_right(ends, decision.analysed_start)
+        stop = bisect_left(starts, decision.analysed_end)
+        if mapped_prefix[first] == mapped_prefix[stop]:
+            raise ValueError("canonical decision anchor lacks source reconstruction anchors")
+    primary_edges = {edge.edge_id for edge in analysis.primary_edges}
+    for signal in analysis.signals:
+        identities.append((signal.signal_id, AnchorTargetKind.SUPPORTING_SIGNAL))
+        type(signal).model_validate(signal.model_dump())
+        if not set(signal.attachment_candidates) <= primary_edges:
+            raise ValueError("signal attachment candidate references an absent primary edge")
+        if not signal.char_spans or any(start < 0 or end > len(analysed.text) for start, end in signal.char_spans):
+            raise ValueError("signal character span lies outside the analysed document")
+    if len(identities) != len(set(identities)):
+        raise ValueError("analysis anchors contain duplicate target identities")
 
 
 def _validate_composite(composite: CompositeAnalysisIdentity) -> None:
     expected = semantic_sha256(composite.model_dump(exclude={"semantic_digest"}))
     if composite.semantic_digest is None or composite.semantic_digest.hex_digest != expected:
         raise ValueError("composite component identity does not reproduce")
+
+
+def _validate_evidence_identities(analysed: AnalysedDocument, erst: ErstCompletionEvidence | None) -> None:
+    """Verify identities already available before the outer result is assembled."""
+    for evidence in (analysed, erst):
+        if evidence is None:
+            continue
+        expected = semantic_sha256(evidence.model_dump(exclude={"semantic_digest"}))
+        if evidence.semantic_digest is None or evidence.semantic_digest.hex_digest != expected:
+            raise ValueError("analysis evidence semantic identity does not reproduce")
 
 
 def _validate_recombination(receipt: RecombinationReceipt) -> None:
@@ -304,16 +520,21 @@ def _validate_recombination(receipt: RecombinationReceipt) -> None:
 
 
 def _analysis_checked_count(
-    check_id: str, analysis: RstAnalysis, anchors: tuple[AnalysisAnchor, ...], primary: PrimaryInferenceEvidence
+    check_id: str,
+    analysis: RstAnalysis,
+    anchor_count: int,
+    primary: PrimaryInferenceEvidence,
+    composite: CompositeAnalysisIdentity,
+    erst: ErstCompletionEvidence | None,
 ) -> int:
     return {
         "source_substrate_identity": len(primary.segmentation_decisions),
         "primary_tree": len(analysis.nodes) + len(analysis.primary_edges),
         "erst_formal_rules": len(analysis.secondary_edges),
         "decision_evidence": len(primary.structure_decisions) + len(primary.refinements),
-        "analysis_anchors": len(anchors),
-        "component_identity": 9,
-        "semantic_identity": 1,
+        "analysis_anchors": anchor_count,
+        "component_identity": len(composite.model_dump(exclude={"semantic_digest"})),
+        "semantic_identity": 1 + int(erst is not None),
     }[check_id]
 
 
@@ -518,6 +739,7 @@ def _validate_duplicate_chains(
 
 __all__ = [
     "build_analysis_validation_receipt",
+    "validate_canonical_anchors",
     "validate_inventory",
     "validate_parser_analysis_result",
     "validate_preparation_outcome",

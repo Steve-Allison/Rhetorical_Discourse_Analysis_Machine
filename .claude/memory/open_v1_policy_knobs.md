@@ -5,6 +5,14 @@ metadata:
   type: project
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 **Status: RESOLVED 2026-05-15** by the "do the full thing first time" directive and the architecture revision.
 
 The proposal's `parse_docling()` signature now exposes:
@@ -24,4 +32,4 @@ Two policies are NOT parameters by design:
 
 **How to apply:** when adding new policy decisions for the entry point, default to "expose as parameter with safe default" unless there's a structural reason not to (e.g. tables-as-grids).
 
-Related: [[decision-one-tree-per-document]], [[open-device-api]] (the `device` parameter shape).
+Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-device-api](open_device_api.md) (the `device` parameter shape).

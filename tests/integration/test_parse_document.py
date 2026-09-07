@@ -3,14 +3,8 @@
 from rdam.rst.annotation_rst import DiscourseUnit
 import pytest
 
-from rdam.rst import (
-    ErstCapabilityError,
-    OutputFormalismEnum,
-    Parser,
-    RstAnalysis,
-    RstDocument,
-)
-from rdam.rst.erst.converter import du_to_analysis
+from rdam.rst import OutputFormalismEnum, Parser, RstAnalysis, RstDocument
+from rdam.rst.converter import du_to_analysis
 
 
 class DummyPredictor:
@@ -55,21 +49,20 @@ def test_parse_document_from_text(monkeypatch: pytest.MonkeyPatch) -> None:
     assert analysis == expected
 
 
-def test_parse_document_from_edus_requires_validated_erst_bundle(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_production_parse_document_rejects_erst(monkeypatch: pytest.MonkeyPatch) -> None:
     parser = Parser.__new__(Parser)
     object.__setattr__(parser, "predictor", DummyPredictor())
     parser.hf_model_version = "rstdt"
     parser.segmenter = None
-    parser.erst_checkpoint = None
 
     doc = RstDocument.from_edus(["First sentence.", "Second sentence."], document_id="doc-test-2")
-    with pytest.raises(ErstCapabilityError, match="validated completion bundle"):
+    with pytest.raises(ValueError, match="workbench"):
         parser.parse_document(doc, output="erst_graph")
 
 
 def test_du_to_analysis_nuclearity_and_relations() -> None:
     from rdam.rst.contracts import NuclearityPatternEnum
-    from rdam.rst.erst.converter import du_to_analysis
+    from rdam.rst.converter import du_to_analysis
     from workbench.evaluation.rst import SoftParsevalScorer
 
     # 1. NS relation: left is Nucleus (span), right is Satellite (elaboration)

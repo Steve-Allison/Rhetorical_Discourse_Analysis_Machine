@@ -1,22 +1,16 @@
-from functools import cache
-import re
-from collections.abc import Sequence
+"""Lexical discourse-cue candidates that never alter primary model decisions."""
 
-from rdam.rst.contracts.analysis import (
-    DiscourseSignal,
-    PrimaryRelationEdge,
-    RstAnalysis,
-    SignalDetectorProvenance,
-)
-from rdam.rst.contracts.document import RstDocument
-from rdam.rst.contracts.enums import (
-    AnnotationStatusEnum,
-    SignalDetectionMethod,
-)
-from rdam.rst.relations.multilingual_markers import (
-    MULTILINGUAL_MARKER_RULES,
-    MarkerRule,
-)
+from collections.abc import Sequence
+from dataclasses import asdict, replace
+from functools import cache
+import hashlib
+import json
+import re
+
+from rdam.rst.contracts.analysis import DiscourseSignal, RstAnalysis, SignalDetectorProvenance
+from rdam.rst.contracts.document import DocumentToken, RstDocument
+from rdam.rst.contracts.enums import AnnotationStatusEnum, SignalDetectionMethod
+from rdam.rst.relations.multilingual_markers import MULTILINGUAL_MARKER_RULES, MarkerRule
 
 __all__ = ["DISCOURSE_MARKER_RULES", "DiscourseMarkerPrimer", "MarkerRule"]
 
@@ -25,155 +19,128 @@ DISCOURSE_MARKER_RULES = MULTILINGUAL_MARKER_RULES["en"]
 
 @cache
 def _compile_rule_pattern(cue: str) -> re.Pattern[str]:
-    """Pre-compile regex for a discourse cue."""
-    cue_lower = cue.lower()
-    if any("\u4e00" <= c <= "\u9fff" for c in cue_lower):
-        pattern = r"(?:^|[;,\.，。；、\s]+)" + re.escape(cue_lower)
-    else:
-        pattern = r"(?:^|[;,\.]\s*)\b" + re.escape(cue_lower) + r"\b"
-    return re.compile(pattern)
+    """Match original text so Unicode case conversion cannot shift offsets."""
+    chinese = any("\u4e00" <= character <= "\u9fff" for character in cue)
+    boundary = r"(?:^\s*|[;,.!?，。；、]\s*)"
+    word_boundary = "" if chinese else r"\b"
+    return re.compile(boundary + word_boundary + "(?P<cue>" + re.escape(cue) + ")" + word_boundary, re.IGNORECASE)
 
 
 class DiscourseMarkerPrimer:
-    """Detects explicit discourse connectives and primes/refines rhetorical relation labels."""
+    """Detect unscored lexical candidates with explicit, provisional attachments."""
 
     def __init__(self, rules: Sequence[MarkerRule] | None = None, language: str = "en") -> None:
-        self.language = (language or "en").strip().lower()
-        if rules is not None:
-            self.rules = tuple(rules)
-        else:
-            self.rules = MULTILINGUAL_MARKER_RULES.get(self.language, MULTILINGUAL_MARKER_RULES["en"])
-        # Sort rules with longest cues first so specific phrases match before sub-words
-        self.sorted_rules = sorted(self.rules, key=lambda r: len(r.cue), reverse=True)
-
-    def find_cue_in_text(self, text: str) -> tuple[MarkerRule, int, int] | None:
-        """Find matching discourse cue at start of text or following punctuation.
-
-        Returns (MarkerRule, match_start, match_end) or None.
-        """
-        return self._find_cue(text, self.sorted_rules)
+        self.language = language.strip().lower()
+        self.rules = tuple(rules) if rules is not None else self._language_rules(self.language)
+        self.sorted_rules = sorted(self.rules, key=lambda rule: (-len(rule.cue), rule.cue))
 
     @staticmethod
-    def _find_cue(text: str, rules: Sequence[MarkerRule]) -> tuple[MarkerRule, int, int] | None:
-        clean_text = text.lstrip()
-        leading_ws = len(text) - len(clean_text)
-        text_lower = clean_text.lower()
+    def _language_rules(language: str) -> tuple[MarkerRule, ...]:
+        try:
+            return MULTILINGUAL_MARKER_RULES[language]
+        except KeyError as exc:
+            raise ValueError(f"no discourse-marker inventory for language {language!r}") from exc
 
-        for rule in rules:
-            cue = rule.cue.lower()
-            regex = _compile_rule_pattern(cue)
-            match = regex.search(text_lower)
-            if match:
-                cue_start_in_match = match.group(0).lower().find(cue)
-                start_pos = leading_ws + match.start() + cue_start_in_match
-                end_pos = start_pos + len(cue)
-                return rule, start_pos, end_pos
+    @staticmethod
+    def _find_cues(text: str, rules: Sequence[MarkerRule]) -> tuple[tuple[MarkerRule, int, int], ...]:
+        matches = [
+            (rule, *match.span("cue")) for rule in rules for match in _compile_rule_pattern(rule.cue).finditer(text)
+        ]
+        # Longest lexical match wins at the same occurrence; each source span is
+        # emitted once, independently of how many ancestors enclose it.
+        matches.sort(key=lambda item: (item[1], -(item[2] - item[1]), item[0].cue))
+        selected: list[tuple[MarkerRule, int, int]] = []
+        for match in matches:
+            if selected and match[1] < selected[-1][2]:
+                continue
+            selected.append(match)
+        return tuple(selected)
 
-        return None
+    def find_cue_in_text(self, text: str) -> tuple[MarkerRule, int, int] | None:
+        """Return the first lexical cue occurrence, without classifying its use."""
+        matches = self._find_cues(text, self.sorted_rules)
+        return matches[0] if matches else None
 
     def prime_analysis(
         self,
         analysis: RstAnalysis,
         document: RstDocument,
-        min_model_confidence_to_override: float = 0.90,
+        *,
+        tokens: Sequence[DocumentToken] | None = None,
     ) -> RstAnalysis:
-        """Refine relation labels on primary edges where explicit discourse markers are present."""
-        if not analysis.primary_edges or not analysis.nodes:
-            return analysis
-
-        # Use document language rules if document specifies a language
-        doc_lang = (document.language or self.language).strip().lower()
-        primer_rules = (
-            self.sorted_rules
-            if doc_lang == self.language
-            else sorted(
-                MULTILINGUAL_MARKER_RULES.get(doc_lang, self.rules),
-                key=lambda r: len(r.cue),
-                reverse=True,
-            )
-        )
-
+        """Add candidates; nearest-constituent attachment is a heuristic, not proof."""
+        language = (document.language or self.language).strip().lower()
+        rules = self.rules if language == self.language else self._language_rules(language)
+        digest = hashlib.sha256(
+            json.dumps(
+                [asdict(rule) for rule in rules],
+                sort_keys=True,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
         detector = SignalDetectorProvenance(
             detector_id="isanlp_rst.marker_primer",
-            detector_version="1.0.0",
+            detector_version="2.0.0",
             method=SignalDetectionMethod.RULE,
-            ruleset_digest="discourse_marker_lexicon_v1",
+            ruleset_digest=digest,
         )
-
-        new_edges: list[PrimaryRelationEdge] = []
-        new_signals: list[DiscourseSignal] = list(analysis.signals)
-        signal_counter = len(new_signals) + 1
-
+        substrate_tokens = document.tokens if tokens is None else tokens
         node_by_id = {node.node_id: node for node in analysis.nodes}
-
-        for edge in analysis.primary_edges:
-            child_node = node_by_id.get(edge.child_id)
-            if child_node is None:
-                new_edges.append(edge)
-                continue
-
-            child_text = child_node.text
-            match_res = self._find_cue(child_text, primer_rules)
-
-            if match_res is None:
-                new_edges.append(edge)
-                continue
-
-            rule, cue_local_start, cue_local_end = match_res
-            doc_cue_start = child_node.char_span[0] + cue_local_start
-            doc_cue_end = child_node.char_span[0] + cue_local_end
-
-            # Find matching document tokens if tokenized
-            matched_token_ids: list[int] = []
-            if document.tokens:
-                matched_token_ids.extend(
-                    token.token_id
-                    for token in document.tokens
-                    if not (token.end <= doc_cue_start or token.start >= doc_cue_end)
+        signals = list(analysis.signals)
+        existing = {signal.signal_id: signal for signal in signals}
+        for rule, start, end in self._find_cues(document.text, rules):
+            enclosing = [
+                edge
+                for edge in analysis.primary_edges
+                if edge.parent_id in node_by_id
+                and edge.child_id in node_by_id
+                and node_by_id[edge.child_id].char_span[0] <= start
+                and end <= node_by_id[edge.child_id].char_span[1]
+            ]
+            parent_ids = {edge.parent_id for edge in enclosing}
+            if parent_ids:
+                smallest = min(
+                    node_by_id[parent].char_span[1] - node_by_id[parent].char_span[0] for parent in parent_ids
                 )
-
-            sig = DiscourseSignal(
-                signal_id=f"sig_{signal_counter:04d}",
-                edge_id=edge.edge_id,
-                signal_type="dm",
-                signal_subtype="dm",
-                token_ids=tuple(matched_token_ids),
-                char_spans=((doc_cue_start, doc_cue_end),),
-                compatible_relations=tuple(dict.fromkeys((rule.fine_label, rule.coarse_concept.lower()))),
-                detector=detector,
-                sufficient=True,
-                status=AnnotationStatusEnum.PREDICTED,
-                confidence=0.92,
+                parent_ids = {
+                    parent
+                    for parent in parent_ids
+                    if node_by_id[parent].char_span[1] - node_by_id[parent].char_span[0] == smallest
+                }
+            candidates = tuple(
+                sorted(
+                    {
+                        edge.edge_id
+                        for edge in analysis.primary_edges
+                        if edge.parent_id in parent_ids
+                        and edge.relation_raw.casefold() != "span"
+                        and (edge.nuclearity.value != "NN" or edge in enclosing)
+                    }
+                )
             )
-            new_signals.append(sig)
-            signal_counter += 1
-
-            # Determine whether to update relation concept based on confidence
-            should_override = edge.confidence is None or edge.confidence < min_model_confidence_to_override
-            if should_override and edge.relation_concept != rule.coarse_concept:
-                updated_edge = PrimaryRelationEdge(
-                    edge_id=edge.edge_id,
-                    parent_id=edge.parent_id,
-                    child_id=edge.child_id,
-                    relation_raw=rule.fine_label,
-                    relation_concept=rule.coarse_concept,
-                    nuclearity=rule.default_nuclearity,
-                    confidence=0.88,
-                    calibrated=True,
-                )
-                new_edges.append(updated_edge)
-            else:
-                new_edges.append(edge)
-
-        return RstAnalysis(
-            document_id=analysis.document_id,
-            formalism=analysis.formalism,
-            nodes=analysis.nodes,
-            primary_edges=tuple(new_edges),
-            secondary_edges=analysis.secondary_edges,
-            signals=tuple(new_signals),
-            provenance=analysis.provenance,
-            timing=analysis.timing,
-            warnings=analysis.warnings,
-            failure_code=analysis.failure_code,
-        )
+            signal = DiscourseSignal(
+                signal_id=f"marker:{start}:{end}",
+                edge_id=candidates[0] if len(candidates) == 1 else None,
+                signal_type="dm",
+                signal_subtype="lexical_candidate",
+                token_ids=tuple(
+                    token.token_id for token in substrate_tokens or () if token.start < end and start < token.end
+                ),
+                char_spans=((start, end),),
+                compatible_relations=(rule.fine_label,),
+                detector=detector,
+                sufficient=False,
+                status=AnnotationStatusEnum.PREDICTED,
+                confidence=None,
+                attachment_candidates=candidates,
+                attachment_basis="smallest_enclosing_constituent" if candidates else "no_applicable_primary_relation",
+            )
+            previous = existing.get(signal.signal_id)
+            if previous is not None:
+                if previous != signal:
+                    raise ValueError("marker identity collides with different signal evidence")
+                continue
+            signals.append(signal)
+            existing[signal.signal_id] = signal
+        return replace(analysis, signals=tuple(signals))

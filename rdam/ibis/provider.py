@@ -22,12 +22,14 @@ from rdam import (
     SemanticVersion,
     Sha256Identity,
     Technique,
+    canonical_json_bytes,
     technique_curie,
 )
 from rdam._provider_provenance import provider_failure, provider_provenance, source_identity as _source_identity
 from rdam._immutable_json import thaw_json
 from rdam._strict import JsonValue
 from rdam.ibis.grammar import IbisStructure, StructureError, deliberation_map
+from rdam.ibis.output import IbisOutput
 
 PROVIDER_ID: Final = "rdam.ibis/gibis-grammar-v1"
 FORMALISM_ID: Final = "ibis_structure"
@@ -95,6 +97,7 @@ class IbisProvider:
                 "technique": request.derived_from.technique.value,
                 "result_identity": request.derived_from.result_identity.hex_digest,
             }
+        IbisOutput.model_validate_json(canonical_json_bytes(payload))
         return NativeTechniqueResult(
             technique=Technique.IBIS,
             formalism_id=FORMALISM_ID,

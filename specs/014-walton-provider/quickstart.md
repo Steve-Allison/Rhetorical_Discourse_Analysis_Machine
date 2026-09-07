@@ -1,5 +1,10 @@
 # Quickstart: Validate the Walton Provider
 
+Current native integrity/version corrections are recorded in
+[Feature 019](../019-unified-machine-interfaces/contracts/native-integrity.md).
+Model execution requires configured credentials; discovery alone does not verify
+remote service availability.
+
 **Feature**: 014 | **Date**: 2026-09-03
 
 ```bash

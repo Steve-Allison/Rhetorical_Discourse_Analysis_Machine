@@ -18,7 +18,7 @@ from pydantic_ai.models.function import AgentInfo, FunctionModel
 import pytest
 
 from rdam import (
-    AggregateAnalysis, AggregateRequest, AvailableCapability, FormalismChoice,
+    AggregateAnalysis, AggregateRequest, FormalismChoice,
     Machine, PreparationRequest, ProviderRequest,
     ResultOutcome, SourceIdentity, StructuredInput, Technique,
     UpstreamResultReference, ViewRequest, canonical_json_bytes, load,
@@ -29,11 +29,12 @@ from rdam._strict import JsonValue
 from rdam.dung import DungProvider
 from rdam.ibis import IbisProvider
 from rdam.pdtb import PdtbProvider
-from rdam.rst.provider import ERST_GRAPH, RST_TREE, RstProvider
+from rdam.rst.provider import RST_TREE, RstProvider
 from rdam.sdrt import SdrtProvider
-from rdam.serialization import schema, schema_models
+from rdam.serialization import load_native_payload, schema, schema_models
 from rdam.toulmin import ToulminProvider
 from rdam.walton import WaltonProvider
+from rdam.ontology import observed_vocabulary_alignment, walton_profile_alignment
 
 type SchemaMode = Literal["validation", "serialization"]
 
@@ -126,6 +127,7 @@ def test_structural_provider_payloads_match_advertised_outputs(
     _validate("native-result", serialize(result), mode)
     output = schema_models()[f"{technique.value}-result"].model_validate_json(canonical_json_bytes(result.payload))
     assert canonical_json_bytes(output) == canonical_json_bytes(result.payload)
+    assert load_native_payload(serialize(result)) == output
 
 
 @pytest.mark.parametrize("mode", ("validation", "serialization"))
@@ -157,6 +159,7 @@ def test_llm_provider_outputs_and_current_records_match_schemas(
     _validate(f"{technique.value}-result", canonical_json_bytes(native.payload), mode)
     output = schema_models()[f"{technique.value}-result"].model_validate_json(canonical_json_bytes(native.payload))
     assert canonical_json_bytes(output) == canonical_json_bytes(native.payload)
+    assert load_native_payload(serialize(native)) == output
     _validate("native-result", serialize(native), mode)
     _validate("aggregate", serialize(aggregate), mode)
     _validate("request", serialize_request(request), mode)
@@ -167,6 +170,24 @@ def test_llm_provider_outputs_and_current_records_match_schemas(
     _validate("analysis-view", serialize(view), mode)
     _validate("view-request", serialize_view_request(ViewRequest(analysis=aggregate, techniques=(technique,))), mode)
     _validate("capabilities", serialize(machine.capabilities()), mode)
+    if technique in (Technique.PDTB, Technique.SDRT, Technique.WALTON):
+        if technique is Technique.WALTON:
+            forged_alignment = walton_profile_alignment(("sign",) if minimal else ())
+        else:
+            vocabulary, label = (
+                ("coe:artifact/narrative/pdtb3_relation_types", "Explicit") if technique is Technique.PDTB
+                else ("coe:artifact/narrative/sdrt_vocabulary", "Narration")
+            )
+            forged_alignment = observed_vocabulary_alignment(vocabulary, (label,) if minimal else ())
+        for record in (aggregate, view):
+            forged = record.model_dump()
+            forged["semantic_digest"] = None
+            descriptor = forged["reading_guide"]["entries"][0]["descriptor"]
+            descriptor["identity"] = None
+            section = next(item for item in descriptor["sections"] if "observed_vocabulary" in item)
+            section["observed_vocabulary"] = forged_alignment.model_dump()
+            with pytest.raises(ValueError, match="Observed vocabulary differs from the native section"):
+                type(record).model_validate(forged)
 
 
 @pytest.mark.parametrize("mode", ("validation", "serialization"))
@@ -225,32 +246,12 @@ def test_real_rst_output_matches_schema(real_rst_aggregate: AggregateAnalysis, m
     outcome = real_rst_aggregate.outcome_for(Technique.RST)
     assert isinstance(outcome, ResultOutcome)
     _validate("rst-result", canonical_json_bytes(outcome.result.payload), mode)
+    assert canonical_json_bytes(load_native_payload(serialize(outcome.result))) == canonical_json_bytes(outcome.result.payload)
     _validate("aggregate", serialize(real_rst_aggregate), mode)
 
 
-@pytest.mark.slow
-@pytest.mark.parametrize("mode", ("validation", "serialization"))
-def test_erst_schema_does_not_accept_an_rst_tree(real_rst_aggregate: AggregateAnalysis, mode: SchemaMode) -> None:
-    outcome = real_rst_aggregate.outcome_for(Technique.RST)
-    assert isinstance(outcome, ResultOutcome)
-    payload = canonical_json_bytes(outcome.result.payload)
-    with pytest.raises(ValueError):
-        schema_models()["erst-result"].model_validate_json(payload)
-    assert not _validator("erst-result", mode).is_valid(json.loads(payload))
-
-
-@pytest.mark.slow
-@pytest.mark.parametrize("mode", ("validation", "serialization"))
-def test_real_erst_output_matches_schema_when_checkpoint_is_available(mode: SchemaMode) -> None:
-    provider = RstProvider(device="cpu")
-    formalism = provider.declaration.formalism(ERST_GRAPH)
-    assert formalism is not None
-    if not isinstance(formalism.capability, AvailableCapability):
-        pytest.skip("a validated eRST checkpoint is not available in this checkout")
-    aggregate = Machine((provider,)).analyse(AggregateRequest.for_text(
-        "The cat sat on the mat. It was a black cat.", (Technique.RST,),
-        formalisms=(FormalismChoice(technique=Technique.RST, formalism_id=ERST_GRAPH),),
-    ))
-    outcome = aggregate.outcome_for(Technique.RST)
-    assert isinstance(outcome, ResultOutcome)
-    _validate("erst-result", canonical_json_bytes(outcome.result.payload), mode)
+def test_production_does_not_advertise_erst_schema_or_formalism() -> None:
+    assert "erst-result" not in schema_models()
+    assert RstProvider(device="cpu").declaration.formalism("erst_graph") is None
+    with pytest.raises(ValueError, match="unsupported schema name"):
+        schema("erst-result")

@@ -45,7 +45,6 @@ from .contracts import (
     TextSpan,
     TimingRecord,
 )
-from .erst import ErstCapabilityError, RS4Document, RS4Reader, RS4Writer
 from .graph import (
     to_graphrag_json,
     to_jsonld,
@@ -70,7 +69,6 @@ __all__ = [
     "DocumentToken",
     "EdgeKindEnum",
     "Edu",
-    "ErstCapabilityError",
     "FailureCodeEnum",
     "FormatRstAnalysis",
     "InputFidelityEnum",
@@ -86,9 +84,6 @@ __all__ = [
     "PredictorUniRST",
     "PrimaryRelationEdge",
     "ProvenanceRecord",
-    "RS4Document",
-    "RS4Reader",
-    "RS4Writer",
     "RelationSchemeEnum",
     "RelationStructureEnum",
     "RenderedRST",

@@ -314,3 +314,65 @@ def test_genuine_nonargument_source_does_not_invent_findings(boundary: str) -> N
     result = _analyse(provider, EMPTY)
     field = "instances" if boundary == "walton" else "layouts"
     assert _objects(result.payload[field]) == ()
+
+
+@pytest.mark.live
+@pytest.mark.slow
+@pytest.mark.usefixtures("authorized_model")
+def test_pdtb_full_biography_does_not_erase_relations_after_offset_feedback() -> None:
+    from xml.etree import ElementTree
+
+    fixture = Path(__file__).resolve().parents[1] / "fixtures" / "gum" / "GUM_bio_dvorak.rs4"
+    document = ElementTree.parse(fixture)
+    text = " ".join("".join(segment.itertext()) for segment in document.findall("./body/segment"))
+    result = _analyse(PdtbProvider(), text)
+    relations = _objects(result.payload["relations"])
+    assert relations, "this connected biography contains explicit and implicit discourse relations"
+    concessions = [relation for relation in relations
+                   if any(span["text"] == "Although" for span in _spans(relation["connective_spans"], text))]
+    assert concessions, "the biography explicitly contrasts Dvorak's unawareness with Brahms's involvement"
+    for relation in relations:
+        for role in ("arg1", "arg2"):
+            argument = relation[role]
+            assert isinstance(argument, Mapping)
+            _spans(argument["spans"], text)
+    concession_senses: list[str] = []
+    for relation in concessions:
+        senses = relation["senses"]
+        assert isinstance(senses, Sequence) and not isinstance(senses, str)
+        concession_senses.extend(str(sense) for sense in senses)
+    assert any(sense.startswith("Comparison.Concession.") for sense in concession_senses)
+
+
+@pytest.mark.live
+@pytest.mark.slow
+@pytest.mark.usefixtures("authorized_model")
+def test_sdrt_cause_before_effect_is_result_not_reversed_explanation() -> None:
+    text = "The river overflowed. As a result, the road flooded."
+    result = _analyse(SdrtProvider(), text)
+    edus = _spans(result.payload["edus"], text)
+    assert len(edus) == 2
+    relations = _objects(result.payload["relations"])
+    assert len(relations) == 1
+    assert str(relations[0]["label"]).casefold() == "result"
+    assert relations[0]["structural_type"] == "coordinating"
+    assert relations[0]["source_id"] == edus[0]["unit_id"]
+    assert relations[0]["target_id"] == edus[1]["unit_id"]
+
+
+@pytest.mark.live
+@pytest.mark.slow
+@pytest.mark.usefixtures("authorized_model")
+@pytest.mark.parametrize(("text", "expected"), (
+    ("The work premiered in 1880. It was performed again in 1883.", "Temporal.Asynchronous.Precedence"),
+    ("The work was performed in 1883. It had premiered in 1880.", "Temporal.Asynchronous.Succession"),
+))
+def test_pdtb_temporal_sense_follows_argument_dates(text: str, expected: str) -> None:
+    result = _analyse(PdtbProvider(), text)
+    relations = _objects(result.payload["relations"])
+    observed: list[str] = []
+    for relation in relations:
+        senses = relation["senses"]
+        assert isinstance(senses, Sequence) and not isinstance(senses, str)
+        observed.extend(str(sense) for sense in senses)
+    assert expected in observed, "temporal labels must retain Arg1/Arg2 chronology"

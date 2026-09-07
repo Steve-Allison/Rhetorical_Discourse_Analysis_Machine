@@ -1,0 +1,4061 @@
+{
+  "coe:artifact/narrative/argumentation_schemes_taxonomy": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/argumentation_schemes_taxonomy/critical_question": {
+        "description": "A scheme-specific challenge whose answer can sustain, qualify, or defeat the defeasible inference.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Scheme Critical Question",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/counteranalogy": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests whether another relevant comparison supports a conflicting conclusion.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/counteranalogy",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is there a stronger counteranalogy?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/difference": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests whether a material disanalogy defeats or narrows the proposed transfer.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/difference",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is there a relevant difference between the cases?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/similarity": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests whether the similarities support the transferred property rather than merely resembling the target superficially.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/similarity",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Are the cited similarities relevant to the conclusion?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/source_case": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests the truth and scope of the case from which the conclusion is transferred.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/source_case",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is the source case itself established?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/assertion": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests whether the argument preserves the source's actual proposition, scope, and qualification.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/assertion",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "What exactly did the source assert?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/consistency": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests whether credible peers materially disagree and whether that disagreement changes the presumption.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/consistency",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is the assertion consistent with other qualified opinion?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/evidence": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests the data, method, or reasons behind the opinion rather than relying on status alone.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/evidence",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is the assertion supported by evidence?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/expertise": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests the source's qualifications, experience, and standing for this subject.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/expertise",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "How credible is the source as an expert?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/field": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests whether the proposition actually falls inside the expertise established for the source.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/field",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is the assertion within the source's field?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/trustworthiness": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests bias, conflicts, incentives, and reporting conditions relevant to the assertion.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/trustworthiness",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is the source trustworthy in this instance?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/alternatives": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests whether another feasible action advances the goal with a more favourable trade-off.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/alternatives",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is there a materially better alternative action?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/consequences": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests material side effects, risks, and conflicts with other goals before accepting the recommendation.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/consequences",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Do adverse consequences outweigh the expected benefit?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/feasibility": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests whether the actor can perform the proposed action under the stated constraints.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/feasibility",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is the proposed action feasible?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/goal_advancement": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests the strength and scope of the means–goal connection rather than assuming it from sequence or plausibility.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/goal_advancement",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Will the action advance the goal?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/goal_legitimacy": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/critical_question"
+        ],
+        "description": "Tests whether the stated goal is an appropriate objective for the actual decision and audience.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/goal_legitimacy",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Is the goal legitimate and genuinely valued?",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot": {
+        "description": "A named semantic role that an instantiated scheme must bind to actual argument components or support sets.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Scheme Premise Slot",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/relevant_similarity": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "States the similarities that are material to the transferred conclusion rather than merely superficial.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/relevant_similarity",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Analogy Relevant-Similarity Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/source_case": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "States the cited case from which the proposed inference is transferred.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/source_case",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Analogy Source-Case Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/target_case": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "States the case to which the proposed inference is applied.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/target_case",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Analogy Target-Case Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/assertion": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "Records the exact proposition the qualified source asserts.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/assertion",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Expert Opinion Assertion Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/expertise": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "Establishes the source's relevant expertise in the field to which the proposition belongs.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/expertise",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Expert Opinion Expertise Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/field": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "Establishes that the asserted proposition falls within the source's relevant field.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/field",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Expert Opinion Field Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/action": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "States the concrete action proposed as a means of advancing the goal.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/action",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Practical Reasoning Action Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/goal": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "States the goal or audience-valued outcome the proposed action is intended to advance.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/goal",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Practical Reasoning Goal Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/means_goal": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "States the warranted connection by which the proposed action advances the declared goal.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/means_goal",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Practical Reasoning Means–Goal Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/sign/indicator_warrant": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "Supplies the defeasible connection from indicator A to proposition B in the relevant kind of situation.",
+        "evidence_ids": [
+          "coe:source/walton-reed-diagramming-2002"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/sign/indicator_warrant",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Sign Indicator Warrant",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/premise_slot/sign/observation": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/premise_slot"
+        ],
+        "description": "Asserts that the indicator A occurs in the situation under consideration.",
+        "evidence_ids": [
+          "coe:source/walton-reed-diagramming-2002"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/sign/observation",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Sign Observation Premise",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme": {
+        "description": "A defeasible inference pattern whose presumption is assessable only with its declared premise slots and critical questions.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argumentation Scheme",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/ad_hominem": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Challenges a person's argument through an adverse allegation about that person; the allegation's relevance must itself be justified.",
+        "evidence_ids": [
+          "coe:source/discourse-frameworks-reference-5475d9fa"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/ad_hominem",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Ad Hominem Argument",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/analogy": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Transfers a defeasible conclusion from a cited source case to a target case on the basis of relevant similarities and after testing relevant differences.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/analogy",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Analogy",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/cause_to_effect": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Predicts an effect defeasibly from an asserted cause and a causal generalisation.",
+        "evidence_ids": [
+          "coe:source/discourse-frameworks-reference-5475d9fa"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/cause_to_effect",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Cause to Effect",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/consequences": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Recommends or opposes an action by evaluating its anticipated consequences.",
+        "evidence_ids": [
+          "coe:source/discourse-frameworks-reference-5475d9fa"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/consequences",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Consequences",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/example": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Infers a generalisation defeasibly from a particular case or collection of cases.",
+        "evidence_ids": [
+          "coe:source/discourse-frameworks-reference-5475d9fa"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/example",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Example",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/expert_opinion": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Reasons defeasibly from a qualified source's assertion in its field to acceptance of the asserted proposition.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/expert_opinion",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Expert Opinion",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/popular_opinion": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Invokes widespread acceptance as a defeasible reason to accept a proposition.",
+        "evidence_ids": [
+          "coe:source/walton-macagno-common-knowledge-2005"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/popular_opinion",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Popular Opinion",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/position_to_know": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Accepts an assertion presumptively because its source has access to the relevant facts.",
+        "evidence_ids": [
+          "coe:source/discourse-frameworks-reference-5475d9fa"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/position_to_know",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Position to Know",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/practical_reasoning": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Reasons from a desired goal and a feasible action that promotes it to a defeasible recommendation to perform that action.",
+        "evidence_ids": [
+          "coe:source/nine-frameworks-research-45b6a77f"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/practical_reasoning",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Practical Reasoning",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/sign": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Infers a state of affairs from an observed indicator associated with it.",
+        "evidence_ids": [
+          "coe:source/discourse-frameworks-reference-5475d9fa"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/sign",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Sign",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/slippery_slope": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Opposes an initial step because a claimed sequence of transitions would lead to an unacceptable outcome.",
+        "evidence_ids": [
+          "coe:source/discourse-frameworks-reference-5475d9fa"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/slippery_slope",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Slippery Slope Argument",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme/verbal_classification": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme"
+        ],
+        "description": "Assigns an individual to a category through an attributed property and a classification rule.",
+        "evidence_ids": [
+          "coe:source/discourse-frameworks-reference-5475d9fa"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme/verbal_classification",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Argument from Verbal Classification",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme_variable": {
+        "description": "A parameter of an inference pattern, distinct from a premise asserting a relationship among parameters.",
+        "evidence_ids": [
+          "coe:source/walton-reed-diagramming-2002"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Scheme Variable",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme_variable/expert_opinion/domain": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme_variable"
+        ],
+        "description": "The subject domain S to which the expertise and proposition are related; naming it does not establish the required field relationship.",
+        "evidence_ids": [
+          "coe:source/walton-reed-diagramming-2002"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/expert_opinion/domain",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Expert Opinion Domain Variable",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme_variable/expert_opinion/source": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme_variable"
+        ],
+        "description": "The source E whose expertise and assertion are at issue; identifying E alone does not establish expertise.",
+        "evidence_ids": [
+          "coe:source/walton-reed-diagramming-2002"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/expert_opinion/source",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Expert Opinion Source Variable",
+        "status": "canonical"
+      },
+      "coe:concept/argumentation_schemes_taxonomy/scheme_variable/sign/indicated_proposition": {
+        "broader": [
+          "coe:concept/argumentation_schemes_taxonomy/scheme_variable"
+        ],
+        "description": "Proposition B whose truth is inferred from the observed sign, rather than independently assumed as a premise.",
+        "evidence_ids": [
+          "coe:source/walton-reed-diagramming-2002"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/argumentation_schemes_taxonomy/scheme_variable/sign/indicated_proposition",
+        "in_scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+        "label": "Sign Indicated Proposition Variable",
+        "status": "canonical"
+      }
+    },
+    "description": "Canonical identities for the bounded Walton-style defeasible reasoning patterns, together with the premise-slot and critical-question identities required to instantiate and challenge each pattern without treating its conclusion as deductively proven.",
+    "last_updated": "2026-09-05",
+    "scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+    "source": "ontology/vendor/central-configs/domains/narrative/argumentation_schemes.yaml",
+    "source_sha256": "b54885b05b691a8677da2256ccb45d38a065480952358a0c2b72037591da4b56"
+  },
+  "coe:artifact/narrative/descriptive_rst_taxonomy": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/descriptive_rst_taxonomy/application_domain": {
+        "description": "Downstream NLP task that consumes parsed discourse structures as input features.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/application_domain",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "application_domain",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/application_domain/abstractive_summarization": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/application_domain"
+        ],
+        "description": "Summarization that generates new phrasing rather than selecting source spans, using discourse structure to judge content salience (standard NLP task)",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/application_domain/abstractive_summarization",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Abstractive Summarization",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/application_domain/argument_mining": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/application_domain"
+        ],
+        "description": "Automatic extraction of claims, premises, and their support and attack relations, for which parsed discourse relations provide structural scaffolding (standard NLP task)",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/application_domain/argument_mining",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Argument Mining",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/application_domain/authorship_attribution": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/application_domain"
+        ],
+        "description": "Identifying a text's author from stylistic patterns, with habitual discourse-structuring choices serving as discriminating features (standard NLP task)",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/application_domain/authorship_attribution",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Authorship Attribution",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/application_domain/coherence_evaluation": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/application_domain"
+        ],
+        "description": "Scoring how well a text hangs together, using the parsed relation structure itself as the coherence signal (standard NLP task)",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/application_domain/coherence_evaluation",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Coherence Evaluation",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/application_domain/deception_detection": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/application_domain"
+        ],
+        "description": "Detecting deceptive text from linguistic cues, including atypical discourse structuring relative to truthful writing (standard NLP task)",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/application_domain/deception_detection",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Deception Detection",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/application_domain/extractive_summarization": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/application_domain"
+        ],
+        "description": "Summarization by selecting spans verbatim from the source, exploiting nuclearity-based deterministic tree pruning to decide which units survive",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/application_domain/extractive_summarization",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Extractive Summarization",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/application_domain/question_answering": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/application_domain"
+        ],
+        "description": "Answering natural-language questions over text, using discourse relations to locate the spans that bear the answer (standard NLP task)",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/application_domain/question_answering",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Question Answering",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/application_domain/sentiment_analysis": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/application_domain"
+        ],
+        "description": "Classification of evaluative polarity in text, with discourse structure enabling sentiment propagation through hierarchical weighting of spans",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/application_domain/sentiment_analysis",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Sentiment Analysis",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/discourse_framework": {
+        "description": "Major computational discourse theories with distinct topological structures, scope, and recursion handling.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/discourse_framework",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "discourse_framework",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/discourse_framework/erst": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/discourse_framework"
+        ],
+        "description": "Enhanced RST augments a primary rhetorical tree with secondary relations and anchored discourse signals, allowing additional relations to be represented without replacing the primary tree.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/discourse_framework/erst",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "eRST",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/discourse_framework/pdtb": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/discourse_framework"
+        ],
+        "description": "The Penn Discourse Treebank annotates argument pairs, relation types and senses for explicit and implicit discourse relations, without requiring a single document-wide discourse tree.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/discourse_framework/pdtb",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "PDTB",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/discourse_framework/rst": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/discourse_framework"
+        ],
+        "description": "Mann and Thompson's Rhetorical Structure Theory — highly recursive projective trees capturing global document structure, whose strict tree constraints force concurrent relations to be discarded",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/discourse_framework/rst",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "RST",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/discourse_framework/sdrt": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/discourse_framework"
+        ],
+        "description": "Segmented Discourse Representation Theory represents discourse constituents and their semantic and pragmatic relations, including complex constituents and constraints on accessible attachment sites.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/discourse_framework/sdrt",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "SDRT",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration": {
+        "description": "Structural configuration indicating relative semantic weight between spans. Determines which span carries the core communicative intent.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "nuclearity_configuration",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration/nucleus_nucleus": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration"
+        ],
+        "description": "Multinuclear configuration in which two or more spans carry equal semantic weight with no subordination (Mann & Thompson 1988)",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration/nucleus_nucleus",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Nucleus Nucleus",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration/nucleus_satellite": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration"
+        ],
+        "description": "Hypotactic configuration in which the nucleus precedes its supporting satellite, the nucleus carrying the core communicative intent (Mann & Thompson 1988)",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration/nucleus_satellite",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Nucleus Satellite",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration/satellite_nucleus": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration"
+        ],
+        "description": "Hypotactic configuration in which the satellite precedes the nucleus it supports, delaying the span that carries the core communicative intent (Mann & Thompson 1988)",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/nuclearity_configuration/satellite_nucleus",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Satellite Nucleus",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/parsing_strategy": {
+        "description": "Algorithmic approach for automated discourse tree construction from raw text.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/parsing_strategy",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "parsing_strategy",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/parsing_strategy/bottom_up": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/parsing_strategy"
+        ],
+        "description": "Shift-reduce approach that iteratively evaluates adjacent units in a working stack, building the tree from leaf EDUs upward — precise at intra-sentential boundaries but sequential, so early errors propagate",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/parsing_strategy/bottom_up",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Bottom Up",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/parsing_strategy/hybrid": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/parsing_strategy"
+        ],
+        "description": "Ensemble approach using an efficient lower-parameter model for segmentation and a highly parameterised reasoning model for relation assignment, optimising both cost and accuracy",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/parsing_strategy/hybrid",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Hybrid",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/parsing_strategy/top_down": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/parsing_strategy"
+        ],
+        "description": "Sequential-bisection approach treating the whole document as one macro-span and recursively predicting optimal split points — captures global coherence efficiently but loses precision at fine-grained boundaries",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/parsing_strategy/top_down",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Top Down",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class": {
+        "description": "RST-DT rhetorical groups and structural conventions; a coarse group does not fix semantic direction or nuclearity.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "relation_class",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/attribution": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group for attribution and negative attribution; the satellite supplies the source of the nuclear content.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/attribution",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Attribution",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/background": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group for background and circumstance, supplying context for interpreting the nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/background",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Background",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/cause": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group for cause, result and consequence; direction depends on the fine label and nuclearity.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/cause",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Cause",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/comparison": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group for comparison, analogy, preference and proportion; members may be mononuclear or multinuclear.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/comparison",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Comparison",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/condition": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group for condition, hypothetical, contingency and otherwise, distinguishing unrealized conditions, hypothetical scenarios, recurrence and alternatives.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/condition",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Condition",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/contrast": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group containing multinuclear contrast and mononuclear concession and antithesis; group membership does not determine nuclearity.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/contrast",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Contrast",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/elaboration": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group for additional detail, general-specific, part-whole, process-step, object-attribute and set-member elaboration, example and definition.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/elaboration",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Elaboration",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/enablement": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group containing enablement and purpose, distinguishing facilitation of an unrealized situation from an intended goal.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/enablement",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Enablement",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/evaluation": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group for evaluation, interpretation, conclusion and comment; fine labels and nuclearity locate the assessment or concluding perspective.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/evaluation",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Evaluation",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/explanation": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group for evidence, explanation-argumentative and reason, distinguishing persuasion, factual explanation and an animate agent's reason for acting.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/explanation",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Explanation",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/joint": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group containing list and disjunction, joining nuclei through enumeration or alternatives.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/joint",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Joint",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/manner_means": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group containing manner and means, distinguishing the style of an action from the method used to accomplish a goal.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/manner_means",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Manner Means",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/same_unit": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT structural pseudo-relation rejoining interrupted portions of an EDU; multinuclear by annotation convention.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/same_unit",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Same Unit",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/summary": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group containing summary and restatement. A summary may occupy nucleus or satellite; restatement reiterates nuclear content in a satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/summary",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Summary",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/temporal": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group containing temporal-before, temporal-after, temporal-same-time, sequence and inverted-sequence; fine labels preserve chronology and nuclearity.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/temporal",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Temporal",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/textual_organization": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT structural relation connecting schematically labelled text spans; multinuclear by annotation convention.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/textual_organization",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Textual Organization",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/topic_change": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group containing smooth topic drift and sharp topic shift; members may be mononuclear or multinuclear.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/topic_change",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Topic Change",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/relation_class/topic_comment": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/relation_class"
+        ],
+        "description": "RST-DT group containing problem-solution, question-answer, statement-response, topic-comment, comment-topic and rhetorical-question; fine labels distinguish roles and direction.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/relation_class/topic_comment",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Topic Comment",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern": {
+        "description": "Engineering pattern for representing and assembling discourse structures extracted from model outputs.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "schema_extraction_pattern",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern/direct_recursive": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern"
+        ],
+        "description": "Represent nested tree nodes directly through recursive schema references; support and depth constraints depend on the selected output system.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern/direct_recursive",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Direct Recursive",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern/flat_relational_adjacency": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern"
+        ],
+        "description": "Represent nodes and rhetorical edges as separate lists with explicit endpoint references, then reconstruct and validate the hierarchy locally.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern/flat_relational_adjacency",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Flat Relational Adjacency",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern/progressive_chunking": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern"
+        ],
+        "description": "Parse local subtrees separately and link their roots in a later pass; cross-chunk relations and the assembled structure require validation.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern/progressive_chunking",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Progressive Chunking",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/signal_typology": {
+        "description": "Five distinct categories of discourse signals that indicate rhetorical relations, ranging from explicit lexical markers, a minority of relations, to implicit semantic, syntactic, morphological, and graphical cues that carry the majority.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/signal_typology",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "signal_typology",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/signal_typology/discourse_marker": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/signal_typology"
+        ],
+        "description": "Explicit lexical connectives that directly name a rhetorical relation — the most studied signal type, yet accounting for only a minority of discourse relations",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/signal_typology/discourse_marker",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Discourse Marker",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/signal_typology/graphical": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/signal_typology"
+        ],
+        "description": "Signals derived from visual and typographic features of the text — punctuation boundaries, paragraph breaks, and section headings",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/signal_typology/graphical",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Graphical",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/signal_typology/morphological": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/signal_typology"
+        ],
+        "description": "Signals derived from word-form variation, chiefly verb-tense shifts and person-marker changes between adjacent EDUs",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/signal_typology/morphological",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Morphological",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/signal_typology/semantic": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/signal_typology"
+        ],
+        "description": "Signals derived from meaning-level relationships between lexical items across EDUs — lexical chains, synonymy, meronymy, and coreference; the largest signal category",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/signal_typology/semantic",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Semantic",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/signal_typology/syntactic": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/signal_typology"
+        ],
+        "description": "Signals derived from grammatical constructions and clause-structure patterns such as parallelism, relative clauses, clause mood, and reported speech",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/signal_typology/syntactic",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Syntactic",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/tree_topology": {
+        "description": "The graph-theoretic structure used to represent discourse relations.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/tree_topology",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "tree_topology",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/tree_topology/augmented_graph": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/tree_topology"
+        ],
+        "description": "A primary tree augmented by secondary cross-branch edges that capture concurrent relations without abandoning the hierarchy — the topology of eRST",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/tree_topology/augmented_graph",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Augmented Graph",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/tree_topology/directed_acyclic_graph": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/tree_topology"
+        ],
+        "description": "Graph structure permitting multi-parent dependencies and crossing edges while remaining acyclic — the topology of SDRT",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/tree_topology/directed_acyclic_graph",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Directed Acyclic Graph",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/tree_topology/flat_pairs": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/tree_topology"
+        ],
+        "description": "Relations represented as argument pairs without imposing a single global tree; argument spans need not be adjacent.",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/tree_topology/flat_pairs",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Flat Pairs",
+        "status": "canonical"
+      },
+      "coe:concept/descriptive_rst_taxonomy/tree_topology/projective_tree": {
+        "broader": [
+          "coe:concept/descriptive_rst_taxonomy/tree_topology"
+        ],
+        "description": "Strict single-parent tree with no crossing edges — the topology of classical RST",
+        "evidence_ids": [
+          "coe:source/central-configs-legacy-f6eb98ff",
+          "coe:decision/v4-migration/narrative/story_frameworks",
+          "coe:source/legacy-file/33eee4f3fe1faf7a",
+          "coe:source/legacy-file/7988c40dbd0d912a",
+          "coe:source/legacy-file/44f53a62008d3280",
+          "coe:source/legacy-file/455743bee949e065",
+          "coe:source/legacy-file/0c52acecbb922ab7",
+          "coe:source/legacy-file/519357b8b1766a4a",
+          "coe:source/legacy-file/6e65ee635305b279",
+          "coe:source/legacy-file/f9e3b305780eca24",
+          "coe:source/legacy-file/58b350902fbd7653"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/descriptive_rst_taxonomy/tree_topology/projective_tree",
+        "in_scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+        "label": "Projective Tree",
+        "status": "canonical"
+      }
+    },
+    "description": "Classification system for RST rhetorical relations, discourse signal typologies, parsing strategies, tree topologies, and comparative discourse frameworks.",
+    "last_updated": "2026-09-01",
+    "scheme": "coe:artifact/narrative/descriptive_rst_taxonomy",
+    "source": "ontology/vendor/central-configs/domains/narrative/story_frameworks.yaml",
+    "source_sha256": "ce82a1b96b007787640308125a2af40f31f415c8612fc1bf92fb995974f0af0d"
+  },
+  "coe:artifact/narrative/dung_semantics": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/dung_semantics/acceptable": {
+        "description": "An argument whose every attacker is attacked by the evaluating set.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/acceptable",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Acceptable Argument",
+        "status": "canonical"
+      },
+      "coe:concept/dung_semantics/admissible": {
+        "description": "A conflict-free set defending all its members.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/admissible",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Admissible Set",
+        "status": "canonical"
+      },
+      "coe:concept/dung_semantics/argument": {
+        "description": "An abstract item whose internal reasoning is left unspecified.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/argument",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Argument",
+        "status": "canonical"
+      },
+      "coe:concept/dung_semantics/attack": {
+        "description": "A directed challenge from one argument to another.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/attack",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Attack",
+        "status": "canonical"
+      },
+      "coe:concept/dung_semantics/characteristic_function": {
+        "description": "Maps an argument set to all arguments acceptable relative to it.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/characteristic_function",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Characteristic Function",
+        "status": "canonical"
+      },
+      "coe:concept/dung_semantics/complete": {
+        "description": "An admissible set containing every argument it defends.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/complete",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Complete Extension",
+        "status": "canonical"
+      },
+      "coe:concept/dung_semantics/conflict_free": {
+        "description": "An argument set containing no internal attack.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/conflict_free",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Conflict-free Set",
+        "status": "canonical"
+      },
+      "coe:concept/dung_semantics/grounded": {
+        "description": "The least fixed point of the characteristic function.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/grounded",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Grounded Extension",
+        "status": "canonical"
+      },
+      "coe:concept/dung_semantics/preferred": {
+        "description": "An admissible set maximal under set inclusion.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/preferred",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Preferred Extension",
+        "status": "canonical"
+      },
+      "coe:concept/dung_semantics/stable": {
+        "description": "A conflict-free set attacking every argument outside itself.",
+        "evidence_ids": [
+          "coe:source/dung-acceptability-1995"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/dung_semantics/stable",
+        "in_scheme": "coe:artifact/narrative/dung_semantics",
+        "label": "Stable Extension",
+        "status": "canonical"
+      }
+    },
+    "description": "Attack-based acceptability and extension semantics; support edges and internal premise structure are not part of this formalism.",
+    "last_updated": "2026-09-05",
+    "scheme": "coe:artifact/narrative/dung_semantics",
+    "source": "ontology/vendor/central-configs/domains/narrative/discourse_techniques.yaml",
+    "source_sha256": "984e8c6b4fdfab1210392949a58840b8f22920ca9961ca57733a7ad96c342ce0"
+  },
+  "coe:artifact/narrative/gum_erst_groups": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/gum_erst_groups/adversative": {
+        "description": "GUM group for antithesis, concession and contrast.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/adversative",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "adversative",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/attribution": {
+        "description": "GUM group for positive and negative attribution.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/attribution",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "attribution",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/causal": {
+        "description": "GUM group for cause and result.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/causal",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "causal",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/context": {
+        "description": "GUM group for background and circumstance.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/context",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "context",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/contingency": {
+        "description": "GUM group for conditional relations.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/contingency",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "contingency",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/elaboration": {
+        "description": "GUM group for additional detail and attributes.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/elaboration",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "elaboration",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/evaluation": {
+        "description": "GUM group for evaluative comments.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/evaluation",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "evaluation",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/explanation": {
+        "description": "GUM group for evidence, justification and motivation.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/explanation",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "explanation",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/joint": {
+        "description": "GUM group for list, disjunction, sequence and otherwise unclassified coordination.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/joint",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "joint",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/mode": {
+        "description": "GUM group for manner and means.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/mode",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "mode",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/organization": {
+        "description": "GUM group for heading, preparation and phatic material.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/organization",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "organization",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/purpose": {
+        "description": "GUM group for goals and attribute purposes.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/purpose",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "purpose",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/restatement": {
+        "description": "GUM group for partial restatement and repetition.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/restatement",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "restatement",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/same_unit": {
+        "description": "GUM structural convention joining interrupted EDU fragments.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/same_unit",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "same-unit",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_groups/topic": {
+        "description": "GUM group for question and solutionhood.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_groups/topic",
+        "in_scheme": "coe:artifact/narrative/gum_erst_groups",
+        "label": "topic",
+        "status": "canonical"
+      }
+    },
+    "description": "Coarse groupings of the GUM and GENTLE relation inventory. A group does not identify a fine relation or determine its nuclearity.",
+    "last_updated": "2026-09-05",
+    "scheme": "coe:artifact/narrative/gum_erst_groups",
+    "source": "ontology/vendor/central-configs/domains/narrative/discourse_techniques.yaml",
+    "source_sha256": "984e8c6b4fdfab1210392949a58840b8f22920ca9961ca57733a7ad96c342ce0"
+  },
+  "coe:artifact/narrative/gum_erst_relations": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/gum_erst_relations/adversative_antithesis": {
+        "description": "Satellite is less credible than nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/adversative_antithesis",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "adversative-antithesis",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/adversative_concession": {
+        "description": "Writer accepts satellite despite claiming nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/adversative_concession",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "adversative-concession",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/adversative_contrast": {
+        "description": "Comparable nuclei oppose each other.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/adversative_contrast",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "adversative-contrast",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/attribution_negative": {
+        "description": "Satellite denies a source for nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/attribution_negative",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "attribution-negative",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/attribution_positive": {
+        "description": "Satellite identifies nucleus's source.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/attribution_positive",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "attribution-positive",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/causal_cause": {
+        "description": "Satellite causes nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/causal_cause",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "causal-cause",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/causal_result": {
+        "description": "Satellite results from nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/causal_result",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "causal-result",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/context_background": {
+        "description": "Satellite enables understanding of nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/context_background",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "context-background",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/context_circumstance": {
+        "description": "Satellite supplies nucleus's circumstances.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/context_circumstance",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "context-circumstance",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/contingency_condition": {
+        "description": "Satellite conditions nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/contingency_condition",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "contingency-condition",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/elaboration_additional": {
+        "description": "Satellite details nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/elaboration_additional",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "elaboration-additional",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/elaboration_attribute": {
+        "description": "Satellite details a nucleus phrase.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/elaboration_attribute",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "elaboration-attribute",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/evaluation_comment": {
+        "description": "Satellite evaluates nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/evaluation_comment",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "evaluation-comment",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/explanation_evidence": {
+        "description": "Satellite supports believing nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/explanation_evidence",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "explanation-evidence",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/explanation_justify": {
+        "description": "Satellite justifies uttering nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/explanation_justify",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "explanation-justify",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/explanation_motivation": {
+        "description": "Satellite motivates the reader's nuclear action.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/explanation_motivation",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "explanation-motivation",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/joint_disjunction": {
+        "description": "Nuclei present alternatives.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/joint_disjunction",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "joint-disjunction",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/joint_list": {
+        "description": "Nuclei coordinate similar units.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/joint_list",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "joint-list",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/joint_other": {
+        "description": "Nuclei coordinate otherwise unrelated units.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/joint_other",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "joint-other",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/joint_sequence": {
+        "description": "Nuclei form a chronological sequence.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/joint_sequence",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "joint-sequence",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/mode_manner": {
+        "description": "Satellite describes how nucleus occurs.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/mode_manner",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "mode-manner",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/mode_means": {
+        "description": "Satellite supplies nucleus's means.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/mode_means",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "mode-means",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/organization_heading": {
+        "description": "Satellite is nucleus's graphical heading.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/organization_heading",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "organization-heading",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/organization_phatic": {
+        "description": "Satellite maintains interaction without substantive content.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/organization_phatic",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "organization-phatic",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/organization_preparation": {
+        "description": "Satellite prepares for nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/organization_preparation",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "organization-preparation",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/purpose_attribute": {
+        "description": "Satellite gives a nucleus phrase's purpose.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/purpose_attribute",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "purpose-attribute",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/purpose_goal": {
+        "description": "Satellite states nucleus's intended goal.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/purpose_goal",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "purpose-goal",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/restatement_partial": {
+        "description": "Satellite restates part of nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/restatement_partial",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "restatement-partial",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/restatement_repetition": {
+        "description": "Nuclei express equivalent content.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/restatement_repetition",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "restatement-repetition",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/same_unit": {
+        "description": "Structural device joining interrupted EDU fragments; not a rhetorical relation.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/same_unit",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "same-unit",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/topic_question": {
+        "description": "Satellite requests information supplied by nucleus.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/topic_question",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "topic-question",
+        "status": "canonical"
+      },
+      "coe:concept/gum_erst_relations/topic_solutionhood": {
+        "description": "Nucleus answers satellite's problem.",
+        "evidence_ids": [
+          "coe:source/gum-erst-guidelines"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/gum_erst_relations/topic_solutionhood",
+        "in_scheme": "coe:artifact/narrative/gum_erst_relations",
+        "label": "topic-solutionhood",
+        "status": "canonical"
+      }
+    },
+    "description": "Corpus-scoped fine labels, including the same-unit structural convention. Nucleus and satellite refer to rhetorical organization, not source order. These meanings do not define RST-DT labels or model-class indices.",
+    "last_updated": "2026-09-05",
+    "scheme": "coe:artifact/narrative/gum_erst_relations",
+    "source": "ontology/vendor/central-configs/domains/narrative/discourse_techniques.yaml",
+    "source_sha256": "984e8c6b4fdfab1210392949a58840b8f22920ca9961ca57733a7ad96c342ce0"
+  },
+  "coe:artifact/narrative/ibis_vocabulary": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/ibis_vocabulary/argument": {
+        "description": "A reason supporting or opposing a position.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/argument",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Argument",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/generalizes": {
+        "description": "Connects an issue to a more specific issue it subsumes.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/generalizes",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Generalizes",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/is_suggested_by": {
+        "description": "Connects an issue to the deliberation node that prompted it.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/is_suggested_by",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Is-suggested-by",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/issue": {
+        "description": "A question or problem requiring deliberation.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/issue",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Issue",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/objects_to": {
+        "description": "Connects an opposing argument to a position.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/objects_to",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Objects-to",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/position": {
+        "description": "A proposed resolution of an issue.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/position",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Position",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/questions": {
+        "description": "Connects an issue to the deliberation node it challenges.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/questions",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Questions",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/replaces": {
+        "description": "Connects an issue to the issue it supersedes.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/replaces",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Replaces",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/responds_to": {
+        "description": "Connects a proposed position to its issue.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/responds_to",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Responds-to",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/specializes": {
+        "description": "Connects an issue to a broader issue it narrows.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/specializes",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Specializes",
+        "status": "canonical"
+      },
+      "coe:concept/ibis_vocabulary/supports": {
+        "description": "Connects a favourable argument to a position.",
+        "evidence_ids": [
+          "coe:source/conklin-begeman-gibis-1988"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/ibis_vocabulary/supports",
+        "in_scheme": "coe:artifact/narrative/ibis_vocabulary",
+        "label": "Supports",
+        "status": "canonical"
+      }
+    },
+    "description": "Core issue-based deliberation nodes and the rhetorical links in the gIBIS grammar. Escape nodes and implementation workflow are excluded.",
+    "last_updated": "2026-09-05",
+    "scheme": "coe:artifact/narrative/ibis_vocabulary",
+    "source": "ontology/vendor/central-configs/domains/narrative/discourse_techniques.yaml",
+    "source_sha256": "984e8c6b4fdfab1210392949a58840b8f22920ca9961ca57733a7ad96c342ce0"
+  },
+  "coe:artifact/narrative/pdtb3_relation_types": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/pdtb3_relation_types/altlex": {
+        "description": "Alternative lexical expression.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_relation_types/altlex",
+        "in_scheme": "coe:artifact/narrative/pdtb3_relation_types",
+        "label": "AltLex",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_relation_types/altlexc": {
+        "description": "Lexicosyntactic connective construction.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_relation_types/altlexc",
+        "in_scheme": "coe:artifact/narrative/pdtb3_relation_types",
+        "label": "AltLexC",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_relation_types/entrel": {
+        "description": "Entity coherence without a discourse sense.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_relation_types/entrel",
+        "in_scheme": "coe:artifact/narrative/pdtb3_relation_types",
+        "label": "EntRel",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_relation_types/explicit": {
+        "description": "Overt discourse connective.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_relation_types/explicit",
+        "in_scheme": "coe:artifact/narrative/pdtb3_relation_types",
+        "label": "Explicit",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_relation_types/hypophora": {
+        "description": "Question followed by its answer.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_relation_types/hypophora",
+        "in_scheme": "coe:artifact/narrative/pdtb3_relation_types",
+        "label": "Hypophora",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_relation_types/implicit": {
+        "description": "Inferred discourse connective.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_relation_types/implicit",
+        "in_scheme": "coe:artifact/narrative/pdtb3_relation_types",
+        "label": "Implicit",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_relation_types/norel": {
+        "description": "No annotated discourse or entity relation.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_relation_types/norel",
+        "in_scheme": "coe:artifact/narrative/pdtb3_relation_types",
+        "label": "NoRel",
+        "status": "canonical"
+      }
+    },
+    "description": "Annotation kinds distinguish how a discourse connection is expressed, including non-sense-bearing annotations.",
+    "last_updated": "2026-09-05",
+    "scheme": "coe:artifact/narrative/pdtb3_relation_types",
+    "source": "ontology/vendor/central-configs/domains/narrative/discourse_techniques.yaml",
+    "source_sha256": "984e8c6b4fdfab1210392949a58840b8f22920ca9961ca57733a7ad96c342ce0"
+  },
+  "coe:artifact/narrative/pdtb3_senses": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/pdtb3_senses/belief_reason": {
+        "description": "Arg2 justifies believing Arg1.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/belief_reason",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Cause+Belief.Reason+Belief",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/belief_result": {
+        "description": "Arg1 justifies believing Arg2.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/belief_result",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Cause+Belief.Result+Belief",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/cause_negative_result": {
+        "description": "Arg1 prevents the effect in Arg2.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/cause_negative_result",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Cause.NegResult",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/cause_reason": {
+        "description": "Arg2 causes or explains Arg1.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/cause_reason",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Cause.Reason",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/cause_result": {
+        "description": "Arg1 causes or explains Arg2.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/cause_result",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Cause.Result",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/concession_arg1": {
+        "description": "Arg1 defeats Arg2's expectation.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/concession_arg1",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Comparison.Concession.Arg1-as-denier",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/concession_arg2": {
+        "description": "Arg2 defeats Arg1's expectation.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/concession_arg2",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Comparison.Concession.Arg2-as-denier",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/concession_speech_act": {
+        "description": "Arg2 denies Arg1's implicit speech act.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/concession_speech_act",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Comparison.Concession+SpeechAct.Arg2-as-denier+SpeechAct",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/condition_arg1": {
+        "description": "Arg1 conditions Arg2.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/condition_arg1",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Condition.Arg1-as-cond",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/condition_arg2": {
+        "description": "Arg2 conditions Arg1.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/condition_arg2",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Condition.Arg2-as-cond",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/condition_speech_act": {
+        "description": "A condition licenses an implicit speech act.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/condition_speech_act",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Condition+SpeechAct",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/conjunction": {
+        "description": "Arguments contribute together to another situation.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/conjunction",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Conjunction",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/contrast": {
+        "description": "Highlights differences between the arguments.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/contrast",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Comparison.Contrast",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/detail_arg1": {
+        "description": "Arg1 details Arg2's situation.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/detail_arg1",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Level-of-detail.Arg1-as-detail",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/detail_arg2": {
+        "description": "Arg2 details Arg1's situation.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/detail_arg2",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Level-of-detail.Arg2-as-detail",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/disjunction": {
+        "description": "Arguments offer potentially inclusive alternatives.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/disjunction",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Disjunction",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/equivalence": {
+        "description": "Arguments describe the same situation differently.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/equivalence",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Equivalence",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/exception_arg1": {
+        "description": "Arg1 excepts Arg2's generalisation.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/exception_arg1",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Exception.Arg1-as-excpt",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/exception_arg2": {
+        "description": "Arg2 excepts Arg1's generalisation.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/exception_arg2",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Exception.Arg2-as-excpt",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/instantiation_arg1": {
+        "description": "Arg1 instantiates Arg2.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/instantiation_arg1",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Instantiation.Arg1-as-instance",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/instantiation_arg2": {
+        "description": "Arg2 instantiates Arg1.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/instantiation_arg2",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Instantiation.Arg2-as-instance",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/manner_arg1": {
+        "description": "Arg1 describes how Arg2 happens.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/manner_arg1",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Manner.Arg1-as-manner",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/manner_arg2": {
+        "description": "Arg2 describes how Arg1 happens.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/manner_arg2",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Manner.Arg2-as-manner",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/negative_condition_arg1": {
+        "description": "Nonoccurrence of Arg1 conditions Arg2.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/negative_condition_arg1",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Negative-condition.Arg1-as-negCond",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/negative_condition_arg2": {
+        "description": "Nonoccurrence of Arg2 conditions Arg1.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/negative_condition_arg2",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Negative-condition.Arg2-as-negCond",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/negative_condition_speech_act": {
+        "description": "Nonoccurrence licenses an implicit speech act.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/negative_condition_speech_act",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Negative-condition+SpeechAct",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/purpose_arg1": {
+        "description": "Arg1 is Arg2's intended goal.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/purpose_arg1",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Purpose.Arg1-as-goal",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/purpose_arg2": {
+        "description": "Arg2 is Arg1's intended goal.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/purpose_arg2",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Purpose.Arg2-as-goal",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/similarity": {
+        "description": "Highlights similarities between the arguments.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/similarity",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Comparison.Similarity",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/speech_act_reason": {
+        "description": "Arg2 justifies uttering Arg1.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/speech_act_reason",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Cause+SpeechAct.Reason+SpeechAct",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/speech_act_result": {
+        "description": "Arg1 justifies uttering Arg2.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/speech_act_result",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Contingency.Cause+SpeechAct.Result+SpeechAct",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/substitution_arg1": {
+        "description": "Arg1 replaces rejected Arg2.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/substitution_arg1",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Substitution.Arg1-as-subst",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/substitution_arg2": {
+        "description": "Arg2 replaces rejected Arg1.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/substitution_arg2",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Expansion.Substitution.Arg2-as-subst",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/temporal_precedence": {
+        "description": "Arg1 precedes Arg2.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/temporal_precedence",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Temporal.Asynchronous.Precedence",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/temporal_succession": {
+        "description": "Arg2 precedes Arg1.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/temporal_succession",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Temporal.Asynchronous.Succession",
+        "status": "canonical"
+      },
+      "coe:concept/pdtb3_senses/temporal_synchronous": {
+        "description": "The argument situations overlap in time.",
+        "evidence_ids": [
+          "coe:source/pdtb3-annotation-manual"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/pdtb3_senses/temporal_synchronous",
+        "in_scheme": "coe:artifact/narrative/pdtb3_senses",
+        "label": "Temporal.Synchronous",
+        "status": "canonical"
+      }
+    },
+    "description": "Published PDTB sense distinctions with argument direction and pragmatic qualifiers preserved. This vocabulary is distinct from the smaller discourse-argumentation profile.",
+    "last_updated": "2026-09-05",
+    "scheme": "coe:artifact/narrative/pdtb3_senses",
+    "source": "ontology/vendor/central-configs/domains/narrative/discourse_techniques.yaml",
+    "source_sha256": "984e8c6b4fdfab1210392949a58840b8f22920ca9961ca57733a7ad96c342ce0"
+  },
+  "coe:artifact/narrative/rst_dt_relations": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/rst_dt_relations/analogy": {
+        "description": "Transfers a comparison across otherwise different cases.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/analogy",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "analogy",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/antithesis": {
+        "description": "Nucleus contrasts with satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/antithesis",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "antithesis",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/attribution": {
+        "description": "Satellite identifies the source of nuclear content.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/attribution",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "attribution",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/attribution_n": {
+        "description": "Satellite negates attribution of nuclear content.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/attribution_n",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "attribution-n",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/background": {
+        "description": "Satellite supplies interpretive context without causing nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/background",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "background",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/cause": {
+        "description": "Nucleus causes satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/cause",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "cause",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/cause_result": {
+        "description": "Equally salient nuclei express cause and effect.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/cause_result",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "cause-result",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/circumstance": {
+        "description": "Satellite supplies approximately concurrent circumstances.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/circumstance",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "circumstance",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/comment": {
+        "description": "Satellite comments from an external perspective.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/comment",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "comment",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/comment_topic": {
+        "description": "Comment precedes its identifying topic.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/comment_topic",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "comment-topic",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/comparison": {
+        "description": "Spans are compared without contrast.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/comparison",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "comparison",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/concession": {
+        "description": "Nucleus violates an expectation raised by satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/concession",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "concession",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/conclusion": {
+        "description": "A concluding judgment wraps up another span.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/conclusion",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "conclusion",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/condition": {
+        "description": "Unrealized satellite conditions nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/condition",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "condition",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/consequence": {
+        "description": "Spans express an indirect causal connection.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/consequence",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "consequence",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/consequence_n": {
+        "description": "Nucleus is an indirect consequence of satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/consequence_n",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "consequence-n",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/consequence_s": {
+        "description": "Satellite is an indirect consequence of nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/consequence_s",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "consequence-s",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/contingency": {
+        "description": "Satellite supplies a recurrent or habitual contingency.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/contingency",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "contingency",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/contrast": {
+        "description": "Equally salient nuclei oppose each other.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/contrast",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "contrast",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/definition": {
+        "description": "Satellite defines nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/definition",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "definition",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/disjunction": {
+        "description": "Nuclei present alternatives.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/disjunction",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "disjunction",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/elaboration_additional": {
+        "description": "Satellite adds otherwise unspecified detail.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/elaboration_additional",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "elaboration-additional",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/elaboration_general_specific": {
+        "description": "Satellite specifies a general nuclear concept.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/elaboration_general_specific",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "elaboration-general-specific",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/elaboration_object_attribute": {
+        "description": "Satellite supplies an essential nuclear attribute.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/elaboration_object_attribute",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "elaboration-object-attribute",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/elaboration_part_whole": {
+        "description": "Satellite describes a part of nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/elaboration_part_whole",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "elaboration-part-whole",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/elaboration_process_step": {
+        "description": "Satellite describes steps of the nuclear process.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/elaboration_process_step",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "elaboration-process-step",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/elaboration_set_member": {
+        "description": "Satellite describes members of a specified set.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/elaboration_set_member",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "elaboration-set-member",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/enablement": {
+        "description": "Satellite facilitates an unrealized nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/enablement",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "enablement",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/evaluation": {
+        "description": "A span assesses another span.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/evaluation",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "evaluation",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/evaluation_n": {
+        "description": "Nucleus assesses satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/evaluation_n",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "evaluation-n",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/evaluation_s": {
+        "description": "Satellite assesses nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/evaluation_s",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "evaluation-s",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/evidence": {
+        "description": "Satellite increases acceptance of nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/evidence",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "evidence",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/example": {
+        "description": "Satellite exemplifies an incompletely specified set.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/example",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "example",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/explanation_argumentative": {
+        "description": "Satellite factually explains nucleus without persuasive intent.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/explanation_argumentative",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "explanation-argumentative",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/hypothetical": {
+        "description": "Nucleus follows from a conjectured satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/hypothetical",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "hypothetical",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/interpretation": {
+        "description": "A span subjectively interprets another span.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/interpretation",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "interpretation",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/interpretation_n": {
+        "description": "Nucleus interprets satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/interpretation_n",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "interpretation-n",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/interpretation_s": {
+        "description": "Satellite interprets nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/interpretation_s",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "interpretation-s",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/inverted_sequence": {
+        "description": "Nuclei occur in reverse chronology.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/inverted_sequence",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "inverted-sequence",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/list": {
+        "description": "Nuclei enumerate parallel items.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/list",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "list",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/manner": {
+        "description": "Satellite describes the manner of nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/manner",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "manner",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/means": {
+        "description": "Satellite supplies means for nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/means",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "means",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/otherwise": {
+        "description": "Realizing nucleus prevents the alternative satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/otherwise",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "otherwise",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/preference": {
+        "description": "Nucleus is preferred over satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/preference",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "preference",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/problem_solution": {
+        "description": "Spans express a problem and solution.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/problem_solution",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "problem-solution",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/problem_solution_n": {
+        "description": "Nucleus solves satellite's problem.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/problem_solution_n",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "problem-solution-n",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/problem_solution_s": {
+        "description": "Satellite solves nucleus's problem.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/problem_solution_s",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "problem-solution-s",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/proportion": {
+        "description": "Nuclei express proportional tendencies.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/proportion",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "proportion",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/purpose": {
+        "description": "Satellite is nucleus's intended goal.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/purpose",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "purpose",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/question_answer": {
+        "description": "Spans express a question and answer.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/question_answer",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "question-answer",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/question_answer_n": {
+        "description": "Nucleus answers satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/question_answer_n",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "question-answer-n",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/question_answer_s": {
+        "description": "Satellite answers nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/question_answer_s",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "question-answer-s",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/reason": {
+        "description": "A span explains an animate agent's action.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/reason",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "reason",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/restatement": {
+        "description": "Satellite reiterates nucleus without interpretation.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/restatement",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "restatement",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/result": {
+        "description": "Satellite causes nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/result",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "result",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/rhetorical_question": {
+        "description": "Satellite poses a rhetorical question about nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/rhetorical_question",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "rhetorical-question",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/same_unit": {
+        "description": "Structural convention joining interrupted EDU fragments.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/same_unit",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "same-unit",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/sequence": {
+        "description": "Nuclei occur chronologically.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/sequence",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "sequence",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/span": {
+        "description": "Structural link carrying nuclear content upward.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/span",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "span",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/statement_response": {
+        "description": "Spans express a statement and response.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/statement_response",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "statement-response",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/statement_response_n": {
+        "description": "Nucleus responds to satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/statement_response_n",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "statement-response-n",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/statement_response_s": {
+        "description": "Satellite responds to nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/statement_response_s",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "statement-response-s",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/summary_n": {
+        "description": "Nucleus condenses satellite.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/summary_n",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "summary-n",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/summary_s": {
+        "description": "Satellite condenses nucleus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/summary_s",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "summary-s",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/temporal_after": {
+        "description": "Nucleus follows satellite temporally.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/temporal_after",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "temporal-after",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/temporal_before": {
+        "description": "Nucleus precedes satellite temporally.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/temporal_before",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "temporal-before",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/temporal_same_time": {
+        "description": "Spans overlap temporally.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/temporal_same_time",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "temporal-same-time",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/textualorganization": {
+        "description": "Structural convention connecting schematically labelled spans.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/textualorganization",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "textualorganization",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/topic_comment": {
+        "description": "Topic precedes a specific comment.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/topic_comment",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "topic-comment",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/topic_drift": {
+        "description": "Topic changes smoothly with shared focus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/topic_drift",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "topic-drift",
+        "status": "canonical"
+      },
+      "coe:concept/rst_dt_relations/topic_shift": {
+        "description": "Topic changes sharply to different focus.",
+        "evidence_ids": [
+          "coe:source/rst-dt-manual-2001"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/rst_dt_relations/topic_shift",
+        "in_scheme": "coe:artifact/narrative/rst_dt_relations",
+        "label": "topic-shift",
+        "status": "canonical"
+      }
+    },
+    "description": "Corpus-specific relation names and directional variants from Carlson and Marcu. Nuclearity is recorded separately; embedded suffixes identify embedding, not new meanings. Structural conventions remain distinguished in their definitions.",
+    "last_updated": "2026-09-05",
+    "scheme": "coe:artifact/narrative/rst_dt_relations",
+    "source": "ontology/vendor/central-configs/domains/narrative/discourse_techniques.yaml",
+    "source_sha256": "984e8c6b4fdfab1210392949a58840b8f22920ca9961ca57733a7ad96c342ce0"
+  },
+  "coe:artifact/narrative/sdrt_vocabulary": {
+    "authority": "Central_Configs",
+    "concepts": {
+      "coe:concept/sdrt_vocabulary/alternation": {
+        "description": "Presents disjunctive alternatives without asserting either constituent.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/alternation",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Alternation",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/attribution": {
+        "description": "Relates an agent to attributed content without committing to the content's truth.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/attribution",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Attribution",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/background": {
+        "description": "Supplies contextual information about an event or object; event-state background overlaps temporally.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/background",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Background",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/cdu": {
+        "description": "A group of discourse constituents interpreted together as a discourse unit.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/cdu",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Complex Discourse Unit",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/commentary": {
+        "description": "Adds an evaluation or opinion about the first constituent.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/commentary",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Commentary",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/consequence": {
+        "description": "Relates conditional antecedent to consequent without asserting either constituent.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/consequence",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Consequence",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/continuation": {
+        "description": "Adds a contribution at the same discourse level under a shared topic.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/continuation",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Continuation",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/contrast": {
+        "description": "Juxtaposes comparable constituents through opposition or denial of an expected consequence.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/contrast",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Contrast",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/coordinating": {
+        "description": "Connects constituents at the same level of discourse structure.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/coordinating",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Coordinating Relation",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/edu": {
+        "description": "An elementary segment contributing a discourse representation.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/edu",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Elementary Discourse Unit",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/elaboration": {
+        "description": "Develops a constituent through more specific information about its content.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/elaboration",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Elaboration",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/explanation": {
+        "description": "Provides an explanatory cause for the preceding constituent's situation.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/explanation",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Explanation",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/narration": {
+        "description": "Relates successive events belonging to a coherent narrative sequence.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/narration",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Narration",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/parallel": {
+        "description": "Relates constituents through corresponding semantic structure.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/parallel",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Parallel",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/precondition": {
+        "description": "Presents an event preceding the first constituent; this is reverse narration, not a logical conditional.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/precondition",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Precondition",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/result": {
+        "description": "Presents a consequence of the preceding constituent's situation.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/result",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Result",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/right_frontier": {
+        "description": "Restricts incremental attachment to the latest constituent and its available structural superordinates.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/right_frontier",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Right Frontier Constraint",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/source": {
+        "description": "Relates communicated content to its source; both constituents are treated as veridical.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/source",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Source",
+        "status": "canonical"
+      },
+      "coe:concept/sdrt_vocabulary/subordinating": {
+        "description": "Connects a constituent to one elaborating or explaining it at a subordinate level.",
+        "evidence_ids": [
+          "coe:source/discor-manual-2007"
+        ],
+        "home_domain": "narrative",
+        "id": "coe:concept/sdrt_vocabulary/subordinating",
+        "in_scheme": "coe:artifact/narrative/sdrt_vocabulary",
+        "label": "Subordinating Relation",
+        "status": "canonical"
+      }
+    },
+    "description": "Structural concepts and named relations in the DISCOR annotation manual. Other SDRT annotation profiles may differ; this vocabulary does not prescribe a universal relation-to-attachment classification.",
+    "last_updated": "2026-09-05",
+    "scheme": "coe:artifact/narrative/sdrt_vocabulary",
+    "source": "ontology/vendor/central-configs/domains/narrative/discourse_techniques.yaml",
+    "source_sha256": "984e8c6b4fdfab1210392949a58840b8f22920ca9961ca57733a7ad96c342ce0"
+  }
+}

@@ -192,7 +192,6 @@ def _analyse_with_release(
     *,
     model_store: Path,
     release_id: str,
-    erst_checkpoint: Path | None,
     device: str,
 ) -> dict[str, object]:
     from rdam import AggregateRequest, MachineConfig, ResultOutcome, Technique, production_machine
@@ -206,7 +205,7 @@ def _analyse_with_release(
 
     config = MachineConfig(rst=RstSettings(
         model=LocalRstModel(store=model_store, release_id=release_id),
-        device=device, erst_checkpoint=erst_checkpoint,
+        device=device,
     ))
     machine = production_machine(config=config)
     aggregate = machine.analyse(AggregateRequest.for_text(
@@ -253,8 +252,6 @@ def _analyse_with_release(
             "--output",
             str(output),
         ]
-        if erst_checkpoint is not None:
-            command.extend(("--erst-checkpoint", str(erst_checkpoint)))
         subprocess.run(command, check=True, env=os.environ.copy())
         cli = load(output.read_bytes())
         if getattr(cli, "semantic_digest", None) != aggregate.semantic_digest:
@@ -284,7 +281,12 @@ def _machine_interfaces(*, http: bool) -> dict[str, object]:
         raise AssertionError("obsolete RST-only CLI module remains installed")
     if (find_spec("uvicorn") is not None) != http or (find_spec("starlette") is not None) != http:
         raise AssertionError("HTTP dependency availability contradicts installed extras")
+    for module in ("workbench", "rdam.rst.erst", "rdam.rst.contracts.erst", "rdam.rst.english.erst"):
+        if find_spec(module) is not None:
+            raise AssertionError(f"experimental eRST module is installed: {module}")
     machine = production_machine()
+    if any(form.formalism_id == "erst_graph" for item in machine.capabilities().techniques for form in item.formalisms):
+        raise AssertionError("production advertises experimental eRST")
     if machine.capabilities().http_available != http:
         raise AssertionError("capabilities contradict installed HTTP availability")
     request = AggregateRequest.for_structured((StructuredInput(
@@ -346,7 +348,6 @@ def main() -> int:
     parser.add_argument("--expected-version", required=True, help="the version the installed wheel declares")
     parser.add_argument("--model-store", type=Path, required=True)
     parser.add_argument("--release-id")
-    parser.add_argument("--erst-checkpoint", type=Path)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--formats", action="store_true")
     parser.add_argument("--http", action="store_true")
@@ -413,7 +414,6 @@ def main() -> int:
         result["analysis"] = _analyse_with_release(
             model_store=args.model_store,
             release_id=args.release_id,
-            erst_checkpoint=args.erst_checkpoint,
             device=args.device,
         )
     result["valid"] = True

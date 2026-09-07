@@ -7,9 +7,7 @@ membership, sizes, and hashes validate. That local validation is cached per prov
 neither path constructs a parser or touches the network, and the parser is constructed
 only by the first ``analyse``.
 
-Formalisms (006 data-model §Formalism): ``rst_tree`` carries ``…/rst``; ``erst_graph``
-carries ``…/erst`` and is available only when a validated eRST completion bundle
-resolves. Failures are ``rdam.rst``'s typed failures mapped one-to-one, same code and
+The production formalism is ``rst_tree``; eRST runs only in the workbench. Failures are ``rdam.rst``'s typed failures mapped one-to-one, same code and
 same retryability, onto the machine's ``ProviderFailure``; the machine never retries.
 """
 
@@ -23,7 +21,6 @@ from time import perf_counter
 import sys
 
 from rdam.rst import Parser
-from rdam.rst.erst.checkpoint import resolve_default_erst_checkpoint, validate_erst_checkpoint_bundle
 from rdam.contracts import ProviderConfiguration
 from rdam.rst.interpretation import describe
 from rdam.ingest.contracts.analysis import MarkerRefinementMode
@@ -69,15 +66,13 @@ from rdam._provider_provenance import provider_provenance
 
 PACKAGE: Final = "rdam.rst"
 RST_TREE: Final = "rst_tree"
-ERST_GRAPH: Final = "erst_graph"
 # The weights published under tchewik/isanlp_rst_v3, which every hf_model_version pulls.
 PUBLISHED_WEIGHTS_LICENCE: Final = "CC BY-NC 4.0 — research and non-commercial use only (LICENSE_MODELS)"
 INVALID_LOCAL_RELEASE_LICENCE: Final = "Unknown — configured local model release is unavailable or invalid"
 _FORMALISM_OUTPUT: Final[Mapping[str, OutputFormalism]] = {
     RST_TREE: OutputFormalism.RST_TREE,
-    ERST_GRAPH: OutputFormalism.ERST_GRAPH,
 }
-_FORMALISM_TECHNIQUE: Final[Mapping[str, Technique]] = {RST_TREE: Technique.RST, ERST_GRAPH: Technique.ERST}
+_FORMALISM_TECHNIQUE: Final[Mapping[str, Technique]] = {RST_TREE: Technique.RST}
 
 
 class ProviderConfigurationError(ValueError):
@@ -103,7 +98,6 @@ class RstProvider:
         release_id: str | None = None,
         relinventory: str | None = None,
         device: str = "auto",
-        erst_scorer_checkpoint: Path | None = None,
         cache_directory: Path | None = None,
         default_formalism: str = RST_TREE,
         evidence_detail: EvidenceDetailPolicy = DEFAULT_ANALYSIS_POLICY.evidence_detail,
@@ -122,13 +116,10 @@ class RstProvider:
         self._release_id = release_id
         self._relinventory = relinventory
         self._device = device
-        self._erst_checkpoint = erst_scorer_checkpoint
         self._cache_directory = cache_directory
         self._default_formalism = default_formalism
         self._evidence_detail = evidence_detail
         self._marker_refinement = marker_refinement
-        self._erst_checkpoint = resolve_default_erst_checkpoint(erst_scorer_checkpoint)
-        self._erst_manifest = None if self._erst_checkpoint is None else validate_erst_checkpoint_bundle(self._erst_checkpoint)
         self._parser: Parser | None = None
         self._initialization_lock = RLock()
         self._local_release_checked = False
@@ -187,18 +178,12 @@ class RstProvider:
 
     @property
     def declaration(self) -> ProviderDeclaration:
-        """Side-effect-free: resolves configuration and looks for a bundle; loads no model."""
+        """Side-effect-free: resolves configuration; loads no model."""
 
         contract_version = SemanticVersion(root=WRITE_CONTRACT_VERSION)
         reason = self._unavailable_reason()
         available = AvailableCapability(provider_id=self.provider_id, contract_version=contract_version)
         capability = available if reason is None else UnavailableCapability(reason=reason)
-        erst_bundle = self._erst_manifest is not None
-        erst_capability = (
-            available
-            if reason is None and erst_bundle
-            else UnavailableCapability(reason=reason or UnavailableReason.MODEL_UNAVAILABLE)
-        )
         return ProviderDeclaration(
             provider_id=self.provider_id,
             technique=Technique.RST,
@@ -209,12 +194,6 @@ class RstProvider:
                     technique=Technique.RST,
                     technique_curie=technique_curie(Technique.RST),
                     capability=capability,
-                ),
-                FormalismDeclaration(
-                    formalism_id=ERST_GRAPH,
-                    technique=Technique.ERST,
-                    technique_curie=technique_curie(Technique.ERST),
-                    capability=erst_capability,
                 ),
             ),
             contract_version=contract_version,
@@ -229,11 +208,10 @@ class RstProvider:
             configuration=self._configuration(),
             interpretations=tuple(describe(formalism, str(contract_version)) for formalism in _FORMALISM_OUTPUT),
             # T073/T082 measured full cold initialization and inference on CPU
-            # and MPS. Other devices and eRST completion remain unmeasured.
+            # and MPS. Other devices remain unmeasured.
             parallel_safety=(
                 "concurrent"
-                if not erst_bundle
-                and (self._device in {"cpu", "mps"} or (self._device == "auto" and sys.platform == "darwin"))
+                if (self._device in {"cpu", "mps"} or (self._device == "auto" and sys.platform == "darwin"))
                 else "serialized"
             ),
         )
@@ -250,7 +228,6 @@ class RstProvider:
                 "model_identity": self.model_identity,
                 "model_source_revision": model_source_revision,
                 "model_manifest": None if release is None else release.manifest.manifest_sha256,
-                "erst_manifest": None if self._erst_manifest is None else self._erst_manifest.model_dump(mode="json"),
                 "relinventory": self._relinventory, "device": self._device,
                 "default_formalism": self._default_formalism,
                 "evidence_detail": self._evidence_detail.value,
@@ -392,14 +369,12 @@ class RstProvider:
                 family=self._validated_local_family,
                 relinventory=self._relinventory,
                 device=self._device,
-                erst_scorer_checkpoint=self._erst_checkpoint,
             )
             return self._parser
         self._parser = Parser(
             hf_model_version=self._hf_model_version,
             relinventory=self._relinventory,
             device=self._device,
-            erst_scorer_checkpoint=self._erst_checkpoint,
         )
         return self._parser
 
@@ -448,4 +423,4 @@ def _execution_fields(payload: Mapping[str, JsonValue]) -> tuple[tuple[str, ...]
     return tuple(present)
 
 
-__all__ = ["ERST_GRAPH", "PUBLISHED_WEIGHTS_LICENCE", "RST_TREE", "ProviderConfigurationError", "RstProvider"]
+__all__ = ["PUBLISHED_WEIGHTS_LICENCE", "RST_TREE", "ProviderConfigurationError", "RstProvider"]

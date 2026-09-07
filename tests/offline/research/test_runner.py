@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from rdam.rst.contracts.erst import CorpusPartition
+from workbench.erst.contracts import CorpusPartition
 from workbench.research.erst.contracts import (
     DocumentScore,
     EvaluationSetting,

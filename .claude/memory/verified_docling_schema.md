@@ -5,6 +5,14 @@ metadata:
   type: reference
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 Findings from inspecting 5 Docling JSON files on 2026-05-15: the four files in [`tests/fixtures/docling/`](../../tests/fixtures/docling/) plus one additional sample from the same corpus. **Sample size: 5. Scope of any claim below is the sample, unless explicitly noted otherwise.**
 
 ## Per-fixture observations
@@ -39,8 +47,8 @@ These are observations from **single fixtures**, not validated across multiple f
 
 ## How to apply
 
-- Phase 0 step 3 (schema-detail verification) closes the gaps named above and in [[open-schema-detail-verifications]].
+- Phase 0 step 3 (schema-detail verification) closes the gaps named above and in [open-schema-detail-verifications](open_schema_detail_verifications.md).
 - Use the per-fixture README (`tests/fixtures/docling/README.md`) as the citable evidence base — don't restate from this memory; cite the README instead.
 - New Docling files added to the fixture set must have their facts verified and committed to the README, not just inferred from this memory.
 
-Related: [[verified-docling-core-api]], [[open-schema-detail-verifications]], [[open-rst-real-world-quality]].
+Related: [verified-docling-core-api](verified_docling_core_api.md), [open-schema-detail-verifications](open_schema_detail_verifications.md), [open-rst-real-world-quality](open_rst_real_world_quality.md).

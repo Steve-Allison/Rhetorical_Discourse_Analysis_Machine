@@ -4,6 +4,15 @@ description: Tracks the bug-list issue filed at upstream on 2026-05-09 and the f
 type: project
 originSessionId: 144e33e2-2406-4db9-bc23-4c7a7fb5e882
 ---
+
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 Filed <https://github.com/tchewik/isanlp_rst/issues/14> on 2026-05-09 from
 account Steve-Allison. Issue lists 10 bugs found in v3.2.0 (forward-compat,
 correctness, robustness, packaging, plus optional MPS support) and offers

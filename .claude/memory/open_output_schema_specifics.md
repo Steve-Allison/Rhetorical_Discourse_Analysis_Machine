@@ -5,6 +5,14 @@ metadata:
   type: project
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 The proposed `DoclingRstResult` schema has several underspecified details. Each must be pinned before Phase 1 because they affect byte-identical reproducibility tests.
 
 ## `relations[]` order
@@ -76,4 +84,4 @@ For byte-identical reproducibility:
 
 Pin each of these before Phase 1 (Phase 3 orchestrator + serialiser depends on them). Add to the build plan's Phase 1 deliverables (schema.py + serialiser tests).
 
-Related: [[decision-one-tree-per-document]], [[open-boundary-design-decisions]].
+Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-boundary-design-decisions](open_boundary_design_decisions.md).

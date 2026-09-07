@@ -24,25 +24,20 @@ from rdam.ingest.contracts.analysis import (
     PreparedRange,
     RecombinationReceipt,
     StitchingDecision,
-    TokenMapping,
     UnitExecutionReceipt,
 )
 from rdam.ingest.contracts.base import CoverageUnit, ExactCoverage, SemanticVersion, Sha256Identity
 from rdam.ingest.contracts.inference import (
-    ConfidenceKind,
-    MappingStatus,
     PrimaryInferenceEvidence,
     SegmentationDecisionEvidence,
     PrimaryStructureDecisionEvidence,
     RefinementRecord,
-    RelationInterpretation,
-    ScoreValue,
 )
 from rdam.ingest.contracts.preparation import AnalysisPlan
 from rdam.ingest.contracts.source import TextSpanAnchor
 from rdam.ingest.identity import semantic_sha256
 from rdam.ingest.parser_result import (
-    analysis_anchors,
+    interpret_native_relation,
     build_validation_receipt,
     component_digest_for,
     validate_parser_analysis_result,
@@ -68,6 +63,7 @@ def recombine_parser_results(
         result.semantic.policy != policy
         or result.semantic.composite_identity != composite
         or result.semantic.loaded_components != loaded
+        or result.semantic.primary_inference.relation_vocabulary != results[0].semantic.primary_inference.relation_vocabulary
         for result in results[1:]
     ):
         raise ValueError("analysis units used different policies or component identities")
@@ -76,7 +72,6 @@ def recombine_parser_results(
 
     all_tokens: list[AnalysedToken] = []
     all_edus: list[AnalysedEdu] = []
-    all_mappings: list[TokenMapping] = []
     all_nodes: list[RstNode] = []
     all_edges: list[PrimaryRelationEdge] = []
     all_signals: list[DiscourseSignal] = []
@@ -92,6 +87,7 @@ def recombine_parser_results(
     next_node_id = 1
     for unit_index, (result, (offset, unit_end)) in enumerate(zip(results, unit_ranges, strict=True)):
         local = result.semantic
+        edu_offset = edu_order
         if local.analysed_document.text != text[offset:unit_end]:
             raise ValueError("analysis-unit text does not match its declared prepared range")
         prefix = f"unit:{unit_index:04d}"
@@ -132,30 +128,22 @@ def recombine_parser_results(
             token_order += 1
         for edu in local.analysed_document.edus:
             mapped_tokens = tuple(token_ids[token_id] for token_id in edu.token_ids)
-            anchors = tuple(token.source_anchors[0] for token in all_tokens if token.token_id in mapped_tokens)
+            span = PreparedRange(start=edu.character_range.start + offset, end=edu.character_range.end + offset)
             all_edus.append(
                 edu.model_copy(
                     update={
                         "edu_id": edu_ids[edu.edu_id],
                         "order": edu_order,
+                        "character_range": span,
                         "token_ids": mapped_tokens,
                         "sentence_id": f"{prefix}:{edu.sentence_id}",
                         "paragraph_id": f"{prefix}:{edu.paragraph_id}",
                         "prepared_segment_ids": (f"document:segment:{unit_index:04d}",),
-                        "source_anchors": anchors,
+                        "source_anchors": (_document_anchor(document_id, span.start, span.end, text),),
                     }
                 )
             )
             edu_order += 1
-        all_mappings.extend(
-            TokenMapping(
-                token_id=token_ids[mapping.token_id],
-                edu_id=edu_ids[mapping.edu_id],
-                sentence_id=f"{prefix}:{mapping.sentence_id}",
-                paragraph_id=f"{prefix}:{mapping.paragraph_id}",
-            )
-            for mapping in local.analysed_document.mappings
-        )
         for node in local.analysis.nodes:
             all_nodes.append(
                 replace(
@@ -201,6 +189,7 @@ def recombine_parser_results(
                         else signal.edge_id
                     ),
                     "token_ids": tuple(signal_token_ids[token_id] for token_id in signal.token_ids),
+                    "attachment_candidates": tuple(edge_ids[edge_id] for edge_id in signal.attachment_candidates),
                     "char_spans": tuple((start + offset, end + offset) for start, end in signal.char_spans),
                 }
             )
@@ -225,6 +214,31 @@ def recombine_parser_results(
                     "primary_edge_ids": tuple(edge_ids[edge_id] for edge_id in decision.primary_edge_ids),
                     "analysed_start": decision.analysed_start + offset,
                     "analysed_end": decision.analysed_end + offset,
+                    "selected_split": decision.selected_split + edu_offset
+                    if decision.selected_split is not None
+                    else None,
+                    "split_distribution": (
+                        decision.split_distribution.model_copy(
+                            update={
+                                "entries": tuple(
+                                    entry.model_copy(update={"label": str(int(entry.label) + edu_offset)})
+                                    for entry in decision.split_distribution.entries
+                                )
+                            }
+                        )
+                        if decision.split_distribution is not None
+                        else None
+                    ),
+                    "transitions": tuple(
+                        replace(
+                            transition,
+                            stack_spans=tuple(
+                                (start + edu_offset, end + edu_offset) for start, end in transition.stack_spans
+                            ),
+                            next_edu=transition.next_edu + edu_offset if transition.next_edu is not None else None,
+                        )
+                        for transition in decision.transitions
+                    ),
                 }
             )
             for decision in local.primary_inference.structure_decisions
@@ -301,20 +315,16 @@ def recombine_parser_results(
             analysed_end=len(text),
             selected_split=None,
             nuclearity="NN",
-            relation=RelationInterpretation(
+            relation=interpret_native_relation(
+                policy=policy,
                 raw_label="same-unit",
                 relation_scheme="deterministic_recombination",
                 inventory_identity=relation_inventory_identity,
-                selected_ontology_concept="same-unit",
-                mapping_status=MappingStatus.IDENTITY_ONLY,
             ),
-            confidence=ScoreValue(
-                value=1.0,
-                confidence_kind=ConfidenceKind.DETERMINISTIC,
-                minimum=1.0,
-                maximum=1.0,
-                producing_component_identity=recombination_identity,
-            ),
+            confidence=None,
+            confidence_basis="unscored_deterministic_recombination",
+            joint=None,
+            split_basis="deterministic_recombination",
             producing_component_identity=recombination_identity,
         )
     )
@@ -335,7 +345,6 @@ def recombine_parser_results(
         text=text,
         tokens=tuple(all_tokens),
         edus=tuple(all_edus),
-        mappings=tuple(all_mappings),
         sentence_boundaries=tuple(
             PreparedRange(start=boundary.start + offset, end=boundary.end + offset)
             for result, (offset, _) in zip(results, unit_ranges, strict=True)
@@ -375,12 +384,7 @@ def recombine_parser_results(
         segmentation_decisions=tuple(segmentation),
         structure_decisions=tuple(structures),
         refinements=tuple(refinements),
-    )
-    anchors = analysis_anchors(
-        analysis,
-        analysed,
-        primary,
-        document_identity=document_id,
+        relation_vocabulary=results[0].semantic.primary_inference.relation_vocabulary,
     )
     receipt = RecombinationReceipt(
         unit_identities=tuple(Sha256Identity(hex_digest=semantic_sha256(unit)) for unit in plan.units),
@@ -412,7 +416,7 @@ def recombine_parser_results(
         analysed,
         primary,
         None,
-        anchors,
+        None,
         policy=policy,
         composite=composite,
         recombination=receipt,
@@ -422,7 +426,6 @@ def recombine_parser_results(
             policy=policy,
             analysed_document=analysed,
             analysis=analysis,
-            anchors=anchors,
             primary_inference=primary,
             erst_completion=None,
             composite_identity=composite,

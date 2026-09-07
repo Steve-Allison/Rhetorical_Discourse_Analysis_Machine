@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/delivery/terminology
   title: Delivery — Terminology
-  last_updated: '2026-08-22'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: delivery
@@ -21,7 +21,7 @@ entity_collections:
   entities:
   - id: coe:entity/delivery/term/hook
     label: Hook
-    description: An opening vocal, physical, or audience-interactive technique to capture attention in the first 30 seconds.
+    description: An opening vocal, physical, or audience-interactive technique that captures attention in the moments before the audience has settled its judgement of the speaker.
     home_domain: delivery
     status: canonical
     evidence_ids: *id001

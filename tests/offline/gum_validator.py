@@ -16,11 +16,13 @@ from rdam.rst.contracts import (
     RstDocument,
     analysis_from_json,
 )
-from rdam.rst.erst.converter import du_to_analysis, rs4_to_document_and_analysis
-from rdam.rst.erst.rs4 import RS4Document, RS4Reader
+from rdam.rst.converter import du_to_analysis
+from workbench.erst.converter import rs4_to_document_and_analysis
+from workbench.erst.rs4 import RS4Document, RS4Reader
 from workbench.evaluation.rst.erst_scorer import ErstScorer, SecondaryEdgeMetrics, SignalMetrics
-from workbench.evaluation.rst.parseval import ParsevalMetrics, SoftParsevalScorer, StandardParsevalScorer
-from rdam.rst.ontology.adapter import OntologyAdapter
+from workbench.evaluation.rst.parseval import ParsevalMetrics, SoftParsevalScorer, StandardParsevalScorer, rst_parseval_spans
+from workbench.evaluation.rst.normalization import binarize_rs4
+from workbench.evaluation.rst.label_projection import gum_coarse_projection
 from rdam.rst.parser import Parser
 
 GUM_FIXTURES_DIR = Path(__file__).resolve().parents[1] / "fixtures" / "gum"
@@ -53,6 +55,7 @@ class GumValidationReport:
     soft_parseval: ParsevalMetrics | None = None
     secondary_metrics: SecondaryEdgeMetrics | None = None
     signal_metrics: SignalMetrics | None = None
+    signal_evaluation_unavailable_reason: str | None = None
     is_valid_tree: bool = True
     structural_errors: tuple[str, ...] = ()
 
@@ -77,8 +80,8 @@ class GumValidationReport:
                 "| :--- | :--- | :--- | :--- | :--- |",
                 f"| **Standard Span (EDU-exact)** | {self.standard_parseval.span_precision:.3f} | {self.standard_parseval.span_recall:.3f} | {self.standard_parseval.span_f1:.3f} | {self.standard_parseval.matched_span} / {self.standard_parseval.gold_spans_count} |",
                 f"| **Standard Nuclearity** | {self.standard_parseval.nuclearity_precision:.3f} | {self.standard_parseval.nuclearity_recall:.3f} | {self.standard_parseval.nuclearity_f1:.3f} | {self.standard_parseval.matched_nuclearity} / {self.standard_parseval.gold_spans_count} |",
-                f"| **Standard Relation (Fine)** | {self.standard_parseval.relation_precision:.3f} | {self.standard_parseval.relation_recall:.3f} | {self.standard_parseval.relation_f1:.3f} | {self.standard_parseval.matched_relation} / {self.standard_parseval.gold_spans_count} |",
-                f"| **Standard Relation (Coarse-18)** | {self.coarse_parseval.relation_precision:.3f} | {self.coarse_parseval.relation_recall:.3f} | {self.coarse_parseval.relation_f1:.3f} | {self.coarse_parseval.matched_relation} / {self.coarse_parseval.gold_spans_count} |",
+                f"| **Raw Relation Agreement** | {self.standard_parseval.relation_precision:.3f} | {self.standard_parseval.relation_recall:.3f} | {self.standard_parseval.relation_f1:.3f} | {self.standard_parseval.matched_relation} / {self.standard_parseval.gold_spans_count} |",
+                f"| **Declared Inventory Relation** | {self.coarse_parseval.relation_precision:.3f} | {self.coarse_parseval.relation_recall:.3f} | {self.coarse_parseval.relation_f1:.3f} | {self.coarse_parseval.matched_relation} / {self.coarse_parseval.gold_spans_count} |",
                 f"| **Standard Full (Span+Nuc+Rel)** | {self.standard_parseval.full_precision:.3f} | {self.standard_parseval.full_recall:.3f} | {self.standard_parseval.full_f1:.3f} | {self.standard_parseval.matched_full} / {self.standard_parseval.gold_spans_count} |",
             ]
         )
@@ -95,7 +98,7 @@ class GumValidationReport:
         lines.extend(
             [
                 f"| **RST-Parseval Span** | {self.rst_parseval.span_precision:.3f} | {self.rst_parseval.span_recall:.3f} | {self.rst_parseval.span_f1:.3f} | {self.rst_parseval.matched_span} / {self.rst_parseval.gold_spans_count} |",
-                f"| **RST-Parseval Relation (Fine)** | {self.rst_parseval.relation_precision:.3f} | {self.rst_parseval.relation_recall:.3f} | {self.rst_parseval.relation_f1:.3f} | {self.rst_parseval.matched_relation} / {self.rst_parseval.gold_spans_count} |",
+                f"| **RST-Parseval Raw Relation** | {self.rst_parseval.relation_precision:.3f} | {self.rst_parseval.relation_recall:.3f} | {self.rst_parseval.relation_f1:.3f} | {self.rst_parseval.matched_relation} / {self.rst_parseval.gold_spans_count} |",
             ]
         )
 
@@ -123,6 +126,8 @@ class GumValidationReport:
                 ]
             )
 
+        if self.signal_evaluation_unavailable_reason is not None:
+            lines.append(f"Signal evaluation unavailable: {self.signal_evaluation_unavailable_reason}")
         return "\n".join(lines)
 
 
@@ -191,25 +196,15 @@ class GumCorpusValidationReport:
 class GumGoldValidator:
     """Validator that verifies model predictions or processed files against GUM gold standards."""
 
-    def __init__(self, fixtures_dir: Path | str | None = None) -> None:
+    def __init__(
+        self, fixtures_dir: Path | str | None = None, *, relation_inventory: Sequence[str] | None = None,
+    ) -> None:
         self.fixtures_dir = Path(fixtures_dir) if fixtures_dir else GUM_FIXTURES_DIR
-        self.ontology_adapter = OntologyAdapter()
-        self.standard_scorer = StandardParsevalScorer(include_leaves=False, include_root=False)
-        self.rst_parseval_scorer = StandardParsevalScorer(include_leaves=True, include_root=True)
+        self.relation_inventory = tuple(relation_inventory) if relation_inventory is not None else None
+        self.standard_scorer = StandardParsevalScorer()
         self.erst_scorer = ErstScorer()
-
-        # Coarse-18 mapper function
-        def coarse_mapper(raw_label: str) -> str:
-            resolved = self.ontology_adapter.resolve_label(raw_label, raise_on_unmapped=False)
-            return resolved[1].lower() if resolved else raw_label.lower()
-
-        self.coarse_scorer = StandardParsevalScorer(
-            include_leaves=False,
-            include_root=False,
-            label_mapper=coarse_mapper,
-        )
-        self.char_scorer = SoftParsevalScorer(include_leaves=False, include_root=False, min_iou=1.0)
-        self.soft_scorer = SoftParsevalScorer(include_leaves=False, include_root=False, min_iou=0.80)
+        self.char_scorer = SoftParsevalScorer(min_iou=1.0)
+        self.soft_scorer = SoftParsevalScorer(min_iou=0.80)
 
     def get_gold_path(self, doc_id: str) -> Path:
         filename = f"{doc_id}.rs4" if not doc_id.endswith(".rs4") else doc_id
@@ -229,9 +224,20 @@ class GumGoldValidator:
         self,
         gold_doc_id: str,
         predicted_analysis: RstAnalysis,
+        *,
+        prediction_rs4: RS4Document | None = None,
+        signal_identities_prealigned: bool = False,
     ) -> GumValidationReport:
-        """Validate an RstAnalysis against a GUM gold fixture."""
-        _, gold_analysis, _ = self.load_gold_fixture(gold_doc_id)
+        """Compare binary primary projections; retain original eRST evidence.
+
+        Supply prediction_rs4 when predicted_analysis uses an RS4 graph encoding.
+        A binary parser result already supplies the required attachment structure.
+        """
+        _, gold_analysis, gold_rs4 = self.load_gold_fixture(gold_doc_id)
+        _, gold_primary = binarize_rs4(gold_rs4, document_id=gold_doc_id)
+        predicted_primary = predicted_analysis
+        if prediction_rs4 is not None:
+            _, predicted_primary = binarize_rs4(prediction_rs4, document_id=predicted_analysis.document_id)
 
         gold_edu_count = len([n for n in gold_analysis.nodes if n.kind == NodeKindEnum.EDU])
         pred_edu_count = len([n for n in predicted_analysis.nodes if n.kind == NodeKindEnum.EDU])
@@ -250,11 +256,19 @@ class GumGoldValidator:
             structural_errors.append("Missing root node in non-empty tree.")
 
         # Compute Parseval metrics
-        std_metrics = self.standard_scorer.score(gold_analysis, predicted_analysis)
-        rst_metrics = self.rst_parseval_scorer.score(gold_analysis, predicted_analysis)
-        coarse_metrics = self.coarse_scorer.score(gold_analysis, predicted_analysis)
-        char_metrics = self.char_scorer.score(gold_analysis, predicted_analysis)
-        soft_metrics = self.soft_scorer.score(gold_analysis, predicted_analysis)
+        std_metrics = self.standard_scorer.score(gold_primary, predicted_primary)
+        rst_metrics = self.standard_scorer.score_span_sets(
+            rst_parseval_spans(gold_primary), rst_parseval_spans(predicted_primary),
+        )
+        if self.relation_inventory is None:
+            coarse_metrics = std_metrics
+        else:
+            projection = gum_coarse_projection(tuple(gold_rs4.relations), self.relation_inventory)
+            coarse_metrics = StandardParsevalScorer(label_mapper=projection.__getitem__).score(
+                gold_primary, predicted_primary,
+            )
+        char_metrics = self.char_scorer.score(gold_primary, predicted_primary)
+        soft_metrics = self.soft_scorer.score(gold_primary, predicted_primary)
 
         # eRST metrics if present
         sec_metrics: SecondaryEdgeMetrics | None = None
@@ -265,10 +279,14 @@ class GumGoldValidator:
             )
 
         sig_metrics: SignalMetrics | None = None
-        if gold_analysis.signals or predicted_analysis.signals:
+        signal_reason: str | None = None
+        if (gold_analysis.signals or predicted_analysis.signals) and not signal_identities_prealigned:
+            signal_reason = "edge_and_token_alignment_not_verified"
+        elif gold_analysis.signals or predicted_analysis.signals:
             sig_metrics = self.erst_scorer.score_signals(
                 gold_analysis.signals,
                 predicted_analysis.signals,
+                identities_prealigned=True,
             )
 
         return GumValidationReport(
@@ -282,6 +300,7 @@ class GumGoldValidator:
             soft_parseval=soft_metrics,
             secondary_metrics=sec_metrics,
             signal_metrics=sig_metrics,
+            signal_evaluation_unavailable_reason=signal_reason,
             is_valid_tree=is_valid,
             structural_errors=tuple(structural_errors),
         )
@@ -305,17 +324,18 @@ class GumGoldValidator:
         if not path.is_file():
             raise FileNotFoundError(f"Processed file not found: {path}")
 
+        prediction_rs4: RS4Document | None = None
         if path.suffix.lower() == ".json":
             json_text = path.read_text(encoding="utf-8")
             pred_analysis = analysis_from_json(json_text)
         elif path.suffix.lower() == ".rs4":
             reader = RS4Reader()
-            rs4 = reader.read_file(path)
-            _, pred_analysis = rs4_to_document_and_analysis(rs4, document_id=gold_doc_id)
+            prediction_rs4 = reader.read_file(path)
+            _, pred_analysis = rs4_to_document_and_analysis(prediction_rs4, document_id=gold_doc_id)
         else:
             raise ValueError(f"Unsupported file format: {path.suffix} (expected .json or .rs4)")
 
-        return self.validate_analysis(gold_doc_id, pred_analysis)
+        return self.validate_analysis(gold_doc_id, pred_analysis, prediction_rs4=prediction_rs4)
 
     def validate_document_with_parser(
         self,

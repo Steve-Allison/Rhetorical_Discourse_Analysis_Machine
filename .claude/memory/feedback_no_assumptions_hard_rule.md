@@ -29,4 +29,4 @@ This is anti-pattern #2 from `.claude/rules/no-assumptions.md` (pattern-matched 
 - The hook at `.claude/hooks/no-assumptions-check.sh` blocks Write / Edit / MultiEdit when the proposed content contains these triggers without a nearby evidence anchor or `ASSUMED` marker. Do not work around the hook by rephrasing. The rephrase is the symptom; the unverified claim is the disease.
 - This applies to plans, memory files, rule files, READMEs, docstrings, comments, and inline prose in chat replies. Every surface.
 
-Related: [[no-assumptions-rule]] (the four anti-patterns catalogued in full).
+Related: [no-assumptions-rule](../rules/no-assumptions.md) (the four anti-patterns catalogued in full).

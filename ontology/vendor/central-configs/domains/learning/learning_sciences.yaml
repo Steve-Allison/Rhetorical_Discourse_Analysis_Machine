@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/learning/learning_sciences
   title: Learning — Learning Sciences and Assessment Disciplines
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: learning
@@ -36,7 +36,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: BANDURA_SCT
     examples:
     - social cognitive theory
     - Bandura's self-efficacy
@@ -45,7 +44,6 @@ entity_collections:
     - vicarious learning
     anti_examples:
     - social media theory
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/cognitive_apprenticeship
@@ -65,7 +63,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: COGNITIVE_APPRENTICESHIP
     examples:
     - cognitive apprenticeship
     - modelling and fading
@@ -74,7 +71,6 @@ entity_collections:
     anti_examples:
     - trade apprenticeship
     - apprenticeship contract
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/connectivism
@@ -94,7 +90,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: CONNECTIVISM
     examples:
     - connectivism
     - learning networks
@@ -102,7 +97,6 @@ entity_collections:
     - cMOOC
     anti_examples:
     - network connectivity
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/critical_thinking
@@ -112,7 +106,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: CRITICAL_THINKING
     examples:
     - critical thinking
     - logical fallacy
@@ -122,7 +115,6 @@ entity_collections:
     anti_examples:
     - critical incident
     - critical path
-    confidence_threshold: 0.65
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/deliberate_practice
@@ -132,7 +124,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: DELIBERATE_PRACTICE
     examples:
     - deliberate practice
     - purposeful practice
@@ -140,7 +131,6 @@ entity_collections:
     - practice at the edge of ability
     anti_examples:
     - deliberate delay
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/goal_setting_theory
@@ -150,7 +140,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: GOAL_SETTING_THEORY
     examples:
     - goal-setting theory
     - Locke and Latham
@@ -159,7 +148,6 @@ entity_collections:
     - High Performance Cycle
     anti_examples:
     - goal difference
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/growth_mindset
@@ -180,7 +168,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: GROWTH_MINDSET
     examples:
     - growth mindset
     - fixed mindset
@@ -189,7 +176,6 @@ entity_collections:
     anti_examples:
     - growth rate
     - growth market
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/learning_pyramid
@@ -200,7 +186,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: LEARNING_PYRAMID
     examples:
     - learning pyramid
     - retention rates by method
@@ -209,7 +194,6 @@ entity_collections:
     anti_examples:
     - pyramid principle
     - food pyramid
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/learning_styles_meshing
@@ -229,7 +213,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: LEARNING_STYLES_MESHING
     examples:
     - learning styles
     - VARK
@@ -239,7 +222,6 @@ entity_collections:
     anti_examples:
     - writing style
     - leadership style
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/metacognition
@@ -259,14 +241,12 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: METACOGNITION
     examples:
     - metacognition
     - metacognitive strategies
     - thinking about thinking
     - self-regulated learning
     - monitoring one's own understanding
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/nudge_theory
@@ -276,7 +256,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: NUDGE_THEORY
     examples:
     - nudge theory
     - choice architecture
@@ -285,7 +264,6 @@ entity_collections:
     - libertarian paternalism
     anti_examples:
     - a gentle nudge to the team
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/psychological_safety
@@ -305,7 +283,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: PSYCHOLOGICAL_SAFETY
     examples:
     - psychological safety
     - safe to take interpersonal risks
@@ -314,7 +291,6 @@ entity_collections:
     anti_examples:
     - physical safety
     - safety training
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/schanks_script_theory
@@ -344,7 +320,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: SCRIPT_THEORY
     examples:
     - script theory
     - expectation failure
@@ -354,7 +329,6 @@ entity_collections:
     anti_examples:
     - video script
     - script direction
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/theory_of_mind
@@ -384,7 +358,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: THEORY_OF_MIND
     examples:
     - theory of mind
     - false-belief task
@@ -393,7 +366,6 @@ entity_collections:
     anti_examples:
     - theory of change
     - state of mind
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/tuckman_group_development
@@ -413,7 +385,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: TUCKMAN_STAGES
     examples:
     - forming storming norming performing
     - Tuckman's stages
@@ -421,7 +392,6 @@ entity_collections:
     - group development stages
     anti_examples:
     - brainstorming session
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/learning/instructional_design_models
@@ -450,13 +420,11 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: BOPPPS
     examples:
     - BOPPPS
     - bridge-in
     - pre-assessment and post-assessment blocks
     - participatory learning segment
-    confidence_threshold: 0.9
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/dick_carey_model
@@ -476,12 +444,10 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: DICK_CAREY
     examples:
     - Dick and Carey
     - systems approach model
     - ten-step design model
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/elaboration_theory
@@ -501,7 +467,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: ELABORATION_THEORY
     examples:
     - elaboration theory
     - epitome lesson
@@ -509,7 +474,6 @@ entity_collections:
     - Reigeluth
     anti_examples:
     - elaborate on this point
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/baldwin_ford_transfer_model
@@ -529,7 +493,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: TRANSFER_MODEL
     examples:
     - transfer of training
     - Baldwin and Ford
@@ -538,7 +501,6 @@ entity_collections:
     anti_examples:
     - file transfer
     - transfer pricing
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/morrison_ross_kemp_model
@@ -558,13 +520,11 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: MRK_MODEL
     examples:
     - Morrison, Ross and Kemp
     - Kemp model
     - nine interdependent elements
     - oval design model
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/responsive_scaffold_model
@@ -584,12 +544,10 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: RESPONSIVE_SCAFFOLD
     examples:
     - Responsive Scaffold Model
     - model-coach-scaffold-fade
     - scaffold fading tracks
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/rosenshines_principles
@@ -620,14 +578,12 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: ROSENSHINE_PRINCIPLES
     examples:
     - Rosenshine's principles
     - principles of explicit instruction
     - daily review
     - guided practice
     - teach in small steps
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/scheme_of_work_design
@@ -638,7 +594,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SCHEME_OF_WORK
     examples:
     - scheme of work
     - medium-term plan
@@ -647,7 +602,6 @@ entity_collections:
     - enquiry question
     anti_examples:
     - scheme of arrangement
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/three_cs_scenario_design
@@ -667,14 +621,12 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: THREE_CS
     examples:
     - 3Cs scenario
     - challenge, choices, consequences
     - decision-point scenario
     anti_examples:
     - three Cs of marketing
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/udl_framework
@@ -684,7 +636,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: UDL
     examples:
     - Universal Design for Learning
     - UDL
@@ -693,7 +644,6 @@ entity_collections:
     - CAST guidelines
     anti_examples:
     - universal design in architecture
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/learning/learning_methods_formats
@@ -708,19 +658,18 @@ entity_collections:
   entities:
   - id: coe:entity/seventy_twenty_ten_model
     label: 70:20:10 Model
-    description: Development heuristic holding workplace capability grows roughly 70% from experience, 20% from others
-      and 10% from coursework — the experiential direction is supported, the fixed ratio is unwarranted.
+    description: Development heuristic holding that workplace capability grows mostly from experience, less from others
+      and least from coursework, in the fixed proportions its name states — the experiential direction is supported, the
+      fixed ratio is unwarranted.
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SEVENTY_TWENTY_TEN
     examples:
     - '70:20:10'
     - 70-20-10 model
     - experiential learning ratio
     anti_examples:
     - 70/20/10 budget split
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/case_based_learning
@@ -740,7 +689,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: CASE_BASED_LEARNING
     examples:
     - case-based learning
     - case study method
@@ -750,7 +698,6 @@ entity_collections:
     - use case
     - test case
     - business case
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/coaching_frameworks
@@ -770,7 +717,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: COACHING_FRAMEWORK
     examples:
     - GROW model
     - coaching conversation
@@ -780,7 +726,6 @@ entity_collections:
     anti_examples:
     - sports coaching
     - coach class
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/gamification_and_game_based_learning
@@ -800,7 +745,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: GAMIFICATION
     examples:
     - gamification
     - game-based learning
@@ -809,7 +753,6 @@ entity_collections:
     - game mechanics
     anti_examples:
     - video game review
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/icebreakers_and_group_formation
@@ -829,7 +772,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: ICEBREAKER
     examples:
     - icebreaker
     - energiser activity
@@ -837,7 +779,6 @@ entity_collections:
     - group formation activity
     anti_examples:
     - icebreaker ship
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/immersive_learning
@@ -847,7 +788,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: IMMERSIVE_LEARNING
     examples:
     - immersive learning
     - VR training
@@ -856,7 +796,6 @@ entity_collections:
     - AR overlay
     anti_examples:
     - immersive theatre
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/manager_as_coach
@@ -866,12 +805,10 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: MANAGER_AS_COACH
     examples:
     - manager as coach
     - coaching your direct reports
     - leader as coach
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/spaced_repetition
@@ -901,7 +838,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: SPACED_REPETITION
     examples:
     - spaced repetition
     - spacing effect
@@ -910,7 +846,6 @@ entity_collections:
     - distributed practice
     anti_examples:
     - evenly spaced layout
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/inclusion_personas
@@ -920,13 +855,11 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: INCLUSION_PERSONA
     examples:
     - persona spectrum
     - situational disability
     - inclusive personas
     - temporary impairment
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/screencast
@@ -936,7 +869,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SCREENCAST
     examples:
     - screencast
     - screen recording tutorial
@@ -944,7 +876,6 @@ entity_collections:
     - narrated demo recording
     anti_examples:
     - cast the screen to the TV
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/learning/assessment_disciplines
@@ -964,7 +895,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: MULTI_SOURCE_FEEDBACK
     examples:
     - 360-degree feedback
     - multi-source feedback
@@ -972,7 +902,6 @@ entity_collections:
     - self-other agreement
     anti_examples:
     - 360-degree video
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/ai_content_detection
@@ -982,7 +911,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: AI_CONTENT_DETECTION
     examples:
     - AI detector
     - AI-generated text detection
@@ -990,7 +918,6 @@ entity_collections:
     - perplexity-based detection
     anti_examples:
     - anomaly detection
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/assessment_method_selection
@@ -1000,7 +927,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: ASSESSMENT_METHOD_SELECTION
     examples:
     - utility model
     - Miller's pyramid
@@ -1008,7 +934,6 @@ entity_collections:
     - method selection trade-offs
     anti_examples:
     - natural selection
-    confidence_threshold: 0.7
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/automated_essay_scoring
@@ -1018,13 +943,11 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: AES
     examples:
     - automated essay scoring
     - AES engine
     - machine-scored essays
     - e-rater
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/cognitive_diagnostic_modelling
@@ -1034,13 +957,11 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: CDM
     examples:
     - cognitive diagnostic model
     - Q-matrix
     - attribute mastery profile
     - G-DINA
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/computer_adaptive_testing
@@ -1060,7 +981,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: CAT
     examples:
     - computer-adaptive testing
     - adaptive test
@@ -1068,7 +988,6 @@ entity_collections:
     - ability estimate
     anti_examples:
     - adaptive layout
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/construct_validity_under_ai
@@ -1088,14 +1007,12 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: CONSTRUCT_SUBSTITUTION
     examples:
     - construct substitution
     - human-AI team construct
     - assessing with AI access
     anti_examples:
     - software construct
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/cross_cultural_assessment_validity
@@ -1106,13 +1023,11 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: CROSS_CULTURAL_VALIDITY
     examples:
     - measurement invariance
     - test adaptation
     - ITC guidelines
     - cross-cultural comparability
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/demo_certification
@@ -1132,7 +1047,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: DEMO_CERTIFICATION
     examples:
     - demo certification
     - certified demo
@@ -1140,7 +1054,6 @@ entity_collections:
     - demo cut-score
     anti_examples:
     - demo environment
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/hard_soft_skills_assessment
@@ -1150,7 +1063,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: HARD_SOFT_SKILLS
     examples:
     - hard skills
     - soft skills
@@ -1158,7 +1070,6 @@ entity_collections:
     - technical competencies
     anti_examples:
     - hardware and software
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/inter_annotator_agreement
@@ -1168,14 +1079,12 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: IAA
     examples:
     - inter-annotator agreement
     - inter-rater reliability
     - Cohen's kappa
     - Krippendorff's alpha
     - Fleiss' kappa
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/kane_validity_framework
@@ -1195,13 +1104,11 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: KANE_VALIDITY
     examples:
     - Kane's validity framework
     - interpretation/use argument
     - argument-based validity
     - scoring inference
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/microcredentialing
@@ -1211,13 +1118,11 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: MICROCREDENTIAL
     examples:
     - microcredential
     - digital badge
     - open badges
     - stackable credentials
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/okr_kpi_frameworks
@@ -1227,14 +1132,12 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: OKR_KPI
     examples:
     - OKR
     - KPI
     - objectives and key results
     - leading indicator
     - Goodhart's law
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/oral_assessment_design
@@ -1254,7 +1157,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: ORAL_ASSESSMENT
     examples:
     - oral examination
     - viva voce
@@ -1262,7 +1164,6 @@ entity_collections:
     - examiner calibration
     anti_examples:
     - oral history
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/portfolio_assessment
@@ -1272,7 +1173,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: PORTFOLIO_ASSESSMENT
     examples:
     - portfolio assessment
     - e-portfolio
@@ -1281,7 +1181,6 @@ entity_collections:
     anti_examples:
     - investment portfolio
     - design portfolio
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/pre_employment_selection
@@ -1291,7 +1190,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SELECTION_ASSESSMENT
     examples:
     - structured interview
     - work sample test
@@ -1299,7 +1197,6 @@ entity_collections:
     - adverse impact analysis
     anti_examples:
     - natural selection
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/psychometrics
@@ -1348,14 +1245,12 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: PSYCHOMETRICS
     examples:
     - psychometrics
     - classical test theory
     - test reliability
     - measurement model
     - item banking
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/social_network_analysis
@@ -1365,7 +1260,6 @@ entity_collections:
     home_domain: learning
     status: canonical
     edges: []
-    ner_label: SNA
     examples:
     - social network analysis
     - centrality
@@ -1374,7 +1268,6 @@ entity_collections:
     - sociogram
     anti_examples:
     - posting on social networks
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/stealth_assessment
@@ -1394,7 +1287,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: STEALTH_ASSESSMENT
     examples:
     - stealth assessment
     - evidence-centred design
@@ -1402,7 +1294,6 @@ entity_collections:
     - in-game assessment
     anti_examples:
     - stealth game
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/learning/knowledge_organisation_disciplines
@@ -1440,7 +1331,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: KNOWLEDGE_ORGANISATION
     examples:
     - knowledge organisation system
     - controlled vocabulary
@@ -1448,7 +1338,6 @@ entity_collections:
     - KOS
     anti_examples:
     - organisation chart
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/ontology_engineering
@@ -1467,7 +1356,6 @@ entity_collections:
       home_domain: learning
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: ONTOLOGY_ENGINEERING
     examples:
     - ontology engineering
     - OWL ontology
@@ -1476,6 +1364,5 @@ entity_collections:
     - ontology alignment
     anti_examples:
     - ontology in philosophy
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery

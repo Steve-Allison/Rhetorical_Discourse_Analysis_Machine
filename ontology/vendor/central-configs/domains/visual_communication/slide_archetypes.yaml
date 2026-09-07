@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/visual_communication/slide_archetypes
   title: Visual Communication — Slide Archetypes
-  last_updated: '2026-08-22'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: visual_communication
@@ -77,7 +77,6 @@ entity_collections:
     description: Information conveyed by color alone (WCAG 1.4.1 violation)
     home_domain: visual_communication
     status: canonical
-    ner_label: COLOR_ONLY
     examples:
     - red fields are required
     - green indicates success
@@ -89,7 +88,6 @@ entity_collections:
     - highlighted in yellow
     - the red bars represent deficits
     - use the green category
-    confidence_threshold: 0.7
     evidence_ids: &id002
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/visual_communication/slide_archetypes
@@ -162,7 +160,6 @@ entity_collections:
     description: Visual content without text alternative (WCAG 1.1.1 violation)
     home_domain: visual_communication
     status: canonical
-    ner_label: MISSING_ALT
     examples:
     - see image
     - shown in figure
@@ -175,7 +172,6 @@ entity_collections:
     - image depicts
     - the infographic above
     - see the visual
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/low_contrast_text
@@ -247,7 +243,6 @@ entity_collections:
     description: Text that fails minimum contrast ratio requirements (WCAG 1.4.3 violation)
     home_domain: visual_communication
     status: canonical
-    ner_label: CONTRAST_VIOLATION
     examples:
     - light gray text on white background
     - subtle contrast for secondary text
@@ -256,7 +251,6 @@ entity_collections:
     - white text on pale yellow
     - faint watermark text
     - barely visible caption
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/text_size_violation
@@ -309,7 +303,6 @@ entity_collections:
     description: Font size below minimum legibility threshold for the delivery context
     home_domain: visual_communication
     status: canonical
-    ner_label: TEXT_SIZE_ISSUE
     examples:
     - small print disclaimer
     - 8pt footnote
@@ -318,7 +311,6 @@ entity_collections:
     - text too small to read from the back
     - tiny label on the chart axis
     - 6pt caption
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/animation_only_carrier
@@ -398,14 +390,12 @@ entity_collections:
     description: Essential information that can only be accessed via animation — inaccessible to static reading (anti-pattern)
     home_domain: visual_communication
     status: canonical
-    ner_label: ANIMATION_ONLY_CARRIER
     examples:
     - the key point appears on click
     - final conclusion reveals after animation completes
     - this only shows after the build sequence
     - the recommendation is hidden until the last click
     - reveals progressively through animations
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/baked_text_in_image
@@ -503,7 +493,6 @@ entity_collections:
     description: Text embedded within a raster image rather than as real selectable text (WCAG 1.4.5 violation)
     home_domain: visual_communication
     status: canonical
-    ner_label: BAKED_TEXT
     examples:
     - text embedded in the infographic
     - labels baked into the screenshot
@@ -512,7 +501,6 @@ entity_collections:
     - the quote is part of the photograph
     - title text rendered as image
     - rasterised text block
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - id: coe:entity/keyboard_inaccessibility
     label: Keyboard Inaccessibility
@@ -520,8 +508,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: KEYBOARD_INACCESSIBILITY
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/video_shot_type
@@ -556,7 +542,7 @@ entity_collections:
       object_id: coe:entity/video_edit_transition
       relationship_weight: expected
       description: Shot variety across wide, medium, and close-up enables meaningful edit transitions at natural breakpoints
-        every 8-15 seconds
+        at the library's cut-frequency interval
       statement_id: coe:edge/badff988b9a80b5dd7a650d2
       home_domain: visual_communication
       evidence_ids: *id001
@@ -620,7 +606,6 @@ entity_collections:
     description: Camera shot types and framing conventions used in video production
     home_domain: visual_communication
     status: canonical
-    ner_label: VIDEO_SHOT_TYPE
     examples:
     - close-up of the speaker
     - wide establishing shot
@@ -633,7 +618,6 @@ entity_collections:
     anti_examples:
     - shot of espresso
     - take a shot
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/video_edit_transition
@@ -667,7 +651,7 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/progressive_disclosure_marker
       relationship_weight: expected
-      description: Progressive disclosure is supported by video edit transitions that chunk content into 1-3 minute chapters
+      description: Progressive disclosure is supported by video edit transitions that chunk content into short chapters
         with title cards and verbal cues between segments per Visual Best Practices for Corporate Learning Videos | Video
         edit transitions support progressive disclosure by segmenting content into logical chapters with title cards and consistent
         transition styles between sections per Visual Best Practices for Corporate Learning Videos
@@ -687,8 +671,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/working_memory_marker
       relationship_weight: expected
-      description: Well-paced video edit transitions allowing 3-6 seconds per bullet point and natural pauses for micro-reflection
-        prevent working memory overload per Visual Best Practices for Corporate Learning Videos
+      description: Well-paced video edit transitions holding each bullet for the library's bullet-hold band and allowing natural
+        pauses for micro-reflection prevent working memory overload per Visual Best Practices for Corporate Learning Videos
       statement_id: coe:edge/7f238b012ce1715e3d345392
       home_domain: visual_communication
       evidence_ids: *id001
@@ -697,7 +681,6 @@ entity_collections:
     description: Post-production transition and editing techniques between video segments
     home_domain: visual_communication
     status: canonical
-    ner_label: VIDEO_TRANSITION
     examples:
     - hard cut
     - dissolve transition
@@ -710,7 +693,6 @@ entity_collections:
     anti_examples:
     - cut the cord
     - fade away
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/audio_element
@@ -753,7 +735,7 @@ entity_collections:
       predicate: coe:triggers
       object_id: coe:entity/delivery_rate_issue
       relationship_weight: optional
-      description: Narration speed deviating from recommended 120-150 words per minute triggers pacing and delivery rate problems
+      description: Narration speed deviating from the library's scripted-video rate band triggers pacing and delivery rate problems
       statement_id: coe:edge/ac3ed80b2aa70629aa0f1efe
       home_domain: visual_communication
       evidence_ids: *id001
@@ -798,7 +780,6 @@ entity_collections:
     description: Audio production elements including voiceover, music, and sound design
     home_domain: visual_communication
     status: canonical
-    ner_label: AUDIO_ELEMENT
     examples:
     - voiceover narration
     - background music bed
@@ -811,7 +792,6 @@ entity_collections:
     anti_examples:
     - audio settings
     - sound system
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/animation_type
@@ -864,7 +844,6 @@ entity_collections:
     description: Animation styles and motion graphics techniques used in learning content
     home_domain: visual_communication
     status: canonical
-    ner_label: ANIMATION_TYPE
     examples:
     - motion graphics
     - kinetic typography
@@ -877,7 +856,6 @@ entity_collections:
     anti_examples:
     - animated discussion
     - 3D printing
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/storyboard_element
@@ -1013,7 +991,6 @@ entity_collections:
     description: Components of storyboard documents used in pre-production planning
     home_domain: visual_communication
     status: canonical
-    ner_label: STORYBOARD_ELEMENT
     examples:
     - storyboard panel
     - scene description
@@ -1026,7 +1003,6 @@ entity_collections:
     anti_examples:
     - story time
     - board meeting
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/image_asset_type
@@ -1079,7 +1055,6 @@ entity_collections:
     description: Types of visual assets used in learning and presentation content
     home_domain: visual_communication
     status: canonical
-    ner_label: IMAGE_ASSET_TYPE
     examples:
     - stock photograph
     - custom illustration
@@ -1092,7 +1067,6 @@ entity_collections:
     anti_examples:
     - image quality
     - asset management
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/image_prompt_element
@@ -1154,7 +1128,6 @@ entity_collections:
     description: Components of AI image generation prompts including style, composition, and technical parameters
     home_domain: visual_communication
     status: canonical
-    ner_label: IMAGE_PROMPT_ELEMENT
     examples:
     - photorealistic style
     - isometric illustration
@@ -1167,7 +1140,6 @@ entity_collections:
     anti_examples:
     - style guide
     - flat tire
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/structural_slide
@@ -1241,7 +1213,6 @@ entity_collections:
       hierarchies, and timelines
     home_domain: visual_communication
     status: canonical
-    ner_label: STRUCTURAL_SLIDE
     examples:
     - add an architecture stack slide
     - create a hub-and-spoke diagram
@@ -1255,7 +1226,6 @@ entity_collections:
     - the structure of the argument
     - process improvement project
     - timeline of events
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/data_proof_slide
@@ -1326,7 +1296,6 @@ entity_collections:
       and competitive landscapes
     home_domain: visual_communication
     status: canonical
-    ner_label: DATA_PROOF_SLIDE
     examples:
     - add a stats slide with the key metrics
     - include an ROI slide showing business impact
@@ -1344,7 +1313,6 @@ entity_collections:
     - customer feedback email
     - the problem with our strategy
     - the solution to the inefficiency
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/content_slide
@@ -1371,7 +1339,6 @@ entity_collections:
       two-column layouts, and tables
     home_domain: visual_communication
     status: canonical
-    ner_label: CONTENT_SLIDE
     examples:
     - add a content cards grid showing the services
     - create a bullet point summary slide
@@ -1390,7 +1357,6 @@ entity_collections:
     - reference document
     - summarize the meeting
     - the key message is that...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges: []
     id: coe:entity/product_slide
@@ -1398,7 +1364,6 @@ entity_collections:
     description: References to product demonstration slides including screenshots, UI walkthroughs, and live demo captures
     home_domain: visual_communication
     status: canonical
-    ner_label: PRODUCT_SLIDE
     examples:
     - add a screenshot slide showing the dashboard
     - include a product demo walkthrough
@@ -1407,7 +1372,6 @@ entity_collections:
     anti_examples:
     - demo the product live
     - take a screenshot
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/narrative_slide
@@ -1478,7 +1442,6 @@ entity_collections:
       introductions
     home_domain: visual_communication
     status: canonical
-    ner_label: NARRATIVE_SLIDE
     examples:
     - add a title slide for the opening
     - create a brand vision slide
@@ -1497,7 +1460,6 @@ entity_collections:
     - hook the audience with data
     - slidument
     - read-ahead document
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/functional_slide
@@ -1515,7 +1477,6 @@ entity_collections:
       cards
     home_domain: visual_communication
     status: canonical
-    ner_label: FUNCTIONAL_SLIDE
     examples:
     - add a section divider slide
     - insert a Q&A slide
@@ -1531,7 +1492,6 @@ entity_collections:
     - the leave-behind document
     - slidument format
     - boardroom read-ahead packet
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/complex_slide
     label: Complex Slide
@@ -1539,7 +1499,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: COMPLEX_SLIDE
     examples:
     - add a dashboard slide with all KPIs
     - create a multi-zone executive summary
@@ -1552,15 +1511,14 @@ entity_collections:
     - the dashboard application
     - status update email
     - the presentation was dense
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/speaker_led_cinematic
     label: Speaker Led Cinematic
-    description: Performance-oriented medium where slides serve as 'glance media' billboards, decoded in < 3 seconds.
+    description: Performance-oriented medium where slides serve as 'glance media' billboards, decoded at a glance before
+      attention returns to the speaker; the decode-time ceiling is library knowledge.
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: CINEMATIC_DECK
     evidence_ids: *id002
   - id: coe:entity/duarte_slidedoc
     label: Duarte Slidedoc
@@ -1568,7 +1526,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: SLIDEDOC
     evidence_ids: *id002
   - id: coe:entity/slopegraph
     label: Slopegraph
@@ -1576,7 +1533,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: SLOPEGRAPH
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/chart_type
@@ -1693,7 +1649,6 @@ entity_collections:
     description: Data visualization chart types and graph formats
     home_domain: visual_communication
     status: canonical
-    ner_label: CHART_TYPE
     examples:
     - bar chart
     - line graph
@@ -1716,7 +1671,6 @@ entity_collections:
     - box plot
     - lollipop chart
     - step chart
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/layout_pattern
@@ -1826,7 +1780,6 @@ entity_collections:
     description: Slide and page layout structures
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_PATTERN
     examples:
     - title slide
     - two-column layout
@@ -1841,7 +1794,6 @@ entity_collections:
     anti_examples:
     - behavior pattern
     - design pattern (software)
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/visual_element
@@ -1949,7 +1901,6 @@ entity_collections:
     description: Individual design elements and components
     home_domain: visual_communication
     status: canonical
-    ner_label: VISUAL_ELEMENT
     examples:
     - icon
     - logo
@@ -1963,7 +1914,6 @@ entity_collections:
     - callout box
     - pull quote
     - data table
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/color_reference
@@ -2052,7 +2002,6 @@ entity_collections:
     description: Color names, values, and palette references
     home_domain: visual_communication
     status: canonical
-    ner_label: COLOR_REFERENCE
     examples:
     - brand blue
     - primary color
@@ -2064,7 +2013,6 @@ entity_collections:
     - cool palette
     - high contrast
     - muted tones
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/typography_element
@@ -2098,8 +2046,8 @@ entity_collections:
       predicate: coe:resolves
       object_id: coe:entity/extraneous_load_marker
       relationship_weight: expected
-      description: Typographic hierarchy (H1 24-30pt, H2 18-20pt, H3 14-16pt, Body 10-12pt) reduces extraneous load by signaling
-        importance levels and enabling scanning without reading all content (Cognitive Interface, §2.2.1)
+      description: Typographic hierarchy, its size ladder library knowledge, reduces extraneous load by signaling importance
+        levels and enabling scanning without reading all content (Cognitive Interface, §2.2.1)
       statement_id: coe:edge/d446ca0240319cefb341f478
       home_domain: visual_communication
       evidence_ids: *id001
@@ -2108,8 +2056,8 @@ entity_collections:
       object_id: coe:entity/accessibility_feature
       relationship_weight: required
       description: Typography choices (font size, weight, contrast) are critical accessibility features. Sans-serif fonts,
-        adequate contrast, and minimum 18pt sizes support visual accessibility for diverse audiences including those with
-        low vision.
+        adequate contrast, and sizes above the library's floors support visual accessibility for diverse audiences including
+        those with low vision.
       statement_id: coe:edge/8d455db0cdb4fc3d1cdd62c3
       home_domain: visual_communication
       evidence_ids: *id001
@@ -2146,7 +2094,6 @@ entity_collections:
     description: Font and text styling references
     home_domain: visual_communication
     status: canonical
-    ner_label: TYPOGRAPHY_ELEMENT
     examples:
     - headline
     - body text
@@ -2158,7 +2105,6 @@ entity_collections:
     - subtitle
     - bullet point
     - numbered list
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/design_principle
@@ -2365,8 +2311,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/visual_content_format
       relationship_weight: expected
-      description: All visuals must serve instructional purpose per coherence principle; decorative images reduce recall with
-        negative effect size (d=-0.30)
+      description: All visuals must serve instructional purpose per coherence principle; decorative images reduce recall, the
+        effect size library knowledge
       statement_id: coe:edge/632aad25705a030ae1ec8d42
       home_domain: visual_communication
       evidence_ids: *id001
@@ -2393,7 +2339,6 @@ entity_collections:
     description: Visual design principles and concepts
     home_domain: visual_communication
     status: canonical
-    ner_label: DESIGN_PRINCIPLE
     examples:
     - visual hierarchy
     - white space
@@ -2414,7 +2359,6 @@ entity_collections:
     - guiding principle
     - first principle
     - business principle
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/slide_transition
@@ -2516,7 +2460,6 @@ entity_collections:
     description: Motion and transition types
     home_domain: visual_communication
     status: canonical
-    ner_label: ANIMATION_TYPE
     examples:
     - fade in
     - slide in
@@ -2528,7 +2471,6 @@ entity_collections:
     - ease in
     - ease out
     - parallax
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/slide_type
@@ -2555,7 +2497,6 @@ entity_collections:
     description: Common presentation slide categories
     home_domain: visual_communication
     status: canonical
-    ner_label: SLIDE_TYPE
     examples:
     - title slide
     - agenda slide
@@ -2567,7 +2508,6 @@ entity_collections:
     - thank you slide
     - Q&A slide
     - appendix slide
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/brand_element
@@ -2602,7 +2542,6 @@ entity_collections:
     description: Brand identity components
     home_domain: visual_communication
     status: canonical
-    ner_label: BRAND_ELEMENT
     examples:
     - logo
     - wordmark
@@ -2613,7 +2552,6 @@ entity_collections:
     - visual identity
     - brand assets
     - style guide
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/accessibility_feature
@@ -2720,10 +2658,10 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/microlearning_format
       relationship_weight: required
-      description: 'WCAG 2.1 Level AA compliance is mandatory for microlearning: 4.5:1 contrast, keyboard nav, screen reader
-        compatibility, 200% text resizing per AI Microlearning Guide | WCAG 2.1 AA compliance, keyboard navigation, screen
-        reader compatibility, 200% text resizing, and neurodiversity accommodations are mandatory for microlearning per AI
-        Microlearning Guide'
+      description: 'WCAG 2.1 Level AA compliance is mandatory for microlearning: contrast at the library''s floors, keyboard
+        nav, screen reader compatibility, text resizing to the library''s scale per AI Microlearning Guide | WCAG 2.1 AA
+        compliance, keyboard navigation, screen reader compatibility, text resizing, and neurodiversity accommodations are
+        mandatory for microlearning per AI Microlearning Guide'
       statement_id: coe:edge/253293655246919f050e3935
       home_domain: visual_communication
       evidence_ids: *id001
@@ -2731,8 +2669,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/visual_content_format
       relationship_weight: expected
-      description: WCAG 2.1 AA compliance required for visual content including 4.5:1 contrast ratios, alt text, captions,
-        and mobile optimisation
+      description: WCAG 2.1 AA compliance required for visual content including contrast at the library's floors, alt text,
+        captions, and mobile optimisation
       statement_id: coe:edge/4262322def0c511706777da5
       home_domain: visual_communication
       evidence_ids: *id001
@@ -2750,7 +2688,6 @@ entity_collections:
     description: Accessibility-related visual elements
     home_domain: visual_communication
     status: canonical
-    ner_label: ACCESSIBILITY_FEATURE
     examples:
     - alt text
     - color contrast
@@ -2760,7 +2697,6 @@ entity_collections:
     - focus indicator
     - aria label
     - reading order
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/quality_indicator
@@ -2813,7 +2749,6 @@ entity_collections:
     description: Visual quality assessment markers
     home_domain: visual_communication
     status: canonical
-    ner_label: QUALITY_INDICATOR
     examples:
     - high resolution
     - pixelated
@@ -2824,7 +2759,6 @@ entity_collections:
     - rough draft
     - stock photo
     - custom illustration
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/semiotic_arrangement
@@ -2917,7 +2851,6 @@ entity_collections:
       and Ideal/Real (top/bottom axis) positioning as meaning-making structures
     home_domain: visual_communication
     status: canonical
-    ner_label: SEMIOTIC_ARRANGEMENT
     examples:
     - The 'before' state on the left, the 'after' state on the right.
     - Aspirational vision at the top, operational detail below.
@@ -2926,7 +2859,6 @@ entity_collections:
     - Current state left, future state right.
     - Headline promise at top; evidence below the fold.
     - Problem in the upper-left; solution in the lower-right.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/text_density_marker
@@ -2961,8 +2893,8 @@ entity_collections:
       predicate: coe:limits
       object_id: coe:entity/quality_indicator
       relationship_weight: expected
-      description: Cognitive debt directly degrades slide quality scores — slides scoring below 34/50 on the Slide Cognitive
-        Score indicate redesign-level debt per Slide Deck Design Playbook
+      description: Cognitive debt directly degrades slide quality scores — slides scoring below the library's refinement band
+        on the Slide Cognitive Score indicate redesign-level debt per Slide Deck Design Playbook
       statement_id: coe:edge/e637a9a6e5967b2eb9af637a
       home_domain: visual_communication
       evidence_ids: *id001
@@ -2990,7 +2922,6 @@ entity_collections:
       wall-of-text, and bullet overload violations of Cognitive Load Theory
     home_domain: visual_communication
     status: canonical
-    ner_label: COGNITIVE_DEBT
     examples:
     - Wall of text — no visual relief.
     - 12 bullets on one slide.
@@ -3000,7 +2931,6 @@ entity_collections:
     - Every point in paragraph form instead of structured format.
     - Text box repeating the chart title word for word.
     - Slide with 8 data points and no clear hierarchy.
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/visual_narrative_element
@@ -3119,7 +3049,6 @@ entity_collections:
       visual structure, and annotation markers
     home_domain: visual_communication
     status: canonical
-    ner_label: VISUAL_NARRATIVE
     examples:
     - 'Action title: ''Costs fell 40% after automation — proving ROI in 90 days'''
     - 'Dot-dash label: ''Market Share — up 12pp since 2024'''
@@ -3127,7 +3056,6 @@ entity_collections:
     - 'Data annotation: ''↑23% YoY — above market benchmark'''
     - 'Insight label: ''The key takeaway: speed, not scale, is the differentiator'''
     - 'Headline title: ''Three facts that will change your view of this market'''
-    confidence_threshold: 0.67
     evidence_ids: *id002
   - id: coe:entity/focal_point
     label: Focal Point
@@ -3137,7 +3065,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: FOCAL_POINT
     examples:
     - the hero image is the focal point
     - make the chart the focal point of this slide
@@ -3145,17 +3072,15 @@ entity_collections:
     anti_examples:
     - focus on the main topic
     - the focal area of the research
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/white_space
     label: White Space
     description: An active design tool, not empty space. Functions include isolating elements, providing breathing room, and
-      strengthening focal points by eliminating nearby attention competitors. Recommended 40-60% of slide area. Margin whitespace
-      15-20% each side.
+      strengthening focal points by eliminating nearby attention competitors; its recommended share of slide area and
+      margin widths are library knowledge.
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: WHITE_SPACE
     examples:
     - add more white space around the chart
     - the slide needs breathing room
@@ -3163,7 +3088,6 @@ entity_collections:
     anti_examples:
     - the white paper
     - blank slide
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/chartjunk
     label: Chartjunk
@@ -3173,7 +3097,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: CHARTJUNK
     examples:
     - remove the 3D effects from the chart
     - the gridlines are too heavy
@@ -3181,7 +3104,6 @@ entity_collections:
     anti_examples:
     - the chart data
     - junk email
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/color_scheme_type
     label: Color Scheme Type
@@ -3189,7 +3111,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: COLOR_SCHEME_TYPE
     examples:
     - use a monochromatic color scheme
     - the palette is complementary
@@ -3197,7 +3118,6 @@ entity_collections:
     anti_examples:
     - the color of the text
     - scheme for the project
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/gestalt_principles_viz
     label: Gestalt Principles Viz
@@ -3206,7 +3126,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: GESTALT_VIZ
     evidence_ids: *id002
   - id: coe:entity/preattentive_attributes
     label: Preattentive Attributes
@@ -3215,16 +3134,14 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: PREATTENTIVE
     evidence_ids: *id002
   - id: coe:entity/signage_principle
     label: Signage Principle
-    description: Design principle stating that slides are a 'glance media' (like billboards) and must pass the 3-second Glance
-      Test.
+    description: Design principle stating that slides are a 'glance media' (like billboards) and must pass the Glance Test;
+      the decode-time ceiling is library knowledge.
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: SIGNAGE_PRIN
     evidence_ids: *id002
   home_domain: visual_communication
   status: canonical
@@ -3236,167 +3153,112 @@ entity_collections:
   entities:
   - id: coe:entity/visual_communication/dimension_hero_banner
     label: 'Layout Spec: Hero Banner'
-    description: 'Visual layout standard: Hero Banner = {''aspect_ratio'': ''3:1'', ''width_px'': 1200, ''height_px'': 400,
-      ''padding_px'': 48}.'
+    description: Layout standard for the hero banner frame family; its dimensions are the library's hero banner layout
+      specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_presentation_slide
     label: 'Layout Spec: Presentation Slide'
-    description: 'Visual layout standard: Presentation Slide = {''aspect_ratio'': ''16:9'', ''width_px'': 1920, ''height_px'':
-      1080, ''safe_margin_px'': {''top'': 80, ''bottom'': 80, ''left'': 100, ''right'': 100}}.'
+    description: Layout standard for the widescreen presentation slide frame family; its dimensions and safe margins are the
+      library's presentation slide layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_document_page
     label: 'Layout Spec: Document Page'
-    description: 'Visual layout standard: Document Page = {''standard'': ''A4'', ''width_mm'': 210, ''height_mm'': 297, ''margins_mm'':
-      {''top'': 25, ''bottom'': 25, ''left'': 25, ''right'': 25}}.'
+    description: Layout standard for the A4 document page frame family; its dimensions and margins are the library's document
+      page layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_interactive_scenario
     label: 'Layout Spec: Interactive Scenario'
-    description: 'Visual layout standard: Interactive Scenario = {''max_width_px'': 600, ''container_padding_px'': 40, ''choice_button'':
-      {''min_height_px'': 48, ''padding_vertical_px'': 12, ''padding_horizontal_px'': 16, ''gap_between_buttons_px'': 12},
-      ''avatar'': {''size_px'': 64, ''border_width_px'': 2, ''gap_to_text_px'': 16}, ''feedback_panel'': {''padding_px'':
-      16, ''border_width_px'': 1}, ''design_bounds'': {''max_choices_per_node'': 3, ''remediation_loop_limit'': 2}}.'
+    description: Layout standard for the interactive branching scenario frame family; its dimensions, controls and design
+      bounds are the library's interactive scenario layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_quizzes
     label: 'Layout Spec: Quizzes'
-    description: 'Visual layout standard: Quizzes = {''question_spacing_px'': 24, ''choice_item'': {''padding_vertical_px'':
-      10, ''padding_horizontal_px'': 12, ''min_touch_target_px'': 44}, ''matrix_question'': {''cell_padding_px'': 8, ''header_font_size_pt'':
-      11}, ''design_bounds'': {''preferred_options_count'': 3}}.'
+    description: Layout standard for the quiz frame family; its spacing, touch targets and design bounds are the library's
+      quiz layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_lottie_animation
     label: 'Layout Spec: Lottie Animation'
-    description: 'Visual layout standard: Lottie Animation = {''default_width'': 300, ''default_height'': 300}.'
+    description: Layout standard for the Lottie animation frame family; its default canvas is the library's Lottie animation
+      layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_svg_canvas
     label: 'Layout Spec: Svg Canvas'
-    description: 'Visual layout standard: Svg Canvas = {''default_width'': 800, ''default_height'': 600, ''title_font_size_px'':
-      24, ''subtitle_font_size_px'': 14, ''label_font_size_px'': 12}.'
+    description: Layout standard for the SVG canvas frame family; its default canvas and type sizes are the library's SVG
+      canvas layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_knowledge_organiser
     label: 'Layout Spec: Knowledge Organiser'
-    description: 'Visual layout standard: Knowledge Organiser = {''paper_size'': ''A4'', ''flipped'': True, ''min_margin_top_cm'':
-      0.6, ''min_margin_bottom_cm'': 0.6, ''min_margin_left_cm'': 0.8, ''min_margin_right_cm'': 0.8, ''grid'': {''row_gutter_pt'':
-      8.0, ''column_gutter_pt'': 10.0, ''base_gutter_pt'': 6.0}, ''grid_templates'': {''1'': {''columns'': ''1fr'', ''rows'':
-      ''1fr''}, ''2'': {''columns'': ''1fr, 1fr'', ''rows'': ''1fr''}, ''3'': {''columns'': ''1fr, 1fr, 1fr'', ''rows'': ''1fr''},
-      ''4'': {''columns'': ''1fr, 1fr'', ''rows'': ''1fr, 1fr''}, ''6'': {''columns'': ''1fr, 1fr, 1fr'', ''rows'': ''1fr,
-      1fr''}, ''8'': {''columns'': ''1fr, 1fr, 1fr, 1fr'', ''rows'': ''1fr, 1fr''}}, ''title_banner'': {''radius_pt'': 6.0,
-      ''padding_top_pt'': 10.0, ''padding_bottom_pt'': 10.0, ''top_stroke_width_pt'': 4.0, ''font_size_pt'': 24.0}, ''cards'':
-      {''border_radius_pt'': 8.0, ''padding_pt'': 8.0, ''stroke_width_pt'': 1.5}, ''sub_cards'': {''border_radius_pt'': 5.0,
-      ''left_stroke_width_pt'': 4.5, ''padding_top_pt'': 7.0, ''padding_bottom_pt'': 7.0, ''padding_left_pt'': 10.0, ''padding_right_pt'':
-      10.0, ''row_gutter_pt'': 6.0}, ''header_banner'': {''border_radius_pt'': 5.0, ''padding_top_pt'': 7.0, ''padding_bottom_pt'':
-      7.0, ''padding_left_pt'': 10.0, ''font_size_pt'': 15.0}}.'
+    description: Layout standard for the landscape A4 knowledge organiser frame family; its page, grid, banner and card
+      measurements are the library's knowledge organiser layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_retrieval_grid
     label: 'Layout Spec: Retrieval Grid'
-    description: 'Visual layout standard: Retrieval Grid = {''paper_size'': ''A4'', ''flipped'': False, ''min_margin_top_cm'':
-      1.2, ''min_margin_bottom_cm'': 1.2, ''min_margin_left_cm'': 1.2, ''min_margin_right_cm'': 1.2, ''grid'': {''row_gutter_pt'':
-      8.0, ''column_gutter_pt'': 10.0}, ''title_banner'': {''radius_pt'': 6.0, ''padding_top_pt'': 10.0, ''padding_bottom_pt'':
-      10.0, ''top_stroke_width_pt'': 4.0, ''font_size_pt'': 20.0}, ''instructions_box'': {''border_radius_pt'': 5.0, ''padding_pt'':
-      9.0, ''left_stroke_width_pt'': 4.0, ''font_size_pt'': 10.0}, ''column_header'': {''border_radius_pt'': 5.0, ''padding_top_pt'':
-      6.0, ''padding_bottom_pt'': 6.0, ''font_size_pt'': 12.0}, ''question_cell'': {''border_radius_pt'': 6.0, ''padding_pt'':
-      8.0, ''stroke_width_pt'': 1.0, ''left_stroke_width_pt'': 4.0, ''row_gutter_pt'': 6.0, ''prompt_font_size_pt'': 10.0,
-      ''marks_font_size_pt'': 8.0, ''answer_space_cm'': 1.1, ''answer_rule_width_pt'': 0.5, ''border_token'': ''neutral_light'',
-      ''answer_rule_token'': ''neutral_dark''}, ''bucket_tokens'': {''last_lesson'': ''primary'', ''last_week'': ''secondary'',
-      ''last_term'': ''accent_3'', ''last_year'': ''accent_1'', ''red'': ''danger'', ''amber'': ''warning'', ''green'': ''success''},
-      ''design_bounds'': {''max_columns'': 4, ''max_questions_per_column'': 5}}.'
+    description: Layout standard for the portrait A4 retrieval grid frame family; its page, grid, banner, cell and token
+      measurements are the library's retrieval grid layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_flowchart
     label: 'Layout Spec: Flowchart'
-    description: 'Visual layout standard: Flowchart = {''default_width_px'': 600, ''default_height_px'': 400, ''node'': {''padding_px'':
-      10, ''stroke_width_px'': 2, ''font_size_pt'': 11}}.'
+    description: Layout standard for the flowchart frame family; its default canvas and node measurements are the library's
+      flowchart layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_timeline
     label: 'Layout Spec: Timeline'
-    description: 'Visual layout standard: Timeline = {''default_width_px'': 800, ''default_height_px'': 200, ''item'': {''node_radius_pt'':
-      6.0, ''stroke_width_pt'': 2.0, ''font_size_pt'': 10.0}}.'
+    description: Layout standard for the timeline frame family; its default canvas and item measurements are the library's
+      timeline layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_puzzles
     label: 'Layout Spec: Puzzles'
-    description: 'Visual layout standard: Puzzles = {''word_search'': {''cell_size_cm'': 0.9, ''stroke_width_pt'': 0.5, ''container_radius_pt'':
-      4.0, ''container_padding_pt'': 16.0, ''container_stroke_width_pt'': 1.0, ''grid_font_size_pt'': 12.0, ''list_font_size_pt'':
-      11.0}, ''sudoku'': {''cell_size_cm'': 1.1, ''thick_stroke_width_pt'': 1.5, ''thin_stroke_width_pt'': 0.5, ''font_size_pt'':
-      14.0}, ''crossword'': {''cell_size_cm'': 0.8, ''stroke_width_pt'': 0.5, ''grid_size'': 13, ''font_size_pt'': 11.0, ''number_font_size_pt'':
-      7.0}}.'
+    description: Layout standard for the word-search, sudoku and crossword puzzle frame families; their cell, stroke and type
+      measurements are the library's puzzle layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/dimension_master_sow
     label: 'Layout Spec: Master Sow'
-    description: 'Visual layout standard: Master Sow = {''paper_size'': ''A4'', ''flipped'': True, ''min_margin_top_cm'':
-      1.4, ''min_margin_bottom_cm'': 1.4, ''min_margin_left_cm'': 1.4, ''min_margin_right_cm'': 1.4, ''stack_gutter_pt'':
-      12.0, ''section_gutter_pt'': 16.0, ''title_banner'': {''radius_pt'': 6.0, ''padding_top_pt'': 12.0, ''padding_bottom_pt'':
-      12.0, ''top_stroke_width_pt'': 4.0, ''font_size_pt'': 18.0, ''subtitle_font_size_pt'': 10.0}, ''meta_strip'': {''border_radius_pt'':
-      5.0, ''padding_pt'': 8.0, ''font_size_pt'': 9.0, ''column_gutter_pt'': 8.0, ''fill_token'': ''neutral_light'', ''stroke_token'':
-      ''primary'', ''left_stroke_width_pt'': 3.0}, ''section_header'': {''font_size_pt'': 12.0, ''padding_bottom_pt'': 4.0,
-      ''rule_width_pt'': 1.0, ''rule_token'': ''primary'', ''fill_token'': ''neutral_dark''}, ''body_text'': {''font_size_pt'':
-      9.0, ''line_leading_em'': 1.25}, ''callout_box'': {''border_radius_pt'': 5.0, ''padding_pt'': 9.0, ''font_size_pt'':
-      9.0, ''left_stroke_width_pt'': 3.0, ''fill_token'': ''neutral_light'', ''stroke_token'': ''secondary''}, ''two_column'':
-      {''column_gutter_pt'': 10.0, ''card_radius_pt'': 5.0, ''card_padding_pt'': 8.0, ''card_stroke_width_pt'': 0.5, ''card_fill_token'':
-      ''white'', ''card_stroke_token'': ''neutral_light'', ''heading_font_size_pt'': 10.0}, ''table'': {''header_fill_token'':
-      ''neutral_dark'', ''header_text_token'': ''white'', ''header_font_size_pt'': 8.0, ''cell_font_size_pt'': 8.0, ''cell_padding_pt'':
-      5.0, ''row_alt_fill_token'': ''neutral_light'', ''stroke_width_pt'': 0.5, ''stroke_token'': ''neutral_light'', ''border_radius_pt'':
-      4.0}, ''chip'': {''radius_pt'': 3.0, ''padding_x_pt'': 5.0, ''padding_y_pt'': 2.0, ''font_size_pt'': 7.5, ''fill_token'':
-      ''primary'', ''text_token'': ''white''}, ''lesson_row'': {''number_fill_token'': ''primary'', ''number_text_token'':
-      ''white'', ''number_radius_pt'': 3.0, ''number_size_pt'': 8.0, ''title_font_size_pt'': 9.0, ''meta_font_size_pt'': 7.5,
-      ''gutter_pt'': 6.0}, ''design_bounds'': {''max_lessons_preview'': 40, ''max_vocab_per_tier_preview'': 24, ''max_threshold_concepts_preview'':
-      16}}.'
+    description: Layout standard for the landscape A4 master scheme-of-work frame family; its page, banner, strip, section,
+      table, chip and row measurements and design bounds are the library's master scheme-of-work layout specification.
     home_domain: visual_communication
     status: canonical
-    ner_label: LAYOUT_SPEC
     evidence_ids: *id002
   - id: coe:entity/visual_communication/style_style
     label: 'Visual Style: Style'
     description: 'Design system visual style: Style.'
     home_domain: visual_communication
     status: canonical
-    ner_label: VISUAL_STYLE
     evidence_ids: *id002
   - id: coe:entity/visual_communication/style_design
     label: 'Visual Style: Design'
     description: 'Design system visual style: Design.'
     home_domain: visual_communication
     status: canonical
-    ner_label: VISUAL_STYLE
     evidence_ids: *id002
   - id: coe:entity/visual_communication/style_tone_of_voice
     label: 'Visual Style: Tone Of Voice'
     description: 'Design system visual style: Tone Of Voice.'
     home_domain: visual_communication
     status: canonical
-    ner_label: VISUAL_STYLE
     evidence_ids: *id002
   home_domain: visual_communication
   status: canonical
@@ -3415,7 +3277,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: COLOR_SCHEMA
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/opener_slide_design
@@ -3442,7 +3303,6 @@ entity_collections:
       slide must amplify the spoken hook, not compete with it
     home_domain: visual_communication
     status: canonical
-    ner_label: OPENER_SLIDE_DESIGN
     examples:
     - full-bleed image with single statistic overlay
     - black slide with one large number
@@ -3450,6 +3310,5 @@ entity_collections:
     anti_examples:
     - agenda or table of contents slide
     - company logo splash page
-    confidence_threshold: 0.65
     evidence_ids: *id002
   evidence_ids: *id002

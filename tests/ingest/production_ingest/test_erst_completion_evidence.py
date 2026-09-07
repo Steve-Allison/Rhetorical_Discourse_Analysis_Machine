@@ -5,11 +5,12 @@ from pydantic import ValidationError
 
 from rdam.rst.contracts.analysis import DiscourseSignal, RstAnalysis, RstNode, SignalDetectorProvenance
 from rdam.rst.contracts.enums import NodeKindEnum, OutputFormalismEnum, SignalDetectionMethod
-from rdam.rst.contracts.erst import ErstDecoderConfig
-from rdam.rst.english.erst.completer import ErstCompletionTrace
-from rdam.rst.erst.candidates import SecondaryEdgeCandidate
-from rdam.rst.erst.decoder import ErstSecondaryEdgeDecoder
+from workbench.erst.contracts import ErstDecoderConfig
+from workbench.erst.completer import ErstCompletionTrace
+from workbench.erst.candidates import SecondaryEdgeCandidate
+from workbench.erst.decoder import ErstSecondaryEdgeDecoder
 from rdam.ingest import SemanticVersion, Sha256Identity
+from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
 from rdam.ingest.contracts.inference import (
     ComponentFileIdentity,
     CompositeAnalysisIdentity,
@@ -28,12 +29,8 @@ from rdam.ingest.contracts.inference import (
     SupportingSignalEvidence,
 )
 from rdam.ingest.contracts.source import TextSpanAnchor
-from rdam.ingest.parser_result import (
-    _decision_basis,
-    _erst_evidence,
-    _packaged_component,
-    _segmentation_source_from_composite,
-)
+from rdam.ingest.parser_result import segmentation_decision_basis, packaged_component_identity, segmentation_source_from_composite
+from workbench.erst.evidence import build_erst_completion_evidence
 
 
 def test_erst_completion_preserves_accepted_and_rejected_candidate_account() -> None:
@@ -144,7 +141,9 @@ def test_constraint_checks_and_orphan_signals_reflect_decoder_reality() -> None:
         relation_logits=((0.0,), (0.0,), (0.0,), (0.0,)),
         decoded=decoded,
     )
-    evidence = _erst_evidence(trace, _fixture_composite(), document_identity="doc")
+    evidence = build_erst_completion_evidence(trace, _fixture_composite(), policy=DEFAULT_ANALYSIS_POLICY, document_identity="doc")
+    assert all(item.relation.mapping_status is MappingStatus.NOT_MAPPED for item in evidence.candidate_decisions)
+    assert all(item.relation.selected_ontology_concept is None for item in evidence.candidate_decisions)
 
     # Decoder disposition of the four candidates: (1, 2) and (3, 2) accepted,
     # (2, 1) insufficient signal, (1, 3) below threshold. Constraints after
@@ -173,17 +172,17 @@ def test_segmentation_source_recovery_from_composite_identity() -> None:
         component="segmenter",
         reason="input supplied exact presegmented EDUs",
     )
-    assert _segmentation_source_from_composite(presegmented) == "presegmented"
+    assert segmentation_source_from_composite(presegmented) == "presegmented"
 
-    packaged, _ = _packaged_component("segmenter", ("dmrst_parser/predictor.py",))
-    assert _segmentation_source_from_composite(packaged) == "deterministic_sentence_boundary_v1"
+    packaged, _ = packaged_component_identity("segmenter", ("dmrst_parser/predictor.py",))
+    assert segmentation_source_from_composite(packaged) == "deterministic_sentence_boundary_v1"
 
     mutable_model = MutableComponentIdentity(
         component="segmenter",
         provider_type="FixtureSegmenter",
         reason="segmenter was not loaded from an immutable local model release",
     )
-    assert _segmentation_source_from_composite(mutable_model) == "model"
+    assert segmentation_source_from_composite(mutable_model) == "model"
 
     released_model = ImmutableComponentIdentity(
         component="segmenter",
@@ -199,13 +198,13 @@ def test_segmentation_source_recovery_from_composite_identity() -> None:
             ),
         ),
     )
-    assert _segmentation_source_from_composite(released_model) == "model"
+    assert segmentation_source_from_composite(released_model) == "model"
 
 
-def test_decision_basis_preserves_model_segmentation() -> None:
-    assert _decision_basis("presegmented") == "presegmented"
-    assert _decision_basis("model") == "model"
-    assert _decision_basis("deterministic_sentence_boundary_v1") == "deterministic_rule"
+def testsegmentation_decision_basis_preserves_model_segmentation() -> None:
+    assert segmentation_decision_basis("presegmented") == "presegmented"
+    assert segmentation_decision_basis("model") == "model"
+    assert segmentation_decision_basis("deterministic_sentence_boundary_v1") == "deterministic_rule"
 
 
 def _signal(

@@ -106,14 +106,6 @@ def analysis_outcome_semantic_projection(outcome: BaseModel) -> dict[str, Any]:
         if not isinstance(parser_result, BaseModel):
             raise TypeError("analysis parser result is not a contract model")
         semantic_payload["parser_result"] = parser_result_semantic_projection(parser_result)
-    recombination = getattr(semantic, "recombination", None)
-    if recombination is not None:
-        if not isinstance(recombination, BaseModel):
-            raise TypeError("analysis recombination receipt is not a contract model")
-        semantic_payload["recombination"] = recombination.model_dump(
-            mode="python",
-            exclude={"unit_durations_ms"},
-        )
     return {
         "contract": contract,
         "contract_version": contract_version,

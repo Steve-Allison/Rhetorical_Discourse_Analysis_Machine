@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/learning/taxonomies
   title: Learning — Taxonomies
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: learning
@@ -774,7 +774,7 @@ taxonomies:
     - coe:concept/cognitive_load_taxonomy/content_modality
     id: coe:concept/cognitive_load_taxonomy/content_modality/slide_presentation
     label: Slide Presentation
-    description: 'Slide-based content whose primary load risks are text overload, split attention, and redundancy — guideline caps of 40 words, 7 bullets, and 4 data series per slide'
+    description: 'Slide-based content whose primary load risks are text overload, split attention, and redundancy; its word, bullet and data-series caps are library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -783,7 +783,7 @@ taxonomies:
     - coe:concept/cognitive_load_taxonomy/content_modality
     id: coe:concept/cognitive_load_taxonomy/content_modality/video_content
     label: Video Content
-    description: 'Video or animation content risking temporal misalignment and information dump — segments kept to 2-6 minutes with at most 10-15 words of on-screen text'
+    description: 'Video or animation content risking temporal misalignment and information dump; its segment length and on-screen text caps are library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -792,7 +792,7 @@ taxonomies:
     - coe:concept/cognitive_load_taxonomy/content_modality
     id: coe:concept/cognitive_load_taxonomy/content_modality/written_document
     label: Written Document
-    description: 'Written or eLearning document content risking walls of text and undefined jargon — paragraphs capped at 4 sentences and sections at 6 concepts'
+    description: 'Written or eLearning document content risking walls of text and undefined jargon; its paragraph and section caps are library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -801,7 +801,7 @@ taxonomies:
     - coe:concept/cognitive_load_taxonomy/content_modality
     id: coe:concept/cognitive_load_taxonomy/content_modality/interactive_module
     label: Interactive Module
-    description: 'Interactive eLearning content risking navigation confusion and interactivity overload — at most 3 interactions per screen'
+    description: 'Interactive eLearning content risking navigation confusion and interactivity overload; its interactions-per-screen cap is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -954,7 +954,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/structural_granularity
     id: coe:concept/content_architecture_taxonomy/structural_granularity/module_level
     label: Module Level
-    description: 'A distinct unit of instruction organised around a cluster of related learning objectives, typically 30-90 minutes'
+    description: 'A distinct unit of instruction organised around a cluster of related learning objectives; its duration band is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -963,7 +963,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/structural_granularity
     id: coe:concept/content_architecture_taxonomy/structural_granularity/topic_level
     label: Topic Level
-    description: 'A major subject area or concept group within a module, typically 10-30 minutes'
+    description: 'A major subject area or concept group within a module; its duration band is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -972,7 +972,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/structural_granularity
     id: coe:concept/content_architecture_taxonomy/structural_granularity/segment_level
     label: Segment Level
-    description: 'A self-contained portion of content, typically one pedagogical sequence stage of 2-10 minutes'
+    description: 'A self-contained portion of content, typically one pedagogical sequence stage; its duration band is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -981,7 +981,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/structural_granularity
     id: coe:concept/content_architecture_taxonomy/structural_granularity/scene_level
     label: Scene Level
-    description: 'A single view, shot, or screen state within a segment, typically 15-120 seconds'
+    description: 'A single view, shot, or screen state within a segment; its duration band is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -997,7 +997,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/pedagogical_function
     id: coe:concept/content_architecture_taxonomy/pedagogical_function/hook_and_opening
     label: Hook And Opening
-    description: 'Stage 1 — attention-grabbing introduction that motivates learners and creates relevance, typically 30-90 seconds'
+    description: 'Stage 1 — attention-grabbing introduction that motivates learners and creates relevance; its duration is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1006,7 +1006,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/pedagogical_function
     id: coe:concept/content_architecture_taxonomy/pedagogical_function/roadmap
     label: Roadmap
-    description: 'Stage 2 — advance organiser previewing what the learner will cover, establishing expectations and a mental framework, typically 30-60 seconds'
+    description: 'Stage 2 — advance organiser previewing what the learner will cover, establishing expectations and a mental framework; its duration is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1015,7 +1015,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/pedagogical_function
     id: coe:concept/content_architecture_taxonomy/pedagogical_function/pre_training
     label: Pre Training
-    description: 'Stage 3 — foundational vocabulary and prerequisite concepts taught before the main complexity, typically 1-3 minutes'
+    description: 'Stage 3 — foundational vocabulary and prerequisite concepts taught before the main complexity; its duration is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1024,7 +1024,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/pedagogical_function
     id: coe:concept/content_architecture_taxonomy/pedagogical_function/core_instruction
     label: Core Instruction
-    description: 'Stage 4 — primary content delivery: the main explanatory, demonstrative, or exploratory material, typically 3-15 minutes per segment'
+    description: 'Stage 4 — primary content delivery: the main explanatory, demonstrative, or exploratory material; its segment duration is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1033,7 +1033,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/pedagogical_function
     id: coe:concept/content_architecture_taxonomy/pedagogical_function/practice_and_retrieval
     label: Practice And Retrieval
-    description: 'Stage 5 — in-line knowledge checks, activities, and retrieval practice embedded within or after core content, typically 1-3 minutes per check'
+    description: 'Stage 5 — in-line knowledge checks, activities, and retrieval practice embedded within or after core content; its check duration is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1042,7 +1042,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/pedagogical_function
     id: coe:concept/content_architecture_taxonomy/pedagogical_function/summary_and_reflection
     label: Summary And Reflection
-    description: 'Stage 6 — consolidation of key points and personal reflection on how to apply the learning, typically 1-2 minutes'
+    description: 'Stage 6 — consolidation of key points and personal reflection on how to apply the learning; its duration is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1051,7 +1051,7 @@ taxonomies:
     - coe:concept/content_architecture_taxonomy/pedagogical_function
     id: coe:concept/content_architecture_taxonomy/pedagogical_function/assessment_and_closure
     label: Assessment And Closure
-    description: 'Stage 7 — summative evaluation and transition to next learning or application, typically 2-5 minutes'
+    description: 'Stage 7 — summative evaluation and transition to next learning or application; its duration is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1159,7 +1159,7 @@ taxonomies:
   - in_scheme: coe:artifact/learning/content_format_taxonomy
     id: coe:concept/content_format_taxonomy/duration_band
     label: duration_band
-    description: Content duration classification from nano (< 2 min) to extended (> 4 hours)
+    description: Content duration classification ordered from nano through extended; the band boundaries are library knowledge
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1168,7 +1168,7 @@ taxonomies:
     - coe:concept/content_format_taxonomy/duration_band
     id: coe:concept/content_format_taxonomy/duration_band/nano
     label: Nano
-    description: 'Under 2 minutes — a single fact or concept, such as a knowledge burst'
+    description: 'The shortest band — a single fact or concept, such as a knowledge burst'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1177,7 +1177,7 @@ taxonomies:
     - coe:concept/content_format_taxonomy/duration_band
     id: coe:concept/content_format_taxonomy/duration_band/micro
     label: Micro
-    description: '2-10 minutes — a single-objective microlearning unit'
+    description: 'The microlearning band — a single-objective microlearning unit'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1186,7 +1186,7 @@ taxonomies:
     - coe:concept/content_format_taxonomy/duration_band
     id: coe:concept/content_format_taxonomy/duration_band/short
     label: Short
-    description: '10-30 minutes — a focused topic treatment or practice drill'
+    description: 'The short band — a focused topic treatment or practice drill'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1195,7 +1195,7 @@ taxonomies:
     - coe:concept/content_format_taxonomy/duration_band
     id: coe:concept/content_format_taxonomy/duration_band/medium
     label: Medium
-    description: '30-90 minutes — a full learning module or coaching session'
+    description: 'The medium band — a full learning module or coaching session'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1204,7 +1204,7 @@ taxonomies:
     - coe:concept/content_format_taxonomy/duration_band
     id: coe:concept/content_format_taxonomy/duration_band/long
     label: Long
-    description: '90 minutes to 4 hours — a workshop or multi-module block'
+    description: 'The long band — a workshop or multi-module block'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1213,7 +1213,7 @@ taxonomies:
     - coe:concept/content_format_taxonomy/duration_band
     id: coe:concept/content_format_taxonomy/duration_band/extended
     label: Extended
-    description: 'Over 4 hours — a full course, bootcamp, or multi-day programme'
+    description: 'The longest band — a full course, bootcamp, or multi-day programme'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1830,7 +1830,7 @@ taxonomies:
     - coe:concept/scoring_taxonomy/score_tier
     id: coe:concept/scoring_taxonomy/score_tier/exemplary
     label: Exemplary
-    description: 'Exceeds expectations and models best practice — numeric range 90-100'
+    description: 'Exceeds expectations and models best practice; its score band is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1839,7 +1839,7 @@ taxonomies:
     - coe:concept/scoring_taxonomy/score_tier
     id: coe:concept/scoring_taxonomy/score_tier/proficient
     label: Proficient
-    description: 'Meets expectations — solid and effective; numeric range 70-89'
+    description: 'Meets expectations — solid and effective; its score band is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1848,7 +1848,7 @@ taxonomies:
     - coe:concept/scoring_taxonomy/score_tier
     id: coe:concept/scoring_taxonomy/score_tier/developing
     label: Developing
-    description: 'Approaching expectations — shows promise but needs refinement; numeric range 50-69'
+    description: 'Approaching expectations — shows promise but needs refinement; its score band is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1857,7 +1857,7 @@ taxonomies:
     - coe:concept/scoring_taxonomy/score_tier
     id: coe:concept/scoring_taxonomy/score_tier/needs_improvement
     label: Needs Improvement
-    description: 'Below expectations — fundamental issues to address; numeric range 0-49'
+    description: 'Below expectations — fundamental issues to address; its score band is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -1944,7 +1944,7 @@ taxonomies:
     - coe:concept/scoring_taxonomy/assessment_scope
     id: coe:concept/scoring_taxonomy/assessment_scope/microlearning_level
     label: Microlearning Level
-    description: 'Evaluation of a short microlearning sequence — embedded quick checks and micro-feedback loops spanning 3-7 minutes of content'
+    description: 'Evaluation of a short microlearning sequence — embedded quick checks and micro-feedback loops; the span it covers is library knowledge'
     home_domain: learning
     status: canonical
     evidence_ids: *id001
@@ -2051,7 +2051,7 @@ taxonomies:
     - coe:concept/scoring_taxonomy/evaluative_function
     id: coe:concept/scoring_taxonomy/evaluative_function/transfer_evaluation
     label: Transfer Evaluation
-    description: 'Assesses application of learning in the workplace after the formal learning event, at Kirkpatrick L3-L4, typically at 30, 60, and 90 days'
+    description: 'Assesses application of learning in the workplace after the formal learning event, at Kirkpatrick L3-L4, at the booster intervals the library states'
     home_domain: learning
     status: canonical
     evidence_ids: *id001

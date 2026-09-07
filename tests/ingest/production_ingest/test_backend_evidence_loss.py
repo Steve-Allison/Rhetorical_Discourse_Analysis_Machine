@@ -23,7 +23,9 @@ def test_deliberate_evidence_substitution_is_rejected(
         primary = semantic.primary_inference.model_copy(update={"structure_decisions": ()})
         semantic = semantic.model_copy(update={"primary_inference": primary})
     elif lost_field == "analysis_anchor":
-        semantic = semantic.model_copy(update={"anchors": semantic.anchors[:-1]})
+        with pytest.raises(ValueError, match="anchors are derived"):
+            semantic.model_copy(update={"anchors": semantic.anchors[:-1]})
+        return
     else:
         validation = semantic.validation.model_copy(update={"checks": semantic.validation.checks[:-1]})
         semantic = semantic.model_copy(update={"validation": validation})

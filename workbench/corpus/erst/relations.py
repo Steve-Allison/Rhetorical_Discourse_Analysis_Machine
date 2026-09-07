@@ -3,7 +3,7 @@
 from collections.abc import Mapping
 
 from rdam.rst.contracts.enums import RelationSchemeEnum
-from rdam.rst.contracts.erst import CorpusPartition, RawRelationInventory
+from workbench.erst.contracts import CorpusPartition, RawRelationInventory
 from workbench.corpus.erst.corpus import LoadedGumCorpus
 from rdam.rst.ontology.adapter import OntologyAdapter
 

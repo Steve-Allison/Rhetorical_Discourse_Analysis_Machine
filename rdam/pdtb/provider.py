@@ -23,12 +23,14 @@ from rdam import (
     Sha256Identity,
     Technique,
     UnavailableCapability,
+    canonical_json_bytes,
     semantic_sha256,
     technique_curie,
 )
 from rdam.pdtb.interpretation import describe
+from rdam.pdtb.output import PdtbOutput
 from rdam._llm import DEFAULT_OUTPUT_RETRIES, DEFAULT_TRANSPORT_RETRIES, DEFAULT_TRANSPORT_DEADLINE_SECONDS
-from rdam._llm import LlmError, StructuredAnalyst, resolved_model_identity, unavailable_reason
+from rdam._llm import LlmError, StructuredAnalyst, resolved_model_identity, source_locations, unavailable_reason
 from rdam._provider_provenance import (
     llm_provider_failure,
     llm_configuration,
@@ -54,6 +56,18 @@ def source_identity() -> Sha256Identity:
 INSTRUCTIONS: Final = """\
 Analyse the passage using the Penn Discourse Treebank 3.0 annotation framework.
 
+Analyse the whole passage, including both explicit connectives and implicit relations
+between adjacent discourse units. Return every supported binary relation, not just a
+sample. An empty relation list is appropriate only when the passage contains no pair of
+discourse arguments to annotate. Difficulty calculating offsets is not evidence that
+relations are absent: use source-validation feedback to correct the locations of real
+relations rather than dropping those relations to make validation pass.
+
+Use the source_locations tool to obtain exact character offsets for your quotations.
+It searches the unmodified input and returns every literal occurrence. Select the
+occurrence belonging to the intended argument; never guess numerical offsets. You may
+look up all argument and connective quotations together in a single tool call.
+
 Return binary relations with exact Arg1 and Arg2 source spans. Preserve PDTB-3 argument
 labels: for inter-sentential and coordinating relations Arg1 is the left argument and
 Arg2 the right; for intra-sentential subordinating structures Arg2 is the subordinate
@@ -67,6 +81,13 @@ Use exactly these relation types and evidence rules:
 - EntRel: entity coherence only; no connective and no sense.
 - Hypophora: an information-seeking question and its answer; no connective and no sense.
 - NoRel: adjacent material with no discourse relation; no connective and no sense.
+
+Temporal sense direction is defined by the argument labels, not by narrative movement:
+Temporal.Asynchronous.Precedence means Arg1 happens BEFORE Arg2.
+Temporal.Asynchronous.Succession means Arg2 happens BEFORE Arg1.
+Therefore chronological narration from an earlier Arg1 to a later Arg2 is Precedence;
+reverse chronology is Succession. Apply this even when the inferred connective is
+"then" or "afterward". Do not reverse the sense merely because the second event follows.
 
 Use only the PDTB-3 sense labels admitted by the output schema. Preserve multiple senses
 when they hold. Spans are zero-based, half-open Python character offsets and their text
@@ -180,6 +201,7 @@ class PdtbProvider:
                     transport_deadline_seconds=self._transport_deadline_seconds,
                     source_validator=PdtbAnalysis.validate_source,
                 )
+                self._analyst.agent.tool(source_locations)
         return self._analyst
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:
@@ -231,6 +253,7 @@ class PdtbProvider:
                 "instructions_digest": semantic_sha256(INSTRUCTIONS),
             },
         }
+        PdtbOutput.model_validate_json(canonical_json_bytes(payload))
         return NativeTechniqueResult(
             technique=Technique.PDTB,
             formalism_id=FORMALISM_ID,

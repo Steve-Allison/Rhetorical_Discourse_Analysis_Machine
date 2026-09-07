@@ -23,12 +23,14 @@ from rdam import (
     Sha256Identity,
     Technique,
     UnavailableCapability,
+    canonical_json_bytes,
     semantic_sha256,
     technique_curie,
 )
 from rdam.sdrt.interpretation import describe
+from rdam.sdrt.output import SdrtOutput
 from rdam._llm import DEFAULT_OUTPUT_RETRIES, DEFAULT_TRANSPORT_RETRIES, DEFAULT_TRANSPORT_DEADLINE_SECONDS
-from rdam._llm import LlmError, StructuredAnalyst, resolved_model_identity, unavailable_reason
+from rdam._llm import LlmError, StructuredAnalyst, resolved_model_identity, source_locations, unavailable_reason
 from rdam._provider_provenance import (
     llm_provider_failure,
     llm_configuration,
@@ -54,6 +56,10 @@ def source_identity() -> Sha256Identity:
 INSTRUCTIONS: Final = """\
 Analyse the passage as a Segmented Discourse Representation Structure (SDRS).
 
+Use source_locations to obtain exact offsets for your EDU quotations from the unmodified
+source. Look up the quotations together in one call; preserve every real unit when
+correcting offsets. The tool returns all literal occurrences, so choose the intended one.
+
 Return elementary discourse units (EDUs) in source order with exact zero-based, half-open
 character offsets and exact source text. Return complex discourse units (CDUs) explicitly
 when a discourse relation scopes over a group rather than a single EDU. A CDU has at least
@@ -65,6 +71,15 @@ attached/target argument. Preserve the relation's meaningful label and classify 
   Contrast, Parallel, Continuation);
 - subordinating: the target is subordinate to the source (for example Elaboration,
   Explanation, Background, Commentary).
+
+Respect the semantic argument direction independently of source order:
+Explanation(source, target) means the target explains why the source occurred.
+Result(source, target) means the source causes or motivates the target, and is
+coordinating. When a reason or motivation appears before the action it explains,
+use the appropriate forward causal relation; do not label the later action as the
+explanation of its earlier cause. Background(source, target) means the target provides
+background for the source, not the reverse. Preserve these meanings while choosing
+attachments admitted by the right frontier.
 
 Every EDU after the first must attach from the current SDRT right frontier. Non-adjacent
 attachments and CDUs are expected when the discourse requires them. Do not force a tree,
@@ -171,6 +186,7 @@ class SdrtProvider:
                     transport_deadline_seconds=self._transport_deadline_seconds,
                     source_validator=SdrtAnalysis.validate_source,
                 )
+                self._analyst.agent.tool(source_locations)
         return self._analyst
 
     def analyse(self, request: ProviderRequest) -> NativeTechniqueResult:
@@ -222,6 +238,7 @@ class SdrtProvider:
                 "instructions_digest": semantic_sha256(INSTRUCTIONS),
             },
         }
+        SdrtOutput.model_validate_json(canonical_json_bytes(payload))
         return NativeTechniqueResult(
             technique=Technique.SDRT,
             formalism_id=FORMALISM_ID,

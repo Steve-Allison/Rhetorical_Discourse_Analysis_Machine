@@ -93,6 +93,27 @@ def test_comparator_rejects_causal_analytical_changes() -> None:
     ) is DifferenceClass.ANALYTICAL
 
 
+@pytest.mark.parametrize("version", ("3.0.0", "4.0.0"))
+def test_preparation_version_transition_does_not_hide_content_changes(version: str) -> None:
+    before = {
+        "contract": "isanlp_rst.production", "kind": "preparation_outcome",
+        "contract_version": "2.0.0", "semantic": {"text": "Original"},
+    }
+    after = {**before, "contract_version": version, "semantic": {"text": "Invented"}}
+    differences = diff_records(json.dumps(before).encode(), json.dumps(after).encode())
+    by_path = {difference.path: difference.classification for difference in differences}
+    assert by_path["semantic/text"] is DifferenceClass.ANALYTICAL
+    assert by_path["contract_version"] is (
+        DifferenceClass.CONTRACT_VERSION_TRANSITION if version == "3.0.0" else DifferenceClass.ANALYTICAL
+    )
+
+
+def test_version_transition_requires_the_known_envelope() -> None:
+    assert _difference_class(
+        {"contract_version": "2.0.0"}, {"contract_version": "3.0.0"},
+    ) is DifferenceClass.ANALYTICAL
+
+
 @pytest.mark.parametrize("capacity", (None, {"maximum": 512, "unit": "edu_count"}))
 def test_capacity_rename_is_reported_without_hiding_its_values(capacity: object) -> None:
     before = {"semantic": {"analysis_plan": {"parser_capacity": capacity}}}

@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
+from rdam.rst.inference_evidence import NetworkStructureDecision, capture_structure_decision
+
 from . import modules
 from . import segmenters
 from .data import nucs_and_rels
@@ -495,6 +497,8 @@ class ParsingNet(nn.Module):
         generate_tree: bool,
         use_pred_segmentation: bool,
         dataset_index: list[int],
+        *,
+        decision_traces: list[list[NetworkStructureDecision]] | None = None,
     ) -> tuple[object, object, list[list[str]] | None, tuple[list[int], list[int]], list[list[int]]]:
         """
         Input:
@@ -539,6 +543,10 @@ class ParsingNet(nn.Module):
         span_batch: list[list[str]] = []
 
         for i in range(len(edu_breaks)):
+            decisions: list[NetworkStructureDecision] | None = None
+            if decision_traces is not None:
+                decisions = []
+                decision_traces.append(decisions)
             cur_label: list[int] = []
             cur_tree: list[int] = []
             span = ""
@@ -576,12 +584,21 @@ class ParsingNet(nn.Module):
                 cls_idx = self.dataset2classifier[cur_dataset_index]
                 if self.dataset_masks is not None:
                     mask = self.dataset_masks[cls_idx]
-                    relation_weights, _log_relation_weights = self.label_classifier(input_left, input_right, mask=mask)
+                    relation_weights, log_relation_weights = self.label_classifier(input_left, input_right, mask=mask)
                 else:
-                    relation_weights, _log_relation_weights = self.label_classifiers[cls_idx](input_left, input_right)
+                    relation_weights, log_relation_weights = self.label_classifiers[cls_idx](input_left, input_right)
 
                 _, topindex = relation_weights.topk(1)
                 label_idx = int(topindex[0][0])
+                capture_structure_decision(
+                    decisions,
+                    start=0,
+                    end=1,
+                    split=0,
+                    joint_labels=(self.relation_vocab if self.dataset_masks is not None else self.relation_tables[cls_idx]),
+                    selected_class=label_idx,
+                    joint_log_probabilities=log_relation_weights,
+                )
                 tree_batch.append([0])
                 label_batch.append([label_idx])
 
@@ -641,15 +658,24 @@ class ParsingNet(nn.Module):
                         cls_idx = self.dataset2classifier[cur_dataset_index]
                         if self.dataset_masks is not None:
                             mask = self.dataset_masks[cls_idx]
-                            relation_weights, _log_relation_weights = self.label_classifier(
+                            relation_weights, log_relation_weights = self.label_classifier(
                                 input_left, input_right, mask=mask
                             )
                         else:
-                            relation_weights, _log_relation_weights = self.label_classifiers[cls_idx](
+                            relation_weights, log_relation_weights = self.label_classifiers[cls_idx](
                                 input_left, input_right
                             )
                         _, topindex = relation_weights.topk(1)
                         label_idx = int(topindex[0][0])
+                        capture_structure_decision(
+                            decisions,
+                            start=stack_head[0],
+                            end=stack_head[-1],
+                            split=stack_head[0],
+                            joint_labels=(self.relation_vocab if self.dataset_masks is not None else self.relation_tables[cls_idx]),
+                            selected_class=label_idx,
+                            joint_log_probabilities=log_relation_weights,
+                        )
                         cur_label.append(label_idx)
 
                         # For 2 EDU case, we directly point the first EDU as the current parsing tree break
@@ -739,16 +765,26 @@ class ParsingNet(nn.Module):
                         cls_idx = self.dataset2classifier[cur_dataset_index]
                         if self.dataset_masks is not None:
                             mask = self.dataset_masks[cls_idx]
-                            relation_weights, _log_relation_weights = self.label_classifier(
+                            relation_weights, log_relation_weights = self.label_classifier(
                                 input_left_du, input_right_du, mask=mask
                             )
                         else:
-                            relation_weights, _log_relation_weights = self.label_classifiers[cls_idx](
+                            relation_weights, log_relation_weights = self.label_classifiers[cls_idx](
                                 input_left_du, input_right_du
                             )
 
                         _, topindex_label = relation_weights.topk(1)
                         label_idx = int(topindex_label[0][0])
+                        capture_structure_decision(
+                            decisions,
+                            start=stack_head[0],
+                            end=stack_head[-1],
+                            split=tree_predict,
+                            joint_labels=(self.relation_vocab if self.dataset_masks is not None else self.relation_tables[cls_idx]),
+                            selected_class=label_idx,
+                            joint_log_probabilities=log_relation_weights,
+                            split_log_probabilities=log_atten_weights,
+                        )
                         cur_label.append(label_idx)
 
                         # Stacks stuff

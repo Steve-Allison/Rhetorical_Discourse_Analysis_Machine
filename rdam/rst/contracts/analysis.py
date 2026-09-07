@@ -3,8 +3,9 @@
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from types import MappingProxyType
+from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from rdam.rst.contracts.document import ProvenanceRecord
 from rdam.rst.contracts.enums import (
@@ -13,6 +14,7 @@ from rdam.rst.contracts.enums import (
     NodeKindEnum,
     NuclearityPatternEnum,
     OutputFormalismEnum,
+    RelationStructureEnum,
     SignalDetectionMethod,
 )
 
@@ -49,6 +51,21 @@ class PrimaryRelationEdge:
     nuclearity: NuclearityPatternEnum
     confidence: float | None = None
     calibrated: bool = False
+    relation_structure: RelationStructureEnum | None = None
+
+    def __post_init__(self) -> None:
+        expected = (
+            RelationStructureEnum.STRUCTURAL_PSEUDO
+            if self.relation_raw.casefold() == "span"
+            else RelationStructureEnum.MULTINUCLEAR
+            if self.nuclearity is NuclearityPatternEnum.NN
+            else RelationStructureEnum.MONONUCLEAR
+        )
+        if self.relation_structure is not None and self.relation_structure is not expected:
+            raise ValueError("primary relation structure contradicts its native label and nuclearity")
+        if expected is RelationStructureEnum.STRUCTURAL_PSEUDO and (self.confidence is not None or self.calibrated):
+            raise ValueError("structural span links are not independently scored rhetorical decisions")
+        object.__setattr__(self, "relation_structure", expected)
 
 
 @dataclass(frozen=True, slots=True)
@@ -93,6 +110,22 @@ class DiscourseSignal(BaseModel):
     sufficient: bool = True
     status: AnnotationStatusEnum = AnnotationStatusEnum.PREDICTED
     confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    attachment_candidates: tuple[str, ...] = ()
+    attachment_basis: Literal["smallest_enclosing_constituent", "no_applicable_primary_relation"] | None = None
+
+    @model_validator(mode="after")
+    def attachment_evidence_agrees(self) -> Self:
+        if len(self.attachment_candidates) != len(set(self.attachment_candidates)):
+            raise ValueError("signal attachment candidates must be unique")
+        if self.attachment_basis is not None:
+            if (self.attachment_basis == "smallest_enclosing_constituent") != bool(self.attachment_candidates):
+                raise ValueError("signal attachment basis contradicts candidate availability")
+            expected = self.attachment_candidates[0] if len(self.attachment_candidates) == 1 else None
+            if self.edge_id != expected:
+                raise ValueError("lexical candidate attachment must reflect its unambiguous candidate")
+            if self.sufficient or self.confidence is not None:
+                raise ValueError("lexical attachment heuristics cannot claim sufficient evidence or probability")
+        return self
 
     @field_validator("token_ids")
     @classmethod

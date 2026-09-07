@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/narrative/communication_disciplines
   title: Narrative — Communication Disciplines
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: narrative
@@ -34,7 +34,6 @@ entity_collections:
       home_domain: narrative
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: FREYTAGS_PYRAMID
     examples:
     - Freytag's pyramid
     - rising action
@@ -43,7 +42,6 @@ entity_collections:
     - denouement
     anti_examples:
     - pyramid principle
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/save_the_cat
@@ -53,7 +51,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SAVE_THE_CAT
     examples:
     - Save the Cat
     - beat sheet
@@ -61,7 +58,6 @@ entity_collections:
     - All Is Lost beat
     anti_examples:
     - save the cat from the tree
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/story_spine
@@ -71,14 +67,12 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: STORY_SPINE
     examples:
     - story spine
     - once upon a time... until finally
     - because of that
     anti_examples:
     - spine of the book
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/golden_circle
@@ -88,14 +82,12 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: GOLDEN_CIRCLE
     examples:
     - golden circle
     - start with why
     - why, how, what
     anti_examples:
     - golden ratio
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/succes_framework
@@ -105,7 +97,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SUCCES_FRAMEWORK
     examples:
     - SUCCES
     - Made to Stick
@@ -113,7 +104,6 @@ entity_collections:
     - sticky ideas
     anti_examples:
     - success metrics
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/live_speechwriting
@@ -123,7 +113,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SPEECHWRITING
     examples:
     - speechwriting
     - written for the ear
@@ -131,7 +120,6 @@ entity_collections:
     - manuscript speech
     anti_examples:
     - speech recognition
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/narrative/argument_and_audience_disciplines
@@ -159,7 +147,6 @@ entity_collections:
       home_domain: narrative
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: DIALECTIC
     examples:
     - dialectic
     - Socratic method
@@ -167,7 +154,6 @@ entity_collections:
     - dialectical inquiry
     anti_examples:
     - dialect
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/cer_framework
@@ -187,12 +173,10 @@ entity_collections:
       home_domain: narrative
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: CER_FRAMEWORK
     examples:
     - claim-evidence-reasoning
     - CER framework
     - scientific argumentation rubric
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/audience_analysis
@@ -221,7 +205,6 @@ entity_collections:
       home_domain: narrative
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: AUDIENCE_ANALYSIS
     examples:
     - audience analysis
     - audience research
@@ -229,7 +212,6 @@ entity_collections:
     - audience needs assessment
     anti_examples:
     - audience applause
-    confidence_threshold: 0.7
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/audience_design
@@ -239,7 +221,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: AUDIENCE_DESIGN
     examples:
     - audience design
     - common ground
@@ -247,6 +228,5 @@ entity_collections:
     - egocentric speech error
     anti_examples:
     - audience seating design
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery

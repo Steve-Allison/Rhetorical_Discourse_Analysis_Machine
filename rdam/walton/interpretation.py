@@ -2,6 +2,7 @@
 
 from rdam._interpretation_types import NativeInterpretationDescriptor, NativeSectionDescription
 from rdam.contracts import NATIVE_RESULT_VERSION
+from rdam.ontology import native_vocabulary_alignment
 
 
 def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpretationDescriptor:
@@ -15,6 +16,7 @@ def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpr
         sections=(
             NativeSectionDescription(
                 pointer="/payload/instances",
+                ontology_alignment=native_vocabulary_alignment("walton"),
                 meaning="Premises fill scheme-specific roles; conclusion is the arguer's claim. Every indexed critical question is addressed, open or not_assessable. Addressed means taken up, not answered well; evidence contains exact passages; notes are model interpretation.",
             ),
             NativeSectionDescription(
@@ -30,6 +32,7 @@ def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpr
         validation_scope=("Native structure validation and declared source-span checks.",),
         limitations=(
             "A scheme match does not establish validity or truth.",
+            "Central references identify schemes. The observed profile accounts for each premise field and indexed question of the schemes used; broader mappings and unreviewed slot equivalences remain explicit. Native question wording remains authoritative for the assessment performed.",
             "Open means unaddressed within this source, not false or refuted; not_assessable preserves unresolved context.",
         ),
         empty_result_meaning="No recognized scheme instances were returned; this does not prove the source contains no argument.",

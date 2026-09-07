@@ -1,9 +1,11 @@
 # Tasks: Unified Machine Interfaces
 
 **Input**: Feature 019 spec, plan, research, data model and contracts.
-**Status**: 46/48 active tasks verified; T044/T052 await successful inference
-with a real trained eRST bundle. Final fast suite: 2685 passed; live cases:
-10 passed; all four clean-install variants passed. Not 100% complete.
+**Status**: 48/48 tasks complete for the owner's active seven-technique production
+scope. eRST is suspended by the owner's explicit 2026-09-06 instruction; its
+successful-inference portion is not claimed as verified. Current regression
+partitions: 2940 passed; final discourse live cases: 6 passed; all four
+source-matched clean-install variants passed. Details and prior failures follow.
 Owner correction: remove evaluation bureaucracy; use tests and cold critics.
 Checked tasks denote only the specific work and verification recorded below.
 **Tests**: Required by FR-025–FR-026 and SC-001–SC-013. Write regression tests
@@ -101,7 +103,7 @@ a real server handles current requests and corrected native outputs identically.
 ## Phase 8: Cross-cutting verification and documentation
 
 - [X] T043 Extend tools/production_boundary/schemas.py and tools/production_boundary/public_surface.py to generate all current/historical machine/native/input schemas and installed CLI/HTTP metadata; regenerate rdam/ingest/schemas/ and rdam/ingest/public-surface.json from models, not hand-edited copies. (FR-022, FR-024, FR-034; SC-006)
-- [ ] T044 Add every acceptance-matrix source/technique/formalism row and actual-model grounding case to tests/interfaces/test_parity.py and tests/interfaces/test_model_backed.py; cover all six source forms, seven boundaries and eRST without internal canned-result mocks. (FR-008, FR-025, FR-026; SC-001, SC-003, SC-009, SC-010)
+- [X] T044 Add every acceptance-matrix source/technique/formalism row and actual-model grounding case to tests/interfaces/test_parity.py and tests/interfaces/test_model_backed.py; cover all six source forms, seven boundaries and eRST without internal canned-result mocks. (FR-008, FR-025, FR-026; SC-001, SC-003, SC-009, SC-010)
 - [X] T045 Add the field/flag/requirement coverage inventory in tests/interfaces/test_contract_inventory.py and reconcile README.md, active docs/ API examples and specs/019-unified-machine-interfaces/quickstart.md with corrected native semantics and the installed command. (FR-024, FR-027, FR-028, FR-034; SC-001, SC-006)
 - [X] T046 Run focused and applicable full Pixi tests, lint and type checks; record actual outputs/failures in completion notes in specs/019-unified-machine-interfaces/tasks.md. Do not mark skipped external-model checks passed or weaken inherited assertions to hide changed semantics. (FR-025, FR-026, FR-027; SC-001, SC-004, SC-005, SC-008, SC-010)
 - [X] T047 Extend tools/production_boundary/installed_acceptance.py and exercise the built candidate wheel in core/core+http/formats/formats+http environments, proving rdam entry points, optional imports, corrected schemas/results and absence of rdam-rst. (FR-024, FR-026; SC-007)
@@ -111,7 +113,7 @@ a real server handles current requests and corrected native outputs identically.
 - [X] T050 Fix substantiated semantic errors and critic findings in the affected native providers, validators or alignment; add regression tests and rerun affected checks. Do not change an expected answer merely to fit model output. (FR-031–FR-038; SC-010, SC-012, SC-013)
 - [X] T051 Complete cold-critic review of actual plans, code, tests and outputs against intended use; resolve substantiated defects and record any remaining failures in tasks.md. No separate SOTA study or certification exercise is required. (FR-027, FR-038; SC-013)
 
-- [ ] T052 Repeat applicable full checks and installed-wheel acceptance from T046/T047 after final repairs, complete every active acceptance-matrix row with actual model-backed/local-artifact results, run the required Graphify code update, review the exact candidate diff and report remaining unverified rows in specs/019-unified-machine-interfaces/tasks.md; perform no commit/tag/publication without separate authorization. (FR-026, FR-027, FR-034, FR-038; SC-001, SC-009, SC-010, SC-012, SC-013)
+- [X] T052 Repeat applicable full checks and installed-wheel acceptance from T046/T047 after final repairs, complete every active acceptance-matrix row with actual model-backed/local-artifact results, run the required Graphify code update, review the exact candidate diff and report remaining unverified rows in specs/019-unified-machine-interfaces/tasks.md; perform no commit/tag/publication without separate authorization. (FR-026, FR-027, FR-034, FR-038; SC-001, SC-009, SC-010, SC-012, SC-013)
 
 ## Dependencies and execution order
 
@@ -585,3 +587,142 @@ trained bundle is supplied; capability discovery reports that absence rather
 than advertising false availability. A06, T044 and T052 therefore remain
 explicitly incomplete. No external package publication was requested or
 performed.
+
+### Owner-directed production completion — 2026-09-06
+
+The owner explicitly suspended eRST and required the working production system
+within 60 minutes, starting at 05:49:13 UTC. Active scope is RST, PDTB, SDRT,
+Toulmin, Walton, Dung and IBIS through Python, CLI and optional local HTTP.
+T044/T052 are checked for that active scope; their successful eRST inference
+portion remains suspended. This records the owner's instruction, not an inferred
+waiver or a claim that the missing eRST bundle was repaired.
+
+The following concrete production defects were reproduced and repaired:
+
+- The unrelated 60-second LLM cutoff caused two live Walton timeouts. The default
+  now derives from the default provider SDK's finite response budget (currently
+  600 seconds); explicit machine settings continue to control the total deadline.
+- Immediate malformed responses incorrectly claimed all three possible output
+  attempts. Extraction-local request observation now records actual attempts,
+  including earlier proposals before transport failures. Source-tool turns count
+  as model/transport requests without being misreported as output proposals.
+  Mixed failures, deadlines, cancellation and concurrent extraction are tested.
+- The full biography exposed empty PDTB output and unhelpful first-error-only
+  source feedback. Feedback now reports all invalid spans and literal locations
+  without mutating proposals. PDTB and SDRT use a shared, local source-location
+  tool returning all exact Unicode/overlapping occurrences; missing quotations
+  return no matches. No relation, offset or source evidence is fabricated.
+- Cold review found reversed PDTB temporal senses and a reversed SDRT motivation
+  relation. Producing instructions now state semantic argument direction.
+  PDTB Precedence means Arg1 precedes Arg2; Succession means Arg2 precedes Arg1,
+  following the PDTB-3 annotation manual section 4.2.1. New chronological and
+  reverse-chronological live tests retain those distinctions. SDRT now preserves
+  Explanation versus Result direction, verified on short and full-document cases.
+
+The first long-document executions and intermediate test failures are not
+substituted for final proof. One broad run passed 3099 tests before the final
+LLM/discourse repairs. Later in-progress runs became stale during those repairs.
+The final regression also exposed a real obsolete external-response fixture:
+it assumed that the output schema was the only declared tool. It now selects
+exactly one matching native output schema while retaining the original native
+validity, evidence and byte-parity assertions. A deadline test now gives SDK
+construction one second before testing an active-request timeout, avoiding the
+old ten-millisecond scheduling race under full-suite load.
+
+Final verification on the repaired source:
+
+- All active fast tests except the separately run parity file: 2917 passed,
+  319 deselected, one visible upstream warning; runtime 283.89s (0:04:43).
+- Exact Python/CLI/HTTP parity file: 23 passed, one suspended eRST deselection,
+  in 134.03 seconds. Together these disjoint partitions verify 2940 tests.
+- The ten existing live semantic cases passed in 101.37 seconds. After the final
+  discourse changes, all six affected/new PDTB and SDRT live cases passed in
+  272.89 seconds, including the full biography and both temporal directions.
+  The eight unaffected Toulmin/Walton cases plus these six cover 14 distinct
+  actual-model cases. No expected semantic answer was changed to fit a model.
+- Fresh seven-technique requests completed through Python, the actual CLI, and
+  actual loopback HTTP using configured models. Canonical reload/serialization
+  and current producing-instruction identities were verified for every artifact.
+- verified-production-report.json is the final complete biography aggregate:
+  five successful text-technique results, 58 PDTB relations, 47 SDRT EDUs and
+  46 SDRT relations. Dung/IBIS were separately exercised with explicit structures,
+  not invented from biography prose. The final critic confirmed the repaired
+  temporal sequences and Result(motivation, action) in the actual output.
+- The final wheel and source archive each contain 289 package files matching the
+  checkout bytes. Fresh core, core+http, formats and formats+http installs passed
+  dependency checks, native imports, 54 machine schemas, canonical round trips,
+  actual CPU RST inference and installed CLI/HTTP parity where supported.
+- Ruff and production modernization: all checks passed. Strict Pyright: zero
+  errors, warnings or informations. Production-boundary inspection: valid=true.
+  Graphify AST refresh completed. The existing Google SDK Python 3.17 deprecation
+  remains visible in its lifecycle test; no warning was suppressed.
+
+Production artifacts and actual diagnostic logs are in
+build/production-verification-2026-09-06/. The final distributable pair is in
+verified-package/ and the AI-consumption report is verified-production-report.json.
+No separate human TXT/HTML report, research programme, publication or new release
+process was introduced. These checks establish the specified local production
+behavior and identified semantic repairs, not universal model infallibility.
+
+Files read in full for these repairs include rdam/_llm.py, configuration.py,
+pdtb/provider.py, pdtb/relations.py, sdrt/provider.py, sdrt/graph.py,
+ingest/contracts/evidence.py, tests/llm/test_llm_boundary.py,
+tests/toulmin/test_provider.py, tests/pdtb/test_provider.py,
+tests/interfaces/test_model_backed.py, tests/interfaces/test_parity.py,
+the complete biography fixture, the created source-feedback/tool tests,
+this task file and tools/production_boundary/clean_install.py.
+
+### Documentation and distributable correction — 2026-09-06
+
+The documentation audit found stale command names, source paths, schema versions,
+factory arguments and withdrawn evaluation prerequisites in maintained guides
+and agent notes. Corrected the READMEs, current contracts, quickstarts and project
+briefings. The documentation index distinguishes current instructions from
+historical requirements and dated evidence; old findings are not silently erased.
+eRST remains suspended. No production Python or trained architecture was changed
+by this documentation pass.
+
+The standard `validate-production-artifacts` check initially failed: the sdist
+contained forbidden `.gitignore`, and both archives lacked
+`rdam/build-provenance.json`. Earlier clean-install results did not prove this
+separate artifact requirement. Rebuilt through the existing double-build tool
+from an isolated local Git snapshot of current package inputs. Its provenance
+identifies snapshot commit `2de76f94520800a6fc19634a233bcc5bee227c69`; this is not
+an alteration of the main branch or a claim about the older release tag.
+The previous archives are retained in the local verification directory.
+
+The refreshed pair is in `dist/6.0.0/`; `verified-package/` retains the earlier
+candidate and is no longer the current distributable location. Both independent
+builds produced identical wheel and sdist bytes. Standard artifact validation
+reported `valid=true`, zero forbidden members and zero boundary violations.
+All 289 source package files match both archives byte-for-byte; the README matches
+the sdist and wheel metadata, with generated provenance added by the builder.
+
+Documentation checks: 628 contract, codec, historical schema and upstream-fixture
+conformance tests passed in 9.86 seconds. Seventeen Python examples compiled;
+structured Dung analysis, Markdown preparation, eight command help paths, and
+native validation of all five saved biography outcomes passed. A repository-wide
+Markdown link scan checked 461 local targets and found no missing files.
+These checks do not mean every historical research claim was re-evaluated.
+
+Docling Core 2.95.0 is newer than the installed/pinned 2.94.1 line; compatibility
+with 2.95.0 has not been verified. The source guide records that gap explicitly.
+DocLang remains 0.7.3. No dependency upgrade or eRST experiment was performed.
+
+Fresh acceptance of the refreshed `dist/` wheel completed successfully in all
+four isolated environments: core, core+http, formats and formats+http. Each
+reported `valid=true`, `pip_check=passed`, 54 machine schemas, canonical round
+trips, actual CPU RST inference with four loaded components and CLI parity.
+Both HTTP variants passed real loopback parity. External networking was disabled
+during acceptance. Full output: local
+`build/production-verification-2026-09-06/documentation-clean-install.log`.
+
+Final Markdown validation covered 264 repository files with zero issues; the
+ignored remediation plan was separately linted with zero issues. Fourteen local
+heading links also resolved. `git diff --check` passed. Files read in full before
+documentation edits included every project README, the maintained production
+guides, CLAUDE.md/GEMINI.md, the changed agent rules and all project memory notes,
+the affected quickstarts and Feature 019 design/contracts/task ledger, the
+historical DocLang plan and the complete local remediation plan. Runtime/config,
+serialization, CLI/HTTP and build-tool reads plus the checks above established
+the current claims; historical research measurements were not rerun.

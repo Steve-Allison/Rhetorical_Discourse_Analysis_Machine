@@ -8,8 +8,8 @@ from rdam.rst.parser import Parser
 from rdam.serialization import schema_models
 
 
-def test_persisted_production_contract_and_schema_ids_are_unchanged() -> None:
-    assert (PRODUCTION_CONTRACT, WRITE_CONTRACT_VERSION) == ("isanlp_rst.production", "2.0.0")
+def test_normalized_contract_keeps_family_and_versions_its_new_shape() -> None:
+    assert (PRODUCTION_CONTRACT, WRITE_CONTRACT_VERSION) == ("isanlp_rst.production", "3.0.0")
     recorded = {
         "analysed-outcome.schema.json",
         "capabilities.schema.json",
@@ -26,7 +26,7 @@ def test_persisted_production_contract_and_schema_ids_are_unchanged() -> None:
         for path in schemas.iterdir() if path.name.endswith(".json")
     }
     assert {name: actual[name] for name in recorded} == {
-        name: f"https://schemas.isanlp-rst.local/production/2.0.0/{name}" for name in recorded
+        name: f"https://schemas.isanlp-rst.local/production/3.0.0/{name}" for name in recorded
     }
     assert set(actual) == recorded | {
         f"machine-{name}.{mode}.schema.json"

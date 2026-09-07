@@ -27,7 +27,7 @@ CONFIG_COMMANDS = ("capabilities", "prepare", "analyse", "serve")
 CONFIG_FLAGS = {
     "--config": "config.json", "--model": "openai:test", "--technique-model": "toulmin=openai:test",
     "--rst-model": "gumrrg", "--model-store": "models", "--release-id": "release",
-    "--rst-relinventory": "eng.erst.gum", "--device": "cpu", "--erst-checkpoint": "checkpoint",
+    "--rst-relinventory": "eng.erst.gum", "--device": "cpu",
     "--rst-evidence-detail": "normalized_distributions", "--rst-marker-refinement": "disabled",
     "--dung-capacity": "2", "--max-workers": "1", "--cache-directory": "cache",
 }
@@ -37,9 +37,9 @@ HTTP_FLAGS = {"--host": "127.0.0.1", "--port": "0", "--max-request-bytes": "1024
 MAPPING_FLAGS = {"--structured", "--formalism", "--technique-model"}
 CURRENT_SCHEMAS = {"request", "preparation-request", "configuration", "preparation", "aggregate", "capabilities",
                    "native-result", "operation-error", "version", "analysis-view", "view-request"}
-HISTORICAL_SCHEMAS = {"aggregate-v1", "capabilities-v1", "native-result-v1", "toulmin-result-v1", "walton-result-v1"}
+HISTORICAL_SCHEMAS = {"aggregate-v1", "capabilities-v1", "native-result-v1", "preparation-v1", "toulmin-result-v1", "walton-result-v1"}
 INPUT_SCHEMAS = {"dung-input", "ibis-input"}
-OUTPUT_SCHEMAS = {f"{technique.value}-result" for technique in Technique}
+OUTPUT_SCHEMAS = {f"{technique.value}-result" for technique in BOUNDARY_TECHNIQUES}
 
 
 def _flags(command: str) -> dict[str, str | None]:
@@ -155,8 +155,8 @@ def request_documents() -> dict[str, dict[str, Any]]:
             "llm": {"model": "openai:test", "output_retries": 0, "transport_retries": 1, "transport_deadline_seconds": 1.5},
             "technique_models": {technique: f"openai:{technique}" for technique in ("pdtb", "sdrt", "toulmin", "walton")},
             "rst": {"model": {"kind": "local_release", "store": "models", "release_id": "release"},
-                    "relinventory": "eng.erst.gum", "device": "cpu", "erst_checkpoint": "checkpoint",
-                    "default_formalism": "erst_graph", "evidence_detail": "normalized_distributions", "marker_refinement": "disabled"},
+                    "relinventory": "eng.erst.gum", "device": "cpu",
+                    "default_formalism": "rst_tree", "evidence_detail": "normalized_distributions", "marker_refinement": "disabled"},
             "dung_capacity": 2, "execution": {"max_workers": 1, "cache_directory": "cache"},
         })))),
     }

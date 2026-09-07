@@ -7,6 +7,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
+from rdam.rst.inference_evidence import (
+    NetworkStructureDecision,
+    NetworkTransitionDecision,
+    capture_structure_decision,
+)
 from .parsing_net import ParsingNet
 from .data import nucs_and_rels
 
@@ -140,9 +145,7 @@ class ParsingNetBottomUp(ParsingNet):
             actions = self._actions(tree)
 
             stack: list[SpanState] = []
-            buffer: deque[SpanState] = deque(
-                (j, j, self._span_embedding(cur_enc, j, j)) for j in range(n_edus)
-            )
+            buffer: deque[SpanState] = deque((j, j, self._span_embedding(cur_enc, j, j)) for j in range(n_edus))
 
             for act, lbl in actions:
                 top1 = stack[-1][2] if len(stack) >= 1 else zero
@@ -193,6 +196,8 @@ class ParsingNetBottomUp(ParsingNet):
         generate_tree: bool,
         use_pred_segmentation: bool,
         dataset_index: list[int],
+        *,
+        decision_traces: list[list[NetworkStructureDecision]] | None = None,
     ) -> tuple[float, float, list[list[str]], tuple[list[int], list[int]], list[list[int]]]:
         encoder_outputs, _, _, predicted_edu_breaks, _ = self.encoder(
             input_sentence,
@@ -213,6 +218,11 @@ class ParsingNetBottomUp(ParsingNet):
         zero = torch.zeros(1, self.hidden_size, device=self._cuda_device)
         for i in range(batch_size):
             n_edus = len(effective_edu_breaks[i])
+            decisions: list[NetworkStructureDecision] | None = None
+            transitions: list[NetworkTransitionDecision] = []
+            if decision_traces is not None:
+                decisions = []
+                decision_traces.append(decisions)
             if n_edus == 1:
                 tree_batch.append([])
                 label_batch.append([])
@@ -221,9 +231,7 @@ class ParsingNetBottomUp(ParsingNet):
 
             cur_enc = encoder_outputs[i][:n_edus]
             stack: list[SpanState] = []
-            buffer: deque[SpanState] = deque(
-                (j, j, self._span_embedding(cur_enc, j, j)) for j in range(n_edus)
-            )
+            buffer: deque[SpanState] = deque((j, j, self._span_embedding(cur_enc, j, j)) for j in range(n_edus))
 
             cur_tree: list[int] = []
             cur_labels: list[int] = []
@@ -236,6 +244,19 @@ class ParsingNetBottomUp(ParsingNet):
                 feat = torch.cat([top2, top1, next_buf], dim=-1)
                 action_scores = self.action_scorer(feat)
                 act = int(torch.argmax(action_scores))  # 0=SHIFT, 1=REDUCE
+                if decisions is not None:
+                    applied = 0 if (act == 0 and buffer) or len(stack) < 2 else 1
+                    transitions.append(
+                        NetworkTransitionDecision(
+                            stack_spans=tuple((start, end) for start, end, _ in stack),
+                            next_edu=buffer[0][0] if buffer else None,
+                            action_logits=tuple(
+                                float(value) for value in action_scores.detach().cpu().reshape(-1).unbind()
+                            ),
+                            selected_action=act,
+                            applied_action=applied,
+                        )
+                    )
 
                 if act == 0 and buffer:
                     stack.append(buffer.popleft())
@@ -254,12 +275,29 @@ class ParsingNetBottomUp(ParsingNet):
                     cls_idx = self.dataset2classifier[dataset_index[i]]
                     if self.dataset_masks is not None:
                         mask = self.dataset_masks[cls_idx]
-                        relation_weights, _ = self.label_classifier(input_left, input_right, mask=mask)
+                        relation_weights, log_relation_weights = self.label_classifier(
+                            input_left, input_right, mask=mask
+                        )
                     else:
-                        relation_weights, _ = self.label_classifiers[cls_idx](input_left, input_right)
+                        relation_weights, log_relation_weights = self.label_classifiers[cls_idx](
+                            input_left, input_right
+                        )
                     label_idx = int(torch.argmax(relation_weights))
                     cur_labels.append(label_idx)
                     cur_tree.append(left[1])
+                    capture_structure_decision(
+                        decisions,
+                        start=left[0],
+                        end=right[1],
+                        split=left[1],
+                        joint_labels=self.relation_vocab
+                        if self.dataset_masks is not None
+                        else self.relation_tables[cls_idx],
+                        selected_class=label_idx,
+                        joint_log_probabilities=log_relation_weights,
+                        transitions=tuple(transitions),
+                    )
+                    transitions.clear()
 
                     if generate_tree:
                         relation_inventory = (

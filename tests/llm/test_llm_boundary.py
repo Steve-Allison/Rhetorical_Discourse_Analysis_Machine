@@ -8,6 +8,7 @@ structure the boundary receives is chosen by the test, not by a live model.
 import asyncio
 from pathlib import Path
 
+from openai import DEFAULT_TIMEOUT
 from pydantic import BaseModel, Field
 from pydantic_ai.exceptions import (
     AgentRunError,
@@ -62,6 +63,12 @@ def _analyst() -> StructuredAnalyst[Finding]:
 
 
 class TestModelConfiguration:
+    def test_default_configuration_does_not_cut_short_the_sdk_response_budget(self) -> None:
+        from rdam.configuration import LlmSettings
+
+        assert DEFAULT_TIMEOUT.read is not None
+        assert LlmSettings().transport_deadline_seconds >= DEFAULT_TIMEOUT.read
+
     def test_the_default_model_is_used_when_nothing_overrides_it(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv(MODEL_ENV, raising=False)
         assert configured_model() == DEFAULT_MODEL
@@ -182,14 +189,13 @@ class TestExtraction:
             output_type=Finding,
             instructions="find the claim",
             model="openai:test",
-            transport_deadline_seconds=0.01,
+            transport_deadline_seconds=1.0,
         )
 
-        async def never_returns(_text: str):
+        async def never_returns(_messages: list[ModelMessage], _info: AgentInfo) -> ModelResponse:
             await asyncio.Future()
 
-        monkeypatch.setattr(analyst, "_run", never_returns)
-        with pytest.raises(LlmError) as caught:
+        with analyst.agent.override(model=FunctionModel(never_returns)), pytest.raises(LlmError) as caught:
             analyst.extract("passage")
         assert caught.value.code == "llm_transport_deadline_exceeded"
         assert caught.value.retryability is Retryability.RETRYABLE
@@ -199,11 +205,10 @@ class TestExtraction:
         analyst = StructuredAnalyst(output_type=Finding, instructions="find", model="openai:test")
         entered = asyncio.Event()
 
-        async def never_returns(_text: str):
+        async def never_returns(_messages: list[ModelMessage], _info: AgentInfo) -> ModelResponse:
             entered.set()
             await asyncio.Future()
 
-        monkeypatch.setattr(analyst, "_run", never_returns)
 
         async def scenario() -> None:
             task = asyncio.create_task(analyst.extract_async("passage"))
@@ -212,7 +217,8 @@ class TestExtraction:
             with pytest.raises(asyncio.CancelledError):
                 await task
 
-        asyncio.run(scenario())
+        with analyst.agent.override(model=FunctionModel(never_returns)):
+            asyncio.run(scenario())
 
 
 class TestFailureAlgebra:
@@ -239,13 +245,15 @@ class TestFailureAlgebra:
         assert caught.value.code == "llm_request_rejected"
         assert caught.value.retryability is expected
 
-    def test_exhausted_output_validation_is_not_retryable(self) -> None:
+    def test_immediate_malformed_response_counts_one_attempt(self) -> None:
         analyst = _analyst()
         error = UnexpectedModelBehavior("exceeded max retries")
         with analyst.agent.override(model=_raising(error)), pytest.raises(LlmError) as caught:
             analyst.extract("passage")
         assert caught.value.code == "llm_output_failed_validation"
         assert caught.value.retryability is Retryability.NOT_RETRYABLE
+        assert caught.value.output_attempts == 1
+        assert caught.value.transport_attempts == 1
         assert "Finding" in caught.value.detail, "the failure names the contract that was not satisfied"
 
     def test_transport_failure_is_retryable(self) -> None:
@@ -303,3 +311,45 @@ class TestNoHiddenNetwork:
     def test_the_agent_is_built_once_and_reused(self) -> None:
         analyst = _analyst()
         assert analyst.agent is analyst.agent
+
+
+class TestObservedAttempts:
+    @pytest.mark.parametrize("ending", ("success", "invalid", "transport", "malformed"))
+    def test_validation_attempts_survive_a_later_transport_failure(self, ending: str) -> None:
+        analyst = StructuredAnalyst(output_type=Finding, instructions="find", model="openai:test", transport_retries=1)
+        calls = 0
+
+        def behaviour(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+            nonlocal calls
+            calls += 1
+            if calls == 2 or (ending == "transport" and calls == 3):
+                raise ModelHTTPError(503, "test", headers={"retry-after": "0"})
+            if ending == "malformed" and calls == 3:
+                raise UnexpectedModelBehavior("malformed provider response")
+            arguments = {"claim": "accepted"} if ending == "success" and calls == 3 else {}
+            return ModelResponse(parts=[ToolCallPart(tool_name=info.output_tools[0].name, args=arguments)])
+
+        with analyst.agent.override(model=FunctionModel(behaviour)):
+            if ending == "success":
+                result = analyst.extract("passage")
+                assert (result.output_attempts, result.transport_attempts) == (2, 3)
+            else:
+                with pytest.raises(LlmError) as caught:
+                    analyst.extract("passage")
+                expected = {"invalid": (4, 5), "transport": (1, 3), "malformed": (2, 3)}
+                assert (caught.value.output_attempts, caught.value.transport_attempts) == expected[ending]
+        assert calls == (5 if ending == "invalid" else 3)
+
+    def test_concurrent_extractions_have_independent_attempt_counts(self) -> None:
+        analyst = _analyst()
+
+        async def behaviour(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+            await asyncio.sleep(0)
+            return ModelResponse(parts=[ToolCallPart(tool_name=info.output_tools[0].name, args={"claim": "accepted"})])
+
+        async def scenario() -> None:
+            results = await asyncio.gather(analyst.extract_async("first"), analyst.extract_async("second"))
+            assert [(result.output_attempts, result.transport_attempts) for result in results] == [(1, 1), (1, 1)]
+
+        with analyst.agent.override(model=FunctionModel(behaviour)):
+            asyncio.run(scenario())

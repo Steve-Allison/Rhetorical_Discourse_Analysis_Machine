@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/business/buyer_personas
   title: Business — Buyer Personas
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: business
@@ -25,7 +25,6 @@ entity_collections:
     home_domain: business
     status: canonical
     evidence_ids: *id001
-    ner_label: BUYER_AUDIENCE
   - id: coe:entity/business/buyer_persona/economic_buyer
     label: Economic Buyer
     description: Executive with budget authority and final purchase approval
@@ -45,8 +44,6 @@ entity_collections:
     - economy class
     - economic conditions
     - economic forecast
-    confidence_threshold: 0.75
-    ner_label: ECONOMIC_BUYER
   - id: coe:entity/business/buyer_persona/technical_buyer
     label: Technical Buyer
     description: Technical evaluator with product veto power based on technical requirements
@@ -66,8 +63,6 @@ entity_collections:
     - technical documentation
     - technical support
     - technical issues
-    confidence_threshold: 0.75
-    ner_label: TECHNICAL_BUYER
   - id: coe:entity/business/buyer_persona/user_buyer
     label: User Buyer
     description: End-user champion who will use the product daily
@@ -87,8 +82,6 @@ entity_collections:
     - user manual
     - user interface
     - user experience
-    confidence_threshold: 0.7
-    ner_label: USER_BUYER
   - id: coe:entity/business/buyer_persona/champion
     label: Champion
     description: Internal advocate driving the purchase decision forward
@@ -103,8 +96,6 @@ entity_collections:
     - initiative owner
     - advocate
     anti_examples: []
-    confidence_threshold: 0.7
-    ner_label: CHAMPION
   - id: coe:entity/business/buyer_persona/influencer
     label: Influencer
     description: Stakeholder who shapes opinions but doesn't have final authority
@@ -121,8 +112,6 @@ entity_collections:
     anti_examples:
     - social media influencer
     - Instagram influencer
-    confidence_threshold: 0.7
-    ner_label: INFLUENCER
   - id: coe:entity/business/buyer_persona/enterprise_buyer
     label: Enterprise Buyer
     description: Large-organisation buyer characterised by complex procurement, multiple stakeholders, and extended sales
@@ -139,8 +128,6 @@ entity_collections:
     anti_examples:
     - enterprise software feature
     - enterprise architecture pattern
-    confidence_threshold: 0.7
-    ner_label: ENTERPRISE_BUYER
   - id: coe:entity/business/buyer_persona/smb_buyer
     label: Smb Buyer
     description: Small or medium business buyer characterised by streamlined decisions, budget sensitivity, and personal rapport
@@ -156,8 +143,6 @@ entity_collections:
     anti_examples:
     - SMB server configuration
     - small business accounting
-    confidence_threshold: 0.7
-    ner_label: SMB_BUYER
 - id: coe:artifact/business/buyer_personas
   label: B2B Enterprise Buyer Personas
   description: CXO decision-makers, buying center archetypes, commercial priorities.
@@ -169,14 +154,12 @@ entity_collections:
     home_domain: business
     status: canonical
     edges: []
-    ner_label: COMPETITOR
     examples:
     - HubSpot
     - Salesforce Marketing Cloud
     - Google Analytics
     - Sitecore
     - Canva
-    confidence_threshold: 0.8
     evidence_ids: &id002
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/business/buyer_personas
@@ -186,12 +169,10 @@ entity_collections:
     home_domain: business
     status: canonical
     edges: []
-    ner_label: COMPETITIVE_CLAIM
     examples:
     - Unlike HubSpot, Adobe offers...
     - While competitors require multiple tools...
     - Adobe is the only platform that...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/objection
     label: Objection
@@ -199,13 +180,11 @@ entity_collections:
     home_domain: business
     status: canonical
     edges: []
-    ner_label: OBJECTION
     examples:
     - Adobe is too expensive
     - We can't afford
     - Too complex for our team
     - We're happy with our current solution
-    confidence_threshold: 0.65
     evidence_ids: *id002
   home_domain: business
   status: canonical
@@ -222,7 +201,6 @@ entity_collections:
       formerly Pardot), Oracle Eloqua, and Mailchimp.
     home_domain: business
     status: canonical
-    ner_label: MARKET_COMPETITOR
     evidence_ids: *id002
   - id: coe:entity/business/competitor_analytics
     label: Analytics Competitors
@@ -231,7 +209,6 @@ entity_collections:
       and Heap.
     home_domain: business
     status: canonical
-    ner_label: MARKET_COMPETITOR
     evidence_ids: *id002
   - id: coe:entity/business/competitor_content_management
     label: Content Management Competitors
@@ -240,7 +217,6 @@ entity_collections:
       Bloomreach, Drupal/Acquia) to SMB publishing platforms (WordPress, Squarespace, Wix).
     home_domain: business
     status: canonical
-    ner_label: MARKET_COMPETITOR
     evidence_ids: *id002
   - id: coe:entity/business/competitor_creative_tools
     label: Creative Tools Competitors
@@ -249,7 +225,6 @@ entity_collections:
       Stability AI, Runway, Descript, Jasper, Typeface).
     home_domain: business
     status: canonical
-    ner_label: MARKET_COMPETITOR
     evidence_ids: *id002
   - id: coe:entity/business/competitor_ecommerce
     label: Ecommerce Competitors
@@ -258,7 +233,6 @@ entity_collections:
       Path.
     home_domain: business
     status: canonical
-    ner_label: MARKET_COMPETITOR
     evidence_ids: *id002
   - id: coe:entity/business/competitor_search_and_discovery
     label: Search and Discovery Competitors
@@ -266,7 +240,6 @@ entity_collections:
       Adobe Target and Adobe Commerce search, principally Algolia.
     home_domain: business
     status: canonical
-    ner_label: MARKET_COMPETITOR
     evidence_ids: *id002
   home_domain: business
   status: canonical
@@ -285,7 +258,6 @@ entity_collections:
     home_domain: business
     status: canonical
     edges: []
-    ner_label: PRE_WIRE
     evidence_ids: *id002
   evidence_ids: *id002
 - id: coe:artifact/business/audience_method_disciplines
@@ -315,12 +287,10 @@ entity_collections:
       home_domain: business
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: EMPATHY_MAP
     examples:
     - empathy map
     - says, thinks, does, feels
     - pains and gains canvas
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/jobs_to_be_done
@@ -340,7 +310,6 @@ entity_collections:
       home_domain: business
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: JTBD
     examples:
     - jobs to be done
     - JTBD
@@ -350,7 +319,6 @@ entity_collections:
     anti_examples:
     - job listing
     - jobs report
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/persona_method
@@ -370,7 +338,6 @@ entity_collections:
       home_domain: business
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: PERSONA_METHOD
     examples:
     - persona construction
     - persona validation
@@ -378,7 +345,6 @@ entity_collections:
     - persona retirement
     anti_examples:
     - stage persona
-    confidence_threshold: 0.7
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/product_demo_delivery
@@ -397,7 +363,6 @@ entity_collections:
       home_domain: business
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: PRODUCT_DEMO
     examples:
     - product demo
     - demo flow
@@ -406,6 +371,5 @@ entity_collections:
     - value delta
     anti_examples:
     - demo tape
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery

@@ -2,7 +2,7 @@
 
 import json
 from collections.abc import Mapping
-from rdam.contracts import AggregateAnalysis, MachineCapabilities, MachinePreparation, ResultOutcome, FailedOutcome
+from rdam.contracts import AggregateAnalysis, MachineCapabilities, MachinePreparation, HistoricalMachinePreparation, ResultOutcome, FailedOutcome
 from rdam.historical import HistoricalAggregateAnalysis, HistoricalResultOutcome, outcome_technique
 
 
@@ -11,7 +11,7 @@ def _safe(value: str) -> str:
 
 
 def summarise(
-    record: AggregateAnalysis | HistoricalAggregateAnalysis | MachinePreparation | MachineCapabilities,
+    record: AggregateAnalysis | HistoricalAggregateAnalysis | MachinePreparation | HistoricalMachinePreparation | MachineCapabilities,
 ) -> str:
     record = type(record).model_validate(record.model_dump())
     lines = [f"{record.contract} {record.contract_version}"]
@@ -52,7 +52,7 @@ def summarise(
             )
             if record.preparation is not None:
                 lines.extend(_preparation_lines(record.preparation))
-    elif isinstance(record, MachinePreparation):
+    elif isinstance(record, (MachinePreparation, HistoricalMachinePreparation)):
         lines.extend(_preparation_lines(record))
     else:
         lines.append(f"model probe: {record.model_probe}; HTTP installed: {record.http_available}")
@@ -63,7 +63,7 @@ def summarise(
     return "\n".join(lines)
 
 
-def _preparation_lines(record: MachinePreparation) -> list[str]:
+def _preparation_lines(record: MachinePreparation | HistoricalMachinePreparation) -> list[str]:
     evidence = record.preparation
     lines = [f"inventory items: {len(evidence.inventory)}"]
     lines.extend(

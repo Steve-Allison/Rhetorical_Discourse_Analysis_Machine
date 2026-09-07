@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/learning/learner_personas
   title: Learning — Learner Personas
-  last_updated: '2026-08-22'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: learning
@@ -23,13 +23,11 @@ entity_collections:
     evidence_ids:
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/learning/learner_personas
-    ner_label: LEARNER_AUDIENCE
   - id: coe:entity/learning/learner_ks3_foundation_explorer
     label: KS3 Foundation Explorer
     description: UK Learner Profile for KS3 Foundation Explorer.
     home_domain: learning
     status: canonical
-    ner_label: LEARNER_PERSONA
     edges: []
     evidence_ids: &id001
     - coe:source/central-configs-legacy-f6eb98ff
@@ -39,7 +37,6 @@ entity_collections:
     description: UK Learner Profile for KS4 GCSE Academic Achiever.
     home_domain: learning
     status: canonical
-    ner_label: LEARNER_PERSONA
     edges: []
     evidence_ids: *id001
   - id: coe:entity/learning/learner_ks4_5_applied_vocational_learner
@@ -47,7 +44,6 @@ entity_collections:
     description: UK Learner Profile for Applied & Vocational Learner.
     home_domain: learning
     status: canonical
-    ner_label: LEARNER_PERSONA
     edges: []
     evidence_ids: *id001
   - id: coe:entity/learning/learner_ks5_academic_specialist
@@ -55,7 +51,6 @@ entity_collections:
     description: UK Learner Profile for KS5 Academic Specialist.
     home_domain: learning
     status: canonical
-    ner_label: LEARNER_PERSONA
     edges: []
     evidence_ids: *id001
   - id: coe:entity/learning/learner_supported_diverse_learner
@@ -63,7 +58,6 @@ entity_collections:
     description: UK Learner Profile for Supported Diverse Learner.
     home_domain: learning
     status: canonical
-    ner_label: LEARNER_PERSONA
     edges: []
     evidence_ids: *id001
   - id: coe:entity/learning/learner_ks2_lower_primary_explorer
@@ -71,7 +65,6 @@ entity_collections:
     description: UK Learner Profile for KS2 Lower Primary Explorer.
     home_domain: learning
     status: canonical
-    ner_label: LEARNER_PERSONA
     edges: []
     evidence_ids: *id001
   - id: coe:entity/learning/learner_ks2_upper_primary_achiever
@@ -79,7 +72,6 @@ entity_collections:
     description: UK Learner Profile for KS2 Upper Primary Achiever.
     home_domain: learning
     status: canonical
-    ner_label: LEARNER_PERSONA
     edges: []
     evidence_ids: *id001
   - id: coe:entity/adult_professional_learner
@@ -91,8 +83,6 @@ entity_collections:
     - corporate employee
     - self-directed learner
     - busy professional
-    confidence_threshold: 0.7
-    ner_label: ADULT_LEARNER
     home_domain: learning
     status: canonical
     evidence_ids: *id001

@@ -3,10 +3,10 @@
 ```python
 from pathlib import Path
 
-from rdam import AggregateRequest, ExecutionPolicy, Technique, production_machine
+from rdam import AggregateRequest, ExecutionSettings, MachineConfig, Technique, production_machine
 
 machine = production_machine(
-    execution_policy=ExecutionPolicy(max_workers=4, cache_directory=Path(".local-rdam-cache")),
+    config=MachineConfig(execution=ExecutionSettings(cache_directory=Path(".local-rdam-cache"))),
 )
 analysis = machine.analyse(
     AggregateRequest.for_text("The proposal is costly, but it may reduce risk.", (Technique.RST, Technique.PDTB))

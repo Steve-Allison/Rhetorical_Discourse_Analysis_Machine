@@ -11,6 +11,7 @@ Run: ``pixi run project-framework-identities``
 """
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -26,11 +27,14 @@ PROJECTION = Path("rdam/resources/framework-identities.json")
 def project(taxonomy_path: Path) -> dict[str, Any]:
     """Build the projection from the vendored taxonomy, failing on any missing concept."""
 
-    document = yaml.safe_load(taxonomy_path.read_text(encoding="utf-8"))
+    source_bytes = taxonomy_path.read_bytes()
+    document = yaml.safe_load(source_bytes.decode("utf-8"))
     taxonomies = [item for item in document["taxonomies"] if item["id"] == SCHEME]
     if len(taxonomies) != 1:
         raise ValueError(f"expected exactly one {SCHEME} in {taxonomy_path}; found {len(taxonomies)}")
     concepts_by_id = {concept["id"]: concept for concept in taxonomies[0]["concepts"]}
+    if len(concepts_by_id) != len(taxonomies[0]["concepts"]):
+        raise ValueError("taxonomy contains duplicate concept identities")
     concepts: dict[str, dict[str, str]] = {}
     for technique in TECHNIQUES:
         matches = [concept for concept_id, concept in concepts_by_id.items() if concept_id.endswith(f"/{technique}")]
@@ -40,6 +44,11 @@ def project(taxonomy_path: Path) -> dict[str, Any]:
         broader = concept.get("broader", [])
         if len(broader) != 1:
             raise ValueError(f"{concept['id']} must have exactly one broader concept; found {len(broader)}")
+        if concept["in_scheme"] != SCHEME:
+            raise ValueError(f"{concept['id']} is outside the requested taxonomy")
+        parent = concepts_by_id.get(broader[0])
+        if parent is None or parent["in_scheme"] != SCHEME or parent["id"] == concept["id"]:
+            raise ValueError(f"{concept['id']} has an unresolved, foreign or self-referencing broader concept")
         concepts[technique] = {
             "id": concept["id"],
             "label": concept["label"],
@@ -51,6 +60,7 @@ def project(taxonomy_path: Path) -> dict[str, Any]:
         # Always the fixed vendored location, never the argument path, so the committed
         # projection is byte-stable wherever it is regenerated.
         "source": VENDORED_TAXONOMY.as_posix(),
+        "source_sha256": hashlib.sha256(source_bytes).hexdigest(),
         "last_updated": str(taxonomies[0]["last_updated"]),
         "concepts": concepts,
     }

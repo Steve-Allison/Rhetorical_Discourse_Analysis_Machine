@@ -8,6 +8,8 @@ from typing import Any, Protocol, cast
 from ._torch_runtime import DeviceProbe as DeviceProbe
 from ._torch_runtime import resolve_device as resolve_device
 from ._torch_runtime import resolve_dtype, torch
+from .inference_evidence import NetworkStructureDecision
+from .contracts.document import DocumentToken, TextSpan
 
 
 class _OffsetToken(Protocol):
@@ -126,6 +128,86 @@ class BasePredictor:
         return positions, originals
 
     @staticmethod
+    def capture_word_tokens(
+        text: str, words: Sequence[str], offsets: Sequence[tuple[int, int]]
+    ) -> tuple[DocumentToken, ...]:
+        """Preserve the words supplied to subword encoding in source coordinates."""
+        tokens: list[DocumentToken] = []
+        previous_end = 0
+        for index, (word, (start, end)) in enumerate(zip(words, offsets, strict=True), start=1):
+            if not (previous_end <= start < end <= len(text)) or text[start:end] != word:
+                raise ValueError(f"Predictor word token {index} does not align with the source")
+            tokens.append(DocumentToken(token_id=index, text=word, start=start, end=end))
+            previous_end = end
+        return tuple(tokens)
+
+    @staticmethod
+    def validate_source_spans(text: str, boundaries: Sequence[TextSpan]) -> None:
+        """Require ordered, non-overlapping spans that quote their exact source."""
+        previous_end = 0
+        for boundary in boundaries:
+            if (
+                not previous_end <= boundary.start < boundary.end <= len(text)
+                or text[boundary.start:boundary.end] != boundary.text
+            ):
+                raise ValueError("source groups must be ordered, disjoint, exact source spans")
+            previous_end = boundary.end
+
+    @staticmethod
+    def capture_token_groups(
+        text: str,
+        tokens: Sequence[DocumentToken],
+        boundaries: Sequence[TextSpan],
+    ) -> tuple[int, ...]:
+        """Resolve sentence/paragraph membership only from exact source boundaries.
+
+        Boundary IDs are their one-based positions in the returned trace. Gaps
+        between groups may contain whitespace, but every input token must fit
+        wholly within a group; a nearest or default group is not evidence.
+        """
+        BasePredictor.validate_source_spans(text, boundaries)
+        memberships: list[int] = []
+        group_index = 0
+        for token in tokens:
+            while group_index < len(boundaries) and token.start >= boundaries[group_index].end:
+                group_index += 1
+            if group_index == len(boundaries):
+                raise ValueError(f"input token {token.token_id} has no containing source group")
+            group = boundaries[group_index]
+            if not group.start <= token.start < token.end <= group.end:
+                raise ValueError(f"input token {token.token_id} crosses or misses a source group")
+            memberships.append(group_index + 1)
+        return tuple(memberships)
+
+    @staticmethod
+    def capture_edu_memberships(
+        text: str, tokens: Sequence[DocumentToken], edus: Sequence[TextSpan],
+    ) -> tuple[tuple[int, ...], ...]:
+        """Retain every exact overlap when a native word crosses an EDU boundary."""
+        BasePredictor.validate_source_spans(text, edus)
+        previous_end = 0
+        for edu in edus:
+            if text[previous_end:edu.start].strip():
+                raise ValueError("EDU spans leave source characters uncovered")
+            previous_end = edu.end
+        if text[previous_end:].strip():
+            raise ValueError("EDU spans leave source characters uncovered")
+        memberships: list[list[int]] = [[] for _ in edus]
+        edu_index = 0
+        for token in tokens:
+            while edu_index < len(edus) and edus[edu_index].end <= token.start:
+                edu_index += 1
+            index = edu_index
+            matched = False
+            while index < len(edus) and edus[index].start < token.end:
+                memberships[index].append(token.token_id)
+                matched = True
+                index += 1
+            if not matched:
+                raise ValueError(f"input token {token.token_id} has no overlapping EDU")
+        return tuple(tuple(token_ids) for token_ids in memberships)
+
+    @staticmethod
     def _map_offset(value: int, positions: list[int], originals: list[int]) -> int:
         if not positions:
             return value
@@ -217,7 +299,7 @@ class BasePredictor:
         for index, (leaf, (start, end)) in enumerate(zip(leaves, spans, strict=True)):
             if not (0 <= start < end <= len(original_text)):
                 raise ValueError(f"EDU span {index} is outside the joined source text")
-            if index and spans[index - 1][1] >= start:
+            if index and spans[index - 1][1] > start:
                 raise ValueError(f"EDU span {index} is not ordered after the preceding EDU")
             leaf.start = start
             leaf.end = end
@@ -240,6 +322,38 @@ class BasePredictor:
             pending_nodes.append((node, True))
             pending_nodes.append((right, False))
             pending_nodes.append((left, False))
+
+    @staticmethod
+    def predicted_edu_source_spans(
+        breaks: Sequence[int], subword_offsets: Sequence[tuple[int, int]],
+        positions: list[int], originals: list[int], text: str,
+    ) -> list[tuple[int, int]]:
+        """Map actual predicted subword boundaries through the tokenizer's offsets.
+
+        Decoded token strings can contain unknown-token spellings or Unicode
+        normalization changes. Their lengths must never determine source spans.
+        """
+        spans: list[tuple[int, int]] = []
+        first = 0
+        for last in breaks:
+            if not first <= last < len(subword_offsets):
+                raise ValueError("Predicted EDU boundary is outside the remaining subwords")
+            offsets = [(start, end) for start, end in subword_offsets[first:last + 1] if start < end]
+            if not offsets:
+                raise ValueError("Predicted EDU contains no source characters")
+            start = BasePredictor._map_offset(offsets[0][0], positions, originals)
+            end = BasePredictor._map_offset(offsets[-1][1], positions, originals)
+            while start < end and text[start].isspace():
+                start += 1
+            while end > start and text[end - 1].isspace():
+                end -= 1
+            if start == end:
+                raise ValueError("Predicted EDU contains only whitespace")
+            spans.append((start, end))
+            first = last + 1
+        if first != len(subword_offsets):
+            raise ValueError("Predicted EDU boundaries do not cover all subwords")
+        return spans
 
     @staticmethod
     def _guess_token_offsets(text: str, tokens: Sequence[str]) -> list[tuple[int, int]]:
@@ -435,11 +549,11 @@ class BasePredictor:
             enabled=(self._dtype is not torch.float32),
         )
 
-    def parse_rst(self, text: str) -> Any:
+    def parse_rst(self, text: str, *, capture_evidence: bool = False) -> Any:
         """Parse raw text into an RST tree. Required override."""
         raise NotImplementedError(f"{type(self).__name__} must implement parse_rst")
 
-    def parse_from_edus(self, edus: Sequence[str]) -> Any:
+    def parse_from_edus(self, edus: Sequence[str], *, capture_evidence: bool = False) -> Any:
         """Parse pre-segmented EDUs into an RST tree. Required override."""
         raise NotImplementedError(f"{type(self).__name__} must implement parse_from_edus")
 
@@ -450,21 +564,21 @@ class BasePredictor:
         self,
         text: str,
         edus: Sequence[Any] | None = None,
-        sentence_boundaries: tuple[Any, ...] = (),
-        paragraph_boundaries: tuple[Any, ...] = (),
+        sentence_boundaries: tuple[TextSpan, ...] = (),
+        paragraph_boundaries: tuple[TextSpan, ...] = (),
         segmentation_source: str | None = None,
     ) -> Any:
         """Run inference and wrap exact substrate and parse evidence in PredictorAnalysisTrace."""
-        from rdam.rst.contracts.document import DocumentToken, Edu as ContractEdu, TextSpan
+        from rdam.rst.contracts.document import Edu as ContractEdu
         from rdam.rst.contracts.trace import PredictorAnalysisTrace
-        from rdam.rst.erst.converter import du_to_analysis
+        from rdam.rst.converter import du_to_analysis
 
         if edus is not None and len(edus) > 0:
             edu_texts = [e.text for e in edus] if isinstance(edus[0], ContractEdu) else [str(e) for e in edus]
-            res = self.parse_from_edus(edu_texts)
+            res = self.parse_from_edus(edu_texts, capture_evidence=True)
             used_source = segmentation_source or "presegmented"
         else:
-            res = self.parse_rst(text)
+            res = self.parse_rst(text, capture_evidence=True)
             used_source = segmentation_source or "model"
 
         root_unit = res["rst"][0]
@@ -472,88 +586,65 @@ class BasePredictor:
 
         import razdel
 
-        sentences = list(razdel.sentenize(text))
-        if not sentences:
-            sentence_spans = [TextSpan(start=0, end=len(text), text=text)]
-        else:
-            sentence_spans = [TextSpan(start=s.start, end=s.stop, text=s.text) for s in sentences]
+        resolved_sentences = sentence_boundaries or tuple(
+            TextSpan(start=sentence.start, end=sentence.stop, text=sentence.text)
+            for sentence in razdel.sentenize(text)
+        )
+        resolved_paragraphs = paragraph_boundaries or (TextSpan(start=0, end=len(text), text=text),)
 
-        raw_tokens = list(razdel.tokenize(text))
+        raw_tokens = res.get("analysis_tokens")
+        if not isinstance(raw_tokens, tuple) or any(
+            not isinstance(token, DocumentToken) for token in cast(tuple[object, ...], raw_tokens)
+        ):
+            raise ValueError("predictor did not return its input word tokens")
+        input_tokens = cast(tuple[DocumentToken, ...], raw_tokens)
+        sentence_ids = self.capture_token_groups(text, input_tokens, resolved_sentences)
+        paragraph_ids = self.capture_token_groups(text, input_tokens, resolved_paragraphs)
         tokens: list[DocumentToken] = []
-        sentence_index = 0
-        for idx, t in enumerate(raw_tokens):
-            while sentence_index + 1 < len(sentence_spans) and t.start >= sentence_spans[sentence_index].end:
-                sentence_index += 1
-            sentence = sentence_spans[sentence_index]
-            s_id = sentence_index + 1 if sentence.start <= t.start and t.stop <= sentence.end else 1
+        for t, sentence_id, paragraph_id in zip(input_tokens, sentence_ids, paragraph_ids, strict=True):
             tokens.append(
                 DocumentToken(
-                    token_id=idx + 1,
+                    token_id=t.token_id,
                     text=t.text,
                     start=t.start,
-                    end=t.stop,
-                    sentence_id=s_id,
-                    paragraph_id=1,
+                    end=t.end,
+                    sentence_id=sentence_id,
+                    paragraph_id=paragraph_id,
                 )
             )
 
         leaves: list[Any] = []
         self._collect_leaf_units(root_unit, leaves)
-        leaf_tok_ids: list[list[int]] = [[] for _ in leaves]
-        leaf_spans = [
-            (
-                leaf.start if getattr(leaf, "start", None) is not None else 0,
-                leaf.end if getattr(leaf, "end", None) is not None else len(leaf.text),
-            )
-            for leaf in leaves
-        ]
-        leaf_index = 0
-        for tok in tokens:
-            while leaf_index + 1 < len(leaf_spans) and tok.start >= leaf_spans[leaf_index][1]:
-                leaf_index += 1
-            if not leaf_spans:
-                continue
-            l_start, l_end = leaf_spans[leaf_index]
-            if tok.start >= l_start and tok.end <= l_end:
-                leaf_tok_ids[leaf_index].append(tok.token_id)
-                continue
-            candidate_indices = range(max(0, leaf_index - 1), min(len(leaf_spans), leaf_index + 2))
-            best_index = min(
-                candidate_indices,
-                key=lambda index: min(
-                    abs(tok.start - leaf_spans[index][0]),
-                    abs(tok.end - leaf_spans[index][1]),
-                    abs(tok.start - leaf_spans[index][1]),
-                ),
-            )
-            leaf_tok_ids[best_index].append(tok.token_id)
+        leaf_spans = tuple(TextSpan(start=leaf.start, end=leaf.end, text=leaf.text) for leaf in leaves)
+        leaf_tok_ids = self.capture_edu_memberships(text, tokens, leaf_spans)
 
         contract_edus: list[ContractEdu] = []
-        for idx, leaf in enumerate(leaves):
-            l_start = leaf.start if getattr(leaf, "start", None) is not None else 0
-            l_end = leaf.end if getattr(leaf, "end", None) is not None else len(leaf.text)
+        for idx, span in enumerate(leaf_spans):
             contract_edus.append(
                 ContractEdu(
                     edu_id=idx + 1,
-                    text=leaf.text,
-                    start=l_start,
-                    end=l_end,
+                    text=span.text,
+                    start=span.start,
+                    end=span.end,
                     token_ids=tuple(sorted(leaf_tok_ids[idx])),
                 )
             )
 
-        resolved_sentences = tuple(sentence_boundaries) if sentence_boundaries else tuple(sentence_spans)
-        resolved_paragraphs = (
-            tuple(paragraph_boundaries) if paragraph_boundaries else (TextSpan(start=0, end=len(text), text=text),)
+        raw_decisions = res.get("network_decisions")
+        if not isinstance(raw_decisions, tuple):
+            raise ValueError("predictor did not return captured network decision evidence")
+        if any(
+            not isinstance(decision, NetworkStructureDecision) for decision in cast(tuple[object, ...], raw_decisions)
+        ):
+            raise ValueError("predictor did not return captured network decision evidence")
+        structure_decisions = cast(tuple[NetworkStructureDecision, ...], raw_decisions)
+        self._validate_structure_decisions(root_unit, structure_decisions)
+        joint_inventory = (
+            structure_decisions[0].joint_labels if structure_decisions else tuple(getattr(self, "relation_table", ()))
         )
-
-        raw_inventory: list[str] = []
-        for item in getattr(self, "relation_table", ()):
-            base = item.split("_")[0] if "_" in item else item
-            if base not in raw_inventory:
-                raw_inventory.append(base)
-
-        structure_decisions = tuple(self._collect_structure_decisions(root_unit, tuple(raw_inventory)))
+        if any(decision.joint_labels != joint_inventory for decision in structure_decisions):
+            raise ValueError("network class inventory changed within one document")
+        raw_inventory = tuple(dict.fromkeys(label.rpartition("_")[0] for label in joint_inventory))
 
         return PredictorAnalysisTrace(
             root_unit=root_unit,
@@ -567,13 +658,14 @@ class BasePredictor:
             relation_inventory=tuple(raw_inventory),
         )
 
-    def _collect_structure_decisions(self, unit: Any, rel_table: tuple[str, ...]) -> list[Any]:
-        from rdam.rst.contracts.trace import ParsedRstTreeEvidence, ParsedRstTreeSpan
-
-        decisions: list[Any] = []
+    @staticmethod
+    def _validate_structure_decisions(unit: Any, decisions: tuple[NetworkStructureDecision, ...]) -> None:
+        """Check captured choices against the converted tree without inventing scores."""
+        by_span = {(decision.start, decision.end): decision for decision in decisions}
+        if len(by_span) != len(decisions):
+            raise ValueError("duplicate network constituent evidence")
         spans: dict[int, tuple[int, int]] = {}
-        relation_indexes = {relation: index for index, relation in enumerate(rel_table)}
-        relation_casefold = {relation.casefold(): relation for relation in rel_table}
+        visited: set[tuple[int, int]] = set()
         leaf_index = 0
         pending = [(unit, False)]
         while pending:
@@ -591,49 +683,22 @@ class BasePredictor:
                 pending.append((right, False))
                 pending.append((left, False))
                 continue
-
-            start_idx, left_end = spans[id(left)]
-            _right_start, end_idx = spans[id(right)]
-            split_idx = left_end
-
-            nuc = getattr(node, "nuclearity", "NS") or "NS"
-            rel = getattr(node, "relation", "elaboration") or "elaboration"
-            if "_" in rel:
-                rel = rel.split("_")[0]
-            canonical_rel = relation_casefold.get(rel.casefold(), rel)
-            proba = float(getattr(node, "proba", 1.0) or 1.0)
-
-            span = ParsedRstTreeSpan(
-                start=start_idx,
-                end=end_idx,
-                split=split_idx,
-                nuclearity=nuc,
-                relation=canonical_rel,
-                score=proba,
-            )
-            split_candidates = tuple(range(start_idx, end_idx)) if end_idx > start_idx else (split_idx,)
-            split_logits = tuple(1.0 if idx == split_idx else 0.0 for idx in split_candidates)
-            nuc_classes = ("NS", "SN", "NN")
-            nuc_idx = nuc_classes.index(nuc) if nuc in nuc_classes else 0
-            nuclearity_logits = tuple(1.0 if idx == nuc_idx else 0.0 for idx in range(3))
-
-            if canonical_rel in relation_indexes:
-                rel_idx = relation_indexes[canonical_rel]
-                relation_logits = tuple(1.0 if idx == rel_idx else 0.0 for idx in range(len(rel_table)))
-            else:
-                relation_logits = tuple(1.0 if idx == 0 else 0.0 for idx in range(max(1, len(rel_table))))
-
-            decisions.append(
-                ParsedRstTreeEvidence(
-                    span=span,
-                    split_candidates=split_candidates,
-                    split_logits=split_logits,
-                    nuclearity_logits=nuclearity_logits,
-                    relation_logits=relation_logits,
-                )
-            )
-            spans[id(node)] = (start_idx, end_idx)
-        return decisions
+            start, split = spans[id(left)]
+            _, end = spans[id(right)]
+            decision = by_span.get((start, end))
+            if decision is None:
+                raise ValueError("decoded constituent has no captured network decision")
+            relation, _, nuclearity = decision.joint_labels[decision.selected_class].rpartition("_")
+            if (
+                decision.split != split
+                or relation.casefold() != node.relation.casefold()
+                or nuclearity.upper() != node.nuclearity.upper()
+            ):
+                raise ValueError("captured network decision contradicts the decoded tree")
+            visited.add((start, end))
+            spans[id(node)] = (start, end)
+        if visited != by_span.keys():
+            raise ValueError("network evidence contains constituents absent from the decoded tree")
 
     def _collect_leaf_units(self, unit: Any, leaves: list[Any]) -> None:
         pending = [unit]

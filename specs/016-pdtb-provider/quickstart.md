@@ -1,5 +1,10 @@
 # Quickstart: PDTB Provider
 
+Current native integrity/version corrections are recorded in
+[Feature 019](../019-unified-machine-interfaces/contracts/native-integrity.md).
+Model execution requires configured credentials; discovery alone does not verify
+remote service availability.
+
 ```python
 from rdam import ProviderRequest, SourceIdentity
 from rdam.pdtb import PdtbProvider

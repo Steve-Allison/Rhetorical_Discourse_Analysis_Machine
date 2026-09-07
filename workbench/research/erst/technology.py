@@ -9,7 +9,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from rdam.rst._version import PACKAGE_VERSION
-from rdam.rst.contracts.erst import TokenizerCompatibilityReceipt
+from workbench.erst.contracts import TokenizerCompatibilityReceipt
 from workbench.research.erst.contracts import MandatoryExperimentSystem
 
 TECHNOLOGY_MATRIX_SCHEMA_VERSION = "1.0"

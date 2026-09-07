@@ -52,7 +52,6 @@ def _install_and_run(
     parity_baseline: Path | None,
     base_python: Path,
     release_id: str | None,
-    erst_checkpoint: Path | None,
     expected_version: str,
 ) -> dict[str, object]:
     with tempfile.TemporaryDirectory(prefix=f"rdam-{name}-") as directory:
@@ -78,8 +77,6 @@ def _install_and_run(
         ]
         if release_id is not None:
             command.extend(("--release-id", release_id))
-        if erst_checkpoint is not None:
-            command.extend(("--erst-checkpoint", str(erst_checkpoint)))
         if "http" in extras:
             command.append("--http")
         if "formats" in extras:
@@ -145,7 +142,6 @@ def main() -> int:
     parser.add_argument("--parity-baseline", type=Path)
     parser.add_argument("--base-python", type=Path, default=Path(sys.executable))
     parser.add_argument("--release-id")
-    parser.add_argument("--erst-checkpoint", type=Path)
     args = parser.parse_args()
     if args.full and args.release_id is None:
         raise ValueError("full clean-install certification requires --release-id")
@@ -175,9 +171,6 @@ def main() -> int:
             parity_baseline=args.parity_baseline.resolve() if args.parity_baseline is not None else None,
             base_python=args.base_python.resolve(),
             release_id=args.release_id,
-            erst_checkpoint=(
-                args.erst_checkpoint.resolve() if args.erst_checkpoint is not None else None
-            ),
             expected_version=str(wheel_version),
         )
         for name in ("core", "core+http", "formats", "formats+http")

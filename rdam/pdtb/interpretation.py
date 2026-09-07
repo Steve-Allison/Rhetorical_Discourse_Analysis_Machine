@@ -2,6 +2,7 @@
 
 from rdam._interpretation_types import NativeInterpretationDescriptor, NativeSectionDescription
 from rdam.contracts import NATIVE_RESULT_VERSION
+from rdam.ontology import pdtb_sense_alignment
 
 
 def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpretationDescriptor:
@@ -15,6 +16,7 @@ def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpr
         sections=(
             NativeSectionDescription(
                 pointer="/payload/relations",
+                ontology_alignment=pdtb_sense_alignment(),
                 meaning="Arg1 and Arg2 retain PDTB roles and exact spans. Explicit/AltLex/AltLexC carry declared source signals; Implicit has inferred connective text, not quotations. EntRel/Hypophora/NoRel legitimately have no senses.",
             ),
             NativeSectionDescription(

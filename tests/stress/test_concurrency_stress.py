@@ -13,11 +13,12 @@ from rdam.rst.model_loading import ModelReleaseError, load_model_release, peek_r
 from rdam.rst.model_loading.release import MODEL_RELEASE_MANIFEST
 from rdam.rst.parser import Parser
 from rdam.rst.universal_parser.predictor import PredictorUniRST
+from rdam.rst.universal_parser.inventory import parse_corpora_config
 from rdam import AvailableCapability, ProviderRequest, SourceIdentity
 from rdam.rst.provider import RstProvider
 from rdam.ingest.contracts import SourceArtifact, SourceForm
 from rdam.ingest.service import ProductionIngestor
-from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+from workbench.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from workbench.hashing import (
     blake3_digest,
     canonical_json_digest,
@@ -27,7 +28,7 @@ from workbench.hashing import (
 pytestmark = pytest.mark.stress
 
 
-def _compatible_parser_release(family: str) -> tuple[Path, str]:
+def _compatible_parser_release(family: str, *, relinventory: str | None = None) -> tuple[Path, str]:
     """Use a real, validated local release; missing evidence is a test failure."""
     local = Path(__file__).resolve().parents[2] / "models" / "model-releases"
     cached = Path.home() / ".cache" / "isanlp_rst" / "model-releases"
@@ -44,6 +45,12 @@ def _compatible_parser_release(family: str) -> tuple[Path, str]:
             except ModelReleaseError as error:
                 failures.append(f"{release_id}: {error}")
                 continue
+            if relinventory is not None:
+                config = json.loads((manifest.parent / "config.json").read_text(encoding="utf-8"))
+                inventories = parse_corpora_config(config["data"]["corpora"])
+                if relinventory.casefold() not in {name.casefold() for name in inventories}:
+                    failures.append(f"{release_id}: does not declare requested inventory {relinventory!r}")
+                    continue
             return store, release_id
     pytest.fail(f"No compatible {family} release for a real concurrency measurement: {failures}")
 
@@ -84,12 +91,13 @@ def test_real_parser_concurrency_matches_sequential_trees(family: str, device: s
     """T073: share loaded model state across four simultaneous calls on CPU and MPS."""
     if device == "mps" and not torch.backends.mps.is_available():
         pytest.skip("MPS hardware is unavailable; this is not evidence of MPS parallel safety")
-    store, release_id = _compatible_parser_release(family)
+    relinventory = "eng.erst.gum" if family == "unirst" else None
+    store, release_id = _compatible_parser_release(family, relinventory=relinventory)
     parser = Parser.from_model_release(
         store,
         release_id,
         device=device,
-        relinventory="eng.erst.gum" if family == "unirst" else None,
+        relinventory=relinventory,
     )
     expected_type = PredictorDMRST if family == "dmrst" else PredictorUniRST
     assert isinstance(parser.predictor, expected_type)
@@ -119,9 +127,10 @@ def test_real_parser_concurrency_matches_sequential_trees(family: str, device: s
 def test_real_provider_cold_initialization_and_analysis_are_concurrent(family: str, device: str) -> None:
     if device == "mps" and not torch.backends.mps.is_available():
         pytest.skip("MPS hardware is unavailable; this is not evidence of MPS parallel safety")
-    store, release_id = _compatible_parser_release(family)
+    relinventory = "eng.erst.gum" if family == "unirst" else None
+    store, release_id = _compatible_parser_release(family, relinventory=relinventory)
     provider = RstProvider(
-        store=store, release_id=release_id, device=device, relinventory="eng.erst.gum" if family == "unirst" else None
+        store=store, release_id=release_id, device=device, relinventory=relinventory
     )
     barrier = Barrier(4)
     text = "Because it rained, the match stopped. The crowd left."

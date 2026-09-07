@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from rdam.rst.contracts import OutputFormalismEnum
-from rdam.rst.erst import (
+from workbench.erst import (
     RS4Document,
     RS4Group,
     RS4Reader,

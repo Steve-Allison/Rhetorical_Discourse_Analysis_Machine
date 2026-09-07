@@ -1,5 +1,11 @@
 # Quickstart: Production Contract 5.0.0
 
+> **Historical quickstart.** The following commands and APIs belong to this
+> earlier feature design and are not current execution instructions. Use the
+> [current quickstart](../019-unified-machine-interfaces/quickstart.md) and
+> [production ingest guide](../../docs/production-source-ingest.md). The package
+> and command are now `rdam`; eRST work is suspended as of 2026-09-06.
+
 This is the consumer workflow and installed-wheel acceptance authority. Source
 examples are executable before release selection. Steps that require committed
 artifacts, the promoted ModernBERT release, or another machine are explicitly

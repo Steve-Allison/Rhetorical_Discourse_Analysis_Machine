@@ -51,5 +51,6 @@
   },
   "last_updated": "2026-08-31",
   "scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-  "source": "ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml"
+  "source": "ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml",
+  "source_sha256": "dc0862b52226a17a0f3b7996f90e5c85899cd08bf5df5021cd56eb74a033b778"
 }

@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/narrative/story_frameworks
   title: Narrative — Story Frameworks
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: narrative
@@ -448,178 +448,177 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     id: coe:concept/descriptive_rst_taxonomy/relation_class
     label: relation_class
-    description: The 18 coarse-grained RST rhetorical relation classes mapped from 56 fine-grained relations in the RST Discourse
-      Treebank. Used for computational evaluation and cross-system benchmarking.
+    description: RST-DT rhetorical groups and structural conventions; a coarse group does not fix semantic direction or nuclearity.
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/attribution
     label: Attribution
-    description: 'Relation in which the satellite identifies the source, speaker, or cognitive agent behind the nuclear proposition — frequently marked by a cognitive verb plus subordinate clause'
+    description: "RST-DT group for attribution and negative attribution; the satellite supplies the source of the nuclear content."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/background
     label: Background
-    description: 'Relation in which the satellite provides contextual information necessary to understand the nucleus; rarely marked by explicit connectives, relying on semantic and positional cues'
+    description: "RST-DT group for background and circumstance, supplying context for interpreting the nucleus."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/cause
     label: Cause
-    description: 'Relation in which the satellite presents the reason or cause for the situation in the nucleus, covering volitional and non-volitional cause, result, and purpose'
+    description: "RST-DT group for cause, result and consequence; direction depends on the fine label and nuclearity."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/comparison
     label: Comparison
-    description: 'Multinuclear relation in which two spans are compared in terms of similarities or differences, including analogy and preference'
+    description: "RST-DT group for comparison, analogy, preference and proportion; members may be mononuclear or multinuclear."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/condition
     label: Condition
-    description: 'Relation in which the satellite presents a hypothetical or conditional prerequisite for the nucleus to hold — signalled by markers such as if, unless, and provided that'
+    description: "RST-DT group for condition, hypothetical, contingency and otherwise, distinguishing unrealized conditions, hypothetical scenarios, recurrence and alternatives."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/contrast
     label: Contrast
-    description: 'Multinuclear relation in which spans of comparable weight present contrasting, opposing, or alternative propositions, subsuming contrast, concession, and antithesis'
+    description: "RST-DT group containing multinuclear contrast and mononuclear concession and antithesis; group membership does not determine nuclearity."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/elaboration
     label: Elaboration
-    description: 'Relation in which the satellite provides additional detail, specification, or exemplification of the nucleus — the most frequent relation in natural text, often unmarked and carried by entity continuity'
+    description: "RST-DT group for additional detail, general-specific, part-whole, process-step, object-attribute and set-member elaboration, example and definition."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/enablement
     label: Enablement
-    description: 'Relation in which the satellite provides information that enables or facilitates the reader''s comprehension or action regarding the nucleus, including motivation and justify'
+    description: "RST-DT group containing enablement and purpose, distinguishing facilitation of an unrealized situation from an intended goal."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/evaluation
     label: Evaluation
-    description: 'Relation in which the satellite provides the author''s evaluative commentary, judgement, or interpretation of the nucleus'
+    description: "RST-DT group for evaluation, interpretation, conclusion and comment; fine labels and nuclearity locate the assessment or concluding perspective."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/explanation
     label: Explanation
-    description: 'Relation in which the satellite explains or justifies a claim, action, or situation presented in the nucleus, including argumentative reason and evidence'
+    description: "RST-DT group for evidence, explanation-argumentative and reason, distinguishing persuasion, factual explanation and an animate agent's reason for acting."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/joint
     label: Joint
-    description: 'Multinuclear relation in which two or more spans of equal semantic weight present parallel information without subordination — list and disjunction; the second most frequent relation'
+    description: "RST-DT group containing list and disjunction, joining nuclei through enumeration or alternatives."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/manner_means
     label: Manner Means
-    description: 'Relation in which the satellite describes the method, manner, or instrument by which the nucleus action is performed'
+    description: "RST-DT group containing manner and means, distinguishing the style of an action from the method used to accomplish a goal."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/same_unit
     label: Same Unit
-    description: 'Structural relation rejoining portions of a single logical unit that has been interrupted by embedded content such as a parenthetical, appositive, or relative clause'
+    description: "RST-DT structural pseudo-relation rejoining interrupted portions of an EDU; multinuclear by annotation convention."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/summary
     label: Summary
-    description: 'Relation in which the satellite presents a condensed restatement of the nuclear content'
+    description: "RST-DT group containing summary and restatement. A summary may occupy nucleus or satellite; restatement reiterates nuclear content in a satellite."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/temporal
     label: Temporal
-    description: 'Multinuclear relation in which spans are sequenced by temporal ordering — before, during, or after'
+    description: "RST-DT group containing temporal-before, temporal-after, temporal-same-time, sequence and inverted-sequence; fine labels preserve chronology and nuclearity."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/textual_organization
     label: Textual Organization
-    description: 'Meta-structural relation organising the text itself through headers, section markers, and navigation cues'
+    description: "RST-DT structural relation connecting schematically labelled text spans; multinuclear by annotation convention."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/topic_change
     label: Topic Change
-    description: 'Relation signalling an abrupt shift from one topic to another without logical continuity, typically marked graphically by section or paragraph breaks'
+    description: "RST-DT group containing smooth topic drift and sharp topic shift; members may be mononuclear or multinuclear."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     broader:
     - coe:concept/descriptive_rst_taxonomy/relation_class
     id: coe:concept/descriptive_rst_taxonomy/relation_class/topic_comment
     label: Topic Comment
-    description: 'Relation in which a topic is introduced and then commented upon — the satellite provides commentary on the nuclear topic, often via topicalization constructions'
+    description: "RST-DT group containing problem-solution, question-answer, statement-response, topic-comment, comment-topic and rhetorical-question; fine labels distinguish roles and direction."
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
+    evidence_ids: [coe:source/rst-dt-manual-2001]
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     id: coe:concept/descriptive_rst_taxonomy/signal_typology
     label: signal_typology
     description: Five distinct categories of discourse signals that indicate rhetorical relations, ranging from explicit lexical
-      markers (~8.5-22% of relations) to implicit semantic, syntactic, morphological, and graphical cues (~78-91.5% of relations).
+      markers, a minority of relations, to implicit semantic, syntactic, morphological, and graphical cues that carry the majority.
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -628,7 +627,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/signal_typology
     id: coe:concept/descriptive_rst_taxonomy/signal_typology/semantic
     label: Semantic
-    description: 'Signals derived from meaning-level relationships between lexical items across EDUs — lexical chains, synonymy, meronymy, and coreference; the largest signal category at roughly 41%'
+    description: 'Signals derived from meaning-level relationships between lexical items across EDUs — lexical chains, synonymy, meronymy, and coreference; the largest signal category'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -637,7 +636,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/signal_typology
     id: coe:concept/descriptive_rst_taxonomy/signal_typology/syntactic
     label: Syntactic
-    description: 'Signals derived from grammatical constructions and clause-structure patterns such as parallelism, relative clauses, clause mood, and reported speech (roughly 18% of signals)'
+    description: 'Signals derived from grammatical constructions and clause-structure patterns such as parallelism, relative clauses, clause mood, and reported speech'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -646,7 +645,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/signal_typology
     id: coe:concept/descriptive_rst_taxonomy/signal_typology/morphological
     label: Morphological
-    description: 'Signals derived from word-form variation, chiefly verb-tense shifts and person-marker changes between adjacent EDUs (roughly 8% of signals)'
+    description: 'Signals derived from word-form variation, chiefly verb-tense shifts and person-marker changes between adjacent EDUs'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -655,7 +654,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/signal_typology
     id: coe:concept/descriptive_rst_taxonomy/signal_typology/graphical
     label: Graphical
-    description: 'Signals derived from visual and typographic features of the text — punctuation boundaries, paragraph breaks, and section headings (roughly 12% of signals)'
+    description: 'Signals derived from visual and typographic features of the text — punctuation boundaries, paragraph breaks, and section headings'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -664,7 +663,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/signal_typology
     id: coe:concept/descriptive_rst_taxonomy/signal_typology/discourse_marker
     label: Discourse Marker
-    description: 'Explicit lexical connectives that directly name a rhetorical relation — the most studied signal type, yet accounting for only 8.5-22% of all discourse relations'
+    description: 'Explicit lexical connectives that directly name a rhetorical relation — the most studied signal type, yet accounting for only a minority of discourse relations'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -758,7 +757,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/discourse_framework
     id: coe:concept/descriptive_rst_taxonomy/discourse_framework/pdtb
     label: PDTB
-    description: 'The Penn Discourse Treebank framework — non-recursive flat pairs over locally adjacent units anchored to explicit connectives; high local precision but no global hierarchy'
+    description: 'The Penn Discourse Treebank annotates argument pairs, relation types and senses for explicit and implicit discourse relations, without requiring a single document-wide discourse tree.'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -767,7 +766,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/discourse_framework
     id: coe:concept/descriptive_rst_taxonomy/discourse_framework/sdrt
     label: SDRT
-    description: 'Segmented Discourse Representation Theory — directed-acyclic-graph structures supporting multi-parent dependencies and crossing edges, with particular efficacy for dialogue and non-linear narrative'
+    description: 'Segmented Discourse Representation Theory represents discourse constituents and their semantic and pragmatic relations, including complex constituents and constraints on accessible attachment sites.'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -776,7 +775,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/discourse_framework
     id: coe:concept/descriptive_rst_taxonomy/discourse_framework/erst
     label: eRST
-    description: 'Enhanced RST (Zeldes 2024) — recursive trees augmented with cross-branch edges and 40+ token-anchored signal types, resolving classical RST''s tree-breaking limitation'
+    description: 'Enhanced RST augments a primary rhetorical tree with secondary relations and anchored discourse signals, allowing additional relations to be represented without replacing the primary tree.'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -810,7 +809,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/tree_topology
     id: coe:concept/descriptive_rst_taxonomy/tree_topology/flat_pairs
     label: Flat Pairs
-    description: 'Non-hierarchical paired relational mappings between adjacent units with no global tree — the topology of PDTB'
+    description: 'Relations represented as argument pairs without imposing a single global tree; argument spans need not be adjacent.'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -826,8 +825,7 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/descriptive_rst_taxonomy
     id: coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern
     label: schema_extraction_pattern
-    description: Engineering pattern for extracting discourse tree structures from LLM outputs, constrained by API limitations
-      on recursive schemas.
+    description: Engineering pattern for representing and assembling discourse structures extracted from model outputs.
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -836,7 +834,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern
     id: coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern/flat_relational_adjacency
     label: Flat Relational Adjacency
-    description: 'Recommended pattern outputting flat lists of discourse nodes and rhetorical edges with parent/child pointers, then reconstructing the nested tree locally — bypassing API bans on recursive schemas while preserving hierarchy'
+    description: 'Represent nodes and rhetorical edges as separate lists with explicit endpoint references, then reconstruct and validate the hierarchy locally.'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -845,7 +843,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern
     id: coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern/progressive_chunking
     label: Progressive Chunking
-    description: 'Recommended pattern parsing localized subtrees paragraph by paragraph, then linking their roots into a macro-tree in a second pass — avoiding the context-window degradation and structural hallucination of single-pass extraction'
+    description: 'Parse local subtrees separately and link their roots in a later pass; cross-chunk relations and the assembled structure require validation.'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -854,7 +852,7 @@ taxonomies:
     - coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern
     id: coe:concept/descriptive_rst_taxonomy/schema_extraction_pattern/direct_recursive
     label: Direct Recursive
-    description: 'Anti-pattern attempting to emit deeply nested tree objects via recursive schema references — conceptually clean but technically impossible under strict structured-output modes, which ban recursive references'
+    description: 'Represent nested tree nodes directly through recursive schema references; support and depth constraints depend on the selected output system.'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -2360,7 +2358,7 @@ taxonomies:
     - coe:concept/presentation_structures_taxonomy/slide_density
     id: coe:concept/presentation_structures_taxonomy/slide_density/lean
     label: Lean
-    description: 'One concept and minimal text with under ten seconds of dwell time — statement slides, transitions, and emotional beats built for maximum impact'
+    description: 'One concept and minimal text with the shortest dwell time — statement slides, transitions, and emotional beats built for maximum impact'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -2369,7 +2367,7 @@ taxonomies:
     - coe:concept/presentation_structures_taxonomy/slide_density
     id: coe:concept/presentation_structures_taxonomy/slide_density/moderate
     label: Moderate
-    description: 'Two to three balanced points with 10-30 seconds of dwell time — standard information delivery with clear hierarchy'
+    description: 'Two to three balanced points with a short dwell time — standard information delivery with clear hierarchy'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -2378,7 +2376,7 @@ taxonomies:
     - coe:concept/presentation_structures_taxonomy/slide_density
     id: coe:concept/presentation_structures_taxonomy/slide_density/dense
     label: Dense
-    description: 'Multiple data points or complex visuals with 30-60 seconds of dwell time — analysis and detailed-evidence slides requiring careful organisation'
+    description: 'Multiple data points or complex visuals with an extended dwell time — analysis and detailed-evidence slides requiring careful organisation'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -2387,7 +2385,7 @@ taxonomies:
     - coe:concept/presentation_structures_taxonomy/slide_density
     id: coe:concept/presentation_structures_taxonomy/slide_density/slidument
     label: Slidument
-    description: 'A document disguised as a slide, demanding over sixty seconds of dwell time — to be avoided in live presentations and acceptable only as leave-behind reference material'
+    description: 'A document disguised as a slide, demanding document-length dwell time — to be avoided in live presentations and acceptable only as leave-behind reference material'
     home_domain: narrative
     status: canonical
     evidence_ids: *id001
@@ -2852,28 +2850,24 @@ entity_collections:
     description: 'Narrative framework: Purpose'
     home_domain: narrative
     status: canonical
-    ner_label: NARRATIVE_FRAMEWORK
     evidence_ids: *id001
   - id: coe:entity/narrative/framework_how_to_process_framework
     label: How To Process Framework
     description: 'Narrative structure: How To Process Framework'
     home_domain: narrative
     status: canonical
-    ner_label: NARRATIVE_FRAMEWORK
     evidence_ids: *id001
   - id: coe:entity/narrative/framework_case_study_framework
     label: Case Study Framework
     description: 'Narrative structure: Case Study Framework'
     home_domain: narrative
     status: canonical
-    ner_label: NARRATIVE_FRAMEWORK
     evidence_ids: *id001
   - id: coe:entity/narrative/framework_when_to_use_which_framework
     label: When To Use Which Framework
     description: 'Narrative structure: When To Use Which Framework'
     home_domain: narrative
     status: canonical
-    ner_label: NARRATIVE_FRAMEWORK
     evidence_ids: *id001
   home_domain: narrative
   status: canonical

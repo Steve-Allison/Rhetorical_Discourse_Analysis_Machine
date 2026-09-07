@@ -13,8 +13,8 @@ by ``tools/ontology/project_framework_identities.py`` from the vendored distribu
 ``rdam`` resolves identities without a repository checkout, as Central's consumer contract
 prescribes ("generate or author that projection inside the consumer").
 
-Seven of the eight are technique boundaries. ``erst`` is not a boundary: the RST provider
-serves it as a declared formalism (006 data-model §Formalism).
+Seven of the eight are production technique boundaries. The ``erst`` identity remains
+for saved records and workbench evaluation; production providers do not execute it.
 """
 
 from collections.abc import Mapping
@@ -23,7 +23,10 @@ from enum import StrEnum
 from functools import cache
 from importlib import resources
 import json
-from typing import Final, cast
+from types import MappingProxyType
+from typing import Final, Literal, cast
+
+from rdam._strict import Sha256Identity, StrictModel, sha256_bytes
 
 FRAMEWORK_SCHEME: Final = "coe:artifact/narrative/analytical_frameworks_taxonomy"
 _CONCEPT_ROOT: Final = "coe:concept/analytical_frameworks_taxonomy"
@@ -51,7 +54,7 @@ BOUNDARY_TECHNIQUES: Final[tuple[Technique, ...]] = (
     Technique.DUNG,
     Technique.IBIS,
 )
-"""The seven technique boundaries of FR-002, in the spec's order. ``erst`` is a formalism."""
+"""The seven technique boundaries of FR-002, in the spec's order. ``erst`` is retained for saved records and workbench evaluation."""
 
 STRUCTURED_INPUT_TECHNIQUES: Final[frozenset[Technique]] = frozenset({Technique.DUNG, Technique.IBIS})
 """Techniques that analyse a supplied structure, not raw text (FR-016, FR-017)."""
@@ -72,6 +75,35 @@ class FrameworkResolutionError(LookupError):
     """A framework identity is absent from, or inconsistent with, the packaged projection."""
 
 
+class FrameworkAuthority(StrictModel):
+    """Exact authority source and generated projection used for framework identities.
+
+    This describes framework registration, not native relation equivalence.
+    Source dates are not substituted for release versions.
+    """
+
+    authority: Literal["Central_Configs"] = "Central_Configs"
+    scheme: str
+    source: str
+    source_identity: Sha256Identity
+    projection_identity: Sha256Identity
+
+
+@cache
+def framework_authority() -> FrameworkAuthority:
+    """Identify the installed projection without loading the sibling repository."""
+    raw = resources.files("rdam").joinpath("resources/framework-identities.json").read_bytes()
+    payload = json.loads(raw)
+    if payload.get("scheme") != FRAMEWORK_SCHEME:
+        raise FrameworkResolutionError("framework projection names the wrong scheme")
+    return FrameworkAuthority(
+        scheme=payload["scheme"],
+        source=payload["source"],
+        source_identity=Sha256Identity(hex_digest=payload["source_sha256"]),
+        projection_identity=Sha256Identity(hex_digest=sha256_bytes(raw)),
+    )
+
+
 @cache
 def framework_identities() -> Mapping[Technique, FrameworkIdentity]:
     """Load the packaged projection once; every identity must match Central's id pattern."""
@@ -85,27 +117,35 @@ def framework_identities() -> Mapping[Technique, FrameworkIdentity]:
     if not isinstance(concepts, dict):
         raise FrameworkResolutionError("framework projection has no concepts mapping")
     concept_map = cast(dict[object, object], concepts)
+    if set(concept_map) != {technique.value for technique in Technique}:
+        raise FrameworkResolutionError("framework projection does not match the registered techniques")
     resolved: dict[Technique, FrameworkIdentity] = {}
     for technique in Technique:
         entry = concept_map.get(technique.value)
         if not isinstance(entry, dict):
             raise FrameworkResolutionError(f"framework projection lacks {technique.value!r}")
         concept = cast(dict[object, object], entry)
-        curie = str(concept["id"])
+        if any(not isinstance(concept.get(field), str) or not str(concept[field]).strip()
+               for field in ("id", "label", "broader", "in_scheme")):
+            raise FrameworkResolutionError(f"framework identity for {technique.value!r} has invalid text fields")
+        curie = cast(str, concept["id"])
+        broader = cast(str, concept["broader"])
         if not curie.startswith(f"{_CONCEPT_ROOT}/") or not curie.endswith(f"/{technique.value}"):
             raise FrameworkResolutionError(
                 f"framework identity for {technique.value!r} does not follow Central's concept id pattern: {curie}"
             )
         if concept.get("in_scheme") != FRAMEWORK_SCHEME:
             raise FrameworkResolutionError(f"framework identity for {technique.value!r} is outside the scheme")
+        if curie.rpartition("/")[0] != broader or broader == _CONCEPT_ROOT:
+            raise FrameworkResolutionError(f"framework identity for {technique.value!r} has an inconsistent parent")
         resolved[technique] = FrameworkIdentity(
             technique=technique,
             curie=curie,
-            label=str(concept["label"]),
-            broader=str(concept["broader"]),
-            scheme=str(concept["in_scheme"]),
+            label=cast(str, concept["label"]),
+            broader=broader,
+            scheme=cast(str, concept["in_scheme"]),
         )
-    return resolved
+    return MappingProxyType(resolved)
 
 
 def technique_curie(technique: Technique) -> str:
@@ -118,9 +158,11 @@ __all__ = [
     "BOUNDARY_TECHNIQUES",
     "FRAMEWORK_SCHEME",
     "STRUCTURED_INPUT_TECHNIQUES",
+    "FrameworkAuthority",
     "FrameworkIdentity",
     "FrameworkResolutionError",
     "Technique",
+    "framework_authority",
     "framework_identities",
     "technique_curie",
 ]

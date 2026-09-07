@@ -10,6 +10,7 @@ from rdam.ingest.contracts.base import (
     PRODUCTION_CONTRACT,
     READABLE_CONTRACT_VERSIONS,
     WRITE_CONTRACT_VERSION,
+    CurrentContractVersion,
     SemanticVersion,
     Sha256Identity,
     StrictContractModel,
@@ -94,7 +95,7 @@ class CapabilityExecution(StrictContractModel):
 
 class ProductionCapabilities(StrictContractModel):
     contract: Literal["isanlp_rst.production"] = PRODUCTION_CONTRACT
-    contract_version: Literal["2.0.0"] = WRITE_CONTRACT_VERSION
+    contract_version: CurrentContractVersion = WRITE_CONTRACT_VERSION
     kind: Literal["capabilities"] = "capabilities"
     semantic: ProductionCapabilitiesSemantic
     execution: CapabilityExecution
@@ -153,7 +154,7 @@ class ProductionCapabilities(StrictContractModel):
                     availability=Availability.UNAVAILABLE,
                     reason="parser_not_configured",
                 )
-                for formalism in OutputFormalism
+                for formalism in (OutputFormalism.RST_TREE,)
             ),
             evidence_capabilities=tuple(
                 EvidenceCapability(

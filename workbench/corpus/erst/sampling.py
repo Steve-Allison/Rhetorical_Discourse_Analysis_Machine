@@ -5,13 +5,13 @@ import hashlib
 import heapq
 import math
 
-from rdam.rst.contracts.erst import (
+from workbench.erst.contracts import (
     CandidateDocumentSelection,
     CandidateSelectionReceipt,
     CorpusPartition,
     HardNegativeSamplingConfig,
 )
-from rdam.rst.erst.candidates import SecondaryEdgeCandidate
+from workbench.erst.candidates import SecondaryEdgeCandidate
 from workbench.corpus.erst.corpus import LoadedGumCorpus
 
 

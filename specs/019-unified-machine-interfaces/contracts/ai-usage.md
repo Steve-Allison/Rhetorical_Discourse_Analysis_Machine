@@ -1,6 +1,7 @@
 # Contract: Direct AI Consumption
 
-**Status**: Normative Feature 019 design, not implemented behavior.
+**Status**: Implemented contract for the active seven-technique scope.
+See [implementation results](../tasks.md). eRST successful inference is suspended.
 
 ## Canonical analysis is the primary AI artifact
 

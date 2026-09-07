@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/language_editorial/tone_archetypes
   title: Language Editorial — Tone Archetypes
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: language_editorial
@@ -413,7 +413,7 @@ taxonomies:
     - coe:concept/writing_taxonomy/readability_target
     id: coe:concept/writing_taxonomy/readability_target/grade_6_8
     label: Grade 6-8
-    description: 'Plain-language band (Flesch-Kincaid grade 6-8): short sentences and common words for broad general audiences and must-read operational content.'
+    description: 'Plain-language band: short sentences and common words for broad general audiences and must-read operational content.'
     home_domain: language_editorial
     status: canonical
     evidence_ids: *id001
@@ -422,7 +422,7 @@ taxonomies:
     - coe:concept/writing_taxonomy/readability_target
     id: coe:concept/writing_taxonomy/readability_target/grade_9_12
     label: Grade 9-12
-    description: 'High-school band (Flesch-Kincaid grade 9-12): standard business prose for general professional audiences, admitting moderate sentence complexity and everyday business vocabulary.'
+    description: 'High-school band: standard business prose for general professional audiences, admitting moderate sentence complexity and everyday business vocabulary.'
     home_domain: language_editorial
     status: canonical
     evidence_ids: *id001
@@ -431,7 +431,7 @@ taxonomies:
     - coe:concept/writing_taxonomy/readability_target
     id: coe:concept/writing_taxonomy/readability_target/undergraduate
     label: Undergraduate
-    description: 'College-level band (roughly Flesch-Kincaid grade 13-16): sustained argument and discipline-general terminology for educated readers outside the specialism.'
+    description: 'College-level band: sustained argument and discipline-general terminology for educated readers outside the specialism.'
     home_domain: language_editorial
     status: canonical
     evidence_ids: *id001
@@ -440,7 +440,7 @@ taxonomies:
     - coe:concept/writing_taxonomy/readability_target
     id: coe:concept/writing_taxonomy/readability_target/graduate_professional
     label: Graduate Professional
-    description: 'Advanced band (Flesch-Kincaid grade 17 and above): dense, abstraction-heavy prose for expert professional readers, as in white papers and scholarly analysis.'
+    description: 'Advanced band: dense, abstraction-heavy prose for expert professional readers, as in white papers and scholarly analysis.'
     home_domain: language_editorial
     status: canonical
     evidence_ids: *id001
@@ -595,182 +595,156 @@ entity_collections:
     description: 'Brand stance: _Frame'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_STANCE
     evidence_ids: *id001
   - id: coe:entity/language_editorial/stance_relationship_posture
     label: 'Voice Stance: Relationship Posture'
     description: 'Brand stance: Relationship Posture'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_STANCE
     evidence_ids: *id001
   - id: coe:entity/language_editorial/stance_address_identity
     label: 'Voice Stance: Address Identity'
     description: 'Brand stance: Address Identity'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_STANCE
     evidence_ids: *id001
   - id: coe:entity/language_editorial/stance_understanding_worldview
     label: 'Voice Stance: Understanding Worldview'
     description: 'Brand stance: Understanding Worldview'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_STANCE
     evidence_ids: *id001
   - id: coe:entity/language_editorial/stance_curiosity_forward
     label: 'Voice Stance: Curiosity Forward'
     description: 'Brand stance: Curiosity Forward'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_STANCE
     evidence_ids: *id001
   - id: coe:entity/language_editorial/stance_brand_refusals
     label: 'Voice Stance: Brand Refusals'
     description: 'Brand stance: Brand Refusals'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_STANCE
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_spine_language
     label: 'Register: Spine Language'
     description: 'Voice register: Spine Language'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_assertion_lines
     label: 'Register: Assertion Lines'
     description: 'Voice register: Assertion Lines'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_visible_copy
     label: 'Register: Visible Copy'
     description: 'Voice register: Visible Copy'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_speaker_notes
     label: 'Register: Speaker Notes'
     description: 'Voice register: Speaker Notes'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_learning_and_assessment
     label: 'Register: Learning And Assessment'
     description: 'Voice register: Learning And Assessment'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_infographics
     label: 'Register: Infographics'
     description: 'Voice register: Infographics'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_podcasts
     label: 'Register: Podcasts'
     description: 'Voice register: Podcasts'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_website_and_marketing_copy
     label: 'Register: Website And Marketing Copy'
     description: 'Voice register: Website And Marketing Copy'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_long_form_written
     label: 'Register: Long Form Written'
     description: 'Voice register: Long Form Written'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_email_and_newsletter
     label: 'Register: Email And Newsletter'
     description: 'Voice register: Email And Newsletter'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_education_audience
     label: 'Register: Education Audience'
     description: 'Voice register: Education Audience'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_video_scripts
     label: 'Register: Video Scripts'
     description: 'Voice register: Video Scripts'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_quizzes_and_surveys
     label: 'Register: Quizzes And Surveys'
     description: 'Voice register: Quizzes And Surveys'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_hints_and_scaffolding
     label: 'Register: Hints And Scaffolding'
     description: 'Voice register: Hints And Scaffolding'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_accessibility_alt_text
     label: 'Register: Accessibility Alt Text'
     description: 'Voice register: Accessibility Alt Text'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_dramatic_dialogue
     label: 'Register: Dramatic Dialogue'
     description: 'Voice register: Dramatic Dialogue'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_worksheets_and_handouts
     label: 'Register: Worksheets And Handouts'
     description: 'Voice register: Worksheets And Handouts'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_branching_scenarios
     label: 'Register: Branching Scenarios'
     description: 'Voice register: Branching Scenarios'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_puzzles
     label: 'Register: Puzzles'
     description: 'Voice register: Puzzles'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   - id: coe:entity/language_editorial/register_multimedia_prompts
     label: 'Register: Multimedia Prompts'
     description: 'Voice register: Multimedia Prompts'
     home_domain: language_editorial
     status: canonical
-    ner_label: VOICE_REGISTER
     evidence_ids: *id001
   home_domain: language_editorial
   status: canonical

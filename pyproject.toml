@@ -164,6 +164,9 @@ typeCheckingMode = "strict"
 include = [
   "rdam",
   "tests/interfaces",
+  "tests/machine/test_ontology_snapshots.py",
+  "tests/unit/test_runtime_vocabulary.py",
+  "tools/ontology/project_discourse_concepts.py",
   "tests/llm/test_client_lifecycle.py",
   "tests/llm/test_instruction_provenance.py",
   "tests/production_boundary/test_runtime_tokenizer_dependency.py",

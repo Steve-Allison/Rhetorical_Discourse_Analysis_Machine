@@ -209,6 +209,36 @@ def test_view_rejects_changed_exclusions_with_old_digest(analysis: AggregateAnal
         load(json.dumps(data))
 
 
+def test_selection_rejects_resealed_false_native_semantics() -> None:
+    analysis = Machine((DungProvider(),)).analyse(AggregateRequest.for_structured((
+        StructuredInput(technique=Technique.DUNG, payload=FRAMEWORK),
+    )))
+    data = analysis.model_dump(exclude={"semantic_digest"})
+    native = data["outcomes"][0]["result"]
+    native.pop("semantic_digest")
+    native.pop("artifact_digest")
+    native["payload"]["extensions"]["stable"] = [[]]
+    # This envelope is internally sealed, but a self-attacking framework has
+    # no stable extension. Selection must not present it as a valid analysis.
+    resealed = AggregateAnalysis.model_validate(data)
+    assert load(serialize(resealed)) == resealed
+    with pytest.raises(ValueError, match="extensions must reproduce"):
+        select_analysis(resealed, techniques=(Technique.DUNG,))
+
+
+def test_saved_view_rejects_false_native_semantics_with_recomputed_digests() -> None:
+    analysis = Machine((DungProvider(),)).analyse(AggregateRequest.for_structured((
+        StructuredInput(technique=Technique.DUNG, payload=FRAMEWORK),
+    )))
+    data = select_analysis(analysis, techniques=(Technique.DUNG,)).model_dump(exclude={"semantic_digest"})
+    native = data["outcomes"][0]["result"]
+    native.pop("semantic_digest")
+    native.pop("artifact_digest")
+    native["payload"]["extensions"]["stable"] = [[]]
+    with pytest.raises(ValueError, match="extensions must reproduce"):
+        AnalysisView.model_validate(data)
+
+
 def test_view_rejects_descriptor_content_tampering(analysis: AggregateAnalysis) -> None:
     data = json.loads(serialize(select_analysis(analysis, techniques=(Technique.DUNG,))))
     data["reading_guide"]["entries"][0]["descriptor"]["purpose"] = "Invent a final verdict."

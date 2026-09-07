@@ -51,15 +51,15 @@ These checks concern the written specification, not implemented or verified fixe
 
 ## Analytical-quality planning checks
 
-- [x] World-class explicitly applies to plans, research, contracts, implementation, tests and reporting; no deferred polishing or score-based waiver of known defects.
-- [x] Semantic support and origin/state accuracy are distinguished from structural validity and quotation matching.
-- [x] Reference ownership, acceptable alternatives, independent source-family splits and contamination handling are specified.
-- [x] Required strata, denominators, per-run thresholds, zero-denominator behavior and uncertainty are explicit in contracts/analytical-quality.md.
-- [x] Scorer tests include hand-calculated examples and deliberately empty/all-open/all-abstaining/duplicate/unsupported outputs.
-- [x] Adversarial cases cover irrelevant quotations, attribution, negation, modality, reconstruction, context and genuine empty findings.
-- [x] All scheduled runs/errors are retained; baseline comparability and SOTA claim limits are explicit.
-- [x] Owner review and model-backed evaluation remain implementation prerequisites, not completed checkboxes or assumed available proof.
+The former annotation, scoring and review prerequisites were withdrawn by the
+owner on 2026-09-04. This checklist follows the current
+[analytical-quality contract](../contracts/analytical-quality.md).
 
-The numerical policy is a necessary acceptance floor, not a claim that any result
-above it is automatically world-class. No runtime capability gate, universal
-confidence score or enterprise evaluation service has been added to the plan.
+- [x] Native regression cases distinguish semantic support from JSON validity.
+- [x] Focused real-model cases exercise evidence, origin and assessment meanings.
+- [x] Cold critique inspects actual source, outputs, code and tests; concrete defects require repairs.
+- [x] Missing prerequisites, failed checks and model limitations remain explicit.
+- [x] No owner annotation, corpus quota, bespoke scorer or SOTA certification blocks implementation.
+
+These boxes concern specification coverage. Execution results are recorded in
+[tasks.md](../tasks.md); eRST successful-inference acceptance remains suspended.

@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/agents
   title: Adobe — Agents
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -19,7 +19,6 @@ entity_collections:
     description: Central orchestrator for enterprise AI agents on Adobe Experience Platform.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT_PLATFORM
     evidence_ids: &id001
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/adobe/agents
@@ -30,7 +29,6 @@ entity_collections:
       development representatives with account research, outreach-email drafting, and CRM updates.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/account_qualification_agent
       predicate: coe:specialises
@@ -52,7 +50,6 @@ entity_collections:
       buying-group creation.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/audience_agent
       predicate: coe:specialises
@@ -70,7 +67,6 @@ entity_collections:
       email generation, brand-object creation, and brand validation.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/content_production_agent
       predicate: coe:specialises
@@ -89,7 +85,6 @@ entity_collections:
       in the organisation's configured data views.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/data_insights_agent
       predicate: coe:specialises
@@ -107,7 +102,6 @@ entity_collections:
       engineering effort.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/data_engineering_agent
       predicate: coe:specialises
@@ -126,7 +120,6 @@ entity_collections:
       what worked, and get proposals for the next test with suggested KPIs and sample sizes.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/experimentation_agent
       predicate: coe:specialises
@@ -145,7 +138,6 @@ entity_collections:
       conflicts with existing campaigns, and proposes adjustments before publication.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/journey_agent
       predicate: coe:specialises
@@ -164,7 +156,6 @@ entity_collections:
       natural-language questions across the work ecosystem.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/workflow_optimization_agent
       predicate: coe:specialises
@@ -183,7 +174,6 @@ entity_collections:
       typically within a conversational interface.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/product_advisor_agent
       predicate: coe:specialises
@@ -202,7 +192,6 @@ entity_collections:
       (such as poor Core Web Vitals or accessibility violations), and recommends concrete fixes.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/site_optimization_agent
       predicate: coe:specialises
@@ -221,7 +210,6 @@ entity_collections:
       that align with the brand's positioning end to end.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/brand_experience_agent
       predicate: coe:specialises
@@ -240,7 +228,6 @@ entity_collections:
       performance data to propose on-brand, high-performing candidates rather than generating new content.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/content_advisor_agent
       predicate: coe:specialises
@@ -259,7 +246,6 @@ entity_collections:
       and expiry, flagging violations with remediation guidance.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/brand_governance_agent
       predicate: coe:specialises
@@ -279,7 +265,6 @@ entity_collections:
       support tickets directly.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/product_support_agent
       predicate: coe:specialises
@@ -298,7 +283,6 @@ entity_collections:
       and surfacing quality insights for AI-driven experiences.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_AGENT
     edges:
     - subject_id: coe:entity/adobe/llm_optimization_agent
       predicate: coe:specialises

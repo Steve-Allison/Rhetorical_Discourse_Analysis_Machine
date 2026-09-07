@@ -18,6 +18,7 @@ from rdam.contracts import (
     FormalismChoice,
     MachineCapabilities,
     MachinePreparation,
+    HistoricalMachinePreparation,
     OperationError,
     PreparationRequest,
     SourceArtifactRef,
@@ -137,7 +138,6 @@ def create_parser() -> argparse.ArgumentParser:
                 "release-id",
                 "rst-relinventory",
                 "device",
-                "erst-checkpoint",
                 "cache-directory",
             ):
                 _option(sub, "--" + name)
@@ -195,7 +195,6 @@ def _config(args: argparse.Namespace) -> MachineConfig:
     for argument, field in (
         ("rst_relinventory", "relinventory"),
         ("device", "device"),
-        ("erst_checkpoint", "erst_checkpoint"),
         ("rst_evidence_detail", "evidence_detail"),
         ("rst_marker_refinement", "marker_refinement"),
     ):
@@ -328,7 +327,7 @@ def _execute(args: argparse.Namespace) -> tuple[bytes, int, object]:
         saved = load(_read(args.result))
         if args.command == "summary":
             if not isinstance(
-                saved, (AggregateAnalysis, HistoricalAggregateAnalysis, MachinePreparation, MachineCapabilities)
+                saved, (AggregateAnalysis, HistoricalAggregateAnalysis, MachinePreparation, HistoricalMachinePreparation, MachineCapabilities)
             ):
                 raise ValueError("unsupported summary record")
             return summarise(saved).encode("utf-8"), 0, saved

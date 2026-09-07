@@ -4,8 +4,7 @@
 
 `rdam` runs several discourse and argumentation techniques on one source document, natively and
 side by side, and reports one explicit outcome per technique. It never collapses them
-into a common formalism, never generates or rewrites text, and never reports a technique as
-available when it cannot actually run. It serves one person on one local machine.
+into a common formalism, never generates or rewrites text, and reports the locally checked prerequisites separately from actual runtime success. It serves one person on one local machine.
 
 ```text
   text / file / bytes → rdam.ingest → one complete inventory
@@ -23,7 +22,7 @@ available when it cannot actually run. It serves one person on one local machine
 - [Design principles](#design-principles)
 - [Installation](#installation)
 - [Using the machine](#using-the-machine)
-- [Provider: RST / eRST (`rdam.rst`)](#provider-rst--erst-rdamrst)
+- [Provider: RST (`rdam.rst`)](#provider-rst-rdamrst)
 - [Provider: Dung abstract argumentation (`rdam.dung`)](#provider-dung-abstract-argumentation-rdamdung)
 - [Provider: IBIS (`rdam.ibis`)](#provider-ibis-rdamibis)
 - [Repository layout](#repository-layout)
@@ -40,7 +39,7 @@ One distribution, one import package, every technique a sub-package.
 |---|---|---|---|
 | `rdam` | the machine | Python API, unified `rdam` CLI, optional HTTP API, shared requests and native results | — |
 | `rdam.ingest` | shared source preparation | complete inventory, provider requirements, projections, source anchors, and receipts | source-form dependencies |
-| `rdam.rst` | RST and Extended RST | DMRST and UniRST discourse parsers, eRST completion, the RS3 viewer, and the machine adapter | configured parser; eRST also needs a completion bundle |
+| `rdam.rst` | RST | DMRST and UniRST discourse parsers, the RS3 viewer, and the machine adapter | configured parser |
 | `rdam.dung` | Dung abstract argumentation | grounded, complete, preferred, and stable extensions of a supplied argument–attack framework, exact by construction | `available` |
 | `rdam.ibis` | IBIS | issue–position–argument structures validated under the gIBIS link grammar and organised into a deliberation map | `available` |
 | `rdam.sdrt` | SDRT | validated SDRS graphs | configured language model |
@@ -82,22 +81,28 @@ pixi install -e production
 pixi run -e production production-import-check
 ```
 
-Into any Python 3.14 environment:
+For another local project using Python 3.14, install the built wheel from this
+checkout (use its absolute path when working elsewhere):
 
 ```bash
-pip install "rdam @ git+https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine.git"
-
-# Markdown, Docling JSON, and DocLang source adapters are supplied by the `formats` extra
-pip install "rdam[formats] @ git+https://github.com/Steve-Allison/Rhetorical_Discourse_Analysis_Machine.git"
+pip install dist/6.0.0/rdam-6.0.0-py3-none-any.whl
+pip install "dist/6.0.0/rdam-6.0.0-py3-none-any.whl[formats,http]"
 ```
+
+The source archive is `dist/6.0.0/rdam-6.0.0.tar.gz`. The local package
+build uses an isolated local snapshot of the current package inputs; its packaged
+provenance names that snapshot commit, not the older main-repository tag.
+These are local artifacts;
+GitHub installation uses the remote commit, which may differ from this checkout.
+`production-import-check` checks the editable source, not the distributable wheel.
 
 No model weight ships in the wheel. The machine defaults to the published `gumrrg`
 DMRST checkpoint at its pinned source commit, using the encoder it was trained with:
 `xlm-roberta-large` at a pinned revision. A manifest- and hash-validated local release
 can be selected explicitly when complete local component receipts are required.
-Available local releases include DMRST models
+Known release identifiers include DMRST models
 (`gumrrg-eb1d5745f3a1`, `rstdt-cc01afde1232`) and UniRST models
-(`unirst-9407970f1d9d`). Dung and IBIS need nothing beyond the package.
+(`unirst-9407970f1d9d`). Their presence in a model store must be checked locally. Dung and IBIS need nothing beyond the package.
 
 Development uses the `default` environment (`pixi install`, then `pixi run test`).
 
@@ -132,7 +137,7 @@ For custom provider composition:
 ```python
 from pathlib import Path
 
-from rdam import AggregateRequest, Machine, ResultOutcome, SourceIdentity, StructuredInput, Technique
+from rdam import AggregateRequest, Machine, ResultOutcome, StructuredInput, Technique
 from rdam.dung import DungProvider
 from rdam.ibis import IbisProvider
 from rdam.rst.provider import RstProvider
@@ -146,8 +151,9 @@ machine = Machine(
 )
 ```
 
-**Capabilities** are reported without loading anything — one state per technique,
-including the techniques that have no provider:
+**Capabilities** are reported without loading model weights — one state per technique,
+including the techniques that have no provider. The example RST state below
+requires the named release to exist and validate in the configured store:
 
 ```python
 for item in machine.capabilities().techniques:
@@ -190,7 +196,7 @@ for Dung or IBIS is `UnavailableOutcome(reason='missing_structured_input')`. Eve
 `semantic_digest`.
 
 **Lineage, declared not inferred.** If you built a framework from an earlier RST result,
-say so: carry that exact result in the request and name it from the structured input.
+after checking `isinstance(rst, ResultOutcome)`, carry that exact result in the request and name it from the structured input.
 The machine re-emits the upstream result untouched, the Dung payload records
 `input_origin: explicitly_derived` with the upstream identity, and the aggregate's
 `lineage` names both provider identities and the upstream artifact's digest. The
@@ -230,7 +236,7 @@ request = AggregateRequest.for_source(
 )
 aggregate = machine.analyse(request)
 assert aggregate.preparation is not None
-print(len(aggregate.preparation.inventory.items))
+print(len(aggregate.preparation.preparation.inventory))
 print(len(aggregate.preparation.projections))
 ```
 
@@ -255,7 +261,9 @@ safety are not locked; serialized providers share a lifetime-bounded lock across
 machine instances. Typed failures preserve other successes; programming errors
 propagate and no partial aggregate is returned.
 
-Caching is opt-in through `ExecutionPolicy(cache_directory=Path("cache"))`.
+Caching is opt-in through `MachineConfig(execution=ExecutionSettings(
+cache_directory=Path("cache")))` for `production_machine`, or
+`ExecutionPolicy(cache_directory=Path("cache"))` for direct `Machine` composition.
 The key binds source, projection, provider, contract, model and instructions
 identities. Dirty source revisions bypass caching. Invalid cache entries are
 reported and recomputed. Native `artifact_digest` covers execution details too;
@@ -285,11 +293,11 @@ and that provenance travels on every native result. Releases such as
 `gumrrg-eb1d5745f3a1` and `unirst-9407970f1d9d` provide production discourse tree parsing
 through `RstProvider` and `Parser`.
 
-## Provider: RST / eRST (`rdam.rst`)
+## Provider: RST (`rdam.rst`)
 
-Rhetorical Structure Theory parsing from raw text or exact pre-segmented EDUs, with
-Extended RST (non-projective secondary relations and discourse signals, as in GUM eRST /
-RS4) as a second formalism with its own capability state.
+Rhetorical Structure Theory parsing from raw text or exact pre-segmented EDUs.
+The production formalism is `rst_tree`. Extended RST is confined to the
+[offline workbench](workbench/erst/README.md) for testing and evaluation.
 
 ### Command line
 
@@ -297,7 +305,7 @@ RS4) as a second formalism with its own capability state.
 # Canonical analysis of text, or of a Markdown / Docling JSON / DocLang / plain-text file
 rdam analyse --text "Because it rained, the match stopped." --techniques rst
 rdam analyse report.md --techniques rst,toulmin,walton --output analysis.json
-rdam summary analysis.json                              # separate readable summary
+rdam summary analysis.json                              # optional terminal inspection
 rdam view analysis.json --techniques walton              # whole native result, no rerun
 rdam prepare report.md                                  # complete inventory, no inference
 rdam capabilities                                      # model-free discovery
@@ -354,9 +362,9 @@ holding many trees, `tree.clear_textfields()` drops the substrings and
 
 `device=` accepts `"auto"`, `"cpu"`, `"mps"`, `"cuda"`, `"cuda:N"`, or a `torch.device`.
 `dtype=` (`bf16` / `fp16` / `fp32`, or a `torch.dtype`) runs the forward pass under
-`torch.autocast`; the default is `float32` everywhere. Tree topology and segmentation are
-bit-equivalent across dtypes; relation labels on near-tied nodes can flip under reduced
-precision (`tests/integration/test_integration.py` is the equivalence suite).
+`torch.autocast`; the default is `float32` everywhere. The dtype regression suite checks topology and segmentation on its fixtures; it does
+not prove universal equivalence. Relation labels on near-tied nodes can flip under
+reduced precision (`tests/integration/test_integration.py`).
 
 ### Production source ingest
 
@@ -394,7 +402,7 @@ identity includes the complete pipeline fingerprint; failures are typed, staged,
 private by default. Contract: [`docs/production-api-contract.md`](docs/production-api-contract.md),
 [`docs/production-source-ingest.md`](docs/production-source-ingest.md).
 
-### Viewer, eRST, long documents, diagnostics
+### Viewer, long documents, diagnostics
 
 ```python
 import rdam.rst as rst
@@ -408,13 +416,10 @@ rst.to_pdf("document.rs3", "document.pdf")
 
 <img src="examples/example-image.png" alt="A rendered RST tree" width="600">
 
-- **eRST**: `rdam.rst.erst.rs4` reads and writes RS4 XML (`RS4Reader`, `RS4Writer`,
-  `rs4_to_document_and_analysis`); `rdam.rst.erst.neural_scorer.NeuralSecondaryEdgeScorer`
-  scores candidate secondary relations; the decoder in `rdam.rst.erst.decoder` applies
-  exactly four formal constraints (sufficient signal, no self-loop, both endpoints exist,
-  no duplicate directed pair). `parser.parse_document(document, output="erst_graph")`
-  requires a validated eRST completion bundle and refuses without one rather than
-  fabricating edges.
+- **eRST is workbench-only.** Signal detection, secondary-edge scoring and decoding,
+  RS4 conversion, checkpoint handling and experimental contracts live in
+  `workbench/erst/`. Production rejects `erst_graph` and has no eRST checkpoint
+  option or automatic bundle loading. Passive saved-report data remains readable.
 - **Long documents**: `rdam.rst.hierarchical.HierarchicalSectionStitcher(parser).parse_hierarchical(document)`
   parses each section, parses the macro relations across section roots, and stitches one
   globally consistent `RstAnalysis`.
@@ -460,7 +465,8 @@ grammar id, and a `map` of each issue with its positions and their supporting an
 objecting arguments, plus the gaps (issues without positions, positions without
 arguments, isolated nodes). The type table is checked exhaustively for all
 3 × 3 × 8 kind–kind–relation combinations (`tests/ibis`). Argument strength or
-acceptability is the Dung provider's job, not this one's.
+acceptability is not assessed here. Dung computes formal acceptability under its
+supplied attack graph; neither provider measures real-world argument strength.
 
 ## Repository layout
 
@@ -470,7 +476,7 @@ rdam/                        the distribution and import package — the machine
 ├── resources/framework-identities.json   coe: identities projected from the vendored taxonomy
 ├── ingest/                  shared source inventory, projections, planning and anchors
 ├── cli.py, http.py           thin terminal and optional loopback interfaces
-├── rst/                     RST/eRST provider: parser, erst, rstviewer, provider.py
+├── rst/                     RST provider: parser, converter, rstviewer, provider.py
 ├── pdtb/, sdrt/, toulmin/, walton/   independently validated model-backed techniques
 ├── dung/                    semantics.py, provider.py
 └── ibis/                    grammar.py, provider.py
@@ -484,11 +490,15 @@ tools/production_boundary/   boundary inspection, reproducible build, artifact v
 tests/  specs/  docs/        verification, decision-closed feature records, documentation
 ```
 
-Production code never imports `workbench`, and no wheel or sdist member carries anything
-outside `rdam/`; `pixi run -e default production-boundary` proves both. Each technique
+Production code never imports `workbench`. The wheel has one Python import root,
+`rdam/`, plus distribution metadata; the sdist also includes the README, licenses
+and build configuration. `pixi run production-boundary` checks source ownership;
+`pixi run validate-production-artifacts` checks built archives. Each technique
 declares exactly one canonical framework identity from Central's
 `coe:artifact/narrative/analytical_frameworks_taxonomy`, referenced and never redefined
-(`pixi run ontology-validate`).
+(`pixi run ontology-validate`). Native discourse concept projections and retained
+Central snapshots also ship under `rdam/resources/`; Central_Configs remains the
+upstream authority, and mapping does not assert equivalence between formalisms.
 
 ## Development, gates, and release
 
@@ -504,42 +514,59 @@ pixi run smoke                                          # every stored release o
 pixi run test-all                                       # everything, including the slow model suites
 ```
 
-Release: tag the commit `v<version>` (the version declared once in `pyproject.toml`),
-then
+For a clean committed source, build and check the package below. A tag is optional
+for building; when HEAD has a tag, it must match `v<version>` from `pyproject.toml`.
 
 ```bash
 pixi run build-production                    # reproducible double build into ignored dist/<version>/
 pixi run validate-production-artifacts       # RECORD, metadata, provenance, entry point, public surface
-pixi run -e production production-clean-install   # fresh venvs, network off, full acceptance on a release
+pixi run -e production production-clean-install \
+  --model-store "$HOME/.cache/isanlp_rst/model-releases" \
+  --release-id gumrrg-eb1d5745f3a1
 ```
 
 Every release tool derives the distribution name and version from `pyproject.toml`;
 `dist/` is never tracked, and the committed record is the evidence JSON under the feature
 that made the release. A stored model release runs under a later package line only
 through an evidence-backed, manifest-bound compatibility re-declaration
-(`pixi run redeclare-compatibility`), never by editing the immutable manifest.
+(`pixi run python -m workbench.promotion.compatibility --help`), never by editing the immutable manifest.
 `pixi run rst-baseline compare` proves the RST public contract analytically equivalent
 across such changes, classifying every field-level difference before giving a verdict.
 
 ## Status and roadmap
 
-Built on 2026-09-02 against the decision-closed architecture in
-`specs/006-rhetorical-discourse-machine/`, feature by feature (`specs/007-…` to
-`specs/012-…`): the aggregate contract and ontology vendoring, the RST provider
-adapter, the repository migration and the single-package restructure, and the Dung and
-IBIS providers. The promotion-evidence system built as feature 008 was removed on
-2026-09-02 by owner ruling — it gated working analysers behind a ceremony that had never
-been asked for. Release 6.0.0 is tagged and
-certified; the release record is in
-[`specs/010-repository-migration/evidence/gates.md`](specs/010-repository-migration/evidence/gates.md).
+The active production scope is RST, PDTB, SDRT, Toulmin, Walton, Dung and IBIS,
+through Python, the unified `rdam` CLI and optional `/v1/` HTTP routes.
+**eRST is workbench-only** following the owner's 2026-09-06 instruction.
+Its experimental implementation is excluded from the production distribution;
+no trained eRST accuracy or readiness is claimed.
 
-Persisted contract identifiers (`isanlp_rst.production` 2.0.0, `isanlp_rst.parser/dmrst-v1`,
-`isanlp_rst.parser/unirst-v1`) name immutable runtime contracts, not the package.
+The 2026-09-06 verification recorded 2,940 passing regression cases across two
+partitions, 14 distinct real-model scenarios, and four successful clean-install
+variants. These are dated results, not a promise that every model response will
+be analytically correct or that the project has demonstrated SOTA performance.
+See [Feature 019 completion and limitations](specs/019-unified-machine-interfaces/tasks.md).
+The earlier 6.0.0 tag certification describes its original commit; it does not
+certify subsequent working-tree changes.
 
-SDRT, Toulmin, Walton and PDTB now have independent providers. Feature 017 extends
-the machine to real source documents; its task checklist and verification evidence
-are under `specs/017-universal-source-pipeline/`. A passing component test is not a
-claim that the whole feature's final gates have passed.
+The current local five-text-technique Dvořák report is
+`build/production-verification-2026-09-06/verified-production-report.json`.
+Dung and IBIS were verified separately with supplied structures. The original
+`build/real-document-reports/GUM_bio_dvorak.full-report.json` remains historical.
+The remediation plan is `build/real-document-reports/RDAM-remediation-plan.md`.
+These ignored local files are not included in the distribution or a fresh clone.
+Analysis reports are canonical JSON for AI consumption; no companion text or
+HTML report is required.
+
+The nested `isanlp_rst.production` contract writes 3.0.0 and reads historical
+2.0.0 without rewriting its meaning. Machine record families have independent
+versions; use `rdam version` and `rdam schema` for the installed contracts.
+Persisted `isanlp_rst` identifiers are retained intentionally.
+
+[Documentation guide](docs/README.md) distinguishes current usage, approved
+requirements and historical evidence. Features 017–019 describe source preparation,
+shared runtime and unified interfaces; older feature records retain their dated
+results and must not be mistaken for current installation instructions.
 
 ## Provenance and licence
 

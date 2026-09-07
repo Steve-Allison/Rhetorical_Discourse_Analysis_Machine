@@ -8,7 +8,7 @@ import pytest
 
 from rdam.rst.contracts.analysis import PrimaryRelationEdge, RstAnalysis, RstNode
 from rdam.rst.contracts.enums import NodeKindEnum, NuclearityPatternEnum, OutputFormalismEnum
-from rdam.rst.contracts.erst import CorpusPartition
+from workbench.erst.contracts import CorpusPartition
 from workbench.research.erst.calibration import apply_temperature, fit_temperature
 from workbench.research.erst.contracts import (
     DocumentScore,

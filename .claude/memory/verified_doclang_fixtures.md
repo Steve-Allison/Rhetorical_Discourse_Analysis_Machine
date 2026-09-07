@@ -5,6 +5,14 @@ metadata:
   type: reference
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 Phase 1 of the DocLang-native RST plan ([`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md)).
 All 40 valid fixtures from
 [`doclang-project/doclang/tests/data/valid`](https://github.com/doclang-project/doclang/tree/main/tests/data/valid)
@@ -24,12 +32,12 @@ the 1-based position among siblings sharing the same local name. Namespaces
 are stripped via `el.tag.split("}", 1)[1]` when present.
 
 Verified by harvesting all 464 elements in
-[`ok_comprehensive.dclg.xml`](../../tests/fixtures/doclang/ok_comprehensive.dclg.xml):
+[`ok_comprehensive.dclg.xml`](../../tests/fixtures/doclang/ok_comprehensive.dclg):
 
 - 464 / 464 paths round-trip via a `find_by_local_path()` resolver
 - 464 / 464 paths are unique within the document
 - Identical path shape for the namespace-absent
-  [`ok_no_namespace.dclg.xml`](../../tests/fixtures/doclang/ok_no_namespace.dclg.xml)
+  [`ok_no_namespace.dclg.xml`](../../tests/fixtures/doclang/ok_no_namespace.dclg)
   fixture (`/doclang[1]`, `/doclang[1]/heading[1]`, …)
 
 Sample shape:
@@ -49,7 +57,7 @@ Reproducer: `pixi run python` + the script in the Phase 1 plan section.
 `<doclang>` may declare `xmlns="https://www.doclang.ai/ns/v0"` (per
 [`spec.md:219-241`](https://github.com/doclang-project/doclang/blob/main/spec.md#L219-L241))
 or omit the namespace (fixture
-[`ok_no_namespace.dclg.xml:2`](../../tests/fixtures/doclang/ok_no_namespace.dclg.xml#L2)).
+[`ok_no_namespace.dclg.xml:2`](../../tests/fixtures/doclang/ok_no_namespace.dclg#L2)).
 Both are valid.
 
 Since the canonical XPath strips namespaces (item 1), the addressing scheme
@@ -63,7 +71,7 @@ default: paths are namespace-agnostic.
 content lives in lxml's tail-text position, not as an element child.
 
 Evidence from
-[`ok_content_in_virtual_text.dclg.xml`](../../tests/fixtures/doclang/ok_content_in_virtual_text.dclg.xml):
+[`ok_content_in_virtual_text.dclg.xml`](../../tests/fixtures/doclang/ok_content_in_virtual_text.dclg):
 
 ```xml
 <list class="unordered">
@@ -90,9 +98,9 @@ The harvest walk for a `<list>` body is:
 
 Same rule for `<table>` cells with cell-start markers + `<nl/>` terminating
 rows. Confirmed on
-[`ok_list_with_unwrapped_text.dclg.xml`](../../tests/fixtures/doclang/ok_list_with_unwrapped_text.dclg.xml)
+[`ok_list_with_unwrapped_text.dclg.xml`](../../tests/fixtures/doclang/ok_list_with_unwrapped_text.dclg)
 (18 markers, 3 nested-list cases) and
-[`ok_table_raw_before.dclg.xml`](../../tests/fixtures/doclang/ok_table_raw_before.dclg.xml).
+[`ok_table_raw_before.dclg.xml`](../../tests/fixtures/doclang/ok_table_raw_before.dclg).
 
 ## 4. `<thread>` semantics — exactly one per host
 
@@ -102,16 +110,16 @@ Across all 40 fixtures, the per-host `<thread>` count is **exactly 1** for the
 
 Hosts seen:
 
-- [`ok_thread.dclg.xml`](../../tests/fixtures/doclang/ok_thread.dclg.xml) —
+- [`ok_thread.dclg.xml`](../../tests/fixtures/doclang/ok_thread.dclg) —
   two `<text>` elements both bearing `<thread thread_id="1"/>`, demonstrating
   the cross-fragment continuation pattern from
   [`spec.md:2478-2494`](https://github.com/doclang-project/doclang/blob/main/spec.md#L2478-L2494).
-- [`ok_thread_unused.dclg.xml`](../../tests/fixtures/doclang/ok_thread_unused.dclg.xml) —
+- [`ok_thread_unused.dclg.xml`](../../tests/fixtures/doclang/ok_thread_unused.dclg) —
   thread defined, never referenced by `<xref>`. Valid.
-- [`ok_xref.dclg.xml`](../../tests/fixtures/doclang/ok_xref.dclg.xml) —
+- [`ok_xref.dclg.xml`](../../tests/fixtures/doclang/ok_xref.dclg) —
   `<picture>` declares `<thread thread_id="1"/>`; a sibling `<text>` carries
   `<xref thread_id="1"/>Figure 3` referencing it.
-- [`ok_layer_element_head_order.dclg.xml`](../../tests/fixtures/doclang/ok_layer_element_head_order.dclg.xml) —
+- [`ok_layer_element_head_order.dclg.xml`](../../tests/fixtures/doclang/ok_layer_element_head_order.dclg) —
   `<thread>` inside element-head between `<label>` and `<layer>`.
 
 Schema implication: `thread_id: int | None` on `DoclangHarvestSpan` and the
@@ -124,9 +132,9 @@ the corpus confirms.
 
 30 lists across the corpus. Item counts 1–5. Nesting confirmed: 2 nested-list
 cases (in
-[`ok_comprehensive.dclg.xml`](../../tests/fixtures/doclang/ok_comprehensive.dclg.xml)
+[`ok_comprehensive.dclg.xml`](../../tests/fixtures/doclang/ok_comprehensive.dclg)
 and
-[`ok_list_with_unwrapped_text.dclg.xml`](../../tests/fixtures/doclang/ok_list_with_unwrapped_text.dclg.xml)),
+[`ok_list_with_unwrapped_text.dclg.xml`](../../tests/fixtures/doclang/ok_list_with_unwrapped_text.dclg)),
 both at depth 1.
 
 Per-item harvest emits one `DoclangHarvestSpan` per `<ldiv/>` marker, with
@@ -145,7 +153,7 @@ explicitly says no `$...$` wrappers — bare LaTeX). Excluding from RST harvest
 is correct.
 
 `<code>` content is mostly source code, but
-[`ok_comprehensive.dclg.xml`](../../tests/fixtures/doclang/ok_comprehensive.dclg.xml)
+[`ok_comprehensive.dclg.xml`](../../tests/fixtures/doclang/ok_comprehensive.dclg)
 shows mixed cases including `<code>` with inline `<bold>` markup and inline
 prose. Default-off remains defensible; consumers can flip
 `include_code_blocks=True` for cases where they want to feed code into the
@@ -175,6 +183,6 @@ covers all observed shapes:
 
 ## Cross-reference
 
-- Spec citations live in [[verified-doclang-spec]] (Phase 0 memory).
+- Spec citations live in [verified-doclang-spec](verified_doclang_spec.md) (Phase 0 memory).
 - Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md).
 - Fixture README: [`tests/fixtures/doclang/README.md`](../../tests/fixtures/doclang/README.md).

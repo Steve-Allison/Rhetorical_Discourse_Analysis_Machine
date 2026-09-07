@@ -10,8 +10,8 @@ import torch
 from torch.utils.data import DataLoader
 
 from workbench.training.erst.dataset import GUMSecondaryEdgeDataset
-from rdam.rst.erst.environment import load_repository_environment
-from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
+from workbench.erst.environment import load_repository_environment
+from workbench.erst.neural_scorer import NeuralSecondaryEdgeScorer
 from workbench.research.erst.contracts import AblationName, MandatoryExperimentSystem
 from workbench.research.erst.data import HarnessCandidate, ScreeningCorpusPayload
 from workbench.research.erst.runner import (

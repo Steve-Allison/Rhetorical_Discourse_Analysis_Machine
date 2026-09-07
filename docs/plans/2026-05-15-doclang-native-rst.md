@@ -1,10 +1,15 @@
 # DocLang-native RST output
 
+> Historical design and implementation record. The separate format APIs and
+> per-table mini-parses below have been replaced by shared `rdam.ingest`.
+> Use the [current source guide](../production-source-ingest.md) for supported
+> contracts and upstream-version limitations.
+
 **Status:** Phase 2 complete (modules + tests landed; lint + pyright clean); Phase 3 ready. Phase 9 (2026-06-12) added per-cell `<table>` harvest — see Revision below.
 **Date:** 2026-05-15 (Phase 0); 2026-06-10 (Phases 1 + 2); 2026-06-12 (cross-format table-cell directive)
 **Driver:** Steve Allison
 **Companion:** [`2026-05-15-docling-native-rst.md`](./2026-05-15-docling-native-rst.md) (the Docling JSON entry point that already exists); [`2026-06-12-markdown-native-rst.md`](./2026-06-12-markdown-native-rst.md) (the markdown-native entry point and source of the cross-format directive).
-**Sibling memories:** [[verified-doclang-spec]] (spec citations); [[verified-doclang-fixtures]] (fixture-evidence for the answers below).
+**Sibling memories:** [verified-doclang-spec](../../.claude/memory/verified_doclang_spec.md) (spec citations); [verified-doclang-fixtures](../../.claude/memory/verified_doclang_fixtures.md) (fixture-evidence for the answers below).
 
 ---
 
@@ -20,7 +25,7 @@ Add `isanlp_rst.doclang.parse_doclang(path)` as a first-class entry point alongs
 
 ## Verified facts driving the design
 
-From reading the full DocLang 0.5 spec, the `doclang` Python package, and two real `.dclg` fixtures (see [[verified-doclang-spec]] for line citations):
+From reading the full DocLang 0.5 spec, the `doclang` Python package, and two real `.dclg` fixtures (see [verified-doclang-spec](../../.claude/memory/verified_doclang_spec.md) for line citations):
 
 1. **DocLang is XML** (`.dclg`), namespace optional with default `https://www.doclang.ai/ns/v0`. Root `<doclang>`.
 2. **The `doclang` PyPI package is validator-only.** It exposes `validate(path)` and `ValidationError`. No DOM, no parser, no object model. We parse XML ourselves (`lxml` is already in our deps).
@@ -61,7 +66,7 @@ DocLang has no stable identifiers in the spec. Our addressing must be reproducib
 
 **Primary key: local-name canonical XPath** — e.g. `/doclang[1]/heading[2]`, `/doclang[1]/text[7]`. Each step is `local_name[i]` where `i` is the 1-based position among siblings sharing the same local name. Namespaces are stripped.
 
-This is **not** `lxml.etree.ElementTree.getpath()`. We confirmed in Phase 1 that `getpath()` produces `/*/*[3]`-style wildcard paths on default-namespaced documents (the spec-recommended shape per [`spec.md:219-241`](https://github.com/doclang-project/doclang/blob/main/spec.md#L219-L241)) — unusable as a human-readable identifier. We build the path ourselves: a one-screen `local_path(el)` function, round-trips 464 / 464 elements on [`ok_comprehensive.dclg`](../../tests/fixtures/doclang/ok_comprehensive.dclg), 4 / 4 on [`ok_no_namespace.dclg`](../../tests/fixtures/doclang/ok_no_namespace.dclg). All paths unique within a document. See [[verified-doclang-fixtures]] item 1.
+This is **not** `lxml.etree.ElementTree.getpath()`. We confirmed in Phase 1 that `getpath()` produces `/*/*[3]`-style wildcard paths on default-namespaced documents (the spec-recommended shape per [`spec.md:219-241`](https://github.com/doclang-project/doclang/blob/main/spec.md#L219-L241)) — unusable as a human-readable identifier. We build the path ourselves: a one-screen `local_path(el)` function, round-trips 464 / 464 elements on [`ok_comprehensive.dclg`](../../tests/fixtures/doclang/ok_comprehensive.dclg), 4 / 4 on [`ok_no_namespace.dclg`](../../tests/fixtures/doclang/ok_no_namespace.dclg). All paths unique within a document. See [verified-doclang-fixtures](../../.claude/memory/verified_doclang_fixtures.md) item 1.
 
 **Secondary key: `thread_id`** — when present, captured as `thread_id: int | None` on the span. Phase 1 confirmed that across the then-current valid-fixture corpus, every host element has **exactly one** `<thread>` child (5 hosts in total). The element-head ordering at [`spec.md:147-157`](https://github.com/doclang-project/doclang/blob/main/spec.md#L147-L157) specifies `<thread>` as a single optional slot, and the corpus matches. Schema simplified from `tuple[int, ...]` to `int | None`.
 
@@ -208,7 +213,7 @@ result: DoclangRstResult = parse_doclang(
 
 ## Design questions — RESOLVED in Phase 1
 
-All six questions were verified against the then-current valid-fixture corpus pulled into [`tests/fixtures/doclang/`](../../tests/fixtures/doclang/). Evidence per question lives in [[verified-doclang-fixtures]].
+All six questions were verified against the then-current valid-fixture corpus pulled into [`tests/fixtures/doclang/`](../../tests/fixtures/doclang/). Evidence per question lives in [verified-doclang-fixtures](../../.claude/memory/verified_doclang_fixtures.md).
 
 1. **`<list>` granularity** — **RESOLVED: per-item.** 30 lists across the corpus; 2 nested-list cases at depth 1 (`<list>` whose ancestor is `<list>`, not nested via `<ldiv>`). Each `<ldiv/>` marker produces one harvest span; nested lists are harvested independently at their own XPath. Evidence: `ok_list_with_unwrapped_text.dclg`, `ok_comprehensive.dclg`.
 2. **`<code>` and `<formula>` inclusion** — **RESOLVED: default OFF, both knobs preserved.** 3 `<formula>` blocks in the corpus, all pure LaTeX (`E = mc^2`, `x = \frac{-b \pm \sqrt{b^{2} - 4ac}}{2a}`). 12 `<code>` blocks across R / Python / SQL / Java — bulk is source code, a minority is mixed-prose-with-`<bold>` markup. Default-off is correct for both; `include_code_blocks` / `include_formulas` knobs handle the opt-in cases.
@@ -224,20 +229,20 @@ All six questions were verified against the then-current valid-fixture corpus pu
 - ✅ Read DocLang spec.md in full (3734 lines).
 - ✅ Read `doclang` package source — verified validator-only API.
 - ✅ Inspect at least two real `.dclg` fixtures.
-- ✅ Write [[verified-doclang-spec]] with file:line citations.
+- ✅ Write [verified-doclang-spec](../../.claude/memory/verified_doclang_spec.md) with file:line citations.
 - ✅ Write this plan doc.
 
 ### Phase 1 — Fixture set + design verification (2026-06-10)
 
 - ✅ Mirrored the then-current valid fixtures from `doclang-project/doclang/tests/data/valid` into [`tests/fixtures/doclang/`](../../tests/fixtures/doclang/) with provenance README.
 - ✅ Resolved Q1–Q6 against the corpus; updated the addressing-scheme and schema sections above.
-- ✅ Wrote [[verified-doclang-fixtures]] with reproducer commands and fixture:line citations.
+- ✅ Wrote [verified-doclang-fixtures](../../.claude/memory/verified_doclang_fixtures.md) with reproducer commands and fixture:line citations.
 - ✅ Updated this plan doc with verified answers.
 
 ### Phase 2 — Implementation (2026-06-10)
 
-- ✅ Extracted shared overlap maths and nuclearity split into [`isanlp_rst/_rst_common/`](../../isanlp_rst/_rst_common/). Refactored [`isanlp_rst/docling/mapper.py`](../../isanlp_rst/docling/mapper.py) to delegate to the shared helpers while preserving its public API (all 183 prior Docling tests still pass).
-- ✅ Implemented [`isanlp_rst/doclang/`](../../isanlp_rst/doclang/) — `schema`, `errors`, `loader`, `harvester`, `boundaries`, `mapper`, `_entry`, `__init__`.
+- ✅ Extracted shared overlap maths and nuclearity split into `isanlp_rst/_rst_common/` (historical, removed). Refactored `isanlp_rst/docling/mapper.py` (historical, removed) to delegate to the shared helpers while preserving its public API (all 183 prior Docling tests still pass).
+- ✅ Implemented `isanlp_rst/doclang/` (historical, removed) — `schema`, `errors`, `loader`, `harvester`, `boundaries`, `mapper`, `_entry`, `__init__`.
 - ✅ Added [`types-lxml`](https://pypi.org/project/types-lxml/) as a dev dependency (lxml is already direct via `pyproject.toml`).
 - ✅ Wrote 115 new tests across 5 files: `tests/test_doclang_loader.py` (15), `_harvester.py` (31), `_boundaries.py` (25), `_mapper.py` (14), `_entry.py` (30 fast + 6 slow integration). Total test count: 298 fast + 48 slow.
 - ✅ Updated `tool.pyright.include` with the new module dirs.
@@ -254,7 +259,7 @@ All six questions were verified against the then-current valid-fixture corpus pu
 |---|---|
 | DocLang v0.5 is breaking-change territory (any `0.x.y` minor bump can break us per `spec.md:236-241`). | Pin a specific `doclang` package version; track changelog. |
 | ~~`lxml.etree.ElementTree.getpath()` may produce surprising XPath for elements with namespaces.~~ | **Retired by Phase 1**: `getpath()` is unusable on namespaced docs (`/*/*[3]`-style wildcards); we own a `local_path()` walker that round-trips 100% on the corpus. |
-| RST quality on DocLang-rendered prose is the same open question as for Docling (see [[open-rst-real-world-quality]]) — additionally, OTSL tables and code blocks inline within `<text>` may degrade the harvest signal. | Same empirical-quality-check pattern as `parse_docling`. |
+| RST quality on DocLang-rendered prose is the same open question as for Docling (see [open-rst-real-world-quality](../../.claude/memory/open_rst_real_world_quality.md)) — additionally, OTSL tables and code blocks inline within `<text>` may degrade the harvest signal. | Same empirical-quality-check pattern as `parse_docling`. |
 | Fragment continuation via `<thread>` makes harvest spans non-contiguous in the source document but contiguous in our text concatenation. The mapper's overlap rule still works on offsets, but `boundary_memberships` may need to handle a relation whose nucleus is split across two `<thread>` fragments in different `page-N` boundaries. | Phase 1 confirmed shape (`ok_thread.dclg` shows two `<text>` hosts sharing `thread_id=1`). Phase 2 mapper assigns spans to all `page-N` boundaries whose page-range contains their character offsets; the union of those memberships shows up in `relation.boundary_memberships` naturally. |
 
 ## Out of scope
@@ -270,4 +275,4 @@ All six questions were verified against the then-current valid-fixture corpus pu
 - The Docling-native pattern is documented in [`2026-05-15-docling-native-rst.md`](./2026-05-15-docling-native-rst.md) and [`2026-05-15-docling-native-rst-build.md`](./2026-05-15-docling-native-rst-build.md).
 - The no-assumptions rule (`.claude/rules/no-assumptions.md`) applies in full — any claim in this doc not backed by a `spec.md:N` citation or by reading a verified-source artefact must be marked `ASSUMED`.
 
-Related memory: [[verified-doclang-spec]], [[verified-docling-core-api]], [[decision-one-tree-per-document]], [[decision-consumer-agnostic]], [[open-rst-real-world-quality]].
+Related memory: [verified-doclang-spec](../../.claude/memory/verified_doclang_spec.md), [verified-docling-core-api](../../.claude/memory/verified_docling_core_api.md), [decision-one-tree-per-document](../../.claude/memory/decision_one_tree_per_document.md), [decision-consumer-agnostic](../../.claude/memory/decision_consumer_agnostic.md), [open-rst-real-world-quality](../../.claude/memory/open_rst_real_world_quality.md).

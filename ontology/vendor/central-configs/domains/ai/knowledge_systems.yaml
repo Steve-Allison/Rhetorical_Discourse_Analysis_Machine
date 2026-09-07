@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/ai/knowledge_systems
   title: AI — Knowledge Systems and Agentic Practices
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: ai
@@ -27,7 +27,6 @@ entity_collections:
     home_domain: ai
     status: canonical
     edges: []
-    ner_label: AGENTIC_ID_PIPELINE
     examples:
     - agentic pipeline
     - multi-agent course generation
@@ -36,7 +35,6 @@ entity_collections:
     - human-in-the-loop gate
     anti_examples:
     - CI pipeline
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/ai_competency_framework
@@ -46,12 +44,10 @@ entity_collections:
     home_domain: ai
     status: canonical
     edges: []
-    ner_label: AI_COMPETENCY_FRAMEWORK
     examples:
     - AI competency framework
     - UNESCO AI CFT
     - AI literacy levels
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/agent_skill
@@ -72,7 +68,6 @@ entity_collections:
       home_domain: ai
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: AGENT_SKILL
     examples:
     - SKILL.md
     - agent skill
@@ -82,7 +77,6 @@ entity_collections:
     anti_examples:
     - soft skill
     - skill gap
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/tom_prompting_architecture
@@ -92,13 +86,11 @@ entity_collections:
     home_domain: ai
     status: canonical
     edges: []
-    ner_label: TOM_PROMPTING
     examples:
     - SimToM
     - perspective-taking prompt
     - Decompose-ToM
     - ToMAP
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/knowledge_graph_construction
@@ -108,7 +100,6 @@ entity_collections:
     home_domain: ai
     status: canonical
     edges: []
-    ner_label: KG_CONSTRUCTION
     examples:
     - knowledge graph construction
     - triple extraction
@@ -117,7 +108,6 @@ entity_collections:
     - GraphRAG communities
     anti_examples:
     - graph paper
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/human_ai_curation
@@ -136,7 +126,6 @@ entity_collections:
       home_domain: ai
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: HUMAN_AI_CURATION
     examples:
     - human-in-the-loop curation
     - AI-proposed, human-approved
@@ -144,7 +133,6 @@ entity_collections:
     - curation queue
     anti_examples:
     - museum curation
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/semantic_wiki_architecture
@@ -154,7 +142,6 @@ entity_collections:
     home_domain: ai
     status: canonical
     edges: []
-    ner_label: SEMANTIC_WIKI
     examples:
     - semantic wiki
     - agent-readable wiki
@@ -162,7 +149,6 @@ entity_collections:
     - wiki integrity gates
     anti_examples:
     - Wikipedia article
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/topic_modelling
@@ -172,7 +158,6 @@ entity_collections:
     home_domain: ai
     status: canonical
     edges: []
-    ner_label: TOPIC_MODELLING
     examples:
     - topic modelling
     - LDA
@@ -181,7 +166,6 @@ entity_collections:
     - latent themes
     anti_examples:
     - topic sentence
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/llm_as_judge
@@ -211,7 +195,6 @@ entity_collections:
       home_domain: ai
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: LLM_AS_JUDGE
     examples:
     - LLM-as-judge
     - model-graded evaluation
@@ -220,6 +203,5 @@ entity_collections:
     - grader drift
     anti_examples:
     - judge and jury
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery

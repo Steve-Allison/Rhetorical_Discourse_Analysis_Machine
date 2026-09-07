@@ -3,7 +3,7 @@
 from pydantic import ValidationError
 import pytest
 
-from rdam.rst.contracts.erst import (
+from workbench.erst.contracts import (
     CorpusDocumentReceipt,
     CorpusFailureType,
     CorpusLicenseClass,

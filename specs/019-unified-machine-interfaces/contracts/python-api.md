@@ -1,6 +1,7 @@
 # Contract: Python API and Shared Operations
 
-**Status**: Proposed public API for Feature 019, not executable current syntax.
+**Status**: Implemented public API for the active seven-technique scope.
+Generated schemas and runtime signatures are authoritative; eRST is suspended.
 
 ## Public surface
 
@@ -25,7 +26,7 @@ serialize_preparation_request(request: PreparationRequest) -> bytes
 load(payload: bytes | str) -> PersistedRecord
 serialize(record: PersistedRecord) -> bytes
 summarise(record: AggregateAnalysis | HistoricalAggregateAnalysis
-          | MachinePreparation | MachineCapabilities) -> str
+          | MachinePreparation | HistoricalMachinePreparation | MachineCapabilities) -> str
 schema(record_name: str, *, mode: Literal["validation", "serialization"]
        = "validation") -> Mapping[str, JsonValue]
 version_info() -> VersionInfo
@@ -38,8 +39,7 @@ Current native results use the corrected v2 envelope and applicable versioned
 provider contracts in [native-integrity.md](native-integrity.md); presentation
 preservation means keeping those produced records intact, not retaining defects.
 The public `production_machine(model=..., execution_policy=...)` arguments are
-replaced by MachineConfig in the same feature; update current consumers and docs
-in the implementation pass. No deprecated forwarding arguments are added.
+replaced by `MachineConfig`; callers must use `production_machine(config=...)`. No deprecated forwarding arguments are added.
 Direct `Machine(providers, execution_policy=...)` remains supported for custom
 Python compositions, using actual provider declarations for configuration.
 
@@ -143,7 +143,7 @@ Schema names are exactly the registry keys: `request`, `preparation-request`,
 structures. Native input schemas are projected from provider-owned validators;
 semantic graph constraints that JSON Schema cannot express remain documented and
 tested in native validation. Provider output schema names are `rst-result`,
-`erst-result`, `pdtb-result`, `sdrt-result`, `toulmin-result`, `walton-result`,
+`pdtb-result`, `sdrt-result`, `toulmin-result`, `walton-result`,
 `dung-result` and `ibis-result`; they describe the actual versioned native payloads,
 including computed output fields, rather than reusing extraction-input schemas.
 Historical variants append their explicit major version, such as

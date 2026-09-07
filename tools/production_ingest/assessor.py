@@ -8,8 +8,8 @@ from pathlib import Path
 
 from rdam.rst.contracts import RstAnalysis
 from rdam.rst.contracts.serialization import analysis_from_dict
-from rdam.rst.erst.converter import rs4_to_document_and_analysis
-from rdam.rst.erst.rs4 import RS4Reader
+from workbench.erst.converter import rs4_to_document_and_analysis
+from workbench.erst.rs4 import RS4Reader
 from rdam.ingest import (
     AnalysedOutcome,
     EmptyPrimaryAnalysisOutcome,

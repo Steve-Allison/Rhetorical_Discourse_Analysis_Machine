@@ -1,6 +1,7 @@
 # Contract: Unified rdam CLI
 
-**Status**: Proposed grammar; implementation has not started.
+**Status**: Implemented contract for the active seven-technique scope.
+See [implementation results](../tasks.md). eRST is workbench-only.
 
 ## Commands
 
@@ -37,13 +38,13 @@ main function; no separate grammar. No `parse`, `analyze`, `summarise` aliases o
 | OUTPUT | `-o/--output PATH`, `--force`, `--diagnostics json\|text` | Output absent/`-` means stdout. Force requires a file destination. Diagnostics default JSON. |
 | SOURCE_OPTIONS | `--source-form FORM`, `--source-name NAME` | FORM is an exact SourceForm value; a name override preserves declared origin and recomputes metadata-bearing identity. |
 | STRUCTURES | repeated `--structured dung=FILE` / `--structured ibis=FILE` | At most one each, and only for requested techniques. Values are strict native JSON objects, not strings containing JSON. |
-| FORMALISMS | repeated `--formalism TECHNIQUE=FORMALISM` | At most one per selected boundary. `rst=erst_graph` selects eRST. |
+| FORMALISMS | repeated `--formalism TECHNIQUE=FORMALISM` | At most one per selected boundary. `rst=rst_tree` selects production RST. |
 | CONFIG | `-c/--config FILE` plus narrow overrides below | Only capabilities/prepare/analyse/serve accept these options. |
 
 Config overrides: `--model MODEL`; repeated `--technique-model TECHNIQUE=MODEL`
 for the four LLM techniques; `--rst-model VERSION` or the pair `--model-store PATH
 --release-id ID`; `--rst-relinventory NAME`; `--device DEVICE`;
-`--erst-checkpoint PATH`; `--rst-evidence-detail DETAIL`;
+`--rst-evidence-detail DETAIL`;
 `--rst-marker-refinement evidence_preserving|disabled`; `--dung-capacity N`;
 `--max-workers N`; `--cache-directory PATH`. No free-form `--set`, secret flag,
 temperature knob, arbitrary URL or unvalidated provider option bag.

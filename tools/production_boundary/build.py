@@ -60,7 +60,7 @@ def _git(*arguments: str, repository_root: Path, capture_output: bool = True) ->
         capture_output=capture_output,
         text=True,
     )
-    return completed.stdout.strip() if completed.stdout is not None else ""
+    return completed.stdout.strip() if capture_output else ""
 
 
 def _sha256_bytes(payload: bytes) -> str:
@@ -151,6 +151,18 @@ def _provenance_bytes(
     tag live in the committed ``ReproducibleBuildReport``, not here."""
     pyproject_identity = sha256_path(export_root / "pyproject.toml")
     lock_identity = sha256_path(export_root / "pixi.lock")
+    schema = json.loads((export_root / identity.package_dir / "ingest/schemas/capabilities.schema.json").read_bytes())
+    properties = schema["properties"]
+    contract = properties["contract"]["const"]
+    version_definition = properties["contract_version"]
+    if "$ref" in version_definition:
+        reference = version_definition["$ref"]
+        if not isinstance(reference, str) or not reference.startswith("#/$defs/"):
+            raise ValueError("production contract version must resolve within the exported capability schema")
+        version_definition = schema["$defs"][reference.removeprefix("#/$defs/")]
+    contract_version = version_definition["const"]
+    if not isinstance(contract, str) or not contract or not isinstance(contract_version, str) or not contract_version:
+        raise ValueError("exported capability schema must declare literal contract name and version")
     build_input_identity = _sha256_bytes(
         rfc8785.dumps(
             {
@@ -166,8 +178,8 @@ def _provenance_bytes(
             "schema_version": "1.0.0",
             "package_name": identity.distribution,
             "package_version": identity.version,
-            "production_contract": "isanlp_rst.production",
-            "production_contract_version": "2.0.0",
+            "production_contract": contract,
+            "production_contract_version": contract_version,
             "source_commit": commit,
             "source_tree": tree,
             "source_archive_sha256": archive_sha256,
@@ -219,7 +231,7 @@ def _publish_artifact(source: Path, destination: Path) -> Path:
     return destination
 
 
-def _reset_output_dir(destination: Path, identity: ReleaseIdentity) -> None:
+def reset_output_dir(destination: Path, identity: ReleaseIdentity) -> None:
     """Empty the output directory, refusing to touch anything that is not this release's pair."""
 
     if destination.exists():
@@ -251,7 +263,7 @@ def build_production_artifacts(
     if source_tag is not None and source_tag != release.tag:
         raise RuntimeError(f"HEAD is tagged {source_tag!r} but the package version is {release.version}")
     destination = output_dir.resolve()
-    _reset_output_dir(destination, release)
+    reset_output_dir(destination, release)
 
     with tempfile.TemporaryDirectory(prefix="rdam-production-build-") as temporary:
         workspace = Path(temporary)
@@ -349,5 +361,6 @@ if __name__ == "__main__":
 __all__ = [
     "ProductionBuild",
     "build_production_artifacts",
+    "reset_output_dir",
     "source_release_record",
 ]

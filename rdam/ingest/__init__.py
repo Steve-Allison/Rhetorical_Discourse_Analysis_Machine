@@ -1,4 +1,4 @@
-"""Production contract 2.0.0 source preparation and analysis boundary."""
+"""Production contract 3.0.0 source preparation and analysis boundary."""
 
 from importlib import import_module
 from typing import TYPE_CHECKING
@@ -216,7 +216,6 @@ if TYPE_CHECKING:
     from rdam.ingest.service import (
         AnalysisIdentityProvider as AnalysisIdentityProvider,
         AnalysisParser as AnalysisParser,
-        ErstCompletionParser as ErstCompletionParser,
         ProductionIngestor as ProductionIngestor,
     )
 
@@ -412,7 +411,6 @@ _EXPORT_MODULES: dict[str, str] = {
     "serialize_contract": "rdam.ingest.serialization",
     "AnalysisIdentityProvider": "rdam.ingest.service",
     "AnalysisParser": "rdam.ingest.service",
-    "ErstCompletionParser": "rdam.ingest.service",
     "ProductionIngestor": "rdam.ingest.service",
 }
 
@@ -484,7 +482,6 @@ __all__ = [
     "EndpointAnchor",
     "ErstCandidateDecision",
     "ErstCompletionEvidence",
-    "ErstCompletionParser",
     "ErstDecision",
     "ErstDecodeReceipt",
     "EvidenceCapability",

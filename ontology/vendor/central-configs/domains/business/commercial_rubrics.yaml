@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/business/commercial_rubrics
   title: Business — Commercial Rubrics
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: business
@@ -55,84 +55,7 @@ scoring_models:
     home_domain: business
     status: canonical
     evidence_ids: *id001
-  thresholds:
-  - key: pitch_word_count_30_second
-    label: 30-Second Pitch Word Count
-    description: Spoken word count of a 30-second pitch; the band fits the delivery window at a natural speaking pace, with
-      the target at the pace listeners retain best.
-    unit: words
-    minimum_value: 60
-    target_value: 80
-    maximum_value: 100
-  - key: pitch_word_count_60_second
-    label: 60-Second Pitch Word Count
-    description: Spoken word count of a 60-second pitch; the band fits the delivery window at a natural speaking pace.
-    unit: words
-    minimum_value: 120
-    target_value: 150
-    maximum_value: 175
-  - key: pitch_word_count_2_minute
-    label: Two-Minute Pitch Word Count
-    description: Spoken word count of a two-minute pitch; the band fits the delivery window at a natural speaking pace.
-    unit: words
-    minimum_value: 240
-    target_value: 280
-    maximum_value: 320
-  - key: bluf_position
-    label: BLUF Position
-    description: Maximum words that may precede the value proposition or primary benefit; the bottom line must arrive up front,
-      inside the listener's opening attention window.
-    unit: words
-    maximum_value: 30
-  - key: jargon_ratio
-    label: Jargon Ratio
-    description: Maximum share of pitch words that are jargon; above this the pitch stops being plain language for a mixed
-      audience.
-    unit: ratio
-    maximum_value: 0.08
-  - key: unexplained_acronyms
-    label: Unexplained Acronyms
-    description: Maximum acronyms used without expansion or explanation in one pitch.
-    unit: acronyms
-    maximum_value: 2
-  - key: proof_points_30_second
-    label: Proof Points — 30-Second Pitch
-    description: Proof points in a 30-second pitch; at least one is required for credibility, and exceeding the maximum creates
-      data overload and buries the CTA.
-    unit: proof points
-    minimum_value: 1
-    maximum_value: 1
-  - key: proof_points_60_second
-    label: Proof Points — 60-Second Pitch
-    description: Proof points in a 60-second pitch; at least one is required, and exceeding the maximum creates data overload
-      and buries the CTA.
-    unit: proof points
-    minimum_value: 1
-    maximum_value: 2
-  - key: proof_points_2_minute
-    label: Proof Points — Two-Minute Pitch
-    description: Proof points in a two-minute pitch; at least one is required, and exceeding the maximum creates data overload
-      and buries the CTA.
-    unit: proof points
-    minimum_value: 1
-    maximum_value: 3
-  - key: value_prop_sentence_words
-    label: Value Proposition Sentence Length
-    description: Maximum words in the core value proposition sentence; it must be instantly comprehensible in one hearing.
-    unit: words
-    maximum_value: 25
-  - key: cta_specificity_words
-    label: CTA Specificity
-    description: Minimum count of concrete, specific words in the closing call to action (a named next step, time, or artefact);
-      the legacy standard also caps the asked-for commitment at a meeting, which stays a qualitative check.
-    unit: words
-    minimum_value: 1
-  - key: success_criteria_minimum
-    label: Success Criteria Minimum
-    description: Minimum number of scoring success criteria a pitch must satisfy to pass review.
-    unit: criteria
-    minimum_value: 2
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   id: coe:artifact/business/elevator_pitch_rubric
   label: Elevator Pitch Rubric
   description: Scoring rubric for elevator pitch and value proposition quality covering time-to-value, core message clarity,

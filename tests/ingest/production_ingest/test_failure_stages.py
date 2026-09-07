@@ -201,39 +201,12 @@ def test_completed_evidence_must_precede_the_failed_stage() -> None:
     assert inference_failure.completed.kind == "preparation"
 
 
-def test_subdivided_erst_without_completion_support_is_typed_provider_unavailable(
-    parser_builder: ParserBuilder,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    from rdam.rst.contracts import RstDocument
-
-    text = "First. Second. Third. Fourth."
-    parser = parser_builder(maximum=2)
-    unit_result = parser.analyse_document(
-        RstDocument.from_text(text, document_id="subdivided.txt")
-    )
+def test_production_ingest_rejects_erst_before_inference(parser_builder: ParserBuilder) -> None:
     source = SourceArtifact.from_edus(
         ("First.", "Second.", "Third.", "Fourth."), source_name="subdivided.txt"
     )
-    # The deterministic fixture parser has no subdivided-unit support; unit
-    # analysis and recombination are not under test here, only the branch that
-    # fires when the recombined parser lacks document-global eRST completion.
-    monkeypatch.setattr(
-        "rdam.ingest.service._analyse_parser_unit",
-        lambda *_args, **_kwargs: unit_result,
-    )
-    monkeypatch.setattr(
-        "rdam.ingest.recombination.recombine_parser_results",
-        lambda **_kwargs: unit_result,
-    )
-    ingestor = ProductionIngestor(parser=parser)
-    with pytest.raises(ProductionIngestError) as raised:
-        ingestor.analyse(source, analysis_policy=_erst_policy())
-    assert raised.value.failure.failed_stage is LifecycleStage.INFERENCE
-    assert raised.value.failure.code == "erst_completion_unsupported"
-    assert raised.value.failure.category is FailureCategory.PROVIDER_UNAVAILABLE
-    assert raised.value.failure.retryability is Retryability.NOT_RETRYABLE
-    assert raised.value.failure.completed.kind == "preparation"
+    with pytest.raises(ValueError, match="workbench"):
+        ProductionIngestor(parser=parser_builder(maximum=2)).analyse(source, analysis_policy=_erst_policy())
 
 
 def test_validation_internal_failure_is_not_labelled_a_validation_verdict(
@@ -331,7 +304,7 @@ def test_enrichment_failure_claims_only_inference_completed(
     def broken(*_args: object) -> None:
         raise RuntimeError("PRIVATE enrichment bug")
 
-    monkeypatch.setattr("rdam.ingest.enrichment.enrich_parser_evidence", broken)
+    monkeypatch.setattr("rdam.ingest.enrichment.enrich_parser_document", broken)
     ingestor = ProductionIngestor(parser=parser_builder())
     with pytest.raises(ProductionIngestError) as raised:
         ingestor.analyse(

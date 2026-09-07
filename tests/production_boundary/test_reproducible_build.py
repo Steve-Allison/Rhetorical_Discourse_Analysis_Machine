@@ -8,7 +8,7 @@ import zipfile
 import pytest
 
 from rdam.rst._provenance import PROVENANCE_FIELDS
-from tools.production_boundary.build import _reset_output_dir, build_production_artifacts, source_release_record
+from tools.production_boundary.build import reset_output_dir, build_production_artifacts, source_release_record
 from tools.production_boundary.contracts import canonical_record_bytes, sha256_path
 from tools.production_boundary.identity import ReleaseIdentity
 
@@ -49,6 +49,8 @@ def test_double_build_publishes_expected_pair(
     assert provenance["source_commit"] == commit
     assert provenance["package_name"] == fixture_identity.distribution
     assert provenance["package_version"] == fixture_identity.version
+    assert provenance["production_contract"] == "isanlp_rst.production"
+    assert provenance["production_contract_version"] == "4.2.0"
     # The packaged resource keeps the exact schema-1.0.0 field set the runtime reader
     # enforces; the tag is recorded in the build report, not here.
     assert set(provenance) == PROVENANCE_FIELDS
@@ -62,11 +64,11 @@ def test_rebuild_replaces_a_previous_pair_but_refuses_foreign_files(
     (output / fixture_identity.wheel_name).write_bytes(b"stale")
     (output / "unrelated.txt").write_text("keep me", encoding="utf-8")
     with pytest.raises(RuntimeError, match="not this release's artifacts"):
-        _reset_output_dir(output, fixture_identity)
+        reset_output_dir(output, fixture_identity)
     assert (output / "unrelated.txt").read_text(encoding="utf-8") == "keep me"
 
     (output / "unrelated.txt").unlink()
-    _reset_output_dir(output, fixture_identity)
+    reset_output_dir(output, fixture_identity)
     assert output.is_dir()
     assert not any(output.iterdir())
 

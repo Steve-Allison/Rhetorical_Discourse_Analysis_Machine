@@ -13,27 +13,26 @@ description is a description that drifts. List them with:
 pixi task list
 ```
 
-Tasks defined in more than one environment (`production-boundary`,
-`production-import-check`) need an explicit `-e`; the bare form fails as ambiguous.
+Everyday tasks resolve through `default`; use `-e production` for the isolated
+consumer tasks. The explicit `offline` environment is an alias for offline work.
 
 ## When to use what
 
 - **Everyday**: `pixi run test`, `pixi run lint`, `pixi run typecheck`, `pixi run mdlint`.
-- **Editing the predictor stack** (`rdam/rst/transformer_parser/`, `parser.py`,
+- **Editing the predictor stack** (`rdam/rst/dmrst_parser/`, `rdam/rst/universal_parser/`, `parser.py`,
   `model_loading/`): `pixi run test-all`. It includes the dtype-equivalence suite and the
   production smoke, which loads every release in `models/model-releases` on every
   available device. `pixi run smoke` runs the smoke alone.
 - **Before committing substantive changes**: `pixi run lint && pixi run typecheck && pixi run test`,
   plus `test-all` for predictor-stack changes.
-- **Release**: tag the commit `v<version>` (the version declared in `pyproject.toml`),
-  then `pixi run build-production`, `pixi run validate-production-artifacts`, and
-  `pixi run -e production production-clean-install`. `dist/<version>/` is ignored build
+- **Local package build**: use clean committed inputs; a tag is optional, and any
+  HEAD tag must match `v<version>` from `pyproject.toml`. Run `pixi run build-production`, `pixi run validate-production-artifacts`, and
+  `pixi run -e production production-clean-install --model-store <store> --release-id <id>`. `dist/<version>/` is ignored build
   output; the committed record is the evidence JSON the build task names
   (`specs/010-repository-migration/evidence/release/` for 6.0.0). `production-import-check`
   imports the editable source only and certifies no wheel.
-- **A stored release under a new package line**: `pixi run redeclare-compatibility`
-  records a manifest-bound compatibility re-declaration beside the release with its
-  evidence; `pixi run rst-baseline compare` gives the classified equivalence verdict.
+- **Stored model compatibility**: the loader supports manifest-bound compatibility
+  sidecars. Use `pixi run python -m workbench.promotion.compatibility --help`.
 - **Quality diagnostics**: `pixi run rst-diag <paths>`; `--json` for machine output.
 - **CI** (`.github/workflows/`): fast tests on every push, the slow suite nightly. The
   model smoke is local-only because weights are not in git.
@@ -41,7 +40,7 @@ Tasks defined in more than one environment (`production-boundary`,
 ## Single-test invocation
 
 ```bash
-pixi run pytest tests/integration/test_integration.py::test_specific_thing -v
+pixi run pytest tests/ingest/test_markdown_loader.py::test_empty_input_yields_empty_tokens -v
 ```
 
 ## One-off Python with project deps

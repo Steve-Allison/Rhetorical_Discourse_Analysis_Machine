@@ -37,7 +37,6 @@ def generated_public_surface() -> bytes:
                 "function",
                 documentation_anchor="6-analyse-with-an-immutable-model-release",
             ),
-            _special_entry(f"{PACKAGE}.Parser.complete_erst_document", "function"),
             _special_entry(
                 f"{INGEST_PACKAGE}.ProductionIngestor.prepare",
                 "function",

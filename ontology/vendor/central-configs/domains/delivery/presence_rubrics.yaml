@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/delivery/presence_rubrics
   title: Delivery — Presence Rubrics
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: delivery
@@ -168,8 +168,8 @@ entity_collections:
       relationship_weight: expected
       description: Instructional events in synchronous delivery are supported by facilitation techniques — psychological safety
         setting, breakout room practice, volunteer showcases with group feedback (Essentials_Course_Gold_Structure) | Facilitation
-        techniques directly execute Gagné's instructional events including scaffolding (Event 5), coaching questions (Event
-        6), and structured debriefing (Event 7) per theory_gagne_s_nine_events_of_instruction
+        techniques directly execute Gagné's instructional events including the scaffolding, coaching-question and structured
+        debriefing events per theory_gagne_s_nine_events_of_instruction
       statement_id: coe:edge/967af064f37cb9d5d2b33242
       home_domain: delivery
       evidence_ids: *id001
@@ -205,7 +205,6 @@ entity_collections:
     description: Named facilitation methods and instructor techniques for live delivery
     home_domain: delivery
     status: canonical
-    ner_label: FACILITATION_TECHNIQUE
     examples:
     - Socratic questioning
     - cold calling
@@ -218,7 +217,6 @@ entity_collections:
     anti_examples:
     - cold weather
     - parking lot space
-    confidence_threshold: 0.75
     evidence_ids: &id002
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/delivery/presence_rubrics
@@ -236,8 +234,9 @@ entity_collections:
       predicate: coe:limits
       object_id: coe:entity/delivery_rate_issue
       relationship_weight: expected
-      description: Optimal speaking rate for learning is 185-254 wpm (Mayer 2008; Brame 2006); use personal pronouns and avoid
-        reading from script to maintain conversational engagement per Clark LxD
+      description: Engagement cues limit delivery-rate issues in narrated learning; personal pronouns and speaking rather than
+        reading from a script keep narration conversational, and the narrated-instruction rate band is library knowledge
+        per Clark LxD
       statement_id: coe:edge/a98ce34232c8a9ce2d275ff6
       home_domain: delivery
       evidence_ids: *id001
@@ -245,8 +244,8 @@ entity_collections:
       predicate: coe:limits
       object_id: coe:entity/extraneous_load_marker
       relationship_weight: optional
-      description: Frequent small engagement interactions every 5-10 minutes reset the attention clock and keep learners mentally
-        present, limiting extraneous cognitive load from monotony
+      description: Frequent small engagement interactions, spaced at the interval the library's engagement-interval record states,
+        reset the attention clock and keep learners mentally present, limiting extraneous cognitive load from monotony
       statement_id: coe:edge/ed565667977ec20306f40da7
       home_domain: delivery
       evidence_ids: *id001
@@ -263,8 +262,8 @@ entity_collections:
       predicate: coe:triggers
       object_id: coe:entity/germane_load_marker
       relationship_weight: expected
-      description: The 2-minute rule and verbal signposting re-engage audience attention and create active processing (germane
-        load) per Slide Deck Design Playbook
+      description: An early first interaction and verbal signposting re-engage audience attention and create active processing
+        (germane load) per Slide Deck Design Playbook
       statement_id: coe:edge/f4366892e3c24b22cf99f598
       home_domain: delivery
       evidence_ids: *id001
@@ -280,10 +279,10 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/engagement_dimension
       relationship_weight: expected
-      description: LSM warmth score (target 0.85) and inclusive pronoun usage are measurable proxies for audience engagement
-        quality in the evaluation framework (Architecture of Influence, Part 2 Section 3) | Vocal engagement cues — pitch
-        variability >3.0 semitones SD, prosodic variation — directly support engagement scoring by keeping the listener's
-        auditory cortex active through change detection per Unified Performance Framework
+      description: Linguistic style matching and inclusive pronoun usage are measurable proxies for audience engagement quality
+        in the evaluation framework (Architecture of Influence) | Vocal engagement cues — pitch variability and prosodic
+        variation — directly support engagement scoring by keeping the listener's auditory cortex active through change
+        detection per Unified Performance Framework
       statement_id: coe:edge/0b640bf851cb1ed687b874f9
       home_domain: delivery
       evidence_ids: *id001
@@ -300,8 +299,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/instructional_event
       relationship_weight: expected
-      description: Engagement cues directly support Gagné's Event 1 (Gain Attention) and Event 6 (Elicit Performance) by prompting
-        audience interaction through polls, questions, and participation activities per theory_gagne_s_nine_events_of_instruction
+      description: Engagement cues directly support Gagné's gain-attention and elicit-performance events by prompting audience
+        interaction through polls, questions, and participation activities per theory_gagne_s_nine_events_of_instruction
       statement_id: coe:edge/42467a920537ed884274b76a
       home_domain: delivery
       evidence_ids: *id001
@@ -346,7 +345,6 @@ entity_collections:
     description: Verbal and structural cues used to maintain learner engagement during live delivery
     home_domain: delivery
     status: canonical
-    ner_label: ENGAGEMENT_CUE
     examples:
     - raise your hand if
     - type in the chat
@@ -359,7 +357,6 @@ entity_collections:
     anti_examples:
     - hand sanitiser
     - chat application
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/virtual_platform_feature
@@ -506,7 +503,6 @@ entity_collections:
     description: Virtual meeting platform features used for instructional delivery
     home_domain: delivery
     status: canonical
-    ner_label: VIRTUAL_PLATFORM
     examples:
     - breakout rooms
     - virtual whiteboard
@@ -519,7 +515,6 @@ entity_collections:
     anti_examples:
     - break room
     - white board marker
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/presentation_anxiety_marker
@@ -553,8 +548,9 @@ entity_collections:
       predicate: coe:triggers
       object_id: coe:entity/nonverbal_cue
       relationship_weight: required
-      description: 'Presentation anxiety triggers observable nonverbal leakage: self-adaptor rate >5.5/min, postural sway
-        >3.25cm², and contractive posture (abduction <10 degrees) per Unified Performance Framework'
+      description: Presentation anxiety triggers observable nonverbal leakage — elevated self-adaptor rate, postural sway and
+        contractive posture — whose flag values are the library's self-adaptor, sway and abduction records per Unified
+        Performance Framework
       statement_id: coe:edge/ae5c3c06d1645344cb2de21e
       home_domain: delivery
       evidence_ids: *id001
@@ -608,7 +604,6 @@ entity_collections:
     description: Terms and indicators related to public speaking anxiety and nervousness management
     home_domain: delivery
     status: canonical
-    ner_label: ANXIETY_MARKER
     examples:
     - stage fright
     - presentation nerves
@@ -620,7 +615,6 @@ entity_collections:
     anti_examples:
     - anxiety medication
     - stage design
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/confidence_technique
@@ -736,7 +730,6 @@ entity_collections:
     description: Methods and techniques for building presenter confidence and managing delivery anxiety
     home_domain: delivery
     status: canonical
-    ner_label: CONFIDENCE_TECHNIQUE
     examples:
     - power pose
     - box breathing
@@ -749,7 +742,6 @@ entity_collections:
     anti_examples:
     - power outage
     - box set
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/slide_speech_alignment
@@ -767,13 +759,11 @@ entity_collections:
       perfectly synchronized with the start of spoken words describing it
     home_domain: delivery
     status: canonical
-    ner_label: SLIDE_SPEECH_ALIGNMENT
     examples:
     - click to reveal aligned with spoken explanation
     - the animation must sync with the narration
     anti_examples:
     - the speech was well-aligned with the topic
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - id: coe:entity/elite_delivery_metrics
     label: Elite Delivery Metrics
@@ -781,15 +771,13 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: ELITE_DELIVERY_METRICS
     evidence_ids: *id002
   - id: coe:entity/say_show_support_model
     label: Say Show Support Model
-    description: '3-deliverable approach: verbal script (Say) + cinematic aid (Show) + detailed document (Support).'
+    description: 'Three-deliverable approach: verbal script (Say) + cinematic aid (Show) + detailed document (Support).'
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: SAY_SHOW_SUPPORT
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/filler_word
@@ -815,7 +803,7 @@ entity_collections:
       object_id: coe:entity/working_memory_marker
       relationship_weight: required
       description: Filler words directly consume working memory bandwidth — listeners must process meaningless sounds competing
-        with content comprehension, with optimal filler rate of 0-2 per minute per Research_Corpus_Public_Speaking_Full
+        with content comprehension; the tolerable filler rate is the library's filler-rate record per Research_Corpus_Public_Speaking_Full
       statement_id: coe:edge/f0b92f96c6e61c6bf7fd10f7
       home_domain: delivery
       evidence_ids: *id001
@@ -849,9 +837,10 @@ entity_collections:
       predicate: coe:contrasts_with
       object_id: coe:entity/pause_marker
       relationship_weight: required
-      description: Elite speakers replace filler words with emphatic pauses of 250-600ms; silence is the antithesis of disfluency
-        per Unified Performance Framework and Ethos research | Strategic pauses are the antithesis of filler words; elite
-        speakers replace um/uh disfluencies with emphatic silence of 250-600ms per Unified Performance Framework
+      description: Elite speakers replace filler words with emphatic pauses; silence is the antithesis of disfluency per Unified
+        Performance Framework and Ethos research | Strategic pauses are the antithesis of filler words; elite speakers replace
+        um/uh disfluencies with emphatic silence of the duration the library's emphasis-pause record states per Unified
+        Performance Framework
       statement_id: coe:edge/9ff303c20b9dbb1e2b82a83f
       home_domain: delivery
       evidence_ids: *id001
@@ -860,7 +849,7 @@ entity_collections:
       object_id: coe:entity/power_verb
       relationship_weight: expected
       description: Elite speakers replace low-agency stative verbs and filler-prone hedging with high-dynamism power verbs;
-        power verbs signal competence while fillers undermine it (Architecture of Influence, Sections 1.2, 1.4)
+        power verbs signal competence while fillers undermine it (Architecture of Influence)
       statement_id: coe:edge/77ccc4886792af7a838f1aa0
       home_domain: delivery
       evidence_ids: *id001
@@ -869,7 +858,6 @@ entity_collections:
     description: Verbal disfluencies that interrupt speech flow and undermine authority
     home_domain: delivery
     status: canonical
-    ner_label: FILLER_WORD
     examples:
     - um
     - uh
@@ -885,7 +873,6 @@ entity_collections:
     - I like this approach
     - What kind of solution
     - Sort the results
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/vocal_hedge_marker
@@ -911,7 +898,6 @@ entity_collections:
     description: Language that weakens assertions and undermines speaker certainty
     home_domain: delivery
     status: canonical
-    ner_label: HEDGE_MARKER
     examples:
     - maybe we could
     - I think probably
@@ -923,15 +909,15 @@ entity_collections:
     anti_examples:
     - I think therefore I am
     - Maybe is a song title
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/vocal_quality_issue
       predicate: coe:limits
       object_id: coe:entity/clarity_dimension
       relationship_weight: required
-      description: Vocal quality issues directly degrade clarity scoring — low CPP/CPPS (<9dB in speech) and HNR <15dB indicate
-        dysphonic voice that reduces intelligibility per Voice Quality Metric Research
+      description: Vocal quality issues directly degrade clarity scoring — low cepstral peak prominence and low harmonics-to-noise
+        ratio, below the floors the library's clarity records state, indicate dysphonic voice that reduces intelligibility
+        per Voice Quality Metric Research
       statement_id: coe:edge/0c7c0e713ad70985351a8760
       home_domain: delivery
       evidence_ids: *id001
@@ -983,8 +969,8 @@ entity_collections:
       predicate: coe:triggers
       object_id: coe:entity/negative_qualifier
       relationship_weight: expected
-      description: Pathological voice quality indicators (high jitter >1.04%, low HNR <12dB) trigger negative scoring qualifiers
-        per Voice Quality Metric Research
+      description: Pathological voice quality indicators (high jitter, low harmonics-to-noise ratio) trigger negative scoring
+        qualifiers per Voice Quality Metric Research
       statement_id: coe:edge/53e46489071834309bd7b34d
       home_domain: delivery
       evidence_ids: *id001
@@ -992,8 +978,8 @@ entity_collections:
       predicate: coe:triggers
       object_id: coe:entity/performance_tier
       relationship_weight: required
-      description: Vocal quality issues (jitter >1.04%, shimmer >3.81%, HNR <20dB) directly determine performance tier placement
-        per Unified Performance Framework diagnostic thresholds
+      description: Vocal quality issues — jitter, shimmer and harmonics-to-noise ratio beyond the library's clinical-norm records
+        — directly determine performance tier placement per Unified Performance Framework
       statement_id: coe:edge/ae1a79cf1c53ac5195a252f0
       home_domain: delivery
       evidence_ids: *id001
@@ -1002,7 +988,6 @@ entity_collections:
     description: Terms indicating voice quality problems requiring coaching or clinical attention
     home_domain: delivery
     status: canonical
-    ner_label: VOCAL_QUALITY_ISSUE
     examples:
     - hoarse voice
     - breathy quality
@@ -1016,7 +1001,6 @@ entity_collections:
     - voice of the customer
     - brand voice
     - vocal supporter
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/delivery_rate_issue
@@ -1033,8 +1017,8 @@ entity_collections:
       predicate: coe:limits
       object_id: coe:entity/engagement_dimension
       relationship_weight: expected
-      description: Delivery rate issues directly limit engagement scoring — both >180 WPM (cognitive backlog, 17-25% comprehension
-        drop) and monotone pitch (<3 ST sigma) measurably reduce audience engagement per Voice Quality Metric Research
+      description: Delivery rate issues directly limit engagement scoring — both a rate past the comprehension-drop onset (cognitive
+        backlog) and monotone pitch measurably reduce audience engagement per Voice Quality Metric Research
       statement_id: coe:edge/2f02cecad2fc5c305c9bd22d
       home_domain: delivery
       evidence_ids: *id001
@@ -1042,8 +1026,8 @@ entity_collections:
       predicate: coe:limits
       object_id: coe:entity/logos_appeal
       relationship_weight: expected
-      description: Delivery rate issues limit logos appeal; speaking too fast (>170 WPM) exceeds the listener's processing
-        capacity, reducing retention of logical arguments per Vocal Profiling research
+      description: Delivery rate issues limit logos appeal; speaking too fast exceeds the listener's processing capacity,
+        reducing retention of logical arguments per Vocal Profiling research
       statement_id: coe:edge/242723c7f24b018fedda3dac
       home_domain: delivery
       evidence_ids: *id001
@@ -1051,8 +1035,8 @@ entity_collections:
       predicate: coe:limits
       object_id: coe:entity/performance_tier
       relationship_weight: expected
-      description: Novice speakers have fast rate above 160 wpm due to anxiety while elite speakers speak at 100-120 wpm per
-        Elite Speaker Linguistic Analysis
+      description: Novice speakers rush under anxiety while elite speakers hold the deliberately slow band the library's
+        elite-persuasive-rate record states per Elite Speaker Linguistic Analysis
       statement_id: coe:edge/61de7ab4cba91748edb07857
       home_domain: delivery
       evidence_ids: *id001
@@ -1069,8 +1053,8 @@ entity_collections:
       predicate: coe:triggers
       object_id: coe:entity/extraneous_load_marker
       relationship_weight: expected
-      description: Excessive speech rate (>170 WPM) overloads audience processing capacity creating extraneous cognitive load
-        per dual-channel processing theory
+      description: Excessive speech rate overloads audience processing capacity creating extraneous cognitive load per
+        dual-channel processing theory
       statement_id: coe:edge/93da164ca80fc5778334fa6d
       home_domain: delivery
       evidence_ids: *id001
@@ -1078,8 +1062,8 @@ entity_collections:
       predicate: coe:triggers
       object_id: coe:entity/vocal_quality_issue
       relationship_weight: expected
-      description: Excessive speech rate (>6 syllables/sec) triggers vocal quality issues — vowel centralization and spectral
-        reduction degrade intelligibility and acoustic clarity per Voice Coaching and Clinical Analysis
+      description: Excessive articulation rate triggers vocal quality issues — vowel centralization and spectral reduction degrade
+        intelligibility and acoustic clarity per Voice Coaching and Clinical Analysis
       statement_id: coe:edge/5cc47a5626eccfccd0ad69bf
       home_domain: delivery
       evidence_ids: *id001
@@ -1096,8 +1080,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/cognitive_load_dimension
       relationship_weight: expected
-      description: Cognitive load scoring informed by speech rate metrics; rates above 180 WPM cause 17-25% comprehension
-        drops per voice metric research
+      description: Cognitive load scoring is informed by speech rate metrics; rates past the library's comprehension-drop onset
+        cause measurable comprehension loss per voice metric research
       statement_id: coe:edge/63a9f2ab171b1a21ba3cc920
       home_domain: delivery
       evidence_ids: *id001
@@ -1124,7 +1108,6 @@ entity_collections:
     description: Speech rate and pacing problems identified in coaching feedback
     home_domain: delivery
     status: canonical
-    ner_label: DELIVERY_RATE_ISSUE
     examples:
     - speaking too fast
     - rushed delivery
@@ -1138,7 +1121,6 @@ entity_collections:
     - fast track project
     - delivery service
     - flat design
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/speaker_bundle
@@ -1146,7 +1128,7 @@ entity_collections:
       object_id: coe:entity/academic_bundle
       relationship_weight: required
       description: Academic bundles ('In the context of...', 'On the other hand...') are a specific functional class of lexical
-        bundles identified in academic lecture corpus analysis (Architecture of Influence, Part 3)
+        bundles identified in academic lecture corpus analysis (Architecture of Influence)
       statement_id: coe:edge/3af565ac50adf65d297e63e9
       home_domain: delivery
       evidence_ids: *id001
@@ -1221,7 +1203,6 @@ entity_collections:
     description: Multi-word formulaic sequences characteristic of elite speakers
     home_domain: delivery
     status: canonical
-    ner_label: LEXICAL_BUNDLE
     examples:
     - I want to tell you
     - Here's the thing
@@ -1234,7 +1215,6 @@ entity_collections:
     anti_examples:
     - bundle of sticks
     - product bundle
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/pause_marker
@@ -1242,7 +1222,7 @@ entity_collections:
       object_id: coe:entity/germane_load_marker
       relationship_weight: expected
       description: Strategic pauses provide cognitive room — audience processing time that supports germane (meaning-making)
-        load by allowing reflection and integration (Architecture of Influence, Section 1.4)
+        load by allowing reflection and integration (Architecture of Influence)
       statement_id: coe:edge/5a1d9287cb1b1c652bc35df1
       home_domain: delivery
       evidence_ids: *id001
@@ -1259,7 +1239,7 @@ entity_collections:
       predicate: coe:enables
       object_id: coe:entity/performance_tier
       relationship_weight: expected
-      description: Mastery of strategic pausing differentiates speaker tiers; elite speakers use 500-600ms pauses for emphasis
+      description: Mastery of strategic pausing differentiates speaker tiers; elite speakers use deliberately timed emphasis pauses
         while novices fill silence with disfluencies
       statement_id: coe:edge/0958ace93039063074f90077
       home_domain: delivery
@@ -1287,7 +1267,7 @@ entity_collections:
       object_id: coe:entity/extraneous_load_marker
       relationship_weight: expected
       description: Effective pausing resolves extraneous cognitive load by breaking information into digestible chunks that
-        improve retention by 22% per Vocal Profiling research
+        measurably improve retention per Vocal Profiling research
       statement_id: coe:edge/b566038f3fedc833eca7bb0d
       home_domain: delivery
       evidence_ids: *id001
@@ -1295,8 +1275,8 @@ entity_collections:
       predicate: coe:resolves
       object_id: coe:entity/working_memory_marker
       relationship_weight: expected
-      description: Strategic pauses provide cognitive processing time that resolves working memory overload; 500ms pauses
-        allow audience consolidation per dual-channel theory
+      description: Strategic pauses provide cognitive processing time that resolves working memory overload; a pause of emphasis
+        length allows audience consolidation per dual-channel theory
       statement_id: coe:edge/d405f0b46a740441f23e4acb
       home_domain: delivery
       evidence_ids: *id001
@@ -1304,8 +1284,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/clarity_dimension
       relationship_weight: expected
-      description: Deliberate pauses at syntactic boundaries enhance perceived clarity and fluency; 250ms+ cognitive pauses
-        allow audience information encoding per Voice Quality Metric Research
+      description: Deliberate pauses at syntactic boundaries enhance perceived clarity and fluency; pauses long enough to register
+        as deliberate allow audience information encoding per Voice Quality Metric Research
       statement_id: coe:edge/cc9242cc586bcd76b62dc813
       home_domain: delivery
       evidence_ids: *id001
@@ -1313,10 +1293,10 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/delivery_rate_issue
       relationship_weight: required
-      description: Strategic pause insertion is the primary mechanism for controlling delivery rate; optimal 500-600ms pauses
-        reduce WPM from conversational 150-160 to elite 100-120 per Unified Performance Framework | Strategic pausing is a
-        core tool for managing delivery rate. Pauses reduce actual WPM and create cognitive headroom for audiences. The optimal
-        speech rate (100-120 wpm for elite speakers, 150-160 for conversational) is achieved through strategic pause placement.
+      description: Strategic pause insertion is the primary mechanism for controlling delivery rate; emphasis pauses lower words
+        per minute from the conversational band toward the elite persuasive band per Unified Performance Framework | Strategic
+        pausing is a core tool for managing delivery rate. Pauses reduce actual words per minute and create cognitive headroom
+        for audiences. The target rate for each delivery context is achieved through strategic pause placement.
       statement_id: coe:edge/77cb2454e5c7a010cb0a3270
       home_domain: delivery
       evidence_ids: *id001
@@ -1350,8 +1330,9 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/facilitation_technique
       relationship_weight: expected
-      description: Facilitation techniques are supported by pause markers; the talk-to-listen ratio of 43:57 requires strategic
-        silence to allow space for audience processing and participation per Vocal Profiling research
+      description: Facilitation techniques are supported by pause markers; the facilitator talk share the library's talk-listen
+        record states requires strategic silence to allow space for audience processing and participation per Vocal Profiling
+        research
       statement_id: coe:edge/18a2a9cd00877f9d28f26a9d
       home_domain: delivery
       evidence_ids: *id001
@@ -1388,8 +1369,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/transition_marker
       relationship_weight: expected
-      description: Transition markers are reinforced by pause markers — power pauses of 2 seconds after transition phrases
-        like 'Therefore' signal structural shifts per World-Class Public Speaking Research
+      description: Transition markers are reinforced by pause markers — power pauses after transition phrases like 'Therefore'
+        signal structural shifts per World-Class Public Speaking Research
       statement_id: coe:edge/4ede3432948372c95ea9f2ae
       home_domain: delivery
       evidence_ids: *id001
@@ -1407,7 +1388,6 @@ entity_collections:
     description: Notations indicating strategic or problematic pauses in speech
     home_domain: delivery
     status: canonical
-    ner_label: PAUSE_MARKER
     examples:
     - '[pause]'
     - '[long pause]'
@@ -1419,14 +1399,13 @@ entity_collections:
     anti_examples:
     - pause the video
     - press pause
-    confidence_threshold: 0.85
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:enables
       object_id: coe:entity/confidence_technique
       relationship_weight: expected
-      description: Expansive nonverbal cues (shoulder abduction >30 degrees, stable COP, Duchenne smiles) directly enable
+      description: Expansive nonverbal cues (open elbow abduction, a stable centre of pressure, Duchenne smiles) directly enable
         perception of confidence by observers per Unified Performance Framework
       statement_id: coe:edge/263b58305113ac859967ba91
       home_domain: delivery
@@ -1473,8 +1452,8 @@ entity_collections:
       predicate: coe:triggers
       object_id: coe:entity/performance_tier
       relationship_weight: expected
-      description: Nonverbal behaviour is a primary differentiator across performance tiers; self-adaptor frequency >5.5/min
-        indicates anxiety tier per Unified Performance Framework
+      description: Nonverbal behaviour is a primary differentiator across performance tiers; self-adaptor frequency above the
+        library's self-adaptor record indicates the anxiety tier per Unified Performance Framework
       statement_id: coe:edge/770b43a97a341fd2952581bb
       home_domain: delivery
       evidence_ids: *id001
@@ -1483,7 +1462,7 @@ entity_collections:
       object_id: coe:entity/authority_opener
       relationship_weight: expected
       description: Authority openers require congruent nonverbal delivery; open posture, sustained eye contact, and grounded
-        stance within the first 7 seconds per thin-slicing research
+        stance from the first moments, before thin-slice judgements settle, per thin-slicing research
       statement_id: coe:edge/cc9d8a125da44a1d849b3358
       home_domain: delivery
       evidence_ids: *id001
@@ -1491,8 +1470,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/engagement_dimension
       relationship_weight: expected
-      description: Engagement scoring is directly supported by nonverbal cues — gesture-speech synchrony (stroke preceding
-        speech peak by 100-300ms per McNeill's Window) and dynamic pitch variation (4-6 ST sigma) per Voice Quality Metric
+      description: Engagement scoring is directly supported by nonverbal cues — gesture-speech synchrony (the stroke preceding
+        the speech peak within the library's gesture-lead record) and dynamic pitch variation per Voice Quality Metric
         Research | Synchronized nonverbal cues enhance audience engagement assessment scores per Voice Quality Metric Research
       statement_id: coe:edge/f1979e73bc1ff9d46fcb95fd
       home_domain: delivery
@@ -1504,7 +1483,7 @@ entity_collections:
       description: Ethos credibility is physically embodied through posture, gesture, and eye contact — confident nonverbal
         cues directly reinforce perceived authority per Ethos and Physicality research | Nonverbal cues (gesture, posture,
         eye contact, facial expression) are primary vehicles for establishing ethos. Audiences form judgments about credibility
-        within 7 seconds based on nonverbal signals before processing verbal content.
+        within moments, based on nonverbal signals, before processing verbal content.
       statement_id: coe:edge/9b9cfe97ec285b9d7ab74ddd
       home_domain: delivery
       evidence_ids: *id001
@@ -1542,8 +1521,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/presentation_anxiety_marker
       relationship_weight: expected
-      description: Self-adaptor frequency correlates strongly with state anxiety (r=0.95) serving as measurable anxiety indicators
-        per voice metric research
+      description: Self-adaptor frequency correlates strongly with state anxiety, serving as a measurable anxiety indicator per
+        voice metric research
       statement_id: coe:edge/138ffb99579dfb198aadf333
       home_domain: delivery
       evidence_ids: *id001
@@ -1580,7 +1559,6 @@ entity_collections:
     description: Descriptions of body language, gestures, and physical presence in speaker notes
     home_domain: delivery
     status: canonical
-    ner_label: NONVERBAL_CUE
     examples:
     - open hand gesture
     - pointing at the screen
@@ -1596,7 +1574,6 @@ entity_collections:
     - nonverbal agreement
     - cue the music
     - cue card
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/uptalk_indicator
@@ -1652,7 +1629,6 @@ entity_collections:
     description: Markers of High Rising Terminal (HRT) that undermine speaker authority
     home_domain: delivery
     status: canonical
-    ner_label: UPTALK_INDICATOR
     examples:
     - We launched the product?
     - The results were positive?
@@ -1663,7 +1639,6 @@ entity_collections:
     anti_examples:
     - What did you launch?
     - Were the results positive?
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/performance_tier
@@ -1679,8 +1654,8 @@ entity_collections:
       predicate: coe:contains
       object_id: coe:entity/delivery_rate_issue
       relationship_weight: expected
-      description: Performance tier assessment includes delivery rate evaluation; WPM ranges map to diagnostic archetypes
-        (The Manic >170, The Drone <100) per Unified Performance Framework
+      description: Performance tier assessment includes delivery rate evaluation; words-per-minute ranges map to diagnostic
+        archetypes (The Manic rushing, The Drone dragging) per Unified Performance Framework
       statement_id: coe:edge/2913c76e2655fb81b16e229b
       home_domain: delivery
       evidence_ids: *id001
@@ -1716,7 +1691,7 @@ entity_collections:
       object_id: coe:entity/ethos_appeal
       relationship_weight: expected
       description: Perceived credibility (ethos) is directly supported by vocal performance tier — charismatic vocal quality
-        (wide F0 range, high Alpha Ratio, strategic pausing) correlates with leadership perception per Voice Coaching and
+        (wide pitch range, high alpha ratio, strategic pausing) correlates with leadership perception per Voice Coaching and
         Clinical Analysis
       statement_id: coe:edge/8b0399ef4908a2d9dd0874e1
       home_domain: delivery
@@ -1736,7 +1711,6 @@ entity_collections:
     description: Labels from the performance scoring framework indicating speaker level
     home_domain: delivery
     status: canonical
-    ner_label: PERFORMANCE_TIER
     examples:
     - Elite Speaker
     - Proficient Speaker
@@ -1749,15 +1723,14 @@ entity_collections:
     anti_examples:
     - elite membership
     - developing country
-    confidence_threshold: 0.9
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:enables
       object_id: coe:entity/engagement_cue
       relationship_weight: expected
-      description: Pitch dynamics (4-6 semitone sigma) and spectral brightness variation directly enable audience engagement
-        per voice metrics research
+      description: Pitch dynamics and spectral brightness variation directly enable audience engagement per voice metrics
+        research
       statement_id: coe:edge/187ba4615e20dcc0fa0a5ce0
       home_domain: delivery
       evidence_ids: *id001
@@ -1792,8 +1765,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/engagement_dimension
       relationship_weight: expected
-      description: Pitch variability 4-6 semitones and dynamic spectral emphasis sustain listener engagement per Voice Quality
-        Metric Research
+      description: Pitch variability within the library's pitch-variability band and dynamic spectral emphasis sustain listener
+        engagement per Voice Quality Metric Research
       statement_id: coe:edge/d1e3c40b80117c5307d7740e
       home_domain: delivery
       evidence_ids: *id001
@@ -1802,9 +1775,9 @@ entity_collections:
       object_id: coe:entity/germane_load_marker
       relationship_weight: expected
       description: Germane load is supported by emphasis markers; pitch and intensity variability direct the listener's attention
-        to key points, facilitating meaningful processing per Vocal Profiling research | Strategic pauses (500-600ms) support
-        germane cognitive processing by enabling semantic chunking and memory encoding — 15-20% silence ratio is optimal for
-        audience digestion per World-Class Public Speaking research
+        to key points, facilitating meaningful processing per Vocal Profiling research | Strategic pauses support germane
+        cognitive processing by enabling semantic chunking and memory encoding — the silence ratio the library's silence-ratio
+        record states is optimal for audience digestion per World-Class Public Speaking research
       statement_id: coe:edge/875899061404475091791c57
       home_domain: delivery
       evidence_ids: *id001
@@ -1849,7 +1822,6 @@ entity_collections:
     description: Text formatting indicating vocal emphasis in speaker scripts
     home_domain: delivery
     status: canonical
-    ner_label: EMPHASIS_MARKER
     examples:
     - CRITICAL point here
     - '**this matters**'
@@ -1859,7 +1831,6 @@ entity_collections:
     anti_examples:
     - README file
     - API_KEY constant
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/stereotype_content_model
     label: Stereotype Content Model
@@ -1868,7 +1839,6 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: STEREOTYPE_CONTENT_MODEL
     evidence_ids: *id002
   - id: coe:entity/acoustic_leadership_pillars
     label: Acoustic Leadership Pillars
@@ -1877,27 +1847,24 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: ACOUSTIC_PILLARS
     evidence_ids: *id002
   - id: coe:entity/jitter_metric
     label: Jitter Metric
-    description: Frequency perturbation measuring cycle-to-cycle variation in vocal fold vibration. The < 1.04% threshold
-      is a clinical dysphonia norm valid only on sustained vowels — perturbation measures are unreliable on running speech
-      and index voice disorder, not communication authority.
+    description: Frequency perturbation measuring cycle-to-cycle variation in the period of vocal fold vibration. It is
+      a clinical measure of voice disorder, valid only on a sustained vowel and unreliable on running speech, and it
+      does not index communication authority; its clinical norm is library knowledge.
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: JITTER
     evidence_ids: *id002
   - id: coe:entity/shimmer_metric
     label: Shimmer Metric
-    description: Amplitude perturbation measuring cycle-to-cycle variation in intensity. The < 3.81% threshold is a clinical
-      dysphonia norm valid only on sustained vowels — perturbation measures are unreliable on running speech and index voice
-      disorder, not communication authority.
+    description: Amplitude perturbation measuring cycle-to-cycle variation in the intensity of vocal fold vibration. It
+      is a clinical measure of voice disorder, valid only on a sustained vowel and unreliable on running speech, and it
+      does not index communication authority; its clinical norm is library knowledge.
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: SHIMMER
     evidence_ids: *id002
   - id: coe:entity/modality_conflict_marker
     label: Modality Conflict Marker
@@ -1906,7 +1873,6 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: MODALITY_CONFLICT
     evidence_ids: *id002
   home_domain: delivery
   status: canonical
@@ -1928,14 +1894,12 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: SCENOGRAPHY
     examples:
     - scenography
     - stage blocking
     - sightlines
     - show calling
     - stage safety
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/mcneill_gesture_taxonomy
@@ -1945,14 +1909,12 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: GESTURE_TAXONOMY
     examples:
     - iconic gesture
     - deictic gesture
     - beat gesture
     - metaphoric gesture
     - McNeill
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/personal_branding
@@ -1962,7 +1924,6 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: PERSONAL_BRANDING
     examples:
     - personal brand
     - personal branding
@@ -1971,7 +1932,6 @@ entity_collections:
     anti_examples:
     - product branding
     - brand guidelines
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/qa_handling
@@ -1981,7 +1941,6 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    ner_label: QA_HANDLING
     examples:
     - Q&A handling
     - bridging technique
@@ -1990,7 +1949,6 @@ entity_collections:
     anti_examples:
     - QA testing
     - quality assurance
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/reading_the_room
@@ -2010,7 +1968,6 @@ entity_collections:
       home_domain: delivery
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: READING_THE_ROOM
     examples:
     - reading the room
     - audience cues
@@ -2018,7 +1975,6 @@ entity_collections:
     - adjust on the fly
     anti_examples:
     - reading room in the library
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/rehearsal_and_dry_run
@@ -2037,7 +1993,6 @@ entity_collections:
       home_domain: delivery
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: REHEARSAL
     examples:
     - dry run
     - dress rehearsal
@@ -2046,6 +2001,5 @@ entity_collections:
     - run-through
     anti_examples:
     - deployment dry run
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery

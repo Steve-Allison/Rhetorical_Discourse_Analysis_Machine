@@ -8,7 +8,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from rdam.rst._version import PACKAGE_VERSION
-from rdam.rst.contracts.erst import CorpusPartition
+from workbench.erst.contracts import CorpusPartition
 
 EXPERIMENT_PROTOCOL_SCHEMA_VERSION = "1.0"
 EXPERIMENT_RUN_SCHEMA_VERSION = "1.0"

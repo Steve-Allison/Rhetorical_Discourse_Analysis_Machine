@@ -3,6 +3,7 @@
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 import hashlib
+import math
 from pathlib import Path, PurePosixPath
 import re
 from types import SimpleNamespace
@@ -42,10 +43,10 @@ from rdam.ingest.service import DEFAULT_ANALYSIS_POLICY
 from rdam.rst.model_loading import ModelFile, ModelReleaseIdentity
 from rdam.rst.model_loading import ParserCapacity as ReleaseParserCapacity
 from rdam.rst.contracts.trace import (
-    ParsedRstTreeEvidence,
-    ParsedRstTreeSpan,
     PredictorAnalysisTrace,
 )
+
+from rdam.rst.inference_evidence import NetworkStructureDecision
 
 type SourceArtifactBuilder = Callable[..., SourceArtifact]
 type ParserBuilder = Callable[..., "DeterministicParser"]
@@ -150,7 +151,6 @@ class DeterministicParser:
             policy=analysis_policy or DEFAULT_ANALYSIS_POLICY,
             model_analysis=analysis,
             final_analysis=analysis,
-            erst_trace=None,
             duration_ms=0.0,
         )
 
@@ -357,7 +357,7 @@ def _fixture_tree(
 ) -> tuple[
     tuple[RstNode, ...],
     tuple[PrimaryRelationEdge, ...],
-    tuple[ParsedRstTreeEvidence, ...],
+    tuple[NetworkStructureDecision, ...],
 ]:
     nodes: list[RstNode] = [
         RstNode(
@@ -370,7 +370,7 @@ def _fixture_tree(
         for edu in edus
     ]
     edges: list[PrimaryRelationEdge] = []
-    decisions: list[ParsedRstTreeEvidence] = []
+    decisions: list[NetworkStructureDecision] = []
     next_node_id = len(edus) + 1
 
     def build(start: int, end: int) -> int:
@@ -382,19 +382,21 @@ def _fixture_tree(
         split = (start + end) // 2
         split_candidates = tuple(range(start, end))
         decisions.append(
-            ParsedRstTreeEvidence(
-                span=ParsedRstTreeSpan(
-                    start=start,
-                    end=end,
-                    split=split,
-                    nuclearity="NN",
-                    relation="same-unit",
-                    score=1.0,
+            NetworkStructureDecision(
+                start=start,
+                end=end,
+                split=split,
+                joint_labels=("same-unit_NN",),
+                selected_class=0,
+                joint_log_probabilities=(0.0,),
+                split_log_probabilities=(
+                    tuple(
+                        (1.0 if value == split else 0.0) - math.log(math.e + len(split_candidates) - 1)
+                        for value in split_candidates
+                    )
+                    if len(split_candidates) > 1
+                    else None
                 ),
-                split_candidates=split_candidates,
-                split_logits=tuple(1.0 if value == split else 0.0 for value in split_candidates),
-                nuclearity_logits=(0.0, 0.0, 1.0),
-                relation_logits=(1.0,),
             )
         )
         left_id = build(start, split)

@@ -1,0 +1,450 @@
+{
+  "authority": "Central_Configs",
+  "scheme": "coe:artifact/narrative/argumentation_schemes_taxonomy",
+  "source": "ontology/vendor/central-configs/domains/narrative/argumentation_schemes.yaml",
+  "source_identity": {
+    "algorithm": "sha256",
+    "hex_digest": "894ed6b333157e539f7a5d3f95a3abf682ad5e2aecd9b3931b17921359361b08"
+  },
+  "projection_identity": {
+    "algorithm": "sha256",
+    "hex_digest": "3eb3cacff712a44c7d614a169cda614ef0fac75c6b6dbed79b216010a1f54ccc"
+  },
+  "matching": "walton_native_profile",
+  "consumer_profile_identity": {
+    "algorithm": "sha256",
+    "hex_digest": "b13d83026b5e25e1f671a169e151015aadd1de44127d845084e029db8dfe7c92"
+  },
+  "native_values": [
+    "expert_opinion/premise/source",
+    "expert_opinion/premise/domain",
+    "expert_opinion/premise/assertion",
+    "expert_opinion/question/0",
+    "expert_opinion/question/1",
+    "expert_opinion/question/2",
+    "expert_opinion/question/3",
+    "expert_opinion/question/4",
+    "expert_opinion/question/5",
+    "position_to_know/premise/source",
+    "position_to_know/premise/situation",
+    "position_to_know/premise/assertion",
+    "position_to_know/question/0",
+    "position_to_know/question/1",
+    "position_to_know/question/2",
+    "popular_opinion/premise/proposition",
+    "popular_opinion/premise/acceptance",
+    "popular_opinion/question/0",
+    "popular_opinion/question/1",
+    "popular_opinion/question/2",
+    "analogy/premise/source_case",
+    "analogy/premise/target_case",
+    "analogy/premise/similarity",
+    "analogy/premise/conclusion_property",
+    "analogy/question/0",
+    "analogy/question/1",
+    "analogy/question/2",
+    "analogy/question/3",
+    "example/premise/example",
+    "example/premise/generalisation",
+    "example/question/0",
+    "example/question/1",
+    "example/question/2",
+    "example/question/3",
+    "example/question/4",
+    "sign/premise/finding",
+    "sign/premise/indicated",
+    "sign/question/0",
+    "sign/question/1",
+    "cause_to_effect/premise/cause",
+    "cause_to_effect/premise/effect",
+    "cause_to_effect/premise/causal_generalisation",
+    "cause_to_effect/question/0",
+    "cause_to_effect/question/1",
+    "cause_to_effect/question/2",
+    "cause_to_effect/question/3",
+    "consequences/premise/action",
+    "consequences/premise/consequence",
+    "consequences/premise/valence",
+    "consequences/question/0",
+    "consequences/question/1",
+    "consequences/question/2",
+    "practical_reasoning/premise/goal",
+    "practical_reasoning/premise/means",
+    "practical_reasoning/premise/conclusion_action",
+    "practical_reasoning/question/0",
+    "practical_reasoning/question/1",
+    "practical_reasoning/question/2",
+    "practical_reasoning/question/3",
+    "practical_reasoning/question/4",
+    "verbal_classification/premise/individual",
+    "verbal_classification/premise/property",
+    "verbal_classification/premise/classification",
+    "verbal_classification/question/0",
+    "verbal_classification/question/1",
+    "verbal_classification/question/2",
+    "slippery_slope/premise/first_step",
+    "slippery_slope/premise/sequence",
+    "slippery_slope/premise/outcome",
+    "slippery_slope/question/0",
+    "slippery_slope/question/1",
+    "slippery_slope/question/2",
+    "ad_hominem/premise/person",
+    "ad_hominem/premise/attack",
+    "ad_hominem/premise/claim_attacked",
+    "ad_hominem/question/0",
+    "ad_hominem/question/1",
+    "ad_hominem/question/2"
+  ],
+  "mappings": [
+    {
+      "native_value": "expert_opinion/premise/assertion",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/assertion",
+      "label": "Expert Opinion Assertion Premise",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "expert_opinion/question/0",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/expertise",
+      "label": "How credible is the source as an expert?",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "expert_opinion/question/1",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/field",
+      "label": "Is the assertion within the source's field?",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "expert_opinion/question/2",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/assertion",
+      "label": "What exactly did the source assert?",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "expert_opinion/question/3",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/trustworthiness",
+      "label": "Is the source trustworthy in this instance?",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "expert_opinion/question/4",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/consistency",
+      "label": "Is the assertion consistent with other qualified opinion?",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "expert_opinion/question/5",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/evidence",
+      "label": "Is the assertion supported by evidence?",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "analogy/premise/source_case",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/source_case",
+      "label": "Analogy Source-Case Premise",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "analogy/premise/target_case",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/target_case",
+      "label": "Analogy Target-Case Premise",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "analogy/premise/similarity",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/relevant_similarity",
+      "label": "Analogy Relevant-Similarity Premise",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "analogy/question/1",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/source_case",
+      "label": "Is the source case itself established?",
+      "relationship": "broader"
+    },
+    {
+      "native_value": "analogy/question/2",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/difference",
+      "label": "Is there a relevant difference between the cases?",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "analogy/question/3",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/counteranalogy",
+      "label": "Is there a stronger counteranalogy?",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "practical_reasoning/premise/goal",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/goal",
+      "label": "Practical Reasoning Goal Premise",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "practical_reasoning/question/1",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/alternatives",
+      "label": "Is there a materially better alternative action?",
+      "relationship": "broader"
+    },
+    {
+      "native_value": "practical_reasoning/question/2",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/goal_legitimacy",
+      "label": "Is the goal legitimate and genuinely valued?",
+      "relationship": "exact"
+    },
+    {
+      "native_value": "practical_reasoning/question/3",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/consequences",
+      "label": "Do adverse consequences outweigh the expected benefit?",
+      "relationship": "broader"
+    },
+    {
+      "native_value": "practical_reasoning/question/4",
+      "concept_id": "coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/consequences",
+      "label": "Do adverse consequences outweigh the expected benefit?",
+      "relationship": "broader"
+    }
+  ],
+  "unmapped": [
+    {
+      "native_value": "expert_opinion/premise/source",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "expert_opinion/premise/domain",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "position_to_know/premise/source",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "position_to_know/premise/situation",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "position_to_know/premise/assertion",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "position_to_know/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "position_to_know/question/1",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "position_to_know/question/2",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "popular_opinion/premise/proposition",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "popular_opinion/premise/acceptance",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "popular_opinion/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "popular_opinion/question/1",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "popular_opinion/question/2",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "analogy/premise/conclusion_property",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "analogy/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "example/premise/example",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "example/premise/generalisation",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "example/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "example/question/1",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "example/question/2",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "example/question/3",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "example/question/4",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "sign/premise/finding",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "sign/premise/indicated",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "sign/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "sign/question/1",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "cause_to_effect/premise/cause",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "cause_to_effect/premise/effect",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "cause_to_effect/premise/causal_generalisation",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "cause_to_effect/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "cause_to_effect/question/1",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "cause_to_effect/question/2",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "cause_to_effect/question/3",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "consequences/premise/action",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "consequences/premise/consequence",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "consequences/premise/valence",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "consequences/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "consequences/question/1",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "consequences/question/2",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "practical_reasoning/premise/means",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "practical_reasoning/premise/conclusion_action",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "practical_reasoning/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "verbal_classification/premise/individual",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "verbal_classification/premise/property",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "verbal_classification/premise/classification",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "verbal_classification/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "verbal_classification/question/1",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "verbal_classification/question/2",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "slippery_slope/premise/first_step",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "slippery_slope/premise/sequence",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "slippery_slope/premise/outcome",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "slippery_slope/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "slippery_slope/question/1",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "slippery_slope/question/2",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "ad_hominem/premise/person",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "ad_hominem/premise/attack",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "ad_hominem/premise/claim_attacked",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "ad_hominem/question/0",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "ad_hominem/question/1",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    },
+    {
+      "native_value": "ad_hominem/question/2",
+      "reason": "native_slot_has_no_reviewed_crosswalk"
+    }
+  ]
+}

@@ -6,6 +6,10 @@ Every success criterion with the check that demonstrates it. Each scenario runs 
 Shapes and rules live in [data-model.md](data-model.md) and [contracts/](contracts/); this
 is the run guide.
 
+This feature-specific guide retains historical comparisons. Current unified usage
+is in [Feature 019 quickstart](../019-unified-machine-interfaces/quickstart.md).
+eRST work is suspended as of 2026-09-06; do not run it as part of the active scope.
+
 ## Prerequisites
 
 ```bash
@@ -179,8 +183,9 @@ difference and would not catch an identifier drifting.
 pixi run pytest tests/ingest -k "persisted_identifiers" -q
 ```
 
-**Expected**: `isanlp_rst.production` is still 2.0.0, every schema `$id` is byte-identical
-to its recorded value, and every runtime contract name is unchanged. These name stored
+**Current expectation**: the family remains `isanlp_rst.production`; the writer
+is now 3.0.0 and historical 2.0.0 remains readable. Versioned schemas change with
+the contract, while historical schema resources preserve their original identity. These name stored
 contracts, not module paths, and the module path is exactly what this feature changes.
 
 ## SC-019 — The inventory is still complete
@@ -222,7 +227,8 @@ pixi run test-all
 pixi run smoke
 ```
 
-**Expected**: all green; all seven techniques still `available`; and no suppression
+**Expected**: the selected checks pass; all seven techniques have explicit
+capability states, with availability dependent on configured prerequisites; and no suppression
 anywhere:
 
 ```bash

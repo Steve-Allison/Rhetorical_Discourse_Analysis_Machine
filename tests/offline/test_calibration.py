@@ -17,6 +17,7 @@ def test_compute_calibration_error_perfect():
     assert isinstance(summary, CalibrationSummary)
     assert summary.sample_count == 4
     assert len(summary.bins) == 5
+    assert summary.expected_calibration_error is not None
     assert summary.expected_calibration_error >= 0.0
 
 

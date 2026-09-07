@@ -20,6 +20,7 @@ def test_analysed_outcome_embeds_complete_parser_and_preparation_evidence(
     )
     assert isinstance(result, AnalysedOutcome)
     assert result.status.value == "analysed"
+    assert str(result.semantic.request.production_contract_version) == result.contract_version
     assert result.semantic.preparation.semantic.inventory
     assert result.semantic.analysed_document is not None
     assert result.semantic.analysed_document.tokens
@@ -46,6 +47,7 @@ def test_empty_primary_outcome_contains_no_fabricated_analysis(
     )
     assert isinstance(result, EmptyPrimaryAnalysisOutcome)
     assert result.status.value == "empty_primary_discourse"
+    assert str(result.semantic.request.production_contract_version) == result.contract_version
     assert result.semantic.parser_result is None
     assert result.semantic.analysed_document is None
     assert result.semantic.analysis is None

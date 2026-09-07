@@ -2,6 +2,7 @@
 
 from rdam._interpretation_types import NativeInterpretationDescriptor, NativeSectionDescription
 from rdam.contracts import NATIVE_RESULT_VERSION
+from rdam.ontology import native_vocabulary_alignment
 
 
 def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpretationDescriptor:
@@ -14,7 +15,8 @@ def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpr
         method="deterministic_computation",
         sections=(
             NativeSectionDescription(
-                pointer="/payload/structure", meaning="Typed nodes and directional links as supplied by the caller."
+                pointer="/payload/structure", meaning="Typed nodes and directional links as supplied by the caller.",
+                ontology_alignment=native_vocabulary_alignment("ibis"),
             ),
             NativeSectionDescription(
                 pointer="/payload/map",

@@ -1,5 +1,6 @@
 """Current normative Docling, DocLang, and DocLang-archive conformance."""
 
+from collections import Counter
 from hashlib import sha256
 from io import BytesIO
 import json
@@ -13,8 +14,10 @@ import pytest
 
 from rdam.rst.doclang.errors import InvalidDoclangError
 from rdam.ingest import SourceArtifact, SourceForm
-from rdam.ingest.contracts import ContentClass
+from rdam.ingest.contracts import ContentClass, DispositionDecision
 from rdam.ingest.prepare import inventory_source
+from rdam.ingest.service import ProductionIngestor
+from rdam.ingest.validation import validate_preparation_outcome
 
 
 DOCLANG_FIXTURES = Path("tests/fixtures/doclang")
@@ -22,6 +25,8 @@ DOCLING_FIXTURES = Path("tests/fixtures/docling")
 DOCLANG_MANIFEST = json.loads((DOCLANG_FIXTURES / "upstream-manifest.json").read_text(encoding="utf-8"))
 VALID_DOCLANG_FIXTURES = tuple(sorted(DOCLANG_FIXTURES.glob("*.dclg")))
 INVALID_DOCLANG_FIXTURES = tuple(sorted((DOCLANG_FIXTURES / "invalid").glob("*.dclg")))
+REAL_WORLD_DOCLANG_FIXTURE = DOCLANG_FIXTURES / "real_world/change-of-tenancy.dclg"
+REAL_WORLD_DOCLANG_SHA256 = "bd0e7d861054842e2e6993c4d92367a54a20cdb1ba21a8eb1d7640c642747449"
 
 
 def test_current_upstream_doclang_fixture_corpora_are_complete() -> None:
@@ -71,6 +76,32 @@ def test_every_docling_specimen_loads_and_traverses_the_current_complete_api() -
         )
         assert items
         assert str(document.version) == "1.10.0"
+
+
+def test_real_world_doclang_document_is_completely_accounted_for_by_preparation() -> None:
+    assert sha256(REAL_WORLD_DOCLANG_FIXTURE.read_bytes()).hexdigest() == REAL_WORLD_DOCLANG_SHA256
+    doclang.validate(REAL_WORLD_DOCLANG_FIXTURE, allow_empty_namespace=True)
+    artifact = SourceArtifact.from_path(REAL_WORLD_DOCLANG_FIXTURE, source_form=SourceForm.DOCLANG_XML)
+    outcome = ProductionIngestor().prepare(artifact)
+    evidence = outcome.semantic
+
+    assert Counter(item.classification.value for item in evidence.inventory) == {
+        "formula": 1,
+        "metadata": 4,
+        "other": 17,
+        "paragraph": 28,
+        "picture": 4,
+        "picture_description": 2,
+        "table": 7,
+        "table_cell": 325,
+    }
+    assert all(item.disposition.decision is not DispositionDecision.REJECTED_INVALID for item in evidence.inventory)
+    assert evidence.inventory_coverage.covered_units == evidence.inventory_coverage.total_units == 388
+    assert evidence.primary_coverage.covered_units + evidence.retained_coverage.covered_units == 388
+    assert len(evidence.prepared_document.segments) == 9
+    assert len(evidence.prepared_document.text) == 569
+    assert not evidence.warnings
+    validate_preparation_outcome(outcome)
 
 
 def test_current_doclang_opc_specimen_validates_and_retains_only_payload_as_asset() -> None:

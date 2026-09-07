@@ -9,6 +9,8 @@ from pydantic import Field, model_validator
 from rdam.ingest.contracts.base import SemanticVersion, Sha256Identity, StrictContractModel
 from rdam.ingest.contracts.source import SourceAnchor
 from rdam.ingest.identity import semantic_sha256
+from rdam.ingest.contracts.decoding import NetworkTransitionDecision
+from rdam.ingest.vocabulary import RuntimeRelationVocabulary
 
 
 class OutputFormalism(StrEnum):
@@ -183,6 +185,7 @@ class RelationInterpretation(StrictContractModel):
     inventory_identity: Sha256Identity
     selected_ontology_concept: str | None = None
     mapping_status: MappingStatus
+    mapping_reason: str | None = None
     mapping_algorithm: str | None = None
     mapping_version: SemanticVersion | None = None
     ontology_version: str | None = None
@@ -191,10 +194,21 @@ class RelationInterpretation(StrictContractModel):
 
     @model_validator(mode="after")
     def mapping_fields_are_honest(self) -> Self:
-        if self.mapping_status is MappingStatus.MAPPED and self.selected_ontology_concept is None:
-            raise ValueError("mapped relation requires an ontology concept")
+        if self.mapping_status is MappingStatus.MAPPED and any(
+            value is None or value == ""
+            for value in (
+                self.selected_ontology_concept, self.mapping_algorithm, self.mapping_version,
+                self.ontology_version, self.ontology_identity,
+            )
+        ):
+            raise ValueError("mapped relation requires a concept and mapping/ontology provenance")
         if self.mapping_status is MappingStatus.IDENTITY_ONLY and self.selected_ontology_concept != self.raw_label:
             raise ValueError("identity_only concept must equal the raw relation label")
+        if self.mapping_status in {MappingStatus.NOT_MAPPED, MappingStatus.NOT_AVAILABLE}:
+            if self.selected_ontology_concept is not None:
+                raise ValueError("unmapped relation cannot claim an ontology concept")
+            if not self.mapping_reason:
+                raise ValueError("unmapped relation requires an explicit reason")
         return self
 
 
@@ -205,12 +219,25 @@ class SegmentationDecisionEvidence(StrictContractModel):
     decision_basis: Literal["model", "presegmented", "deterministic_rule"]
     confidence: ScoreValue | None = None
     distribution: NormalizedDistribution | None = None
+    scores_unavailable_reason: Literal[
+        "presegmented_input", "deterministic_boundary_rule", "not_captured_by_backend"
+    ] | None = None
     token_ids: tuple[str, ...]
     resulting_edu_ids: tuple[str, ...]
     producing_component_identity: Sha256Identity
 
     @model_validator(mode="after")
     def evidence_matches_basis(self) -> Self:
+        expected_reason = {
+            "presegmented": "presegmented_input",
+            "deterministic_rule": "deterministic_boundary_rule",
+            "model": "not_captured_by_backend",
+        }[self.decision_basis]
+        if self.confidence is None and self.distribution is None:
+            if self.scores_unavailable_reason != expected_reason:
+                raise ValueError("unavailable segmentation scores require a reason matching their decision basis")
+        elif self.scores_unavailable_reason is not None:
+            raise ValueError("available segmentation scores cannot claim to be unavailable")
         if self.decision_basis == "presegmented" and (self.confidence is not None or self.distribution is not None):
             raise ValueError("presegmented boundaries cannot fabricate provider scores")
         if self.distribution is not None and self.confidence is None:
@@ -218,7 +245,39 @@ class SegmentationDecisionEvidence(StrictContractModel):
         return self
 
 
-class PrimaryStructureDecisionEvidence(StrictContractModel):
+class JointRelationNuclearityEvidence(StrictContractModel):
+    """Original conditional classifier output; null is a masked log probability.
+
+    Class identity is its position in the trained inventory. Label text may repeat
+    in published checkpoints; merging those positions would destroy native scores
+    and the selected class identity.
+    """
+
+    labels: tuple[str, ...] = Field(min_length=1)
+    log_probabilities: tuple[float | None, ...] = Field(min_length=1)
+    selected_class: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def valid_joint_choice(self) -> Self:
+        if len(self.labels) != len(self.log_probabilities):
+            raise ValueError("joint labels and scores must align by class index")
+        if self.selected_class >= len(self.labels):
+            raise ValueError("joint selection is outside the inventory")
+        for label in self.labels:
+            relation, separator, nuclearity = label.rpartition("_")
+            if not relation or not separator or nuclearity.upper() not in {"NS", "SN", "NN"}:
+                raise ValueError("invalid joint relation/nuclearity label")
+        if any(value is not None and (not math.isfinite(value) or value > 0.0) for value in self.log_probabilities):
+            raise ValueError("joint log probabilities must be finite and nonpositive or masked")
+        selected = self.log_probabilities[self.selected_class]
+        if selected is None or selected != max(value for value in self.log_probabilities if value is not None):
+            raise ValueError("joint selection contradicts its scores")
+        return self
+
+
+class PrimaryStructureDecisionFields(StrictContractModel):
+    """Decision fields shared by native and inventory-referenced storage forms."""
+
     decision_id: str
     node_ids: tuple[int, ...]
     primary_edge_ids: tuple[str, ...]
@@ -227,17 +286,59 @@ class PrimaryStructureDecisionEvidence(StrictContractModel):
     selected_split: int | None = Field(default=None, ge=0)
     nuclearity: str
     relation: RelationInterpretation
-    confidence: ScoreValue
+    confidence: ScoreValue | None
+    confidence_basis: Literal["joint_relation_nuclearity_given_selected_split", "unscored_deterministic_recombination"]
+    split_basis: Literal["pointer", "forced_two_edu", "bottom_up_transitions", "deterministic_recombination"]
+    transitions: tuple[NetworkTransitionDecision, ...] = ()
     split_entropy: ScoreValue | None = None
     split_distribution: NormalizedDistribution | None = None
     relation_distribution: NormalizedDistribution | None = None
     nuclearity_distribution: NormalizedDistribution | None = None
     producing_component_identity: Sha256Identity
 
+
+class PrimaryStructureDecisionEvidence(PrimaryStructureDecisionFields):
+    joint: JointRelationNuclearityEvidence | None
+
     @model_validator(mode="after")
     def ordered_span(self) -> Self:
         if self.analysed_end <= self.analysed_start:
             raise ValueError("primary decision analysed span is reversed")
+        if self.confidence_basis == "unscored_deterministic_recombination":
+            if (
+                self.split_basis != "deterministic_recombination"
+                or self.relation.relation_scheme != "deterministic_recombination"
+                or self.selected_split is not None
+                or self.transitions
+                or any(
+                    value is not None
+                    for value in (
+                        self.confidence,
+                        self.joint,
+                        self.split_distribution,
+                        self.split_entropy,
+                        self.relation_distribution,
+                        self.nuclearity_distribution,
+                        self.relation.confidence,
+                    )
+                )
+            ):
+                raise ValueError("deterministic recombination cannot claim model scores")
+            return self
+        if self.joint is None or self.confidence is None or self.split_basis == "deterministic_recombination":
+            raise ValueError("model decision requires joint evidence and its confidence")
+        relation, _, nuclearity = self.joint.labels[self.joint.selected_class].rpartition("_")
+        if relation != self.relation.raw_label or nuclearity.upper() != self.nuclearity:
+            raise ValueError("primary labels contradict the selected joint class")
+        selected_log_probability = self.joint.log_probabilities[self.joint.selected_class]
+        if selected_log_probability is None or self.confidence.value != math.exp(selected_log_probability):
+            raise ValueError("primary confidence contradicts captured joint evidence")
+        if self.confidence.confidence_kind is not ConfidenceKind.PROBABILITY:
+            raise ValueError("joint class confidence must be a probability")
+        if (self.split_basis == "bottom_up_transitions") != bool(self.transitions):
+            raise ValueError("bottom-up split requires its transition evidence")
+        if self.split_basis != "pointer" and (self.split_distribution is not None or self.split_entropy is not None):
+            raise ValueError("non-pointer splits cannot carry pointer distributions or entropy")
         return self
 
 
@@ -273,6 +374,19 @@ class PrimaryInferenceEvidence(StrictContractModel):
     segmentation_decisions: tuple[SegmentationDecisionEvidence, ...]
     structure_decisions: tuple[PrimaryStructureDecisionEvidence, ...]
     refinements: tuple[RefinementRecord, ...]
+    relation_vocabulary: RuntimeRelationVocabulary | None = Field(default=None, exclude_if=lambda value: value is None)
+
+    @model_validator(mode="after")
+    def vocabulary_matches_decisions(self) -> Self:
+        vocabulary = self.relation_vocabulary
+        if vocabulary is not None:
+            for decision in self.structure_decisions:
+                if decision.joint is None:
+                    continue
+                labels = tuple(dict.fromkeys(label.rpartition("_")[0] for label in decision.joint.labels))
+                if labels != vocabulary.labels or decision.relation.inventory_identity != vocabulary.inventory_identity:
+                    raise ValueError("Decision inventory differs from recorded runtime vocabulary")
+        return self
 
 
 class ErstDecision(StrEnum):
@@ -425,6 +539,7 @@ __all__ = [
     "EvidenceDetailPolicy",
     "ImmutableComponentIdentity",
     "InferenceEvidence",
+    "JointRelationNuclearityEvidence",
     "LabelledScore",
     "LoadedComponentReceipt",
     "MappingStatus",
@@ -435,6 +550,7 @@ __all__ = [
     "OutputFormalism",
     "PrimaryInferenceEvidence",
     "PrimaryStructureDecisionEvidence",
+    "PrimaryStructureDecisionFields",
     "RefinementRecord",
     "RelationInterpretation",
     "ScoreValue",

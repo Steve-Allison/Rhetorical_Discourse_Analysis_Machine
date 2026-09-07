@@ -3,7 +3,7 @@
 ## Ownership rule
 
 `rdam` — the one production package — contains only code and resources required while
-a consumer performs analysis: the machine (`rdam`), the RST/eRST provider (`rdam.rst`),
+a consumer performs analysis: the machine (`rdam`), the RST provider (`rdam.rst`),
 and the PDTB, SDRT, Toulmin, Walton, Dung and IBIS providers. `workbench` owns corpus
 construction, training, calibration, evaluation, benchmarking, research, and model releases.
 Provenance does not change that boundary: inherited inference code is production code
@@ -39,11 +39,13 @@ research, and model-release dependencies; everyday tasks need no environment fla
 
 ## Capability and identity boundary
 
-Capability discovery reads installed distribution metadata only. It must not:
+Model-free ingest discovery reads installed dependency metadata. Configured
+machine discovery may additionally validate local model manifests and hashes.
+Neither operation may:
 
 - import a format adapter;
 - instantiate a parser;
-- resolve, download, or mmap model bytes;
+- download, load into tensors, or mmap model weights;
 - access a network;
 - inspect `workbench`.
 
@@ -62,7 +64,7 @@ The active production parser families are DMRST and UniRST. Candidate architectu
 A stored release's manifest declares `compatibility_range` as of release time and is
 immutable. When a later package line runs a release unchanged, that finding is recorded
 beside the release as a manifest-bound `CompatibilityRedeclaration`
-(`<store>/<release_id>.compatibility.json`, `pixi run redeclare-compatibility`); the
+(`<store>/<release_id>.compatibility.json`, `pixi run python -m workbench.promotion.compatibility`); the
 loader honours it only for the exact manifest it names.
 
 ## Published and excluded content
@@ -71,15 +73,15 @@ loader honours it only for the exact manifest it names.
 |---|---|---:|
 | The machine: declarations, capability states, outcomes | `rdam` | yes |
 | Parser facade and active inference runtime | `rdam.rst.parser`, predictors, segmenter | yes |
-| Machine-facing RST/eRST adapter | `rdam.rst.provider` | yes |
+| Machine-facing RST adapter | `rdam.rst.provider` | yes |
 | Strict source, preparation, analysis, inference, failure, and capability contracts | `rdam.ingest` | yes |
 | Canonical schemas, public-surface inventory, and build provenance | package resources | yes |
 | Private Docling/DocLang/Markdown loaders | `rdam.rst.doclang`, `rdam.rst.markdown`, ingest harvest | yes, dependencies via `formats` |
-| eRST signal detection, scoring, decoding, checkpoint loading | `rdam.rst.erst`, `rdam.rst.english.erst` | yes |
+| eRST signal detection, scoring, decoding, checkpoint loading and experimental contracts | `workbench.erst` | no |
 | Released-model manifest validation, loading, compatibility re-declaration | `rdam.rst.model_loading` | yes |
 | Dung semantics and provider, with its packaged decision | `rdam.dung` | yes |
 | gIBIS grammar and provider, with its packaged decision | `rdam.ibis` | yes |
-| Vendored Central distribution and LinkML profile | `ontology/` (repository) | no — only the projected `rdam/resources/framework-identities.json` |
+| Vendored Central distribution and LinkML profile | `ontology/` (repository) | no — generated framework/discourse/technique projections, Walton crosswalk and digest-identified snapshots in `rdam/resources/` |
 | Corpora and corpus conversion | `workbench.corpus` | no |
 | Training and calibration | `workbench.training` | no |
 | Evaluation and benchmarking | `workbench.evaluation` | no |
@@ -95,7 +97,7 @@ extensions, and any import root other than `rdam/` in the wheel. It verifies whe
 
 ## Installed provenance
 
-The release build exports one clean named Git commit, derives
+The standard `build-production` task exports one clean named Git commit, derives
 `SOURCE_DATE_EPOCH` from that commit, and injects `rdam/build-provenance.json` (a package
 resource) into independent temporary build roots. The wheel is built through the sdist
 twice; corresponding SHA-256 hashes must be identical.
@@ -120,16 +122,28 @@ requires the exact stored model release and checks canonical parser
 results, loaded-component receipts, validation, and CLI semantic parity.
 
 ```bash
-git tag v6.0.0
 pixi run build-production
 pixi run validate-production-artifacts
-pixi run -e production production-clean-install
+pixi run -e production production-clean-install \
+  --model-store "$HOME/.cache/isanlp_rst/model-releases" \
+  --release-id gumrrg-eb1d5745f3a1
 ```
 
 The build command refuses any tracked or untracked worktree change, refuses a HEAD tag
 that names a different version, and replaces the previous pair in the ignored
-`dist/<version>/` directory. A release is the tagged commit; the artifacts are rebuilt
+`dist/<version>/` directory. A tag is optional; if present it must match the package version. The artifacts are rebuilt
 from it on demand and the committed record is `source-release.json` and
 `reproducible-build.json` in the evidence directory the build task names
 (`specs/010-repository-migration/evidence/release/` for 6.0.0). Source-tree tests are not
 artifact certification — `production-clean-install` is.
+
+The owner moved eRST to the workbench on 2026-09-06. Production contains no
+eRST engine, checkpoint loader, configuration option or completion method. Shared
+passive contracts retain saved graph evidence without importing the workbench. Clean installation and native inference were
+verified for the active seven-technique scope; see [Feature 019](../specs/019-unified-machine-interfaces/tasks.md).
+Historical release evidence must not be reused to certify a changed checkout.
+
+The documentation refresh builds the current package inputs from an isolated
+local Git snapshot under `build/`. Its provenance truthfully identifies that
+snapshot; it is not a commit or tag on the main repository branch. The same
+existing double-build and artifact checks apply. No external publication occurs.

@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/language_editorial/style_rules
   title: Language Editorial — Style Rules
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: language_editorial
@@ -16,12 +16,10 @@ entity_collections:
     home_domain: language_editorial
     status: canonical
     edges: []
-    ner_label: INCLUSION_ISSUE
     examples:
     - Using 'guys' to address mixed groups
     - Using 'blind spot' as a metaphor
     - Using 'master/slave' in technical docs
-    confidence_threshold: 0.7
     evidence_ids: &id001
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/language_editorial/style_rules
@@ -33,12 +31,10 @@ entity_collections:
     home_domain: language_editorial
     status: canonical
     edges: []
-    ner_label: CULTURAL_ISSUE
     examples:
     - USA-centric pop culture references
     - Assuming Western calendar/holidays
     - Sports metaphors (baseball, cricket)
-    confidence_threshold: 0.65
     evidence_ids: *id001
   - id: coe:entity/accessibility_violation
     label: Accessibility Violation
@@ -46,12 +42,10 @@ entity_collections:
     home_domain: language_editorial
     status: canonical
     edges: []
-    ner_label: ACCESSIBILITY_ISSUE
     examples:
     - Image without alt text
     - Colour-only information
     - Insufficient contrast
-    confidence_threshold: 0.8
     evidence_ids: *id001
   last_updated: '2026-08-12'
   id: coe:artifact/language_editorial/inclusion_standards_entities
@@ -97,7 +91,6 @@ entity_collections:
     description: Language markers indicating formal or academic tone in corporate writing
     home_domain: language_editorial
     status: canonical
-    ner_label: FORMAL_REGISTER
     examples:
     - furthermore, the analysis demonstrates
     - pursuant to our agreement
@@ -107,7 +100,6 @@ entity_collections:
     anti_examples:
     - furthermore is a long word
     - moreover brand name
-    confidence_threshold: 0.7
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/conversational_register
@@ -196,7 +188,6 @@ entity_collections:
     description: Informal or conversational language patterns in corporate content
     home_domain: language_editorial
     status: canonical
-    ner_label: CONVERSATIONAL_REGISTER
     examples:
     - okay, so let's dive in
     - here's the deal
@@ -207,7 +198,6 @@ entity_collections:
     anti_examples:
     - deal closed
     - check the box
-    confidence_threshold: 0.65
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/passive_voice_marker
@@ -271,7 +261,6 @@ entity_collections:
     description: Passive voice constructions that may reduce clarity and directness
     home_domain: language_editorial
     status: canonical
-    ner_label: PASSIVE_VOICE
     examples:
     - the report was completed by the team
     - mistakes were made
@@ -281,7 +270,6 @@ entity_collections:
     anti_examples:
     - the team was large
     - she was happy
-    confidence_threshold: 0.75
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/nominalisation_marker
@@ -306,7 +294,6 @@ entity_collections:
     description: Verbs converted to nouns that add unnecessary abstraction and reduce readability
     home_domain: language_editorial
     status: canonical
-    ner_label: NOMINALISATION
     examples:
     - the utilisation of resources
     - the implementation of the strategy
@@ -316,7 +303,6 @@ entity_collections:
     anti_examples:
     - implementation details
     - API utilisation metrics
-    confidence_threshold: 0.7
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/jargon_marker
@@ -369,7 +355,6 @@ entity_collections:
     description: Industry jargon, buzzwords, or unnecessarily complex terminology
     home_domain: language_editorial
     status: canonical
-    ner_label: JARGON_MARKER
     examples:
     - leverage our synergies
     - paradigm shift in the market
@@ -381,7 +366,6 @@ entity_collections:
     anti_examples:
     - leverage the crane
     - ocean temperature
-    confidence_threshold: 0.65
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/cliche_marker
@@ -398,7 +382,6 @@ entity_collections:
     description: Overused phrases and clichés that weaken impact in professional writing
     home_domain: language_editorial
     status: canonical
-    ner_label: CLICHE_MARKER
     examples:
     - at the end of the day
     - think outside the box
@@ -410,7 +393,6 @@ entity_collections:
     anti_examples:
     - end of the day shift
     - outside the box dimensions
-    confidence_threshold: 0.7
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/script_direction
@@ -472,7 +454,6 @@ entity_collections:
     description: Stage directions, speaker notes, or production cues embedded in script content
     home_domain: language_editorial
     status: canonical
-    ner_label: SCRIPT_DIRECTION
     examples:
     - '[CUT TO: product demo]'
     - '[SHOW GRAPHIC: comparison chart]'
@@ -483,7 +464,6 @@ entity_collections:
     anti_examples:
     - cut the budget
     - show me the data
-    confidence_threshold: 0.85
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/readability_flag
@@ -545,7 +525,6 @@ entity_collections:
     description: Indicators of readability issues including long sentences, complex words, and dense paragraphs
     home_domain: language_editorial
     status: canonical
-    ner_label: READABILITY_FLAG
     examples:
     - sentence exceeding 30 words with multiple subordinate clauses
     - polysyllabic terminology without definition
@@ -553,7 +532,6 @@ entity_collections:
     anti_examples:
     - readable font size
     - flag the issue
-    confidence_threshold: 0.6
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/transition_phrase
@@ -596,7 +574,6 @@ entity_collections:
     description: Phrases that signal structural transitions between content sections
     home_domain: language_editorial
     status: canonical
-    ner_label: TRANSITION_PHRASE
     examples:
     - in summary
     - now let's look at
@@ -608,7 +585,6 @@ entity_collections:
     anti_examples:
     - summary report
     - moving furniture
-    confidence_threshold: 0.7
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/marketing_superlative
@@ -634,7 +610,6 @@ entity_collections:
       — typical of marketing copy and hype writing
     home_domain: language_editorial
     status: canonical
-    ner_label: MARKETING_SUPERLATIVE
     examples:
     - best-in-class analytics platform
     - world-leading enterprise solution
@@ -646,7 +621,6 @@ entity_collections:
     - supports a wide range of formats
     - allows users to retouch digital images
     - rated highest by G2 users in 2024
-    confidence_threshold: 0.75
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/presentation_headline_writing
@@ -672,14 +646,12 @@ entity_collections:
     description: Headline/title writing for presentations — conclusion-led titles
     home_domain: language_editorial
     status: canonical
-    ner_label: PRESENTATION_HEADLINE_WRITING
     examples:
     - Pipeline velocity up 18% YoY
     - Personalized campaigns drove +32% ROI
     anti_examples:
     - Marketing Results
     - Architecture Overview
-    confidence_threshold: 0.7
     evidence_ids: *id001
   - id: coe:entity/linguistic_style_metrics
     label: Linguistic Style Metrics
@@ -687,7 +659,6 @@ entity_collections:
     home_domain: language_editorial
     status: canonical
     edges: []
-    ner_label: LINGUISTIC_STYLE_METRICS
     evidence_ids: *id001
   last_updated: '2026-08-12'
   id: coe:artifact/language_editorial/writing_entities
@@ -727,13 +698,11 @@ entity_collections:
       to speaker notes
     home_domain: language_editorial
     status: canonical
-    ner_label: PRESENTATION_SPEAKER_NOTES
     examples:
     - speaker notes with delivery cues and narrative beats
     - keyword-based notes with pause markers
     anti_examples:
     - verbatim script read aloud from notes
-    confidence_threshold: 0.65
     evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/power_verb
@@ -758,8 +727,8 @@ entity_collections:
       predicate: coe:limits
       object_id: coe:entity/delivery_rate_issue
       relationship_weight: optional
-      description: Optimal elite speech rate of 100-120 wpm constrains power verb density; slower pacing allows each power
-        verb to land with emphasis (Architecture of Influence, Sections 1.2, 1.4)
+      description: The optimal elite speech rate constrains power verb density; slower pacing allows each power verb to
+        land with emphasis (Architecture of Influence, Sections 1.2, 1.4)
       statement_id: coe:edge/2882c345b95300711ffadb53
       home_domain: language_editorial
       evidence_ids: *id002
@@ -838,7 +807,6 @@ entity_collections:
     description: High-impact action verbs that convey authority and leadership
     home_domain: language_editorial
     status: canonical
-    ner_label: POWER_VERB
     examples:
     - spearheaded the initiative
     - ignited a transformation
@@ -850,7 +818,6 @@ entity_collections:
     anti_examples:
     - spearhead mint plant
     - ignited the fire
-    confidence_threshold: 0.65
     evidence_ids: *id001
   evidence_ids: *id001
 - id: coe:artifact/language_editorial/editorial_disciplines
@@ -869,7 +836,6 @@ entity_collections:
     home_domain: language_editorial
     status: canonical
     edges: []
-    ner_label: LOCALISATION
     examples:
     - localisation
     - locale adaptation
@@ -878,7 +844,6 @@ entity_collections:
     - XLIFF
     anti_examples:
     - fault localisation
-    confidence_threshold: 0.7
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/culture_as_audience_variable
@@ -898,7 +863,6 @@ entity_collections:
       home_domain: language_editorial
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: CULTURE_VARIABLE
     examples:
     - Hofstede dimensions
     - power distance
@@ -906,7 +870,6 @@ entity_collections:
     - ecological fallacy
     anti_examples:
     - company culture
-    confidence_threshold: 0.7
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/critical_finding_craft
@@ -926,7 +889,6 @@ entity_collections:
       home_domain: language_editorial
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: CRITICAL_FINDING
     examples:
     - critical finding
     - review finding
@@ -934,6 +896,5 @@ entity_collections:
     - finding locus
     anti_examples:
     - court finding
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery

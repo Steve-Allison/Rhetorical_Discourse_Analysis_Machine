@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from pydantic import BaseModel
 
 from rdam._strict import JsonValue, sha256_bytes
+from rdam.frameworks import framework_authority
 from rdam._provenance import INSTRUCTIONS_REVISION_SEPARATOR, installed_package_version, resolve_source_revision
 from rdam.contracts import (
     ProviderError,
@@ -77,6 +78,7 @@ def provider_provenance(
         source_revision=revision,
         model_identity=model_identity,
         licence=licence,
+        framework_authority=framework_authority(),
     )
 
 

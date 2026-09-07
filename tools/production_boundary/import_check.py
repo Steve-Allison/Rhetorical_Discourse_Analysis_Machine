@@ -21,7 +21,6 @@ _PUBLIC_MODULES = (
     "rdam.rst",
     "rdam.rst.parser",
     "rdam.rst.contracts",
-    "rdam.rst.erst",
     "rdam.rst.model_loading.parser_input",
     "rdam.sdrt",
     "rdam.pdtb",

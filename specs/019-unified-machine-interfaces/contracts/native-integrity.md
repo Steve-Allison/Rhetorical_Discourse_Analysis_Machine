@@ -13,9 +13,9 @@ state accuracy and justified abstention must also meet
 prove that a passage supports the interpretation; a complete assessment list
 cannot prove that its states or the detected argument are correct.
 
-## Evidence baseline
+## Historical evidence baseline — 2026-09-04
 
-The diagnostic executed against the existing code produced:
+The diagnostic executed against the pre-implementation code produced:
 
 ```text
 Walton reported assessments: 0
@@ -25,7 +25,7 @@ Alignment candidates for a status label: (('/status', 'open'),)
 ```
 
 The main agent read `rdam/walton/schemes.py`, `rdam/toulmin/argument.py` and
-`rdam/ingest/alignment.py` in full. These observations establish the current
+`rdam/ingest/alignment.py` in full. These observations established the baseline
 contract gaps, not failure rates across a corpus. Regression tests must exercise
 the real validators/providers, not replace them with internal mocks.
 
@@ -135,6 +135,11 @@ mode. Direct-provider output with no projection can retain validated native span
 but cannot claim original-file alignments it cannot establish.
 
 ## NI-04 — Version, persistence, caches and historical truth
+
+The original version decisions below precede the later compact RST storage
+repair. Current RST/eRST payloads write `isanlp_rst.production` v3; the v2 reader
+preserves historical evidence. Machine preparation now writes v2 and reads v1.
+See [data-model.md](../data-model.md) and the generated installed schemas.
 
 - Write `rdam.native_result` **2.0.0** for current providers, with the typed
   alignment contract. Keep an explicit v1 reader/model and its digest algorithm.

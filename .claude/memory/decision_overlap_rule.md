@@ -5,6 +5,14 @@ metadata:
   type: feedback
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 When mapping RST relation character offsets back to Docling `self_ref`s, the rule is:
 
 - **Inclusion:** a relation's `nucleus_refs` (resp. `satellite_refs`) contains every `self_ref` whose harvest character range has *any* non-empty intersection with the relation's nucleus (resp. satellite) span. No minimum threshold for inclusion.
@@ -19,4 +27,4 @@ When mapping RST relation character offsets back to Docling `self_ref`s, the rul
 - Tests must cover: exact match, 50/50 even split, 92/8 lopsided, three-span coverage, threshold edges (89% / 90% / 91%), document-edge offsets.
 - If `note` rates exceed ~30% on a representative corpus in practice, revisit the threshold (or the harvest separator, which affects how often EDUs straddle).
 
-Related: [[decision-consumer-agnostic]].
+Related: [decision-consumer-agnostic](decision_consumer_agnostic.md).

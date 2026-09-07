@@ -5,11 +5,21 @@ metadata:
   type: feedback
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+> The current dependency range is bounded in `pyproject.toml`; the earlier
+> floor-only policy below does not describe this checkout.
+
 For the Docling-native RST entry point, the harvester uses `docling-core`'s `DoclingDocument.load_from_json(...)` + `iterate_items(...)` rather than walking the JSON as a plain dict. `docling-core` is an **optional** dependency — the `formats` extra (`pip install isanlp_rst[formats]`), present in the pixi dev/test env but NOT a core requirement (2026-06-30). Consumers that only use the RST `Parser` as a library (e.g. Story_Analyser) install without it and avoid the docling-core dependency chain (incl. the transitive `typer` constraint that conflicted with conda).
 
 **Why:**
 
-- The walker is verified to exist, be canonical, and resolve `$ref`s correctly (see [[verified-docling-core-api]]).
+- The walker is verified to exist, be canonical, and resolve `$ref`s correctly (see [verified-docling-core-api](verified_docling_core_api.md)).
 - Pydantic-validated loader catches malformed Docling JSON at the boundary.
 - Default content-layer filter (`{ContentLayer.BODY}`) gives us furniture exclusion for free.
 - `page_no` filtering is built-in if we want per-page parsing later.
@@ -22,4 +32,4 @@ For the Docling-native RST entry point, the harvester uses `docling-core`'s `Doc
 - Keep `docling-core` **unpinned** — declare a floor only (`>=2.75.0`, the minimum API the harvester needs) and let it track latest, including majors. Per the 2026-06-27 policy (commit `5b7288d`), docling/doclang always run latest, not pinned; the test suite + CI are the breakage safety net, not a version ceiling. (`doclang` rides in transitively via docling-core's own `doclang>=0.7,<0.8` requirement.)
 - A docling-core **major** bump is still worth watching as a Docling schema-compatibility checkpoint, but it is no longer blocked — if it breaks the harvester, the docling tests fail and we fix forward rather than holding an old version.
 
-Related: [[verified-docling-core-api]], [[decision-consumer-agnostic]].
+Related: [verified-docling-core-api](verified_docling_core_api.md), [decision-consumer-agnostic](decision_consumer_agnostic.md).

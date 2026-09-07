@@ -7,12 +7,9 @@ import math
 from pathlib import Path
 from typing import Any
 
-from rdam.rst.contracts.erst import HardNegativeSamplingConfig
-from rdam.rst.erst.neural_scorer import NeuralSecondaryEdgeScorer
-from rdam.rst.model_authority import (
-    DEFAULT_ENCODER_MODEL_ID,
-    DEFAULT_ENCODER_REVISION,
-)
+from workbench.erst.contracts import HardNegativeSamplingConfig
+from workbench.erst.neural_scorer import NeuralSecondaryEdgeScorer
+from workbench.erst.model_authority import DEFAULT_ENCODER_MODEL_ID, DEFAULT_ENCODER_REVISION
 from workbench.training.modern.authority import (
     MODERNBERT_BASE_MODEL_ID,
     MODERNBERT_BASE_REVISION,

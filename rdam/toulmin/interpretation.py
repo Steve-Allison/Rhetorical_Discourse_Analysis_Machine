@@ -2,6 +2,7 @@
 
 from rdam._interpretation_types import NativeInterpretationDescriptor, NativeSectionDescription
 from rdam.contracts import NATIVE_RESULT_VERSION
+from rdam.ontology import toulmin_role_alignment
 
 
 def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpretationDescriptor:
@@ -15,6 +16,7 @@ def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpr
         sections=(
             NativeSectionDescription(
                 pointer="/payload/layouts",
+                ontology_alignment=toulmin_role_alignment(),
                 meaning="Claim is the assertion; grounds are offered evidence; warrant licenses the inference; backing supports the warrant; qualifier states force; rebuttals defeat the step. Warrant origin is explicit, reconstructed or undetermined. Evidence validates quotations, not entailment.",
             ),
             NativeSectionDescription(

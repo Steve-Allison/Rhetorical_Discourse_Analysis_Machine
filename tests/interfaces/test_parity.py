@@ -169,8 +169,17 @@ def fixed_model_responses() -> Generator[list[Technique]]:
         tools = options["tools"]
         assert isinstance(tools, list)
         declared_tools = cast(list[object], tools)
-        assert len(declared_tools) == 1
-        tool = cast(Mapping[str, object], declared_tools[0])
+        output_tools: list[Mapping[str, object]] = []
+        for candidate in declared_tools:
+            assert isinstance(candidate, Mapping)
+            typed_candidate = cast(Mapping[str, object], candidate)
+            parameters = typed_candidate.get("parameters")
+            if isinstance(parameters, Mapping):
+                properties = cast(Mapping[str, object], parameters).get("properties")
+                if isinstance(properties, Mapping) and set(proposal) <= set(cast(Mapping[str, object], properties)):
+                    output_tools.append(typed_candidate)
+        assert len(output_tools) == 1, "the external fixture must select the native output schema, not a source tool"
+        tool = output_tools[0]
         assert tool["type"] == "function" and isinstance(tool["name"], str)
         assert options["input"], "the external model must receive the actual source"
         calls.append(technique)

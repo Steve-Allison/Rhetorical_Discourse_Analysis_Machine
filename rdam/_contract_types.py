@@ -8,7 +8,7 @@ from pydantic import Field, field_serializer, field_validator, model_validator
 
 from rdam._immutable_json import freeze_json_object, thaw_json
 from rdam._strict import JsonValue, SemanticVersion, Sha256Identity, StrictModel, sha256_bytes
-from rdam.frameworks import STRUCTURED_INPUT_TECHNIQUES, Technique, technique_curie
+from rdam.frameworks import STRUCTURED_INPUT_TECHNIQUES, FrameworkAuthority, Technique, technique_curie
 from rdam.ingest.contracts.source import SourceArtifact
 
 _SNAKE = r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
@@ -67,6 +67,10 @@ class FormalismDeclaration(StrictModel):
         return self
 
 
+def _no_framework_authority(value: FrameworkAuthority | None) -> bool:
+    return value is None
+
+
 class ProviderProvenance(StrictModel):
     """Exact code, configuration, and model identity behind a provider."""
 
@@ -75,6 +79,7 @@ class ProviderProvenance(StrictModel):
     source_revision: str | None = Field(default=None, min_length=1)
     model_identity: str | None = None
     licence: str = Field(min_length=1)
+    framework_authority: FrameworkAuthority | None = Field(default=None, exclude_if=_no_framework_authority)
 
 
 class SourceIdentity(StrictModel):
@@ -203,7 +208,7 @@ class StructuredInput(StrictModel):
 
 
 class FormalismChoice(StrictModel):
-    """Ask one requested technique for a specific declared formalism (e.g. RST's ``erst_graph``)."""
+    """Ask one requested technique for a specific declared formalism (e.g. RST's ``rst_tree``)."""
 
     technique: Technique
     formalism_id: str = Field(pattern=_SNAKE)

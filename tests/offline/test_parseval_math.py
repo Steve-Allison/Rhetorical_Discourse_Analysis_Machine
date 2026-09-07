@@ -2,13 +2,14 @@
 
 import pytest
 
+from rdam.rst.annotation_rst import DiscourseUnit
+from rdam.rst.converter import du_to_analysis
+
 from rdam.rst.contracts import (
     AnnotationStatusEnum,
     DiscourseSignal,
     NodeKindEnum,
-    NuclearityPatternEnum,
     OutputFormalismEnum,
-    PrimaryRelationEdge,
     RstAnalysis,
     RstNode,
     SecondaryRelationEdge,
@@ -31,94 +32,27 @@ SIGNAL_TEST_DETECTOR = SignalDetectorProvenance(
 )
 
 
+def _sample_edus() -> tuple[DiscourseUnit, ...]:
+    return tuple(
+        DiscourseUnit(id=index + 1, text=str(index), start=index * 2, end=index * 2 + 1)
+        for index in range(4)
+    )
+
+
 def _make_sample_tree_1() -> RstAnalysis:
-    # 4 EDUs: (1,2) joined, then joined with 3, then joined with 4 (root)
-    nodes = (
-        RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 5), text="EDU1"),
-        RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(6, 10), text="EDU2"),
-        RstNode(node_id=3, kind=NodeKindEnum.EDU, edu_span=(3, 3), char_span=(11, 15), text="EDU3"),
-        RstNode(node_id=4, kind=NodeKindEnum.EDU, edu_span=(4, 4), char_span=(16, 20), text="EDU4"),
-        RstNode(node_id=5, kind=NodeKindEnum.SPAN, edu_span=(1, 2), char_span=(0, 10), text="EDU1 EDU2"),
-        RstNode(node_id=6, kind=NodeKindEnum.SPAN, edu_span=(1, 3), char_span=(0, 15), text="EDU1 EDU2 EDU3"),
-        RstNode(node_id=7, kind=NodeKindEnum.ROOT, edu_span=(1, 4), char_span=(0, 20), text="EDU1 EDU2 EDU3 EDU4"),
-    )
-    primary_edges = (
-        PrimaryRelationEdge(
-            edge_id="e1",
-            parent_id=5,
-            child_id=2,
-            relation_raw="Elaboration",
-            relation_concept="Elaboration",
-            nuclearity=NuclearityPatternEnum.NS,
-        ),
-        PrimaryRelationEdge(
-            edge_id="e2",
-            parent_id=6,
-            child_id=3,
-            relation_raw="Attribution",
-            relation_concept="Attribution",
-            nuclearity=NuclearityPatternEnum.SN,
-        ),
-        PrimaryRelationEdge(
-            edge_id="e3",
-            parent_id=7,
-            child_id=4,
-            relation_raw="Cause",
-            relation_concept="Cause",
-            nuclearity=NuclearityPatternEnum.NS,
-        ),
-    )
-    return RstAnalysis(
-        document_id="doc-proof-1",
-        formalism=OutputFormalismEnum.RST_TREE,
-        nodes=nodes,
-        primary_edges=primary_edges,
-    )
+    one, two, three, four = _sample_edus()
+    first = DiscourseUnit(id=5, left=one, right=two, nuclearity="NS", relation="Elaboration")
+    second = DiscourseUnit(id=6, left=first, right=three, nuclearity="SN", relation="Attribution")
+    root = DiscourseUnit(id=7, left=second, right=four, nuclearity="NS", relation="Cause")
+    return du_to_analysis(root, document_id="doc-proof-1")
 
 
 def _make_sample_tree_2() -> RstAnalysis:
-    # 4 EDUs: (1,2) joined, (2,3) wrongly proposed instead of (1,3), then root (1,4)
-    nodes = (
-        RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 5), text="EDU1"),
-        RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(6, 10), text="EDU2"),
-        RstNode(node_id=3, kind=NodeKindEnum.EDU, edu_span=(3, 3), char_span=(11, 15), text="EDU3"),
-        RstNode(node_id=4, kind=NodeKindEnum.EDU, edu_span=(4, 4), char_span=(16, 20), text="EDU4"),
-        RstNode(node_id=5, kind=NodeKindEnum.SPAN, edu_span=(1, 2), char_span=(0, 10), text="EDU1 EDU2"),
-        RstNode(node_id=6, kind=NodeKindEnum.SPAN, edu_span=(2, 3), char_span=(6, 15), text="EDU2 EDU3"),
-        RstNode(node_id=7, kind=NodeKindEnum.ROOT, edu_span=(1, 4), char_span=(0, 20), text="EDU1 EDU2 EDU3 EDU4"),
-    )
-    primary_edges = (
-        PrimaryRelationEdge(
-            edge_id="e1",
-            parent_id=5,
-            child_id=2,
-            relation_raw="Elaboration",
-            relation_concept="Elaboration",
-            nuclearity=NuclearityPatternEnum.NS,
-        ),
-        PrimaryRelationEdge(
-            edge_id="e2",
-            parent_id=6,
-            child_id=3,
-            relation_raw="Cause",
-            relation_concept="Cause",
-            nuclearity=NuclearityPatternEnum.NS,
-        ),
-        PrimaryRelationEdge(
-            edge_id="e3",
-            parent_id=7,
-            child_id=4,
-            relation_raw="Cause",
-            relation_concept="Cause",
-            nuclearity=NuclearityPatternEnum.NS,
-        ),
-    )
-    return RstAnalysis(
-        document_id="doc-proof-2",
-        formalism=OutputFormalismEnum.RST_TREE,
-        nodes=nodes,
-        primary_edges=primary_edges,
-    )
+    one, two, three, four = _sample_edus()
+    first = DiscourseUnit(id=5, left=one, right=two, nuclearity="NS", relation="Elaboration")
+    second = DiscourseUnit(id=6, left=three, right=four, nuclearity="NS", relation="Cause")
+    root = DiscourseUnit(id=7, left=first, right=second, nuclearity="NS", relation="Cause")
+    return du_to_analysis(root, document_id="doc-proof-2")
 
 
 def test_standard_parseval_identical_trees_score_one() -> None:
@@ -151,7 +85,7 @@ def test_standard_parseval_hand_computed_math() -> None:
     metrics = scorer.score(gold, pred)
 
     # Gold non-trivial non-root spans: [1,2], [1,3] -> count = 2
-    # Pred non-trivial non-root spans: [1,2], [2,3] -> count = 2
+    # Pred non-trivial non-root spans: [1,2], [3,4] -> count = 2
     # Matched span: [1,2] -> 1
     # Matched nuc: [1,2] both NS -> 1
     # Matched rel: [1,2] both Elaboration -> 1
@@ -256,7 +190,7 @@ def test_erst_secondary_and_signals_scoring() -> None:
     assert sec_metrics.matched_relation == 1
     assert sec_metrics.full_f1 == 0.5
 
-    sig_metrics = scorer.score_signals(gold_sig, pred_sig)
+    sig_metrics = scorer.score_signals(gold_sig, pred_sig, identities_prealigned=True)
     assert sig_metrics.gold_signals_count == 1
     assert sig_metrics.pred_signals_count == 2
     assert sig_metrics.matched_detection == 1
@@ -299,6 +233,24 @@ def test_erst_empty_and_asymmetric_edges() -> None:
     sec_gold_empty = scorer.score_secondary_edges(empty, pred)
     assert sec_gold_empty.full_f1 == 0.0
     assert sec_gold_empty.direction_precision == 0.0
+
+
+def test_signal_scores_do_not_reuse_gold_or_assume_alignment() -> None:
+    gold = DiscourseSignal(
+        signal_id="gold", edge_id="shared-edge", signal_type="dm", signal_subtype="dm",
+        token_ids=(1, 2), detector=SIGNAL_TEST_DETECTOR, status=AnnotationStatusEnum.GOLD,
+    )
+    scorer = ErstScorer()
+    with pytest.raises(ValueError, match="verified shared"):
+        scorer.score_signals((gold,), (gold,))
+    result = scorer.score_signals((gold,), (gold, gold), identities_prealigned=True)
+    assert result.matched_detection == result.matched_type == result.matched_subtype == 1
+    assert result.detection_precision == result.token_precision == 0.5
+    assert result.detection_recall == result.token_recall == 1.0
+    unattached = gold.model_copy(update={"edge_id": None})
+    result = scorer.score_signals((unattached,), (unattached,), identities_prealigned=True)
+    assert result.matched_detection == 0
+    assert result.token_f1 == 0.0
 
 
 def test_erst_secondary_parseval_uses_endpoint_yields_and_separates_all_four_metrics() -> None:
@@ -407,28 +359,13 @@ def test_calibration_ece_hand_computed() -> None:
 
 
 def test_parseval_disjoint_trees_score_zero() -> None:
-    # Gold has [1,2], Pred has [3,4]
-    nodes_gold = (
-        RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 5), text="1"),
-        RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(6, 10), text="2"),
-        RstNode(node_id=3, kind=NodeKindEnum.EDU, edu_span=(3, 3), char_span=(11, 15), text="3"),
-        RstNode(node_id=4, kind=NodeKindEnum.EDU, edu_span=(4, 4), char_span=(16, 20), text="4"),
-        RstNode(node_id=5, kind=NodeKindEnum.SPAN, edu_span=(1, 2), char_span=(0, 10), text="1 2"),
-        RstNode(node_id=6, kind=NodeKindEnum.ROOT, edu_span=(1, 4), char_span=(0, 20), text="1 2 3 4"),
-    )
-    nodes_pred = (
-        RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 5), text="1"),
-        RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(6, 10), text="2"),
-        RstNode(node_id=3, kind=NodeKindEnum.EDU, edu_span=(3, 3), char_span=(11, 15), text="3"),
-        RstNode(node_id=4, kind=NodeKindEnum.EDU, edu_span=(4, 4), char_span=(16, 20), text="4"),
-        RstNode(node_id=5, kind=NodeKindEnum.SPAN, edu_span=(3, 4), char_span=(11, 20), text="3 4"),
-        RstNode(node_id=6, kind=NodeKindEnum.ROOT, edu_span=(1, 4), char_span=(0, 20), text="1 2 3 4"),
-    )
-    gold = RstAnalysis(document_id="g", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_gold, primary_edges=())
-    pred = RstAnalysis(document_id="p", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_pred, primary_edges=())
-
-    scorer = StandardParsevalScorer(include_leaves=False, include_root=False)
-    metrics = scorer.score(gold, pred)
+    gold = _make_sample_tree_1()  # Non-root internal spans [1,2] and [1,3].
+    one, two, three, four = _sample_edus()
+    first = DiscourseUnit(id=5, left=three, right=four, nuclearity="NS", relation="Elaboration")
+    second = DiscourseUnit(id=6, left=two, right=first, nuclearity="NS", relation="Attribution")
+    root = DiscourseUnit(id=7, left=one, right=second, nuclearity="NS", relation="Cause")
+    pred = du_to_analysis(root)  # Non-root internal spans [3,4] and [2,4].
+    metrics = StandardParsevalScorer(include_root=False).score(gold, pred)
     assert metrics.span_f1 == 0.0
     assert metrics.full_f1 == 0.0
 
@@ -453,7 +390,7 @@ def test_calibration_error_mismatched_and_empty() -> None:
 
     empty_summary = compute_calibration_error([], [])
     assert empty_summary.sample_count == 0
-    assert empty_summary.expected_calibration_error == 0.0
+    assert empty_summary.expected_calibration_error is None
 
 
 def test_parseval_zero_prediction_against_nonempty_gold() -> None:
@@ -494,78 +431,27 @@ def test_compute_span_iou_math() -> None:
 
 
 def test_soft_parseval_exact_and_fuzzy() -> None:
-    # Tree 1: [0, 50] contains [0, 20] (Elaboration) and [21, 50] (Joint)
-    nodes_gold = (
-        RstNode(node_id=1, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 20), text="EDU1"),
-        RstNode(node_id=2, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(21, 50), text="EDU2"),
-        RstNode(node_id=3, kind=NodeKindEnum.SPAN, edu_span=(1, 2), char_span=(0, 50), text="EDU1 EDU2"),
-        RstNode(node_id=4, kind=NodeKindEnum.ROOT, edu_span=(1, 3), char_span=(0, 100), text="All"),
-    )
-    edges_gold = (
-        PrimaryRelationEdge(
-            edge_id="e1",
-            parent_id=3,
-            child_id=1,
-            nuclearity=NuclearityPatternEnum.NS,
-            relation_raw="Elaboration",
-            relation_concept="Elaboration",
-        ),
-        PrimaryRelationEdge(
-            edge_id="e2",
-            parent_id=4,
-            child_id=3,
-            nuclearity=NuclearityPatternEnum.NS,
-            relation_raw="Joint",
-            relation_concept="Joint",
-        ),
-    )
-    gold = RstAnalysis(
-        document_id="g", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_gold, primary_edges=edges_gold
-    )
+    def analysis_with_boundary(boundary: int) -> RstAnalysis:
+        one = DiscourseUnit(id=1, text="one", start=0, end=20)
+        two = DiscourseUnit(id=2, text="two", start=21, end=boundary)
+        three = DiscourseUnit(id=3, text="three", start=51, end=100)
+        first = DiscourseUnit(id=4, left=one, right=two, nuclearity="NS", relation="Elaboration")
+        root = DiscourseUnit(id=5, left=first, right=three, nuclearity="NN", relation="Joint")
+        return du_to_analysis(root)
 
-    # Pred has a slightly shifted boundary: [0, 48] instead of [0, 50] (e.g. trailing period segmentation difference)
-    nodes_pred = (
-        RstNode(node_id=10, kind=NodeKindEnum.EDU, edu_span=(1, 1), char_span=(0, 20), text="EDU1"),
-        RstNode(node_id=20, kind=NodeKindEnum.EDU, edu_span=(2, 2), char_span=(21, 48), text="EDU2"),
-        RstNode(node_id=30, kind=NodeKindEnum.SPAN, edu_span=(1, 2), char_span=(0, 48), text="EDU1 EDU2"),
-        RstNode(node_id=40, kind=NodeKindEnum.ROOT, edu_span=(1, 3), char_span=(0, 100), text="All"),
-    )
-    edges_pred = (
-        PrimaryRelationEdge(
-            edge_id="ep1",
-            parent_id=30,
-            child_id=10,
-            nuclearity=NuclearityPatternEnum.NS,
-            relation_raw="Elaboration",
-            relation_concept="Elaboration",
-        ),
-        PrimaryRelationEdge(
-            edge_id="ep2",
-            parent_id=40,
-            child_id=30,
-            nuclearity=NuclearityPatternEnum.NS,
-            relation_raw="Joint",
-            relation_concept="Joint",
-        ),
-    )
-    pred = RstAnalysis(
-        document_id="p", formalism=OutputFormalismEnum.RST_TREE, nodes=nodes_pred, primary_edges=edges_pred
-    )
-
-    # Exact character scorer: [0, 48] != [0, 50] -> 0 matched span
-    exact_scorer = SoftParsevalScorer(min_iou=1.0)
-    exact_metrics = exact_scorer.score(gold, pred)
+    gold = analysis_with_boundary(50)
+    pred = analysis_with_boundary(48)
+    exact_metrics = SoftParsevalScorer(include_root=False).score(gold, pred)
     assert exact_metrics.matched_span == 0
     assert exact_metrics.span_f1 == 0.0
-
-    # Soft character scorer: IoU([0, 50], [0, 48]) = 48/50 = 0.96 >= 0.85 -> matched!
-    soft_scorer = SoftParsevalScorer(min_iou=0.85)
-    soft_metrics = soft_scorer.score(gold, pred)
+    soft_metrics = SoftParsevalScorer(include_root=False, min_iou=0.85).score(gold, pred)
     assert soft_metrics.matched_span == 1
     assert soft_metrics.span_f1 == 1.0
     assert soft_metrics.nuclearity_f1 == 1.0
     assert soft_metrics.relation_f1 == 1.0
     assert soft_metrics.full_f1 == 1.0
+    # Including the root counts its correct attachment as well.
+    assert SoftParsevalScorer().score(gold, pred).matched_full == 1
 
 
 def test_soft_parseval_invalid_min_iou() -> None:

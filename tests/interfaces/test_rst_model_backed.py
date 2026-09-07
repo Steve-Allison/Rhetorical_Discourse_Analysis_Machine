@@ -1,4 +1,4 @@
-"""Real CPU parity using published RST weights and a configured native eRST bundle."""
+"""Real CPU parity using published RST weights."""
 
 from pathlib import Path
 import subprocess
@@ -13,12 +13,16 @@ from rdam import (
 from rdam.configuration import LocalRstModel, MachineConfig, RstSettings
 from rdam.ingest import load_contract
 from rdam.ingest.contracts.analysis import AnalysedOutcome, CacheStatus
-from rdam.ingest.contracts.inference import ErstDecision, OutputFormalism
-from rdam.rst.erst.checkpoint import resolve_default_erst_checkpoint, validate_erst_checkpoint_bundle
+from rdam.ingest.contracts.inference import OutputFormalism
+from workbench.erst.converter import rs4_to_document_and_analysis
+from workbench.erst.rs4 import RS4Reader
 from rdam.serialization import serialize_config
+from rdam.summary import summarise
 from tests.interfaces.test_http import assert_json, running_server
 
 pytestmark = pytest.mark.slow
+
+GUM_REAL_DOCUMENT = Path(__file__).resolve().parents[1] / "fixtures/gum/GUM_bio_dvorak.rs4"
 
 
 def assert_actual_cpu_result(aggregate: AggregateAnalysis, formalism: OutputFormalism) -> NativeTechniqueResult:
@@ -41,42 +45,17 @@ def assert_actual_cpu_result(aggregate: AggregateAnalysis, formalism: OutputForm
     assert parsed.analysis.formalism.value == formalism.value
     assert produced.semantic.primary_inference is not None
     assert produced.semantic.validation is not None and produced.semantic.validation.passed
-    completion = produced.semantic.erst_completion
-    if formalism is OutputFormalism.ERST_GRAPH:
-        assert completion is not None
-        assert parsed.semantic.erst_completion == completion
-        assert completion.scorer_identity.state == "immutable_release"
-        assert completion.calibration_identity.state == "immutable_release"
-        assert completion.relation_inventory_identity.state == "immutable_release"
-        assert completion.decode_receipt.input_count == len(completion.candidate_decisions)
-        accepted_edges = {
-            candidate.secondary_edge_id for candidate in completion.candidate_decisions
-            if candidate.decision is ErstDecision.ACCEPTED
-        }
-        assert accepted_edges == {edge.edge_id for edge in parsed.analysis.secondary_edges}
-        assert completion.decode_receipt.accepted_count == len(parsed.analysis.secondary_edges)
-        assert {signal.signal_id for signal in completion.signals} <= {
-            signal.signal_id for signal in parsed.analysis.signals
-        }
-    else:
-        assert completion is None
+    assert produced.semantic.erst_completion is None
     return native
 
 
-@pytest.mark.parametrize("formalism", (OutputFormalism.RST_TREE, OutputFormalism.ERST_GRAPH))
+@pytest.mark.parametrize("formalism", (OutputFormalism.RST_TREE,))
 def test_published_cpu_rst_has_python_cli_http_successful_inference_parity(
     tmp_path: Path, formalism: OutputFormalism,
 ) -> None:
-    checkpoint = None
-    if formalism is OutputFormalism.ERST_GRAPH:
-        checkpoint = resolve_default_erst_checkpoint()
-        if checkpoint is None:
-            pytest.skip("native eRST resolver found no real completion bundle; successful eRST parity is unverified")
-        validate_erst_checkpoint_bundle(checkpoint)
     config = MachineConfig(rst=RstSettings(
         model=LocalRstModel(store=Path.home() / ".cache/isanlp_rst/model-releases", release_id="gumrrg-eb1d5745f3a1"),
         device="cpu",
-        erst_checkpoint=checkpoint,
     ))
     path = tmp_path / "configuration.json"
     path.write_bytes(serialize_config(config))
@@ -117,3 +96,62 @@ def test_published_cpu_rst_has_python_cli_http_successful_inference_parity(
         assert actual.preparation == expected.preparation
         assert actual.configurations == expected.configurations
         assert actual.reading_guide == expected.reading_guide
+
+
+def test_real_gum_document_produces_a_complete_ai_ready_rst_report() -> None:
+    rs4 = RS4Reader().read_file(GUM_REAL_DOCUMENT)
+    gold_document, _gold_analysis = rs4_to_document_and_analysis(rs4, document_id="GUM_bio_dvorak")
+    assert gold_document.edus is not None
+    assert len(gold_document.edus) == 71
+
+    config = MachineConfig(rst=RstSettings(
+        model=LocalRstModel(
+            store=Path.home() / ".cache/isanlp_rst/model-releases",
+            release_id="gumrrg-eb1d5745f3a1",
+        ),
+        device="cpu",
+    ))
+    request = AggregateRequest.for_text(
+        gold_document.text,
+        (Technique.RST,),
+        source_name="GUM_bio_dvorak",
+        formalisms=(FormalismChoice(technique=Technique.RST, formalism_id=OutputFormalism.RST_TREE.value),),
+    )
+    aggregate = production_machine(config=config).analyse(request)
+    native = assert_actual_cpu_result(aggregate, OutputFormalism.RST_TREE)
+    produced = load_contract(canonical_json_bytes(native.payload))
+    assert isinstance(produced, AnalysedOutcome)
+    assert produced.semantic.analysed_document is not None
+    assert produced.semantic.analysed_document.text == gold_document.text
+    assert produced.semantic.validation is not None and produced.semantic.validation.passed
+
+    assert produced.semantic.primary_inference is not None
+    assert produced.semantic.primary_inference.refinements == ()
+    assert produced.semantic.analysis is not None
+    markers = tuple(signal for signal in produced.semantic.analysis.signals if signal.detector.detector_id == "isanlp_rst.marker_primer")
+    assert markers
+    assert len({signal.char_spans for signal in markers}) == len(markers)
+    anchors = {anchor.target_id: anchor for anchor in produced.semantic.anchors}
+    for signal in markers:
+        assert signal.token_ids and signal.confidence is None and not signal.sufficient
+        assert tuple(f"token:{token_id:06d}" for token_id in signal.token_ids) == anchors[signal.signal_id].token_ids
+
+    guide = aggregate.reading_guide.entries[0].descriptor
+    assert guide is not None
+    guidance = " ".join(
+        (
+            guide.purpose,
+            *(section.meaning for section in guide.sections),
+            *guide.evidence_rules,
+            *guide.limitations,
+        )
+    ).lower()
+    assert "proposition-scale" in guidance
+    assert "recursive salience" in guidance
+    assert "relation labels as hypotheses" in guidance
+    assert "must not be promoted to argument structure" in guidance
+
+    encoded = serialize(aggregate)
+    assert serialize(load(encoded)) == encoded
+    summary = summarise(aggregate)
+    assert "rst: result; formalism=rst_tree; provider=rdam.rst/gumrrg" in summary

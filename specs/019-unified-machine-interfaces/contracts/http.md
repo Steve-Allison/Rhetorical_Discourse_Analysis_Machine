@@ -1,6 +1,7 @@
 # Contract: Optional Local HTTP
 
-**Status**: Proposed Feature 019 transport, not implemented routes.
+**Status**: Implemented contract for the active seven-technique scope.
+See [implementation results](../tasks.md). eRST successful inference is suspended.
 
 ## Surface
 

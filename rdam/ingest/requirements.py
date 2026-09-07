@@ -7,9 +7,6 @@ from rdam.ingest.contracts.preparation import (
 from rdam.ingest.contracts.source import ContentClass
 from rdam.ingest.policy import DEFAULT_PLANNING_POLICY
 
-# An application input budget, not a claim about any vendor's context window.
-LLM_INPUT_TOKEN_BUDGET = 8192
-
 
 def llm_requirement(
     requirement_id: str,
@@ -24,9 +21,9 @@ def llm_requirement(
             representation_kind="table", parameters=TableLinearisationParameters(),
         ),) if tables else (),
         capacity=AnalysisCapacity(
-            unit=CapacityUnit.TOKEN_COUNT, maximum=LLM_INPUT_TOKEN_BUDGET,
+            unit=CapacityUnit.TOKEN_COUNT, maximum=None,
             estimation_algorithm="whitespace_token_count", estimation_version=SemanticVersion(root="1.0.0"),
-            source="rdam.llm/application-input-budget-v1",
+            source="rdam.llm/model_input_capacity_not_established-v1",
         ),
         boundary_preference=DEFAULT_PLANNING_POLICY.boundary_preference,
         normalization="preserve", requires_speaker_identity=requires_speaker_identity,

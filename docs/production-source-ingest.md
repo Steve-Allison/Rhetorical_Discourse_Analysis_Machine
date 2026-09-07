@@ -17,12 +17,21 @@ not public aliases.
 | `edus` | `SourceArtifact.from_edus()` | exact indivisible EDU sequence |
 | `markdown` | path or bytes, `formats` extra | GFM blocks, hierarchy, lists, tables, HTML, metadata, images, and source paths |
 | `docling_json` | explicit/inferred `.docling.json`, `formats` extra | validated items, layers, groups, tables, pages, boxes, captions, provenance, and provider attributes |
-| `doclang_xml` | `.dclg` path or bytes, `formats` extra | current element heads, layers, tables, lists, notes, captions, metadata, links, paths, and locations |
+| `doclang_xml` | `.dclg` path or bytes, `formats` extra | supported element heads, layers, tables, lists, notes, captions, metadata, links, paths, and locations |
 | `doclang_archive` | `.dclx` path or bytes, `formats` extra | validated OPC members, document XML, asset identities, and archive-member anchors |
 
 Core import and capability discovery do not import the optional adapters.
 Attempting an unavailable form produces `source_adapter_distribution_unavailable`
 with the required `formats` extra, never a raw `ModuleNotFoundError`.
+
+Dependency status checked on 2026-09-06: the installed and locked versions are
+Docling Core 2.94.1 and DocLang 0.7.3. PyPI reports [Docling Core 2.95.0](https://pypi.org/project/docling-core/)
+and [DocLang 0.7.3](https://pypi.org/project/doclang/). The current Docling range
+`>=2.94.1,<2.95` excludes 2.95.0; compatibility with that release has not been
+verified. Do not equate locked compatibility with latest-upstream conformance.
+The normative sources are the [Docling model](https://github.com/docling-project/docling-core/blob/main/docling_core/types/doc/document.py)
+and [DocLang specification](https://github.com/doclang-project/doclang/blob/main/spec.md).
+Fixture schemas and RDAM's own v3 envelope are independently versioned.
 
 ## Prepare without inference
 
@@ -82,6 +91,9 @@ planned = ProductionIngestor().prepare(source, capacity=capacity)
 print(planned.semantic.analysis_plan.status)
 ```
 
+The numerical value above is an explicitly supplied application budget, not a
+trained parser limit. Provider capacities are derived from their declared evidence;
+`maximum=None` means no established numerical limit, not unlimited capacity.
 No capacity gives `not_planned`. A fitting source gives `single_unit`; otherwise
 the source is subdivided at complete prepared-segment boundaries. No unit may
 truncate a segment or an EDU. A segment larger than usable capacity is a typed
@@ -111,15 +123,16 @@ parser state, rehashes all loaded files, and refuses an immutable identity claim
 runtime bytes differ.
 
 The neural segmenter and parser never truncate silently. Context overflow,
-unaligned tokenizer offsets, boundary-crossing tokens, capped EDUs, or a
+unaligned tokenizer offsets, capped EDUs, or a
 dropped suffix fail closed. Contract offsets trim tokenizer-reported leading or
-trailing whitespace only; non-whitespace coverage remains exact.
+trailing whitespace only; non-whitespace coverage remains exact. A token that
+overlaps multiple EDUs retains every exact overlap, rather than being discarded.
 
 For subdivided analysis, every unit must complete before recombination. The
 recombination receipt gives local result identities, node/edge mappings,
-boundary inputs, stitching decisions, warnings, and timings. If eRST is
-requested, secondary completion runs once over the globally recombined primary
-tree, not independently inside units.
+boundary inputs, stitching decisions, warnings, and timings. Production ingest
+supports primary RST only. Experimental eRST completion is available separately
+in `workbench/erst/`, including completion of a supplied recombined primary result.
 
 ## Empty primary discourse
 

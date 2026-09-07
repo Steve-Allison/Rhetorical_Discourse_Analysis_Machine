@@ -29,13 +29,13 @@ from rdam.rst.dmrst_parser.src.parser.metrics import get_batch_metrics as dmrst_
 from rdam.rst.dmrst_parser.src.parser.metrics import get_micro_metrics as dmrst_micro_metrics
 from rdam.rst.dmrst_parser.src.parser.parsing_net import ParsingNet as DmrstParsingNet
 from rdam.rst.dmrst_parser.src.parser.segmenters import ToNySegmenter as DmrstSegmenter
-from rdam.rst.erst.candidates import RelationCompatibilityProfile
-from rdam.rst.erst.checkpoint import resolve_default_erst_checkpoint
-from rdam.rst.erst.environment import load_repository_environment
-from rdam.rst.erst.rs4 import RS4Document
+from workbench.erst.candidates import RelationCompatibilityProfile
+from workbench.erst.checkpoint import resolve_default_erst_checkpoint
+from workbench.erst.environment import load_repository_environment
+from workbench.erst.rs4 import RS4Document
 from rdam.rst.graph import to_networkx_graph
 from rdam.ingest.public_surface import _documentation_anchor_exists
-from rdam.rst.ontology.loader import OntologyLockData
+from rdam.rst.ontology.loader import load_ontology_lock
 from rdam.rst.rstviewer.main import Rs3ImportError, rs3tohtml
 from rdam.rst.universal_parser.src.parser.metrics import get_batch_metrics as unirst_batch_metrics
 from rdam.rst.universal_parser.src.parser.metrics import get_micro_metrics as unirst_micro_metrics
@@ -317,16 +317,7 @@ def test_frozen_contract_mappings_are_deeply_read_only() -> None:
         node_map={"node": 1},
     )
     rs4 = RS4Document(relations={"span": "rst"}, sigtypes={"dm": ("dm",)})
-    ontology = OntologyLockData(
-        release_version="1",
-        release_status="released",
-        sha256_digest="0" * 64,
-        coarse_concepts=(),
-        rst_dt_fine_to_coarse={"a": "b"},
-        gum_fine_to_coarse={},
-        dmrst_gum_model_27={},
-        dmrst_rstdt_model_42={},
-    )
+    ontology = load_ontology_lock()
     compatibility = RelationCompatibilityProfile(
         source_revision="revision",
         inventory_digest="digest",

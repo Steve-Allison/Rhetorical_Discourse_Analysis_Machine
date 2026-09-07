@@ -1,13 +1,15 @@
 """Deterministic public analysis-plan and capacity tests."""
 
-from rdam.ingest import AnalysisCapacity, ProductionIngestor, SourceArtifact, SourceForm
+import pytest
+
+from rdam.ingest import AnalysisCapacity, ProductionIngestError, ProductionIngestor, SourceArtifact, SourceForm
 from rdam.ingest.contracts.base import SemanticVersion
 from rdam.ingest.contracts.preparation import BoundaryPreference, CapacityUnit
 from rdam.ingest.subdivision import build_analysis_plan
 from rdam.ingest.policy import DEFAULT_PLANNING_POLICY
 
 
-def _capacity(maximum: int) -> AnalysisCapacity:
+def _capacity(maximum: int | None) -> AnalysisCapacity:
     return AnalysisCapacity(
         unit=CapacityUnit.EDU_COUNT,
         maximum=maximum,
@@ -36,7 +38,7 @@ def test_capacity_returns_single_or_subdivided_complete_plan() -> None:
     assert subdivided.status.value == "subdivided"
     assert len(subdivided.units) == 2
     assert sum(unit.estimated_demand for unit in subdivided.units) == 3
-    assert all(unit.estimated_demand <= unit.capacity for unit in subdivided.units)
+    assert all(unit.capacity is not None and unit.estimated_demand <= unit.capacity for unit in subdivided.units)
     assert len(subdivided.recombination.links) == len(subdivided.units) - 1
 
 
@@ -67,3 +69,17 @@ def test_plan_semantics_are_deterministic() -> None:
     second = ProductionIngestor().prepare(source, capacity=_capacity(2)).semantic.analysis_plan
     assert first == second
     assert first.semantic_digest == second.semantic_digest
+
+
+def test_unknown_numerical_capacity_does_not_invent_a_subdivision_boundary() -> None:
+    source = SourceArtifact.from_edus(tuple("An EDU." for _ in range(513)), source_name="unknown-capacity")
+    plan = ProductionIngestor().prepare(source, capacity=_capacity(None)).semantic.analysis_plan
+    assert plan.status.value == "single_unit"
+    assert plan.capacity is not None and plan.capacity.maximum is None
+    assert len(plan.units) == 1
+    assert plan.units[0].capacity is None
+    assert plan.units[0].estimated_demand == 513
+    margin = DEFAULT_PLANNING_POLICY.model_copy(update={"capacity_margin": 1, "semantic_digest": None})
+    with pytest.raises(ProductionIngestError) as raised:
+        ProductionIngestor().prepare(source, capacity=_capacity(None), planning_policy=margin)
+    assert raised.value.failure.code == "analysis_planning_failed"

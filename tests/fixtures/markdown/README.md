@@ -1,23 +1,18 @@
 # Markdown fixtures
 
-Source files for `tests/test_markdown_*.py`. Three fixtures cover the parse-shape variants the markdown-native entry point claims to handle.
+These files exercise the private Markdown loader and the shared `rdam.ingest`
+source boundary. Current tests live under `tests/ingest/`, including
+`test_markdown_loader.py` and `production_ingest/test_markdown_*.py`.
 
-## `minimal.md`
+- `minimal.md`: a heading and short prose paragraphs.
+- `multi-level.md`: pre-heading prose and headings at several levels.
+- `gfm-rich.md`: front matter, a table, code, blockquote, list, image and raw HTML.
+  These constructs enter the complete inventory; each provider's requirements
+  determine what is admitted to its analysis. RST does not perform a separate
+  table-cell mini-parse.
+- `golden_two_para.rst.json`: a retained historical format-specific output,
+  not the current v3 canonical ingest schema. Do not regenerate it as a current
+  report or use it to infer the public API.
 
-Three paragraphs under one `#` heading. No GFM, no front-matter. The smallest "real" document — one section, no edge cases. Used by tests that need a heading-bounded prose-only corpus.
-
-## `multi-level.md`
-
-Pre-heading paragraph, then `#`, `##`, `###`, `##`, `#` headings each followed by one paragraph. Verifies:
-
-- the pre-heading `document` boundary is emitted
-- `section-N` boundaries carry the heading's `level` (1, 2, 3, 2, 1)
-- nesting is flat (no hierarchical containment) — sections are siblings, distinguished by `level` metadata
-
-## `gfm-rich.md`
-
-YAML front-matter + every harvest-eligible construct exercised at least once: GFM table, fenced code block, blockquote, list, inline image, raw HTML block. Used by the slow integration test for end-to-end coverage (including the per-table mini-parse in `table_analyses`) and by harvester unit tests for knob gating.
-
-## `golden_two_para.rst.json`
-
-Golden-output regression fixture for `test_golden_output_shape`: the `to_dict()` serialisation of a fixed two-paragraph source parsed with the deterministic stub parser (`tool_version` normalised to `"<normalised>"`). Regenerate only when the wire format deliberately changes — the test exists to catch accidental shape drift.
+Use the [production ingest guide](../../../docs/production-source-ingest.md) for
+current APIs and canonical persistence. Fixture input contents remain unchanged.

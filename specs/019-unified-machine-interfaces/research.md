@@ -2,11 +2,14 @@
 
 **Date**: 2026-09-04
 
-**Status**: Design decisions, not implemented behavior.
+**Status**: Historical design decisions and baseline observations from
+2026-09-04. Implementation and later repairs are recorded in [tasks.md](tasks.md);
+current commands and dependency gaps are in [the documentation guide](../../docs/README.md).
+The baseline source paths and limitations below describe the inspected commit.
 
 ## Evidence baseline
 
-Current checkout inspected at `e7deef4968e5b921c33caa8bd1723b58b65280cd` on `master`.
+Baseline checkout inspected at `e7deef4968e5b921c33caa8bd1723b58b65280cd` on `master`.
 The preceding read-only audit ran the composition, source-entry, CLI-contract and
 local-HTTP-contract suites: **18 passed in 4.38s**. Those existing tests are a
 baseline, not proof of this design. `pixi run rdam-rst --help` listed `parse`,

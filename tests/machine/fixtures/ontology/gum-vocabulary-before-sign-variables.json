@@ -1,0 +1,150 @@
+{
+  "alignment": {
+    "authority": "Central_Configs",
+    "mappings": [
+      {
+        "concept_id": "coe:concept/gum_erst_groups/adversative",
+        "label": "adversative",
+        "native_value": "adversative",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/attribution",
+        "label": "attribution",
+        "native_value": "attribution",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/causal",
+        "label": "causal",
+        "native_value": "causal",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/context",
+        "label": "context",
+        "native_value": "context",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/contingency",
+        "label": "contingency",
+        "native_value": "contingency",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/elaboration",
+        "label": "elaboration",
+        "native_value": "elaboration",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/evaluation",
+        "label": "evaluation",
+        "native_value": "evaluation",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/explanation",
+        "label": "explanation",
+        "native_value": "explanation",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/joint",
+        "label": "joint",
+        "native_value": "joint",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/mode",
+        "label": "mode",
+        "native_value": "mode",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/organization",
+        "label": "organization",
+        "native_value": "organization",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/purpose",
+        "label": "purpose",
+        "native_value": "purpose",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/restatement",
+        "label": "restatement",
+        "native_value": "restatement",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/same_unit",
+        "label": "same-unit",
+        "native_value": "same-unit",
+        "relationship": "exact"
+      },
+      {
+        "concept_id": "coe:concept/gum_erst_groups/topic",
+        "label": "topic",
+        "native_value": "topic",
+        "relationship": "exact"
+      }
+    ],
+    "matching": "case_insensitive_label",
+    "native_values": [
+      "adversative",
+      "attribution",
+      "causal",
+      "context",
+      "contingency",
+      "elaboration",
+      "evaluation",
+      "explanation",
+      "joint",
+      "mode",
+      "organization",
+      "purpose",
+      "restatement",
+      "same-unit",
+      "topic"
+    ],
+    "projection_identity": {
+      "algorithm": "sha256",
+      "hex_digest": "3eb3cacff712a44c7d614a169cda614ef0fac75c6b6dbed79b216010a1f54ccc"
+    },
+    "scheme": "coe:artifact/narrative/gum_erst_groups",
+    "source": "ontology/vendor/central-configs/domains/narrative/discourse_techniques.yaml",
+    "source_identity": {
+      "algorithm": "sha256",
+      "hex_digest": "984e8c6b4fdfab1210392949a58840b8f22920ca9961ca57733a7ad96c342ce0"
+    },
+    "unmapped": []
+  },
+  "corpus_name": "GUM",
+  "inventory_identity": {
+    "algorithm": "sha256",
+    "hex_digest": "959f61dde40fe7c0db04460d03e2e1438187865ffba51f25acd8fb7d0b539ee5"
+  },
+  "labels": [
+    "adversative",
+    "attribution",
+    "causal",
+    "context",
+    "contingency",
+    "elaboration",
+    "evaluation",
+    "explanation",
+    "joint",
+    "mode",
+    "organization",
+    "purpose",
+    "restatement",
+    "same-unit",
+    "topic"
+  ],
+  "mapping_reason": null,
+  "scope_basis": "configured_corpus"
+}

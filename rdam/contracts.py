@@ -35,12 +35,12 @@ from rdam._contract_types import (
 )
 from rdam._immutable_json import freeze_json_object, thaw_json
 from rdam._interpretation_types import AnalysisReadingGuide, NativeInterpretationDescriptor
-from rdam._json_pointer import resolve_pointer
+from rdam._json_pointer import escape_pointer_token, resolve_pointer
 from rdam.historical import HistoricalNativeTechniqueResult
 from rdam._strict import JsonValue, SemanticVersion, Sha256Identity, StrictModel, canonical_json_bytes, semantic_sha256, sha256_bytes
 from rdam.frameworks import BOUNDARY_TECHNIQUES, STRUCTURED_INPUT_TECHNIQUES, Technique, technique_curie
 from rdam.ingest.contracts.preparation import (
-    ContentInventory, ContentRequirement, PreparationReceipt, PreparationSemanticEvidence,
+    AnalysisPlan, ContentInventory, ContentRequirement, PreparationReceipt, PreparationSemanticEvidence,
     PreparationWarning, SourceProjection, PreparedRange, SpeakerCoverage,
 )
 from rdam.ingest.contracts.source import SourceArtifact, SourceForm, SourceAnchor
@@ -315,9 +315,8 @@ type PreparationBinding = Annotated[
 ]
 
 
-class MachinePreparation(StrictModel):
+class _PreparationRecord(StrictModel):
     contract: Literal["rdam.preparation"] = "rdam.preparation"
-    contract_version: Literal["1.0.0"] = "1.0.0"
     source: SourceIdentity
     preparation: PreparationSemanticEvidence
     projections: tuple[SourceProjection, ...]
@@ -330,7 +329,8 @@ class MachinePreparation(StrictModel):
         """Derive each distinct view once; supplied persisted views must equal it.
 
         Python construction can omit derived projections and binding identities.
-        JSON records must carry both, and neither path can bypass derivation checks.
+        Historical JSON records carry projections; current records derive them.
+        Neither path can bypass derivation or binding-identity checks.
         """
         if not isinstance(value, Mapping):
             return value
@@ -379,7 +379,7 @@ class MachinePreparation(StrictModel):
             supplied = TypeAdapter(tuple[SourceProjection, ...]).validate_json(canonical_json_bytes(data["projections"]))
             if supplied != expected:
                 raise ValueError("persisted projection differs from its declared derivation")
-        elif info.mode == "json":
+        elif info.mode == "json" and cls.model_fields["contract_version"].default == "1.0.0":
             raise ValueError("persisted preparation requires projections")
         data["preparation"] = preparation
         data["bindings"] = tuple(bindings)
@@ -434,6 +434,49 @@ class MachinePreparation(StrictModel):
         return self
 
 
+class HistoricalMachinePreparation(_PreparationRecord):
+    """Read the original materialized projection contract without rewriting it."""
+
+    contract_version: Literal["1.0.0"] = "1.0.0"
+
+
+class MachinePreparation(_PreparationRecord):
+    """Store canonical preparation and derive provider projections on loading."""
+
+    contract_version: Literal["2.0.0"] = "2.0.0"
+    projections: tuple[SourceProjection, ...] = Field(default=(), exclude=True)
+
+
+class NativePreparationReference(StrictModel):
+    """Aggregate-local sharing of exact preparation evidence, with its own plan."""
+
+    kind: Literal["native_preparation_reference"] = "native_preparation_reference"
+    source: SourceIdentity
+    bindings: tuple[PreparationBinding, ...]
+    semantic_digest: Sha256Identity
+    native_result_pointer: str
+    preparation_pointer: str
+    analysis_plan: AnalysisPlan
+
+
+def _matching_preparation_pointer(payload: object, expected: Mapping[str, object]) -> str | None:
+    """Find exact shared data; do not assign meaning to native field names."""
+    pending: list[tuple[str, object]] = [("", payload)]
+    while pending:
+        pointer, value = pending.pop()
+        if isinstance(value, Mapping):
+            mapping = cast(Mapping[str, object], value)
+            if set(mapping) == set(expected) | {"analysis_plan"} and all(
+                mapping[key] == item for key, item in expected.items()
+            ):
+                return pointer
+            pending.extend((f"{pointer}/{escape_pointer_token(key)}", mapping[key]) for key in sorted(mapping, reverse=True))
+        elif isinstance(value, (list, tuple)):
+            sequence = cast(list[object] | tuple[object, ...], value)
+            pending.extend((f"{pointer}/{index}", sequence[index]) for index in reversed(range(len(sequence))))
+    return None
+
+
 class AggregateAnalysis(StrictModel):
     """N explicit outcomes over one source — never a merged node-and-edge view (FR-013, FR-014)."""
 
@@ -445,10 +488,65 @@ class AggregateAnalysis(StrictModel):
     upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...] = ()
     configurations: tuple[BoundaryConfiguration, ...]
     lineage: tuple[ProviderDependencyReference, ...] = ()
-    preparation: MachinePreparation | None = None
+    preparation: MachinePreparation | HistoricalMachinePreparation | None = None
     status: Literal["complete", "partial", "unsuccessful"]
     reading_guide: AnalysisReadingGuide
     semantic_digest: Sha256Identity | None = None
+
+    @field_validator(
+        "preparation", mode="before",
+        json_schema_input_type=MachinePreparation | HistoricalMachinePreparation | NativePreparationReference | None,
+    )
+    @classmethod
+    def resolve_preparation(cls, value: object, info: ValidationInfo) -> object:
+        if not isinstance(value, Mapping):
+            return value
+        mapping = cast(Mapping[str, object], value)
+        if mapping.get("kind") != "native_preparation_reference":
+            return mapping
+        reference = NativePreparationReference.model_validate_json(canonical_json_bytes(mapping))
+        outcomes = cast(tuple[Outcome, ...], info.data.get("outcomes", ()))
+        upstream = cast(tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...], info.data.get("upstream_results", ()))
+        results: dict[str, NativeTechniqueResult | HistoricalNativeTechniqueResult] = {
+            **{f"/outcomes/{index}/result": item.result for index, item in enumerate(outcomes)
+               if isinstance(item, ResultOutcome)},
+            **{f"/upstream_results/{index}": item for index, item in enumerate(upstream)},
+        }
+        native = results.get(reference.native_result_pointer)
+        if native is None:
+            raise ValueError("preparation reference must address a retained native result")
+        shared = resolve_pointer(native.payload, reference.preparation_pointer)
+        if not isinstance(shared, Mapping):
+            raise ValueError("preparation reference must address a preparation object")
+        evidence = dict(cast(Mapping[str, object], shared))
+        evidence["analysis_plan"] = reference.analysis_plan
+        return MachinePreparation.model_validate_json(canonical_json_bytes({
+            "source": reference.source, "preparation": evidence, "bindings": reference.bindings,
+            "semantic_digest": reference.semantic_digest,
+        }))
+
+    @field_serializer("preparation")
+    def store_preparation(
+        self, value: MachinePreparation | HistoricalMachinePreparation | None,
+    ) -> MachinePreparation | HistoricalMachinePreparation | NativePreparationReference | None:
+        if not isinstance(value, MachinePreparation):
+            return value
+        expected = value.preparation.model_dump(mode="json", exclude={"analysis_plan"})
+        results: list[tuple[str, NativeTechniqueResult | HistoricalNativeTechniqueResult]] = [
+                   (f"/outcomes/{index}/result", item.result) for index, item in enumerate(self.outcomes)
+                   if isinstance(item, ResultOutcome)]
+        results.extend((f"/upstream_results/{index}", item) for index, item in enumerate(self.upstream_results))
+        for pointer, native in results:
+            shared_pointer = _matching_preparation_pointer(thaw_json(native.payload), expected)
+            if shared_pointer is not None:
+                if value.semantic_digest is None:
+                    raise ValueError("shared preparation requires its semantic digest")
+                return NativePreparationReference(
+                    source=value.source, bindings=value.bindings, semantic_digest=value.semantic_digest,
+                    native_result_pointer=pointer, preparation_pointer=shared_pointer,
+                    analysis_plan=value.preparation.analysis_plan,
+                )
+        return value
 
     @model_validator(mode="after")
     def coherent_aggregate(self) -> Self:
@@ -531,6 +629,9 @@ class AggregateAnalysis(StrictModel):
                 ):
                     raise ValueError("reading descriptor differs from native record")
                 for section in descriptor.sections:
+                    from rdam.interpretation import validate_observed_section
+
+                    validate_observed_section(record, section)
                     if section.availability == "present":
                         resolve_pointer(target, section.pointer)
         semantic = self.model_dump(exclude={"semantic_digest", "outcomes", "upstream_results"})

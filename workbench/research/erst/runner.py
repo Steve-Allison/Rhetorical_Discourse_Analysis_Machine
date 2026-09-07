@@ -15,7 +15,7 @@ from typing import Generic, Protocol, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from rdam.rst.contracts.erst import CorpusPartition
+from workbench.erst.contracts import CorpusPartition
 from workbench.research.erst.contracts import (
     AblationName,
     DocumentScore,

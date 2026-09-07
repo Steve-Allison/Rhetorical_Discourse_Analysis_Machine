@@ -37,43 +37,14 @@ def describe_capabilities(
     }
     identified = hasattr(parser, "model_release_identity")
     rst_available = canonical
-    erst_available = (
-        canonical
-        and getattr(parser, "erst_checkpoint", None) is not None
-        and callable(getattr(parser, "complete_erst_document", None))
-    )
-    formalisms = tuple(
-        capability.formalism
-        for capability in (
-            FormalismCapability(
-                formalism=OutputFormalism.RST_TREE,
-                availability=(Availability.AVAILABLE if rst_available else Availability.UNAVAILABLE),
-                reason=(
-                    "canonical_parser_result_supported" if rst_available else "canonical_parser_result_unavailable"
-                ),
-            ),
-            FormalismCapability(
-                formalism=OutputFormalism.ERST_GRAPH,
-                availability=(Availability.AVAILABLE if erst_available else Availability.UNAVAILABLE),
-                reason=(
-                    "validated_erst_checkpoint_loaded" if erst_available else "validated_erst_checkpoint_not_loaded"
-                ),
-            ),
-        )
-        if capability.availability is Availability.AVAILABLE
-    )
     formalism_capabilities = (
         FormalismCapability(
             formalism=OutputFormalism.RST_TREE,
-            availability=(Availability.AVAILABLE if rst_available else Availability.UNAVAILABLE),
-            reason=("canonical_parser_result_supported" if rst_available else "canonical_parser_result_unavailable"),
-        ),
-        FormalismCapability(
-            formalism=OutputFormalism.ERST_GRAPH,
-            availability=(Availability.AVAILABLE if erst_available else Availability.UNAVAILABLE),
-            reason=("validated_erst_checkpoint_loaded" if erst_available else "validated_erst_checkpoint_not_loaded"),
+            availability=Availability.AVAILABLE if rst_available else Availability.UNAVAILABLE,
+            reason="canonical_parser_result_supported" if rst_available else "canonical_parser_result_unavailable",
         ),
     )
+    formalisms = tuple(item.formalism for item in formalism_capabilities if item.availability is Availability.AVAILABLE)
     evidence_capabilities = tuple(
         EvidenceCapability(
             detail=detail,

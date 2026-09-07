@@ -171,3 +171,14 @@ def parse_corpora_config(corpora: object) -> list[str]:
     if isinstance(corpora, list):
         return [str(item) for item in cast(list[object], corpora)]
     raise ValueError("config data.corpora must be a list or list-literal string")
+
+
+def resolve_inventory_index(dataset_names: list[str], requested: str) -> int:
+    """Resolve a corpus name without changing its declared spelling or position."""
+    key = requested.strip().casefold()
+    matches = [index for index, name in enumerate(dataset_names) if name.strip().casefold() == key]
+    if not matches:
+        raise ValueError(f"Unknown relinventory {requested!r}. Available datasets: {dataset_names}.")
+    if len(matches) != 1:
+        raise ValueError(f"Ambiguous relinventory {requested!r}. Matching dataset indices: {matches}.")
+    return matches[0]

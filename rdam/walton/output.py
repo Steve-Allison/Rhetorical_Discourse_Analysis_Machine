@@ -1,11 +1,11 @@
 """Persisted Walton output shape, including catalogue questions and state totals."""
 
-from typing import Literal
-from pydantic import Field
+from typing import Literal, Self
+from pydantic import Field, model_validator
 from rdam._native_output import ExtractionRecord
 from rdam._strict import StrictModel
 from rdam.ingest.contracts.evidence import SourceEvidenceSpan
-from rdam.walton.schemes import CriticalQuestionStatus, NonEmpty, SchemeId
+from rdam.walton.schemes import CriticalQuestionStatus, NonEmpty, SchemeId, SchemeInstance, SCHEME_SET_ID
 
 
 class HistoricalQuestionOutput(StrictModel):
@@ -46,6 +46,18 @@ class InstanceOutput(StrictModel):
     addressed_count: int = Field(ge=0)
     not_assessable_count: int = Field(ge=0)
 
+    @model_validator(mode="after")
+    def instance_and_derived_fields_reproduce(self) -> Self:
+        instance = SchemeInstance.model_validate({
+            "scheme_id": self.scheme_id,
+            "conclusion": self.conclusion,
+            "premises": self.premises,
+            "critical_questions": [question.model_dump(exclude={"question"}) for question in self.critical_questions],
+        })
+        if self.model_dump(mode="json") != instance.to_payload():
+            raise ValueError("Walton instance must reproduce its catalogue and derived fields")
+        return self
+
 
 class WaltonOutput(StrictModel):
     instances: tuple[InstanceOutput, ...]
@@ -57,6 +69,17 @@ class WaltonOutput(StrictModel):
     not_assessable_count: int = Field(ge=0)
     scheme_set: str
     extraction: ExtractionRecord
+
+    @model_validator(mode="after")
+    def totals_reproduce(self) -> Self:
+        if self.scheme_set != SCHEME_SET_ID:
+            raise ValueError("Walton output names an unsupported scheme set")
+        if self.instance_count != len(self.instances) or self.total_open_questions != self.open_question_count:
+            raise ValueError("Walton totals must reproduce the stored instances")
+        for name in ("question_count", "addressed_count", "open_question_count", "not_assessable_count"):
+            if getattr(self, name) != sum(getattr(instance, name) for instance in self.instances):
+                raise ValueError("Walton totals must reproduce the stored instances")
+        return self
 
 
 class HistoricalWaltonOutput(StrictModel):

@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/narrative/argument_structures
   title: Narrative — Argument Structures
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: narrative
@@ -55,7 +55,6 @@ entity_collections:
     description: The central figure who faces a challenge and undergoes transformation through action
     home_domain: narrative
     status: canonical
-    ner_label: HERO
     examples:
     - She stepped up when no one else would.
     - He overcame years of resistance to change.
@@ -64,7 +63,6 @@ entity_collections:
     - The customer who faced this challenge...
     - I decided to do something different.
     - Against the odds, they succeeded.
-    confidence_threshold: 0.68
     evidence_ids: &id002
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/narrative/argument_structures
@@ -148,7 +146,6 @@ entity_collections:
     description: The wise figure who provides knowledge, tools, or encouragement to the hero
     home_domain: narrative
     status: canonical
-    ner_label: MENTOR
     examples:
     - Her manager saw the potential and coached her.
     - The consultant who guided us through...
@@ -156,7 +153,6 @@ entity_collections:
     - He taught me everything I needed to know.
     - The advisor who showed them the path.
     - With their guidance, we were able to...
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/villain
@@ -191,7 +187,6 @@ entity_collections:
     description: The force of opposition — could be a competitor, market condition, or internal resistance
     home_domain: narrative
     status: canonical
-    ner_label: VILLAIN
     examples:
     - The legacy system that blocked their progress.
     - Competitors who threatened their market share.
@@ -199,7 +194,6 @@ entity_collections:
     - Budget cuts that nearly derailed the project.
     - The fear that stopped them from acting.
     - Market disruption threatened everything.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/herald
@@ -253,7 +247,6 @@ entity_collections:
     description: The event, person, or signal that calls the hero to action and sets the story in motion
     home_domain: narrative
     status: canonical
-    ner_label: HERALD
     examples:
     - The pandemic forced a complete rethink.
     - A data breach that changed everything.
@@ -261,7 +254,6 @@ entity_collections:
     - The announcement that triggered the journey.
     - A customer complaint that started it all.
     - The market shift that forced our hand.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/threshold_guardian
@@ -296,7 +288,6 @@ entity_collections:
     description: A test, barrier, or gatekeeper that must be passed before progress can continue
     home_domain: narrative
     status: canonical
-    ner_label: THRESHOLD_GUARDIAN
     examples:
     - Legal approval was the final hurdle.
     - The IT security review that nearly stopped the project.
@@ -304,7 +295,6 @@ entity_collections:
     - Before they could proceed, they needed buy-in.
     - Compliance requirements blocked the first attempt.
     - The procurement process was the first barrier.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/shapeshifter
@@ -339,14 +329,12 @@ entity_collections:
     description: A character whose allegiance or role is unclear or shifts during the story
     home_domain: narrative
     status: canonical
-    ner_label: SHAPESHIFTER
     examples:
     - The partner who seemed helpful but then withdrew support.
     - He supported the project until it became inconvenient.
     - An ally who became a critic.
     - She appeared enthusiastic at first, then reversed position.
     - The stakeholder whose commitment was uncertain.
-    confidence_threshold: 0.6
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/trickster
@@ -381,7 +369,6 @@ entity_collections:
     description: A character who disrupts the status quo, challenges assumptions, or introduces unexpected change
     home_domain: narrative
     status: canonical
-    ner_label: TRICKSTER
     examples:
     - The startup that disrupted the whole industry.
     - She challenged every assumption in the room.
@@ -389,7 +376,6 @@ entity_collections:
     - The unexpected voice that reframed the problem.
     - A competitor nobody saw coming.
     - The intern who asked the uncomfortable question.
-    confidence_threshold: 0.62
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/ally
@@ -443,7 +429,6 @@ entity_collections:
     description: A supporting character who assists the hero but does not lead the journey
     home_domain: narrative
     status: canonical
-    ner_label: ALLY
     examples:
     - Their IT team supported every step.
     - The partner who contributed the technical expertise.
@@ -451,7 +436,6 @@ entity_collections:
     - Adobe worked alongside them through the process.
     - The broader team who made it possible.
     - She helped me see a different angle.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/customer_hero
@@ -476,7 +460,6 @@ entity_collections:
     description: A specific customer cast as the hero of a business case study or success story
     home_domain: narrative
     status: canonical
-    ner_label: CUSTOMER_HERO
     examples:
     - ACME Corporation faced a critical challenge.
     - Their team of 50 engineers needed to...
@@ -484,7 +467,6 @@ entity_collections:
     - A mid-market company who took the leap.
     - Their IT director took the bold decision.
     - The customer who proved it was possible.
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/vendor_as_mentor
@@ -520,7 +502,6 @@ entity_collections:
     description: The vendor or solution provider cast in the mentor role — enabling rather than heroic
     home_domain: narrative
     status: canonical
-    ner_label: VENDOR_AS_MENTOR
     examples:
     - Adobe enabled them to move faster.
     - With our platform, they were able to...
@@ -528,7 +509,6 @@ entity_collections:
     - Our solution gave them the tools they needed.
     - Working with us, they achieved...
     - Together we built the foundation.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/everyman_character
@@ -545,7 +525,6 @@ entity_collections:
       the audience's own experience
     home_domain: narrative
     status: canonical
-    ner_label: EVERYMAN
     examples:
     - A typical marketing team, just like yours.
     - Someone who had never touched a line of code.
@@ -554,7 +533,6 @@ entity_collections:
     - A team no different from the ones in this room.
     - One of those professionals everyone knows — brilliant but overwhelmed.
     - A mid-level manager with no budget and a tight timeline.
-    confidence_threshold: 0.63
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/internal_champion
@@ -579,7 +557,6 @@ entity_collections:
       buy-in, and pushes the project to completion
     home_domain: narrative
     status: canonical
-    ner_label: CHAMPION
     examples:
     - Their VP of Marketing championed the initiative.
     - One internal advocate who drove the change.
@@ -589,7 +566,6 @@ entity_collections:
     - The change agent who built the internal coalition.
     - She became the internal champion who made it possible.
     - He secured executive buy-in against significant resistance.
-    confidence_threshold: 0.67
     evidence_ids: *id002
   - id: coe:entity/sme_academic
     label: Sme Academic
@@ -597,7 +573,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SME_ACADEMIC
     evidence_ids: *id002
   - id: coe:entity/sme_dominant
     label: Sme Dominant
@@ -605,7 +580,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SME_DOMINANT
     evidence_ids: *id002
   - id: coe:entity/sme_clueless
     label: Sme Clueless
@@ -613,7 +587,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SME_CLUELESS
     evidence_ids: *id002
   - id: coe:entity/sme_busy_bee
     label: Sme Busy Bee
@@ -621,7 +594,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SME_BUSY_BEE
     evidence_ids: *id002
   - id: coe:entity/sme_include_it_all
     label: Sme Include It All
@@ -629,7 +601,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SME_INCLUDE_IT_ALL
     evidence_ids: *id002
   - id: coe:entity/sme_luddite
     label: Sme Luddite
@@ -637,7 +608,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SME_LUDDITE
     evidence_ids: *id002
   - id: coe:entity/sme_awol
     label: Sme Awol
@@ -645,7 +615,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SME_AWOL
     evidence_ids: *id002
   - id: coe:entity/speaker_novice
     label: Speaker Novice
@@ -653,7 +622,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SPEAKER_NOVICE
     evidence_ids: *id002
   - id: coe:entity/speaker_technocrat
     label: Speaker Technocrat
@@ -661,7 +629,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SPEAKER_TECHNOCRAT
     evidence_ids: *id002
   - id: coe:entity/speaker_performer
     label: Speaker Performer
@@ -669,7 +636,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SPEAKER_PERFORMER
     evidence_ids: *id002
   - id: coe:entity/speaker_visionary
     label: Speaker Visionary
@@ -677,7 +643,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SPEAKER_VISIONARY
     evidence_ids: *id002
   last_updated: '2026-08-12'
   id: coe:artifact/narrative/character_archetypes_entities
@@ -740,7 +705,6 @@ entity_collections:
       a continuous discourse edge
     home_domain: narrative
     status: canonical
-    ner_label: COREFERENCE_CHAIN
     examples:
     - The CEO announced growth. She outlined the strategy.
     - Our platform launched in Q3. It exceeded all targets.
@@ -751,7 +715,6 @@ entity_collections:
     - The product and the service evolved. The former scaled globally.
     - Adobe and Salesforce partnered. The latter integrated first.
     - Results were strong. These confirmed our hypothesis.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/meronymy_link
@@ -786,7 +749,6 @@ entity_collections:
       proof for Elaboration relations
     home_domain: narrative
     status: canonical
-    ner_label: MERONYMY_LINK
     examples:
     - The company grew. Cloud sales drove the increase.
     - The platform is modular. The API layer handles integrations.
@@ -796,7 +758,6 @@ entity_collections:
     - The system has three tiers. The data layer processes events.
     - Training covered five modules. Module 3 addressed advanced topics.
     - The stack includes four components. The ingestion service routes data.
-    confidence_threshold: 0.6
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/synonymy_signal
@@ -814,7 +775,6 @@ entity_collections:
       explicit coreference
     home_domain: narrative
     status: canonical
-    ner_label: SYNONYMY_SIGNAL
     examples:
     - Revenue grew significantly. This expansion exceeded projections.
     - Costs declined sharply. The reduction improved margins.
@@ -823,15 +783,14 @@ entity_collections:
     - We accelerated delivery. The speed improvement was measurable.
     - The approach was innovative. This novel methodology scaled.
     - Adoption increased across regions. Uptake was strongest in EMEA.
-    confidence_threshold: 0.55
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/lexical_chain
       predicate: coe:contains
       object_id: coe:entity/synonymy_signal
       relationship_weight: expected
-      description: Lexical chains (synonymy, meronymy, general word usage) constitute approximately 41% of semantic signals
-        for RST
+      description: Lexical chains (synonymy, meronymy, general word usage) constitute the largest class of semantic signals
+        for RST relations; the corpus share is a library principle-evidence record
       statement_id: coe:edge/096180cb6db270b753447cc5
       home_domain: narrative
       evidence_ids: *id001
@@ -850,7 +809,6 @@ entity_collections:
       implicit elaboration or joint relations
     home_domain: narrative
     status: canonical
-    ner_label: LEXICAL_CHAIN
     examples:
     - revenue → sales → income → profit (financial chain)
     - customer → client → buyer → user (stakeholder chain)
@@ -858,7 +816,6 @@ entity_collections:
     - AI → machine learning → deep learning → neural networks (technology chain)
     - training → workshop → session → module (pedagogical chain)
     - threat → vulnerability → risk → exposure (security chain)
-    confidence_threshold: 0.6
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/general_word_signal
@@ -876,7 +833,6 @@ entity_collections:
       or summary relations
     home_domain: narrative
     status: canonical
-    ner_label: GENERAL_WORD_SIGNAL
     examples:
     - We redesigned the pipeline. This approach reduced latency.
     - Costs rose and timelines slipped. Such challenges required intervention.
@@ -884,7 +840,6 @@ entity_collections:
     - We invested in AI and automation. That strategy paid off.
     - Migration caused downtime. The issue was resolved in 48 hours.
     - Three teams piloted the tool. This initiative expanded company-wide.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/edu_clause_boundary
@@ -937,7 +892,6 @@ entity_collections:
       segmentation signal
     home_domain: narrative
     status: canonical
-    ner_label: EDU_CLAUSE_BOUNDARY
     examples:
     - Revenue grew, | and margins improved.
     - We invested in AI | because costs were rising.
@@ -945,7 +899,6 @@ entity_collections:
     - Results exceeded targets. | The board approved expansion.
     - The platform launched; | adoption was immediate.
     - Having completed the pilot, | we scaled the solution.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/embedded_clause_marker
@@ -981,7 +934,6 @@ entity_collections:
       when the surrounding spans are rejoined
     home_domain: narrative
     status: canonical
-    ner_label: EMBEDDED_CLAUSE_MARKER
     examples:
     - The product, which launched last quarter, exceeded expectations.
     - Our strategy—developed over months of research—proved effective.
@@ -989,7 +941,6 @@ entity_collections:
     - The CEO, a former engineer, understood the technical debt.
     - Results, though preliminary, are very promising.
     - The team, led by Sarah Chen, delivered on schedule.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/nucleus_indicator
@@ -1014,7 +965,6 @@ entity_collections:
       stand alone and convey the primary message
     home_domain: narrative
     status: canonical
-    ner_label: NUCLEUS_INDICATOR
     examples:
     - The key finding is that adoption increased 300%.
     - Our recommendation is to proceed with Phase 2.
@@ -1022,7 +972,6 @@ entity_collections:
     - In summary, the platform delivers measurable ROI.
     - The critical insight is that implicit signals dominate.
     - We conclude that discourse structure drives coherence.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/satellite_indicator
@@ -1039,7 +988,6 @@ entity_collections:
       information subordinate to a nucleus
     home_domain: narrative
     status: canonical
-    ner_label: SATELLITE_INDICATOR
     examples:
     - For context, the market had been declining for three quarters.
     - It is worth noting that this was a pilot programme.
@@ -1047,7 +995,6 @@ entity_collections:
     - Incidentally, the same pattern was observed in EMEA.
     - As a side note, the original timeline was six months.
     - To provide context, annual budgets had been frozen.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/organisational_entity
@@ -1066,7 +1013,6 @@ entity_collections:
       markers, these bound the actors and subjects the discourse is about
     home_domain: narrative
     status: canonical
-    ner_label: ORGANISATIONAL_ENTITY
     examples:
     - Adobe Experience Platform
     - SC Company SA
@@ -1076,7 +1022,6 @@ entity_collections:
     - the Product Engineering team
     - McKinsey & Company
     - the Customer Success organisation
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/domain_nomenclature
@@ -1093,7 +1038,6 @@ entity_collections:
       signals for relation detection
     home_domain: narrative
     status: canonical
-    ner_label: DOMAIN_NOMENCLATURE
     examples:
     - Elementary Discourse Unit (EDU)
     - Rhetorical Structure Theory (RST)
@@ -1103,7 +1047,6 @@ entity_collections:
     - Parameter-Efficient Fine-Tuning (PEFT)
     - shift-reduce parsing
     - discourse tree
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/shift_action
     label: Shift Action
@@ -1112,12 +1055,10 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SHIFT_ACTION
     examples:
     - 'Shift: Move EDU_5 from queue to stack'
     - 'Action: Shift (new element not yet ready for merge)'
     - Shift — the queue item introduces a new topic unrelated to the stack top
-    confidence_threshold: 0.85
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/reduce_action
@@ -1154,12 +1095,10 @@ entity_collections:
       nuclearity and rhetorical relation — used in bottom-up LLM-driven shift-reduce discourse parsing
     home_domain: narrative
     status: canonical
-    ner_label: REDUCE_ACTION
     examples:
     - 'Reduce: Merge stack items with Nucleus-Satellite: Elaboration'
     - 'Action: Reduce (Nucleus-Nucleus: Joint)'
     - Reduce — the two stack items form a causal relationship
-    confidence_threshold: 0.85
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/combined_signal_anchor
@@ -1194,7 +1133,6 @@ entity_collections:
       increasing detection confidence
     home_domain: narrative
     status: canonical
-    ner_label: COMBINED_SIGNAL_ANCHOR
     examples:
     - The analyst stated [cognitive verb = semantic] that growth will continue [subordinate clause = syntactic] → Attribution
       (tandem semantic-syntactic)
@@ -1202,7 +1140,6 @@ entity_collections:
     - Despite challenges [discourse marker], the opposite occurred [antonymous pair = semantic] → Contrast (tandem lexical-semantic)
     - Previously [morphological tense shift], we had tried [tense shift] a different approach [lexical chain = semantic] →
       Background (tandem morphological-semantic)
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/ambiguous_signal
@@ -1239,14 +1176,12 @@ entity_collections:
       — particularly common between concession and condition
     home_domain: narrative
     status: canonical
-    ner_label: AMBIGUOUS_SIGNAL
     examples:
     - '''although'' → could signal Contrast OR Concession'
     - '''while'' → could signal Temporal OR Contrast OR Condition'
     - '''since'' → could signal Cause OR Temporal'
     - '''as'' → could signal Cause OR Temporal OR Manner'
     - '''if'' + evaluative content → Condition OR Concession'
-    confidence_threshold: 0.5
     evidence_ids: *id002
   last_updated: '2026-08-12'
   id: coe:artifact/narrative/descriptive_rst_entities
@@ -1330,7 +1265,6 @@ entity_collections:
     description: Lexical marker signalling causal or consequential relationship
     home_domain: narrative
     status: canonical
-    ner_label: CAUSE_MARKER
     examples:
     - because we invested in R&D
     - since market conditions improved
@@ -1342,7 +1276,6 @@ entity_collections:
     - hence the improvement
     - owing to strong execution
     - thanks to our team
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/contrast_marker
@@ -1397,7 +1330,6 @@ entity_collections:
     description: Lexical marker signalling contrast, opposition, or concession
     home_domain: narrative
     status: canonical
-    ner_label: CONTRAST_MARKER
     examples:
     - however costs also rose
     - but quality declined
@@ -1409,7 +1341,6 @@ entity_collections:
     - in contrast to expectations
     - whereas competitors struggled
     - unlike our competitors
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/temporal_marker
@@ -1426,7 +1357,6 @@ entity_collections:
     description: Lexical marker signalling temporal sequence or time frame
     home_domain: narrative
     status: canonical
-    ner_label: TEMPORAL_MARKER
     examples:
     - when we launched the product
     - after completing the pilot
@@ -1439,7 +1369,6 @@ entity_collections:
     - meanwhile competitors struggled
     - previously we had tried
     - following the acquisition
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/elaboration_marker
@@ -1519,7 +1448,6 @@ entity_collections:
     description: Lexical marker signalling elaboration, specification, or exemplification
     home_domain: narrative
     status: canonical
-    ner_label: ELABORATION_MARKER
     examples:
     - specifically we reduced latency
     - in particular the enterprise segment
@@ -1531,7 +1459,6 @@ entity_collections:
     - to illustrate the impact
     - more precisely the algorithm
     - for instance in finance
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/joint_marker
@@ -1548,7 +1475,6 @@ entity_collections:
     description: Lexical marker signalling addition or parallel information
     home_domain: narrative
     status: canonical
-    ner_label: JOINT_MARKER
     examples:
     - and we reduced costs
     - also we improved quality
@@ -1560,7 +1486,6 @@ entity_collections:
     - plus new features
     - along with documentation
     - what's more it's scalable
-    confidence_threshold: 0.6
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/condition_marker
@@ -1586,7 +1511,6 @@ entity_collections:
     description: Lexical marker signalling conditional or hypothetical relationship
     home_domain: narrative
     status: canonical
-    ner_label: CONDITION_MARKER
     examples:
     - if we invest in AI
     - unless we act now
@@ -1597,7 +1521,6 @@ entity_collections:
     - supposing the market recovers
     - should the need arise
     - whether or not we proceed
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/same_unit_marker
     label: Same Unit Marker
@@ -1605,7 +1528,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SAME_UNIT_MARKER
     examples:
     - The product, which launched last quarter, exceeded expectations
     - Our strategy—developed over months—proved effective
@@ -1614,7 +1536,6 @@ entity_collections:
     - Sales, particularly in EMEA, surpassed targets
     - The CEO, a former engineer, understood
     - Results, though preliminary, are promising
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/topic_shift_marker
@@ -1639,7 +1560,6 @@ entity_collections:
     description: Lexical marker signalling shift to new topic or section
     home_domain: narrative
     status: canonical
-    ner_label: TOPIC_SHIFT_MARKER
     examples:
     - turning to the financials
     - moving on to implementation
@@ -1650,7 +1570,6 @@ entity_collections:
     - concerning the next steps
     - on the subject of
     - speaking of which
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/summary_marker
@@ -1702,7 +1621,6 @@ entity_collections:
     description: Lexical marker signalling summary or conclusion
     home_domain: narrative
     status: canonical
-    ner_label: SUMMARY_MARKER
     examples:
     - in summary the results show
     - to conclude we recommend
@@ -1717,7 +1635,6 @@ entity_collections:
     anti_examples:
     - summary report
     - takeaway food
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/emphasis_marker
@@ -1734,7 +1651,6 @@ entity_collections:
     description: Lexical marker signalling emphasis or importance
     home_domain: narrative
     status: canonical
-    ner_label: EMPHASIS_MARKER
     examples:
     - importantly the data confirms
     - crucially we maintained quality
@@ -1745,7 +1661,6 @@ entity_collections:
     - above all security is paramount
     - most importantly we delivered
     - it is worth noting that
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/concession_marker
@@ -1809,7 +1724,6 @@ entity_collections:
     description: Lexical marker signalling concession or acknowledgement before counter-point
     home_domain: narrative
     status: canonical
-    ner_label: CONCESSION_MARKER
     examples:
     - admittedly costs increased
     - granted there are challenges
@@ -1820,7 +1734,6 @@ entity_collections:
     - no doubt there are concerns
     - it must be admitted that
     - to be fair the process
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/reformulation_marker
@@ -1846,7 +1759,6 @@ entity_collections:
     description: Lexical marker signalling rephrasing or clarification
     home_domain: narrative
     status: canonical
-    ner_label: REFORMULATION_MARKER
     examples:
     - in other words simplified
     - that is to say reduced
@@ -1857,7 +1769,6 @@ entity_collections:
     - what this means is
     - essentially we automated
     - in essence the core value
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/hedging_marker
@@ -1891,7 +1802,6 @@ entity_collections:
     description: Lexical marker signalling uncertainty, tentativeness, or hedging
     home_domain: narrative
     status: canonical
-    ner_label: HEDGING_MARKER
     examples:
     - perhaps the approach needs revision
     - possibly due to market conditions
@@ -1903,7 +1813,6 @@ entity_collections:
     - seemingly effective
     - apparently the system works
     - it appears that
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/certainty_marker
@@ -1965,7 +1874,6 @@ entity_collections:
     description: Lexical marker signalling high certainty or confidence
     home_domain: narrative
     status: canonical
-    ner_label: CERTAINTY_MARKER
     examples:
     - certainly the data supports
     - definitely the right approach
@@ -1977,7 +1885,6 @@ entity_collections:
     - unquestionably the best
     - there is no doubt that
     - it is certain that
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/evaluation_marker
@@ -1994,7 +1901,6 @@ entity_collections:
     description: Attitudinal adverb expressing author's evaluation of content
     home_domain: narrative
     status: canonical
-    ner_label: EVALUATION_MARKER
     examples:
     - fortunately we secured funding
     - unfortunately costs exceeded budget
@@ -2004,7 +1910,6 @@ entity_collections:
     - remarkably we achieved the target
     - surprisingly the approach worked
     - interestingly the data shows
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/nominalisation
@@ -2048,7 +1953,6 @@ entity_collections:
     description: Abstract noun derived from verb or adjective (increases lexical density)
     home_domain: narrative
     status: canonical
-    ner_label: NOMINALISATION
     examples:
     - transformation
     - implementation
@@ -2062,7 +1966,6 @@ entity_collections:
     - establishment
     - advancement
     - consideration
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/subordination_marker
@@ -2106,7 +2009,6 @@ entity_collections:
     description: Conjunction introducing subordinate clause (increases syntactic complexity)
     home_domain: narrative
     status: canonical
-    ner_label: SUBORDINATION_MARKER
     examples:
     - because we invested
     - although expensive
@@ -2118,7 +2020,6 @@ entity_collections:
     - after completing
     - unless we change
     - until we achieve
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/coordination_marker
@@ -2153,7 +2054,6 @@ entity_collections:
     description: Conjunction joining clauses of equal syntactic status
     home_domain: narrative
     status: canonical
-    ner_label: COORDINATION_MARKER
     examples:
     - we improved speed and we reduced costs
     - revenue increased but costs also rose
@@ -2161,7 +2061,6 @@ entity_collections:
     - we didn't rush nor did we delay
     - challenges existed yet we succeeded
     - demand surged so we scaled
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/relative_clause_marker
@@ -2197,7 +2096,6 @@ entity_collections:
     description: Pronoun introducing a clause that modifies a noun (increases embedding depth)
     home_domain: narrative
     status: canonical
-    ner_label: RELATIVE_CLAUSE_MARKER
     examples:
     - the team who delivered
     - the product which we launched
@@ -2205,7 +2103,6 @@ entity_collections:
     - the CEO whose vision
     - the strategy whom we consulted
     - a solution that scales
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/participial_marker
@@ -2241,7 +2138,6 @@ entity_collections:
     description: Verb form (-ing/-ed) used as modifier (indicates clause reduction)
     home_domain: narrative
     status: canonical
-    ner_label: PARTICIPIAL_MARKER
     examples:
     - the product launched last year
     - customers using our platform
@@ -2250,7 +2146,6 @@ entity_collections:
     - the team leading the project
     - data collected from surveys
     - challenges faced by customers
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/figure_reference
@@ -2267,7 +2162,6 @@ entity_collections:
     description: Explicit reference to a visual element (figure, chart, diagram, table)
     home_domain: narrative
     status: canonical
-    ner_label: FIGURE_REFERENCE
     examples:
     - Figure 1 shows the trend
     - as shown in the chart
@@ -2277,7 +2171,6 @@ entity_collections:
     - this chart demonstrates
     - the illustration depicts
     - as depicted in Figure 3
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - id: coe:entity/deictic_marker
     label: Deictic Marker
@@ -2285,7 +2178,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: DEICTIC_MARKER
     examples:
     - this shows our growth
     - here we see the trend
@@ -2296,7 +2188,6 @@ entity_collections:
     - below is the breakdown
     - on the left we have
     - to the right is
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/anaphora_marker
@@ -2349,13 +2240,11 @@ entity_collections:
     description: Repeated word or phrase at the beginning of successive clauses
     home_domain: narrative
     status: canonical
-    ner_label: ANAPHORA_MARKER
     examples:
     - We will innovate. We will execute. We will succeed.
     - I believe in our team. I believe in our product.
     - This is about growth. This is about transformation.
     - We can scale. We can expand. We can dominate.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/tricolon_marker
@@ -2390,7 +2279,6 @@ entity_collections:
     description: Three parallel words, phrases, or clauses (rule of three)
     home_domain: narrative
     status: canonical
-    ner_label: TRICOLON_MARKER
     examples:
     - speed, quality, and cost
     - reduce, improve, and scale
@@ -2398,7 +2286,6 @@ entity_collections:
     - plan, execute, and deliver
     - people, process, and technology
     - simple, scalable, and secure
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/narrative_progress_index
     label: Narrative Progress Index
@@ -2406,7 +2293,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: NPI_TAU
     evidence_ids: *id002
   - id: coe:entity/marginal_increment_metric
     label: Marginal Increment Metric
@@ -2414,7 +2300,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: MI_DELTA
     evidence_ids: *id002
   - id: coe:entity/skos_mapping_scale
     label: Skos Mapping Scale
@@ -2422,7 +2307,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SKOS_MAPPING
     evidence_ids: *id002
   - id: coe:entity/scope_note_marker
     label: Scope Note Marker
@@ -2430,7 +2314,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SCOPE_NOTE
     evidence_ids: *id002
   - id: coe:entity/boundary_by_contrast
     label: Boundary By Contrast
@@ -2438,7 +2321,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: BOUNDARY_CONTRAST
     evidence_ids: *id002
   - id: coe:entity/epubcfi_marker
     label: Epubcfi Marker
@@ -2446,7 +2328,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: EPUBCFI
     evidence_ids: *id002
   - id: coe:entity/punning_strategy
     label: Punning Strategy
@@ -2454,7 +2335,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: PUNNING
     evidence_ids: *id002
   last_updated: '2026-08-12'
   id: coe:artifact/narrative/discourse_entities
@@ -2478,8 +2358,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/boost_marker
       relationship_weight: expected
-      description: Data statistics support boost markers — specific metrics (67% gravitas perception, 77% public speaking
-        fear) amplify confidence claims per Personal Branding Framework
+      description: Data statistics support boost markers — specific metrics on perceived gravitas and public-speaking fear
+        amplify confidence claims per Personal Branding Framework
       statement_id: coe:edge/da5f714af4bdfb6918964faa
       home_domain: narrative
       evidence_ids: *id001
@@ -2524,8 +2404,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/motivation_element
       relationship_weight: optional
-      description: Hook Cards use data statistics for motivation — '73% of sales teams fail here', '10-second workflow saves
-        2 hours' — data statistics provide credible motivational triggers (Essentials_Course_Gold_Structure)
+      description: Hook Cards use data statistics for motivation — a failure-rate statistic or a time-saved figure — data
+        statistics provide credible motivational triggers (Essentials_Course_Gold_Structure)
       statement_id: coe:edge/8e74bb8749e01fd2ae90f9e6
       home_domain: narrative
       evidence_ids: *id001
@@ -2569,7 +2449,6 @@ entity_collections:
     description: 'Hard numerical data point used as evidence: percentages, multiples, growth figures'
     home_domain: narrative
     status: canonical
-    ner_label: DATA_STATISTIC
     examples:
     - 80% of customers report faster results
     - 3x return on investment
@@ -2579,7 +2458,6 @@ entity_collections:
     - saving 10,000 hours annually
     - revenue up 127% year on year
     - NPS score improved from 32 to 71
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/research_citation
@@ -2640,7 +2518,6 @@ entity_collections:
     description: Reference to a formal research study, survey, or published analysis as evidence
     home_domain: narrative
     status: canonical
-    ner_label: RESEARCH_CITATION
     examples:
     - Research shows that...
     - A study by McKinsey found...
@@ -2650,7 +2527,6 @@ entity_collections:
     - Forrester found that 67% of...
     - Peer-reviewed research indicates...
     - The Aberdeen Group study of 500 enterprises...
-    confidence_threshold: 0.78
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/customer_story
@@ -2766,7 +2642,6 @@ entity_collections:
     description: Reference to a specific customer experience or case study as evidence
     home_domain: narrative
     status: canonical
-    ner_label: CUSTOMER_STORY
     examples:
     - One of our customers told us...
     - A client in healthcare reduced costs by...
@@ -2776,7 +2651,6 @@ entity_collections:
     - In one case study, a retailer...
     - A global manufacturer we work with saw...
     - Within six months of deployment, the client reported...
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/personal_anecdote
@@ -2865,7 +2739,6 @@ entity_collections:
     description: First-person story from the speaker's own experience used as evidence
     home_domain: narrative
     status: canonical
-    ner_label: PERSONAL_ANECDOTE
     examples:
     - I remember when I first saw this problem...
     - When I was working with a team in Singapore...
@@ -2873,7 +2746,6 @@ entity_collections:
     - Let me tell you what happened...
     - I was in a meeting and someone said...
     - My own experience taught me...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/expert_testimony
@@ -2926,7 +2798,6 @@ entity_collections:
     description: Evidence from a named expert, analyst, or authority figure
     home_domain: narrative
     status: canonical
-    ner_label: EXPERT_TESTIMONY
     examples:
     - According to Satya Nadella...
     - Gartner analysts predict...
@@ -2934,7 +2805,6 @@ entity_collections:
     - The Forrester Wave named us...
     - Professor Smith's research concludes...
     - Industry leaders recognise...
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/industry_benchmark
@@ -2957,8 +2827,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/monroe_sequence_marker
       relationship_weight: optional
-      description: Industry benchmarks are used in MMS's Need stage to show gaps, e.g., 'Our satisfaction is 85%, industry
-        average is 95%' per Monroe's Motivated Sequence research
+      description: Industry benchmarks are used in MMS's Need stage to show gaps, contrasting the audience's current level
+        with the industry average per Monroe's Motivated Sequence research
       statement_id: coe:edge/167f34984bef5fcfedc0a984
       home_domain: narrative
       evidence_ids: *id001
@@ -2967,7 +2837,6 @@ entity_collections:
     description: Reference to industry standard, benchmark, or best practice as evidence of quality
     home_domain: narrative
     status: canonical
-    ner_label: INDUSTRY_BENCHMARK
     examples:
     - Compared to the industry average...
     - Above the industry benchmark...
@@ -2975,7 +2844,6 @@ entity_collections:
     - Best-in-class performance on...
     - Outperforming the market by...
     - Against the Gartner benchmark...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/analogy
@@ -3062,14 +2930,12 @@ entity_collections:
     description: Comparison to a familiar concept used to explain or validate a claim
     home_domain: narrative
     status: canonical
-    ner_label: ANALOGY
     examples:
     - Think of it like a GPS for your data.
     - It works the same way as air traffic control.
     - Just as a doctor diagnoses before prescribing...
     - In the same way that electricity transformed manufacturing...
     - Similar to how the internet changed communication...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/hypothetical_scenario
@@ -3149,14 +3015,12 @@ entity_collections:
     description: What-if framing to project a future state or test a proposition as evidence
     home_domain: narrative
     status: canonical
-    ner_label: HYPOTHETICAL_SCENARIO
     examples:
     - What if we could eliminate that friction?
     - Imagine a world where every sale is data-driven.
     - Suppose you could halve your onboarding time.
     - Consider what happens when AI does the heavy lifting.
     - If we could see every customer signal in real time...
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/deductive_reasoning
@@ -3200,7 +3064,6 @@ entity_collections:
     description: Movement from general principle to specific conclusion as logical evidence
     home_domain: narrative
     status: canonical
-    ner_label: DEDUCTIVE_REASONING
     examples:
     - Given this trend, we can conclude...
     - It follows logically that...
@@ -3208,7 +3071,6 @@ entity_collections:
     - Since we know that X, Y must be true.
     - The logical conclusion is...
     - This reasoning leads us to...
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/inductive_reasoning
@@ -3233,7 +3095,6 @@ entity_collections:
     description: Evidence from observed patterns leading to a broader generalisation
     home_domain: narrative
     status: canonical
-    ner_label: INDUCTIVE_REASONING
     examples:
     - In every case we've seen, the pattern holds.
     - Consistently across industries, we observe...
@@ -3241,7 +3102,6 @@ entity_collections:
     - This pattern appears again and again.
     - Time after time, the data shows...
     - Across our entire customer base...
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/visual_demonstration
@@ -3277,7 +3137,6 @@ entity_collections:
     description: Marker signalling that visual evidence is being presented (chart, graph, diagram)
     home_domain: narrative
     status: canonical
-    ner_label: VISUAL_DEMONSTRATION
     examples:
     - As you can see in this chart...
     - This graph shows the trend over time.
@@ -3285,7 +3144,6 @@ entity_collections:
     - Looking at this diagram...
     - If we look at the numbers here...
     - This slide shows the breakdown.
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/live_demonstration
@@ -3310,7 +3168,6 @@ entity_collections:
     description: Marker signalling a live product demonstration or walkthrough as evidence
     home_domain: narrative
     status: canonical
-    ner_label: LIVE_DEMONSTRATION
     examples:
     - Let me show you this live.
     - Watch what happens when...
@@ -3318,7 +3175,6 @@ entity_collections:
     - See it in action.
     - Let me walk you through this.
     - Here's a live example.
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/validated_outcome
@@ -3367,11 +3223,10 @@ entity_collections:
       evidence_ids: *id001
     id: coe:entity/validated_outcome
     label: Validated Outcome
-    description: Independently verified or audited result — highest evidence quality tier; required for passing evidence_specificity
-      gate at score 65
+    description: Independently verified or audited result — highest evidence quality tier; required for passing the evidence
+      specificity gate
     home_domain: narrative
     status: canonical
-    ner_label: VALIDATED_OUTCOME
     examples:
     - Results independently verified by Deloitte.
     - 'Audited outcome: 43% reduction in processing time.'
@@ -3381,7 +3236,6 @@ entity_collections:
     - Independently assessed ROI of 312%.
     - Verified by the client's finance team.
     - Audit-confirmed savings of $1.8M in the first 12 months.
-    confidence_threshold: 0.78
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/before_after_comparison
@@ -3452,7 +3306,6 @@ entity_collections:
       Study Excellence Framework
     home_domain: narrative
     status: canonical
-    ner_label: BEFORE_AFTER_COMPARISON
     examples:
     - 'Before: 14-day onboarding. After: 3 days.'
     - 'Previously, the team spent 40 hours per week on manual reconciliation. Now: 4 hours.'
@@ -3462,7 +3315,6 @@ entity_collections:
     - Prior to implementation, lead time was 12 weeks. It's now 5.
     - We went from 72-hour incident response to under 4 hours.
     - 'Previously: 3 approval layers. Now: single-click authorisation.'
-    confidence_threshold: 0.75
     evidence_ids: *id002
   last_updated: '2026-08-12'
   id: coe:artifact/narrative/evidence_types_entities
@@ -3548,7 +3400,6 @@ entity_collections:
     description: Assertions, propositions, or conclusions that require support
     home_domain: narrative
     status: canonical
-    ner_label: CLAIM
     examples:
     - Our solution reduces costs by 40%
     - AI will transform customer experience
@@ -3561,7 +3412,6 @@ entity_collections:
     - insurance claim
     - claim form
     - baggage claim
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/evidence
@@ -3692,7 +3542,6 @@ entity_collections:
     description: Data, facts, examples, or citations supporting claims
     home_domain: narrative
     status: canonical
-    ner_label: EVIDENCE
     examples:
     - According to Gartner, 75% of enterprises...
     - Customer X achieved 30% cost reduction
@@ -3702,7 +3551,6 @@ entity_collections:
     anti_examples:
     - evidence locker
     - crime scene evidence
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/warrant
@@ -3718,7 +3566,6 @@ entity_collections:
     description: Logical bridges connecting evidence to claims
     home_domain: narrative
     status: canonical
-    ner_label: WARRANT
     examples:
     - Because efficiency drives profitability...
     - Since market leaders set standards...
@@ -3728,7 +3575,6 @@ entity_collections:
     - search warrant
     - arrest warrant
     - warranty
-    confidence_threshold: 0.6
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/qualifier
@@ -3762,14 +3608,12 @@ entity_collections:
     description: Hedging or limiting language indicating certainty level
     home_domain: narrative
     status: canonical
-    ner_label: QUALIFIER
     examples:
     - In most cases...
     - Typically...
     - Under certain conditions...
     - For enterprise customers...
     - Generally speaking...
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/rebuttal
@@ -3812,14 +3656,12 @@ entity_collections:
     description: Acknowledgment of counterarguments or limitations
     home_domain: narrative
     status: canonical
-    ner_label: REBUTTAL
     examples:
     - While competitors claim...
     - Although some argue...
     - Despite concerns about...
     - Critics may point to...
     - One might object that...
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/narrative_hook
@@ -3934,8 +3776,8 @@ entity_collections:
       object_id: coe:entity/microlearning_format
       relationship_weight: required
       description: Narrative hooks support microlearning formats — short-form content relies on immediate attention capture,
-        making hooks critical for micro-module engagement per AI Microlearning Guide | Short-form TikTok formats demand immediate
-        hook in first 2 seconds making hooks essential to microlearning (Best Video Script Prompts)
+        making hooks critical for micro-module engagement per AI Microlearning Guide | Short-form TikTok formats demand an
+        immediate hook in the opening seconds making hooks essential to microlearning (Best Video Script Prompts)
       statement_id: coe:edge/e2ba9b7fe8d8a2d95e2557da
       home_domain: narrative
       evidence_ids: *id001
@@ -3979,14 +3821,12 @@ entity_collections:
     description: Attention-grabbing openings that engage the audience
     home_domain: narrative
     status: canonical
-    ner_label: NARRATIVE_HOOK
     examples:
     - Imagine a world where...
     - What if you could...
     - Picture this scenario...
     - Have you ever wondered...
     - The biggest challenge facing enterprises today...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/call_to_action
@@ -4019,7 +3859,6 @@ entity_collections:
     description: Direct requests for audience action or next steps
     home_domain: narrative
     status: canonical
-    ner_label: CALL_TO_ACTION
     examples:
     - Contact us today to learn more
     - Schedule a demo
@@ -4049,7 +3888,6 @@ entity_collections:
     - getting started guide
     - click the submit button
     - contact information
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/transition_marker
@@ -4155,14 +3993,12 @@ entity_collections:
     description: Discourse connectives signaling topic or section shifts
     home_domain: narrative
     status: canonical
-    ner_label: TRANSITION_MARKER
     examples:
     - Moving on to...
     - Now let's look at...
     - Turning to the next topic...
     - Building on this...
     - With that foundation...
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/value_proposition
@@ -4231,14 +4067,12 @@ entity_collections:
     description: Statements of unique benefit or competitive advantage
     home_domain: narrative
     status: canonical
-    ner_label: VALUE_PROPOSITION
     examples:
     - The only platform that...
     - Uniquely positioned to...
     - Unlike competitors...
     - The industry-leading solution for...
     - Trusted by Fortune 500 companies...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/pain_point
@@ -4316,8 +4150,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/motivation_element
       relationship_weight: expected
-      description: Hook Cards leverage pain points for motivation — 'I missed this signal and lost $400K', '73% of sales teams
-        fail here' — pain points drive motivational engagement (Essentials_Course_Gold_Structure)
+      description: Hook Cards leverage pain points for motivation — a missed signal with a named loss, a failure-rate
+        statistic — pain points drive motivational engagement (Essentials_Course_Gold_Structure)
       statement_id: coe:edge/7ab74d27bafbd91d7dbedb2b
       home_domain: narrative
       evidence_ids: *id001
@@ -4353,7 +4187,6 @@ entity_collections:
     description: Customer challenges, problems, or frustrations
     home_domain: narrative
     status: canonical
-    ner_label: PAIN_POINT
     examples:
     - Struggling with disconnected data...
     - Facing increasing compliance pressure...
@@ -4363,7 +4196,6 @@ entity_collections:
     anti_examples:
     - pain medication
     - point guard
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/outcome_statement
@@ -4397,8 +4229,8 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/clarity_dimension
       relationship_weight: required
-      description: Clarity scoring requires declarative conclusion titles that convey insight in <=3 seconds per the Slide
-        Cognitive Score headline test (Slide Deck Design Playbook)
+      description: Clarity scoring requires declarative conclusion titles that convey insight within the headline test's
+        comprehension window per the Slide Cognitive Score (Slide Deck Design Playbook)
       statement_id: coe:edge/5b74d3e6e12321cbffc2a974
       home_domain: narrative
       evidence_ids: *id001
@@ -4426,14 +4258,12 @@ entity_collections:
     description: Quantified results or measurable benefits
     home_domain: narrative
     status: canonical
-    ner_label: OUTCOME_STATEMENT
     examples:
     - Reduced processing time by 60%
     - Increased revenue by $2M annually
     - Achieved 99.9% uptime
     - Improved customer satisfaction by 25 points
     - Eliminated 40 hours of manual work weekly
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/narrative_tension
@@ -4485,7 +4315,6 @@ entity_collections:
       maps to SOAR Opportunity stage and Minto SCQA complication
     home_domain: narrative
     status: canonical
-    ner_label: NARRATIVE_TENSION
     examples:
     - The gap between expectation and reality was growing.
     - Every month we delayed, the situation deteriorated.
@@ -4497,7 +4326,6 @@ entity_collections:
     - The cost of doing nothing was compounding quarterly.
     - The window for action was closing.
     - A crisis was forming in plain sight.
-    confidence_threshold: 0.67
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/resolution_signal
@@ -4531,7 +4359,6 @@ entity_collections:
       problem was solved or the outcome achieved
     home_domain: narrative
     status: canonical
-    ner_label: RESOLUTION_SIGNAL
     examples:
     - That was the turning point.
     - Here is how we solved it.
@@ -4543,7 +4370,6 @@ entity_collections:
     - From that point forward, the trajectory changed.
     - The single decision that unlocked the outcome.
     - That was when the results began to compound.
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - id: coe:entity/narrative_dna
     label: Narrative Dna
@@ -4553,7 +4379,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: NARRATIVE_DNA
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/argument_graph
@@ -4571,7 +4396,6 @@ entity_collections:
       Attack, Elaborates). Built from CESC (Claim Extraction with Stance Classification) and CEPE (Claim-Evidence Pair Extraction).
     home_domain: narrative
     status: canonical
-    ner_label: ARGUMENT_GRAPH
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/semantic_content_analysis
@@ -4589,7 +4413,6 @@ entity_collections:
       of narrative content — decomposes text into atomic propositions, maps semantic relationships, and scores content depth
     home_domain: narrative
     status: canonical
-    ner_label: SEMANTIC_CONTENT_ANALYSIS
     evidence_ids: *id002
   - id: coe:entity/emotional_arc
     label: Emotional Arc
@@ -4598,7 +4421,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: EMOTIONAL_ARC
     evidence_ids: *id002
   - id: coe:entity/action_title
     label: Action Title
@@ -4607,7 +4429,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: ACTION_TITLE
     examples:
     - Q3 revenue surpassed targets due to new product launches.
     - Competitor price cuts drove our market share decline in Q2.
@@ -4616,7 +4437,6 @@ entity_collections:
     - Q3 Financial Results
     - Market Share Analysis
     - Process Automation Summary
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - id: coe:entity/mece_structure
     label: Mece Structure
@@ -4624,14 +4444,12 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: MECE_STRUCTURE
     examples:
     - Profits down due to 1) Revenue Issues or 2) Cost Issues
     - The three MECE categories cover all possibilities
     anti_examples:
     - exclusive deal
     - exhaustive search
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/lexical_bundle
     label: Lexical Bundle
@@ -4639,7 +4457,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: LEXICAL_BUNDLE
     examples:
     - I want to show you
     - Let me tell you
@@ -4649,7 +4466,6 @@ entity_collections:
     anti_examples:
     - bundle of nerves
     - product bundle
-    confidence_threshold: 0.6
     evidence_ids: *id002
   - id: coe:entity/surprisal_oscillation
     label: Surprisal Oscillation
@@ -4657,14 +4473,12 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SURPRISAL_OSCILLATION
     examples:
     - Let me tell you a story [anchor]... and that story changed everything [spike]
     - We all know that markets change [anchor]... but what if the market itself became the product? [spike]
     anti_examples:
     - surprise party
     - oscillating fan
-    confidence_threshold: 0.55
     evidence_ids: *id002
   - id: coe:entity/frame_marker
     label: Frame Marker
@@ -4672,7 +4486,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: FRAME_MARKER
     examples:
     - First,
     - Finally,
@@ -4682,7 +4495,6 @@ entity_collections:
     anti_examples:
     - picture frame
     - time frame
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/code_gloss
     label: Code Gloss
@@ -4690,7 +4502,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: CODE_GLOSS
     examples:
     - In other words,
     - That is to say,
@@ -4699,7 +4510,6 @@ entity_collections:
     anti_examples:
     - gloss paint
     - lip gloss
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - id: coe:entity/emotional_arc_curiosity
     label: Emotional Arc Curiosity
@@ -4707,7 +4517,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: ARC_CURIOSITY
     evidence_ids: *id002
   - id: coe:entity/emotional_arc_skeptic
     label: Emotional Arc Skeptic
@@ -4715,7 +4524,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: ARC_SKEPTIC
     evidence_ids: *id002
   - id: coe:entity/vista_space_model
     label: Vista Space Model
@@ -4724,7 +4532,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: VISTA_SPACE
     evidence_ids: *id002
   - id: coe:entity/verbs_plus_anchor
     label: Verbs Plus Anchor
@@ -4732,7 +4539,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: VERBS_PLUS
     evidence_ids: *id002
   - id: coe:entity/audience_as_hero
     label: Audience As Hero
@@ -4740,7 +4546,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: AUDIENCE_HERO
     evidence_ids: *id002
   - id: coe:entity/data_story_arc
     label: Data Story Arc
@@ -4748,7 +4553,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: DATA_STORY_ARC
     evidence_ids: *id002
   - id: coe:entity/sparkline_narrative
     label: Sparkline Narrative
@@ -4757,7 +4561,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SPARKLINE
     evidence_ids: *id002
   - id: coe:entity/star_moment
     label: Star Moment
@@ -4766,7 +4569,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: STAR_MOMENT
     evidence_ids: *id002
   - id: coe:entity/minto_pyramid
     label: Minto Pyramid
@@ -4800,7 +4602,6 @@ entity_collections:
       evidence_ids:
       - coe:source/central-configs-legacy-f6eb98ff
       - coe:decision/curation/2026-09-01/relational-completeness
-    ner_label: MINTO_PYRAMID
     evidence_ids: *id002
   - id: coe:entity/pyramid_apex
     label: Pyramid Apex
@@ -4808,7 +4609,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: PYRAMID_APEX
     examples:
     - Our recommendation is to divest the legacy product line.
     - The company must act now to defend its market share.
@@ -4816,7 +4616,6 @@ entity_collections:
     anti_examples:
     - Market data shows...
     - Three reasons support this view
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - id: coe:entity/mece_group
     label: Mece Group
@@ -4825,14 +4624,12 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: MECE_GROUP
     examples:
     - 'Three factors explain the revenue decline: pricing pressure, channel attrition, and product mix shift.'
     - The solution addresses cost, quality, and speed — the three dimensions of operational excellence.
     anti_examples:
     - Various factors include...
     - Some of the reasons are...
-    confidence_threshold: 0.6
     evidence_ids: *id002
   last_updated: '2026-09-01'
   id: coe:artifact/narrative/narrative_entities
@@ -4936,7 +4733,6 @@ entity_collections:
     description: Opens with a question to engage curiosity (curiosity gap principle)
     home_domain: narrative
     status: canonical
-    ner_label: QUESTION_HOOK
     examples:
     - What if everything you knew about X was wrong?
     - Why do 80% of digital transformations fail?
@@ -4946,7 +4742,6 @@ entity_collections:
     - Imagine if your team could...
     - What would you do with an extra hour every day?
     - What's really holding your team back?
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/statistic_hook
@@ -5026,7 +4821,6 @@ entity_collections:
     description: Leads with surprising statistic or data point (von Restorff effect)
     home_domain: narrative
     status: canonical
-    ner_label: STATISTIC_HOOK
     examples:
     - 73% of employees would leave for better work-life balance
     - Every 39 seconds, a company falls victim to cyberattack
@@ -5035,7 +4829,6 @@ entity_collections:
     - In 2025, AI will transform 40% of jobs
     - $3.5 trillion wasted on digital transformation
     - Only 12% of change initiatives fully succeed
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/story_hook
@@ -5123,7 +4916,6 @@ entity_collections:
     description: Begins with brief, vivid anecdote (narrative transportation)
     home_domain: narrative
     status: canonical
-    ner_label: STORY_HOOK
     examples:
     - Imagine you're sitting in a meeting, watching...
     - 'Picture this: 3 AM, hospital IT system goes dark...'
@@ -5132,7 +4924,6 @@ entity_collections:
     - There was a moment when everything changed...
     - I remember the day when...
     - Six months ago, a team in Singapore faced an impossible deadline.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/contrast_hook
@@ -5200,7 +4991,6 @@ entity_collections:
     description: Opens by revealing a gap between expected and actual — uses surprise to provoke attention
     home_domain: narrative
     status: canonical
-    ner_label: CONTRAST_HOOK
     examples:
     - We expected growth. Instead, we found a cliff edge.
     - The conventional wisdom says spend more. Our data says the opposite.
@@ -5208,7 +4998,6 @@ entity_collections:
     - What we planned was X. What happened was Y.
     - Everyone assumed adoption would be low. It was through the roof.
     - We thought it would take months. It took three days.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/problem_statement_hook
@@ -5267,7 +5056,6 @@ entity_collections:
     description: Opens by naming the core problem the audience faces — immediate relevance without setup
     home_domain: narrative
     status: canonical
-    ner_label: PROBLEM_HOOK
     examples:
     - 'The problem is simple: too much data, not enough insight.'
     - Organisations are struggling to deliver content at scale.
@@ -5275,7 +5063,6 @@ entity_collections:
     - Every business in this room is dealing with the same friction.
     - The bottleneck isn't budget — it's speed of execution.
     - 'Here is the core issue: your customer data is fragmented.'
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/bluf_hook
@@ -5361,7 +5148,6 @@ entity_collections:
     description: Bottom Line Up Front — leads immediately with the key conclusion or recommendation (executive default)
     home_domain: narrative
     status: canonical
-    ner_label: BLUF_HOOK
     examples:
     - 'Here is the recommendation: deploy by Q3.'
     - The bottom line is we need to act now.
@@ -5370,7 +5156,6 @@ entity_collections:
     - The single most important thing you need to know is...
     - The decision we need from this room today is...
     - 'We need one thing from you: sign-off on the roadmap.'
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/quote_hook
@@ -5430,7 +5215,6 @@ entity_collections:
     description: Opens with a compelling, attributed quotation that frames the central message
     home_domain: narrative
     status: canonical
-    ner_label: QUOTE_HOOK
     examples:
     - As Warren Buffett said, 'Risk comes from not knowing what you're doing.'
     - 'One of our customers told us: ''This changed everything.'''
@@ -5438,7 +5222,6 @@ entity_collections:
     - 'The CEO of [Company X] put it perfectly last month:'
     - '''The only way to do great work is to love what you do.'' — Steve Jobs'
     - 'A VP of Marketing in our study said something that stopped us:'
-    confidence_threshold: 0.72
     evidence_ids: *id002
   last_updated: '2026-08-12'
   id: coe:artifact/narrative/opening_hooks_entities
@@ -5464,8 +5247,6 @@ entity_collections:
     anti_examples:
     - trust issues
     - customer service
-    confidence_threshold: 0.7
-    ner_label: SOCIAL_PROOF
     evidence_ids: *id002
   - id: coe:entity/urgency_marker
     label: Urgency Marker
@@ -5483,8 +5264,6 @@ entity_collections:
     anti_examples:
     - time management
     - today's agenda
-    confidence_threshold: 0.7
-    ner_label: URGENCY
     evidence_ids: *id002
   - id: coe:entity/testimonial_marker
     label: Testimonial Marker
@@ -5500,8 +5279,6 @@ entity_collections:
     anti_examples:
     - Smith family
     - CEO responsibilities
-    confidence_threshold: 0.7
-    ner_label: TESTIMONIAL
     evidence_ids: *id002
   - id: coe:entity/comparison_marker
     label: Comparison Marker
@@ -5519,8 +5296,6 @@ entity_collections:
     anti_examples:
     - legal vs illegal
     - comparison shopping
-    confidence_threshold: 0.7
-    ner_label: COMPARISON
     evidence_ids: *id002
   - id: coe:entity/compliance_marker
     label: Compliance Marker
@@ -5538,8 +5313,6 @@ entity_collections:
     anti_examples:
     - compliance team
     - security guard
-    confidence_threshold: 0.85
-    ner_label: COMPLIANCE
     evidence_ids: *id002
   - id: coe:entity/integration_marker
     label: Integration Marker
@@ -5557,8 +5330,6 @@ entity_collections:
     anti_examples:
     - integration testing
     - work environment
-    confidence_threshold: 0.7
-    ner_label: INTEGRATION
     evidence_ids: *id002
   - id: coe:entity/multiplier_metric
     label: Multiplier Metric
@@ -5575,8 +5346,6 @@ entity_collections:
     anti_examples:
     - x-ray
     - double-click
-    confidence_threshold: 0.8
-    ner_label: MULTIPLIER
     evidence_ids: *id002
   - id: coe:entity/list_marker
     label: List Marker
@@ -5596,8 +5365,6 @@ entity_collections:
     anti_examples:
     - first name
     - second hand
-    confidence_threshold: 0.7
-    ner_label: LIST_MARKER
     evidence_ids: *id002
   - id: coe:entity/feature_descriptor
     label: Feature Descriptor
@@ -5617,8 +5384,6 @@ entity_collections:
     anti_examples:
     - power outage
     - click here
-    confidence_threshold: 0.7
-    ner_label: FEATURE
     evidence_ids: *id002
   last_updated: '2026-08-12'
   id: coe:artifact/narrative/persuasion_patterns_entities
@@ -5707,7 +5472,6 @@ entity_collections:
     description: Repetition of the same word or phrase at the start of successive clauses for emphasis
     home_domain: narrative
     status: canonical
-    ner_label: ANAPHORA
     examples:
     - We will build. We will scale. We will win.
     - I believe in our people. I believe in our mission.
@@ -5715,7 +5479,6 @@ entity_collections:
     - We can do more. We can deliver more. We can achieve more.
     - Every customer deserves better. Every team deserves better. Every leader deserves better.
     - Not about the technology. Not about the budget. Not about the timeline.
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/epistrophe
@@ -5741,12 +5504,10 @@ entity_collections:
     description: Repetition of the same word or phrase at the end of successive clauses
     home_domain: narrative
     status: canonical
-    ner_label: EPISTROPHE
     examples:
     - Every customer matters. Every deal matters. Every person matters.
     - Speed counts. Accuracy counts. Trust counts.
     - For the customer. For the company. For the future.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/tricolon
@@ -5802,7 +5563,6 @@ entity_collections:
     description: Three parallel words, phrases, or clauses creating rhythm and memorability
     home_domain: narrative
     status: canonical
-    ner_label: TRICOLON
     examples:
     - speed, quality, and cost
     - faster, better, cheaper
@@ -5812,7 +5572,6 @@ entity_collections:
     - reduce costs, improve quality, and increase speed
     - discover, design, and deploy
     - connect, engage, and convert
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/chiasmus
@@ -5829,14 +5588,12 @@ entity_collections:
     description: Two phrases where the second reverses the grammatical structure of the first (A-B / B-A)
     home_domain: narrative
     status: canonical
-    ner_label: CHIASMUS
     examples:
     - We don't sell products; products sell us.
     - Ask not what the company can do for you, but what you can do for the company.
     - When the going gets tough, the tough get going.
     - Work to live, not live to work.
     - Your customer doesn't buy technology; technology buys your customer's trust.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/antithesis
@@ -5870,7 +5627,6 @@ entity_collections:
     description: Juxtaposition of contrasting ideas in parallel grammatical structure
     home_domain: narrative
     status: canonical
-    ner_label: ANTITHESIS
     examples:
     - Not a cost, but an investment.
     - Not failure, but a learning opportunity.
@@ -5879,7 +5635,6 @@ entity_collections:
     - Risk is not the enemy; stagnation is.
     - This isn't a question of if. It's a question of when.
     - Not the status quo. A better path forward.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/rhetorical_question
@@ -5949,7 +5704,6 @@ entity_collections:
     description: Question posed for persuasive or stylistic effect, not expecting a direct answer
     home_domain: narrative
     status: canonical
-    ner_label: RHETORICAL_QUESTION
     examples:
     - What if we could cut costs in half?
     - Why do 70% of transformations fail?
@@ -5957,7 +5711,6 @@ entity_collections:
     - Have you ever wondered why customers leave?
     - Isn't it time we changed?
     - Who wouldn't want faster results?
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/inclusive_we
@@ -6029,7 +5782,6 @@ entity_collections:
     description: Use of 'we', 'our', 'us' to create shared identity between speaker and audience
     home_domain: narrative
     status: canonical
-    ner_label: INCLUSIVE_WE
     examples:
     - We are at a turning point.
     - Our shared mission is growth.
@@ -6037,7 +5789,6 @@ entity_collections:
     - This is our opportunity.
     - We all know the challenge.
     - Let us be clear about what's at stake.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/hyperbole
@@ -6062,14 +5813,12 @@ entity_collections:
     description: Deliberate overstatement used for emphasis or dramatic effect
     home_domain: narrative
     status: canonical
-    ner_label: HYPERBOLE
     examples:
     - This will transform the entire industry.
     - We've saved thousands of hours.
     - Customers love us more than ever.
     - This is the biggest opportunity in a decade.
     - Every single customer wants this.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/metaphor
@@ -6181,7 +5930,6 @@ entity_collections:
     description: Implicit comparison asserting one thing is another to illuminate meaning
     home_domain: narrative
     status: canonical
-    ner_label: METAPHOR
     examples:
     - Data is the new oil.
     - Our platform is a catalyst for growth.
@@ -6189,7 +5937,6 @@ entity_collections:
     - We are the engine of this transformation.
     - Innovation is in our DNA.
     - This is the foundation of our strategy.
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - id: coe:entity/simile
     label: Simile
@@ -6197,14 +5944,12 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: SIMILE
     examples:
     - Think of it like a flywheel.
     - It works like a GPS for your business.
     - Our platform acts like a nervous system.
     - As fast as flipping a switch.
     - Like adding fuel to a fire.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/logos_appeal
@@ -6266,7 +6011,6 @@ entity_collections:
     description: Appeal to logic using data, evidence, reasoning, or statistics
     home_domain: narrative
     status: canonical
-    ner_label: LOGOS_APPEAL
     examples:
     - Data shows 80% of customers report faster results.
     - Research proves that early adopters achieve 3x ROI.
@@ -6274,7 +6018,6 @@ entity_collections:
     - By that logic, the risk outweighs the return.
     - Because of these findings, we recommend...
     - Therefore, the conclusion is clear.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/ethos_appeal
@@ -6337,7 +6080,6 @@ entity_collections:
     description: Appeal to credibility, authority, or trustworthiness of speaker or source
     home_domain: narrative
     status: canonical
-    ner_label: ETHOS_APPEAL
     examples:
     - With 20 years in this industry...
     - As the recognised leader in...
@@ -6345,7 +6087,6 @@ entity_collections:
     - Trusted by over 10,000 customers.
     - As experts in AI transformation...
     - Industry analysts have confirmed...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/pathos_appeal
@@ -6389,7 +6130,6 @@ entity_collections:
     description: Appeal to emotions through storytelling, imagery, or connection to human experience
     home_domain: narrative
     status: canonical
-    ner_label: PATHOS_APPEAL
     examples:
     - Imagine the impact on your team.
     - Picture yourself six months from now.
@@ -6397,7 +6137,6 @@ entity_collections:
     - Their fear was real. Ours can be too.
     - This isn't just about cost. It's about people.
     - Every day we wait, someone suffers.
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/visionary_bundle
@@ -6462,7 +6201,6 @@ entity_collections:
     description: 4-word formulaic phrase characteristic of engaging, visionary speakers
     home_domain: narrative
     status: canonical
-    ner_label: VISIONARY_BUNDLE
     examples:
     - I want to show you something.
     - Let me tell you a story.
@@ -6471,7 +6209,6 @@ entity_collections:
     - Here is the thing.
     - What I want you to take away...
     - This is why we do what we do.
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/academic_bundle
@@ -6516,7 +6253,6 @@ entity_collections:
     description: Formal 4-word phrase that creates distance between speaker and audience
     home_domain: narrative
     status: canonical
-    ner_label: ACADEMIC_BUNDLE
     examples:
     - In the context of digital transformation...
     - On the other hand, we see...
@@ -6524,7 +6260,6 @@ entity_collections:
     - With respect to the timeline...
     - In the case of enterprise clients...
     - To the extent that this applies...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/scqa_marker
@@ -6652,7 +6387,6 @@ entity_collections:
       used in executive communication
     home_domain: narrative
     status: canonical
-    ner_label: SCQA_MARKER
     examples:
     - 'The situation is this: our market is growing at 15% annually. The complication is that our costs are growing faster.
       So the question becomes: how do we maintain margin?'
@@ -6661,7 +6395,6 @@ entity_collections:
     - Here is the situation. Here is the problem. Here is what we recommend.
     - The context is X. The challenge is Y. So what do we do? Here is the answer.
     - We face three realities. Two create tension. One resolves it.
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/kairos_marker
@@ -6680,7 +6413,6 @@ entity_collections:
       or cost-of-delay language (Aristotle's kairos principle)
     home_domain: narrative
     status: canonical
-    ner_label: KAIROS
     examples:
     - The window of opportunity is closing.
     - Now is the moment to act.
@@ -6692,7 +6424,6 @@ entity_collections:
     - The cost of inaction is growing every quarter.
     - Act before the window closes.
     - First movers in this space will define the market.
-    confidence_threshold: 0.68
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/monroe_sequence_marker
@@ -6848,7 +6579,6 @@ entity_collections:
       → Satisfaction → Visualisation → Action'
     home_domain: narrative
     status: canonical
-    ner_label: MONROE_SEQUENCE
     examples:
     - Here is the problem we all face. (Need stage)
     - Here is exactly how we solve it. (Satisfaction stage)
@@ -6857,7 +6587,6 @@ entity_collections:
     - This is why this moment matters. (Attention stage)
     - The solution is already proven. Let me show you what it looks like in practice.
     - Imagine a world where this problem is solved. Here is how we get there.
-    confidence_threshold: 0.67
     evidence_ids: *id002
   last_updated: '2026-08-12'
   id: coe:artifact/narrative/rhetorical_devices_entities
@@ -6945,7 +6674,6 @@ entity_collections:
     description: Epistemic hedge reducing claim certainty
     home_domain: narrative
     status: canonical
-    ner_label: HEDGE
     examples:
     - might
     - may
@@ -6964,7 +6692,6 @@ entity_collections:
     - fairly
     - tend to
     - in some cases
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/boost_marker
@@ -7074,7 +6801,6 @@ entity_collections:
     description: Epistemic booster increasing claim certainty
     home_domain: narrative
     status: canonical
-    ner_label: BOOST
     examples:
     - definitely
     - certainly
@@ -7093,7 +6819,6 @@ entity_collections:
     - established
     - invariably
     - empirically
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/position_marker
@@ -7128,7 +6853,6 @@ entity_collections:
     description: Attitudinal marker expressing author evaluation
     home_domain: narrative
     status: canonical
-    ner_label: POSITION
     examples:
     - fortunately
     - unfortunately
@@ -7145,7 +6869,6 @@ entity_collections:
     - frankly
     - objectively
     - subjectively
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/attribution_marker
@@ -7170,7 +6893,6 @@ entity_collections:
     description: Explicit attribution of a claim to a named source — enables argument provenance tracking
     home_domain: narrative
     status: canonical
-    ner_label: ATTRIBUTION
     examples:
     - According to Gartner...
     - As McKinsey reports...
@@ -7183,7 +6905,6 @@ entity_collections:
     anti_examples:
     - show and tell
     - research department
-    confidence_threshold: 0.72
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/engagement_marker
@@ -7225,7 +6946,6 @@ entity_collections:
     description: Inclusive language that draws the audience into shared ownership of the content
     home_domain: narrative
     status: canonical
-    ner_label: ENGAGEMENT
     examples:
     - let us consider
     - we all know
@@ -7236,7 +6956,6 @@ entity_collections:
     - all of us here
     - in our experience
     - when we look at this
-    confidence_threshold: 0.6
     evidence_ids: *id002
   last_updated: '2026-08-12'
   id: coe:artifact/narrative/stance_markers_entities
@@ -7277,7 +6996,6 @@ entity_collections:
       on how a hook is delivered and perceived
     home_domain: narrative
     status: canonical
-    ner_label: CHANNEL_OPENING
     examples:
     - bold opening slide with single statistic
     - video cold open with action shot
@@ -7285,7 +7003,6 @@ entity_collections:
     anti_examples:
     - agenda slide as opener
     - video starting with logo animation
-    confidence_threshold: 0.65
     evidence_ids: *id002
   - id: coe:entity/ice_breaker_opening
     label: Ice Breaker Opening
@@ -7294,7 +7011,6 @@ entity_collections:
     home_domain: narrative
     status: canonical
     edges: []
-    ner_label: ICE_BREAKER_OPENING
     examples:
     - ice-breaker activity
     - team trivia warm-up
@@ -7302,7 +7018,6 @@ entity_collections:
     - introduction round
     anti_examples:
     - ice breaker ship
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/rhetorical_pattern
@@ -7428,7 +7143,6 @@ entity_collections:
     description: Named rhetorical devices used for persuasive impact in speeches
     home_domain: narrative
     status: canonical
-    ner_label: RHETORICAL_PATTERN
     examples:
     - We will fight. We will win. We will prevail.
     - Not just good — great. Not just great — transformative.
@@ -7438,7 +7152,6 @@ entity_collections:
     anti_examples:
     - Please repeat your answer
     - The pattern in the data
-    confidence_threshold: 0.6
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/authority_opener
@@ -7500,7 +7213,7 @@ entity_collections:
       predicate: coe:supports
       object_id: coe:entity/ethos_appeal
       relationship_weight: expected
-      description: Authority openers are the primary mechanism for establishing immediate ethos; the first 15 seconds define
+      description: Authority openers are the primary mechanism for establishing immediate ethos; the opening seconds define
         the audience authority frame for the entire presentation
       statement_id: coe:edge/0bf3a81e82d6673b093d86bf
       home_domain: narrative
@@ -7539,7 +7252,6 @@ entity_collections:
       no apology, no agenda preamble
     home_domain: narrative
     status: canonical
-    ner_label: AUTHORITY_OPENER
     examples:
     - Here is what you need to know.
     - I am going to tell you something that will change how you think about this.
@@ -7554,7 +7266,6 @@ entity_collections:
     - Good morning everyone
     - I'm going to be covering...
     - Sorry if the slides are a bit...
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/apology_opener
@@ -7645,7 +7356,6 @@ entity_collections:
       and reduces audience attention before the content begins
     home_domain: narrative
     status: canonical
-    ner_label: APOLOGY_OPENER
     examples:
     - I'm sorry if some of you have seen this before.
     - Bear with me while I find the right slide.
@@ -7658,6 +7368,5 @@ entity_collections:
     anti_examples:
     - Let me get straight to it.
     - Here is the core issue.
-    confidence_threshold: 0.75
     evidence_ids: *id002
   evidence_ids: *id002

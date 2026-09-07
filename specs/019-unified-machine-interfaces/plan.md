@@ -3,7 +3,10 @@
 **Git branch**: `master` (unchanged) | **Date**: 2026-09-04
 **Feature**: `019-unified-machine-interfaces` | **Spec**: [spec.md](spec.md)
 
-**Status**: Implementation plan; no production implementation performed.
+**Status**: Implemented for the active seven-technique scope; see the dated
+verification and limitations in [tasks.md](tasks.md). eRST work and its
+successful-inference acceptance portion are suspended by owner instruction
+on 2026-09-06. The sequence below records the approved implementation plan.
 Spec Kit's BRANCH field identifies the feature, not a newly created Git branch.
 
 ## Summary
@@ -73,8 +76,8 @@ conditions against the resulting code; a design check is not runtime certificati
 - [Analytical quality](contracts/analytical-quality.md): focused semantic tests, cold critique
   and defect correction.
 - [Acceptance matrix](contracts/acceptance-matrix.md): scenarios and expected evidence.
-- [quickstart.md](quickstart.md): proposed installed validation workflow.
-- [tasks.md](tasks.md): ordered implementation work; all tasks start unchecked.
+- [quickstart.md](quickstart.md): installed validation workflow.
+- [tasks.md](tasks.md): implementation ledger with dated results and prior failures.
 
 Runtime models remain the implementation authority. Documentation specifies the
 change; generated schema/public-surface artifacts must be regenerated, not

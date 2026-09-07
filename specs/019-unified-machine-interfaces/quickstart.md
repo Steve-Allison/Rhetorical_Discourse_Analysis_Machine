@@ -8,8 +8,10 @@ alone are not proof of completion.
 
 Runnable document.md, dung.json and ibis.json are under tests/interfaces/fixtures/.
 Generate a fully materialized request.json using the Python example below. Model-free structured
-analysis needs no LLM credentials or RST weights. RST/eRST need declared valid
-local artifacts; LLM integration needs explicitly configured models/credentials.
+analysis needs no LLM credentials or RST weights. RST defaults to pinned published
+weights, downloaded on first use when absent; a local release is an explicit
+alternative. eRST is suspended. LLM integration requires valid credentials for
+the resolved model.
 Keep keys outside requests/configuration/results. HTTP is installed only through
 the optional extra; everyday developer commands use the default Pixi environment.
 

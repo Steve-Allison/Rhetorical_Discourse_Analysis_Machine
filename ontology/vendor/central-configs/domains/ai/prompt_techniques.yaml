@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/ai/prompt_techniques
   title: Ai — Prompt Techniques
-  last_updated: '2026-08-22'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: ai
@@ -26,7 +26,6 @@ entity_collections:
     description: Named prompting strategies and methodologies for LLM interaction
     home_domain: ai
     status: canonical
-    ner_label: PROMPT_TECHNIQUE
     examples:
     - chain-of-thought prompting
     - few-shot learning
@@ -40,7 +39,6 @@ entity_collections:
     - chain link fence
     - few items
     - zero tolerance
-    confidence_threshold: 0.75
     evidence_ids: &id002
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/ai/prompt_techniques
@@ -59,7 +57,6 @@ entity_collections:
     description: Structural elements within a prompt template (system message, examples, constraints)
     home_domain: ai
     status: canonical
-    ner_label: PROMPT_COMPONENT
     examples:
     - system message
     - user instruction
@@ -72,7 +69,6 @@ entity_collections:
     anti_examples:
     - system administrator
     - output device
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/rag_component
@@ -88,7 +84,6 @@ entity_collections:
     description: Components of Retrieval-Augmented Generation architectures
     home_domain: ai
     status: canonical
-    ner_label: RAG_COMPONENT
     examples:
     - vector store
     - embedding model
@@ -101,7 +96,6 @@ entity_collections:
     anti_examples:
     - store manager
     - document folder
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/rag_strategy
@@ -117,7 +111,6 @@ entity_collections:
     description: Named RAG architectures and retrieval augmentation strategies
     home_domain: ai
     status: canonical
-    ner_label: RAG_STRATEGY
     examples:
     - naive RAG
     - advanced RAG
@@ -130,7 +123,6 @@ entity_collections:
     anti_examples:
     - rag doll
     - rag tag
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/pdl_construct
@@ -146,7 +138,6 @@ entity_collections:
     description: IBM Prompt Declaration Language constructs and declarative programming elements
     home_domain: ai
     status: canonical
-    ner_label: PDL_CONSTRUCT
     examples:
     - PDL block definition
     - declarative prompt template
@@ -159,7 +150,6 @@ entity_collections:
     anti_examples:
     - PDL file format
     - block chain
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/llm_model_reference
@@ -175,7 +165,6 @@ entity_collections:
     description: References to specific LLM model families, versions, or capabilities
     home_domain: ai
     status: canonical
-    ner_label: LLM_MODEL_REF
     examples:
     - GPT-4
     - Claude 3.5 Sonnet
@@ -187,7 +176,6 @@ entity_collections:
     anti_examples:
     - GPT partition table
     - llama animal
-    confidence_threshold: 0.85
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/generation_parameter
@@ -203,7 +191,6 @@ entity_collections:
     description: Configuration parameters that control LLM text generation behaviour
     home_domain: ai
     status: canonical
-    ner_label: GENERATION_PARAM
     examples:
     - temperature 0.7
     - top_p 0.9
@@ -214,7 +201,6 @@ entity_collections:
     anti_examples:
     - room temperature
     - top priority
-    confidence_threshold: 0.8
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/context_engineering_pattern
@@ -230,7 +216,6 @@ entity_collections:
     description: Named patterns for managing and optimising LLM context windows
     home_domain: ai
     status: canonical
-    ner_label: CONTEXT_PATTERN
     examples:
     - context window stuffing
     - prompt compression
@@ -242,7 +227,6 @@ entity_collections:
     anti_examples:
     - window cleaning
     - context menu
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/slide_qa_pipeline
@@ -258,13 +242,11 @@ entity_collections:
     description: AI-Assisted Slide QA Pipeline architecture — 7-step process
     home_domain: ai
     status: canonical
-    ner_label: SLIDE_QA_PIPELINE
     examples:
     - AI pipeline for slide quality assessment
     - automated slide cognitive audit
     anti_examples:
     - manual slide review process
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/content_extraction_pipeline
@@ -281,7 +263,6 @@ entity_collections:
       5 sequential stages from surface scan through gap analysis
     home_domain: ai
     status: canonical
-    ner_label: CONTENT_EXTRACTION_PIPELINE
     examples:
     - AI content extraction pipeline for course development
     - automated source material analysis
@@ -289,7 +270,6 @@ entity_collections:
     anti_examples:
     - manual content review
     - web content extraction
-    confidence_threshold: 0.75
     evidence_ids: *id002
   - id: coe:entity/visualisation_generation_pipeline
     label: Visualisation Generation Pipeline
@@ -305,7 +285,6 @@ entity_collections:
       statement_id: coe:edge/7d2830f828ec52249417e9a1
       home_domain: ai
       evidence_ids: *id001
-    ner_label: VIS_GENERATION_PIPELINE
     examples:
     - AI-powered chart generation
     - automated data visualisation pipeline
@@ -313,7 +292,6 @@ entity_collections:
     anti_examples:
     - manual chart creation
     - hand-drawn diagrams
-    confidence_threshold: 0.7
     evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/presentation_generation_pipeline
@@ -330,7 +308,6 @@ entity_collections:
       Artist, Critic) with HITL checkpoints
     home_domain: ai
     status: canonical
-    ner_label: PRES_GENERATION_PIPELINE
     examples:
     - multi-agent presentation pipeline
     - automated slide deck generation
@@ -338,7 +315,6 @@ entity_collections:
     anti_examples:
     - single-step slide generator
     - manual presentation design
-    confidence_threshold: 0.75
     evidence_ids: *id002
   last_updated: '2026-08-12'
   id: coe:artifact/ai/ai_systems_entities

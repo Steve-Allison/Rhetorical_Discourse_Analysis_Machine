@@ -19,7 +19,7 @@ import uvicorn
 
 from rdam._errors import Operation, error, failure
 from rdam._strict import canonical_json_bytes
-from rdam.contracts import AggregateAnalysis, MachineCapabilities, MachinePreparation, OperationError
+from rdam.contracts import AggregateAnalysis, MachineCapabilities, MachinePreparation, HistoricalMachinePreparation, OperationError
 from rdam.historical import HistoricalAggregateAnalysis
 from rdam.interpretation import select_analysis
 from rdam.machine import Machine
@@ -71,7 +71,7 @@ def _perform(machine: Machine, operation: Operation, payload: bytes, schema_name
             else:
                 decoded = load(payload)
                 if not isinstance(
-                    decoded, (AggregateAnalysis, HistoricalAggregateAnalysis, MachinePreparation, MachineCapabilities)
+                    decoded, (AggregateAnalysis, HistoricalAggregateAnalysis, MachinePreparation, HistoricalMachinePreparation, MachineCapabilities)
                 ):
                     raise ValueError("unsupported summary record")
         except (ValueError, UnicodeError) as cause:
@@ -84,7 +84,11 @@ def _perform(machine: Machine, operation: Operation, payload: bytes, schema_name
         if isinstance(decoded, AggregateRequest):
             return _response(serialize(machine.analyse(decoded)))
         if isinstance(decoded, ViewRequest):
-            return _response(serialize(select_analysis(decoded.analysis, techniques=decoded.techniques)))
+            try:
+                selected = select_analysis(decoded.analysis, techniques=decoded.techniques)
+            except ValueError as cause:
+                raise error(operation, "invalid_request", "invalid_input") from cause
+            return _response(serialize(selected))
         return _response((summarise(decoded) + "\n").encode("utf-8"), media="text/plain")
     except OperationError:
         raise

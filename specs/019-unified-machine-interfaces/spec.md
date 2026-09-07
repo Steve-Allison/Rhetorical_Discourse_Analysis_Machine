@@ -6,7 +6,7 @@
 
 **Created**: 2026-09-04
 
-**Status**: Implementation authorised; baseline work started.
+**Status**: Implemented for the active seven-technique scope; see [tasks.md](tasks.md). Successful eRST inference is suspended by the owner as of 2026-09-06, not verified.
 
 **Input**: One analysis engine with primary Python and unified `rdam` command-line interfaces, plus optional local HTTP parity. Explicit techniques and model configuration; files or stdin; complete canonical JSON; separate summaries; truthful failure/partial-success signals; caller-supplied Dung/IBIS structures; no `rdam-rst` compatibility wrapper. Owner requested a carefully reviewed, world-class API and CLI design.
 

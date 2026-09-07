@@ -41,7 +41,7 @@ def production_machine(*, config: MachineConfig | None = None) -> Machine:
                 hf_model_version=rst.model.version if isinstance(rst.model, PublishedRstModel) else None,
                 store=rst.model.store if isinstance(rst.model, LocalRstModel) else None,
                 release_id=rst.model.release_id if isinstance(rst.model, LocalRstModel) else None,
-                relinventory=rst.relinventory, device=rst.device, erst_scorer_checkpoint=rst.erst_checkpoint,
+                relinventory=rst.relinventory, device=rst.device,
                 default_formalism=rst.default_formalism,
                 evidence_detail=EvidenceDetailPolicy(rst.evidence_detail),
                 marker_refinement=MarkerRefinementMode(rst.marker_refinement),

@@ -1,6 +1,10 @@
 """Unit tests for ontology lock loader and adapter."""
 
 import pytest
+import hashlib
+from pathlib import Path
+
+from rdam.rst.ontology.loader import LOCK_FILE_PATH
 
 from rdam.rst.contracts import NuclearityPatternEnum, RelationSchemeEnum
 from rdam.rst.ontology import OntologyAdapter, load_ontology_lock
@@ -8,7 +12,10 @@ from rdam.rst.ontology import OntologyAdapter, load_ontology_lock
 
 def test_load_ontology_lock() -> None:
     lock_data = load_ontology_lock()
-    assert lock_data.release_status == "released"
+    assert lock_data.authority == "local_inventory"
+    assert lock_data.release_status == "unverified"
+    assert lock_data.release_version is None
+    assert lock_data.sha256_digest == hashlib.sha256(LOCK_FILE_PATH.read_bytes()).hexdigest()
     assert len(lock_data.coarse_concepts) == 18
     assert "Elaboration" in lock_data.coarse_concepts
     assert len(lock_data.dmrst_gum_model_27) == 27
@@ -77,6 +84,28 @@ def test_gum_label_resolution() -> None:
     assert concept == "Contrast"
 
 
+@pytest.mark.parametrize("raw", ("attribution-n", "ATTRIBUTION-N-E"))
+def test_negative_attribution_is_not_a_nuclearity_suffix(raw: str) -> None:
+    assert OntologyAdapter().resolve_label(raw, RelationSchemeEnum.RST_DT_FINE) == (
+        "attribution-negative", "Attribution",
+    )
+
+
+@pytest.mark.parametrize("label", ("Manner-Means", "Topic-Change", "Topic-Comment"))
+def test_hyphenated_coarse_labels_preserve_inventory_spelling(label: str) -> None:
+    assert OntologyAdapter().resolve_label(label.upper(), RelationSchemeEnum.RST_DT_COARSE_18) == (label, label)
+
+
+def test_all_gum_model_categories_resolve_under_coarse_scheme() -> None:
+    adapter = OntologyAdapter()
+    for mapping in adapter.lock_data.dmrst_gum_model_27.values():
+        assert adapter.resolve_label(mapping.label, RelationSchemeEnum.GUM_ERST_COARSE) == (
+            mapping.label, mapping.concept,
+        )
+    # A coarse adversative prediction does not select a fine concession/contrast label.
+    assert adapter.resolve_label("adversative", RelationSchemeEnum.GUM_ERST_FINE, raise_on_unmapped=False) is None
+
+
 def test_every_locked_gum_fine_label_resolves_to_a_canonical_concept() -> None:
     adapter = OntologyAdapter()
     for raw_label in adapter.lock_data.gum_fine_to_coarse:
@@ -107,3 +136,20 @@ def test_missing_lockfile_raises() -> None:
 
     with pytest.raises(FileNotFoundError):
         load_ontology_lock(Path("/non_existent_path/central.lock.yaml"))
+
+
+@pytest.mark.parametrize("old,new", (
+    ("release_version: null", 'release_version: "4.1.0-discourse"'),
+    ("release_status: unverified", "release_status: released"),
+    ("authority: local_inventory", "authority: Central_Configs"),
+    ('concept: "Contrast"', 'concept: "Invented"'),
+    ('nuclearity: "NN"', 'nuclearity: "SS"'),
+    ('  0: { label: "adversative"', '  99: { label: "adversative"'),
+))
+def test_local_inventory_rejects_false_provenance_and_invalid_mappings(tmp_path: Path, old: str, new: str) -> None:
+    original = LOCK_FILE_PATH.read_text(encoding="utf-8")
+    assert old in original
+    path = tmp_path / "inventory.yaml"
+    path.write_text(original.replace(old, new, 1), encoding="utf-8")
+    with pytest.raises(ValueError):
+        load_ontology_lock(path)

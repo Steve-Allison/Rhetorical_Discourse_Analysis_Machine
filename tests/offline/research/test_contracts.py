@@ -1,12 +1,13 @@
 """Contract tests for executable eRST comparison evidence."""
 
+import ast
 from datetime import UTC, datetime
 from pathlib import Path
 
 from pydantic import ValidationError
 import pytest
 
-from rdam.rst.contracts.erst import CorpusPartition
+from workbench.erst.contracts import CorpusPartition
 from workbench.research.erst.contracts import (
     ChampionManifest,
     DocumentScore,
@@ -51,7 +52,7 @@ def _protocol() -> ExperimentProtocol:
         systems=tuple(
             ExperimentSystemSpec(
                 system=system,
-                implementation=f"rdam.rst.erst.systems.{system.value}",
+                implementation=f"workbench.erst.systems.{system.value}",
                 model_license="MIT" if system == MandatoryExperimentSystem.SIGNAL_RULE else "model-card",
                 config_sha256=f"{index:x}" * 64,
             )
@@ -247,8 +248,8 @@ def test_production_package_does_not_import_research_harness() -> None:
     importers = tuple(
         path.relative_to(production_root)
         for path in production_root.rglob("*.py")
-        if "workbench" in path.read_text(encoding="utf-8")
-        or "workbench.research" in path.read_text(encoding="utf-8")
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8")))
+        if (isinstance(node, ast.ImportFrom) and (node.module or "").split(".")[0] == "workbench")
+        or (isinstance(node, ast.Import) and any(alias.name.split(".")[0] == "workbench" for alias in node.names))
     )
-
     assert importers == ()

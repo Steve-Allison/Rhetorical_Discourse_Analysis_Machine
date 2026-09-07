@@ -8,6 +8,7 @@ from pydantic import Field, model_validator
 from rdam.ingest.contracts.base import (
     PRODUCTION_CONTRACT,
     WRITE_CONTRACT_VERSION,
+    CurrentContractVersion,
     ExactCoverage,
     CoverageUnit,
     SemanticVersion,
@@ -93,7 +94,7 @@ class CapacityUnit(StrEnum):
 
 class AnalysisCapacity(StrictContractModel):
     unit: CapacityUnit
-    maximum: int = Field(gt=1)
+    maximum: int | None = Field(gt=1, description="Declared planning maximum, or null when no numerical bound is established.")
     estimation_algorithm: str = Field(min_length=1)
     estimation_version: SemanticVersion
     source: str = Field(min_length=1)
@@ -317,7 +318,7 @@ class AnalysisUnit(StrictContractModel):
     first_segment_order: int = Field(ge=0)
     last_segment_order: int = Field(ge=0)
     estimated_demand: int = Field(ge=0)
-    capacity: int = Field(gt=0)
+    capacity: int | None = Field(gt=0, description="Usable declared capacity after margin, or null when not established.")
     boundary_reason: BoundaryPreference
     predecessor_id: str | None = None
     successor_id: str | None = None
@@ -326,7 +327,7 @@ class AnalysisUnit(StrictContractModel):
     def coherent_range_and_capacity(self) -> Self:
         if self.last_segment_order < self.first_segment_order:
             raise ValueError("analysis-unit segment order is reversed")
-        if self.estimated_demand > self.capacity:
+        if self.capacity is not None and self.estimated_demand > self.capacity:
             raise ValueError("analysis unit exceeds declared parser capacity")
         return self
 
@@ -356,6 +357,17 @@ class AnalysisPlan(StrictContractModel):
                 raise ValueError("not_planned requires absent capacity and no units")
         elif self.capacity is None:
             raise ValueError("planned analysis requires parser capacity")
+        if self.capacity is not None:
+            if self.capacity.maximum is None:
+                if self.policy.capacity_margin or self.status is AnalysisPlanStatus.SUBDIVIDED:
+                    raise ValueError("unknown numerical capacity cannot justify a margin or capacity subdivision")
+                available = None
+            else:
+                available = self.capacity.maximum - self.policy.capacity_margin
+                if available <= 0:
+                    raise ValueError("planning capacity margin leaves no usable parser capacity")
+            if any(unit.capacity != available for unit in self.units):
+                raise ValueError("analysis units must preserve the declared usable capacity")
         if self.status is AnalysisPlanStatus.SINGLE_UNIT and len(self.units) > 1:
             raise ValueError("single_unit plan cannot contain multiple units")
         if self.status is AnalysisPlanStatus.SUBDIVIDED and len(self.units) < 2:
@@ -578,7 +590,7 @@ class PreparationExecutionEvidence(StrictContractModel):
 
 class PreparationOutcome(StrictContractModel):
     contract: Literal["isanlp_rst.production"] = PRODUCTION_CONTRACT
-    contract_version: Literal["2.0.0"] = WRITE_CONTRACT_VERSION
+    contract_version: CurrentContractVersion = WRITE_CONTRACT_VERSION
     kind: Literal["preparation_outcome"] = "preparation_outcome"
     semantic: PreparationSemanticEvidence
     execution: PreparationExecutionEvidence

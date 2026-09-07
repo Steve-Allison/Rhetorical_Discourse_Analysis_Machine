@@ -2,6 +2,7 @@
 
 from rdam._interpretation_types import NativeInterpretationDescriptor, NativeSectionDescription
 from rdam.contracts import NATIVE_RESULT_VERSION
+from rdam.ontology import native_vocabulary_alignment
 
 
 def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpretationDescriptor:
@@ -21,6 +22,7 @@ def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpr
             ),
             NativeSectionDescription(
                 pointer="/payload/relations",
+                ontology_alignment=native_vocabulary_alignment("sdrt"),
                 meaning="Directed relations go from established/source unit to attached/target unit. Coordinating and subordinating classes determine structural attachment.",
             ),
             NativeSectionDescription(
@@ -40,6 +42,7 @@ def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpr
         validation_scope=("Native structure validation and declared source-span checks.",),
         limitations=(
             "Relation labels and grouping are interpretations, not a closed shared ontology.",
+            "Observed labels are matched case-insensitively to the Central DISCOR vocabulary; unknown labels retain an explicit unmapped reason. Matching a term does not validate its use or determine its structural class.",
             "Structural validation is not formal dynamic-semantic interpretation.",
         ),
         empty_result_meaning="A valid SDRS requires at least one EDU; absence of an outcome is not an empty graph.",

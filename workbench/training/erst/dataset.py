@@ -7,8 +7,8 @@ import torch
 
 from rdam.rst.contracts.analysis import RstAnalysis
 from rdam.rst.contracts.document import RstDocument
-from rdam.rst.erst.candidates import SecondaryEdgeCandidate, generate_secondary_edge_candidates
-from rdam.rst.erst.pair_encoding import SecondaryEdgeInferenceDataset
+from workbench.erst.candidates import SecondaryEdgeCandidate, generate_secondary_edge_candidates
+from workbench.erst.pair_encoding import SecondaryEdgeInferenceDataset
 
 
 class GUMSecondaryEdgeDataset(SecondaryEdgeInferenceDataset):

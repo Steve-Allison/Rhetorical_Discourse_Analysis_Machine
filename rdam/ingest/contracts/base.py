@@ -1,4 +1,4 @@
-"""Shared invariants and identities for production contract 2.0.0."""
+"""Shared invariants and identities for the normalized production contract."""
 
 from enum import StrEnum
 import re
@@ -7,8 +7,9 @@ from typing import Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, RootModel, model_validator
 
 PRODUCTION_CONTRACT = "isanlp_rst.production"
-WRITE_CONTRACT_VERSION = "2.0.0"
-READABLE_CONTRACT_VERSIONS = (WRITE_CONTRACT_VERSION,)
+type CurrentContractVersion = Literal["3.0.0"]
+WRITE_CONTRACT_VERSION: CurrentContractVersion = "3.0.0"
+READABLE_CONTRACT_VERSIONS = (WRITE_CONTRACT_VERSION, "2.0.0")
 INGEST_SCHEMA_NAME = PRODUCTION_CONTRACT
 INGEST_SCHEMA_VERSION = WRITE_CONTRACT_VERSION
 INGEST_PIPELINE_VERSION = WRITE_CONTRACT_VERSION
@@ -89,6 +90,7 @@ __all__ = [
     "READABLE_CONTRACT_VERSIONS",
     "WRITE_CONTRACT_VERSION",
     "CoverageUnit",
+    "CurrentContractVersion",
     "EmptyExecution",
     "ExactCoverage",
     "SemanticVersion",

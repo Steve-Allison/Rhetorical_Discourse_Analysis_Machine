@@ -5,10 +5,18 @@ metadata:
   type: project
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 **RESOLVED 2026-06-30.** Implemented option 1 below: `device=` is the canonical
 knob on `Parser` and both predictors, accepting `"auto"` (default) / `"cpu"` /
 `"mps"` / `"cuda"` / `"cuda:N"` / a `torch.device`, resolved by `resolve_device`
-in [`isanlp_rst/base_predictor.py`](../../isanlp_rst/base_predictor.py). The
+in [`isanlp_rst/base_predictor.py`](../../rdam/rst/base_predictor.py). The
 resolved value is stored as `self._device` (a `torch.device`, replacing the
 misnamed `self._cuda_device`). The legacy `cuda_device:int` is a deprecated shim
 that emits a `DeprecationWarning` (`-1` → CPU, `>= 0` → best accelerator);
@@ -30,4 +38,4 @@ Original problem (kept for record): `Parser(..., cuda_device=N)` was named for
 CUDA but on Apple Silicon selected MPS — the name was a lie and the integer was
 meaningless on MPS, so the docstring gave users a confusing picture.
 
-Related: [[open-v1-policy-knobs]] (similar "expose proper knobs" theme).
+Related: [open-v1-policy-knobs](open_v1_policy_knobs.md) (similar "expose proper knobs" theme).

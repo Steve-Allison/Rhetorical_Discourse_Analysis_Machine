@@ -1,11 +1,12 @@
 """GUM gold RST fixtures — real documents with human trees to compare against.
 
-The files live in ``tests/fixtures/gum/``. They are official GUM V12.1.0
-**test**-split documents whose underlying text is CC BY / CC BY-SA (not
-wikiHow, fiction, essays, letters, podcasts, or reddit).
+The files live in ``tests/fixtures/gum/``. Their pinned upstream identities
+and official train/dev/test assignments are in ``upstream-manifest.json``.
+This mixed fixture collection must not be described as a held-out test set.
 """
 
 from dataclasses import replace
+from hashlib import sha256
 import json
 from pathlib import Path
 from typing import Literal, cast
@@ -19,10 +20,10 @@ from rdam.rst.contracts import NodeKindEnum, OutputFormalismEnum, RstAnalysis
 from rdam.rst.model_authority import (
     PUBLISHED_RST_REVISIONS,
     XLM_ROBERTA_LARGE_MODEL_ID,
-    XLM_ROBERTA_LARGE_REVISION,
 )
 from rdam.rst.model_loading import load_model_release
 from rdam.rst.parser import Parser
+from workbench.evaluation.rst.regression import evaluation_source_identities, match_counts
 from .gum_validator import (
     GOLD_FIXTURE_NAMES,
     GUM_FIXTURES_DIR,
@@ -33,20 +34,22 @@ from .gum_validator import (
 
 
 class _QualityMetrics(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
-    span_f1: float = Field(ge=0.0, le=1.0)
-    nuclearity_f1: float = Field(ge=0.0, le=1.0)
-    relation_fine_f1: float = Field(ge=0.0, le=1.0)
-    relation_coarse_f1: float = Field(ge=0.0, le=1.0)
-    full_f1: float = Field(ge=0.0, le=1.0)
+    gold: int = Field(ge=0)
+    predicted: int = Field(ge=0)
+    span: int = Field(ge=0)
+    nuclearity: int = Field(ge=0)
+    relation: int = Field(ge=0)
+    full: int = Field(ge=0)
 
 
 class _QualityPoint(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
+    fixture_sha256: str
+    split: Literal["train", "dev", "test"]
     observed: _QualityMetrics
-    floors: _QualityMetrics
 
 
 class _QualityModelIdentity(BaseModel):
@@ -57,8 +60,7 @@ class _QualityModelIdentity(BaseModel):
     manifest_sha256: str
     source_model_identity: str
     source_revision: str
-    encoder_model_id: str
-    encoder_revision: str
+    inventory_sha256: str
     device: Literal["cpu"]
     gold_edu_boundaries: Literal[True]
 
@@ -66,12 +68,17 @@ class _QualityModelIdentity(BaseModel):
 class _QualityBaseline(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    schema_version: Literal["rdam.rst.gum-quality-baseline/v2"]
+    schema_version: Literal["rdam.rst.gum-quality-baseline/v3"]
     measured_at: str
     model: _QualityModelIdentity
-    floor_policy: str
+    purpose: Literal["exact_regression_reference_not_accuracy_acceptance"]
+    evaluation: Literal["binary_attachment_parseval_gum_coarse_gold_edus"]
+    evaluation_sources: dict[str, str]
+    upstream_manifest_sha256: str
+    model_training_overlap: Literal["not_verified"]
     documents: dict[str, _QualityPoint]
-    macro: _QualityPoint
+    micro: _QualityMetrics
+    split_micro: dict[str, _QualityMetrics]
 
 GOLD_DOCUMENTS: dict[str, int] = {
     "GUM_academic_art": 74,
@@ -112,7 +119,10 @@ def gold_edus(path: Path) -> tuple[str, ...]:
 
 @pytest.fixture(scope="module")
 def validator() -> GumGoldValidator:
-    return GumGoldValidator()
+    release = load_model_release(MODEL_STORE, QUALITY_RELEASE_ID)
+    member = release.one_file_for_role("relation-inventory")
+    inventory = (release.path / member.path).read_text(encoding="utf-8").splitlines()
+    return GumGoldValidator(relation_inventory=inventory)
 
 
 @pytest.fixture(scope="module")
@@ -133,32 +143,38 @@ def parser_quality_report(
 
 
 def _report_metrics(report: GumValidationReport) -> _QualityMetrics:
-    return _QualityMetrics(
-        span_f1=report.standard_parseval.span_f1,
-        nuclearity_f1=report.standard_parseval.nuclearity_f1,
-        relation_fine_f1=report.standard_parseval.relation_f1,
-        relation_coarse_f1=report.coarse_parseval.relation_f1,
-        full_f1=report.standard_parseval.full_f1,
-    )
+    return _QualityMetrics(**match_counts(report.coarse_parseval))
 
 
 def _corpus_metrics(report: GumCorpusValidationReport) -> _QualityMetrics:
-    return _QualityMetrics(
-        span_f1=report.macro_span_f1,
-        nuclearity_f1=report.macro_nuclearity_f1,
-        relation_fine_f1=report.macro_relation_fine_f1,
-        relation_coarse_f1=report.macro_relation_coarse_f1,
-        full_f1=report.macro_full_f1,
-    )
+    totals: dict[str, int] = {}
+    for document in report.document_reports:
+        for metric, count in match_counts(document.coarse_parseval).items():
+            totals[metric] = totals.get(metric, 0) + count
+    return _QualityMetrics(**totals)
 
 
-def _quality_regressions(actual: _QualityMetrics, floors: _QualityMetrics) -> tuple[str, ...]:
+def _quality_regressions(actual: _QualityMetrics, expected: _QualityMetrics) -> tuple[str, ...]:
     return tuple(
-        f"{metric}: {actual_value:.12f} < {floor_value:.12f}"
+        f"{metric}: observed {actual_value}, reference {getattr(expected, metric)}"
         for metric, actual_value in actual.model_dump().items()
-        if actual_value < getattr(floors, metric)
-        for floor_value in (getattr(floors, metric),)
+        if actual_value != getattr(expected, metric)
     )
+
+
+def test_reference_counts_and_split_aggregates_are_consistent() -> None:
+    totals: dict[str, int] = {}
+    splits: dict[str, dict[str, int]] = {}
+    for reference in QUALITY_BASELINE.documents.values():
+        counts = reference.observed
+        assert counts.full <= min(counts.nuclearity, counts.relation)
+        assert max(counts.nuclearity, counts.relation) <= counts.span <= min(counts.gold, counts.predicted)
+        split = splits.setdefault(reference.split, {})
+        for metric, count in counts.model_dump().items():
+            totals[metric] = totals.get(metric, 0) + count
+            split[metric] = split.get(metric, 0) + count
+    assert totals == QUALITY_BASELINE.micro.model_dump()
+    assert splits == {name: counts.model_dump() for name, counts in QUALITY_BASELINE.split_micro.items()}
 
 
 @pytest.mark.parametrize("doc_id,edu_count", GOLD_DOCUMENTS.items())
@@ -173,8 +189,8 @@ def test_gum_gold_fixture_has_expected_edus(doc_id: str, edu_count: int) -> None
 @pytest.mark.parametrize("doc_id", GOLD_FIXTURE_NAMES)
 def test_validator_gold_against_gold_is_perfect_f1(validator: GumGoldValidator, doc_id: str) -> None:
     """Validating gold against itself must produce perfect 1.0 F1 across all metrics."""
-    _, gold_analysis, _ = validator.load_gold_fixture(doc_id)
-    report = validator.validate_analysis(doc_id, gold_analysis)
+    _, gold_analysis, gold_rs4 = validator.load_gold_fixture(doc_id)
+    report = validator.validate_analysis(doc_id, gold_analysis, prediction_rs4=gold_rs4)
 
     assert report.passed_structural_checks
     assert report.gold_edu_count == report.pred_edu_count
@@ -252,19 +268,27 @@ def test_quality_baseline_is_bound_to_the_default_published_checkpoint() -> None
     assert QUALITY_BASELINE.model.source_revision == release.manifest.source_revision
     assert QUALITY_BASELINE.model.source_revision == PUBLISHED_RST_REVISIONS[DEFAULT_RST_MODEL_VERSION]
     assert transformer_config["model_name"] == XLM_ROBERTA_LARGE_MODEL_ID
-    assert QUALITY_BASELINE.model.encoder_model_id == XLM_ROBERTA_LARGE_MODEL_ID
-    assert QUALITY_BASELINE.model.encoder_revision == XLM_ROBERTA_LARGE_REVISION
+    inventory_member = release.one_file_for_role("relation-inventory")
+    assert QUALITY_BASELINE.model.inventory_sha256 == inventory_member.sha256
+    assert QUALITY_BASELINE.evaluation_sources == evaluation_source_identities()
+    manifest_path = GUM_FIXTURES_DIR / "upstream-manifest.json"
+    assert QUALITY_BASELINE.upstream_manifest_sha256 == sha256(manifest_path.read_bytes()).hexdigest()
+    upstream = json.loads(manifest_path.read_bytes())
+    for name, reference in QUALITY_BASELINE.documents.items():
+        assert reference.fixture_sha256 == sha256(_gold_path(name).read_bytes()).hexdigest()
+        assert reference.split == upstream["fixtures"][name]["split"]
 
 
 def test_quality_gate_rejects_a_structurally_valid_wrong_tree(validator: GumGoldValidator) -> None:
-    _, wrong_document_analysis, _ = validator.load_gold_fixture("GUM_bio_dvorak")
+    _, wrong_document_analysis, wrong_rs4 = validator.load_gold_fixture("GUM_bio_dvorak")
     report = validator.validate_analysis(
         "GUM_academic_art",
         replace(wrong_document_analysis, document_id="GUM_academic_art"),
+        prediction_rs4=wrong_rs4,
     )
     regressions = _quality_regressions(
         _report_metrics(report),
-        QUALITY_BASELINE.documents["GUM_academic_art"].floors,
+        QUALITY_BASELINE.documents["GUM_academic_art"].observed,
     )
     assert report.passed_structural_checks
     assert regressions
@@ -277,12 +301,12 @@ def test_parser_gold_standard_validation(
     parser_quality_report: GumCorpusValidationReport,
     doc_id: str,
 ) -> None:
-    """Enforce per-document neural quality floors against human gold trees."""
+    """Detect any changed match counts under the recorded evaluation conditions."""
     report = next(report for report in parser_quality_report.document_reports if report.doc_id == doc_id)
-    regressions = _quality_regressions(_report_metrics(report), QUALITY_BASELINE.documents[doc_id].floors)
+    regressions = _quality_regressions(_report_metrics(report), QUALITY_BASELINE.documents[doc_id].observed)
 
     assert report.passed_structural_checks, f"Structural validation failed: {report.structural_errors}"
-    assert report.pred_edu_count > 10
+    assert report.pred_edu_count == report.gold_edu_count
     assert report.is_valid_tree
     assert not regressions, "; ".join(regressions)
 
@@ -293,15 +317,14 @@ def test_parser_gold_standard_validation(
 
 @pytest.mark.slow
 @pytest.mark.quality
-def test_gum_corpus_macro_benchmark(
+def test_gum_corpus_micro_regression(
     parser_quality_report: GumCorpusValidationReport,
 ) -> None:
-    """Enforce macro quality floors across the complete ten-document gold corpus."""
+    """Reproduce recorded micro counts without an arbitrary accuracy floor."""
     corpus_report = parser_quality_report
-    regressions = _quality_regressions(_corpus_metrics(corpus_report), QUALITY_BASELINE.macro.floors)
+    regressions = _quality_regressions(_corpus_metrics(corpus_report), QUALITY_BASELINE.micro)
 
     assert corpus_report.document_count == len(GOLD_FIXTURE_NAMES)
-    assert corpus_report.document_count == 10
     assert not regressions, "; ".join(regressions)
 
     summary_table = corpus_report.summary_table()

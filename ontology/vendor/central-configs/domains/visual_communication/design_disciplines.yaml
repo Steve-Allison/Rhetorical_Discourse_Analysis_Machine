@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/visual_communication/design_disciplines
   title: Visual Communication — Design and Media Disciplines
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: visual_communication
@@ -35,14 +35,12 @@ entity_collections:
       home_domain: visual_communication
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: ACCESSIBLE_DATA_VIZ
     examples:
     - accessible chart
     - sonification
     - audio description of data
     - ARIA live region
     - screen-reader-accessible visualisation
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/art_direction
@@ -52,7 +50,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: ART_DIRECTION
     examples:
     - art direction
     - iconography system
@@ -60,7 +57,6 @@ entity_collections:
     - photo art direction
     anti_examples:
     - stage direction
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/crap_design_principles
@@ -80,11 +76,9 @@ entity_collections:
       home_domain: visual_communication
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: CRAP_PRINCIPLES
     examples:
     - contrast, repetition, alignment, proximity
     - CRAP principles
-    confidence_threshold: 0.9
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/graphic_encoding_theory
@@ -104,7 +98,6 @@ entity_collections:
       home_domain: visual_communication
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: GRAPHIC_ENCODING
     examples:
     - visual variable
     - Bertin's variables
@@ -113,7 +106,6 @@ entity_collections:
     anti_examples:
     - character encoding
     - video encoding
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/honeycomb_model_ux
@@ -123,14 +115,12 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: UX_HONEYCOMB
     examples:
     - UX honeycomb
     - Morville's honeycomb
     - useful, usable, desirable
     anti_examples:
     - honeycomb structure material
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/image_production
@@ -150,7 +140,6 @@ entity_collections:
       home_domain: visual_communication
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: IMAGE_PRODUCTION
     examples:
     - image pipeline
     - ICC profile
@@ -159,7 +148,6 @@ entity_collections:
     - colour management
     anti_examples:
     - brand image
-    confidence_threshold: 0.7
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/infographic_design
@@ -169,13 +157,11 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: INFOGRAPHIC_DESIGN
     examples:
     - infographic
     - data-driven graphic
     - infographic layout
     - visual explainer
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/knowledge_visualisation
@@ -185,14 +171,12 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: KNOWLEDGE_VISUALISATION
     examples:
     - concept map
     - mind map
     - knowledge map
     - rich picture
     - visual metaphor diagram
-    confidence_threshold: 0.75
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/lottie_authoring
@@ -202,13 +186,11 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: LOTTIE_AUTHORING
     examples:
     - Lottie
     - Lottie JSON
     - bodymovin
     - vector animation file
-    confidence_threshold: 0.9
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/multivariate_data_visualisation
@@ -218,14 +200,12 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: MULTIVARIATE_VIZ
     examples:
     - parallel coordinates
     - scatterplot matrix
     - SPLOM
     - t-SNE plot
     - UMAP projection
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/system_dynamics_visualisation
@@ -235,7 +215,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: SYSTEM_DYNAMICS_VIZ
     examples:
     - causal loop diagram
     - stock and flow diagram
@@ -244,7 +223,6 @@ entity_collections:
     - system archetype
     anti_examples:
     - system architecture diagram
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/visual_modality_decision
@@ -265,7 +243,6 @@ entity_collections:
       home_domain: visual_communication
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: VISUAL_MODALITY_DECISION
     examples:
     - photo or illustration
     - chart versus table
@@ -273,7 +250,6 @@ entity_collections:
     - modality decision tree
     anti_examples:
     - sensory modality
-    confidence_threshold: 0.7
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/whiteboarding
@@ -293,7 +269,6 @@ entity_collections:
       home_domain: visual_communication
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: WHITEBOARDING
     examples:
     - whiteboarding
     - whiteboard session
@@ -302,7 +277,6 @@ entity_collections:
     - live scribing
     anti_examples:
     - whiteboard marker
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/visual_communication/media_preproduction
@@ -322,7 +296,6 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: SYNTHETIC_PRESENTER
     examples:
     - AI avatar
     - synthetic presenter
@@ -330,7 +303,6 @@ entity_collections:
     - digital human presenter
     anti_examples:
     - synthetic data
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/directors_treatment
@@ -349,7 +321,6 @@ entity_collections:
       home_domain: visual_communication
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: DIRECTORS_TREATMENT
     examples:
     - director's treatment
     - lookbook
@@ -357,7 +328,6 @@ entity_collections:
     - pitch treatment
     anti_examples:
     - medical treatment
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/moodboard
@@ -377,7 +347,6 @@ entity_collections:
       home_domain: visual_communication
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: MOODBOARD
     examples:
     - moodboard
     - mood board
@@ -385,7 +354,6 @@ entity_collections:
     - look and feel board
     anti_examples:
     - mood tracking
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/style_frame
@@ -395,14 +363,12 @@ entity_collections:
     home_domain: visual_communication
     status: canonical
     edges: []
-    ner_label: STYLE_FRAME
     examples:
     - style frame
     - styleframe
     - proof-of-look still
     anti_examples:
     - picture frame style
-    confidence_threshold: 0.85
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/motion_flash_accessibility
@@ -432,7 +398,6 @@ entity_collections:
       home_domain: visual_communication
       evidence_ids:
       - coe:decision/curation/2026-09-01/wiki-relational-mining
-    ner_label: MOTION_FLASH_ACCESSIBILITY
     examples:
     - flash threshold
     - three flashes per second
@@ -442,6 +407,5 @@ entity_collections:
     anti_examples:
     - Adobe Flash
     - camera flash
-    confidence_threshold: 0.8
     evidence_ids:
     - coe:decision/curation/2026-09-01/wiki-entry-recovery

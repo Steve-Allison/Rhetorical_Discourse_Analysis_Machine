@@ -1,9 +1,11 @@
 """Offline Standard-Parseval and RST-Parseval evaluation implementation."""
 
+from collections import Counter, deque
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from rdam.rst.contracts.analysis import RstAnalysis
+from rdam.rst.annotation_rst import DiscourseUnit
+from rdam.rst.contracts.analysis import PrimaryRelationEdge, RstAnalysis, RstNode
 from rdam.rst.contracts.enums import NodeKindEnum, NuclearityPatternEnum
 
 
@@ -79,21 +81,203 @@ def _calc_prf(matched: int, pred_count: int, gold_count: int) -> tuple[float, fl
     return p, r, f1
 
 
-class StandardParsevalScorer:
-    """Evaluates discourse trees using Standard-Parseval or RST-Parseval conventions.
+def _exact_match_counts(
+    gold: Sequence[tuple[int, int, str, str]],
+    predicted: Sequence[tuple[int, int, str, str]],
+) -> tuple[int, int, int, int]:
+    """Intersect bracket multisets independently for each evaluation criterion.
 
-    Standard-Parseval / Morey et al. (2017):
-    - Excludes single-EDU leaves (start == end) by default.
-    - Excludes root span (start == 1, end == N) by default.
-    - Nuclearity evaluation: matched span + identical nuclearity pattern (NS/SN/NN).
-    - Relation evaluation: matched span + identical relation label.
-    - Full evaluation: matched span + identical nuclearity + identical relation label.
+    A gold occurrence can earn credit only once within a metric. Projecting to
+    unlabeled coordinates must preserve multiplicity, including unary brackets
+    with the same yield. Label criteria have their own one-to-one matches.
+    """
+    span = (Counter((s, e) for s, e, _, _ in gold)
+            & Counter((s, e) for s, e, _, _ in predicted)).total()
+    nuclearity = (Counter((s, e, n) for s, e, n, _ in gold)
+                  & Counter((s, e, n) for s, e, n, _ in predicted)).total()
+    relation = (Counter((s, e, r) for s, e, _, r in gold)
+                & Counter((s, e, r) for s, e, _, r in predicted)).total()
+    full = (Counter(gold) & Counter(predicted)).total()
+    return span, nuclearity, relation, full
+
+
+def maximum_match_count(candidates: Sequence[Sequence[int]]) -> int:
+    """Count a maximum bipartite matching using iterative augmenting paths.
+
+    Rows identify predicted occurrences; entries identify eligible gold
+    occurrences. Iterative traversal avoids a recursion limit on long trees.
+    """
+    gold_matches: dict[int, int] = {}
+    predicted_matches: dict[int, int] = {}
+    for root in range(len(candidates)):
+        pending = deque([root])
+        visited = {root}
+        predecessor: dict[int, int] = {}
+        free_gold: int | None = None
+        while pending and free_gold is None:
+            predicted = pending.popleft()
+            for gold in candidates[predicted]:
+                if gold in predecessor:
+                    continue
+                predecessor[gold] = predicted
+                owner = gold_matches.get(gold)
+                if owner is None:
+                    free_gold = gold
+                    break
+                if owner not in visited:
+                    visited.add(owner)
+                    pending.append(owner)
+        while free_gold is not None:
+            predicted = predecessor[free_gold]
+            previous_gold = predicted_matches.get(predicted)
+            gold_matches[free_gold] = predicted
+            predicted_matches[predicted] = free_gold
+            free_gold = previous_gold
+    return len(gold_matches)
+
+
+def _overlap_match_counts(
+    gold: Sequence[CharBracketSpan], predicted: Sequence[CharBracketSpan], min_iou: float,
+) -> tuple[int, int, int, int]:
+    """Maximize one-to-one credit separately for each metric's constraints."""
+    span_candidates: list[list[int]] = []
+    nuclearity_candidates: list[list[int]] = []
+    relation_candidates: list[list[int]] = []
+    full_candidates: list[list[int]] = []
+    for prediction in predicted:
+        spans: list[int] = []
+        nuclearities: list[int] = []
+        relations: list[int] = []
+        full: list[int] = []
+        for index, reference in enumerate(gold):
+            overlap = compute_span_iou(
+                prediction.start_char, prediction.end_char, reference.start_char, reference.end_char,
+            )
+            if overlap < min_iou:
+                continue
+            spans.append(index)
+            same_nuclearity = prediction.nuclearity.upper() == reference.nuclearity.upper()
+            same_relation = prediction.relation == reference.relation
+            if same_nuclearity:
+                nuclearities.append(index)
+            if same_relation:
+                relations.append(index)
+            if same_nuclearity and same_relation:
+                full.append(index)
+        span_candidates.append(spans)
+        nuclearity_candidates.append(nuclearities)
+        relation_candidates.append(relations)
+        full_candidates.append(full)
+    return (
+        maximum_match_count(span_candidates), maximum_match_count(nuclearity_candidates),
+        maximum_match_count(relation_candidates), maximum_match_count(full_candidates),
+    )
+
+
+def _binary_attachments(analysis: RstAnalysis) -> tuple[int | None, list[tuple[RstNode, str, str]]]:
+    """Validate binary topology and recover each parent's native attachment.
+
+    RS4 graphs with EDU parents or non-binary groups must be normalized first;
+    interpreting their incoming labels as binary attachment patterns is invalid.
+    """
+    nodes = {node.node_id: node for node in analysis.nodes}
+    if len(nodes) != len(analysis.nodes):
+        raise ValueError("Evaluation tree contains duplicate node IDs")
+    children: dict[int, list[PrimaryRelationEdge]] = {}
+    parents: set[int] = set()
+    for edge in analysis.primary_edges:
+        if edge.parent_id not in nodes or edge.child_id not in nodes:
+            raise ValueError("Evaluation edge references a missing node")
+        if edge.child_id in parents:
+            raise ValueError("Evaluation tree has repeated incoming edges")
+        parents.add(edge.child_id)
+        children.setdefault(edge.parent_id, []).append(edge)
+    if not nodes:
+        return None, []
+    roots = nodes.keys() - parents
+    if len(roots) != 1:
+        raise ValueError("Evaluation tree must have exactly one root")
+    root_id = next(iter(roots))
+    visited: set[int] = set()
+    pending = [root_id]
+    attachments: list[tuple[RstNode, str, str]] = []
+    leaves: list[int] = []
+    while pending:
+        node_id = pending.pop()
+        if node_id in visited:
+            raise ValueError("Evaluation tree contains a cycle")
+        visited.add(node_id)
+        node = nodes[node_id]
+        outgoing = children.get(node_id, [])
+        if node.kind == NodeKindEnum.EDU:
+            if outgoing or node.edu_span[0] != node.edu_span[1]:
+                raise ValueError("Evaluation EDU must be a leaf with a singleton EDU span")
+            leaves.append(node.edu_span[0])
+            continue
+        if len(outgoing) != 2:
+            raise ValueError("Evaluation requires binary attachments; normalize non-binary annotations first")
+        left_edge, right_edge = sorted(outgoing, key=lambda edge: nodes[edge.child_id].edu_span)
+        left, right = nodes[left_edge.child_id], nodes[right_edge.child_id]
+        if (left.edu_span[0] != node.edu_span[0] or right.edu_span[1] != node.edu_span[1]
+                or left.edu_span[1] + 1 != right.edu_span[0]):
+            raise ValueError("Attachment child EDU spans must partition the parent")
+        if (left.char_span[0] != node.char_span[0] or right.char_span[1] != node.char_span[1]
+                or left.char_span[1] > right.char_span[0]):
+            raise ValueError("Attachment child character spans must be ordered within the parent")
+        pattern = left_edge.nuclearity.value
+        if pattern != right_edge.nuclearity.value:
+            raise ValueError("Binary attachment edges disagree on nuclearity")
+        left_rel, right_rel = left_edge.relation_raw.strip(), right_edge.relation_raw.strip()
+        if pattern == "NS" and left_rel == "span" and right_rel and right_rel != "span":
+            relation = right_rel
+        elif pattern == "SN" and right_rel == "span" and left_rel and left_rel != "span":
+            relation = left_rel
+        elif pattern == "NN" and left_rel == right_rel and left_rel and left_rel != "span":
+            relation = left_rel
+        else:
+            raise ValueError("Binary attachment relation labels disagree with its nuclearity")
+        attachments.append((node, pattern, relation))
+        pending.extend((right.node_id, left.node_id))
+    if visited != nodes.keys():
+        raise ValueError("Evaluation tree contains disconnected nodes")
+    if sorted(leaves) != list(range(1, len(leaves) + 1)):
+        raise ValueError("Evaluation EDUs must form a consecutive one-based sequence")
+    return root_id, attachments
+
+
+def rst_parseval_spans(analysis: RstAnalysis) -> set[BracketSpan]:
+    """Marcu-style brackets: incoming N/S labels, leaves included, root excluded.
+
+    This projection evaluates the supplied binary tree. Non-binary annotations
+    must be normalized explicitly before invoking it.
+    """
+    _, attachments = _binary_attachments(analysis)
+    nodes = {node.node_id: node for node in analysis.nodes}
+    child_edges: dict[int, list[PrimaryRelationEdge]] = {}
+    for edge in analysis.primary_edges:
+        child_edges.setdefault(edge.parent_id, []).append(edge)
+    brackets: set[BracketSpan] = set()
+    for parent, pattern, _ in attachments:
+        outgoing = sorted(child_edges[parent.node_id], key=lambda edge: nodes[edge.child_id].edu_span)
+        for edge, role in zip(outgoing, pattern, strict=True):
+            child = nodes[edge.child_id]
+            brackets.add(BracketSpan(child.edu_span[0], child.edu_span[1], role, edge.relation_raw))
+    return brackets
+
+
+class StandardParsevalScorer:
+    """Score labelled binary attachment decisions using native relation labels.
+
+    Defaults include every internal attachment, including the root, and exclude
+    leaves: n-1 decisions for n EDUs, as in Morey et al. (2017), section 4.
+    Explicit root exclusion or leaf inclusion produces a custom diagnostic;
+    it does not reproduce Marcu's RST-Parseval encoding.
     """
 
     def __init__(
         self,
         include_leaves: bool = False,
-        include_root: bool = False,
+        include_root: bool = True,
         label_mapper: Callable[[str], str] | None = None,
         ignore_case: bool = True,
     ) -> None:
@@ -111,108 +295,64 @@ class StandardParsevalScorer:
         return lab
 
     def extract_spans_from_analysis(self, analysis: RstAnalysis) -> set[BracketSpan]:
-        """Extract bracket spans from an RstAnalysis."""
-        if not analysis.nodes:
-            return set()
-
-        num_edus = max((n.edu_span[1] for n in analysis.nodes), default=0)
-        spans: set[BracketSpan] = set()
-
-        # Map child_id to primary edge
-        child_to_edge = {edge.child_id: edge for edge in analysis.primary_edges}
-
-        for node in analysis.nodes:
-            start, end = node.edu_span
-            if not self.include_leaves and start == end:
-                continue
-            if not self.include_root and start == 1 and end == num_edus and num_edus > 1:
-                continue
-
-            edge = child_to_edge.get(node.node_id)
-            if edge is not None:
-                nuc = edge.nuclearity.value
-                rel = self.normalize_label(edge.relation_concept or edge.relation_raw)
-            else:
-                nuc = NuclearityPatternEnum.NN.value if node.kind == NodeKindEnum.MULTINUCLEAR_GROUP else "ROOT"
-                rel = "span"
-
-            spans.add(BracketSpan(start_edu=start, end_edu=end, nuclearity=nuc, relation=rel))
-
+        """Recover labels from outgoing binary edges, independent of node IDs."""
+        root_id, attachments = _binary_attachments(analysis)
+        spans = {
+            BracketSpan(node.edu_span[0], node.edu_span[1], pattern, self.normalize_label(relation))
+            for node, pattern, relation in attachments
+            if self.include_root or node.node_id != root_id
+        }
+        if self.include_leaves:
+            spans.update(
+                BracketSpan(node.edu_span[0], node.edu_span[1], "", "")
+                for node in analysis.nodes if node.kind == NodeKindEnum.EDU
+            )
         return spans
 
-    def extract_spans_from_du(self, unit: object) -> set[BracketSpan]:
-        """Extract bracket spans from an isanlp.annotation_rst.DiscourseUnit or similar tree."""
+    def extract_spans_from_du(self, unit: DiscourseUnit) -> set[BracketSpan]:
+        """Read attachment labels from the internal nodes that own them.
+
+        DiscourseUnit stores a binary attachment's relation and NS/SN/NN
+        pattern on its parent, not on its children. Leaves carry no attachment
+        labels. Root inclusion remains controlled by the caller's convention.
+        """
         spans: set[BracketSpan] = set()
-
-        # First pass: find total EDUs
-        edu_count = 0
-
-        def count_leaves(node: object) -> None:
-            nonlocal edu_count
-            left = getattr(node, "left", None)
-            right = getattr(node, "right", None)
-            if left is None and right is None:
-                edu_count += 1
-                return
-            if left is not None:
-                count_leaves(left)
-            if right is not None:
-                count_leaves(right)
-
-        count_leaves(unit)
-        total_edus = max(edu_count, 1)
-
-        curr_edu = 1
-
-        def walk(node: object) -> tuple[int, int]:
-            nonlocal curr_edu
-            left = getattr(node, "left", None)
-            right = getattr(node, "right", None)
-
-            if left is None and right is None:
-                start = curr_edu
-                end = curr_edu
-                curr_edu += 1
-                if self.include_leaves:
-                    spans.add(BracketSpan(start_edu=start, end_edu=end, nuclearity="", relation=""))
-                return start, end
-
-            start_l, end_l = walk(left) if left is not None else (curr_edu, curr_edu)
-            start_r, end_r = walk(right) if right is not None else (end_l, end_l)
-            start = start_l
-            end = end_r
-
-            if not self.include_root and start == 1 and end == total_edus and total_edus > 1:
-                pass
-            else:
-                left_nuc = str(getattr(left, "nuclearity", "N") or "N")
-                right_nuc = str(getattr(right, "nuclearity", "N") or "N")
-                if left_nuc in ("N", "S") and right_nuc in ("N", "S"):
-                    nuc = f"{left_nuc}{right_nuc}"
-                else:
-                    nuc = str(getattr(node, "nuclearity", "NN") or "NN")
-
-                left_rel = str(getattr(left, "relation", "") or "")
-                right_rel = str(getattr(right, "relation", "") or "")
-                node_rel = str(getattr(node, "relation", "") or "")
-
-                if left_nuc == "S" and left_rel and left_rel != "span":
-                    raw_rel = left_rel
-                elif right_nuc == "S" and right_rel and right_rel != "span":
-                    raw_rel = right_rel
-                elif left_rel and left_rel != "span":
-                    raw_rel = left_rel
-                elif right_rel and right_rel != "span":
-                    raw_rel = right_rel
-                else:
-                    raw_rel = node_rel or "span"
-
-                rel = self.normalize_label(raw_rel)
-                spans.add(BracketSpan(start_edu=start, end_edu=end, nuclearity=nuc, relation=rel))
-
-            return start, end
-
-        walk(unit)
+        pending: list[tuple[DiscourseUnit, bool]] = [(unit, False)]
+        visited: set[int] = set()
+        yields: dict[int, tuple[int, int]] = {}
+        next_edu = 1
+        while pending:
+            node, exiting = pending.pop()
+            identity = id(node)
+            if not exiting:
+                if identity in visited:
+                    raise ValueError("DiscourseUnit must be a tree without cycles or shared children")
+                visited.add(identity)
+                left, right = node.left, node.right
+                if left is None and right is None:
+                    yields[identity] = (next_edu, next_edu)
+                    if self.include_leaves:
+                        spans.add(BracketSpan(next_edu, next_edu, "", ""))
+                    next_edu += 1
+                    continue
+                if left is None or right is None:
+                    raise ValueError("A binary attachment must have both children")
+                pending.extend(((node, True), (right, False), (left, False)))
+                continue
+            left, right = node.left, node.right
+            if left is None or right is None:
+                raise ValueError("A binary attachment must have both children")
+            start, _ = yields[id(left)]
+            _, end = yields[id(right)]
+            yields[identity] = (start, end)
+            nuclearity = node.nuclearity.upper()
+            if nuclearity not in NuclearityPatternEnum:
+                raise ValueError(f"Attachment has invalid nuclearity: {node.nuclearity!r}")
+            relation = self.normalize_label(node.relation)
+            if not relation or relation == "span":
+                raise ValueError("Attachment must carry a rhetorical relation, not a structural span label")
+            if node is not unit or self.include_root:
+                spans.add(BracketSpan(start, end, nuclearity, relation))
         return spans
 
     def score_span_sets(self, gold_spans: set[BracketSpan], pred_spans: set[BracketSpan]) -> ParsevalMetrics:
@@ -220,29 +360,10 @@ class StandardParsevalScorer:
         gold_count = len(gold_spans)
         pred_count = len(pred_spans)
 
-        # Build index for fast lookup by (start, end)
-        gold_by_span: dict[tuple[int, int], list[BracketSpan]] = {}
-        for g in gold_spans:
-            gold_by_span.setdefault((g.start_edu, g.end_edu), []).append(g)
-
-        matched_span = 0
-        matched_nuclearity = 0
-        matched_relation = 0
-        matched_full = 0
-
-        for p in pred_spans:
-            candidates = gold_by_span.get((p.start_edu, p.end_edu), [])
-            if candidates:
-                matched_span += 1
-                # Check nuclearity
-                if any(c.nuclearity.upper() == p.nuclearity.upper() for c in candidates):
-                    matched_nuclearity += 1
-                # Check relation
-                if any(c.relation == p.relation for c in candidates):
-                    matched_relation += 1
-                # Check full
-                if any(c.nuclearity.upper() == p.nuclearity.upper() and c.relation == p.relation for c in candidates):
-                    matched_full += 1
+        matched_span, matched_nuclearity, matched_relation, matched_full = _exact_match_counts(
+            [(g.start_edu, g.end_edu, g.nuclearity.upper(), g.relation) for g in gold_spans],
+            [(p.start_edu, p.end_edu, p.nuclearity.upper(), p.relation) for p in pred_spans],
+        )
 
         span_p, span_r, span_f1 = _calc_prf(matched_span, pred_count, gold_count)
         nuc_p, nuc_r, nuc_f1 = _calc_prf(matched_nuclearity, pred_count, gold_count)
@@ -272,8 +393,8 @@ class StandardParsevalScorer:
 
     def score(
         self,
-        gold: RstAnalysis | object,
-        pred: RstAnalysis | object,
+        gold: RstAnalysis | DiscourseUnit,
+        pred: RstAnalysis | DiscourseUnit,
     ) -> ParsevalMetrics:
         """Score a predicted tree against a gold tree."""
         if isinstance(gold, RstAnalysis):
@@ -290,8 +411,8 @@ class StandardParsevalScorer:
 
     def score_corpus(
         self,
-        gold_items: Sequence[RstAnalysis | object],
-        pred_items: Sequence[RstAnalysis | object],
+        gold_items: Sequence[RstAnalysis | DiscourseUnit],
+        pred_items: Sequence[RstAnalysis | DiscourseUnit],
     ) -> ParsevalMetrics:
         """Micro-averaged Standard-Parseval score over a corpus of documents."""
         if len(gold_items) != len(pred_items):
@@ -347,14 +468,17 @@ class SoftParsevalScorer:
     - Evaluates constituent character spans (char_start, char_end) rather than discrete EDU IDs.
     - When min_iou == 1.0 (default), enforces exact character-boundary equality.
     - When min_iou < 1.0 (e.g. 0.85), permits slight punctuation/boundary shifts via Intersection-over-Union.
+    - Each metric maximizes one-to-one matches satisfying its overlap and label constraints;
+      scores are independent of input order. This is a local overlap diagnostic,
+      not an assertion of equivalence to a published Parseval benchmark.
     - Excludes single-EDU leaves (node.kind == EDU) by default.
-    - Excludes document root span by default.
+    - Includes the root attachment by default, as with EDU-coordinate Parseval.
     """
 
     def __init__(
         self,
         include_leaves: bool = False,
-        include_root: bool = False,
+        include_root: bool = True,
         min_iou: float = 1.0,
         label_mapper: Callable[[str], str] | None = None,
         ignore_case: bool = True,
@@ -376,39 +500,18 @@ class SoftParsevalScorer:
         return lab
 
     def extract_spans_from_analysis(self, analysis: RstAnalysis) -> list[CharBracketSpan]:
-        """Extract character-level bracket spans from an RstAnalysis."""
-        if not analysis.nodes:
-            return []
-
-        doc_char_span = (0, max((n.char_span[1] for n in analysis.nodes), default=0))
-        num_edus = max((n.edu_span[1] for n in analysis.nodes), default=0)
-        spans: list[CharBracketSpan] = []
-
-        child_to_edge = {edge.child_id: edge for edge in analysis.primary_edges}
-
-        for node in analysis.nodes:
-            if not self.include_leaves and node.kind == NodeKindEnum.EDU:
-                continue
-            if not self.include_root and node.char_span == doc_char_span and num_edus > 1:
-                continue
-
-            edge = child_to_edge.get(node.node_id)
-            if edge is not None:
-                nuc = edge.nuclearity.value
-                rel = self.normalize_label(edge.relation_concept or edge.relation_raw)
-            else:
-                nuc = NuclearityPatternEnum.NN.value if node.kind == NodeKindEnum.MULTINUCLEAR_GROUP else "ROOT"
-                rel = "span"
-
-            spans.append(
-                CharBracketSpan(
-                    start_char=node.char_span[0],
-                    end_char=node.char_span[1],
-                    nuclearity=nuc,
-                    relation=rel,
-                )
+        """Use the same native attachment decisions as EDU-coordinate Parseval."""
+        root_id, attachments = _binary_attachments(analysis)
+        spans = [
+            CharBracketSpan(node.char_span[0], node.char_span[1], pattern, self.normalize_label(relation))
+            for node, pattern, relation in attachments
+            if self.include_root or node.node_id != root_id
+        ]
+        if self.include_leaves:
+            spans.extend(
+                CharBracketSpan(node.char_span[0], node.char_span[1], "", "")
+                for node in analysis.nodes if node.kind == NodeKindEnum.EDU
             )
-
         return spans
 
     def score_span_sets(
@@ -428,47 +531,14 @@ class SoftParsevalScorer:
         matched_full = 0
 
         if self.min_iou >= 1.0:
-            # Exact character span matching
-            gold_by_span: dict[tuple[int, int], list[CharBracketSpan]] = {}
-            for g in gold_list:
-                gold_by_span.setdefault((g.start_char, g.end_char), []).append(g)
-
-            for p in pred_list:
-                candidates = gold_by_span.get((p.start_char, p.end_char), [])
-                if candidates:
-                    matched_span += 1
-                    if any(c.nuclearity.upper() == p.nuclearity.upper() for c in candidates):
-                        matched_nuclearity += 1
-                    if any(c.relation == p.relation for c in candidates):
-                        matched_relation += 1
-                    if any(
-                        c.nuclearity.upper() == p.nuclearity.upper() and c.relation == p.relation for c in candidates
-                    ):
-                        matched_full += 1
+            matched_span, matched_nuclearity, matched_relation, matched_full = _exact_match_counts(
+                [(g.start_char, g.end_char, g.nuclearity.upper(), g.relation) for g in gold_list],
+                [(p.start_char, p.end_char, p.nuclearity.upper(), p.relation) for p in pred_list],
+            )
         else:
-            # Soft / IoU-tolerant matching with greedy assignment
-            matched_gold_indices: set[int] = set()
-            for p in pred_list:
-                best_iou = 0.0
-                best_g_idx = -1
-                for g_idx, g in enumerate(gold_list):
-                    if g_idx in matched_gold_indices:
-                        continue
-                    iou = compute_span_iou(p.start_char, p.end_char, g.start_char, g.end_char)
-                    if iou >= self.min_iou and iou > best_iou:
-                        best_iou = iou
-                        best_g_idx = g_idx
-
-                if best_g_idx >= 0:
-                    matched_gold_indices.add(best_g_idx)
-                    g_match = gold_list[best_g_idx]
-                    matched_span += 1
-                    if g_match.nuclearity.upper() == p.nuclearity.upper():
-                        matched_nuclearity += 1
-                    if g_match.relation == p.relation:
-                        matched_relation += 1
-                    if g_match.nuclearity.upper() == p.nuclearity.upper() and g_match.relation == p.relation:
-                        matched_full += 1
+            matched_span, matched_nuclearity, matched_relation, matched_full = _overlap_match_counts(
+                gold_list, pred_list, self.min_iou,
+            )
 
         span_p, span_r, span_f1 = _calc_prf(matched_span, pred_count, gold_count)
         nuc_p, nuc_r, nuc_f1 = _calc_prf(matched_nuclearity, pred_count, gold_count)

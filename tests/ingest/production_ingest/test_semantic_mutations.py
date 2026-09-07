@@ -1,7 +1,10 @@
 """Analysis request, result, and execution identity boundaries."""
 
+import pytest
+
 from rdam.ingest import ProductionIngestor, SourceArtifact
 from rdam.ingest.contracts.analysis import MarkerRefinementMode
+from rdam.ingest.serialization import load_contract, serialize_contract
 
 from .conftest import ParserBuilder
 
@@ -31,6 +34,11 @@ def test_semantic_mutations_change_identity_and_execution_does_not(
         }
     )
     assert changed_request.semantic_digest != request.semantic_digest
+    with pytest.raises(ValueError, match="embedded parser result"):
+        type(first.semantic).model_validate({
+            **{name: getattr(first.semantic, name) for name in type(first.semantic).model_fields},
+            "request": changed_request,
+        })
 
 
 def test_recombination_unit_timings_do_not_change_semantic_identity(
@@ -56,3 +64,31 @@ def test_recombination_unit_timings_do_not_change_semantic_identity(
         }
     )
     assert changed_result.semantic_digest == parser_result.semantic_digest
+
+
+def test_outcome_stores_parser_graph_and_inference_once(parser_builder: ParserBuilder) -> None:
+    result = ProductionIngestor(parser=parser_builder()).analyse(
+        SourceArtifact.from_text("First. Second.", source_name="single-evidence-owner")
+    )
+    parser = result.semantic.parser_result
+    assert parser is not None
+    assert result.semantic.analysis is parser.semantic.analysis
+    assert result.semantic.primary_inference is parser.semantic.primary_inference
+    payload = result.model_dump(mode="json")
+    assert "policy" not in payload["semantic"]
+    assert "composite_identity" not in payload["semantic"]
+    assert result.semantic.policy is result.semantic.request.analysis_policy
+    assert result.semantic.composite_identity is result.semantic.request.composite_analysis_identity
+    assert "analysed_document" not in payload["semantic"]
+    assert "anchors" not in payload["semantic"]
+    assert "anchors" not in payload["semantic"]["parser_result"]["semantic"]
+    assert result.semantic.analysed_document is not None
+    assert result.semantic.anchors
+    detached = result.semantic.model_copy(update={"parser_result": None})
+    assert detached.analysed_document is None
+    assert detached.anchors == ()
+    for field in ("analysis", "primary_inference", "erst_completion", "recombination"):
+        assert field not in payload["semantic"]
+        assert field in payload["semantic"]["parser_result"]["semantic"]
+    encoded = serialize_contract(result)
+    assert serialize_contract(load_contract(encoded)) == encoded

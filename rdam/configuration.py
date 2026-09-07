@@ -95,8 +95,7 @@ class RstSettings(StrictModel):
     model: Annotated[PublishedRstModel | LocalRstModel, Field(discriminator="kind")] | None = DEFAULT_RST_MODEL
     relinventory: str | None = Field(default=None, min_length=1)
     device: str = Field(default="auto", pattern=r"^(auto|cpu|mps|cuda(?::[0-9]+)?)$")
-    erst_checkpoint: Path | None = None
-    default_formalism: Literal["rst_tree", "erst_graph"] = "rst_tree"
+    default_formalism: Literal["rst_tree"] = "rst_tree"
     evidence_detail: Literal["decision_complete", "normalized_distributions"] = "decision_complete"
     marker_refinement: Literal["evidence_preserving", "disabled"] = "evidence_preserving"
 
@@ -104,11 +103,6 @@ class RstSettings(StrictModel):
     @classmethod
     def resolve_default_model(cls, value: object) -> object:
         return DEFAULT_RST_MODEL if value is None else value
-
-    @field_validator("erst_checkpoint")
-    @classmethod
-    def absolute_checkpoint(cls, value: Path | None) -> Path | None:
-        return None if value is None else value.resolve()
 
 
 class ExecutionSettings(StrictModel):

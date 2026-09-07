@@ -4,7 +4,7 @@
 
 | Evidence | Proves |
 |---|---|
-| [`rst-surface-audit.md`](rst-surface-audit.md) | Live `rdam.rst` public surface and classified analytical preservation. |
+| [`rst-surface-audit.md`](rst-surface-audit.md) | The 2026-09-03 `rdam.rst` public surface and classified analytical preservation. |
 | [`boundary-audit.md`](boundary-audit.md) | Single-package ownership and production/workbench separation. |
 | [`identity-binding-audit.md`](identity-binding-audit.md) | All canonical technique/formalism identities resolve to Central authority. |
 | [`../checklists/requirements.md`](../checklists/requirements.md) | Final documentary and executable acceptance ledger. |
@@ -19,7 +19,9 @@
 - Production API contract: **379 passed in 16.82s**.
 - Ruff: **All checks passed**; Pyright strict: **0 errors, 0 warnings, 0 informations**.
 - Production boundary and model-free import check: **valid**, zero violations.
-- Markdown lint: **0 issues in 0 files**.
+- Historical Markdown invocation: **0 issues in 0 files**. It checked no files
+  and is not Markdown validation evidence. The current `mdlint` task derives its
+  file inventory from Git.
 - Ontology schema/data validation: **no issues**; identity projection matches Central authority. LinkML lint retains its pre-existing `_meta` naming warning and exits successfully.
 
 The final import gate caught and fixed one stale assertion that constructed the newly
@@ -29,3 +31,6 @@ module and `rdam.machine` without constructing a provider.
 The 56 skips are deliberate and visible: 54 local RST-release matrix cases declare an
 incompatible `>=4,<5` runtime range, and two live LLM probes require explicit opt-in.
 Neither category is presented as runtime proof.
+
+These dated results do not certify the current checkout. Current production
+verification is recorded in [Feature 019 tasks](../../019-unified-machine-interfaces/tasks.md).

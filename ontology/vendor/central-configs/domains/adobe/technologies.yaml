@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/technologies
   title: Adobe — Technologies
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -21,7 +21,6 @@ entity_collections:
       intelligence rather than a standalone product.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: &id001
     - coe:source/central-configs-legacy-f6eb98ff
     - coe:decision/v4-migration/adobe/technologies
@@ -32,7 +31,6 @@ entity_collections:
       Experience Manager.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/audience_ai
     label: Audience AI
@@ -41,7 +39,6 @@ entity_collections:
       Assistant and the Audience Agent.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/ai_assistant
     label: AI Assistant
@@ -50,7 +47,6 @@ entity_collections:
       operational questions in natural language and hosting the purpose-built agents.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/generative_fill
     label: Generative Fill
@@ -58,7 +54,6 @@ entity_collections:
       prompt, matching the lighting and perspective of the surrounding image.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/generative_expand
     label: Generative Expand
@@ -66,7 +61,6 @@ entity_collections:
       new content to fill the enlarged canvas.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/content_aware_fill
     label: Content Aware Fill
@@ -74,7 +68,6 @@ entity_collections:
       pixels of the same image — a pre-generative technique that samples the image itself rather than a model.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/firefly_video_model
     label: Firefly Video Model
@@ -82,7 +75,6 @@ entity_collections:
       generation trained on licensed content.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/i_o
     label: Adobe I/O
@@ -90,7 +82,6 @@ entity_collections:
       external code integrates with and extends Adobe products.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/developer_console
     label: Adobe Developer Console
@@ -98,7 +89,6 @@ entity_collections:
       integrations against Adobe APIs.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/exchange
     label: Adobe Exchange
@@ -106,7 +96,6 @@ entity_collections:
       Cloud, and Experience Cloud products.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/creative_cloud_libraries
     label: Creative Cloud Libraries
@@ -114,7 +103,6 @@ entity_collections:
       Cloud applications and teams so design elements stay consistent wherever they are used.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/genstudio_services
     label: GenStudio Services
@@ -123,7 +111,6 @@ entity_collections:
       GenStudio content flows into external workflows and integrations.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/experience_platform_edge_network
     label: Adobe Experience Platform Edge Network
@@ -132,7 +119,6 @@ entity_collections:
       Cloud solutions and hosts Tags and event forwarding at the edge.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/experience_platform_data_collection
     label: Adobe Experience Platform Data Collection
@@ -141,7 +127,6 @@ entity_collections:
       destinations.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/tags
     label: Tags
@@ -150,7 +135,6 @@ entity_collections:
       data-collection and marketing technologies.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/event_forwarding
     label: Event Forwarding
@@ -158,7 +142,6 @@ entity_collections:
       non-Adobe destinations for server-side processing and enrichment, without adding client-side weight.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/datastreams
     label: Datastreams
@@ -166,7 +149,6 @@ entity_collections:
       — Analytics, Target, Experience Platform, Journey Optimizer — and to event-forwarding destinations.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/experience_data_model
     label: Experience Data Model
@@ -175,7 +157,6 @@ entity_collections:
       interoperate across Adobe and third-party systems.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/xdm
     label: XDM
@@ -183,7 +164,6 @@ entity_collections:
       data.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/edge_network
     label: Edge Network
@@ -191,7 +171,6 @@ entity_collections:
       and personalisation edge shared by the Experience Cloud applications.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/data_collection
     label: Data Collection
@@ -199,7 +178,6 @@ entity_collections:
       SDKs, datastreams, and Tags into the Edge Network.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/offer_decisioning
     label: Offer Decisioning
@@ -208,7 +186,6 @@ entity_collections:
       channel can reuse them.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/content_fragments
     label: Content Fragments
@@ -216,7 +193,6 @@ entity_collections:
       delivered through APIs (including GraphQL) to any channel — the unit of AEM headless content.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/experience_fragments
     label: Experience Fragments
@@ -224,7 +200,6 @@ entity_collections:
       can be placed across pages and channels so the same composed content is maintained once.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/web_sdk
     label: Web SDK
@@ -233,7 +208,6 @@ entity_collections:
       libraries.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   - id: coe:entity/adobe/mobile_sdk
     label: Mobile SDK
@@ -241,7 +215,6 @@ entity_collections:
       returns segment qualifications and personalised content in-session.
     home_domain: adobe
     status: canonical
-    ner_label: ADOBE_TECHNOLOGY
     evidence_ids: *id001
   home_domain: adobe
   status: canonical

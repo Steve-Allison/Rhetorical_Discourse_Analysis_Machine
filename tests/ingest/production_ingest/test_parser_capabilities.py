@@ -23,7 +23,7 @@ def test_immutable_canonical_parser_advertises_only_executable_paths(
     assert capabilities.cache_eligibility.state is CacheEligibilityState.ELIGIBLE
     by_formalism = {item.formalism: item for item in capabilities.formalism_capabilities}
     assert by_formalism[OutputFormalism.RST_TREE].availability is Availability.AVAILABLE
-    assert by_formalism[OutputFormalism.ERST_GRAPH].availability is Availability.UNAVAILABLE
+    assert OutputFormalism.ERST_GRAPH not in by_formalism
 
 
 class _ArchivedParser:

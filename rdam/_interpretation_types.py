@@ -6,12 +6,15 @@ from pydantic import Field, model_validator
 
 from rdam._strict import SemanticVersion, Sha256Identity, StrictModel, semantic_sha256
 from rdam.frameworks import Technique
+from rdam.ontology import NativeOntologyAlignment, ObservedVocabularyAlignment
 
 
 class NativeSectionDescription(StrictModel):
     pointer: str
     meaning: str = Field(min_length=1)
     availability: Literal["present", "not_recorded"] = "present"
+    ontology_alignment: NativeOntologyAlignment | None = Field(default=None, exclude_if=lambda value: value is None)
+    observed_vocabulary: ObservedVocabularyAlignment | None = Field(default=None, exclude_if=lambda value: value is None)
 
 
 class NativeInterpretationDescriptor(StrictModel):

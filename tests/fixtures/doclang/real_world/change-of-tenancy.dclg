@@ -1,0 +1,494 @@
+<doclang version="0.7">
+  <text>
+    <bold>Change of Tenancy Form</bold>
+  </text>
+  <text>
+    <bold>(For SmartestEnergy Business Customers)</bold>
+  </text>
+  <text></text>
+  <picture>
+    <label value="icon"/>
+    <description><![CDATA[{"description": "This image is a logo for \"smartestenergy\". It features a stylized, dark teal letter 'S' on the left, followed by the word \"smartestenergy\". The word \"smartest\" is rendered in a bold, dark teal font, while \"energy\" is in a lighter, thinner teal font, creating a visual distinction between the two parts of the name."}]]></description>
+    <custom>
+      <docling_machine__vlm_metadata><![CDATA[{'confidence': None, 'fingerprint': '2ae46e3cddb30b79f29296651019789b74e684a217ec31b46e75e18aeef54b9b'}]]></docling_machine__vlm_metadata>
+    </custom>
+    <src uri="sebl_-_moving_premises_form_2024_8_images/image_000000_62dfe455356bd01fb3a03041d875c3af2ff0e108b1c06400cb8b5372a9eb2b0c.png"/>
+  </picture>
+  <text></text>
+  <text></text>
+  <text></text>
+  <text></text>
+  <text></text>
+  <text>
+    <bold>In accordance with the terms and conditions of the Supply Contract you are required to provide us with at least 10 Business Days’ notice of any vacation and/or sale of a Site and to complete the information required on this form. Please note, where you fail to provide us with the required information this may result in you remaining responsible for the electricity supplied to the Site. Should you need help completing this form, please contact our UK Customer Services on 01903 703400.</bold>
+  </text>
+  <picture>
+    <label value="other"/>
+    <description><![CDATA[{"description": "This image is a text block containing a single paragraph of white text on a solid teal background. It outlines a requirement, in accordance with a Supply Contract, to provide at least 10 Business Days' notice for any vacation or sale of a Site and to complete a form. It warns that failure to provide the required information may result in continued responsibility for electricity supplied to the Site, and provides a contact number, 01903 703400, for UK Customer Services for assistance with the form."}]]></description>
+    <custom>
+      <docling_machine__vlm_metadata><![CDATA[{'confidence': None, 'fingerprint': '2ae46e3cddb30b79f29296651019789b74e684a217ec31b46e75e18aeef54b9b'}]]></docling_machine__vlm_metadata>
+    </custom>
+    <src uri="sebl_-_moving_premises_form_2024_8_images/image_000001_fd206f3d1f023bfa35f527fd82ead345425ad26f1292246de98f2322784eccbb.png"/>
+  </picture>
+  <text></text>
+  <text></text>
+  <text></text>
+  <text></text>
+  <table>
+    <ched/>
+    <text>
+      <bold>1. Property Details</bold>
+    </text>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+<![CDATA[Site Address & Postcode:]]>    <fcel/>
+    <text></text>
+    <text>45 Broad Oak Crescent, Bayston Hill, Shrewsbury, SY3 0NE</text>
+    <text></text>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    MPAN/s (Electricity):
+    <fcel/>
+    <text></text>
+    <text>S 03 0393 N12 14 1509 4110000</text>
+    <text></text>
+    <fcel/>
+    Meter Serial Number/s (Electricity):
+    <fcel/>
+    E14BG 06084
+    <nl/>
+    <fcel/>
+    MPRN/s (Gas):
+    <fcel/>
+    <text></text>
+    <text>N/A</text>
+    <text></text>
+    <fcel/>
+    Meter Serial Number/s (Gas):
+    <fcel/>
+    N/A
+    <nl/>
+  </table>
+  <text></text>
+  <table>
+    <ched/>
+    <text>
+      <bold>2. Outgoing Tenant Details</bold>
+    </text>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    <text>SmartestEnergy</text>
+    <text>Account Number/s:</text>
+    <fcel/>
+    100011928614H
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Business Name:
+    <fcel/>
+    Peter White
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Contact Full Name:
+    <fcel/>
+    Peter White
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Contact Landline Number:
+    <fcel/>
+    01743 235897
+    <lcel/>
+    <fcel/>
+    Contact Email:
+    <lcel/>
+    <fcel/>
+    peter.white.burntmills@googlemail.com
+    <nl/>
+    <fcel/>
+<![CDATA[Forwarding Address & Postcode:]]>    <fcel/>
+    <text></text>
+    <text>Burnt Mills, Woodlands Park, Shrewsbury SY2 6JN</text>
+    <text></text>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Premises Leave Date: (dd/mm/yyyy)
+    <fcel/>
+    18/03/2026
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    <text>Meter Reading/s</text>
+    <text>(upon leave date):</text>
+    <fcel/>
+    Electricity  57725
+    <lcel/>
+    <lcel/>
+    <fcel/>
+    Gas N/A
+    <lcel/>
+    <nl/>
+    <fcel/>
+    <text>NB: To help finalise billing, please provide a photo of the meter/s by email to:</text>
+    <text>
+      <bold>cots.business@smartestenergy.com</bold>
+    </text>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Would you like us to quote your new supply?
+    <lcel/>
+    <fcel/>
+    No
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+  </table>
+  <text></text>
+  <text></text>
+  <table>
+    <ched/>
+    <text>
+      <bold>3. Incoming/New Tenant Details</bold>
+    </text>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Business Name:
+    <ecel/>
+    <fcel/>
+    Company Reg Number:
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <ecel/>
+    <nl/>
+    <fcel/>
+    Contact Full Name:
+    <fcel/>
+    Melanie Haynes
+    <fcel/>
+    D.O.B:
+    <ecel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Contact Landline Number:
+    <ecel/>
+    <fcel/>
+    Contact Mobile Number:
+    <lcel/>
+    <lcel/>
+    <ecel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Contact Email Address:
+    <ecel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    <text>Billing Address:</text>
+    <text>(Leave blank if same as property address)</text>
+    <ecel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Business Opening Hours:
+    <ecel/>
+    <fcel/>
+    Business Type/ Market Sector:
+    <lcel/>
+    <ecel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    <text>Premises Entry Date:</text>
+    <text>(dd/mm/yyyy)</text>
+    <fcel/>
+    19/03/2026
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    <text>Meter Reading/s</text>
+    <text>(upon entry date):</text>
+    <fcel/>
+    Electricity 57725
+    <fcel/>
+    Gas N/A
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    <text></text>
+    <text>
+      <bold>NB: To help process your enquiry please provide a photo of the meter/s by email to: cots.business@smartestenergy.com</bold>
+    </text>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <lcel/>
+    <nl/>
+  </table>
+  <text></text>
+  <text></text>
+  <text></text>
+  <table>
+    <ched/>
+    <text>
+      <bold>4. Landlord Details</bold>
+    </text>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Contact Full Name:
+    <fcel/>
+    Peter White
+    <nl/>
+    <fcel/>
+    Landlord Address:
+    <fcel/>
+    Burnt Mills, Woodlands Park, Shrewsbury, SY2 6JN
+    <nl/>
+    <fcel/>
+    Contact Number:
+    <fcel/>
+    01743 235897
+    <nl/>
+    <fcel/>
+    Contact Email:
+    <fcel/>
+    peter.white.burntmills@googlemail.com
+    <nl/>
+  </table>
+  <text></text>
+  <text></text>
+  <table>
+    <ched/>
+    <text>
+      <bold>5. Broker Details</bold>
+    </text>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Contact Full Name:
+    <fcel/>
+    Hugo Evans
+    <nl/>
+    <fcel/>
+    Broker Name:
+    <fcel/>
+    Cooper Green Pooks
+    <nl/>
+    <fcel/>
+    Contact Number:
+    <fcel/>
+    3 Barker Street, Shrewsbury SY1 1QF
+    <nl/>
+    <fcel/>
+    Contact Email:
+    <ecel/>
+    <nl/>
+  </table>
+  <text></text>
+  <text></text>
+  <table>
+    <ched/>
+    <text>
+      <bold>6. Payment Instruction</bold>
+    </text>
+    <lcel/>
+    <nl/>
+    <fcel/>
+    Account Name/s:
+    <ecel/>
+    <nl/>
+    <fcel/>
+    Account Number:
+    <ecel/>
+    <nl/>
+    <fcel/>
+    Sort Code:
+    <ecel/>
+    <nl/>
+    <fcel/>
+    Bank/Building Society Name:
+    <ecel/>
+    <nl/>
+    <fcel/>
+    Signed:                                                                Name:                                                                                   Date:
+    <lcel/>
+    <nl/>
+    <fcel/>
+    <text></text>
+    <text></text>
+    <picture>
+      <label value="logo"/>
+      <src uri="sebl_-_moving_premises_form_2024_8_images/image_000002_b770dd6ebd5804fba9f8da0e1ff8f73560b32e5ff482809f6913e361700f3391.png"/>
+    </picture>
+    <text>
+      <bold>Instruction to your Bank / Building Society</bold>
+    </text>
+    <text>Please pay SmartestEnergy Business Ltd Direct Debits from the account detailed in this instruction subject to the safeguards assured</text>
+    <text>by the Direct Debit Guarantee. I understand that this instruction may remain SmartestEnergy Business Ltd and, if so, details will</text>
+    <text>be passed electronically to my Bank/Building Society.</text>
+    <text></text>
+    <text>
+      <bold>The Direct Debit Guarantee</bold>
+    </text>
+    <text>This Guarantee is offered by all banks and building societies that accept instructions to pay Direct Debits</text>
+    <text>•  If there are any changes to the amount, date or frequency of your Direct Debit SmartestEnergy Business Ltd will notify you 10 working days in advance of your account being debited or as otherwise agreed. If you request SmartestEnergy Business Ltd to collect a payment, confirmation of the amount and date will be given to you at the time of the request.</text>
+    <text>•  If an error is made in the payment of your Direct Debit, by SmartestEnergy Business Ltd or your bank or building society, you are entitled to a full and immediate refund of the amount paid from your bank or building society</text>
+    <text>•  If you receive a refund you are not entitled to, you must pay it back when SmartestEnergy Business Ltd asks you to</text>
+    <text>•  You can cancel a Direct Debit at any time by simply contacting your bank or building society. Written confirmation may be required. Please also notify us.</text>
+    <text></text>
+    <lcel/>
+    <nl/>
+  </table>
+  <text></text>
+  <text></text>
+  <text>✔️</text>
+  <table>
+    <ched/>
+    <text>
+      <bold>7. Declaration</bold>
+    </text>
+    <nl/>
+    <fcel/>
+    <text></text>
+    <text>Please tick to confirm that you have enclosed the following:</text>
+    <text>✔️</text>
+    <text>A copy of the Lease/Tenancy Agreement or Solicitor Letter</text>
+    <text></text>
+    <text>
+      <bold>Important: Failure to provide this may result in your tenancy change request being rejected.</bold>
+    </text>
+    <text></text>
+    <text>My signature confirms that all the information given on this application form is true and correct. I understand that any falsification or deliberate omissions may result in my application being rejected and/or the termination of service with SmartestEnergy.</text>
+    <text></text>
+    <nl/>
+    <fcel/>
+    <picture>
+      <label value="line_chart"/>
+      <description><![CDATA[The image displays a handwritten signature in dark ink, likely black, against a white background. The signature is rendered in a cursive style, starting with what appears to be an initial, possibly 'M' or 'W', followed by a series of connected, flowing strokes. There is a distinct dot above one of the later strokes, suggesting the letter 'i' or 'j'. The specific name represented by the signature is unreadable due to its stylized nature and the quality of the image.]]></description>
+      <custom>
+        <docling_machine__vlm_metadata><![CDATA[{'confidence': None, 'fingerprint': '7abf7d716fbe3abf73cc2b2accf48d7870718b82a42eb29676cfee762e487e46'}]]></docling_machine__vlm_metadata>
+      </custom>
+      <src uri="sebl_-_moving_premises_form_2024_8_images/image_000003_8270f5efb268f23de4290afa8da7d22604f0992ad0fb74905b8816f8c2223165.png"/>
+    </picture>
+    <text>Signed:				              Name:	Peter White		                               Date: 10 July 2026</text>
+    <nl/>
+  </table>
+  <picture>
+    <label value="icon"/>
+    <src uri="sebl_-_moving_premises_form_2024_8_images/image_000004_a4c8edd3eae6aeb52c3e3b3e964d070b040ded109ebef28d4db7573812644b52.png"/>
+  </picture>
+  <text></text>
+  <text>A Forumla:</text>
+  <formula>\left(1+x\right)^{n}=1+\frac{nx}{1!}+\frac{n\left(n-1\right)x^{2}}{2!}+ \text{ \textellipsis }</formula>
+  <picture class="chart">
+    <label value="bar_chart"/>
+    <tabular>
+      <ecel/>
+      <ched/>
+      Series 1
+      <ched/>
+      Series 2
+      <ched/>
+      Series 3
+      <nl/>
+      <rhed/>
+      Category 1
+      <fcel/>
+      4.3
+      <fcel/>
+      2.4
+      <fcel/>
+      2
+      <nl/>
+      <rhed/>
+      Category 2
+      <fcel/>
+      2.5
+      <fcel/>
+      4.4
+      <fcel/>
+      2
+      <nl/>
+      <rhed/>
+      Category 3
+      <fcel/>
+      3.5
+      <fcel/>
+      1.8
+      <fcel/>
+      3
+      <nl/>
+      <rhed/>
+      Category 4
+      <fcel/>
+      4.5
+      <fcel/>
+      2.8
+      <fcel/>
+      5
+      <nl/>
+    </tabular>
+  </picture>
+</doclang>

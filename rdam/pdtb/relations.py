@@ -204,12 +204,22 @@ class PdtbAnalysis(_ClosedModel):
         return self
 
     def validate_source(self, source: str) -> Self:
+        errors: list[str] = []
         for relation in self.relations:
             for item in relation.quoted_spans():
                 if item.end > len(source) or source[item.start : item.end] != item.text:
-                    raise RelationError(
-                        f"span {item.start}:{item.end} in relation {relation.relation_id!r} does not equal source slice"
+                    first = source.find(item.text)
+                    if first < 0:
+                        detail = "the quotation has no literal occurrence in the source"
+                    elif first != source.rfind(item.text):
+                        detail = "the quotation has multiple literal occurrences; identify the intended passage"
+                    else:
+                        detail = f"the quotation has a unique literal occurrence at [{first}, {first + len(item.text)})"
+                    errors.append(
+                        f"span {item.start}:{item.end} in relation {relation.relation_id!r} does not equal source slice; {detail}"
                     )
+        if errors:
+            raise RelationError("; ".join(errors) + ". Offsets count Unicode characters, not bytes. Resubmit the analysis; validation does not repair it.")
         return self
 
     def to_payload(self) -> dict[str, JsonValue]:

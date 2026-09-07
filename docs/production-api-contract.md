@@ -4,7 +4,7 @@
 optional loopback HTTP. All three use `Machine`, immutable requests/configuration,
 and the same canonical codecs. `rdam.ingest` supplies shared preparation;
 `rdam.rst.Parser` remains the native parser facade. Its nested serialized family
-is `isanlp_rst.production` 2.0.0, independent of the machine envelope version.
+is `isanlp_rst.production` 3.0.0, independent of the machine envelope version.
 There is no downstream-specific adapter or recreated consumer data model.
 
 The exact symbol and resource authority is the packaged
@@ -34,7 +34,7 @@ ingest import path and contract-field aliases are not accepted.
 | `summarise(record)` | `str` | readable saved-record summary | unsupported record |
 | `SourceArtifact.from_path(path, *, source_form=None, original_source=None, conversion_provenance=())` | `SourceArtifact` | one validated source identity | constructor error before the service boundary |
 | `ProductionIngestor.prepare(source, *, policy=None, planning_policy=None, capacity=None)` | `PreparationOutcome` | complete preparation, including empty or retained-only primary discourse | `ProductionIngestError` |
-| `ProductionIngestor.analyse(source, *, policy=None, planning_policy=None, analysis_policy=None, cache_directory=None, diagnostic_policy=None)` | `ProductionAnalysisOutcome` | `AnalysedOutcome` or `EmptyPrimaryAnalysisOutcome` | `ProductionIngestError` |
+| `ProductionIngestor.analyse(source, *, policy=None, planning_policy=None, analysis_policy=None, cache_directory=None, preparation=None)` | `ProductionAnalysisOutcome` | `AnalysedOutcome` or `EmptyPrimaryAnalysisOutcome` | `ProductionIngestError` |
 | `Parser.analyse_document(document, *, analysis_policy=None)` | `ParserAnalysisResult` | validated parser-owned result | typed provider or validation failure through production ingest |
 | `describe_capabilities(parser=None)` | `ProductionCapabilities` | model-free or configured-parser capability evidence | contract validation error |
 | `serialize_contract(value, *, diagnostic_policy=None)` | canonical `bytes` | RFC 8785 record; a `ProductionFailure` becomes a safe failure by default | serialization error |
@@ -49,7 +49,7 @@ means the complete documented default is selected and embedded in the result.
 |---|---|
 | `SourceForm` | `text`, `edus`, `markdown`, `docling_json`, `doclang_xml`, `doclang_archive` |
 | `AnalysisStatus` | `analysed`, `empty_primary_discourse` |
-| `OutputFormalism` | `rst_tree`, `erst_graph` |
+| `OutputFormalism` | production: `rst_tree`; `erst_graph` retained for saved records and workbench evaluation |
 | `EvidenceDetailPolicy` | `decision_complete`, `normalized_distributions` |
 | `ModelIdentityState` | `immutable_release`, `mutable_instance`, `unidentified`, `not_configured` |
 | `CacheEligibilityState` | `eligible`, `ineligible` |
@@ -81,11 +81,11 @@ committed package resources.
 Machine records additionally publish validation and serialization schemas as
 `machine-{name}.{mode}.schema.json`. Discover names through `rdam schema` help
 and contract metadata; retrieve one with `rdam schema request`. Native output
-schemas include every formalism, corrected Toulmin/Walton v2 and historical v1;
+schemas include the seven production techniques, corrected Toulmin/Walton v2 and historical v1;
 `dung-input` and `ibis-input` describe supplied structures. Machine aggregate,
 native envelope and capabilities write v2 and read v1 without upgrading its
-meaning. Request, configuration, preparation, view and operation-error contracts
-are independently versioned at v1. Raw source bytes use canonical padded base64.
+meaning. Machine preparation writes v2 and reads historical v1. Request, configuration,
+view and operation-error contracts are independently versioned at v1. Raw source bytes use canonical padded base64.
 
 The aggregate `reading_guide` is directly consumable by AI: each entry identifies
 its native formalism/version, JSON pointers, section availability, evidence
@@ -96,20 +96,28 @@ explicit/reconstructed/undetermined warrant origin. Evidence uses exact Unicode
 character spans; `supporting_passage` does not mean a finding was quoted verbatim.
 Neither guide text nor a valid span proves truth or argument strength.
 
+`load()` verifies the registered envelope and its identities; it does not turn
+an opaque native payload into a technique-validated object. For a current native
+result, use `rdam.serialization.load_native_payload(serialize(native_result))`
+to validate the technique-owned payload and computed summaries. This does not
+establish extraction accuracy or reinterpret historical payloads.
+
 ## Evidence retained in one analysis outcome
 
-An `AnalysedOutcome` contains the full nested `PreparationOutcome`, not a
-receipt-only substitute. It then exposes:
+An `AnalysedOutcome` retains complete preparation and parser evidence. Version 3
+serializes shared inventories, preparations and score contexts once, with validated
+references; Python access reconstructs the corresponding typed objects. It exposes:
 
 - the resolved analysis request and policy;
 - the exact analysed tokens, EDUs, sentence and paragraph boundaries, token
   mappings, source anchors, and fidelity declarations;
 - the final `RstAnalysis` graph;
 - every primary segmentation, split, relation, nuclearity, confidence,
-  entropy, and requested distribution decision returned by the active parser;
+  entropy, and requested distribution decision returned by the active parser,
+  with explicit availability for evidence the backend does not return;
 - marker-refinement before/after records and trigger evidence;
 - eRST signals, candidates, scores, calibration, accepted and rejected
-  decisions, signal back-links, and decoder receipt when eRST is selected;
+  decisions, signal back-links, and decoder receipt in saved eRST records; production emits no completion;
 - identities for the primary parser, segmenter, marker refiner, eRST detector,
   scorer, decoder, calibration, relation inventory, and ontology mapping;
 - exact loaded-component receipts and runtime-byte agreement for immutable
@@ -129,6 +137,10 @@ The public contract intentionally excludes tensors, embeddings, activations,
 unrestricted score charts, training labels, workbench types, and fabricated
 decisions. Those are implementation or offline research state, not stable
 production evidence.
+
+eRST execution is workbench-only by owner instruction on 2026-09-06. The retained
+data contract below supports saved records; production cannot select or load eRST. Primary scores are model outputs,
+not empirically calibrated probabilities of analytical correctness.
 
 ## Validation rules
 
@@ -166,11 +178,12 @@ diagnostic persistence requires an explicit
 `describe_capabilities()` is offline and model-free. It probes distribution
 metadata without importing optional adapters and reports all six source forms,
 including unavailable ones and their `formats` requirement. Without a parser,
-both RST and eRST are explicitly unavailable and durable caching is ineligible.
+RST is explicitly unavailable and durable caching is ineligible. eRST is not
+advertised by production discovery.
 
 A configured parser advertises only a formalism and evidence level it can
-execute through canonical `ParserAnalysisResult`. Archived DMRST and UniRST
-families are not presented as active ModernBERT production capabilities.
+execute through canonical `ParserAnalysisResult`. DMRST and UniRST are active RST parser families; ModernBERT training remains
+in the workbench and is not the default production architecture.
 Mutable or unidentified parsers can analyse but cannot claim immutable runtime
 identity or durable semantic-cache eligibility.
 
@@ -211,7 +224,7 @@ boundary. All analytical completion states return HTTP 200; inspect `status`.
 
 Python symbols follow package SemVer. The unified command replaces the old
 RST-only command without a compatibility wrapper. The nested RST production
-2.0.0 contract and machine v1/v2 contracts are version-dispatched independently.
+3.0.0 writer, historical 2.0.0 reader, and machine v1/v2 contracts are version-dispatched independently.
 Unsupported future versions and unknown discriminators fail before payload use.
 Removed format-specific parse functions and envelopes have no compatibility
 aliases.

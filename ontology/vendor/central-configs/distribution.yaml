@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/distribution/4.0.0
   title: Central Configs Ontology Distribution Manifest 4.0.0
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-05'
   authority: Central_Configs
   scope: distribution
   governing_class: coe:OntologyDistribution
@@ -45,8 +45,10 @@ domain_module_paths:
 - ontology/data/domains/learning/terminology.yaml
 - ontology/data/domains/narrative/analytical_frameworks.yaml
 - ontology/data/domains/narrative/argument_structures.yaml
+- ontology/data/domains/narrative/argumentation_schemes.yaml
 - ontology/data/domains/narrative/communication_disciplines.yaml
 - ontology/data/domains/narrative/discourse_argumentation.yaml
+- ontology/data/domains/narrative/discourse_techniques.yaml
 - ontology/data/domains/narrative/quality_rubrics.yaml
 - ontology/data/domains/narrative/story_frameworks.yaml
 - ontology/data/domains/narrative/terminology.yaml

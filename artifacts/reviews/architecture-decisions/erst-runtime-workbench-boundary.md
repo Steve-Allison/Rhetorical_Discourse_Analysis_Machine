@@ -1,21 +1,30 @@
 # Decision: eRST runtime and workbench boundary
 
-## Decision
+## Owner direction, 2026-09-06
 
-Move promotion-only receipts out of `rdam` and into `workbench.promotion`; retain only contracts required to validate and load an existing runtime checkpoint in `rdam.rst.contracts.erst`.
+Move eRST out of production and retain it in the workbench for testing and evaluation.
+This supersedes the earlier decision to retain runtime checkpoint contracts in `rdam`.
 
-## Compatibility constraints
+## Ownership
 
-- Do not change the current checkpoint manifest wire schema or trained tensor architecture.
-- Production must not import `workbench`.
-- Offline production-boundary tooling may import the workbench promotion contract because it is not shipped in the wheel.
+`workbench/erst/` owns signal detection, candidate generation, neural scoring,
+decoding, RS4 conversion, checkpoint loading, research contracts and experimental
+parser completion. Existing training, corpus, promotion and evaluation consumers
+import that authority. The production tree converter lives at `rdam/rst/converter.py`.
 
-## Implemented migration
+`rdam.rst.Parser`, `RstProvider` and production ingest support `rst_tree` only.
+Production has no eRST checkpoint option, bundle discovery, completion method or
+`erst-result` schema advertisement. The wheel and sdist exclude the workbench.
 
-- `PromotionReceipt` now lives in `workbench/promotion/contracts.py`.
-- Promotion code and repository-only boundary tooling import that authority.
-- The production model-loading public surface no longer exports the offline receipt.
+## Compatibility
+
+Passive analysis and inference data contracts remain in production to validate
+and read saved reports without executing or importing experimental code. Canonical
+ontology identities and trained primary RST architecture remain unchanged.
+The move does not assert eRST accuracy, a trained bundle, or release readiness.
 
 ## Verification
 
-The fast suite covers promotion/boundary collection, and the production-boundary gate proves no production-to-workbench import.
+Source import checks, production capability/configuration rejection tests, retained
+eRST tests, schema parity and clean wheel installation check the boundary.
+Actual results are reported after those checks run; this decision is not a test receipt.

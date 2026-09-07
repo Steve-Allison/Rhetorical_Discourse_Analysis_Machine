@@ -1,5 +1,11 @@
 # Quickstart: Production Source Ingest
 
+> **Historical quickstart.** The following commands and APIs belong to this
+> earlier feature design and are not current execution instructions. Use the
+> [current quickstart](../019-unified-machine-interfaces/quickstart.md) and
+> [production ingest guide](../../docs/production-source-ingest.md). The package
+> and command are now `rdam`; eRST work is suspended as of 2026-09-06.
+>
 > **Planning contract**: These commands and APIs describe the completed Feature
 > 002 target. They become executable acceptance evidence only after the tasks are
 > generated and implemented. Their presence here is not a claim that the current
@@ -35,7 +41,6 @@ from isanlp_rst.ingest import (
     ProductionIngestor,
     SourceArtifact,
 )
-
 
 artifact = SourceArtifact.from_path(
     Path("/absolute/path/to/source.md"),

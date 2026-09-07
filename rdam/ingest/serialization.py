@@ -33,6 +33,7 @@ from rdam.ingest.identity import (
     parser_result_semantic_projection,
     semantic_sha256,
 )
+from rdam.ingest.historical import HistoricalProductionRecord, load_historical_contract
 
 
 class UnsupportedContractVersionError(ValueError):
@@ -73,12 +74,14 @@ def canonical_json_bytes(value: BaseModel | dict[str, Any]) -> bytes:
 
 
 def serialize_contract(
-    value: PersistedContract | ProductionFailure,
+    value: PersistedContract | ProductionFailure | HistoricalProductionRecord,
     *,
     diagnostic_policy: DiagnosticPolicy | None = None,
 ) -> bytes:
     """Serialize one supported record, safely projecting in-memory failures."""
 
+    if isinstance(value, HistoricalProductionRecord):
+        return load_historical_contract(value.canonical_bytes).canonical_bytes
     record: PersistedContract
     if isinstance(value, ProductionFailure):
         error = ProductionIngestError(value)
@@ -97,7 +100,7 @@ def serialize_contract(
     return canonical_json_bytes(record)
 
 
-def load_contract(payload: bytes | str) -> PersistedContract:
+def load_contract(payload: bytes | str) -> PersistedContract | HistoricalProductionRecord:
     """Strictly decode, version-dispatch, validate, and verify one persisted record."""
 
     data = payload.encode("utf-8", errors="strict") if isinstance(payload, str) else bytes(payload)
@@ -120,6 +123,8 @@ def load_contract(payload: bytes | str) -> PersistedContract:
         raise UnsupportedContractVersionError(
             f"unsupported {PRODUCTION_CONTRACT} contract version: {contract_version!r}"
         )
+    if contract_version == "2.0.0":
+        return load_historical_contract(data)
     record_type = _RECORD_TYPES.get(kind) if isinstance(kind, str) else None
     if record_type is None:
         raise UnsupportedContractKindError(f"unsupported {PRODUCTION_CONTRACT}/{contract_version} kind: {kind!r}")

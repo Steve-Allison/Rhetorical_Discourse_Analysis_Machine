@@ -5,6 +5,14 @@ metadata:
   type: project
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 The Docling-native plan rests on schema assumptions verified on **five sample files**. Each assumption needs broader empirical confirmation against the five-fixture set being built in Phase 0.
 
 ## Slide notes reachability — PARTIALLY RESOLVED 2026-05-15
@@ -109,4 +117,4 @@ The four non-default layers serve different rhetorical purposes:
 
 Phase 0 step 3 (schema-detail verification) walks each of these against the fixture set. Each gets a yes/no answer and updates the plan if a "no" is found.
 
-Related: [[verified-docling-core-api]], [[verified-docling-schema]], [[open-rst-real-world-quality]].
+Related: [verified-docling-core-api](verified_docling_core_api.md), [verified-docling-schema](verified_docling_schema.md), [open-rst-real-world-quality](open_rst_real_world_quality.md).

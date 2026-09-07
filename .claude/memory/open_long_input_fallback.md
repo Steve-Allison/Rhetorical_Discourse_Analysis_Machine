@@ -5,6 +5,14 @@ metadata:
   type: project
 ---
 
+> **Historical note — current status reconciled 2026-09-06.** The observations,
+> proposed APIs and open questions below describe the dated work recorded here.
+> They are not current installation or implementation instructions. The current
+> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
+> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
+> and [documentation guide](../../docs/README.md). Original decisions and measurements
+> remain below for traceability; eRST work is suspended.
+
 The one-tree-per-document architecture feeds the entire cue-aware harvest into a single `Parser` call. Realistic Docling-document harvests can be large:
 
 - Multi-page PDFs: ~50–500 KB of harvested text.
@@ -43,4 +51,4 @@ The CLAUDE.md notes `tokenizer.model_max_length = 1e9` (sliding-window encoding 
 - If options 2 or 3 are needed, the build plan and proposal need amending — bring back to user for redesign approval.
 - Until empirically verified, the plan assumes option 0: parser works fine on all realistic Docling-document inputs.
 
-Related: [[decision-one-tree-per-document]], [[open-rst-real-world-quality]].
+Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-rst-real-world-quality](open_rst_real_world_quality.md).

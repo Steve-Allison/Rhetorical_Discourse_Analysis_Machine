@@ -179,105 +179,20 @@ classes:
   Criterion:
     is_a: SemanticResource
     class_uri: coe:Criterion
-    attributes:
-      weight:
-        range: float
-        minimum_value: 0
-        slot_uri: coe:weight
-        description: Relative importance of this criterion in its parent's weighting scheme;
-          non-negative, conventionally summing to 1 across siblings.
-      minimum_score:
-        range: float
-        slot_uri: coe:minimumScore
-        description: Lowest score this criterion can be awarded.
-      maximum_score:
-        range: float
-        slot_uri: coe:maximumScore
-        description: Highest score this criterion can be awarded.
-    description: One judgeable quality property, optionally weighted and score-bounded
-      for use inside a scoring model.
-  ScoreLevel:
-    class_uri: coe:ScoreLevel
-    description: Locally scoped scoring value; it inherits meaning and ownership from its dimension.
-    attributes:
-      score:
-        required: true
-        range: integer
-        slot_uri: coe:scoreValue
-        description: Numeric value awarded at this level.
-      level_label:
-        required: true
-        slot_uri: rdfs:label
-        description: Short name of this level, for example exemplary.
-      criteria:
-        required: true
-        slot_uri: dcterms:description
-        description: Observable conditions an artifact must meet to be scored at this level.
+    description: One judgeable quality property named for use inside a scoring model; its
+      weight and score bounds are library knowledge, not part of its meaning.
   ScoringDimension:
     is_a: Criterion
     class_uri: coe:ScoringDimension
     attributes:
-      score_levels:
-        range: ScoreLevel
-        multivalued: true
-        inlined_as_list: true
-        slot_uri: coe:scoreLevel
-        description: Ordered levels defining what each score means on this dimension.
       criteria:
         range: Criterion
         multivalued: true
         inlined_as_list: true
         slot_uri: coe:criterion
         description: Nested criteria refining this dimension.
-    description: One weighted dimension of a scoring model, judged against ordered score
-      levels or nested criteria.
-  Threshold:
-    class_uri: coe:Threshold
-    description: One numeric quality bound owned by its scoring model; locally scoped, it
-      inherits domain and evidence from the model that declares it. Every threshold measures
-      exactly one quantity, names that quantity's unit, and declares at least one numeric
-      bound — a target, a minimum, a maximum, or any combination.
-    attributes:
-      key:
-        required: true
-        slot_uri: coe:key
-        description: Stable machine key naming the measured quantity within this scoring model.
-      label:
-        required: true
-        slot_uri: rdfs:label
-        description: Human-readable name of the measured quantity.
-      description:
-        required: true
-        slot_uri: dcterms:description
-        description: What the threshold measures, why the bound holds, and how a consumer
-          applies it; never a restatement of the key.
-      unit:
-        required: true
-        slot_uri: coe:unit
-        description: Unit of measure the bounds are expressed in, for example LUFS, words
-          per minute, ratio, contrast ratio, or points.
-      target_value:
-        range: float
-        slot_uri: coe:targetValue
-        description: Preferred value of the measured quantity when quality is fully met.
-      minimum_value:
-        range: float
-        slot_uri: coe:minimumValue
-        description: Lowest acceptable value of the measured quantity.
-      maximum_value:
-        range: float
-        slot_uri: coe:maximumValue
-        description: Highest acceptable value of the measured quantity.
-    any_of:
-    - slot_conditions:
-        target_value:
-          required: true
-    - slot_conditions:
-        minimum_value:
-          required: true
-    - slot_conditions:
-        maximum_value:
-          required: true
+    description: One dimension of a scoring model, defined in prose and refined by nested
+      criteria; the score levels a consumer judges it against live in the library.
   ScoringModel:
     is_a: KnowledgeArtifact
     class_uri: coe:ScoringModel
@@ -287,15 +202,9 @@ classes:
         multivalued: true
         inlined_as_list: true
         slot_uri: coe:dimension
-        description: Weighted dimensions this model judges quality on.
-      thresholds:
-        range: Threshold
-        multivalued: true
-        inlined_as_list: true
-        slot_uri: coe:threshold
-        description: Numeric quality bounds this model's judgements apply.
-    description: One weighted, evidence-grounded instrument for judging artifact quality;
-      it gathers scoring dimensions and the numeric thresholds those judgements apply.
+        description: Dimensions this model judges quality on.
+    description: One named, evidence-grounded instrument for judging artifact quality by its
+      prose dimensions; its numeric scoring lives in the library.
   ReferenceRecord:
     is_a: KnowledgeArtifact
     class_uri: coe:ReferenceRecord

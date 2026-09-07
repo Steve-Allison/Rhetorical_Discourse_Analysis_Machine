@@ -45,9 +45,11 @@ from anthropic import AsyncAnthropic
 from dotenv import dotenv_values
 from dotenv import load_dotenv as load_dotenv_file
 from httpx2 import AsyncClient
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, DEFAULT_TIMEOUT as OPENAI_DEFAULT_TIMEOUT
 from pydantic import BaseModel, NonNegativeInt
-from pydantic_ai import Agent, AgentRunResult, ModelRetry, RunContext
+from pydantic_ai import Agent, AgentRunResult, ModelRetry, ModelRequestContext, RunContext
+from pydantic_ai.capabilities import AbstractCapability, WrapModelRequestHandler
+from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.exceptions import (
     AgentRunError,
     ModelAPIError,
@@ -62,6 +64,7 @@ from pydantic_ai.providers.anthropic import AnthropicProvider
 from pydantic_ai.providers.openai import OpenAIProvider
 
 from rdam.contracts import Retryability, UnavailableReason
+from rdam.ingest.contracts.evidence import SourceEvidenceSpan
 
 DEFAULT_MODEL: Final = "openai:gpt-5.6-sol"
 """The model the LLM-backed providers call unless ``RDAM_LLM_MODEL`` overrides it.
@@ -73,7 +76,13 @@ A Pydantic AI model string, so the provider is part of the identity: swapping to
 MODEL_ENV: Final = "RDAM_LLM_MODEL"
 DEFAULT_OUTPUT_RETRIES: Final = 2
 DEFAULT_TRANSPORT_RETRIES: Final = 2
-DEFAULT_TRANSPORT_DEADLINE_SECONDS: Final = 60.0
+# The default model uses OpenAI's response budget. Keep a finite total deadline
+# without imposing a shorter, unrelated cutoff on structured reasoning output.
+# Explicit machine/provider settings still take precedence for every vendor.
+_sdk_response_timeout = OPENAI_DEFAULT_TIMEOUT.read
+if _sdk_response_timeout is None or not isfinite(_sdk_response_timeout) or _sdk_response_timeout <= 0:
+    raise RuntimeError("the default model SDK must declare a finite positive response timeout")
+DEFAULT_TRANSPORT_DEADLINE_SECONDS: Final = _sdk_response_timeout
 _INITIAL_RETRY_DELAY_SECONDS: Final = 0.25
 _MAX_RETRY_DELAY_SECONDS: Final = 8.0
 
@@ -250,6 +259,20 @@ async def _model_without_implicit_retries(model: str, *, timeout_seconds: float)
             raise AssertionError("model identity parser admitted an unsupported provider")
 
 
+def source_locations(context: RunContext[str], quotations: list[str]) -> dict[str, tuple[SourceEvidenceSpan, ...]]:
+    """Locate each nonempty quotation literally in the source, retaining all ambiguous occurrences."""
+    locations: dict[str, tuple[SourceEvidenceSpan, ...]] = {}
+    for quotation in quotations:
+        matches: list[SourceEvidenceSpan] = []
+        if quotation:
+            start = context.deps.find(quotation)
+            while start >= 0:
+                matches.append(SourceEvidenceSpan(start=start, end=start + len(quotation), text=quotation))
+                start = context.deps.find(quotation, start + 1)
+        locations[quotation] = tuple(matches)
+    return locations
+
+
 @dataclass(frozen=True, slots=True)
 class Extraction[StructureT: BaseModel]:
     """One accepted proposal, with the identity and effort that produced it."""
@@ -258,6 +281,35 @@ class Extraction[StructureT: BaseModel]:
     model: str
     output_attempts: int
     transport_attempts: int
+
+
+@dataclass
+class _AttemptEvidence(AbstractCapability[str]):
+    """One extraction's observed requests, including its validation and transport retries."""
+
+    output_attempts: int = 0
+    transport_attempts: int = 0
+
+    async def wrap_model_request(
+        self,
+        ctx: RunContext[str],
+        *,
+        request_context: ModelRequestContext,
+        handler: WrapModelRequestHandler,
+    ) -> ModelResponse:
+        self.transport_attempts += 1
+        try:
+            response = await handler(request_context)
+        except UnexpectedModelBehavior:
+            # The provider could not decode the model output into a response.
+            self.output_attempts += 1
+            raise
+        function_names = {tool.name for tool in request_context.model_request_parameters.function_tools}
+        calls = [part for part in response.parts if isinstance(part, ToolCallPart)]
+        # A source-lookup turn is a model request, but not an output proposal.
+        if not calls or any(call.tool_name not in function_names for call in calls):
+            self.output_attempts += 1
+        return response
 
 
 class StructuredAnalyst[StructureT: BaseModel]:
@@ -333,13 +385,13 @@ class StructuredAnalyst[StructureT: BaseModel]:
                 ) from error
         return output
 
-    async def _run(self, text: str) -> AgentRunResult[StructureT]:
-        """One agent run. Kept as the causal external-boundary seam for tests."""
+    async def _run(self, text: str, evidence: _AttemptEvidence) -> AgentRunResult[StructureT]:
+        """One agent run with extraction-local observation of every model request."""
 
         async with _model_without_implicit_retries(
             self._model, timeout_seconds=self._transport_deadline_seconds
         ) as model:
-            return await self._built().run(text, deps=text, model=model)
+            return await self._built().run(text, deps=text, model=model, capabilities=[evidence])
 
     def extract(self, text: str) -> Extraction[StructureT]:
         """Return the validated structure, or raise :class:`LlmError` with its class."""
@@ -351,85 +403,81 @@ class StructuredAnalyst[StructureT: BaseModel]:
 
         if not text.strip():
             raise LlmError("empty_source_text", Retryability.NOT_RETRYABLE, "no text to analyse")
-        transport_attempts = 0
+        evidence = _AttemptEvidence()
+        transport_runs = 0
         try:
             async with asyncio.timeout(self._transport_deadline_seconds):
                 while True:
-                    transport_attempts += 1
+                    transport_runs += 1
                     try:
-                        result = await self._run(text)
+                        result = await self._run(text, evidence)
                         break
                     except UnexpectedModelBehavior as error:
-                        output_attempts = self._output_retries + 1
                         raise LlmError(
                             "llm_output_failed_validation",
                             Retryability.NOT_RETRYABLE,
-                            f"no valid {self._output_type.__name__} in {output_attempts} attempts: {error}",
-                            output_attempts=output_attempts,
-                            transport_attempts=transport_attempts - 1 + output_attempts,
+                            f"no valid {self._output_type.__name__} in {evidence.output_attempts} attempts: {error}",
+                            output_attempts=evidence.output_attempts,
+                            transport_attempts=evidence.transport_attempts,
                         ) from error
                     except ModelHTTPError as error:
                         retryable = error.status_code in {408, 409, 429} or error.status_code >= 500
-                        if retryable and transport_attempts <= self._transport_retries:
-                            await self._wait_before_retry(error.retry_after, transport_attempts)
+                        if retryable and transport_runs <= self._transport_retries:
+                            await self._wait_before_retry(error.retry_after, transport_runs)
                             continue
                         raise LlmError(
                             "llm_request_rejected",
                             Retryability.RETRYABLE if retryable else Retryability.NOT_RETRYABLE,
                             f"HTTP {error.status_code}",
-                            transport_attempts=transport_attempts,
+                            output_attempts=evidence.output_attempts,
+                            transport_attempts=evidence.transport_attempts,
                         ) from error
                     except UsageLimitExceeded as error:
                         raise LlmError(
                             "llm_usage_limit_exceeded",
                             Retryability.NOT_RETRYABLE,
                             str(error),
-                            transport_attempts=transport_attempts,
+                            output_attempts=evidence.output_attempts,
+                            transport_attempts=evidence.transport_attempts,
                         ) from error
                     except ModelAPIError as error:
-                        if transport_attempts <= self._transport_retries:
-                            await self._wait_before_retry(None, transport_attempts)
+                        if transport_runs <= self._transport_retries:
+                            await self._wait_before_retry(None, transport_runs)
                             continue
                         raise LlmError(
                             "llm_transport_failed",
                             Retryability.RETRYABLE,
                             str(error),
-                            transport_attempts=transport_attempts,
+                            output_attempts=evidence.output_attempts,
+                            transport_attempts=evidence.transport_attempts,
                         ) from error
                     except AgentRunError as error:
                         raise LlmError(
                             "llm_run_failed",
                             Retryability.UNKNOWN,
                             str(error),
-                            transport_attempts=transport_attempts,
+                            output_attempts=evidence.output_attempts,
+                            transport_attempts=evidence.transport_attempts,
                         ) from error
         except TimeoutError as error:
             raise LlmError(
                 "llm_transport_deadline_exceeded",
                 Retryability.RETRYABLE,
                 f"transport deadline {self._transport_deadline_seconds:g}s exhausted",
-                transport_attempts=transport_attempts,
+                output_attempts=evidence.output_attempts,
+                transport_attempts=evidence.transport_attempts,
             ) from error
-        output_attempts = _request_count(result)
         return Extraction(
             structure=result.output,
             model=self._model,
-            output_attempts=output_attempts,
-            transport_attempts=transport_attempts - 1 + output_attempts,
+            output_attempts=evidence.output_attempts,
+            transport_attempts=evidence.transport_attempts,
         )
 
     async def _wait_before_retry(self, retry_after: float | None, attempt: int) -> None:
         ceiling = min(_INITIAL_RETRY_DELAY_SECONDS * (2 ** (attempt - 1)), _MAX_RETRY_DELAY_SECONDS)
         delay = retry_after if retry_after is not None else random.uniform(0.0, ceiling)
         await asyncio.sleep(delay)
-
-
-def _request_count(result: object) -> int:
-    """How many model requests the run actually made, from Pydantic AI's own usage record."""
-
-    usage = getattr(result, "usage", None)
-    requests = getattr(usage() if callable(usage) else usage, "requests", None)
-    return requests if isinstance(requests, int) and requests > 0 else 1
 
 
 __all__ = [

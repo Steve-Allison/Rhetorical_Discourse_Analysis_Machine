@@ -10,9 +10,11 @@ diagram calculations under pathological data regimes:
 
 import math
 import numpy as np
+import pytest
 
 from workbench.evaluation.rst.calibration import (
     CalibrationSummary,
+    CalibrationFitError,
     TemperatureScaler,
     compute_calibration_error,
 )
@@ -30,7 +32,7 @@ def test_temperature_scaler_handles_extreme_overflow_underflow_logits() -> None:
         ],
         dtype=np.float64,
     )
-    labels = np.array([1, 1, 0, 0, 0], dtype=np.int64)
+    labels = np.array([1, 0, 0, 0, 0], dtype=np.int64)
 
     scaler = TemperatureScaler(temperature=1.0)
     scaler.fit(logits, labels)
@@ -52,7 +54,8 @@ def test_temperature_scaler_handles_uniform_zero_logits() -> None:
     labels = np.array([1 if i % 2 == 0 else 0 for i in range(100)], dtype=np.int64)
 
     scaler = TemperatureScaler(temperature=1.0)
-    scaler.fit(logits, labels)
+    with pytest.raises(CalibrationFitError, match="unidentifiable"):
+        scaler.fit(logits, labels)
 
     assert math.isfinite(scaler.temperature)
     calibrated = scaler.predict_proba(logits)
@@ -61,9 +64,9 @@ def test_temperature_scaler_handles_uniform_zero_logits() -> None:
 
 
 def test_temperature_scaler_homogeneous_labels_does_not_crash() -> None:
-    # All labels are 0 (no positive secondary edges in small batch) in [50, 2]
-    logits = np.random.RandomState(42).randn(50, 2)
-    labels = np.zeros(50, dtype=np.int64)
+    # All labels are 0, with both correct and incorrect model predictions.
+    logits = np.array([[2.0, 0.0], [2.0, 0.0], [2.0, 0.0], [0.0, 2.0]])
+    labels = np.zeros(4, dtype=np.int64)
 
     scaler = TemperatureScaler()
     scaler.fit(logits, labels)
@@ -79,6 +82,7 @@ def test_compute_calibration_error_boundary_cases() -> None:
 
     summary = compute_calibration_error(probs, labels, n_bins=10)
     assert isinstance(summary, CalibrationSummary)
+    assert summary.expected_calibration_error is not None
     assert math.isfinite(summary.expected_calibration_error)
     assert 0.0 <= summary.expected_calibration_error <= 1.0
     assert summary.sample_count == 4
@@ -88,6 +92,7 @@ def test_compute_calibration_error_boundary_cases() -> None:
     wrong_probs = [0.99, 0.99, 0.01, 0.01]
     wrong_labels = [0, 0, 1, 1]
     wrong_summary = compute_calibration_error(wrong_probs, wrong_labels, n_bins=10)
+    assert wrong_summary.expected_calibration_error is not None
     assert wrong_summary.expected_calibration_error > summary.expected_calibration_error
     assert wrong_summary.expected_calibration_error > 0.50
 
@@ -95,5 +100,6 @@ def test_compute_calibration_error_boundary_cases() -> None:
 def test_calibration_summary_handles_empty_inputs() -> None:
     summary = compute_calibration_error([], [], n_bins=10)
     assert summary.sample_count == 0
-    assert summary.expected_calibration_error == 0.0
+    assert summary.expected_calibration_error is None
+    assert summary.max_calibration_error is None
     assert summary.bins == ()
