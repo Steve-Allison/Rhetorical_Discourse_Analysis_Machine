@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "rdam"
 version = "6.0.0"
 import-names = ["rdam"]
-description = "Rhetorical Discourse Analysis Machine: native RST/eRST, PDTB, SDRT, Toulmin, Walton, Dung, and IBIS analysis side by side."
+description = "Rhetorical Discourse Analysis Machine: native RST, PDTB, SDRT, Toulmin, Walton, Dung, and IBIS analysis side by side."
 readme = "README.md"
 requires-python = ">=3.14"
 license = "MIT"
