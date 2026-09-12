@@ -69,7 +69,7 @@ DOCLANG_ARCHIVE_DOCUMENT = b"<doclang><text>Baseline archive acceptance.</text><
 FIXTURES = {
     SourceForm.MARKDOWN: Path("tests/fixtures/markdown/minimal.md"),
     SourceForm.DOCLING_JSON: Path("tests/fixtures/docling/markdown.docling.json"),
-    SourceForm.DOCLANG_XML: Path("tests/fixtures/doclang/ok_comprehensive.dclg"),
+    SourceForm.DOCLANG_XML: Path("tests/fixtures/production_api/retained_content/mixed.dclg"),
 }
 # Fields whose value is the package's own version wherever they occur in a record.
 _PACKAGE_VERSION_FIELDS = frozenset({"package_version", "software_version"})

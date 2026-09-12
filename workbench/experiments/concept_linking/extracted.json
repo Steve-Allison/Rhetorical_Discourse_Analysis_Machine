@@ -1,0 +1,2227 @@
+{
+  "version": "1.4.0",
+  "gold_sha256": "ba7a2e1006e8c4c04882e675290d5aebbd8f096e5ca643857f668a2d10d8875c",
+  "models": "language;term",
+  "model_files": {
+    "confusables/confusablesRestricted.txt": "9d33fa6fd0aa487baa8879a8b1da93c5aa4a0e5a7a118230533dd759ca9caaaa",
+    "confusables/confusablesSummary.txt": "16273880a159d005548407101c84ad5c204049c6ed670b9ed042f11ac1540b7f",
+    "confusables/note.txt": "7e35a3e6ddddef976ee0e77b3d7a341ea71638d3a4be47f0197ea8f69912e365",
+    "data/nlp/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data/text/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "data.json": "0a3e60b16ad4dc65f6dc46e8f64779d6c9653fadfc89075cce7506aa67e16deb",
+    "data_nlp/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models/crf/geoloc/note.md": "85349fc8f49d00c90cd2f4d3061cf09182ba336c6b1a109913fd7e9377040dc8",
+    "models/crf/part-of-speech/crf_pos_model_en.bin": "d74db5e360dea976e8a88221f7607822ea4178bfa6907f634962bbaa6b5049a7",
+    "models/crf/part-of-speech/note.md": "785d9c6aa9dbccd445199142c309a347d91a181168bf358d0d08c844c46daca6",
+    "models/crf/reference/crf_reference.bin": "1c5d33eb9cea9cd0574429d444f414392b7f6d441629074aa5c0dbbf1586f75e",
+    "models/crf/reference/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models/crf/ucmi/crf_material.bin": "a70a3d4a1cf490ecf8ecf75c1dc91ed0cde0180fa56b036d14a762309d388c11",
+    "models/crf/ucmi/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models/fasttext/language/fst_language.bin": "7e69ec5451bc261cc7844e49e4792a85d7f09c06789ec800fc4a44aec362764e",
+    "models/fasttext/language/note.md": "4dbf02a718823b78415e68752418155b43a4739fd7fee9fc0f7b01685da36b02",
+    "models/fasttext/metadata/fst_author.bin": "fc4fed0154f9b7c1294ad5eab725b13e4ee18095048e8128aa3d547624d29fa3",
+    "models/fasttext/metadata/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models/fasttext/person-name/fst_person_name.bin": "998cffe47670d2534ff49f217609f8750649c1fab2143c58da304e4f6388871c",
+    "models/fasttext/person-name/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models/fasttext/semantic/fst_semantic.bin": "2edabe277798e3d2445920237699de81ecd00e5270b7b337faf0e844f4378515",
+    "models/fasttext/semantic/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models/fasttext/topic/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models/rgx/geoloc/note.md": "85349fc8f49d00c90cd2f4d3061cf09182ba336c6b1a109913fd7e9377040dc8",
+    "models/rgx/geoloc/rgx_geoloc.json": "9792868b6f7d7b558beeaf36a97b501972d78892cfa29b1c38a768ac8bd7a8a8",
+    "models/rgx/vau/units.jsonl": "4d570c3b1e41cd07d6fd341aee3014e8211f83f5b3c081f8ace118898e32c536",
+    "models/tok/default-tokenizer.model": "9e556afd44213b6bd1be2b850ebbbd98f5481437a8021afaf58ee7fb1818d347",
+    "models/tok/note.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models.json": "86c2091e4d734d79e2d8c6b526401ebdd75fc318ab473b665d55632ed49d65e4"
+  },
+  "initialization_seconds": 0.8893394579936285,
+  "peak_rss_bytes": 618545152,
+  "verified_byte_offsets": 33,
+  "position_preserving_whitespace_substitutions": 1,
+  "python_character_offset_counterexamples": 8,
+  "passages": [
+    {
+      "id": "adobe-basic",
+      "seconds": 0.0003774579963646829,
+      "occurrences": [
+        {
+          "start": 0,
+          "end": 15,
+          "quote": "Adobe Analytics",
+          "type": "name",
+          "subtype": "person-name"
+        },
+        {
+          "start": 25,
+          "end": 31,
+          "quote": "visits",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 33,
+          "end": 46,
+          "quote": "Adobe Firefly",
+          "type": "name",
+          "subtype": "person-name"
+        },
+        {
+          "start": 55,
+          "end": 61,
+          "quote": "images",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              4097217992341528355,
+              "TEXT",
+              "#",
+              1.0,
+              3316410684123673809,
+              14698894837038095838,
+              null,
+              null,
+              0,
+              32,
+              0,
+              32,
+              0,
+              5,
+              true,
+              "Adobe Analytics measures visits.",
+              "Adobe Analytics measures visits."
+            ],
+            [
+              "name",
+              "person-name",
+              4097217992341528355,
+              "TEXT",
+              "#",
+              1.0,
+              12231359168888731554,
+              5354644380642116999,
+              null,
+              null,
+              0,
+              15,
+              0,
+              15,
+              0,
+              2,
+              true,
+              "Adobe Analytics",
+              "Adobe Analytics"
+            ],
+            [
+              "term",
+              "single-term",
+              4097217992341528355,
+              "TEXT",
+              "#",
+              1.0,
+              16381206566366703633,
+              13079381588006761201,
+              null,
+              null,
+              25,
+              31,
+              25,
+              31,
+              3,
+              4,
+              true,
+              "visits",
+              "visits"
+            ],
+            [
+              "sentence",
+              "proper",
+              4097217992341528355,
+              "TEXT",
+              "#",
+              1.0,
+              14722927606453906557,
+              17259819746564047940,
+              null,
+              null,
+              33,
+              62,
+              33,
+              62,
+              5,
+              10,
+              true,
+              "Adobe Firefly creates images.",
+              "Adobe Firefly creates images."
+            ],
+            [
+              "name",
+              "person-name",
+              4097217992341528355,
+              "TEXT",
+              "#",
+              1.0,
+              13667888039096553744,
+              11054361917203803977,
+              null,
+              null,
+              33,
+              46,
+              33,
+              46,
+              5,
+              7,
+              true,
+              "Adobe Firefly",
+              "Adobe Firefly"
+            ],
+            [
+              "term",
+              "single-term",
+              4097217992341528355,
+              "TEXT",
+              "#",
+              1.0,
+              16381206560620045048,
+              9500098217313878827,
+              null,
+              null,
+              55,
+              61,
+              55,
+              61,
+              8,
+              9,
+              true,
+              "images",
+              "images"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "Adobe Analytics measures visits. Adobe Firefly creates images.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              4097217992341528355,
+              "TEXT",
+              "#",
+              "en",
+              0.5799999833106995
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 4097217992341528355,
+        "text": "Adobe Analytics measures visits. Adobe Firefly creates images.",
+        "text_hash": 7604829381275616151,
+        "type": "text"
+      }
+    },
+    {
+      "id": "adobe-repeated",
+      "seconds": 0.00018291600281372666,
+      "occurrences": [
+        {
+          "start": 0,
+          "end": 15,
+          "quote": "Adobe Analytics",
+          "type": "name",
+          "subtype": "person-name"
+        },
+        {
+          "start": 31,
+          "end": 46,
+          "quote": "Adobe Analytics",
+          "type": "name",
+          "subtype": "person-name"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              6271276390149777542,
+              "TEXT",
+              "#",
+              1.0,
+              9312869671526136306,
+              4246769440809195132,
+              null,
+              null,
+              0,
+              47,
+              0,
+              47,
+              0,
+              8,
+              true,
+              "Adobe Analytics appears twice: Adobe Analytics.",
+              "Adobe Analytics appears twice: Adobe Analytics."
+            ],
+            [
+              "name",
+              "person-name",
+              6271276390149777542,
+              "TEXT",
+              "#",
+              1.0,
+              12231359168888731554,
+              4026820574868370071,
+              null,
+              null,
+              0,
+              15,
+              0,
+              15,
+              0,
+              2,
+              true,
+              "Adobe Analytics",
+              "Adobe Analytics"
+            ],
+            [
+              "name",
+              "person-name",
+              6271276390149777542,
+              "TEXT",
+              "#",
+              1.0,
+              12231359168888731554,
+              4026820574868372255,
+              null,
+              null,
+              31,
+              46,
+              31,
+              46,
+              5,
+              7,
+              true,
+              "Adobe Analytics",
+              "Adobe Analytics"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "Adobe Analytics appears twice: Adobe Analytics.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              6271276390149777542,
+              "TEXT",
+              "#",
+              "en",
+              0.7900000214576721
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 6271276390149777542,
+        "text": "Adobe Analytics appears twice: Adobe Analytics.",
+        "text_hash": 9312869671526136306,
+        "type": "text"
+      }
+    },
+    {
+      "id": "adobe-whitespace",
+      "seconds": 0.00015937499119900167,
+      "occurrences": [
+        {
+          "start": 12,
+          "end": 29,
+          "quote": "Adobe\n  Analytics",
+          "type": "name",
+          "subtype": "person-name"
+        },
+        {
+          "start": 36,
+          "end": 41,
+          "quote": "lunch",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              10577793418740950474,
+              "TEXT",
+              "#",
+              1.0,
+              745374484003203913,
+              879318938143620064,
+              null,
+              null,
+              0,
+              42,
+              0,
+              42,
+              0,
+              7,
+              true,
+              "We reviewed Adobe   Analytics after lunch.",
+              "We reviewed Adobe   Analytics after lunch."
+            ],
+            [
+              "name",
+              "person-name",
+              10577793418740950474,
+              "TEXT",
+              "#",
+              1.0,
+              954674037734830522,
+              12754256629788983975,
+              null,
+              null,
+              12,
+              29,
+              12,
+              29,
+              2,
+              4,
+              true,
+              "Adobe  Analytics",
+              "Adobe   Analytics"
+            ],
+            [
+              "term",
+              "single-term",
+              10577793418740950474,
+              "TEXT",
+              "#",
+              1.0,
+              329104161623306432,
+              907303027968367342,
+              null,
+              null,
+              36,
+              41,
+              36,
+              41,
+              5,
+              6,
+              true,
+              "lunch",
+              "lunch"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "We reviewed Adobe\n  Analytics after lunch.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              10577793418740950474,
+              "TEXT",
+              "#",
+              "en",
+              0.9599999785423279
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 10577793418740950474,
+        "text": "We reviewed Adobe   Analytics after lunch.",
+        "text_hash": 14087023288659471678,
+        "type": "text"
+      }
+    },
+    {
+      "id": "learning",
+      "seconds": 0.00020099998801015317,
+      "occurrences": [
+        {
+          "start": 0,
+          "end": 11,
+          "quote": "Scaffolding",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 18,
+          "end": 26,
+          "quote": "learners",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 28,
+          "end": 58,
+          "quote": "Retrieval Practice strengthens",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 28,
+          "end": 46,
+          "quote": "Retrieval Practice",
+          "type": "name",
+          "subtype": "person-name"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              13003330623939562268,
+              "TEXT",
+              "#",
+              1.0,
+              12088306824697963061,
+              3208751233125623366,
+              null,
+              null,
+              0,
+              27,
+              0,
+              27,
+              0,
+              4,
+              true,
+              "Scaffolding helps learners.",
+              "Scaffolding helps learners."
+            ],
+            [
+              "term",
+              "single-term",
+              13003330623939562268,
+              "TEXT",
+              "#",
+              1.0,
+              2449628894503558000,
+              6212478091214412314,
+              null,
+              null,
+              0,
+              11,
+              0,
+              11,
+              0,
+              1,
+              true,
+              "Scaffolding",
+              "Scaffolding"
+            ],
+            [
+              "term",
+              "single-term",
+              13003330623939562268,
+              "TEXT",
+              "#",
+              1.0,
+              14639581097006832221,
+              4655160916924536646,
+              null,
+              null,
+              18,
+              26,
+              18,
+              26,
+              2,
+              3,
+              true,
+              "learners",
+              "learners"
+            ],
+            [
+              "sentence",
+              "proper",
+              13003330623939562268,
+              "TEXT",
+              "#",
+              1.0,
+              12183352880234457950,
+              5563919365064516127,
+              null,
+              null,
+              28,
+              66,
+              28,
+              66,
+              4,
+              9,
+              true,
+              "Retrieval Practice strengthens recall.",
+              "Retrieval Practice strengthens recall."
+            ],
+            [
+              "term",
+              "single-term",
+              13003330623939562268,
+              "TEXT",
+              "#",
+              1.0,
+              15029324349645996724,
+              15787143665349490602,
+              null,
+              null,
+              28,
+              58,
+              28,
+              58,
+              4,
+              7,
+              true,
+              "Retrieval Practice strengthens",
+              "Retrieval Practice strengthens"
+            ],
+            [
+              "name",
+              "person-name",
+              13003330623939562268,
+              "TEXT",
+              "#",
+              1.0,
+              8198278104612083539,
+              11061161446257496215,
+              null,
+              null,
+              28,
+              46,
+              28,
+              46,
+              4,
+              6,
+              true,
+              "Retrieval Practice",
+              "Retrieval Practice"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "Scaffolding helps learners. Retrieval Practice strengthens recall.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              13003330623939562268,
+              "TEXT",
+              "#",
+              "en",
+              0.8199999928474426
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 13003330623939562268,
+        "text": "Scaffolding helps learners. Retrieval Practice strengthens recall.",
+        "text_hash": 16006046269375534956,
+        "type": "text"
+      }
+    },
+    {
+      "id": "learning-objective",
+      "seconds": 0.0002455420035403222,
+      "occurrences": [
+        {
+          "start": 4,
+          "end": 22,
+          "quote": "Learning Objective",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 36,
+          "end": 54,
+          "quote": "observable outcome",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              13284058414662399449,
+              "TEXT",
+              "#",
+              1.0,
+              16865854944714726705,
+              181661368853713057,
+              null,
+              null,
+              0,
+              55,
+              0,
+              55,
+              0,
+              8,
+              true,
+              "The Learning Objective specifies an observable outcome.",
+              "The Learning Objective specifies an observable outcome."
+            ],
+            [
+              "term",
+              "single-term",
+              13284058414662399449,
+              "TEXT",
+              "#",
+              1.0,
+              17762044592788497774,
+              16502832210877259060,
+              null,
+              null,
+              4,
+              22,
+              4,
+              22,
+              1,
+              3,
+              true,
+              "Learning Objective",
+              "Learning Objective"
+            ],
+            [
+              "term",
+              "single-term",
+              13284058414662399449,
+              "TEXT",
+              "#",
+              1.0,
+              2737423491364641497,
+              1338947279821422018,
+              null,
+              null,
+              36,
+              54,
+              36,
+              54,
+              5,
+              7,
+              true,
+              "observable outcome",
+              "observable outcome"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "The Learning Objective specifies an observable outcome.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              13284058414662399449,
+              "TEXT",
+              "#",
+              "en",
+              0.5799999833106995
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 13284058414662399449,
+        "text": "The Learning Objective specifies an observable outcome.",
+        "text_hash": 16865854944714726705,
+        "type": "text"
+      }
+    },
+    {
+      "id": "visual-ambiguity",
+      "seconds": 0.00020358298206701875,
+      "occurrences": [
+        {
+          "start": 4,
+          "end": 14,
+          "quote": "slide grid",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 44,
+          "end": 55,
+          "quote": "composition",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              15467366949610019399,
+              "TEXT",
+              "#",
+              1.0,
+              18434036206374176947,
+              6768537340066512045,
+              null,
+              null,
+              0,
+              56,
+              0,
+              56,
+              0,
+              9,
+              true,
+              "The slide grid provides scaffolding for the composition.",
+              "The slide grid provides scaffolding for the composition."
+            ],
+            [
+              "term",
+              "single-term",
+              15467366949610019399,
+              "TEXT",
+              "#",
+              1.0,
+              14106856599044660822,
+              11229880726339825772,
+              null,
+              null,
+              4,
+              14,
+              4,
+              14,
+              1,
+              3,
+              true,
+              "slide grid",
+              "slide grid"
+            ],
+            [
+              "term",
+              "single-term",
+              15467366949610019399,
+              "TEXT",
+              "#",
+              1.0,
+              14749101077007455096,
+              6557236881174241291,
+              null,
+              null,
+              44,
+              55,
+              44,
+              55,
+              7,
+              8,
+              true,
+              "composition",
+              "composition"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "The slide grid provides scaffolding for the composition.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              15467366949610019399,
+              "TEXT",
+              "#",
+              "en",
+              0.8100000023841858
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 15467366949610019399,
+        "text": "The slide grid provides scaffolding for the composition.",
+        "text_hash": 18434036206374176947,
+        "type": "text"
+      }
+    },
+    {
+      "id": "literal-ambiguity",
+      "seconds": 0.00015233299927785993,
+      "occurrences": [
+        {
+          "start": 0,
+          "end": 7,
+          "quote": "Workers",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 39,
+          "end": 44,
+          "quote": "house",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              16877966682314587850,
+              "TEXT",
+              "#",
+              1.0,
+              2049260149473616958,
+              9260494542915490224,
+              null,
+              null,
+              0,
+              45,
+              0,
+              45,
+              0,
+              7,
+              true,
+              "Workers erected scaffolding around the house.",
+              "Workers erected scaffolding around the house."
+            ],
+            [
+              "term",
+              "single-term",
+              16877966682314587850,
+              "TEXT",
+              "#",
+              1.0,
+              8106342588213212904,
+              7357899554211247505,
+              null,
+              null,
+              0,
+              7,
+              0,
+              7,
+              0,
+              1,
+              true,
+              "Workers",
+              "Workers"
+            ],
+            [
+              "term",
+              "single-term",
+              16877966682314587850,
+              "TEXT",
+              "#",
+              1.0,
+              329104161533767326,
+              13814815746617623864,
+              null,
+              null,
+              39,
+              44,
+              39,
+              44,
+              5,
+              6,
+              true,
+              "house",
+              "house"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "Workers erected scaffolding around the house.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              16877966682314587850,
+              "TEXT",
+              "#",
+              "en",
+              0.9700000286102295
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 16877966682314587850,
+        "text": "Workers erected scaffolding around the house.",
+        "text_hash": 2049260149473616958,
+        "type": "text"
+      }
+    },
+    {
+      "id": "narrative",
+      "seconds": 0.00019749999046325684,
+      "occurrences": [
+        {
+          "start": 4,
+          "end": 10,
+          "quote": "writer",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 18,
+          "end": 26,
+          "quote": "metaphor",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 43,
+          "end": 48,
+          "quote": "storm",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              10307930924628462876,
+              "TEXT",
+              "#",
+              1.0,
+              13346656667060557164,
+              3863902132299461981,
+              null,
+              null,
+              0,
+              49,
+              0,
+              49,
+              0,
+              10,
+              true,
+              "The writer used a metaphor to describe the storm.",
+              "The writer used a metaphor to describe the storm."
+            ],
+            [
+              "term",
+              "single-term",
+              10307930924628462876,
+              "TEXT",
+              "#",
+              1.0,
+              16381206558016426374,
+              9740888852801598403,
+              null,
+              null,
+              4,
+              10,
+              4,
+              10,
+              1,
+              2,
+              true,
+              "writer",
+              "writer"
+            ],
+            [
+              "term",
+              "single-term",
+              10307930924628462876,
+              "TEXT",
+              "#",
+              1.0,
+              14638347573456485401,
+              2046710705769885100,
+              null,
+              null,
+              18,
+              26,
+              18,
+              26,
+              4,
+              5,
+              true,
+              "metaphor",
+              "metaphor"
+            ],
+            [
+              "term",
+              "single-term",
+              10307930924628462876,
+              "TEXT",
+              "#",
+              1.0,
+              329104161640489106,
+              11034749282994141608,
+              null,
+              null,
+              43,
+              48,
+              43,
+              48,
+              8,
+              9,
+              true,
+              "storm",
+              "storm"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "The writer used a metaphor to describe the storm.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              10307930924628462876,
+              "TEXT",
+              "#",
+              "en",
+              0.8500000238418579
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 10307930924628462876,
+        "text": "The writer used a metaphor to describe the storm.",
+        "text_hash": 13346656667060557164,
+        "type": "text"
+      }
+    },
+    {
+      "id": "unicode",
+      "seconds": 0.00024516601115465164,
+      "occurrences": [
+        {
+          "start": 0,
+          "end": 8,
+          "quote": "Élodie 😀",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 14,
+          "end": 29,
+          "quote": "Adobe Analytics",
+          "type": "name",
+          "subtype": "person-name"
+        },
+        {
+          "start": 39,
+          "end": 43,
+          "quote": "café",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 47,
+          "end": 55,
+          "quote": "metaphor",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "improper",
+              12071124993575620875,
+              "TEXT",
+              "#",
+              1.0,
+              15224723911748766245,
+              6274065826410935955,
+              null,
+              null,
+              0,
+              17,
+              0,
+              13,
+              0,
+              3,
+              true,
+              "Élodie 😀 used",
+              "Élodie 😀 used"
+            ],
+            [
+              "term",
+              "single-term",
+              12071124993575620875,
+              "TEXT",
+              "#",
+              1.0,
+              18371898164509626008,
+              6466562152509725407,
+              null,
+              null,
+              0,
+              12,
+              0,
+              8,
+              0,
+              2,
+              true,
+              "Élodie 😀",
+              "Élodie 😀"
+            ],
+            [
+              "sentence",
+              "proper",
+              12071124993575620875,
+              "TEXT",
+              "#",
+              1.0,
+              8960613388569940221,
+              15383450030961934170,
+              null,
+              null,
+              18,
+              49,
+              14,
+              44,
+              3,
+              9,
+              true,
+              "Adobe Analytics beside a café.",
+              "Adobe Analytics beside a café."
+            ],
+            [
+              "name",
+              "person-name",
+              12071124993575620875,
+              "TEXT",
+              "#",
+              1.0,
+              12231359168888731554,
+              6959356292130143009,
+              null,
+              null,
+              18,
+              33,
+              14,
+              29,
+              3,
+              5,
+              true,
+              "Adobe Analytics",
+              "Adobe Analytics"
+            ],
+            [
+              "term",
+              "single-term",
+              12071124993575620875,
+              "TEXT",
+              "#",
+              1.0,
+              389609625695109336,
+              17377081492027587044,
+              null,
+              null,
+              43,
+              48,
+              39,
+              43,
+              7,
+              8,
+              true,
+              "café",
+              "café"
+            ],
+            [
+              "sentence",
+              "proper",
+              12071124993575620875,
+              "TEXT",
+              "#",
+              1.0,
+              15478053045613064220,
+              16473722927897095552,
+              null,
+              null,
+              50,
+              70,
+              45,
+              65,
+              9,
+              13,
+              true,
+              "A metaphor followed.",
+              "A metaphor followed."
+            ],
+            [
+              "term",
+              "single-term",
+              12071124993575620875,
+              "TEXT",
+              "#",
+              1.0,
+              14638347573456485401,
+              9234320561603968726,
+              null,
+              null,
+              52,
+              60,
+              47,
+              55,
+              10,
+              11,
+              true,
+              "metaphor",
+              "metaphor"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "Élodie 😀 used Adobe Analytics beside a café. A metaphor followed.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              12071124993575620875,
+              "TEXT",
+              "#",
+              "en",
+              0.4399999976158142
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 12071124993575620875,
+        "text": "Élodie 😀 used Adobe Analytics beside a café. A metaphor followed.",
+        "text_hash": 15037723873008288127,
+        "type": "text"
+      }
+    },
+    {
+      "id": "combining",
+      "seconds": 0.00018479101709090173,
+      "occurrences": [
+        {
+          "start": 0,
+          "end": 14,
+          "quote": "Café visitors",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 25,
+          "end": 38,
+          "quote": "Adobe Firefly",
+          "type": "name",
+          "subtype": "person-name"
+        },
+        {
+          "start": 45,
+          "end": 53,
+          "quote": "metaphor",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              17877587480934471790,
+              "TEXT",
+              "#",
+              1.0,
+              3048106892311710426,
+              14056244671326025637,
+              null,
+              null,
+              0,
+              55,
+              0,
+              54,
+              0,
+              9,
+              true,
+              "Café visitors discussed Adobe Firefly and a metaphor.",
+              "Café visitors discussed Adobe Firefly and a metaphor."
+            ],
+            [
+              "term",
+              "single-term",
+              17877587480934471790,
+              "TEXT",
+              "#",
+              1.0,
+              16367070936262456632,
+              10892399552406530159,
+              null,
+              null,
+              0,
+              15,
+              0,
+              14,
+              0,
+              2,
+              true,
+              "Café visitors",
+              "Café visitors"
+            ],
+            [
+              "name",
+              "person-name",
+              17877587480934471790,
+              "TEXT",
+              "#",
+              1.0,
+              13667888039096553744,
+              16176580788259695452,
+              null,
+              null,
+              26,
+              39,
+              25,
+              38,
+              3,
+              5,
+              true,
+              "Adobe Firefly",
+              "Adobe Firefly"
+            ],
+            [
+              "term",
+              "single-term",
+              17877587480934471790,
+              "TEXT",
+              "#",
+              1.0,
+              14638347573456485401,
+              4041481204390077647,
+              null,
+              null,
+              46,
+              54,
+              45,
+              53,
+              7,
+              8,
+              true,
+              "metaphor",
+              "metaphor"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "Café visitors discussed Adobe Firefly and a metaphor.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              17877587480934471790,
+              "TEXT",
+              "#",
+              "en",
+              0.5699999928474426
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 17877587480934471790,
+        "text": "Café visitors discussed Adobe Firefly and a metaphor.",
+        "text_hash": 3048106892311710426,
+        "type": "text"
+      }
+    },
+    {
+      "id": "boundaries",
+      "seconds": 0.0002134589885827154,
+      "occurrences": [
+        {
+          "start": 4,
+          "end": 27,
+          "quote": "token xAdobe Analyticsx",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 11,
+          "end": 27,
+          "quote": "Adobe Analyticsx",
+          "type": "name",
+          "subtype": "person-name"
+        },
+        {
+          "start": 50,
+          "end": 65,
+          "quote": "product mention",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              6088134415257953710,
+              "TEXT",
+              "#",
+              1.0,
+              9090690631641525530,
+              5267356236658841851,
+              null,
+              null,
+              0,
+              66,
+              0,
+              66,
+              0,
+              11,
+              true,
+              "The token xAdobe Analyticsx is deliberately not a product mention.",
+              "The token xAdobe Analyticsx is deliberately not a product mention."
+            ],
+            [
+              "term",
+              "single-term",
+              6088134415257953710,
+              "TEXT",
+              "#",
+              1.0,
+              2955570590838120211,
+              9857011689560890553,
+              null,
+              null,
+              4,
+              27,
+              4,
+              27,
+              1,
+              4,
+              true,
+              "token xAdobe Analyticsx",
+              "token xAdobe Analyticsx"
+            ],
+            [
+              "name",
+              "person-name",
+              6088134415257953710,
+              "TEXT",
+              "#",
+              1.0,
+              15589794174267401642,
+              3502365422054108249,
+              null,
+              null,
+              11,
+              27,
+              11,
+              27,
+              2,
+              4,
+              true,
+              "Adobe Analyticsx",
+              "Adobe Analyticsx"
+            ],
+            [
+              "term",
+              "single-term",
+              6088134415257953710,
+              "TEXT",
+              "#",
+              1.0,
+              13706139364453127043,
+              10841651608835735940,
+              null,
+              null,
+              50,
+              65,
+              50,
+              65,
+              8,
+              10,
+              true,
+              "product mention",
+              "product mention"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "The token xAdobe Analyticsx is deliberately not a product mention.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              6088134415257953710,
+              "TEXT",
+              "#",
+              "en",
+              0.8600000143051147
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 6088134415257953710,
+        "text": "The token xAdobe Analyticsx is deliberately not a product mention.",
+        "text_hash": 9090690631641525530,
+        "type": "text"
+      }
+    },
+    {
+      "id": "unknown",
+      "seconds": 0.0001644160074647516,
+      "occurrences": [
+        {
+          "start": 4,
+          "end": 19,
+          "quote": "invented method",
+          "type": "term",
+          "subtype": "single-term"
+        },
+        {
+          "start": 23,
+          "end": 46,
+          "quote": "quantum banana tutoring",
+          "type": "term",
+          "subtype": "single-term"
+        }
+      ],
+      "raw": {
+        "applied_models": [
+          "cite",
+          "expression",
+          "language",
+          "link",
+          "name",
+          "numval",
+          "parenthesis",
+          "quote",
+          "sentence",
+          "term"
+        ],
+        "dloc": "#",
+        "instances": {
+          "data": [
+            [
+              "sentence",
+              "proper",
+              11398274325634177155,
+              "TEXT",
+              "#",
+              1.0,
+              14437476156738980343,
+              5879415916286926144,
+              null,
+              null,
+              0,
+              47,
+              0,
+              47,
+              0,
+              8,
+              true,
+              "The invented method is quantum banana tutoring.",
+              "The invented method is quantum banana tutoring."
+            ],
+            [
+              "term",
+              "single-term",
+              11398274325634177155,
+              "TEXT",
+              "#",
+              1.0,
+              13858444188556190823,
+              9259074869707753385,
+              null,
+              null,
+              4,
+              19,
+              4,
+              19,
+              1,
+              3,
+              true,
+              "invented method",
+              "invented method"
+            ],
+            [
+              "term",
+              "single-term",
+              11398274325634177155,
+              "TEXT",
+              "#",
+              1.0,
+              11205311959621765423,
+              2029799781045953208,
+              null,
+              null,
+              23,
+              46,
+              23,
+              46,
+              4,
+              7,
+              true,
+              "quantum banana tutoring",
+              "quantum banana tutoring"
+            ]
+          ],
+          "headers": [
+            "type",
+            "subtype",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "conf",
+            "hash",
+            "ihash",
+            "coor_i",
+            "coor_j",
+            "char_i",
+            "char_j",
+            "ctok_i",
+            "ctok_j",
+            "wtok_i",
+            "wtok_j",
+            "wtok-match",
+            "name",
+            "original"
+          ]
+        },
+        "model-application": {
+          "message": "success",
+          "success": true
+        },
+        "orig": "The invented method is quantum banana tutoring.",
+        "properties": {
+          "data": [
+            [
+              "language",
+              11398274325634177155,
+              "TEXT",
+              "#",
+              "en",
+              0.9200000166893005
+            ]
+          ],
+          "headers": [
+            "type",
+            "subj_hash",
+            "subj_name",
+            "subj_path",
+            "label",
+            "confidence"
+          ]
+        },
+        "prov": [],
+        "sref": "#",
+        "subj_hash": 11398274325634177155,
+        "text": "The invented method is quantum banana tutoring.",
+        "text_hash": 14437476156738980343,
+        "type": "text"
+      }
+    }
+  ]
+}

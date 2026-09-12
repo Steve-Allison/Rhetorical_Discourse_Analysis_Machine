@@ -1,0 +1,15 @@
+validator: FAIL [strict] (warnings failed the build under --strict) — 92 errors, 73 warnings → (not written; --no-write)
+  first errors:
+    [methodology-provenance-complete] RST provider record belongs to a different source identity.
+    [methodology-provenance-complete] RST provider record belongs to a different source identity.
+    [methodology-provenance-complete] RST provider record belongs to a different source identity.
+    [methodology-provenance-complete] RST provider record belongs to a different source identity.
+    [methodology-provenance-complete] RST provider record belongs to a different source identity.
+    ... and 87 more (see project/output/curated.validation.json)
+  first warnings:
+    [source-element-coverage] source '2026_ai_and_digital_trends_consumer_report.docling.json': curator set_aside is 168/241 (70%) of non-auto elements — coverage review required: no current authored review (Invisible Filter / coverage-honesty).
+    [source-element-coverage] source 'adobe_brand_concierge_security_overview.docling.json': curator set_aside is 116/180 (64%) of non-auto elements — coverage review required: no current authored review (Invisible Filter / coverage-honesty).
+    [source-element-coverage] source 'brand_concierge_icp_oct_2025.docling.json': curator set_aside is 24/30 (80%) of non-auto elements — coverage review required: no current authored review (Invisible Filter / coverage-honesty).
+    [source-element-coverage] source 'brand_concierge_pilot_scoping_form.docling.json': curator set_aside is 78/144 (54%) of non-auto elements — coverage review required: no current authored review (Invisible Filter / coverage-honesty).
+    [unlinked-alias-mention] node 'adobe-cx-enterprise-architecture' prose mentions 'brand visibility' (→ 'brand-concierge-agentic-brand-activation') without a [[wiki-link]]
+    ... and 68 more (see project/output/curated.validation.json)

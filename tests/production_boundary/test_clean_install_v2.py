@@ -7,7 +7,7 @@ import sys
 
 import pytest
 
-from rdam.rst.doclang.loader import load_doclang_archive
+from rdam.ingest.doclang.loader import load_doclang_archive
 from tools.production_boundary import clean_install
 from tools.production_boundary.installed_acceptance import _archive_bytes
 

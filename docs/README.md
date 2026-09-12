@@ -2,7 +2,8 @@
 
 Current usage is described by the [root README](../README.md),
 [production API contract](production-api-contract.md),
-[source ingest guide](production-source-ingest.md), and
+[source ingest guide](production-source-ingest.md),
+[shared concept linking](concept-linking.md), and
 [package/workbench boundary](production-offline-boundary.md).
 The [Feature 019 quickstart](../specs/019-unified-machine-interfaces/quickstart.md)
 contains runnable unified CLI, Python and HTTP examples.

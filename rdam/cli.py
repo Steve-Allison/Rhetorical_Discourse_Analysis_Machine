@@ -76,6 +76,15 @@ def create_parser() -> argparse.ArgumentParser:
     )
     _option(parser, "--version", nargs=0, const=True, help="emit installed version and contracts as JSON")
     commands = parser.add_subparsers(dest="command", parser_class=_Parser)
+    concepts = commands.add_parser("concepts", help="Link source mentions to Central without inference.")
+    concept_commands = concepts.add_subparsers(dest="concept_command", parser_class=_Parser, required=True)
+    link = concept_commands.add_parser("link", help="Execute a typed concept-link request.")
+    _option(link, "--request", required=True, help="JSON request path or - for stdin")
+    _option(link, "--ontology-index", help="Generated Central JSON projection; default: packaged snapshot")
+    _option(link, "--format", choices=("json", "jsonl"), default="json")
+    _option(link, "-o", "--output")
+    _option(link, "--force", nargs=0, const=True, default=False)
+    _option(link, "--diagnostics", choices=("json", "text"), default="json")
     descriptions = {
         "capabilities": "Describe all techniques and configured models without inference.",
         "prepare": "Inventory a source without inference; default: no selected projections.",
@@ -147,6 +156,7 @@ def create_parser() -> argparse.ArgumentParser:
             for name in ("dung-capacity", "max-workers"):
                 _option(sub, "--" + name, type=int)
         if command == "serve":
+            _option(sub, "--ontology-index", help="Generated Central JSON projection for concept linking")
             _option(sub, "--host", default="127.0.0.1")
             _option(sub, "--port", type=int, default=8765)
             _option(sub, "--max-request-bytes", type=int, default=64 * 1024 * 1024)
@@ -211,7 +221,7 @@ def _config(args: argparse.Namespace) -> MachineConfig:
 
 
 def _inputs(args: argparse.Namespace) -> tuple[Path, ...]:
-    paths = [getattr(args, name, None) for name in ("source", "request", "result", "config")]
+    paths = [getattr(args, name, None) for name in ("source", "request", "result", "config", "ontology_index")]
     paths.extend(_mapping(getattr(args, "structured", []), {"dung", "ibis"}).values())
     if getattr(args, "config", None) == "-" or paths.count("-") > 1:
         raise error("configuration", "invalid_request", "invalid_arguments")
@@ -317,10 +327,23 @@ def _request(args: argparse.Namespace) -> PreparationRequest | AggregateRequest:
 
 
 def _execute(args: argparse.Namespace) -> tuple[bytes, int, object]:
+    if args.command == "concepts":
+        from rdam.concepts import ConceptIndex, execute_request
+        from rdam.concepts.serialization import export_jsonl, load_request as load_concept_request, serialize as serialize_concepts
+
+        index = ConceptIndex.load(Path(args.ontology_index) if args.ontology_index else None)
+        linked = execute_request(load_concept_request(_read(args.request)), index)
+        payload = export_jsonl(linked) if args.format == "jsonl" else serialize_concepts(linked)
+        return payload, 0, None
     if args.command == "version":
         record = version_info()
     elif args.command == "schema":
         from rdam.serialization import schema
+
+        if args.record in {"concept-link-request", "concept-links", "concept-mention"}:
+            from rdam.concepts.serialization import schema as concept_schema
+
+            return canonical_json_bytes(concept_schema(args.record, mode=args.mode)), 0, None
 
         return canonical_json_bytes(schema(args.record, mode=args.mode)), 0, None
     elif args.command in {"summary", "view"}:
@@ -341,6 +364,7 @@ def _execute(args: argparse.Namespace) -> tuple[bytes, int, object]:
 
         machine = production_machine(config=config)
         if args.command == "serve":
+            from rdam.concepts import ConceptIndex
             from rdam.http import serve
 
             serve(
@@ -349,6 +373,7 @@ def _execute(args: argparse.Namespace) -> tuple[bytes, int, object]:
                 port=args.port,
                 max_request_bytes=args.max_request_bytes,
                 body_timeout_seconds=args.body_timeout_seconds,
+                concept_index=ConceptIndex.load(Path(args.ontology_index)) if args.ontology_index else None,
             )
             return b"", 0, None
         if isinstance(request, AggregateRequest):

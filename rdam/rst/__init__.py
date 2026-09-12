@@ -11,9 +11,9 @@ import os
 from collections.abc import Awaitable
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import IO
+from typing import IO, TYPE_CHECKING
+from importlib import import_module
 
-from . import _torch_runtime as _torch_runtime
 from ._version import resolve_installed_package_version
 from .annotation_rst import DiscourseUnit, register_isanlp_compat
 from .contracts import (
@@ -53,11 +53,23 @@ from .graph import (
     to_turtle,
 )
 from .ontology import OntologyAdapter
-from .parser import Parser
 from .rstviewer import RenderedRST, main as _rst_main
-from .dmrst_parser.predictor import PredictorDMRST
-from .universal_parser.predictor import PredictorUniRST
 from .utils.analysis import find_cdu, relation_category, tree_stats
+
+if TYPE_CHECKING:
+    from .parser import Parser
+    from .dmrst_parser.predictor import PredictorDMRST
+    from .universal_parser.predictor import PredictorUniRST
+
+
+def __getattr__(name: str) -> object:
+    modules = {"Parser": ".parser", "PredictorDMRST": ".dmrst_parser.predictor", "PredictorUniRST": ".universal_parser.predictor"}
+    if name not in modules:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    value = getattr(import_module(modules[name], __name__), name)
+    globals()[name] = value
+    return value
+
 
 __all__ = [
     "AnnotationStatusEnum",

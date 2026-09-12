@@ -1,0 +1,2 @@
+✨ Pixi task (lint-check): ruff check src/ tools/ tests/: (Run ruff in check-only mode (no fixes). Use in CI.)
+All checks passed!

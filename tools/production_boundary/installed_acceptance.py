@@ -268,6 +268,35 @@ def _analyse_with_release(
     }
 
 
+def _concept_interfaces() -> dict[str, object]:
+    """Exercise packaged lexical resources and canonical Python/CLI exports."""
+    from rdam.concepts import ConceptIndex, ConceptLinkRequest, link_source
+    from rdam.concepts.serialization import export_jsonl, load_result, mention_records, serialize
+    from rdam.ingest import SourceArtifact
+
+    source = SourceArtifact.from_text("Adobe Analytics supports reporting.", source_name="concepts.txt")
+    result = link_source(source, ConceptIndex.load())
+    if not any(
+        mention.quote == "Adobe Analytics"
+        and any(candidate.resource.identifier == "coe:entity/adobe/analytics" for candidate in mention.candidates)
+        for mention in result.mentions
+    ):
+        raise AssertionError("installed concept index did not resolve the documented lexical candidate")
+    encoded = serialize(result)
+    if serialize(load_result(encoded)) != encoded:
+        raise AssertionError("installed concept result failed canonical round-trip")
+    records = tuple(mention_records(result))
+    if not records or len(export_jsonl(result).splitlines()) != len(records):
+        raise AssertionError("installed concept JSONL omitted mention evidence")
+    cli = subprocess.run(
+        [str(Path(sys.executable).with_name("rdam")), "concepts", "link", "--request", "-"],
+        input=serialize(ConceptLinkRequest(source=source)), capture_output=True, check=True,
+    )
+    if serialize(load_result(cli.stdout)) != encoded:
+        raise AssertionError("installed concept Python/CLI results differ")
+    return {"mentions": len(records), "canonical_roundtrip": True, "cli_parity": True}
+
+
 def _machine_interfaces(*, http: bool) -> dict[str, object]:
     """Check the installed machine and both thin transports without model calls."""
     from importlib.util import find_spec
@@ -402,6 +431,7 @@ def main() -> int:
         "offline_distributions_absent": True,
         "public_surface_entries": len(entries),
         "machine_interfaces": _machine_interfaces(http=args.http),
+        "concept_interfaces": _concept_interfaces(),
         "source_contract": _prepare_sources(
             markdown=args.markdown if formats else None,
             doclang=args.doclang if formats else None,

@@ -940,7 +940,7 @@ class InputIssue(StrictModel):
 class OperationFailure(StrictModel):
     contract: Literal["rdam.operation_error"] = "rdam.operation_error"
     contract_version: Literal["1.0.0"] = "1.0.0"
-    operation: Literal["configuration", "capabilities", "prepare", "analyse", "summary", "view", "schema", "version", "serve", "publish"]
+    operation: Literal["configuration", "capabilities", "prepare", "analyse", "summary", "view", "schema", "version", "serve", "publish", "concepts"]
     category: Literal["invalid_request", "source_unavailable", "preparation_failed", "dependency_unavailable",
                       "busy", "internal_error", "output_error", "interrupted"]
     code: str = Field(pattern=_SNAKE)

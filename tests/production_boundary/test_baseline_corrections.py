@@ -11,6 +11,8 @@ from typing import Any
 import pytest
 
 from rdam.ingest import ProductionIngestor, SourceArtifact, SourceForm, serialize_contract
+from rdam.ingest.identity import canonical_json_bytes, semantic_sha256
+from rdam.ingest.contracts.base import PRODUCTION_CONTRACT, WRITE_CONTRACT_VERSION
 from tools.production_boundary.rst_baseline import FIXTURES, RecordComparison, capture, diff_records
 from tools.production_boundary.baseline_corrections import BaselineVerificationError
 
@@ -21,14 +23,29 @@ BASELINE = Path("specs/017-universal-source-pipeline/evidence/baseline-dmrst-cur
 @pytest.fixture(scope="module")
 def records() -> dict[SourceForm, tuple[SourceArtifact, bytes, bytes]]:
     ingestor = ProductionIngestor()
-    return {
-        form: (
-            source := SourceArtifact.from_path(path, source_form=form),
-            (BASELINE / f"prepare-{form.value}.json").read_bytes(),
-            serialize_contract(ingestor.prepare(source)),
-        )
-        for form, path in FIXTURES.items()
-    }
+    result: dict[SourceForm, tuple[SourceArtifact, bytes, bytes]] = {}
+    for form, path in FIXTURES.items():
+        if form is SourceForm.DOCLANG_XML:
+            # Feature 020 correctly rejects Example 22 in this upstream file.
+            # Keep testing Feature 017's historical correction against the exact
+            # semantic output captured at 74f7f3a before Feature 020. There is no
+            # invented execution record and no current-validator bypass.
+            source = SourceArtifact.from_path(Path("tests/fixtures/doclang/ok_comprehensive.dclg"), source_form=form)
+            semantic = json.loads(Path("tests/fixtures/production_api/doclang-pre020-semantic.json").read_bytes())
+            assert semantic["source"] == source.summary().model_dump(mode="json")
+            payload = {
+                "contract": PRODUCTION_CONTRACT, "contract_version": WRITE_CONTRACT_VERSION,
+                "kind": "preparation_outcome", "semantic": semantic,
+            }
+            after = canonical_json_bytes({
+                **payload,
+                "semantic_digest": {"algorithm": "sha256", "hex_digest": semantic_sha256(payload)},
+            })
+        else:
+            source = SourceArtifact.from_path(path, source_form=form)
+            after = serialize_contract(ingestor.prepare(source))
+        result[form] = (source, (BASELINE / f"prepare-{form.value}.json").read_bytes(), after)
+    return result
 
 
 @pytest.mark.parametrize("form", tuple(FIXTURES))
@@ -166,9 +183,10 @@ def test_real_comparison_cli_checks_contents_and_preserves_baseline(tmp_path: Pa
     elif mutation == "missing_record":
         (tmp_path / "prepare-text.json").unlink()
     else:
-        # Preserve the real historical records; a scratch copy mixes those three
-        # prepared documents with model-free captures for the other source forms.
-        for form in FIXTURES:
+        # Preserve historical records for formats with unchanged accepted inputs.
+        # DocLang now uses a valid current specimen; its historical correction
+        # is independently exercised by the snapshot-based tests above.
+        for form in (SourceForm.MARKDOWN, SourceForm.DOCLING_JSON):
             name = f"prepare-{form.value}.json"
             (tmp_path / name).write_bytes((BASELINE / name).read_bytes())
     original = {path.name: path.read_bytes() for path in tmp_path.iterdir()}
@@ -183,7 +201,6 @@ def test_real_comparison_cli_checks_contents_and_preserves_baseline(tmp_path: Pa
         assert report["equivalent"] is False
         assert report["analytically_equivalent"] is False
         assert report["difference_counts_by_class"]["source_identity_correction"] > 0
-        assert report["difference_counts_by_class"]["doclang_table_correction"] > 0
     else:
         assert report["analytical_differences"]["prepare-text"]
     assert {path.name: path.read_bytes() for path in tmp_path.iterdir()} == original

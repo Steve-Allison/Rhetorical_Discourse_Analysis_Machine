@@ -1,6 +1,6 @@
 version: 7
 platforms:
-- name: p1
+- name: osx-arm64-macos-14-0
   subdir: osx-arm64
   virtual-packages:
   - __osx=14.0
@@ -13,7 +13,7 @@ environments:
     indexes:
     - https://pypi.org/simple
     packages:
-      p1:
+      osx-arm64-macos-14-0:
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.7.22-hbd8a1cb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/markdownlint-cli2-0.23.2-h24b164e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python_abi-3.14-8_cp314.conda
@@ -255,7 +255,7 @@ environments:
     indexes:
     - https://pypi.org/simple
     packages:
-      p1:
+      osx-arm64-macos-14-0:
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.7.22-hbd8a1cb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/markdownlint-cli2-0.23.2-h24b164e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python_abi-3.14-8_cp314.conda
@@ -497,7 +497,7 @@ environments:
     indexes:
     - https://pypi.org/simple
     packages:
-      p1:
+      osx-arm64-macos-14-0:
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.7.22-hbd8a1cb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python_abi-3.14-8_cp314.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2026c-h151e31d_0.conda

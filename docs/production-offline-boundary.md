@@ -11,7 +11,9 @@ and must meet the same Python 3.14 standard.
 
 `rdam.ingest` is core production code. Docling, DocLang, and Markdown
 distributions are optional under the `formats` extra; their adapter modules are
-private implementation details. The core wheel can import, load schemas,
+private implementation details. DocLang validation, decoding and archive handling belong to
+`rdam.ingest.doclang`; every technique consumes the shared inventory and its projections.
+The core wheel can import, load schemas,
 serialize contracts, prepare text/EDUs, and discover all capability states
 without those distributions installed.
 
@@ -76,7 +78,7 @@ loader honours it only for the exact manifest it names.
 | Machine-facing RST adapter | `rdam.rst.provider` | yes |
 | Strict source, preparation, analysis, inference, failure, and capability contracts | `rdam.ingest` | yes |
 | Canonical schemas, public-surface inventory, and build provenance | package resources | yes |
-| Private Docling/DocLang/Markdown loaders | `rdam.rst.doclang`, `rdam.rst.markdown`, ingest harvest | yes, dependencies via `formats` |
+| Private Docling/DocLang/Markdown loaders | `rdam.ingest.doclang`, `rdam.rst.markdown`, ingest harvest | yes, dependencies via `formats` |
 | eRST signal detection, scoring, decoding, checkpoint loading and experimental contracts | `workbench.erst` | no |
 | Released-model manifest validation, loading, compatibility re-declaration | `rdam.rst.model_loading` | yes |
 | Dung semantics and provider, with its packaged decision | `rdam.dung` | yes |

@@ -2,7 +2,7 @@
 
 from lxml import etree
 
-from rdam.rst.doclang.text_walker import body_text, iter_body_text, iter_sibling_body_text
+from rdam.ingest.doclang.text_walker import body_text, iter_body_text, iter_sibling_body_text
 
 
 def test_nested_metadata_and_its_content_are_excluded_but_tail_is_preserved() -> None:

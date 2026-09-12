@@ -154,7 +154,7 @@ def main() -> int:
     _, wheel_version, _, _ = parse_wheel_filename(wheel.name)
     fixtures = (
         root / "tests/fixtures/markdown/minimal.md",
-        root / "tests/fixtures/doclang/ok_comprehensive.dclg",
+        root / "tests/fixtures/production_api/retained_content/mixed.dclg",
         root / "tests/fixtures/docling/markdown.docling.json",
     )
     acceptance = root / "tools/production_boundary/installed_acceptance.py"

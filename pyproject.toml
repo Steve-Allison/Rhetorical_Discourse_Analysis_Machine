@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rdam"
-version = "6.0.0"
+version = "6.1.0"
 import-names = ["rdam"]
 description = "Rhetorical Discourse Analysis Machine: native RST, PDTB, SDRT, Toulmin, Walton, Dung, and IBIS analysis side by side."
 readme = "README.md"
@@ -163,6 +163,9 @@ show_missing = true
 typeCheckingMode = "strict"
 include = [
   "rdam",
+  "tests/concepts",
+  "tools/compile_concept_index.py",
+  "examples/concept_passages.py",
   "tests/interfaces",
   "tests/machine/test_ontology_snapshots.py",
   "tests/unit/test_runtime_vocabulary.py",
@@ -172,6 +175,11 @@ include = [
   "tests/production_boundary/test_runtime_tokenizer_dependency.py",
   "tests/production_boundary/test_shared_mutation_verdict.py",
   "tools/shared_runtime_mutation_test.py",
+  "tools/rst_mutation_test.py",
+  "tests/ingest/test_doclang_document.py",
+  "tests/ingest/test_doclang_decoder.py",
+  "tests/ingest/test_doclang_identity.py",
+  "tests/production_boundary/test_rst_mutation_verdict.py",
   "tools/production_boundary/installed_acceptance.py",
 ]
 exclude = [
@@ -216,8 +224,8 @@ mdlint = { cmd = "python scripts/lint_markdown.py --lint", description = "markdo
 cleanup = { cmd = "python scripts/cleanup.py", description = "Remove bytecode, tool caches, and dist/ (never .pixi)" }
 bench = { cmd = "python -m scripts.bench", description = "Performance bench across models and dtypes" }
 rst-diag = { cmd = "python scripts/rst_diag.py", description = "RST quality proxy metrics over .md / Docling / DocLang sources; --json for machine output" }
-rst-format-test = { cmd = "pytest tests/ingest/test_doclang_fixture_parity.py tests/ingest/test_doclang_loader.py tests/ingest/test_doclang_text_walker.py tests/ingest/test_markdown_loader.py tests/ingest/production_ingest/test_doclang_complex.py tests/ingest/production_ingest/test_doclang_ingest.py tests/ingest/production_ingest/test_docling_complex.py tests/ingest/production_ingest/test_docling_ingest.py tests/ingest/production_ingest/test_markdown_complex.py tests/ingest/production_ingest/test_markdown_conformance.py tests/ingest/production_ingest/test_markdown_ingest.py tests/ingest/production_ingest/test_native_anchors.py tests/ingest/production_ingest/test_upstream_conformance.py -q", description = "Normative, adversarial, and native-anchor tests for DocLang, Docling, and Markdown" }
-rst-format-coverage = { cmd = "coverage erase && coverage run --source=rdam -m pytest tests/ingest -q && coverage report --fail-under=90 rdam/rst/doclang/loader.py rdam/rst/doclang/text_walker.py rdam/rst/markdown/loader.py rdam/ingest/_harvest.py", description = "Branch-coverage gate for DocLang, Docling, and Markdown loaders and harvesters" }
+rst-format-test = { cmd = "pytest tests/ingest/test_doclang_document.py tests/ingest/test_doclang_decoder.py tests/ingest/test_doclang_identity.py tests/ingest/test_doclang_fixture_parity.py tests/ingest/test_doclang_loader.py tests/ingest/test_doclang_text_walker.py tests/ingest/test_markdown_loader.py tests/ingest/production_ingest/test_doclang_complex.py tests/ingest/production_ingest/test_doclang_ingest.py tests/ingest/production_ingest/test_docling_complex.py tests/ingest/production_ingest/test_docling_ingest.py tests/ingest/production_ingest/test_markdown_complex.py tests/ingest/production_ingest/test_markdown_conformance.py tests/ingest/production_ingest/test_markdown_ingest.py tests/ingest/production_ingest/test_native_anchors.py tests/ingest/production_ingest/test_upstream_conformance.py -q", description = "Normative, adversarial, and native-anchor tests for DocLang, Docling, and Markdown" }
+rst-format-coverage = { cmd = "coverage erase && coverage run --source=rdam -m pytest tests/ingest -q && coverage report --fail-under=90 rdam/ingest/doclang/loader.py rdam/ingest/doclang/text_walker.py rdam/ingest/doclang/document.py rdam/ingest/doclang/decoder.py rdam/ingest/_doclang.py rdam/ingest/_classification.py rdam/rst/markdown/loader.py rdam/ingest/_harvest.py", description = "Branch-coverage gate for DocLang, Docling, and Markdown loaders and harvesters" }
 rst-mutation-test = { cmd = "python tools/rst_mutation_test.py", description = "Deterministic mutation gate for DocLang validation and archive safety, Docling layer retention, and Markdown fidelity" }
 rst-quality = { cmd = "pytest tests/offline/test_gum_gold.py -m quality -q", description = "Model-backed RST quality regression floors against ten human-annotated GUM gold trees" }
 build-production = { cmd = "python -m tools.production_boundary.build --evidence-dir specs/010-repository-migration/evidence/release", description = "Reproducibly double-build the wheel and sdist from the clean, tagged HEAD into ignored dist/<version>/ (name and version from pyproject.toml) and write the release evidence JSON under specs/010-repository-migration/evidence/release/" }

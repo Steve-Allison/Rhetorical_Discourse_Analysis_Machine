@@ -1,0 +1,165 @@
+{
+  "methodology": "Synthetic passages and manual expected occurrence annotations authored before either evaluated method ran. Task: subject-matter concept mentions, including one deliberately unmapped invented phrase. This is an independently authored fixture, not an independent human study; small-set results do not estimate corpus-wide accuracy.",
+  "passages": [
+    {
+      "id": "adobe-basic",
+      "text": "Adobe Analytics measures visits. Adobe Firefly creates images.",
+      "annotations": [
+        {
+          "start": 0,
+          "end": 15,
+          "quote": "Adobe Analytics",
+          "target": "coe:entity/adobe/analytics"
+        },
+        {
+          "start": 33,
+          "end": 46,
+          "quote": "Adobe Firefly",
+          "target": "coe:entity/adobe/firefly"
+        }
+      ]
+    },
+    {
+      "id": "adobe-repeated",
+      "text": "Adobe Analytics appears twice: Adobe Analytics.",
+      "annotations": [
+        {
+          "start": 0,
+          "end": 15,
+          "quote": "Adobe Analytics",
+          "target": "coe:entity/adobe/analytics"
+        },
+        {
+          "start": 31,
+          "end": 46,
+          "quote": "Adobe Analytics",
+          "target": "coe:entity/adobe/analytics"
+        }
+      ]
+    },
+    {
+      "id": "adobe-whitespace",
+      "text": "We reviewed Adobe\n  Analytics after lunch.",
+      "annotations": [
+        {
+          "start": 12,
+          "end": 29,
+          "quote": "Adobe\n  Analytics",
+          "target": "coe:entity/adobe/analytics"
+        }
+      ]
+    },
+    {
+      "id": "learning",
+      "text": "Scaffolding helps learners. Retrieval Practice strengthens recall.",
+      "annotations": [
+        {
+          "start": 0,
+          "end": 11,
+          "quote": "Scaffolding",
+          "target": "coe:entity/learning/term/scaffolding"
+        },
+        {
+          "start": 28,
+          "end": 46,
+          "quote": "Retrieval Practice",
+          "target": "coe:concept/cognitive_load_taxonomy/design_strategy/retrieval_practice"
+        }
+      ]
+    },
+    {
+      "id": "learning-objective",
+      "text": "The Learning Objective specifies an observable outcome.",
+      "annotations": [
+        {
+          "start": 4,
+          "end": 22,
+          "quote": "Learning Objective",
+          "target": "coe:entity/learning_objective"
+        }
+      ]
+    },
+    {
+      "id": "visual-ambiguity",
+      "text": "The slide grid provides scaffolding for the composition.",
+      "annotations": [
+        {
+          "start": 24,
+          "end": 35,
+          "quote": "scaffolding",
+          "target": "coe:entity/visual_communication/term/scaffolding"
+        }
+      ]
+    },
+    {
+      "id": "literal-ambiguity",
+      "text": "Workers erected scaffolding around the house.",
+      "annotations": []
+    },
+    {
+      "id": "narrative",
+      "text": "The writer used a metaphor to describe the storm.",
+      "annotations": [
+        {
+          "start": 18,
+          "end": 26,
+          "quote": "metaphor",
+          "target": "coe:entity/metaphor"
+        }
+      ]
+    },
+    {
+      "id": "unicode",
+      "text": "Élodie 😀 used Adobe Analytics beside a café. A metaphor followed.",
+      "annotations": [
+        {
+          "start": 14,
+          "end": 29,
+          "quote": "Adobe Analytics",
+          "target": "coe:entity/adobe/analytics"
+        },
+        {
+          "start": 47,
+          "end": 55,
+          "quote": "metaphor",
+          "target": "coe:entity/metaphor"
+        }
+      ]
+    },
+    {
+      "id": "combining",
+      "text": "Café visitors discussed Adobe Firefly and a metaphor.",
+      "annotations": [
+        {
+          "start": 25,
+          "end": 38,
+          "quote": "Adobe Firefly",
+          "target": "coe:entity/adobe/firefly"
+        },
+        {
+          "start": 45,
+          "end": 53,
+          "quote": "metaphor",
+          "target": "coe:entity/metaphor"
+        }
+      ]
+    },
+    {
+      "id": "boundaries",
+      "text": "The token xAdobe Analyticsx is deliberately not a product mention.",
+      "annotations": []
+    },
+    {
+      "id": "unknown",
+      "text": "The invented method is quantum banana tutoring.",
+      "annotations": [
+        {
+          "start": 23,
+          "end": 46,
+          "quote": "quantum banana tutoring",
+          "target": null
+        }
+      ]
+    }
+  ]
+}

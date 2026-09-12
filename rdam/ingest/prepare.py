@@ -80,7 +80,7 @@ from rdam.ingest.policy import (
 )
 from rdam.ingest.subdivision import build_analysis_plan
 from rdam.ingest.speakers import resolve_speaker
-from rdam.ingest.validation import validate_inventory, validate_preparation_outcome
+from rdam.ingest.inventory_validation import validate_inventory, validate_preparation_outcome
 
 
 class PreparationValidationError(ValueError):
@@ -100,6 +100,10 @@ def inventory_source(
 ) -> tuple[tuple[ContentInventoryItem, ...], SourceContractIdentity]:
     """Harvest every provider-observed item and translate it to the v2 contract."""
 
+    if artifact.source_form.value in {"doclang_xml", "doclang_archive"}:
+        from rdam.ingest._doclang import inventory_doclang
+
+        return inventory_doclang(artifact)
     legacy_inventory, legacy_contract = _harvest.inventory_source(_legacy_artifact(artifact))
     children_by_parent: dict[str, list[LegacyInventoryItem]] = {}
     for item in legacy_inventory:

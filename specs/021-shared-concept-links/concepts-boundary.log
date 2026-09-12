@@ -1,0 +1,9 @@
+✨ Pixi task (production-boundary in default): python -m tools.production_boundary --root .: (Ownership and import boundary inspection of the source tree (no artifacts))
+{
+  "artifact_receipts": [],
+  "elapsed_ms": 11068.61029198626,
+  "production_modules": 183,
+  "scanned_files": 183,
+  "valid": true,
+  "violations": []
+}

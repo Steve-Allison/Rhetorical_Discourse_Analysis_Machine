@@ -2,7 +2,7 @@
 
 from importlib.util import find_spec
 
-import rdam.rst.doclang as doclang_helpers
+import rdam.ingest.doclang as doclang_helpers
 import rdam.ingest as ingest
 import rdam.rst.markdown as markdown_helpers
 
@@ -31,10 +31,11 @@ def test_obsolete_public_entry_points_are_absent() -> None:
 
 def test_obsolete_envelopes_and_entry_modules_are_absent() -> None:
     obsolete_modules = (
+        "rdam.rst.doclang",
         "rdam.rst.markdown._entry",
         "rdam.rst.markdown.schema",
-        "rdam.rst.doclang._entry",
-        "rdam.rst.doclang.schema",
+        "rdam.ingest.doclang._entry",
+        "rdam.ingest.doclang.schema",
         "rdam.rst.docling._entry",
         "rdam.ingest.compatibility",
     )

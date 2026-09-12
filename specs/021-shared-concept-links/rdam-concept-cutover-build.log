@@ -1,0 +1,41 @@
+* Getting build dependencies for sdist...
+* Building sdist...
+* Building wheel from sdist
+* Getting build dependencies for wheel...
+* Building wheel...
+Successfully built rdam-6.0.0.tar.gz and rdam-6.0.0-py3-none-any.whl
+* Getting build dependencies for sdist...
+* Building sdist...
+* Building wheel from sdist
+* Getting build dependencies for wheel...
+* Building wheel...
+Successfully built rdam-6.0.0.tar.gz and rdam-6.0.0-py3-none-any.whl
+{
+  "schema_name": "isanlp_rst.release_evidence.reproducible_build",
+  "schema_version": "1.0.0",
+  "source_commit": "4661808d4c39e6030a4fa504dc7356facbfc59b8",
+  "source_tree": "110df94e588bca08ebb085a5bfac6ca2cea52269",
+  "source_tag": null,
+  "source_archive_sha256": "7ccd76fab7045aabe16da673f33a81bdcae6839c2f3c9794116686b7a3d51b04",
+  "source_date_epoch": 1789209172,
+  "build_frontend": "build 1.6.0",
+  "build_backend": "hatchling 1.32.0",
+  "build_reports": [
+    "55c9f893367604b4f3d074c54fc80530e4599aa5d1434ea30ecc1ad6b7234ee8",
+    "ed35c6f9ef035fb1ac7c500300029e6ef7e8bfdbac7a5849fbabb6821313e000"
+  ],
+  "provenance_sha256": "1bfe1645515fc87c9fad0c67726dd509c4775f9a30cf90e19fdb5e81f09e53e8",
+  "artifacts": [
+    {
+      "filename": "rdam-6.0.0-py3-none-any.whl",
+      "sha256": "832f5c713406c9071fc7144650fa4e56c57f55c3c0a7d1f52a76f4c57aa2a6de",
+      "size_bytes": 1601539
+    },
+    {
+      "filename": "rdam-6.0.0.tar.gz",
+      "sha256": "28be398e1225bcb1bf3e2b8461bcd29ca55a4186715edb1b7e66da42ce9ffae5",
+      "size_bytes": 1395295
+    }
+  ],
+  "reproducible": true
+}

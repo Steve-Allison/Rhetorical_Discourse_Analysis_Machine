@@ -1,0 +1,43 @@
+{
+  "status": "pass",
+  "lock_path": "/Users/steveallison/AI_Projects+Code/Content_Structuring_Machine/.pixi/envs/default/lib/python3.14/site-packages/csm_data/config/rdam-rst.lock.json",
+  "provider_lock_digest": "d2e9c94e108e1932de786cc67b3f904916c222340d6df02ca7aefdc1cc6937e1",
+  "package_name": "rdam",
+  "package_version": "6.0.0",
+  "wheel_path": "/Users/steveallison/AI_Projects+Code/Rhetorical_Discourse_Analysis_Machine/dist/concept-cutover/rdam-6.0.0-py3-none-any.whl",
+  "wheel_sha256": "832f5c713406c9071fc7144650fa4e56c57f55c3c0a7d1f52a76f4c57aa2a6de",
+  "source_distribution_path": "/Users/steveallison/AI_Projects+Code/Rhetorical_Discourse_Analysis_Machine/dist/concept-cutover/rdam-6.0.0.tar.gz",
+  "source_distribution_sha256": "28be398e1225bcb1bf3e2b8461bcd29ca55a4186715edb1b7e66da42ce9ffae5",
+  "installed_from": "file:///Users/steveallison/AI_Projects%2BCode/Rhetorical_Discourse_Analysis_Machine/dist/concept-cutover/rdam-6.0.0-py3-none-any.whl",
+  "production_contract": "isanlp_rst.production",
+  "production_contract_version": "3.0.0",
+  "source_commit": "4661808d4c39e6030a4fa504dc7356facbfc59b8",
+  "source_tree": "110df94e588bca08ebb085a5bfac6ca2cea52269",
+  "build_input_sha256": "d2371854d2de0e2261e42fa11c0151ef2e5ca74f44f11c72ed40240fe9bf1fef",
+  "model_release_id": "gumrrg-eb1d5745f3a1",
+  "model_family": "dmrst",
+  "model_manifest_sha256": "ea5ee95394050ee73856b1daf171ba4e30e95e270965fc9034c082b97b64cac0",
+  "model_runtime_contract": "isanlp_rst.parser/dmrst-v1",
+  "model_semantic_digest": "9ee63f8155251aaa047f95e6b53c3217d341044e7cd36fddd2495f957cf05efb",
+  "capability_semantic_digest": "03993b130fc35320ce449c3ec74b37dbf2aeead1c9f96dc4efb4e01782ac1519",
+  "available_source_forms": [
+    "doclang_archive",
+    "doclang_xml",
+    "docling_json",
+    "edus",
+    "markdown",
+    "text"
+  ],
+  "available_operations": [
+    "analyse",
+    "prepare"
+  ],
+  "parser_loaded": true,
+  "parser_identity_state": "immutable_release",
+  "active_parser_family": "dmrst",
+  "canonical_parser_result_supported": true,
+  "exact_runtime_identity_supported": true,
+  "available_formalisms": [
+    "rst_tree"
+  ]
+}

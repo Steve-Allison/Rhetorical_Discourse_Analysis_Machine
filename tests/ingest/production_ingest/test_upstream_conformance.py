@@ -12,7 +12,7 @@ from docling_core.types.doc import ContentLayer, DoclingDocument
 from lxml import etree
 import pytest
 
-from rdam.rst.doclang.errors import InvalidDoclangError
+from rdam.ingest.doclang.errors import InvalidDoclangError
 from rdam.ingest import SourceArtifact, SourceForm
 from rdam.ingest.contracts import ContentClass, DispositionDecision
 from rdam.ingest.prepare import inventory_source
@@ -29,7 +29,7 @@ REAL_WORLD_DOCLANG_FIXTURE = DOCLANG_FIXTURES / "real_world/change-of-tenancy.dc
 REAL_WORLD_DOCLANG_SHA256 = "bd0e7d861054842e2e6993c4d92367a54a20cdb1ba21a8eb1d7640c642747449"
 
 
-def test_current_upstream_doclang_fixture_corpora_are_complete() -> None:
+def test_pinned_doclang_fixture_corpora_are_complete() -> None:
     assert len(VALID_DOCLANG_FIXTURES) == 42
     assert len(INVALID_DOCLANG_FIXTURES) == 59
     assert {path.name for path in VALID_DOCLANG_FIXTURES} == DOCLANG_MANIFEST["files"].keys()
@@ -42,9 +42,14 @@ def test_current_upstream_valid_doclang_specimen_is_unmodified_and_accepted(fixt
     root_tag = etree.parse(fixture).getroot().tag
     namespaced = isinstance(root_tag, str) and root_tag.startswith("{")
     doclang.validate(fixture, allow_empty_namespace=not namespaced)
-    inventory, _contract = inventory_source(
-        SourceArtifact.from_path(fixture, source_form=SourceForm.DOCLANG_XML)
-    )
+    source = SourceArtifact.from_path(fixture, source_form=SourceForm.DOCLANG_XML)
+    if fixture.name == "ok_comprehensive.dclg":
+        # Upstream's unchanged Example 22 has text in ecel and orphan lcel.
+        # XSD/Schematron acceptance does not establish valid merge geometry.
+        with pytest.raises(InvalidDoclangError, match="non-content DocLang cell"):
+            inventory_source(source)
+        return
+    inventory, _contract = inventory_source(source)
     assert inventory
 
 

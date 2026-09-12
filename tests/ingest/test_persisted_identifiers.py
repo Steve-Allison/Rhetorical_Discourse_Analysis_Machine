@@ -31,6 +31,10 @@ def test_normalized_contract_keeps_family_and_versions_its_new_shape() -> None:
     assert set(actual) == recorded | {
         f"machine-{name}.{mode}.schema.json"
         for name in schema_models() for mode in ("validation", "serialization")
+    } | {
+        f"{name}.{mode}.schema.json"
+        for name in ("concept-link-request", "concept-links", "concept-mention")
+        for mode in ("validation", "serialization")
     }
 
 

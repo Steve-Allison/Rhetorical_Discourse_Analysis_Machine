@@ -55,7 +55,7 @@ CI (`.github/workflows/ci.yml`) runs lint, typecheck, mdlint, and the fast tests
 
 ## Layout and identity (owner rulings, 2026-09-02)
 
-- **One production package at the repository root, `rdam/`, shipped as one wheel** (`rdam` 6.0.0). Every technique is a sub-package of it. This supersedes the per-technique top-level boundary roster of feature 006 (`machine/`, `rst/`, `dung/`, …); the supersession is recorded in [`specs/010-repository-migration/spec.md`](specs/010-repository-migration/spec.md) and noted at the top of the 006 boundary contract.
+- **One production package at the repository root, `rdam/`, shipped as one wheel** (`rdam` 6.1.0). Every technique is a sub-package of it. This supersedes the per-technique top-level boundary roster of feature 006 (`machine/`, `rst/`, `dung/`, …); the supersession is recorded in [`specs/010-repository-migration/spec.md`](specs/010-repository-migration/spec.md) and noted at the top of the 006 boundary contract.
 - `isanlp_rst` is not a protected name. The RST provider is `rdam.rst`; the console command is `rdam`.
 - **Persisted contract names retain their existing identity**: `isanlp_rst.production` (current ingest writing uses 3.0.0 with historical reading handled separately), `isanlp_rst.parser/modernbert-v1` (a historical immutable manifest identity, not the active model architecture), `isanlp_rst.build_provenance`, `isanlp_rst.public_surface`, the schema `$id`s, and `ISANLP_RST_ERST_CHECKPOINT`. They name contracts and stored releases, not the package. Renaming them is a separate owner ruling.
 - `ontology/` stays a top-level repository directory (vendored Central distribution and the LinkML profile). The wheel ships generated framework, discourse and technique projections under `rdam/resources/`, the consumer Walton crosswalk, and digest-identified ontology/profile snapshots for historical resolution.
@@ -97,11 +97,17 @@ generic orchestration without technique imports. Execution uses four in-process 
 by default, declaration-driven provider locking, request-ordered outcomes and an optional
 cache binding source, projection, provider, contract, model and instructions identities.
 
-Format code beneath `rdam.rst.doclang` and `rdam.rst.markdown` is private decoding support for the canonical service. Docling JSON is loaded directly with the supported `docling-core` version in `pyproject.toml`. There is no independent format mapper, result schema, cache, or public entry point.
+Format decoding is owned by `rdam.ingest.doclang` and `rdam.ingest.markdown`. Shared preparation validation is in `rdam.ingest.inventory_validation`; linking does not import inference runtimes. Docling JSON is loaded directly with the supported `docling-core` version in `pyproject.toml`. There is no independent format mapper, result schema, cache, or public entry point.
 
 Quality measurement: `pixi run rst-diag <paths>` ([`scripts/rst_diag.py`](scripts/rst_diag.py)) — preparation coverage, content-class decisions, anchor integrity, tree structure, relation distribution, subdivision, and timing across the canonical source forms.
 
 Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks verified facts (spec citations, fixture evidence) and open design questions.
+
+## Shared subject-matter linking
+
+`rdam.concepts` consumes shared inventories and Central-generated terminology projections.
+It emits exact lexical mention evidence, independent of analytical vocabulary alignment.
+See [concept linking](docs/concept-linking.md) for Python, CLI, HTTP and downstream examples.
 
 ## Files worth knowing
 

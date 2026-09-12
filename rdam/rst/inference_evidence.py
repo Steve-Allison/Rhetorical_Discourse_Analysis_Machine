@@ -4,7 +4,10 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 import math
 
-from torch import Tensor
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from torch import Tensor
 
 from rdam.ingest.contracts.decoding import NetworkTransitionDecision
 

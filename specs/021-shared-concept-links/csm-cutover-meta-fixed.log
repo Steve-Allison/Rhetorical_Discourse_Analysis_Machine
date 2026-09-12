@@ -1,0 +1,8 @@
+....                                                                     [100%]
+=============================== warnings summary ===============================
+.pixi/envs/default/lib/python3.14/site-packages/google/genai/types.py:42
+  /Users/steveallison/AI_Projects+Code/Content_Structuring_Machine/.pixi/envs/default/lib/python3.14/site-packages/google/genai/types.py:42: DeprecationWarning: '_UnionGenericAlias' is deprecated and slated for removal in Python 3.17
+    VersionedUnionType = Union[builtin_types.UnionType, _UnionGenericAlias]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+4 passed, 1 warning in 5.12s

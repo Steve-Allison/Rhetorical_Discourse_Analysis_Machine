@@ -11,6 +11,7 @@ import rfc8785
 from rdam.rst._version import TOOL_NAME
 import rdam.ingest as ingest
 import rdam
+import rdam.concepts as concepts
 from tools.production_boundary.schemas import generated_schemas
 
 # The resource lives inside the package wherever the package lives in the repository.
@@ -29,6 +30,10 @@ def generated_public_surface() -> bytes:
     entries.extend(
         _special_entry(f"rdam.{name}", _entry_kind(getattr(rdam, name)), public_import=f"rdam:{name}")
         for name in sorted(rdam.__all__)
+    )
+    entries.extend(
+        _special_entry(f"rdam.concepts.{name}", _entry_kind(getattr(concepts, name)), public_import=f"rdam.concepts:{name}")
+        for name in sorted(concepts.__all__)
     )
     entries.extend(
         (
@@ -89,7 +94,7 @@ def generated_public_surface() -> bytes:
     entries.extend(
         _special_entry(f"{TOOL_NAME}.local-http./v1/{route}", "local_endpoint",
                        compatibility="serialized_contract")
-        for route in ("prepare", "view", "summary", "schemas/{record}")
+        for route in ("prepare", "view", "summary", "schemas/{record}", "concepts/link")
     )
     entries.extend(
         _special_entry(

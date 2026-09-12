@@ -1,0 +1,840 @@
+{
+  "gold_sha256": "ba7a2e1006e8c4c04882e675290d5aebbd8f096e5ca643857f668a2d10d8875c",
+  "ontology": {
+    "distribution_id": "coe:distribution/4.0.0",
+    "version": "4.0.0",
+    "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+    "domains": [
+      "adobe",
+      "ai",
+      "business",
+      "delivery",
+      "language_editorial",
+      "learning",
+      "narrative",
+      "visual_communication"
+    ]
+  },
+  "metrics": {
+    "baseline": {
+      "predicted_mentions": 25,
+      "gold_mentions": 15,
+      "true_positive_mentions": 14,
+      "mention_precision": 0.56,
+      "mention_recall": 0.9333333333333333,
+      "canonical_gold_mentions": 14,
+      "correct_canonical_candidate_inclusions": 14,
+      "canonical_candidate_recall": 1.0,
+      "ambiguous_mentions": 3,
+      "spurious_mentions": 11,
+      "spurious_canonical_candidates": 17,
+      "unmapped_mentions": 0,
+      "additional_valid_mentions_over_baseline": 0,
+      "seconds_excluding_initialization": 2.458408834063448,
+      "occurrences": [
+        {
+          "passage": "adobe-basic",
+          "start": 0,
+          "end": 15,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-basic",
+          "start": 6,
+          "end": 15,
+          "candidates": [
+            "coe:entity/business/competitor_analytics"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "adobe-basic",
+          "start": 33,
+          "end": 46,
+          "candidates": [
+            "coe:entity/adobe/firefly"
+          ],
+          "gold_target": "coe:entity/adobe/firefly",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-repeated",
+          "start": 0,
+          "end": 15,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-repeated",
+          "start": 6,
+          "end": 15,
+          "candidates": [
+            "coe:entity/business/competitor_analytics"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "adobe-repeated",
+          "start": 31,
+          "end": 46,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-repeated",
+          "start": 37,
+          "end": 46,
+          "candidates": [
+            "coe:entity/business/competitor_analytics"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "adobe-whitespace",
+          "start": 12,
+          "end": 29,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-whitespace",
+          "start": 20,
+          "end": 29,
+          "candidates": [
+            "coe:entity/business/competitor_analytics"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "combining",
+          "start": 25,
+          "end": 38,
+          "candidates": [
+            "coe:entity/adobe/firefly"
+          ],
+          "gold_target": "coe:entity/adobe/firefly",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "combining",
+          "start": 45,
+          "end": 53,
+          "candidates": [
+            "coe:entity/metaphor"
+          ],
+          "gold_target": "coe:entity/metaphor",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning",
+          "start": 0,
+          "end": 11,
+          "candidates": [
+            "coe:concept/corpus_glossary/scaffolding",
+            "coe:entity/learning/term/scaffolding",
+            "coe:entity/visual_communication/term/scaffolding"
+          ],
+          "gold_target": "coe:entity/learning/term/scaffolding",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning",
+          "start": 28,
+          "end": 37,
+          "candidates": [
+            "coe:concept/ai_systems_taxonomy/pipeline_stage/retrieval"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "learning",
+          "start": 28,
+          "end": 46,
+          "candidates": [
+            "coe:concept/cognitive_load_taxonomy/design_strategy/retrieval_practice"
+          ],
+          "gold_target": "coe:concept/cognitive_load_taxonomy/design_strategy/retrieval_practice",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning",
+          "start": 59,
+          "end": 65,
+          "candidates": [
+            "coe:concept/activity_types_taxonomy/outcome_type/recall"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "learning-objective",
+          "start": 4,
+          "end": 12,
+          "candidates": [
+            "coe:concept/assessment_taxonomy/kirkpatrick_level/learning"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "learning-objective",
+          "start": 4,
+          "end": 22,
+          "candidates": [
+            "coe:entity/learning_objective"
+          ],
+          "gold_target": "coe:entity/learning_objective",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "literal-ambiguity",
+          "start": 16,
+          "end": 27,
+          "candidates": [
+            "coe:concept/corpus_glossary/scaffolding",
+            "coe:entity/learning/term/scaffolding",
+            "coe:entity/visual_communication/term/scaffolding"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "narrative",
+          "start": 18,
+          "end": 26,
+          "candidates": [
+            "coe:entity/metaphor"
+          ],
+          "gold_target": "coe:entity/metaphor",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "unicode",
+          "start": 14,
+          "end": 29,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "unicode",
+          "start": 20,
+          "end": 29,
+          "candidates": [
+            "coe:entity/business/competitor_analytics"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "unicode",
+          "start": 47,
+          "end": 55,
+          "candidates": [
+            "coe:entity/metaphor"
+          ],
+          "gold_target": "coe:entity/metaphor",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "visual-ambiguity",
+          "start": 4,
+          "end": 9,
+          "candidates": [
+            "coe:entity/slide_type"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "visual-ambiguity",
+          "start": 24,
+          "end": 35,
+          "candidates": [
+            "coe:concept/corpus_glossary/scaffolding",
+            "coe:entity/learning/term/scaffolding",
+            "coe:entity/visual_communication/term/scaffolding"
+          ],
+          "gold_target": "coe:entity/visual_communication/term/scaffolding",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "visual-ambiguity",
+          "start": 44,
+          "end": 55,
+          "candidates": [
+            "coe:entity/layout_pattern"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        }
+      ]
+    },
+    "terms": {
+      "predicted_mentions": 24,
+      "gold_mentions": 15,
+      "true_positive_mentions": 6,
+      "mention_precision": 0.25,
+      "mention_recall": 0.4,
+      "canonical_gold_mentions": 14,
+      "correct_canonical_candidate_inclusions": 5,
+      "canonical_candidate_recall": 0.35714285714285715,
+      "ambiguous_mentions": 1,
+      "spurious_mentions": 18,
+      "spurious_canonical_candidates": 3,
+      "unmapped_mentions": 18,
+      "additional_valid_mentions_over_baseline": 1,
+      "seconds_excluding_initialization": 2.4245212479727343,
+      "occurrences": [
+        {
+          "passage": "adobe-basic",
+          "start": 25,
+          "end": 31,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "adobe-basic",
+          "start": 55,
+          "end": 61,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "adobe-whitespace",
+          "start": 36,
+          "end": 41,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "boundaries",
+          "start": 4,
+          "end": 27,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "boundaries",
+          "start": 50,
+          "end": 65,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "combining",
+          "start": 0,
+          "end": 14,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "combining",
+          "start": 45,
+          "end": 53,
+          "candidates": [
+            "coe:entity/metaphor"
+          ],
+          "gold_target": "coe:entity/metaphor",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning",
+          "start": 0,
+          "end": 11,
+          "candidates": [
+            "coe:concept/corpus_glossary/scaffolding",
+            "coe:entity/learning/term/scaffolding",
+            "coe:entity/visual_communication/term/scaffolding"
+          ],
+          "gold_target": "coe:entity/learning/term/scaffolding",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning",
+          "start": 18,
+          "end": 26,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "learning",
+          "start": 28,
+          "end": 58,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "learning-objective",
+          "start": 4,
+          "end": 22,
+          "candidates": [
+            "coe:entity/learning_objective"
+          ],
+          "gold_target": "coe:entity/learning_objective",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning-objective",
+          "start": 36,
+          "end": 54,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "literal-ambiguity",
+          "start": 0,
+          "end": 7,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "literal-ambiguity",
+          "start": 39,
+          "end": 44,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "narrative",
+          "start": 4,
+          "end": 10,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "narrative",
+          "start": 18,
+          "end": 26,
+          "candidates": [
+            "coe:entity/metaphor"
+          ],
+          "gold_target": "coe:entity/metaphor",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "narrative",
+          "start": 43,
+          "end": 48,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "unicode",
+          "start": 0,
+          "end": 8,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "unicode",
+          "start": 39,
+          "end": 43,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "unicode",
+          "start": 47,
+          "end": 55,
+          "candidates": [
+            "coe:entity/metaphor"
+          ],
+          "gold_target": "coe:entity/metaphor",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "unknown",
+          "start": 4,
+          "end": 19,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "unknown",
+          "start": 23,
+          "end": 46,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": true
+        },
+        {
+          "passage": "visual-ambiguity",
+          "start": 4,
+          "end": 14,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "visual-ambiguity",
+          "start": 44,
+          "end": 55,
+          "candidates": [
+            "coe:entity/layout_pattern"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        }
+      ]
+    },
+    "terms_and_names_diagnostic": {
+      "predicted_mentions": 33,
+      "gold_mentions": 15,
+      "true_positive_mentions": 14,
+      "mention_precision": 0.42424242424242425,
+      "mention_recall": 0.9333333333333333,
+      "canonical_gold_mentions": 14,
+      "correct_canonical_candidate_inclusions": 13,
+      "canonical_candidate_recall": 0.9285714285714286,
+      "ambiguous_mentions": 1,
+      "spurious_mentions": 19,
+      "spurious_canonical_candidates": 3,
+      "unmapped_mentions": 19,
+      "additional_valid_mentions_over_baseline": 1,
+      "seconds_excluding_initialization": 2.4614961649058387,
+      "occurrences": [
+        {
+          "passage": "adobe-basic",
+          "start": 0,
+          "end": 15,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-basic",
+          "start": 25,
+          "end": 31,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "adobe-basic",
+          "start": 33,
+          "end": 46,
+          "candidates": [
+            "coe:entity/adobe/firefly"
+          ],
+          "gold_target": "coe:entity/adobe/firefly",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-basic",
+          "start": 55,
+          "end": 61,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "adobe-repeated",
+          "start": 0,
+          "end": 15,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-repeated",
+          "start": 31,
+          "end": 46,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-whitespace",
+          "start": 12,
+          "end": 29,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "adobe-whitespace",
+          "start": 36,
+          "end": 41,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "boundaries",
+          "start": 4,
+          "end": 27,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "boundaries",
+          "start": 11,
+          "end": 27,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "boundaries",
+          "start": 50,
+          "end": 65,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "combining",
+          "start": 0,
+          "end": 14,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "combining",
+          "start": 25,
+          "end": 38,
+          "candidates": [
+            "coe:entity/adobe/firefly"
+          ],
+          "gold_target": "coe:entity/adobe/firefly",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "combining",
+          "start": 45,
+          "end": 53,
+          "candidates": [
+            "coe:entity/metaphor"
+          ],
+          "gold_target": "coe:entity/metaphor",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning",
+          "start": 0,
+          "end": 11,
+          "candidates": [
+            "coe:concept/corpus_glossary/scaffolding",
+            "coe:entity/learning/term/scaffolding",
+            "coe:entity/visual_communication/term/scaffolding"
+          ],
+          "gold_target": "coe:entity/learning/term/scaffolding",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning",
+          "start": 18,
+          "end": 26,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "learning",
+          "start": 28,
+          "end": 46,
+          "candidates": [
+            "coe:concept/cognitive_load_taxonomy/design_strategy/retrieval_practice"
+          ],
+          "gold_target": "coe:concept/cognitive_load_taxonomy/design_strategy/retrieval_practice",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning",
+          "start": 28,
+          "end": 58,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "learning-objective",
+          "start": 4,
+          "end": 22,
+          "candidates": [
+            "coe:entity/learning_objective"
+          ],
+          "gold_target": "coe:entity/learning_objective",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "learning-objective",
+          "start": 36,
+          "end": 54,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "literal-ambiguity",
+          "start": 0,
+          "end": 7,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "literal-ambiguity",
+          "start": 39,
+          "end": 44,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "narrative",
+          "start": 4,
+          "end": 10,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "narrative",
+          "start": 18,
+          "end": 26,
+          "candidates": [
+            "coe:entity/metaphor"
+          ],
+          "gold_target": "coe:entity/metaphor",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "narrative",
+          "start": 43,
+          "end": 48,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "unicode",
+          "start": 0,
+          "end": 8,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "unicode",
+          "start": 14,
+          "end": 29,
+          "candidates": [
+            "coe:entity/adobe/analytics"
+          ],
+          "gold_target": "coe:entity/adobe/analytics",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "unicode",
+          "start": 39,
+          "end": 43,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "unicode",
+          "start": 47,
+          "end": 55,
+          "candidates": [
+            "coe:entity/metaphor"
+          ],
+          "gold_target": "coe:entity/metaphor",
+          "gold_occurrence": true
+        },
+        {
+          "passage": "unknown",
+          "start": 4,
+          "end": 19,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "unknown",
+          "start": 23,
+          "end": 46,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": true
+        },
+        {
+          "passage": "visual-ambiguity",
+          "start": 4,
+          "end": 14,
+          "candidates": [],
+          "gold_target": null,
+          "gold_occurrence": false
+        },
+        {
+          "passage": "visual-ambiguity",
+          "start": 44,
+          "end": 55,
+          "candidates": [
+            "coe:entity/layout_pattern"
+          ],
+          "gold_target": null,
+          "gold_occurrence": false
+        }
+      ]
+    }
+  },
+  "peak_rss_bytes": {
+    "baseline_process": 132202496,
+    "nlp_process": 618545152
+  },
+  "nlp_initialization_seconds": 0.8893394579936285,
+  "offsets": {
+    "verified_byte_offsets": 33,
+    "python_character_offset_counterexamples": 8,
+    "position_preserving_whitespace_substitutions": 1
+  }
+}

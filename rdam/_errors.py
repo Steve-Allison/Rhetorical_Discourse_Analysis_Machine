@@ -4,7 +4,7 @@ from typing import Literal
 from rdam.contracts import OperationError, OperationFailure, Retryability, Sha256Identity
 
 type Operation = Literal[
-    "configuration", "capabilities", "prepare", "analyse", "summary", "view", "schema", "version", "serve", "publish"
+    "configuration", "capabilities", "prepare", "analyse", "summary", "view", "schema", "version", "serve", "publish", "concepts"
 ]
 type Category = Literal[
     "invalid_request",

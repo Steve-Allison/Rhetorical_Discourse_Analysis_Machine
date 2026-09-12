@@ -1,0 +1,3377 @@
+{
+  "gold_sha256": "ba7a2e1006e8c4c04882e675290d5aebbd8f096e5ca643857f668a2d10d8875c",
+  "ontology": {
+    "distribution_id": "coe:distribution/4.0.0",
+    "version": "4.0.0",
+    "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+    "domains": [
+      "adobe",
+      "ai",
+      "business",
+      "delivery",
+      "language_editorial",
+      "learning",
+      "narrative",
+      "visual_communication"
+    ]
+  },
+  "peak_rss_bytes": 132202496,
+  "passages": [
+    {
+      "id": "adobe-basic",
+      "text": "Adobe Analytics measures visits. Adobe Firefly creates images.",
+      "annotations": [
+        {
+          "start": 0,
+          "end": 15,
+          "quote": "Adobe Analytics",
+          "target": "coe:entity/adobe/analytics"
+        },
+        {
+          "start": 33,
+          "end": 46,
+          "quote": "Adobe Firefly",
+          "target": "coe:entity/adobe/firefly"
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "34d5c60c075a442539f3b674fda036ebe6bf24d3264556ed923ce21200d5bbac",
+          "source_name": "adobe-basic",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 62,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "15736b20f6cae3d6329189b876dcaec47dbbdb085a418a9d6caf24819f202fb8"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "Adobe Analytics measures visits. Adobe Firefly creates images.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "34d5c60c075a442539f3b674fda036ebe6bf24d3264556ed923ce21200d5bbac",
+                "start": 0,
+                "end": 62,
+                "quote": "Adobe Analytics measures visits. Adobe Firefly creates images."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "80a6c6e2fae7a16c847b6260b9392d5a09b0e5f73b9df4a27e9e32a67960cb9e"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "34d5c60c075a442539f3b674fda036ebe6bf24d3264556ed923ce21200d5bbac",
+          "source_name": "adobe-basic",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 62,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "15736b20f6cae3d6329189b876dcaec47dbbdb085a418a9d6caf24819f202fb8"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "80a6c6e2fae7a16c847b6260b9392d5a09b0e5f73b9df4a27e9e32a67960cb9e"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "Adobe Analytics measures visits. Adobe Firefly creates images.",
+            "text_identity": "bc3b138e76b018bfc80b9d984d6f02fcb71ad01bc7b7783d3d1d279130ebb1b4",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "34d5c60c075a442539f3b674fda036ebe6bf24d3264556ed923ce21200d5bbac",
+                "start": 0,
+                "end": 62,
+                "quote": "Adobe Analytics measures visits. Adobe Firefly creates images."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 0,
+            "end": 15,
+            "quote": "Adobe Analytics",
+            "occurrence_id": "9480221b3564d291493c8e1255483cc4790b0c5c8d5c635f5dd35542de597c1a",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/adobe/analytics",
+                  "label": "Adobe Analytics",
+                  "description": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                  "domain": "adobe",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/adobe/products.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/adobe-analytics-a6b6c3f7a6",
+                    "sense_id": "coe:sense/by-resource/929a93608f00844f",
+                    "definition": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 6,
+            "end": 15,
+            "quote": "Analytics",
+            "occurrence_id": "99a8dbc0f33447c9a4c89dae807812999d922e59b7251e626016c601fb288995",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/business/competitor_analytics",
+                  "label": "Analytics Competitors",
+                  "description": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                  "domain": "business",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/business/buyer_personas.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "analytics",
+                    "target": "coe:entity/business/competitor_analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/analytics-65f98121a1",
+                    "sense_id": "coe:sense/by-resource/3d5092d98bd1ce3e",
+                    "definition": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 33,
+            "end": 46,
+            "quote": "Adobe Firefly",
+            "occurrence_id": "816a679a67150f014cd6ac805205fc89b6061d6e0604c62b7d37eca30afffee5",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/adobe/firefly",
+                  "label": "Adobe Firefly",
+                  "description": "Adobe's generative AI family and creative studio — commercially safe models that generate and edit images, video, vectors, and audio, integrated across Creative Cloud and available as a web application and APIs with access to partner models.",
+                  "domain": "adobe",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/adobe/products.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Adobe Firefly",
+                    "target": "coe:entity/adobe/firefly",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Adobe Firefly",
+                    "target": "coe:entity/adobe/firefly",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/adobe-firefly-d75388af00",
+                    "sense_id": "coe:sense/by-resource/a88a4c296cecf111",
+                    "definition": "Adobe's generative AI family and creative studio — commercially safe models that generate and edit images, video, vectors, and audio, integrated across Creative Cloud and available as a web application and APIs with access to partner models.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          }
+        ],
+        "semantic_digest": "0538562da98528b8489552ecc2bd5fc2417a6194a40db0ff1c5b649ffea1fe27"
+      },
+      "seconds": 0.20769966699299403
+    },
+    {
+      "id": "adobe-repeated",
+      "text": "Adobe Analytics appears twice: Adobe Analytics.",
+      "annotations": [
+        {
+          "start": 0,
+          "end": 15,
+          "quote": "Adobe Analytics",
+          "target": "coe:entity/adobe/analytics"
+        },
+        {
+          "start": 31,
+          "end": 46,
+          "quote": "Adobe Analytics",
+          "target": "coe:entity/adobe/analytics"
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "efc37ce91a482631f69ba492cbdd5584fd66825deb74e4def9ca8962a60c7425",
+          "source_name": "adobe-repeated",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 47,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "ef5d1db330363282cf2324f0506202e0772ebe9ce3221ec841358838ba64352b"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "Adobe Analytics appears twice: Adobe Analytics.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "efc37ce91a482631f69ba492cbdd5584fd66825deb74e4def9ca8962a60c7425",
+                "start": 0,
+                "end": 47,
+                "quote": "Adobe Analytics appears twice: Adobe Analytics."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "265d5701f3d4a1388c1eb8dee2fa2ceb1ff755c5802c14e1861a45864758830b"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "efc37ce91a482631f69ba492cbdd5584fd66825deb74e4def9ca8962a60c7425",
+          "source_name": "adobe-repeated",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 47,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "ef5d1db330363282cf2324f0506202e0772ebe9ce3221ec841358838ba64352b"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "265d5701f3d4a1388c1eb8dee2fa2ceb1ff755c5802c14e1861a45864758830b"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "Adobe Analytics appears twice: Adobe Analytics.",
+            "text_identity": "e1745102e6bb37a299d1dccbb56573f16232aa1771f3795e7c03af6db50c04e8",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "efc37ce91a482631f69ba492cbdd5584fd66825deb74e4def9ca8962a60c7425",
+                "start": 0,
+                "end": 47,
+                "quote": "Adobe Analytics appears twice: Adobe Analytics."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 0,
+            "end": 15,
+            "quote": "Adobe Analytics",
+            "occurrence_id": "a7321495ac67a55093f68730d1369f9154f46c18713f745b2de1e1cec5acbb2c",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/adobe/analytics",
+                  "label": "Adobe Analytics",
+                  "description": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                  "domain": "adobe",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/adobe/products.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/adobe-analytics-a6b6c3f7a6",
+                    "sense_id": "coe:sense/by-resource/929a93608f00844f",
+                    "definition": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 6,
+            "end": 15,
+            "quote": "Analytics",
+            "occurrence_id": "ac27709c0f4f08ac18daa583513516ec09be9219b2510832b269f9c266a1fcd2",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/business/competitor_analytics",
+                  "label": "Analytics Competitors",
+                  "description": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                  "domain": "business",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/business/buyer_personas.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "analytics",
+                    "target": "coe:entity/business/competitor_analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/analytics-65f98121a1",
+                    "sense_id": "coe:sense/by-resource/3d5092d98bd1ce3e",
+                    "definition": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 31,
+            "end": 46,
+            "quote": "Adobe Analytics",
+            "occurrence_id": "6d05056a8a944afcef7ba08f23be7ea2d86477bc4891a3c5ab069be448592a3d",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/adobe/analytics",
+                  "label": "Adobe Analytics",
+                  "description": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                  "domain": "adobe",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/adobe/products.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/adobe-analytics-a6b6c3f7a6",
+                    "sense_id": "coe:sense/by-resource/929a93608f00844f",
+                    "definition": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 37,
+            "end": 46,
+            "quote": "Analytics",
+            "occurrence_id": "a6591cba7cd6f2a48be30d4f066d40573be9f6be785717e536a0ff53008c93a5",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/business/competitor_analytics",
+                  "label": "Analytics Competitors",
+                  "description": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                  "domain": "business",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/business/buyer_personas.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "analytics",
+                    "target": "coe:entity/business/competitor_analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/analytics-65f98121a1",
+                    "sense_id": "coe:sense/by-resource/3d5092d98bd1ce3e",
+                    "definition": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          }
+        ],
+        "semantic_digest": "8a6f1f25c0837847808368db95fad1f13b0064920371b8dcbc2d17a0c05f8c02"
+      },
+      "seconds": 0.19797595901763998
+    },
+    {
+      "id": "adobe-whitespace",
+      "text": "We reviewed Adobe\n  Analytics after lunch.",
+      "annotations": [
+        {
+          "start": 12,
+          "end": 29,
+          "quote": "Adobe\n  Analytics",
+          "target": "coe:entity/adobe/analytics"
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "c56532fe27a2fa09f7459ced595dc42af6bf9db4506a92e2751a1d6bdda8050e",
+          "source_name": "adobe-whitespace",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 42,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "cdc10f1838c661d132a31ff91576b992f11e1320ebe53d93f090b3716a389778"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "We reviewed Adobe\n  Analytics after lunch.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "c56532fe27a2fa09f7459ced595dc42af6bf9db4506a92e2751a1d6bdda8050e",
+                "start": 0,
+                "end": 42,
+                "quote": "We reviewed Adobe\n  Analytics after lunch."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "7ff06ceed25d22f22d78de0beca3e0ce657f2a2375464e447c340cc910d76ea3"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "c56532fe27a2fa09f7459ced595dc42af6bf9db4506a92e2751a1d6bdda8050e",
+          "source_name": "adobe-whitespace",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 42,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "cdc10f1838c661d132a31ff91576b992f11e1320ebe53d93f090b3716a389778"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "7ff06ceed25d22f22d78de0beca3e0ce657f2a2375464e447c340cc910d76ea3"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "We reviewed Adobe\n  Analytics after lunch.",
+            "text_identity": "071f85dcf8f66bcaed34ab2810753550c4d5b93787601279bfcd0280f8d8f84b",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "c56532fe27a2fa09f7459ced595dc42af6bf9db4506a92e2751a1d6bdda8050e",
+                "start": 0,
+                "end": 42,
+                "quote": "We reviewed Adobe\n  Analytics after lunch."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 12,
+            "end": 29,
+            "quote": "Adobe\n  Analytics",
+            "occurrence_id": "c3eae7bf02bf0f36f49f72e52e76acd0ee2adcc73497f77d3472b433d6564c4b",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/adobe/analytics",
+                  "label": "Adobe Analytics",
+                  "description": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                  "domain": "adobe",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/adobe/products.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/adobe-analytics-a6b6c3f7a6",
+                    "sense_id": "coe:sense/by-resource/929a93608f00844f",
+                    "definition": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 20,
+            "end": 29,
+            "quote": "Analytics",
+            "occurrence_id": "7100d013459b960f914a5a273bfa3fb073f48b0ebed4ecf7e7f0acfc59d25fb0",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/business/competitor_analytics",
+                  "label": "Analytics Competitors",
+                  "description": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                  "domain": "business",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/business/buyer_personas.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "analytics",
+                    "target": "coe:entity/business/competitor_analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/analytics-65f98121a1",
+                    "sense_id": "coe:sense/by-resource/3d5092d98bd1ce3e",
+                    "definition": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          }
+        ],
+        "semantic_digest": "79ba92ef16b62881b4cc76661f2e664dcb94a65bd6f803a712bf7d505d7f5f20"
+      },
+      "seconds": 0.2008350420219358
+    },
+    {
+      "id": "learning",
+      "text": "Scaffolding helps learners. Retrieval Practice strengthens recall.",
+      "annotations": [
+        {
+          "start": 0,
+          "end": 11,
+          "quote": "Scaffolding",
+          "target": "coe:entity/learning/term/scaffolding"
+        },
+        {
+          "start": 28,
+          "end": 46,
+          "quote": "Retrieval Practice",
+          "target": "coe:concept/cognitive_load_taxonomy/design_strategy/retrieval_practice"
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "3244cc501cd549a736261714aedc87b0624f314d23e1d65fc8a51fbefea9d993",
+          "source_name": "learning",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 66,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "d1a5efb657e2b6aa801ef268f1f7ef475d07a4d172b738e181a8bdb041b068b8"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "Scaffolding helps learners. Retrieval Practice strengthens recall.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "3244cc501cd549a736261714aedc87b0624f314d23e1d65fc8a51fbefea9d993",
+                "start": 0,
+                "end": 66,
+                "quote": "Scaffolding helps learners. Retrieval Practice strengthens recall."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "7ac42ec02a08596415c7d15a9993a4b0414491af17b9585e95b0a4bb601b38e0"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "3244cc501cd549a736261714aedc87b0624f314d23e1d65fc8a51fbefea9d993",
+          "source_name": "learning",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 66,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "d1a5efb657e2b6aa801ef268f1f7ef475d07a4d172b738e181a8bdb041b068b8"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "7ac42ec02a08596415c7d15a9993a4b0414491af17b9585e95b0a4bb601b38e0"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "Scaffolding helps learners. Retrieval Practice strengthens recall.",
+            "text_identity": "2e24b1e1e201532d759513d209f3ff19026db799bf5b0bcf6fa96b4eef9061e5",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "3244cc501cd549a736261714aedc87b0624f314d23e1d65fc8a51fbefea9d993",
+                "start": 0,
+                "end": 66,
+                "quote": "Scaffolding helps learners. Retrieval Practice strengthens recall."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 0,
+            "end": 11,
+            "quote": "Scaffolding",
+            "occurrence_id": "a0e15202abf6a209c44174cf6ac92e8bfc595ca15a38989fc2c730aeee675866",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:concept/corpus_glossary/scaffolding",
+                  "label": "scaffolding",
+                  "description": "Training body content that facilitates cognitive processing (worked examples, practice items).",
+                  "domain": "language_editorial",
+                  "status": "canonical",
+                  "resource_type": "Concept",
+                  "source_path": "ontology/data/domains/language_editorial/tone_archetypes.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "scaffolding",
+                    "target": "coe:concept/corpus_glossary/scaffolding",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              },
+              {
+                "resource": {
+                  "identifier": "coe:entity/learning/term/scaffolding",
+                  "label": "Scaffolding",
+                  "description": "Temporary instructional support provided to learners in their Zone of Proximal Development, gradually faded.",
+                  "domain": "learning",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/learning/terminology.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/learning/term/scaffolding",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/learning/term/scaffolding",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/scaffolding-4dba5aba09",
+                    "sense_id": "coe:sense/learning/scaffolding",
+                    "definition": "Temporary instructional support provided to learners in their Zone of Proximal Development, gradually faded.",
+                    "distinguished_from": [
+                      "coe:sense/visual_communication/scaffolding"
+                    ],
+                    "usage_note": "Used specifically within the learning domain context.",
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              },
+              {
+                "resource": {
+                  "identifier": "coe:entity/visual_communication/term/scaffolding",
+                  "label": "Scaffolding",
+                  "description": "The underlying modular grid, column hierarchy, and visual structure organizing slide elements.",
+                  "domain": "visual_communication",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/visual_communication/terminology.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/visual_communication/term/scaffolding",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/visual_communication/term/scaffolding",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/scaffolding-4dba5aba09",
+                    "sense_id": "coe:sense/visual_communication/scaffolding",
+                    "definition": "The underlying modular grid, column hierarchy, and visual structure organizing slide elements.",
+                    "distinguished_from": [
+                      "coe:sense/learning/scaffolding"
+                    ],
+                    "usage_note": "Used specifically within the visual_communication domain context.",
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "ambiguous"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 28,
+            "end": 37,
+            "quote": "Retrieval",
+            "occurrence_id": "74297d8e4dcde551c736a9028730c5cd21f6985c12f0f142f104a584e2845af6",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:concept/ai_systems_taxonomy/pipeline_stage/retrieval",
+                  "label": "Retrieval",
+                  "description": "The pipeline stage that queries the index to find the chunks most relevant to a given input, supplying the context that generation will consume.",
+                  "domain": "ai",
+                  "status": "canonical",
+                  "resource_type": "Concept",
+                  "source_path": "ontology/data/domains/ai/ai_systems_taxonomy.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Retrieval",
+                    "target": "coe:concept/ai_systems_taxonomy/pipeline_stage/retrieval",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 28,
+            "end": 46,
+            "quote": "Retrieval Practice",
+            "occurrence_id": "e4835b6557b5635c3942c7dcfec41af023c3054616ac4477e4d79337f75ecd58",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:concept/cognitive_load_taxonomy/design_strategy/retrieval_practice",
+                  "label": "Retrieval Practice",
+                  "description": "Strengthen learning through active recall using low-stakes quizzing, spaced repetition, and interleaving — targets germane load",
+                  "domain": "learning",
+                  "status": "canonical",
+                  "resource_type": "Concept",
+                  "source_path": "ontology/data/domains/learning/taxonomies.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Retrieval Practice",
+                    "target": "coe:concept/cognitive_load_taxonomy/design_strategy/retrieval_practice",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 59,
+            "end": 65,
+            "quote": "recall",
+            "occurrence_id": "6ad549b38d892d477b9948599a44796320a325681db2087ac2bb54953ce8b969",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:concept/activity_types_taxonomy/outcome_type/recall",
+                  "label": "Recall",
+                  "description": "Can reproduce facts or steps",
+                  "domain": "learning",
+                  "status": "canonical",
+                  "resource_type": "Concept",
+                  "source_path": "ontology/data/domains/learning/taxonomies.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Recall",
+                    "target": "coe:concept/activity_types_taxonomy/outcome_type/recall",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          }
+        ],
+        "semantic_digest": "c2fb612337dcd899ad853bb5cf4492b39a13840f8d271522fc05a994ad0b78c7"
+      },
+      "seconds": 0.22539654199499637
+    },
+    {
+      "id": "learning-objective",
+      "text": "The Learning Objective specifies an observable outcome.",
+      "annotations": [
+        {
+          "start": 4,
+          "end": 22,
+          "quote": "Learning Objective",
+          "target": "coe:entity/learning_objective"
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "c5546b267115932ce7b6e12abafcecf7b8036832e09bab149e3c93d62be9858d",
+          "source_name": "learning-objective",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 55,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "9f578bf8833a9f3c419d33c340575adcdbc511baf59c2b5f05221556bb148db3"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "The Learning Objective specifies an observable outcome.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "c5546b267115932ce7b6e12abafcecf7b8036832e09bab149e3c93d62be9858d",
+                "start": 0,
+                "end": 55,
+                "quote": "The Learning Objective specifies an observable outcome."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "2eb5c83a1ea619cd38bae87a4f013efdadc6ea4d4009885976cb9fef93948290"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "c5546b267115932ce7b6e12abafcecf7b8036832e09bab149e3c93d62be9858d",
+          "source_name": "learning-objective",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 55,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "9f578bf8833a9f3c419d33c340575adcdbc511baf59c2b5f05221556bb148db3"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "2eb5c83a1ea619cd38bae87a4f013efdadc6ea4d4009885976cb9fef93948290"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "The Learning Objective specifies an observable outcome.",
+            "text_identity": "8906b561d9ea53f139a7c8259356a717ef42bd8fbfd37e1923cdeb684373c7a4",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "c5546b267115932ce7b6e12abafcecf7b8036832e09bab149e3c93d62be9858d",
+                "start": 0,
+                "end": 55,
+                "quote": "The Learning Objective specifies an observable outcome."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 4,
+            "end": 12,
+            "quote": "Learning",
+            "occurrence_id": "a4ce6310db7a568d6f88c5107b9e4a362bb168f9cb44a65395cafdd546e1a9a8",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:concept/assessment_taxonomy/kirkpatrick_level/learning",
+                  "label": "Learning",
+                  "description": "Kirkpatrick Level 2 — measures knowledge acquisition, skill development, and attitude change",
+                  "domain": "learning",
+                  "status": "canonical",
+                  "resource_type": "Concept",
+                  "source_path": "ontology/data/domains/learning/taxonomies.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Learning",
+                    "target": "coe:concept/assessment_taxonomy/kirkpatrick_level/learning",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 4,
+            "end": 22,
+            "quote": "Learning Objective",
+            "occurrence_id": "b64c3003684d7f04befaa7e00f2d1e335f28e76e094710527711242f1e6703df",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/learning_objective",
+                  "label": "Learning Objective",
+                  "description": "Stated learning goals, outcomes, or competencies",
+                  "domain": "learning",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/learning/instructional_methods.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Learning Objective",
+                    "target": "coe:entity/learning_objective",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Learning Objective",
+                    "target": "coe:entity/learning_objective",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/learning-objective-b5c248ccc1",
+                    "sense_id": "coe:sense/by-resource/b478cd4062e4e5c0",
+                    "definition": "Stated learning goals, outcomes, or competencies",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          }
+        ],
+        "semantic_digest": "e5484542a937836285f84a3504456b5d7de16db82d4e19ceb52d8e9cf4463487"
+      },
+      "seconds": 0.1981177090201527
+    },
+    {
+      "id": "visual-ambiguity",
+      "text": "The slide grid provides scaffolding for the composition.",
+      "annotations": [
+        {
+          "start": 24,
+          "end": 35,
+          "quote": "scaffolding",
+          "target": "coe:entity/visual_communication/term/scaffolding"
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "0b8a319093314613c9cfec223475e0e6c85a76cbc6052a2f20b59b31b41a9a29",
+          "source_name": "visual-ambiguity",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 56,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "9f29c88f3bc7be840c7939f85aa085bd8f79446883a8d42a9cd80cf49e604ee4"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "The slide grid provides scaffolding for the composition.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "0b8a319093314613c9cfec223475e0e6c85a76cbc6052a2f20b59b31b41a9a29",
+                "start": 0,
+                "end": 56,
+                "quote": "The slide grid provides scaffolding for the composition."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "b8385eb97ff0ec042b41e3936a233bd7fe736e644e92bfbe61549535fcd53256"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "0b8a319093314613c9cfec223475e0e6c85a76cbc6052a2f20b59b31b41a9a29",
+          "source_name": "visual-ambiguity",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 56,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "9f29c88f3bc7be840c7939f85aa085bd8f79446883a8d42a9cd80cf49e604ee4"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "b8385eb97ff0ec042b41e3936a233bd7fe736e644e92bfbe61549535fcd53256"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "The slide grid provides scaffolding for the composition.",
+            "text_identity": "e55862c91b2ed49aa8629df5ce674aab2d6b2ecda9b6c9a97dab8aeacdba927d",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "0b8a319093314613c9cfec223475e0e6c85a76cbc6052a2f20b59b31b41a9a29",
+                "start": 0,
+                "end": 56,
+                "quote": "The slide grid provides scaffolding for the composition."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 4,
+            "end": 9,
+            "quote": "slide",
+            "occurrence_id": "08f7be120ac0550d4cb2fcbd63daf61574b3d71efa0bd7c4151e84d9112011d7",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/slide_type",
+                  "label": "Slide Type",
+                  "description": "Common presentation slide categories",
+                  "domain": "visual_communication",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/visual_communication/slide_archetypes.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "slide",
+                    "target": "coe:entity/slide_type",
+                    "method": "synonym",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/slide-type-9328bd3234",
+                    "sense_id": "coe:sense/by-resource/44a6d33bac9044f6",
+                    "definition": "Common presentation slide categories",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": "coe:synonym/ccdbc7b63318",
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 24,
+            "end": 35,
+            "quote": "scaffolding",
+            "occurrence_id": "066eb30a03f937c0f83eb69e593f319dd21d255dc4523cb881a58916637468e8",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:concept/corpus_glossary/scaffolding",
+                  "label": "scaffolding",
+                  "description": "Training body content that facilitates cognitive processing (worked examples, practice items).",
+                  "domain": "language_editorial",
+                  "status": "canonical",
+                  "resource_type": "Concept",
+                  "source_path": "ontology/data/domains/language_editorial/tone_archetypes.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "scaffolding",
+                    "target": "coe:concept/corpus_glossary/scaffolding",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              },
+              {
+                "resource": {
+                  "identifier": "coe:entity/learning/term/scaffolding",
+                  "label": "Scaffolding",
+                  "description": "Temporary instructional support provided to learners in their Zone of Proximal Development, gradually faded.",
+                  "domain": "learning",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/learning/terminology.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/learning/term/scaffolding",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/learning/term/scaffolding",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/scaffolding-4dba5aba09",
+                    "sense_id": "coe:sense/learning/scaffolding",
+                    "definition": "Temporary instructional support provided to learners in their Zone of Proximal Development, gradually faded.",
+                    "distinguished_from": [
+                      "coe:sense/visual_communication/scaffolding"
+                    ],
+                    "usage_note": "Used specifically within the learning domain context.",
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              },
+              {
+                "resource": {
+                  "identifier": "coe:entity/visual_communication/term/scaffolding",
+                  "label": "Scaffolding",
+                  "description": "The underlying modular grid, column hierarchy, and visual structure organizing slide elements.",
+                  "domain": "visual_communication",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/visual_communication/terminology.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/visual_communication/term/scaffolding",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/visual_communication/term/scaffolding",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/scaffolding-4dba5aba09",
+                    "sense_id": "coe:sense/visual_communication/scaffolding",
+                    "definition": "The underlying modular grid, column hierarchy, and visual structure organizing slide elements.",
+                    "distinguished_from": [
+                      "coe:sense/learning/scaffolding"
+                    ],
+                    "usage_note": "Used specifically within the visual_communication domain context.",
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "ambiguous"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 44,
+            "end": 55,
+            "quote": "composition",
+            "occurrence_id": "2c91455a90415dc552b17a93821b1e818dd421259d3e16c0b338d09936095189",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/layout_pattern",
+                  "label": "Layout Pattern",
+                  "description": "Slide and page layout structures",
+                  "domain": "visual_communication",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/visual_communication/slide_archetypes.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "composition",
+                    "target": "coe:entity/layout_pattern",
+                    "method": "synonym",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/layout-pattern-d134026c31",
+                    "sense_id": "coe:sense/by-resource/af7e61547c7446c2",
+                    "definition": "Slide and page layout structures",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": "coe:synonym/ef614241ce5e",
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          }
+        ],
+        "semantic_digest": "0343fed76ba526f45adc0029601881cd4e6f312a9d01e6e62913b752774683b4"
+      },
+      "seconds": 0.20637745800195262
+    },
+    {
+      "id": "literal-ambiguity",
+      "text": "Workers erected scaffolding around the house.",
+      "annotations": [],
+      "inventory": {
+        "source": {
+          "source_id": "c6fcc3aabd9fd8e027609b0b6c483d1761a6fad8915af50b58c14acde12cd164",
+          "source_name": "literal-ambiguity",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 45,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "3fd7fc8c0089a62861840b3ada41994a005c8d7ec0838e2873a38046b2c5cf6c"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "Workers erected scaffolding around the house.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "c6fcc3aabd9fd8e027609b0b6c483d1761a6fad8915af50b58c14acde12cd164",
+                "start": 0,
+                "end": 45,
+                "quote": "Workers erected scaffolding around the house."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "7903fe52f29c5e3bfb00c60de0b35d54c55ca7ad679dfa2409b582a248c46556"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "c6fcc3aabd9fd8e027609b0b6c483d1761a6fad8915af50b58c14acde12cd164",
+          "source_name": "literal-ambiguity",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 45,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "3fd7fc8c0089a62861840b3ada41994a005c8d7ec0838e2873a38046b2c5cf6c"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "7903fe52f29c5e3bfb00c60de0b35d54c55ca7ad679dfa2409b582a248c46556"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "Workers erected scaffolding around the house.",
+            "text_identity": "68affafec4df3b37f2e8d1a4d6040de19efebaf9cf2a376fb37e15fa6424e6c2",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "c6fcc3aabd9fd8e027609b0b6c483d1761a6fad8915af50b58c14acde12cd164",
+                "start": 0,
+                "end": 45,
+                "quote": "Workers erected scaffolding around the house."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 16,
+            "end": 27,
+            "quote": "scaffolding",
+            "occurrence_id": "8aa7ddc1308fb337462c17904f2edacd735668222932ad36223d2d147a0c315d",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:concept/corpus_glossary/scaffolding",
+                  "label": "scaffolding",
+                  "description": "Training body content that facilitates cognitive processing (worked examples, practice items).",
+                  "domain": "language_editorial",
+                  "status": "canonical",
+                  "resource_type": "Concept",
+                  "source_path": "ontology/data/domains/language_editorial/tone_archetypes.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "scaffolding",
+                    "target": "coe:concept/corpus_glossary/scaffolding",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              },
+              {
+                "resource": {
+                  "identifier": "coe:entity/learning/term/scaffolding",
+                  "label": "Scaffolding",
+                  "description": "Temporary instructional support provided to learners in their Zone of Proximal Development, gradually faded.",
+                  "domain": "learning",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/learning/terminology.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/learning/term/scaffolding",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/learning/term/scaffolding",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/scaffolding-4dba5aba09",
+                    "sense_id": "coe:sense/learning/scaffolding",
+                    "definition": "Temporary instructional support provided to learners in their Zone of Proximal Development, gradually faded.",
+                    "distinguished_from": [
+                      "coe:sense/visual_communication/scaffolding"
+                    ],
+                    "usage_note": "Used specifically within the learning domain context.",
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              },
+              {
+                "resource": {
+                  "identifier": "coe:entity/visual_communication/term/scaffolding",
+                  "label": "Scaffolding",
+                  "description": "The underlying modular grid, column hierarchy, and visual structure organizing slide elements.",
+                  "domain": "visual_communication",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/visual_communication/terminology.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/visual_communication/term/scaffolding",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Scaffolding",
+                    "target": "coe:entity/visual_communication/term/scaffolding",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/scaffolding-4dba5aba09",
+                    "sense_id": "coe:sense/visual_communication/scaffolding",
+                    "definition": "The underlying modular grid, column hierarchy, and visual structure organizing slide elements.",
+                    "distinguished_from": [
+                      "coe:sense/learning/scaffolding"
+                    ],
+                    "usage_note": "Used specifically within the visual_communication domain context.",
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "ambiguous"
+          }
+        ],
+        "semantic_digest": "0732df5209168c625783f208806e0810911d8c9ab8343676ae351ad1183cbd2f"
+      },
+      "seconds": 0.22460312501061708
+    },
+    {
+      "id": "narrative",
+      "text": "The writer used a metaphor to describe the storm.",
+      "annotations": [
+        {
+          "start": 18,
+          "end": 26,
+          "quote": "metaphor",
+          "target": "coe:entity/metaphor"
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "12a5b293c4f114fc5f50d45685f8d0035dba0d106118424367980d3846ad6db4",
+          "source_name": "narrative",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 49,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "fb585c4643e3567b9881d03f060e19b6595ceb6ae517c551d8a2ac75c91ca0b0"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "The writer used a metaphor to describe the storm.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "12a5b293c4f114fc5f50d45685f8d0035dba0d106118424367980d3846ad6db4",
+                "start": 0,
+                "end": 49,
+                "quote": "The writer used a metaphor to describe the storm."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "5031db4f3e1d03d89d144b8d2b10875128ac0c599ab074ce06e610533bbf3461"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "12a5b293c4f114fc5f50d45685f8d0035dba0d106118424367980d3846ad6db4",
+          "source_name": "narrative",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 49,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "fb585c4643e3567b9881d03f060e19b6595ceb6ae517c551d8a2ac75c91ca0b0"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "5031db4f3e1d03d89d144b8d2b10875128ac0c599ab074ce06e610533bbf3461"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "The writer used a metaphor to describe the storm.",
+            "text_identity": "19952673f4b371e3b7a1ef81469465e1be5dc85ae7a9d362fccef533f05823c6",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "12a5b293c4f114fc5f50d45685f8d0035dba0d106118424367980d3846ad6db4",
+                "start": 0,
+                "end": 49,
+                "quote": "The writer used a metaphor to describe the storm."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 18,
+            "end": 26,
+            "quote": "metaphor",
+            "occurrence_id": "06bfce474513e71e4a52c6c2755304732fbc7d21bc36f8e74b1d801452c5944b",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/metaphor",
+                  "label": "Metaphor",
+                  "description": "Implicit comparison asserting one thing is another to illuminate meaning",
+                  "domain": "narrative",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/narrative/argument_structures.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Metaphor",
+                    "target": "coe:entity/metaphor",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Metaphor",
+                    "target": "coe:entity/metaphor",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/metaphor-065d74f276",
+                    "sense_id": "coe:sense/by-resource/15abde903bb5228c",
+                    "definition": "Implicit comparison asserting one thing is another to illuminate meaning",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          }
+        ],
+        "semantic_digest": "76be74bab135a839516a910260c2dbc5c9b805fe8d0384afda7adf7cfd887657"
+      },
+      "seconds": 0.192823249992216
+    },
+    {
+      "id": "unicode",
+      "text": "Élodie 😀 used Adobe Analytics beside a café. A metaphor followed.",
+      "annotations": [
+        {
+          "start": 14,
+          "end": 29,
+          "quote": "Adobe Analytics",
+          "target": "coe:entity/adobe/analytics"
+        },
+        {
+          "start": 47,
+          "end": 55,
+          "quote": "metaphor",
+          "target": "coe:entity/metaphor"
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "250e698d34ff4d596215634bbb30f64ece7cf82cef26548ccaed2266fe60873a",
+          "source_name": "unicode",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 70,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "5b0388e611a544b7f22ef261de06ac917397e38dc7bc92462a7ef02c04e05610"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "Élodie 😀 used Adobe Analytics beside a café. A metaphor followed.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "250e698d34ff4d596215634bbb30f64ece7cf82cef26548ccaed2266fe60873a",
+                "start": 0,
+                "end": 65,
+                "quote": "Élodie 😀 used Adobe Analytics beside a café. A metaphor followed."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "e5cd9e5ea9890b01be5d0aefe05d63804662cded34581b64bf216d8a9ef59fde"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "250e698d34ff4d596215634bbb30f64ece7cf82cef26548ccaed2266fe60873a",
+          "source_name": "unicode",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 70,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "5b0388e611a544b7f22ef261de06ac917397e38dc7bc92462a7ef02c04e05610"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "e5cd9e5ea9890b01be5d0aefe05d63804662cded34581b64bf216d8a9ef59fde"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "Élodie 😀 used Adobe Analytics beside a café. A metaphor followed.",
+            "text_identity": "88670283a539da3074b03a0c215508c04071f81c944c06681115ec2cee4cdfdd",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "250e698d34ff4d596215634bbb30f64ece7cf82cef26548ccaed2266fe60873a",
+                "start": 0,
+                "end": 65,
+                "quote": "Élodie 😀 used Adobe Analytics beside a café. A metaphor followed."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 14,
+            "end": 29,
+            "quote": "Adobe Analytics",
+            "occurrence_id": "421e38b055bb783ffdef817dedc59604f0a9d0fffebbf9fb77d5839ee9e9200c",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/adobe/analytics",
+                  "label": "Adobe Analytics",
+                  "description": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                  "domain": "adobe",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/adobe/products.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Adobe Analytics",
+                    "target": "coe:entity/adobe/analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/adobe-analytics-a6b6c3f7a6",
+                    "sense_id": "coe:sense/by-resource/929a93608f00844f",
+                    "definition": "Adobe's web and app analytics solution — collection, segmentation, and reporting of digital behaviour such as traffic, conversion, and pathing, with Analysis Workspace as its analysis surface.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 20,
+            "end": 29,
+            "quote": "Analytics",
+            "occurrence_id": "1d0fd269e75e539d1c394ada4386c6655ba0432c2ca9567ead1c2f42aa5c862f",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/business/competitor_analytics",
+                  "label": "Analytics Competitors",
+                  "description": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                  "domain": "business",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/business/buyer_personas.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "analytics",
+                    "target": "coe:entity/business/competitor_analytics",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/analytics-65f98121a1",
+                    "sense_id": "coe:sense/by-resource/3d5092d98bd1ce3e",
+                    "definition": "Competitor market segment for digital analytics, customer insights, and attribution — vendors competing with Adobe Analytics and Customer Journey Analytics, principally Google Analytics 4, Mixpanel, Amplitude, Segment, and Heap.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 47,
+            "end": 55,
+            "quote": "metaphor",
+            "occurrence_id": "17a3bee70bd8a6af9778aec8e90e085b8695ae69dc0a9c50ecfa657237223287",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/metaphor",
+                  "label": "Metaphor",
+                  "description": "Implicit comparison asserting one thing is another to illuminate meaning",
+                  "domain": "narrative",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/narrative/argument_structures.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Metaphor",
+                    "target": "coe:entity/metaphor",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Metaphor",
+                    "target": "coe:entity/metaphor",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/metaphor-065d74f276",
+                    "sense_id": "coe:sense/by-resource/15abde903bb5228c",
+                    "definition": "Implicit comparison asserting one thing is another to illuminate meaning",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          }
+        ],
+        "semantic_digest": "3c5f778399ddb809a6e0ad993b775eb05e45848d832e4f53acfe3ec6c64bb3a0"
+      },
+      "seconds": 0.19912908299011178
+    },
+    {
+      "id": "combining",
+      "text": "Café visitors discussed Adobe Firefly and a metaphor.",
+      "annotations": [
+        {
+          "start": 25,
+          "end": 38,
+          "quote": "Adobe Firefly",
+          "target": "coe:entity/adobe/firefly"
+        },
+        {
+          "start": 45,
+          "end": 53,
+          "quote": "metaphor",
+          "target": "coe:entity/metaphor"
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "a9955e187fc732c5eefe9e96a2ebdaeea610e20d23c64fbaa4be612ae4bc2e32",
+          "source_name": "combining",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 55,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "24ecfd2768c508a9e0c5297fea907867aadf8c70c64f4d52834a3438bd638cbb"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "Café visitors discussed Adobe Firefly and a metaphor.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "a9955e187fc732c5eefe9e96a2ebdaeea610e20d23c64fbaa4be612ae4bc2e32",
+                "start": 0,
+                "end": 54,
+                "quote": "Café visitors discussed Adobe Firefly and a metaphor."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "522d3c2d085e13d9a0b5c64c454f94eba6b1d888f8db8b390bf9a58511b60f66"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "a9955e187fc732c5eefe9e96a2ebdaeea610e20d23c64fbaa4be612ae4bc2e32",
+          "source_name": "combining",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 55,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "24ecfd2768c508a9e0c5297fea907867aadf8c70c64f4d52834a3438bd638cbb"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "522d3c2d085e13d9a0b5c64c454f94eba6b1d888f8db8b390bf9a58511b60f66"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "Café visitors discussed Adobe Firefly and a metaphor.",
+            "text_identity": "f36cc3186b5537a51bebd2cf64fbef35c2b73eb94b7b20bbf86890db8215f26d",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "a9955e187fc732c5eefe9e96a2ebdaeea610e20d23c64fbaa4be612ae4bc2e32",
+                "start": 0,
+                "end": 54,
+                "quote": "Café visitors discussed Adobe Firefly and a metaphor."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 25,
+            "end": 38,
+            "quote": "Adobe Firefly",
+            "occurrence_id": "1f238bc35edd5c817f9402e6001e74799d628998a815933dc2c7a49d88fb4ed4",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/adobe/firefly",
+                  "label": "Adobe Firefly",
+                  "description": "Adobe's generative AI family and creative studio — commercially safe models that generate and edit images, video, vectors, and audio, integrated across Creative Cloud and available as a web application and APIs with access to partner models.",
+                  "domain": "adobe",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/adobe/products.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Adobe Firefly",
+                    "target": "coe:entity/adobe/firefly",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Adobe Firefly",
+                    "target": "coe:entity/adobe/firefly",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/adobe-firefly-d75388af00",
+                    "sense_id": "coe:sense/by-resource/a88a4c296cecf111",
+                    "definition": "Adobe's generative AI family and creative studio — commercially safe models that generate and edit images, video, vectors, and audio, integrated across Creative Cloud and available as a web application and APIs with access to partner models.",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          },
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "start": 45,
+            "end": 53,
+            "quote": "metaphor",
+            "occurrence_id": "f55d682a4afa9fdea14dd15c9a1c784209f976359acdd580b0994623150cb65a",
+            "candidates": [
+              {
+                "resource": {
+                  "identifier": "coe:entity/metaphor",
+                  "label": "Metaphor",
+                  "description": "Implicit comparison asserting one thing is another to illuminate meaning",
+                  "domain": "narrative",
+                  "status": "canonical",
+                  "resource_type": "OntologyEntity",
+                  "source_path": "ontology/data/domains/narrative/argument_structures.yaml"
+                },
+                "reasons": [
+                  {
+                    "literal": "Metaphor",
+                    "target": "coe:entity/metaphor",
+                    "method": "label",
+                    "scope": "exact",
+                    "term_id": null,
+                    "sense_id": null,
+                    "definition": null,
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  },
+                  {
+                    "literal": "Metaphor",
+                    "target": "coe:entity/metaphor",
+                    "method": "term",
+                    "scope": "exact",
+                    "term_id": "coe:term/lexical/metaphor-065d74f276",
+                    "sense_id": "coe:sense/by-resource/15abde903bb5228c",
+                    "definition": "Implicit comparison asserting one thing is another to illuminate meaning",
+                    "distinguished_from": [],
+                    "usage_note": null,
+                    "synonym_id": null,
+                    "status": "canonical"
+                  }
+                ]
+              }
+            ],
+            "resolution": "unique"
+          }
+        ],
+        "semantic_digest": "bd1d4c47d9fcdfd30109ae1e8062e392202c7421208d8d79742de8d569e2c3f7"
+      },
+      "seconds": 0.2183435409970116
+    },
+    {
+      "id": "boundaries",
+      "text": "The token xAdobe Analyticsx is deliberately not a product mention.",
+      "annotations": [],
+      "inventory": {
+        "source": {
+          "source_id": "86b400788aac7c165c7b7a10fb4388c9c1efecd81a8dc33312ea8bb637726c79",
+          "source_name": "boundaries",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 66,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "29fb731c23f6152de3b5d7a4948985c3eaa06bec1f670a093c52d97725298409"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "The token xAdobe Analyticsx is deliberately not a product mention.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "86b400788aac7c165c7b7a10fb4388c9c1efecd81a8dc33312ea8bb637726c79",
+                "start": 0,
+                "end": 66,
+                "quote": "The token xAdobe Analyticsx is deliberately not a product mention."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "d21e654907dfaf165d892a7096d26ad3d0bf83a9bd8438324980531bb3bc6e94"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "86b400788aac7c165c7b7a10fb4388c9c1efecd81a8dc33312ea8bb637726c79",
+          "source_name": "boundaries",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 66,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "29fb731c23f6152de3b5d7a4948985c3eaa06bec1f670a093c52d97725298409"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "d21e654907dfaf165d892a7096d26ad3d0bf83a9bd8438324980531bb3bc6e94"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "The token xAdobe Analyticsx is deliberately not a product mention.",
+            "text_identity": "fd4a7d74c98612f3551dee17a98e9e16efa2fce581d8b8b76e79c4bed3aafa64",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "86b400788aac7c165c7b7a10fb4388c9c1efecd81a8dc33312ea8bb637726c79",
+                "start": 0,
+                "end": 66,
+                "quote": "The token xAdobe Analyticsx is deliberately not a product mention."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [],
+        "semantic_digest": "3412d79cb662744039000f0cd282a4f2f5a85df08663b6ea3a8d04cbf177fb67"
+      },
+      "seconds": 0.19600062500103377
+    },
+    {
+      "id": "unknown",
+      "text": "The invented method is quantum banana tutoring.",
+      "annotations": [
+        {
+          "start": 23,
+          "end": 46,
+          "quote": "quantum banana tutoring",
+          "target": null
+        }
+      ],
+      "inventory": {
+        "source": {
+          "source_id": "f33abc8cae052163bb8b20eaa7d60fefd759bd0178980a9917ee1995989f5f6d",
+          "source_name": "unknown",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 47,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "69bf440f303424f0ca2db96aee36935b30092d3a2e72556f04583a4de3919617"
+          },
+          "raw_contract": null
+        },
+        "source_contract": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "items": [
+          {
+            "item_id": "text:document",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "representation": {
+              "kind": "text",
+              "text": "The invented method is quantum banana tutoring.",
+              "language": null,
+              "semantic_role": "paragraph",
+              "attributes": []
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "f33abc8cae052163bb8b20eaa7d60fefd759bd0178980a9917ee1995989f5f6d",
+                "start": 0,
+                "end": 47,
+                "quote": "The invented method is quantum banana tutoring."
+              }
+            ],
+            "parent_id": null,
+            "child_ids": [],
+            "relationships": [],
+            "provider_attributes": [],
+            "disposition": {
+              "decision": "primary",
+              "reason": "authored_primary",
+              "primary_segment_ids": [
+                "segment:text:document"
+              ],
+              "duplicate_of": null,
+              "transformation_ids": []
+            }
+          }
+        ],
+        "empty_submitted_content": false,
+        "semantic_digest": {
+          "algorithm": "sha256",
+          "hex_digest": "dfc5cd8fde76f96854a2439260e2d385d427cdff409707cda5134d82773b0d0a"
+        }
+      },
+      "baseline": {
+        "contract": "rdam.concept_links",
+        "contract_version": "1.0.0",
+        "source": {
+          "source_id": "f33abc8cae052163bb8b20eaa7d60fefd759bd0178980a9917ee1995989f5f6d",
+          "source_name": "unknown",
+          "source_form": "text",
+          "origin_classification": "in_memory",
+          "declared_artifact_id": null,
+          "media_type": "text/plain; charset=utf-8",
+          "encoding": "utf-8",
+          "byte_length": 47,
+          "byte_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "69bf440f303424f0ca2db96aee36935b30092d3a2e72556f04583a4de3919617"
+          },
+          "raw_contract": null
+        },
+        "inventory_identity": {
+          "algorithm": "sha256",
+          "hex_digest": "dfc5cd8fde76f96854a2439260e2d385d427cdff409707cda5134d82773b0d0a"
+        },
+        "source_adapter": {
+          "adapter": "isanlp_rst.ingest.plain_text",
+          "adapter_contract_version": "2.0.0",
+          "upstream_format": "rdam",
+          "upstream_version": "6.0.0",
+          "schema_identity": {
+            "algorithm": "sha256",
+            "hex_digest": "7fcf30226dfd12dc4d76842bc95b77a7885cb4b4a7bb11c4024a4e024bb61629"
+          },
+          "assumptions": []
+        },
+        "ontology": {
+          "distribution_id": "coe:distribution/4.0.0",
+          "version": "4.0.0",
+          "content_digest": "5acb0b5d2815471bad2478991410a90cb4b913c45a28ea482a47cf6f5a4761f2",
+          "domains": [
+            "adobe",
+            "ai",
+            "business",
+            "delivery",
+            "language_editorial",
+            "learning",
+            "narrative",
+            "visual_communication"
+          ]
+        },
+        "algorithm": "unicode-lexical-surfaces",
+        "algorithm_version": "1.0.0",
+        "implementation_identity": "aca058bc1d82a5468fd322eb0225c6a67a25f4d2b6fc5f5ac2c8c881c28fb525",
+        "options": {
+          "acronym_case_sensitive": true
+        },
+        "surfaces": [
+          {
+            "item_id": "text:document",
+            "field_pointer": "/representation/text",
+            "text": "The invented method is quantum banana tutoring.",
+            "text_identity": "68d4cea82cfd819b2019d286a954ec120f4823ade93d84495e53558a523a7fe9",
+            "classification": "paragraph",
+            "origin": {
+              "authorship": "authored",
+              "source_layer": null,
+              "producer": "isanlp_rst.ingest.text/v1"
+            },
+            "anchors": [
+              {
+                "kind": "text_span",
+                "artifact_identity": "f33abc8cae052163bb8b20eaa7d60fefd759bd0178980a9917ee1995989f5f6d",
+                "start": 0,
+                "end": 47,
+                "quote": "The invented method is quantum banana tutoring."
+              }
+            ]
+          }
+        ],
+        "exclusions": [],
+        "supplied_candidates": null,
+        "mentions": [],
+        "semantic_digest": "b5de4eebd1c497a5ff41f62ed9fac45ae2bd3bd566f78831314083a7328f93a7"
+      },
+      "seconds": 0.1911068330227863
+    }
+  ]
+}

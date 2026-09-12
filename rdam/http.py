@@ -19,6 +19,8 @@ import uvicorn
 
 from rdam._errors import Operation, error, failure
 from rdam._strict import canonical_json_bytes
+from rdam.concepts import ConceptIndex, execute_request as execute_concept_request
+from rdam.concepts.serialization import load_request as load_concept_request, serialize as serialize_concepts
 from rdam.contracts import AggregateAnalysis, MachineCapabilities, MachinePreparation, HistoricalMachinePreparation, OperationError
 from rdam.historical import HistoricalAggregateAnalysis
 from rdam.interpretation import select_analysis
@@ -26,7 +28,7 @@ from rdam.machine import Machine
 from rdam.serialization import load, load_preparation_request, load_request, load_view_request, serialize, version_info
 from rdam.summary import summarise
 
-_POST_ROUTES = {"/v1/prepare": "prepare", "/v1/analyse": "analyse", "/v1/view": "view", "/v1/summary": "summary"}
+_POST_ROUTES = {"/v1/prepare": "prepare", "/v1/analyse": "analyse", "/v1/view": "view", "/v1/summary": "summary", "/v1/concepts/link": "concepts"}
 _GET_ROUTES = {"/v1/capabilities": "capabilities", "/v1/version": "version"}
 _HEADERS = {"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"}
 
@@ -47,8 +49,17 @@ def _reject(
     return _response(serialize(failure(operation, category, code)), status=status, allow=allow)
 
 
-def _perform(machine: Machine, operation: Operation, payload: bytes, schema_name: str | None, mode: str) -> Response:
+def _perform(machine: Machine, operation: Operation, payload: bytes, schema_name: str | None, mode: str, concept_index: ConceptIndex | None = None) -> Response:
     try:
+        if operation == "concepts":
+            try:
+                request = load_concept_request(payload)
+                index = concept_index if concept_index is not None else ConceptIndex.load()
+                return _response(serialize_concepts(execute_concept_request(request, index)))
+            except (ValueError, UnicodeError) as cause:
+                raise error(operation, "invalid_request", "invalid_input") from cause
+            except ImportError as cause:
+                raise error(operation, "dependency_unavailable", "dependency_unavailable") from cause
         if operation == "capabilities":
             return _response(serialize(machine.capabilities()))
         if operation == "version":
@@ -57,7 +68,12 @@ def _perform(machine: Machine, operation: Operation, payload: bytes, schema_name
             from rdam.serialization import schema
 
             try:
-                document = schema(schema_name or "", mode=cast(Literal["validation", "serialization"], mode))
+                if schema_name in {"concept-link-request", "concept-links", "concept-mention"}:
+                    from rdam.concepts.serialization import schema as concept_schema
+
+                    document = concept_schema(schema_name, mode=cast(Literal["validation", "serialization"], mode))
+                else:
+                    document = schema(schema_name or "", mode=cast(Literal["validation", "serialization"], mode))
             except ValueError as cause:
                 raise error(operation, "invalid_request", "invalid_input") from cause
             return _response(canonical_json_bytes(document))
@@ -98,10 +114,10 @@ def _perform(machine: Machine, operation: Operation, payload: bytes, schema_name
 
 
 def _safe_perform(
-    machine: Machine, operation: Operation, payload: bytes, schema_name: str | None, mode: str
+    machine: Machine, operation: Operation, payload: bytes, schema_name: str | None, mode: str, concept_index: ConceptIndex | None = None
 ) -> Response:
     try:
-        return _perform(machine, operation, payload, schema_name, mode)
+        return _perform(machine, operation, payload, schema_name, mode, concept_index)
     except OperationError as cause:
         status = {
             "invalid_request": 400,
@@ -120,6 +136,7 @@ def create_app(
     port: int = 8765,
     max_request_bytes: int = 64 * 1024 * 1024,
     body_timeout_seconds: float = 30.0,
+    concept_index: ConceptIndex | None = None,
 ) -> Starlette:
     _validate_settings(host, port, max_request_bytes, body_timeout_seconds)
     authority = f"[{host}]:{port}" if ":" in host else f"{host}:{port}"
@@ -210,7 +227,7 @@ def create_app(
             if len(body) != size:
                 return _reject(operation, 400)
             worker = asyncio.create_task(
-                asyncio.to_thread(_safe_perform, machine, operation, bytes(body), schema_name, mode)
+                asyncio.to_thread(_safe_perform, machine, operation, bytes(body), schema_name, mode, concept_index)
             )
             jobs.add(worker)
             worker.add_done_callback(finished)
@@ -253,6 +270,7 @@ def serve(
     port: int = 8765,
     max_request_bytes: int = 64 * 1024 * 1024,
     body_timeout_seconds: float = 30.0,
+    concept_index: ConceptIndex | None = None,
 ) -> None:
     _validate_settings(host, port, max_request_bytes, body_timeout_seconds)
     family = socket.AF_INET6 if host == "::1" else socket.AF_INET
@@ -266,6 +284,7 @@ def serve(
             port=actual_port,
             max_request_bytes=max_request_bytes,
             body_timeout_seconds=body_timeout_seconds,
+            concept_index=concept_index,
         )
         config = uvicorn.Config(
             app,

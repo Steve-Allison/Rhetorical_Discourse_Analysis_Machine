@@ -1,0 +1,43 @@
+{
+  "status": "compatible",
+  "candidate_wheel": "/Users/steveallison/AI_Projects+Code/Rhetorical_Discourse_Analysis_Machine/dist/concept-cutover/rdam-6.0.0-py3-none-any.whl",
+  "candidate_wheel_sha256": "832f5c713406c9071fc7144650fa4e56c57f55c3c0a7d1f52a76f4c57aa2a6de",
+  "candidate_source_distribution_sha256": "28be398e1225bcb1bf3e2b8461bcd29ca55a4186715edb1b7e66da42ce9ffae5",
+  "package_version": "6.0.0",
+  "source_commit": "4661808d4c39e6030a4fa504dc7356facbfc59b8",
+  "source_tree": "110df94e588bca08ebb085a5bfac6ca2cea52269",
+  "build_input_sha256": "d2371854d2de0e2261e42fa11c0151ef2e5ca74f44f11c72ed40240fe9bf1fef",
+  "contract": "isanlp_rst.production",
+  "contract_version": "3.0.0",
+  "capability_semantic_digest": "03993b130fc35320ce449c3ec74b37dbf2aeead1c9f96dc4efb4e01782ac1519",
+  "model_release_id": "gumrrg-eb1d5745f3a1",
+  "model_semantic_digest": "9ee63f8155251aaa047f95e6b53c3217d341044e7cd36fddd2495f957cf05efb",
+  "fixture_results": [
+    {
+      "source": "repeated.docling.json",
+      "provider_kind": "analysed_outcome",
+      "semantic_digest": "2f6cc32fb0cc7651059075f88b061dbdda9d9f4a17760185b41620d008e15a95",
+      "canonical_round_trip": true,
+      "bridge_entries": 4
+    },
+    {
+      "source": "repeated.md",
+      "provider_kind": "analysed_outcome",
+      "semantic_digest": "aa7513153683560720ca5c9a13880dd7b36010f0d6d15b23f61f94d2e1e67bce",
+      "canonical_round_trip": true,
+      "bridge_entries": 4
+    },
+    {
+      "source": "repeated.dclg",
+      "provider_kind": "analysed_outcome",
+      "semantic_digest": "ae18c894bd606510b7d33d95a068bc4b2407a4c5b92cbfae362c6e8df47d780d",
+      "canonical_round_trip": true,
+      "bridge_entries": 4
+    }
+  ],
+  "protected_state_before": "2cf8bdaf8ebc1b7c9188996c93e5f3e36da0c63c46c4992a4d2ad718e98295fb",
+  "protected_state_after": "2cf8bdaf8ebc1b7c9188996c93e5f3e36da0c63c46c4992a4d2ad718e98295fb",
+  "protected_state_unchanged": true,
+  "failure_code": null,
+  "failure_detail": null
+}

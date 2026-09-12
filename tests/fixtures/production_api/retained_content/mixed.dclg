@@ -374,31 +374,11 @@ Third line</content>
     <hint><bold>This is bold with <italic>nested italic</italic> and tooltip</bold></hint>, plus <marker>mark</marker> and <checkbox/>.
   </text>
 
-  <!-- Example 22: OTSL with element head and all separator types -->
+  <!-- RDAM merge specimen: one 2x2 owner, one empty cell, four ordinary cells. -->
   <table>
-    <location value="100"/>
-    <location value="100"/>
-    <location value="500"/>
-    <location value="300"/>
-    <custom>
-      <acme_assessment>positive</acme_assessment>
-      <acme_confidence_score value="0.98"/>
-    </custom>
-    <fcel/>
-    <text>A</text>
-    <fcel/>
-    <text>B</text>
-    <ecel/>
-    <text>C</text>
-    <nl/>
-    <lcel/>
-    <text>D</text>
-    <lcel/>
-    <text>E</text>
-    <ucel/>
-    <text>F</text>
-    <xcel/>
-    <text>G</text>
+    <fcel/><text>A</text><lcel/><ecel/><nl/>
+    <ucel/><xcel/><fcel/><text>B</text><nl/>
+    <fcel/><text>C</text><fcel/><text>D</text><fcel/><text>E</text><nl/>
   </table>
 
   <!-- Example 23: All new formatting elements together -->

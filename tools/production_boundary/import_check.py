@@ -33,7 +33,7 @@ _PUBLIC_MODULES = (
     "rdam.ingest",
 )
 _FORMAT_MODULES = (
-    "rdam.rst.doclang",
+    "rdam.ingest.doclang",
     "rdam.rst.markdown",
 )
 _FORBIDDEN_PREFIXES = ("workbench", "workbench.research")

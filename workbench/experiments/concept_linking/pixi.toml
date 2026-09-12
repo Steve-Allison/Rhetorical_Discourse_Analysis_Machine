@@ -1,0 +1,13 @@
+[workspace]
+name = "docling-nlp-concept-evaluation"
+channels = ["conda-forge"]
+platforms = [{ platform = "osx-arm64", macos = "14.0" }]
+
+[dependencies]
+python = "3.14.*"
+
+[pypi-dependencies]
+docling-nlp = "==1.4.0"
+
+[tasks]
+extract = "python extract.py"

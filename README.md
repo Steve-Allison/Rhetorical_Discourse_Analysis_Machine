@@ -85,11 +85,11 @@ For another local project using Python 3.14, install the built wheel from this
 checkout (use its absolute path when working elsewhere):
 
 ```bash
-pip install dist/6.0.0/rdam-6.0.0-py3-none-any.whl
-pip install "dist/6.0.0/rdam-6.0.0-py3-none-any.whl[formats,http]"
+pip install dist/6.1.0/rdam-6.1.0-py3-none-any.whl
+pip install "dist/6.1.0/rdam-6.1.0-py3-none-any.whl[formats,http]"
 ```
 
-The source archive is `dist/6.0.0/rdam-6.0.0.tar.gz`. The local package
+The source archive is `dist/6.1.0/rdam-6.1.0.tar.gz`. The local package
 build uses an isolated local snapshot of the current package inputs; its packaged
 provenance names that snapshot commit, not the older main-repository tag.
 These are local artifacts;

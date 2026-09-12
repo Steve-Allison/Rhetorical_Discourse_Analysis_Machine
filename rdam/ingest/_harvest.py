@@ -6,8 +6,7 @@ import re
 import tempfile
 from typing import Any, cast
 
-from rdam.rst._version import PACKAGE_NAME
-from rdam.rst.doclang.loader import DoclangArchiveMember, XmlElement
+from rdam._version import PACKAGE_NAME
 from rdam.ingest.contracts.legacy import (
     AnchorKind,
     AuthorshipRole,
@@ -38,10 +37,8 @@ def inventory_source(
             return _inventory_markdown(artifact)
         case SourceForm.DOCLING_JSON:
             return _inventory_docling(artifact)
-        case SourceForm.DOCLANG_XML:
-            return _inventory_doclang(artifact)
-        case SourceForm.DOCLANG_ARCHIVE:
-            return _inventory_doclang_archive(artifact)
+        case SourceForm.DOCLANG_XML | SourceForm.DOCLANG_ARCHIVE:
+            raise ValueError("DocLang requires the current inventory adapter")
 
 
 def _inventory_text(
@@ -104,7 +101,7 @@ def _inventory_edus(
 def _inventory_markdown(
     artifact: SourceArtifact,
 ) -> tuple[tuple[ContentInventoryItem, ...], SourceContractIdentity]:
-    from rdam.rst.markdown.loader import load_markdown
+    from rdam.ingest.markdown import load_markdown
 
     source = (artifact.raw_bytes or b"").decode("utf-8")
     loaded = load_markdown(source, gfm=True)
@@ -278,112 +275,6 @@ def _inventory_docling(
         validator_version=version("docling-core"),
         validator_digest=_adapter_digest(Path(__file__)),
         validation_profile=(("all_content_layers", "true"), ("groups", "true"), ("pictures", "true")),
-    )
-    return _reclassify_back_matter(_with_children(tuple(items))), contract
-
-
-def _inventory_doclang(
-    artifact: SourceArtifact,
-) -> tuple[tuple[ContentInventoryItem, ...], SourceContractIdentity]:
-    return _inventory_doclang_data(artifact, artifact.raw_bytes or b"", archive_members=())
-
-
-def _inventory_doclang_archive(
-    artifact: SourceArtifact,
-) -> tuple[tuple[ContentInventoryItem, ...], SourceContractIdentity]:
-    from rdam.rst.doclang.loader import load_doclang_archive
-
-    archive = load_doclang_archive(artifact.raw_bytes or b"")
-    return _inventory_doclang_data(artifact, archive.document_bytes, archive_members=archive.members)
-
-
-def _inventory_doclang_data(
-    artifact: SourceArtifact,
-    data: bytes,
-    *,
-    archive_members: tuple[DoclangArchiveMember, ...],
-) -> tuple[tuple[ContentInventoryItem, ...], SourceContractIdentity]:
-    from doclang import ValidationError as DoclangValidationError
-    from doclang import validate
-    from lxml import etree
-    from rdam.rst.doclang.errors import InvalidDoclangError
-    from rdam.rst.doclang.loader import local_path_index
-
-    try:
-        with tempfile.NamedTemporaryFile(suffix=".dclg") as stream:
-            stream.write(data)
-            stream.flush()
-            validate(stream.name, allow_empty_namespace=True)
-        parser = etree.XMLParser(
-            resolve_entities=False, no_network=True, load_dtd=False, recover=False, huge_tree=False
-        )
-        root = cast(XmlElement, etree.fromstring(data, parser=parser))
-    except (DoclangValidationError, etree.XMLSyntaxError) as exc:
-        raise InvalidDoclangError(f"DocLang XML failed current validation ({type(exc).__name__})") from exc
-    items: list[ContentInventoryItem] = []
-    path_by_element = local_path_index(root)
-    for element in root.iter():
-        if not isinstance(element.tag, str):
-            continue
-        item_id = path_by_element[element]
-        parent = element.getparent()
-        parent_id = path_by_element[parent] if parent is not None else None
-        tag = etree.QName(cast(Any, element)).localname
-        content_class = _doclang_class(tag)
-        ancestor_names = _doclang_ancestor_names(element)
-        if "table" in ancestor_names and tag != "table":
-            content_class = ContentClass.TABLE_CELL
-        elif "picture" in ancestor_names and content_class is ContentClass.PARAGRAPH:
-            content_class = ContentClass.PICTURE_DESCRIPTION
-        elif "field_region" in ancestor_names or "field_item" in ancestor_names:
-            content_class = ContentClass.FIELD
-        text = _doclang_text(element, tag)
-        if content_class is ContentClass.PARAGRAPH and isinstance(text, str) and _is_speaker_turn(text):
-            content_class = ContentClass.TURN
-        layer = _doclang_layer(element)
-        items.append(
-            _item(
-                artifact,
-                item_id,
-                parent_id,
-                content_class,
-                text,
-                AnchorKind.XML_PATH,
-                item_id,
-                layer=layer,
-                attributes=tuple(sorted((str(key), str(value)) for key, value in element.attrib.items())),
-                additional_anchors=_doclang_anchors(artifact, element, item_id, tag),
-                adapter="isanlp_rst.doclang.inventory/v1",
-            )
-        )
-    for member in archive_members:
-        if member.name in {"[Content_Types].xml", "_rels/.rels", "document.xml"} or member.name.endswith("/"):
-            continue
-        items.append(
-            _item(
-                artifact,
-                f"archive:{member.name}",
-                None,
-                ContentClass.ASSET,
-                None,
-                AnchorKind.ITEM,
-                member.name,
-                attributes=(
-                    ("sha256", member.sha256),
-                    ("size_bytes", str(member.size_bytes)),
-                    ("compressed_size_bytes", str(member.compressed_size_bytes)),
-                ),
-                adapter="isanlp_rst.doclang.archive.inventory/v1",
-            )
-        )
-    contract = SourceContractIdentity(
-        family="doclang",
-        raw_declared_schema=artifact.raw_contract,
-        accepted_schema=RawContractDeclaration(namespace=etree.QName(cast(Any, root)).namespace),
-        validator_distribution="doclang",
-        validator_version=version("doclang"),
-        validator_digest=_adapter_digest(Path(__file__), Path(__file__).parents[1] / "rst/doclang/loader.py"),
-        validation_profile=(("allow_empty_namespace", "true"), ("xsd", "true"), ("schematron", "true")),
     )
     return _reclassify_back_matter(_with_children(tuple(items))), contract
 
@@ -574,42 +465,11 @@ def _reclassify_markdown(items: tuple[ContentInventoryItem, ...]) -> tuple[Conte
 
 
 def _reclassify_back_matter(items: tuple[ContentInventoryItem, ...]) -> tuple[ContentInventoryItem, ...]:
-    revised = list(items)
-    abstract_index = next(
-        (
-            index
-            for index, item in enumerate(revised)
-            if item.content_class is ContentClass.HEADING and (item.text or "").strip().casefold() == "abstract"
-        ),
-        None,
-    )
-    if abstract_index is not None:
-        first_heading = next(
-            (
-                index
-                for index, item in enumerate(revised[:abstract_index])
-                if item.content_class in {ContentClass.TITLE, ContentClass.HEADING}
-            ),
-            None,
-        )
-        if first_heading is not None:
-            for index in range(first_heading + 1, abstract_index):
-                if revised[index].content_class in {ContentClass.PARAGRAPH, ContentClass.LIST_ITEM}:
-                    revised[index] = revised[index].model_copy(update={"content_class": ContentClass.METADATA})
-    back_matter = False
-    for index, item in enumerate(revised):
-        if item.content_class in {ContentClass.TITLE, ContentClass.HEADING}:
-            heading = " ".join((item.text or "").casefold().split()).rstrip(":")
-            if heading in {"references", "bibliography", "works cited"}:
-                back_matter = True
-        if back_matter and item.content_class in {
-            ContentClass.TITLE,
-            ContentClass.HEADING,
-            ContentClass.PARAGRAPH,
-            ContentClass.LIST_ITEM,
-        }:
-            revised[index] = item.model_copy(update={"content_class": ContentClass.NAVIGATION})
-    return tuple(revised)
+    from rdam.ingest._classification import back_matter_classes
+    from rdam.ingest.contracts.source import ContentClass as CurrentClass
+
+    classes = back_matter_classes(tuple((CurrentClass(item.content_class.value), item.text) for item in items))
+    return tuple(item.model_copy(update={"content_class": ContentClass(classification.value)}) for item, classification in zip(items, classes, strict=True))
 
 
 def _is_image_only_markdown(text: str) -> bool:
@@ -830,137 +690,6 @@ def _is_transcript(doc: Any) -> bool:
 
 def _is_speaker_turn(text: str) -> bool:
     return re.match(r"^\s*(?:SPEAKER[_ -]?\d+|[A-Z][A-Z0-9 _-]{1,40}):\s+", text) is not None
-
-
-def _doclang_class(tag: str) -> ContentClass:
-    return {
-        "head": ContentClass.METADATA,
-        "title": ContentClass.TITLE,
-        "heading": ContentClass.HEADING,
-        "text": ContentClass.PARAGRAPH,
-        "footnote": ContentClass.PARAGRAPH,
-        "list": ContentClass.GROUP,
-        "ldiv": ContentClass.LIST_ITEM,
-        "table": ContentClass.TABLE,
-        "ched": ContentClass.TABLE_CELL,
-        "rhed": ContentClass.TABLE_CELL,
-        "corn": ContentClass.TABLE_CELL,
-        "srow": ContentClass.TABLE_CELL,
-        "fcel": ContentClass.TABLE_CELL,
-        "ecel": ContentClass.TABLE_CELL,
-        "code": ContentClass.CODE,
-        "formula": ContentClass.FORMULA,
-        "picture": ContentClass.PICTURE,
-        "caption": ContentClass.CAPTION,
-        "description": ContentClass.PICTURE_DESCRIPTION,
-        "page_header": ContentClass.FURNITURE,
-        "page_footer": ContentClass.FURNITURE,
-        "field_region": ContentClass.FIELD,
-        "field_item": ContentClass.FIELD,
-        "key": ContentClass.FIELD,
-        "value": ContentClass.FIELD,
-        "asset": ContentClass.ASSET,
-        "group": ContentClass.GROUP,
-    }.get(tag, ContentClass.METADATA if tag in {"label", "thread", "layer", "location"} else ContentClass.OTHER)
-
-
-def _doclang_text(element: Any, tag: str) -> str | None:
-    from rdam.rst.doclang.loader import local_name
-    from rdam.rst.doclang.text_walker import body_text
-
-    if tag in {"text", "heading", "footnote", "code", "formula", "caption", "description", "key", "value"}:
-        text = body_text(element)
-        return text or None
-    if tag == "ldiv":
-        tail = element.tail or ""
-        return tail.strip() or None
-    if tag in {"ched", "rhed", "corn", "srow", "fcel"}:
-        pieces = [element.tail or ""]
-        for sibling in element.itersiblings():
-            if isinstance(sibling.tag, str) and local_name(sibling) in _DOCLANG_CELL_TOKENS | {"nl"}:
-                break
-            pieces.append("".join(sibling.itertext()))
-            if sibling.tail:
-                pieces.append(sibling.tail)
-        text = "".join(pieces).strip()
-        return text or None
-    return None
-
-
-def _doclang_layer(element: Any) -> str:
-    from rdam.rst.doclang.loader import local_name
-
-    for child in element:
-        if isinstance(child.tag, str) and local_name(child) == "layer":
-            value = child.get("value")
-            if value:
-                return value
-    return "body"
-
-
-_DOCLANG_CELL_TOKENS = frozenset({"ched", "rhed", "corn", "srow", "fcel", "ecel", "lcel", "ucel", "xcel"})
-
-
-def _doclang_anchors(
-    artifact: SourceArtifact,
-    element: Any,
-    item_id: str,
-    tag: str,
-) -> tuple[NativeAnchor, ...]:
-    from rdam.rst.doclang.loader import local_name
-
-    anchors: list[NativeAnchor] = []
-    locations = [child for child in element if isinstance(child.tag, str) and local_name(child) == "location"]
-    if len(locations) == 4:
-        coordinates = ";".join(
-            f"{axis}={location.get('value')};{axis}_resolution={location.get('resolution') or 'default'}"
-            for axis, location in zip(("x0", "y0", "x1", "y1"), locations, strict=True)
-        )
-        anchors.append(
-            NativeAnchor(
-                artifact_id=artifact.source_id,
-                item_id=item_id,
-                kind=AnchorKind.BOUNDING_BOX,
-                selector=coordinates,
-            )
-        )
-    if tag in _DOCLANG_CELL_TOKENS:
-        parent = element.getparent()
-        if parent is not None and local_name(parent) in {"table", "index", "tabular"}:
-            row = 0
-            column = 0
-            for sibling in parent:
-                if sibling is element:
-                    break
-                if not isinstance(sibling.tag, str):
-                    continue
-                sibling_name = local_name(sibling)
-                if sibling_name == "nl":
-                    row += 1
-                    column = 0
-                elif sibling_name in _DOCLANG_CELL_TOKENS:
-                    column += 1
-            anchors.append(
-                NativeAnchor(
-                    artifact_id=artifact.source_id,
-                    item_id=item_id,
-                    kind=AnchorKind.TABLE_COORDINATE,
-                    selector=f"row={row};column={column};token={tag}",
-                )
-            )
-    return tuple(anchors)
-
-
-def _doclang_ancestor_names(element: Any) -> frozenset[str]:
-    from rdam.rst.doclang.loader import local_name
-
-    names: set[str] = set()
-    parent = element.getparent()
-    while parent is not None:
-        if isinstance(parent.tag, str):
-            names.add(local_name(parent))
-        parent = parent.getparent()
-    return frozenset(names)
 
 
 __all__ = ["inventory_source"]

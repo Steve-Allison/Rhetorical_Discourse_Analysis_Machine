@@ -5,8 +5,8 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 import pytest
 
-from rdam.rst.doclang import loader
-from rdam.rst.doclang.errors import InvalidDoclangError, UnsafeDoclangArchiveError
+from rdam.ingest.doclang import loader
+from rdam.ingest.doclang.errors import InvalidDoclangError, UnsafeDoclangArchiveError
 from rdam.ingest import SourceArtifact, SourceForm
 from rdam.ingest.contracts import ContentClass
 from rdam.ingest.prepare import inventory_source
@@ -25,7 +25,7 @@ RELATIONSHIPS = b"""<?xml version="1.0" encoding="UTF-8"?>
 </Relationships>"""
 
 
-def _archive(
+def build_doclang_archive(
     *,
     extra_name: str = "assets/image.bin",
     extra_data: bytes = b"asset",
@@ -51,7 +51,7 @@ def _raw_archive(entries: tuple[tuple[str | ZipInfo, bytes], ...]) -> bytes:
 
 
 def test_doclang_archive_validates_document_and_retains_asset_identity() -> None:
-    data = _archive()
+    data = build_doclang_archive()
     loaded = loader.load_doclang_archive(data)
     assert loaded.document_bytes == FIXTURE.read_bytes()
     assert loaded.members[3].name == "assets/image.bin"
@@ -68,7 +68,7 @@ def test_doclang_archive_validates_document_and_retains_asset_identity() -> None
 @pytest.mark.parametrize("name", ("../escape", "/absolute", "assets\\windows"))
 def test_doclang_archive_rejects_unsafe_member_paths(name: str) -> None:
     with pytest.raises(UnsafeDoclangArchiveError, match="member path"):
-        loader.load_doclang_archive(_archive(extra_name=name))
+        loader.load_doclang_archive(build_doclang_archive(extra_name=name))
 
 
 def test_doclang_archive_rejects_symlink_members() -> None:
@@ -101,7 +101,7 @@ def test_doclang_archive_rejects_legacy_bare_zip() -> None:
 )
 def test_doclang_archive_rejects_invalid_content_types(content_types: bytes, message: str) -> None:
     with pytest.raises(InvalidDoclangError, match=message):
-        loader.load_doclang_archive(_archive(content_types=content_types))
+        loader.load_doclang_archive(build_doclang_archive(content_types=content_types))
 
 
 @pytest.mark.parametrize(
@@ -114,13 +114,13 @@ def test_doclang_archive_rejects_invalid_content_types(content_types: bytes, mes
 )
 def test_doclang_archive_rejects_invalid_document_relationship(relationships: bytes) -> None:
     with pytest.raises(InvalidDoclangError, match="main-document relationship"):
-        loader.load_doclang_archive(_archive(relationships=relationships))
+        loader.load_doclang_archive(build_doclang_archive(relationships=relationships))
 
 
 def test_doclang_archive_requires_referenced_assets() -> None:
     document = b'<doclang><picture><src uri="assets/missing.bin"/></picture></doclang>'
     with pytest.raises(InvalidDoclangError, match="missing asset"):
-        loader.load_doclang_archive(_archive(document=document))
+        loader.load_doclang_archive(build_doclang_archive(document=document))
 
 
 def test_doclang_archive_rejects_page_image_beyond_markup_page_count() -> None:
@@ -129,7 +129,7 @@ def test_doclang_archive_rejects_page_image_beyond_markup_page_count() -> None:
         b'<Default Extension="png" ContentType="image/png"/>',
     )
     with pytest.raises(InvalidDoclangError, match="exceeds the document page count"):
-        loader.load_doclang_archive(_archive(extra_name="pages/2.png", content_types=content_types))
+        loader.load_doclang_archive(build_doclang_archive(extra_name="pages/2.png", content_types=content_types))
 
 
 def test_doclang_archive_rejects_non_zip_bytes() -> None:
@@ -153,25 +153,25 @@ def test_doclang_archive_rejects_duplicate_member_names() -> None:
 def test_doclang_archive_enforces_member_count_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(loader, "_MAX_ARCHIVE_MEMBERS", 3)
     with pytest.raises(UnsafeDoclangArchiveError, match="member-count"):
-        loader.load_doclang_archive(_archive())
+        loader.load_doclang_archive(build_doclang_archive())
 
 
 def test_doclang_archive_enforces_member_size_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(loader, "_MAX_MEMBER_BYTES", 3)
     with pytest.raises(UnsafeDoclangArchiveError, match="size limit"):
-        loader.load_doclang_archive(_archive())
+        loader.load_doclang_archive(build_doclang_archive())
 
 
 def test_doclang_archive_enforces_total_size_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(loader, "_MAX_TOTAL_BYTES", 1)
     with pytest.raises(UnsafeDoclangArchiveError, match="total uncompressed-size"):
-        loader.load_doclang_archive(_archive())
+        loader.load_doclang_archive(build_doclang_archive())
 
 
 def test_doclang_archive_enforces_compression_ratio_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(loader, "_MAX_COMPRESSION_RATIO", 2)
     with pytest.raises(UnsafeDoclangArchiveError, match="compression-ratio"):
-        loader.load_doclang_archive(_archive(extra_data=b"0" * 10_000))
+        loader.load_doclang_archive(build_doclang_archive(extra_data=b"0" * 10_000))
 
 
 @pytest.mark.parametrize(
@@ -228,7 +228,7 @@ def test_doclang_archive_rejects_malformed_content_type_contracts(
     message: str,
 ) -> None:
     with pytest.raises(InvalidDoclangError, match=message):
-        loader.load_doclang_archive(_archive(content_types=content_types))
+        loader.load_doclang_archive(build_doclang_archive(content_types=content_types))
 
 
 @pytest.mark.parametrize(
@@ -262,25 +262,25 @@ def test_doclang_archive_rejects_malformed_relationship_contracts(
     message: str,
 ) -> None:
     with pytest.raises(InvalidDoclangError, match=message):
-        loader.load_doclang_archive(_archive(relationships=relationships))
+        loader.load_doclang_archive(build_doclang_archive(relationships=relationships))
 
 
 @pytest.mark.parametrize("uri", ("/assets/x.bin", "assets\\x.bin", "../x.bin", "assets/%2e%2e/x.bin"))
 def test_doclang_archive_rejects_unsafe_document_asset_uris(uri: str) -> None:
     document = f'<doclang><picture><src uri="{uri}"/></picture></doclang>'.encode()
     with pytest.raises(UnsafeDoclangArchiveError, match="unsafe DocLang archive asset URI"):
-        loader.load_doclang_archive(_archive(document=document))
+        loader.load_doclang_archive(build_doclang_archive(document=document))
 
 
 def test_doclang_archive_allows_external_document_asset_uris() -> None:
     document = b'<doclang><picture><src uri="https://example.com/image.png"/></picture></doclang>'
-    loaded = loader.load_doclang_archive(_archive(document=document))
+    loaded = loader.load_doclang_archive(build_doclang_archive(document=document))
     assert loaded.document_bytes == document
 
 
 def test_doclang_archive_allows_source_without_uri_and_directory_members() -> None:
     document = b"<doclang><picture><src/></picture></doclang>"
-    loaded = loader.load_doclang_archive(_archive(document=document, extra_name="assets/", extra_data=b""))
+    loaded = loader.load_doclang_archive(build_doclang_archive(document=document, extra_name="assets/", extra_data=b""))
     assert loaded.document_bytes == document
     assert loaded.members[-1].name == "assets/"
 
@@ -292,4 +292,4 @@ def test_doclang_archive_rejects_non_conforming_page_image_names(name: str) -> N
         b'<Default Extension="png" ContentType="image/png"/><Default Extension="gif" ContentType="image/gif"/>',
     )
     with pytest.raises(InvalidDoclangError, match="non-conforming part name"):
-        loader.load_doclang_archive(_archive(extra_name=name, content_types=content_types))
+        loader.load_doclang_archive(build_doclang_archive(extra_name=name, content_types=content_types))

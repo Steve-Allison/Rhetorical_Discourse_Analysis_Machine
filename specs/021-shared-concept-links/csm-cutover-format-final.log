@@ -1,0 +1,2 @@
+✨ Pixi task (format-check): ruff format --check src/ tools/ tests/: (Check formatting without rewriting. Use in CI.)
+303 files already formatted

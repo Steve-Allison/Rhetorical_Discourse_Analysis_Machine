@@ -23,7 +23,7 @@ import stat
 from urllib.parse import unquote, urlsplit
 from zipfile import BadZipFile, ZipFile, ZipInfo
 from collections.abc import Iterator, Mapping
-from typing import Protocol, TypeVar, cast, overload
+from typing import Protocol, cast, overload
 
 from lxml import etree
 
@@ -42,7 +42,6 @@ _DOCUMENT_CONTENT_TYPE = "application/vnd.doclang.document+xml"
 _RELATIONSHIPS_CONTENT_TYPE = "application/vnd.openxmlformats-package.relationships+xml"
 _DOCUMENT_RELATIONSHIP_TYPE = "http://doclang.ai/ns/package/2026/relationships/document"
 _PAGE_IMAGE = re.compile(r"pages/([1-9][0-9]*)\.(png|jpg|jpeg|webp)", re.IGNORECASE)
-_DefaultT = TypeVar("_DefaultT")
 
 
 class XmlElement(Protocol):
@@ -68,7 +67,7 @@ class XmlElement(Protocol):
     def get(self, key: str) -> str | None: ...
 
     @overload
-    def get(self, key: str, default: _DefaultT) -> str | _DefaultT: ...
+    def get[DefaultT](self, key: str, default: DefaultT) -> str | DefaultT: ...
 
     def iter(self) -> Iterator[XmlElement]: ...
 
@@ -88,6 +87,7 @@ class DoclangArchive:
     """Validated archive container material required by production inventory."""
 
     document_bytes: bytes
+    document_root: XmlElement
     members: tuple[DoclangArchiveMember, ...]
 
 
@@ -183,16 +183,18 @@ def load_doclang_archive(data: bytes) -> DoclangArchive:
         missing = {_CONTENT_TYPES_PART, _RELATIONSHIPS_PART, _DOCUMENT_PART} - package_parts.keys()
         if missing:
             raise InvalidDoclangError(f"DocLang OPC package is missing required part(s): {', '.join(sorted(missing))}")
-        document_root = _parse_control_xml(package_parts[_DOCUMENT_PART], part_name=_DOCUMENT_PART)
+        document_root = parse_control_xml(package_parts[_DOCUMENT_PART], part_name=_DOCUMENT_PART)
         member_names = frozenset(entry.filename for entry in entries if not entry.is_dir())
         _validate_content_types(package_parts[_CONTENT_TYPES_PART], member_names)
         _validate_root_relationships(package_parts[_RELATIONSHIPS_PART])
         _validate_document_references(document_root, member_names)
         _validate_page_images(document_root, member_names)
-        return DoclangArchive(document_bytes=package_parts[_DOCUMENT_PART], members=tuple(identities))
+        return DoclangArchive(
+            document_bytes=package_parts[_DOCUMENT_PART], document_root=document_root, members=tuple(identities)
+        )
 
 
-def _parse_control_xml(data: bytes, *, part_name: str) -> XmlElement:
+def parse_control_xml(data: bytes, *, part_name: str) -> XmlElement:
     parser = etree.XMLParser(
         resolve_entities=False,
         no_network=True,
@@ -207,7 +209,7 @@ def _parse_control_xml(data: bytes, *, part_name: str) -> XmlElement:
 
 
 def _validate_content_types(data: bytes, member_names: frozenset[str]) -> None:
-    root = _parse_control_xml(data, part_name=_CONTENT_TYPES_PART)
+    root = parse_control_xml(data, part_name=_CONTENT_TYPES_PART)
     if root.tag != f"{{{_CONTENT_TYPES_NAMESPACE}}}Types":
         raise InvalidDoclangError("DocLang OPC content-types part has the wrong root element")
     defaults: dict[str, str] = {}
@@ -242,7 +244,7 @@ def _validate_content_types(data: bytes, member_names: frozenset[str]) -> None:
 
 
 def _validate_root_relationships(data: bytes) -> None:
-    root = _parse_control_xml(data, part_name=_RELATIONSHIPS_PART)
+    root = parse_control_xml(data, part_name=_RELATIONSHIPS_PART)
     if root.tag != f"{{{_RELATIONSHIPS_NAMESPACE}}}Relationships":
         raise InvalidDoclangError("DocLang OPC root relationships part has the wrong root element")
     document_relationships: list[XmlElement] = []

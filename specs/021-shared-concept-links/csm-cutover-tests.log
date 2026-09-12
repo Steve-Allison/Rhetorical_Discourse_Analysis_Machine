@@ -1,0 +1,191 @@
+✨ Pixi task (test): HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python -m pytest: (Run the full test suite with the locked RST runtime forced offline.)
+============================= test session starts ==============================
+platform darwin -- Python 3.14.7, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/steveallison/AI_Projects+Code/Content_Structuring_Machine
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0, anyio-4.15.1
+collected 1164 items
+
+tests/api_wiki/contract/test_anthropic_transport.py ss                   [  0%]
+tests/api_wiki/contract/test_genai_transport.py ssssssssssssssssssss     [  1%]
+tests/api_wiki/test_candidate_meta.py F...                               [  2%]
+tests/api_wiki/test_cli.py .....................                         [  4%]
+tests/api_wiki/test_concept_contracts.py ....                            [  4%]
+tests/api_wiki/test_concept_map.py .                                     [  4%]
+tests/api_wiki/test_config.py .............................              [  6%]
+tests/api_wiki/test_context_proposals.py ........                        [  7%]
+tests/api_wiki/test_contracts.py ..............                          [  8%]
+tests/api_wiki/test_counted_boundary.py .........                        [  9%]
+tests/api_wiki/test_digests.py ..........                                [ 10%]
+tests/api_wiki/test_discourse.py .......                                 [ 11%]
+tests/api_wiki/test_draft_reviews.py ..                                  [ 11%]
+tests/api_wiki/test_emit.py ..............                               [ 12%]
+tests/api_wiki/test_errors.py ..............                             [ 13%]
+tests/api_wiki/test_evaluation_contracts.py ......                       [ 14%]
+tests/api_wiki/test_extract_windows.py .....                             [ 14%]
+tests/api_wiki/test_identity.py ...........                              [ 15%]
+tests/api_wiki/test_ledger_preparation.py .............                  [ 16%]
+tests/api_wiki/test_node_contracts.py .......                            [ 17%]
+tests/api_wiki/test_plate_windows.py .......                             [ 17%]
+tests/api_wiki/test_plates.py ........                                   [ 18%]
+tests/api_wiki/test_provenance.py .......                                [ 19%]
+tests/api_wiki/test_provider_probes.py ...                               [ 19%]
+tests/api_wiki/test_published.py ....                                    [ 19%]
+tests/api_wiki/test_qualifications.py ............................       [ 22%]
+tests/api_wiki/test_revision_contracts.py .........                      [ 22%]
+tests/api_wiki/test_revision_lifecycle.py .............................. [ 25%]
+........                                                                 [ 26%]
+tests/api_wiki/test_role_boundary.py ........                            [ 26%]
+tests/api_wiki/test_scripted_transport.py .                              [ 26%]
+tests/api_wiki/test_separation_flags.py ...................              [ 28%]
+tests/api_wiki/test_separation_review.py ......                          [ 29%]
+tests/api_wiki/test_source_audit.py ......                               [ 29%]
+tests/api_wiki/test_source_context.py ......                             [ 30%]
+tests/api_wiki/test_source_ledger.py ..                                  [ 30%]
+tests/api_wiki/test_source_repair.py ....                                [ 30%]
+tests/api_wiki/test_source_stages.py .                                   [ 30%]
+tests/api_wiki/test_startup.py .......                                   [ 31%]
+tests/api_wiki/test_transport.py ......                                  [ 31%]
+tests/api_wiki/test_transport_http.py .......                            [ 32%]
+tests/api_wiki/test_units.py ............                                [ 33%]
+tests/api_wiki/test_verdict_contracts.py ...........                     [ 34%]
+tests/api_wiki/test_verify_claims.py .....                               [ 34%]
+tests/api_wiki/test_window_planning.py .....                             [ 35%]
+tests/api_wiki/test_window_splitting.py ........                         [ 35%]
+tests/api_wiki_poc/test_boundary.py .......                              [ 36%]
+tests/api_wiki_poc/test_compare.py ....                                  [ 36%]
+tests/api_wiki_poc/test_contracts.py ...........                         [ 37%]
+tests/api_wiki_poc/test_emit.py ............                             [ 38%]
+tests/api_wiki_poc/test_meta.py ......                                   [ 39%]
+tests/api_wiki_poc/test_render.py .                                      [ 39%]
+tests/api_wiki_poc/test_stage_concept_map.py .....                       [ 39%]
+tests/api_wiki_poc/test_stage_ledgers.py ......                          [ 40%]
+tests/api_wiki_poc/test_stage_nodes.py .......                           [ 41%]
+tests/api_wiki_poc/test_store.py ...                                     [ 41%]
+tests/api_wiki_poc/test_units.py ...........                             [ 42%]
+tests/api_wiki_poc/test_validators.py .........                          [ 43%]
+tests/hooks/test_agent_hook_runtime.py .........                         [ 43%]
+tests/hooks/test_hooks.py .............                                  [ 44%]
+tests/hooks/test_no_shortcut_reads.py ..................                 [ 46%]
+tests/packaging/test_installed_cli.py ...                                [ 46%]
+tests/pipeline/test_ac_dictionary_staleness.py ............              [ 47%]
+tests/pipeline/test_audit_hardening.py .....                             [ 48%]
+tests/pipeline/test_browse_maps_and_ancestors.py ....                    [ 48%]
+tests/pipeline/test_calibration.py .......                               [ 49%]
+tests/pipeline/test_capture_eval.py ....                                 [ 49%]
+tests/pipeline/test_concept_mentions.py .....                            [ 49%]
+tests/pipeline/test_contradiction_matrix.py .....                        [ 50%]
+tests/pipeline/test_control_surface_p2.py ......                         [ 50%]
+tests/pipeline/test_coverage_ledger.py .                                 [ 50%]
+tests/pipeline/test_csm_authoring.py .............                       [ 52%]
+tests/pipeline/test_dispositions.py ..........                           [ 52%]
+tests/pipeline/test_doclang_conformance_cache.py .....                   [ 53%]
+tests/pipeline/test_effort_sweep.py ........                             [ 54%]
+tests/pipeline/test_faithfulness_hardening.py .......                    [ 54%]
+tests/pipeline/test_hybrid_migration.py .....                            [ 55%]
+tests/pipeline/test_ingest_pipeline.py ..........                        [ 55%]
+tests/pipeline/test_migrate_methodology_rst.py ..                        [ 56%]
+tests/pipeline/test_new_features.py ..                                   [ 56%]
+tests/pipeline/test_p3_correctness.py ...                                [ 56%]
+tests/pipeline/test_p3_projection_freshness.py .............             [ 57%]
+tests/pipeline/test_pipeline_e2e.py .........                            [ 58%]
+tests/pipeline/test_pixi_task_inputs.py ....                             [ 58%]
+tests/pipeline/test_plate_e2e.py ....                                    [ 59%]
+tests/pipeline/test_policy_hardening_p2.py ........                      [ 59%]
+tests/pipeline/test_projector_requires_roots.py .                        [ 59%]
+tests/pipeline/test_retrieval_freshness_gate.py ......                   [ 60%]
+tests/pipeline/test_retrieval_golden.py ..                               [ 60%]
+tests/pipeline/test_retrieval_lazy_ontology.py ...                       [ 60%]
+tests/pipeline/test_retrieval_requires_roots.py ..                       [ 60%]
+tests/pipeline/test_retrieval_semantics.py .                             [ 61%]
+tests/pipeline/test_rst_locator_bridge.py ........                       [ 61%]
+tests/pipeline/test_rst_outcomes.py ..........                           [ 62%]
+tests/pipeline/test_rst_provider.py ...........                          [ 63%]
+tests/pipeline/test_rst_provider_compat.py ..                            [ 63%]
+tests/pipeline/test_rst_server.py .                                      [ 63%]
+tests/pipeline/test_rst_spine.py ....                                    [ 64%]
+tests/pipeline/test_rst_topology.py ....                                 [ 64%]
+tests/pipeline/test_run_stage.py ....                                    [ 64%]
+tests/pipeline/test_semantic_pilot.py .                                  [ 64%]
+tests/pipeline/test_source_data_boundary.py ....                         [ 65%]
+tests/pipeline/test_text_norm.py .......                                 [ 65%]
+tests/rules/test_aliases.py ....................                         [ 67%]
+tests/rules/test_assets.py ........                                      [ 68%]
+tests/rules/test_body_cache_reuse.py .......                             [ 68%]
+tests/rules/test_coverage_audit.py .............................         [ 71%]
+tests/rules/test_cqs.py ...                                              [ 71%]
+tests/rules/test_doclang_conformance.py ...............                  [ 72%]
+tests/rules/test_helpers_recovery.py .                                   [ 73%]
+tests/rules/test_lifecycle.py ................                           [ 74%]
+tests/rules/test_lifecycle_malformed.py ...........                      [ 75%]
+tests/rules/test_methodology.py ..............                           [ 76%]
+tests/rules/test_organisation_state.py ...                               [ 76%]
+tests/rules/test_related.py ......                                       [ 77%]
+tests/rules/test_scope_notes.py ...                                      [ 77%]
+tests/rules/test_semantics.py .....                                      [ 78%]
+tests/rules/test_sources.py ..........................                   [ 80%]
+tests/rules/test_structural.py ...................                       [ 81%]
+tests/schemas/test_csm_xml.py ........                                   [ 82%]
+tests/schemas/test_docling.py .....                                      [ 82%]
+tests/schemas/test_heading_levels.py ....                                [ 83%]
+tests/schemas/test_ingest_tracker_organised.py .                         [ 83%]
+tests/schemas/test_metafiles.py ..................                       [ 84%]
+tests/schemas/test_methodology.py ...................................... [ 88%]
+.                                                                        [ 88%]
+tests/schemas/test_plates.py ....................                        [ 90%]
+tests/schemas/test_wiki.py .......................................       [ 93%]
+tests/test_central_ontology.py ....                                      [ 93%]
+tests/test_conftest_wiki_guard.py ............                           [ 94%]
+tests/test_doclang_body_contract_docs.py ..                              [ 94%]
+tests/test_hooks_bash_source_writes.py ..........................        [ 97%]
+tests/test_operating_model_docs.py ......                                [ 97%]
+tests/test_repository_invariants.py .............                        [ 98%]
+tests/test_sacred_boundary.py ..........                                 [ 99%]
+tests/test_smoke.py ....                                                 [100%]
+
+=================================== FAILURES ===================================
+____ test_metadata_uses_frozen_roots_and_keeps_unextracted_sources_pending _____
+
+revision_workspace = PosixPath('/private/var/folders/w_/d3z3xl2j6qzcsp3r44q4_djw0000gq/T/pytest-of-steveallison/pytest-339/test_metadata_uses_frozen_root0/project')
+code_root = PosixPath('/private/var/folders/w_/d3z3xl2j6qzcsp3r44q4_djw0000gq/T/pytest-of-steveallison/pytest-339/test_metadata_uses_frozen_root0/implementation')
+run_config = RunConfig(seed=42, temperature=0.0, execution='interactive', context_max_elements=20, window_input_tokens=8000, window... input_token_limit=32000, max_output_tokens=4000, batch_supported=True, pinned_version='test-anthropic-observed-v1')}))
+emission = (PersistedDraft(header=DraftHeader(draft_digest_set=DraftDigestSet(instruction='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', role_version='observed-drafter'), last_updated='2026-09-12'))
+
+    def test_metadata_uses_frozen_roots_and_keeps_unextracted_sources_pending(
+        revision_workspace, code_root, run_config, emission
+    ):
+        config = test_revision_lifecycle.configured_code(run_config, code_root)
+        candidate = create_candidate(revision_workspace, config, code=CodeInputs(code_root))
+        _, context = emission
+        sources = revision_workspace / "sources"
+        sources.mkdir(exist_ok=True)
+        source_name = context.ledgers["source"].header.source_path
+        (sources / source_name).write_text(json.dumps({"texts": []}))
+        (sources / "uncaptured.md").write_text("A separately retained source.")
+        evidence = DraftEvidence(context.concept_map, context.ledgers, {})
+        write_candidate_meta(revision_workspace, candidate, config, evidence)
+        root = next(iter(config.roots))
+        parsed = load_wiki_node(candidate / "wiki" / f"{root}.dclg")
+        assert parsed.node.title == config.roots[root]
+        assert parsed.node.parent is None
+        tracker = IngestTrackerFile.parse(candidate / "wiki/_ingest-tracker.md")
+>       assert {row.file: row.status for row in tracker.rows} == {source_name: "organised", "uncaptured.md": "pending"}
+E       AssertionError: assert {'adobe_brand...d': 'pending'} == {'source.docl...d': 'pending'}
+E
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'adobe_brand_concierge_pilot_requirements.docling.json': 'pending'}
+E         Use -v to get more diff
+
+tests/api_wiki/test_candidate_meta.py:43: AssertionError
+=============================== warnings summary ===============================
+.pixi/envs/default/lib/python3.14/site-packages/google/genai/types.py:42
+  /Users/steveallison/AI_Projects+Code/Content_Structuring_Machine/.pixi/envs/default/lib/python3.14/site-packages/google/genai/types.py:42: DeprecationWarning: '_UnionGenericAlias' is deprecated and slated for removal in Python 3.17
+    VersionedUnionType = Union[builtin_types.UnionType, _UnionGenericAlias]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [22] tests/api_wiki/contract/adoption.py:32: Live provider adoption is unverified; paid tests require explicit opt-in
+FAILED tests/api_wiki/test_candidate_meta.py::test_metadata_uses_frozen_roots_and_keeps_unextracted_sources_pending
+====== 1 failed, 1141 passed, 22 skipped, 1 warning in 573.19s (0:09:33) =======

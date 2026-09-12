@@ -1,0 +1,2 @@
+✨ Pixi task (typecheck): pyright src/ tools/: (Type-check src/ + tools/ with pyright (strict mode).)
+0 errors, 0 warnings, 0 informations
