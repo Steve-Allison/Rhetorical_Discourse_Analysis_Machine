@@ -52,7 +52,6 @@ def compile_distribution(root: Path) -> IndexProjection:
         enums.update(value.get("enums", {}))
 
     schema(manifest["schema_path"])
-    read(manifest["evidence_catalog_path"])
 
     def ancestors(name: str) -> tuple[str, ...]:
         parent = classes[name].get("is_a")
@@ -73,7 +72,7 @@ def compile_distribution(root: Path) -> IndexProjection:
     resources: list[SemanticResource] = []
     entries: list[LexicalEntry] = []
 
-    def walk(value: dict[str, Any], name: str, path: str, domain: str, term: dict[str, Any] | None = None) -> None:
+    def walk(value: dict[str, Any], name: str, path: str, owner: str | None = None) -> None:
         definitions = fields(name)
         unknown = value.keys() - definitions.keys()
         if unknown:
@@ -94,22 +93,18 @@ def compile_distribution(root: Path) -> IndexProjection:
                 "resource_type": name, "source_path": path,
             })
             resources.append(resource)
-            if name in {"Concept", "OntologyEntity"}:
-                entries.append(LexicalEntry(literal=resource.label, target=resource.identifier, method="label", status=resource.status))
-        if name == "TermSense":
-            if term is None:
-                raise ValueError("TermSense must belong to a Term")
-            base = {
-                "target": value["denotes"], "term_id": term["id"], "sense_id": value["id"],
-                "definition": value["definition"], "distinguished_from": tuple(value.get("distinguished_from", [])),
-                "usage_note": value.get("usage_note"), "status": value["status"],
-            }
-            entries.append(LexicalEntry.model_validate({**base, "literal": term["surface_form"], "method": "term"}))
-            for synonym in value.get("synonyms", []):
-                entries.append(LexicalEntry.model_validate({
-                    **base, "literal": synonym["literal"], "method": "synonym",
-                    "scope": synonym["synonym_scope"], "synonym_id": synonym["synonym_id"],
-                }))
+            owner = resource.identifier
+            if not {"Concept", "OntologyEntity"}.isdisjoint(ancestors(name)):
+                entries.append(LexicalEntry(literal=resource.label, target=resource.identifier, method="label"))
+        if name == "Term":
+            if owner is None:
+                raise ValueError(f"term {value['literal']!r} in {path} names no semantic resource")
+            entries.append(LexicalEntry.model_validate({
+                "literal": value["literal"], "target": owner, "method": "term",
+                "term_type": value["term_type"], "term_status": value["term_status"],
+                "valid_from": value.get("valid_from"), "valid_to": value.get("valid_to"),
+                "usage_note": value.get("usage_note"),
+            }))
         for key, content in value.items():
             definition = definitions[key]
             target = definition.get("range")
@@ -117,7 +112,7 @@ def compile_distribution(root: Path) -> IndexProjection:
                 continue
             children = content if definition.get("multivalued") else [content]
             for child in children:
-                walk(_mapping(child), target, path, domain, value if name == "Term" else term)
+                walk(_mapping(child), target, path, owner)
 
     modules: dict[str, tuple[str, dict[str, Any]]] = {}
     for path in manifest["domain_module_paths"]:
@@ -134,7 +129,7 @@ def compile_distribution(root: Path) -> IndexProjection:
         if domain in domains:
             raise ValueError(f"duplicate domain: {domain}")
         domains.add(domain)
-        walk(bundle, "DomainBundle", path, domain)
+        walk(bundle, "DomainBundle", path)
         for identifier in bundle["modules"]:
             if identifier in declared or identifier not in modules:
                 raise ValueError(f"duplicate or missing declared module: {identifier}")
@@ -142,14 +137,14 @@ def compile_distribution(root: Path) -> IndexProjection:
             location, module = modules[identifier]
             if module["domain"] != domain:
                 raise ValueError(f"module domain differs from bundle: {identifier}")
-            walk(module, "DomainModule", location, domain)
+            walk(module, "DomainModule", location)
     if declared != modules.keys():
         raise ValueError("distribution contains modules absent from domain manifests")
     return IndexProjection(
         distribution_id=manifest["distribution_id"], version=manifest["version"],
         domains=tuple(sorted(domains)), source_files=tuple(sorted(inputs.items())),
         resources=tuple(sorted(resources, key=lambda item: item.identifier)),
-        entries=tuple(sorted(entries, key=lambda item: (item.literal, item.target, item.method, item.sense_id or "", item.synonym_id or ""))),
+        entries=tuple(sorted(entries, key=lambda item: (item.literal, item.target, item.method, item.term_type or "", item.term_status or ""))),
         authorable_predicates=tuple(sorted(enums["AuthoredPredicateEnum"]["permissible_values"])),
     )
 

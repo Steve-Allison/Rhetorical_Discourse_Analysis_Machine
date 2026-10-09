@@ -21,7 +21,8 @@ def test_consumer_reads_json_and_jsonl_and_selects_identifier(tmp_path: Path) ->
         assert run.returncode == 0, run.stderr
         assert '"quote": "Adobe Analytics"' in run.stdout
         assert '"status": "pending"' in run.stdout
-        assert [json.loads(line)["quote"] for line in run.stdout.splitlines()] == ["Adobe Analytics"]
+        # The label and, overlapping it, Central's short-form term "Analytics".
+        assert [json.loads(line)["quote"] for line in run.stdout.splitlines()] == ["Adobe Analytics", "Analytics"]
     old = tmp_path / "old.jsonl"
     old.write_text('{"schema_version":"5.2","slug":"old-card"}\n')
     assert tuple(records(old)) == ()

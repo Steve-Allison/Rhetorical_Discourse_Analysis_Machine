@@ -15,7 +15,7 @@ from rdam.ingest.contracts.source import SourceContractIdentity, SourceSummary
 
 class MentionExport(StrictContractModel):
     contract: Literal["rdam.concept_mention"] = "rdam.concept_mention"
-    contract_version: Literal["1.0.0"] = "1.0.0"
+    contract_version: Literal["2.0.0"] = "2.0.0"
     source: SourceSummary
     inventory_identity: Sha256Identity
     source_adapter: SourceContractIdentity
@@ -77,5 +77,8 @@ def schema(name: str, *, mode: Literal["validation", "serialization"] = "validat
         raise ValueError(f"unknown concept schema: {name}")
     document = models[name].model_json_schema(mode=mode)
     document["$schema"] = "https://json-schema.org/draft/2020-12/schema"
-    document["$id"] = f"https://schemas.rdam.local/{models[name].model_fields['contract'].default}/1.0.0/{mode}.schema.json"
+    fields = models[name].model_fields
+    document["$id"] = (
+        f"https://schemas.rdam.local/{fields['contract'].default}/{fields['contract_version'].default}/{mode}.schema.json"
+    )
     return document

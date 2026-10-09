@@ -120,10 +120,10 @@ def _link(
                 raise ValueError("supplied candidate does not resolve to its exact source surface")
             requested[span.item_id, span.field_pointer].add((span.start, span.end))
     resources = {item.identifier: item for item in index.projection.resources}
-    entries = tuple(entry for entry in index.projection.entries if entry.status != "retired"
-                    and resources[entry.target].status != "retired" and resources[entry.target].domain in index.domains)
-    sensitive_entries = tuple(entry for entry in entries if options.acronym_case_sensitive and entry.scope == "acronym")
-    ordinary_entries = tuple(entry for entry in entries if not (options.acronym_case_sensitive and entry.scope == "acronym"))
+    entries = tuple(entry for entry in index.projection.entries
+                    if resources[entry.target].status != "retired" and resources[entry.target].domain in index.domains)
+    sensitive_entries = tuple(entry for entry in entries if options.acronym_case_sensitive and entry.case_sensitive)
+    ordinary_entries = tuple(entry for entry in entries if not (options.acronym_case_sensitive and entry.case_sensitive))
     tries = ((_trie(ordinary_entries, case_sensitive=False), False), (_trie(sensitive_entries, case_sensitive=True), True))
     mentions: list[Mention] = []
     identity = inventory.semantic_digest

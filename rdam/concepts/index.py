@@ -11,7 +11,13 @@ from rdam.ingest.contracts.base import StrictContractModel
 from rdam.serialization import decode_object
 
 
-type SynonymScope = Literal["exact", "broad", "narrow", "acronym", "deprecated_form"]
+# Central's terminology model (coe_terminology): every name other than a resource's label is a
+# Term inline on that resource, typed and given a normative status after LexInfo.
+type TermType = Literal["full_form", "short_form", "acronym", "initialism", "abbreviation", "product_code", "codename"]
+type TermStatus = Literal["admitted", "superseded", "deprecated"]
+
+# Letter-code names whose case distinguishes them from ordinary words ("Ps", "AEM").
+CASE_SENSITIVE_TERM_TYPES: frozenset[TermType] = frozenset({"acronym", "initialism", "product_code"})
 
 
 class SemanticResource(StrictContractModel):
@@ -25,28 +31,33 @@ class SemanticResource(StrictContractModel):
 
 
 class LexicalEntry(StrictContractModel):
+    """One name of one resource: its label, or one of its Central terms."""
+
     literal: str = Field(min_length=1)
     target: str = Field(min_length=1)
-    method: Literal["label", "term", "synonym"]
-    scope: SynonymScope = "exact"
-    term_id: str | None = None
-    sense_id: str | None = None
-    definition: str | None = None
-    distinguished_from: tuple[str, ...] = ()
+    method: Literal["label", "term"]
+    term_type: TermType | None = None
+    term_status: TermStatus | None = None
+    valid_from: str | None = Field(default=None, pattern=r"^\d{4}(-\d{2}(-\d{2})?)?$")
+    valid_to: str | None = Field(default=None, pattern=r"^\d{4}(-\d{2}(-\d{2})?)?$")
     usage_note: str | None = None
-    synonym_id: str | None = None
-    status: Literal["draft", "candidate", "canonical", "retired"] = "canonical"
 
     @model_validator(mode="after")
     def coherent_reason(self) -> Self:
         if self.method == "label":
-            if any((self.term_id, self.sense_id, self.synonym_id, self.definition)) or self.scope != "exact":
-                raise ValueError("label evidence cannot carry terminology or synonym scope")
-        elif not self.term_id or not self.sense_id or not self.definition:
-            raise ValueError("terminology evidence requires term, sense and definition")
-        if (self.method == "synonym") != (self.synonym_id is not None):
-            raise ValueError("synonym evidence requires exactly one synonym identity")
+            if any(value is not None for value in (
+                self.term_type, self.term_status, self.valid_from, self.valid_to, self.usage_note,
+            )):
+                raise ValueError("label evidence cannot carry term attributes")
+        elif self.term_type is None or self.term_status is None:
+            raise ValueError("term evidence requires its term type and status")
+        if self.valid_from is not None and self.valid_to is not None and self.valid_to < self.valid_from:
+            raise ValueError("term validity ends before it begins")
         return self
+
+    @property
+    def case_sensitive(self) -> bool:
+        return self.term_type in CASE_SENSITIVE_TERM_TYPES
 
 
 class OntologyIdentity(StrictContractModel):
@@ -58,7 +69,7 @@ class OntologyIdentity(StrictContractModel):
 
 class IndexProjection(StrictContractModel):
     contract: Literal["rdam.concept_index"] = "rdam.concept_index"
-    contract_version: Literal["1.0.0"] = "1.0.0"
+    contract_version: Literal["2.0.0"] = "2.0.0"
     distribution_id: str
     version: str
     domains: tuple[str, ...]
@@ -81,14 +92,6 @@ class IndexProjection(StrictContractModel):
         for entry in self.entries:
             if entry.target not in resources:
                 raise ValueError(f"dangling terminology target: {entry.target}")
-            if entry.sense_id is not None:
-                sense = resources.get(entry.sense_id)
-                if sense is None or sense.resource_type != "TermSense":
-                    raise ValueError("terminology sense is absent")
-            for identifier in entry.distinguished_from:
-                sense = resources.get(identifier)
-                if sense is None or sense.resource_type != "TermSense":
-                    raise ValueError("dangling distinguished_from sense")
         expected = semantic_sha256(self.model_dump(exclude={"content_digest"}))
         if self.content_digest and self.content_digest != expected:
             raise ValueError("ontology projection content digest mismatch")

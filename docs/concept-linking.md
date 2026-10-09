@@ -33,9 +33,12 @@ Development projection generation follows Central's distribution/domain manifest
 pixi run python tools/compile_concept_index.py --help
 ```
 
-The packaged distribution is Central 4.0.0: eight domains, 2,805 semantic resources,
-3,170 lexical entries. Duplicate IDs, absent declared modules and dangling terminology
-references fail compilation. Domain selection restricts matching without editing Central.
+The packaged distribution is Central 4.0.0 as compiled from Central_Configs `9971b77`
+on 2026-10-09: eight domains, 2,222 semantic resources and 2,423 lexical entries
+(2,064 labels, 359 terms). A lexical entry is a resource's label or one of its Central
+terms, the names Central carries inline on the resource with a LexInfo term type and
+status. Duplicate IDs, absent declared modules, unknown fields and invalid term types or
+statuses fail compilation. Domain selection restricts matching without editing Central.
 Retired identifiers remain available diagnostically and cannot produce active candidates.
 
 ## Wire interfaces
@@ -52,16 +55,20 @@ through the existing bounded HTTP adapter. Configure the index through `create_a
 Schemas for request, result and standalone mention records are shipped under
 `rdam/ingest/schemas/concept-*.schema.json` in validation and serialization modes.
 
-The result contract is `rdam.concept_links`, version `1.0.0`. Its identity includes
+The result contract is `rdam.concept_links`, version `2.0.0`; exported mentions are
+`rdam.concept_mention` `2.0.0`. Its identity includes
 source, inventory, adapter, ontology digest/domains, algorithm, implementation and options.
 Each mention retains original anchors and a named text surface. Offsets are zero-based,
 half-open Python character offsets into that surface, not XML or file byte offsets.
 `validate_result(result, inventory, index)` replays matching and rejects stale evidence.
 
 Ordinary labels use Unicode-aware case folding and whitespace matching with reversible
-offsets. Acronyms are case-sensitive by default. Punctuation, overlapping ranges and
-separate occurrences survive. Matching reasons retain exact/broad/narrow/acronym/deprecated
-scope; a unique lexical target is not proof of contextual meaning.
+offsets. Acronyms, initialisms and product codes are case-sensitive by default
+(`acronym_case_sensitive`). Punctuation, overlapping ranges and separate occurrences
+survive. Each matching reason is `label` or `term`; a term reason retains its term type,
+status (`admitted`, `superseded` or `deprecated`), validity dates and usage note, so
+superseded and deprecated names still match and say so. A unique lexical target is not
+proof of contextual meaning.
 Generated descriptions retain authorship and layer. Code, formula and metadata remain
 classified separately. Non-text, empty, redacted and explicit duplicate surfaces are
 accounted for rather than reconstructed or silently merged.
@@ -85,6 +92,6 @@ are in `workbench/experiments/concept_linking/REPORT.md`.
 ## Verification scope
 
 See `specs/021-shared-concept-links/verification.md` for actual check outcomes and limitations.
-Production dependency constraints remain unchanged. At the upstream check, DocLang 0.7.3
-matched the installed version; Docling Core latest was 2.96.0, ahead of RDAM's 2.94.1 and
-CSM's 2.92 constraints. Those locked versions must not be described as the latest spec.
+RDAM tracks the latest Docling Core release (2.101.1 as of 2026-10-09; see
+[production ingest](production-source-ingest.md)). Locked versions must not be described
+as the latest spec.

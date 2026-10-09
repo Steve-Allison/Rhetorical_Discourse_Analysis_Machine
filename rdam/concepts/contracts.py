@@ -64,7 +64,7 @@ class Candidate(StrictContractModel):
     def consistent_target(self) -> Self:
         if any(reason.target != self.resource.identifier for reason in self.reasons):
             raise ValueError("candidate reason target mismatch")
-        if self.resource.status == "retired" or any(reason.status == "retired" for reason in self.reasons):
+        if self.resource.status == "retired":
             raise ValueError("retired resources cannot be active candidates")
         return self
 
@@ -109,7 +109,7 @@ class ConceptLinkRequest(StrictContractModel):
 
 class ConceptLinkResult(StrictContractModel):
     contract: Literal["rdam.concept_links"] = "rdam.concept_links"
-    contract_version: Literal["1.0.0"] = "1.0.0"
+    contract_version: Literal["2.0.0"] = "2.0.0"
     source: SourceSummary
     inventory_identity: Sha256Identity
     source_adapter: SourceContractIdentity

@@ -33,11 +33,21 @@ def _inventory(text: str) -> ContentInventory:
 def test_real_packaged_central_and_repeated_evidence() -> None:
     index = ConceptIndex.load()
     assert len(index.domains) == 8
-    result = link_source(SourceArtifact.from_text("Adobe Analytics. Adobe Analytics.", source_name="test"), index)
-    mentions = [m for m in result.mentions if any(c.resource.identifier == "coe:entity/adobe/analytics" for c in m.candidates)]
+    text = "Adobe Analytics. Adobe Analytics. AEM uses Ps, not ps."
+    result = link_source(SourceArtifact.from_text(text, source_name="test"), index)
+    mentions = [m for m in result.mentions if m.quote == "Adobe Analytics"]
     assert [(m.start, m.end) for m in mentions] == [(0, 15), (17, 32)]
     assert len({m.occurrence_id for m in mentions}) == 2
-    assert {reason.method for reason in mentions[0].candidates[0].reasons} == {"label", "term"}
+    assert [c.resource.identifier for c in mentions[0].candidates] == ["coe:entity/adobe/analytics"]
+    assert {reason.method for reason in mentions[0].candidates[0].reasons} == {"label"}
+    by_quote = {m.quote: m for m in result.mentions}
+    aem = by_quote["AEM"].candidates[0]
+    assert aem.resource.identifier == "coe:entity/adobe/experience_manager"
+    assert [(r.method, r.term_type, r.term_status) for r in aem.reasons] == [("term", "initialism", "admitted")]
+    photoshop = by_quote["Ps"].candidates[0]
+    assert photoshop.resource.identifier == "coe:entity/adobe/photoshop"
+    assert photoshop.reasons[0].term_type == "product_code" and photoshop.reasons[0].usage_note
+    assert "ps" not in by_quote, "product codes match case-sensitively by default"
     assert ConceptLinkResult.model_validate_json(result.model_dump_json()) == result
 
 
