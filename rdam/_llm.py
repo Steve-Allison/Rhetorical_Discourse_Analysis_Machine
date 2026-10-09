@@ -47,6 +47,7 @@ from dotenv import load_dotenv as load_dotenv_file
 from httpx2 import AsyncClient
 from openai import AsyncOpenAI, DEFAULT_TIMEOUT as OPENAI_DEFAULT_TIMEOUT
 from pydantic import BaseModel, NonNegativeInt
+import pydantic_ai
 from pydantic_ai import Agent, AgentRunResult, ModelRetry, ModelRequestContext, RunContext
 from pydantic_ai.capabilities import AbstractCapability, WrapModelRequestHandler
 from pydantic_ai.messages import ModelResponse, ToolCallPart
@@ -65,6 +66,9 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 from rdam.contracts import Retryability, UnavailableReason
 from rdam.ingest.contracts.evidence import SourceEvidenceSpan
+
+# rdam owns its terminal output; Pydantic AI's first-run banner must not appear on it.
+pydantic_ai.BANNER_ENABLED = False
 
 DEFAULT_MODEL: Final = "openai:gpt-5.6-sol"
 """The model the LLM-backed providers call unless ``RDAM_LLM_MODEL`` overrides it.

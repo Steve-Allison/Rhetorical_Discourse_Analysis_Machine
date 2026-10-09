@@ -157,6 +157,12 @@ def _analyst(
     )
 
 
+def test_rdam_disables_the_pydantic_ai_first_run_banner() -> None:
+    import pydantic_ai
+
+    assert pydantic_ai.BANNER_ENABLED is False
+
+
 @pytest.mark.parametrize("provider", ["openai", "anthropic", "google"])
 def test_repeated_sync_calls_close_on_owning_loop_after_success_and_validation_failure(
     monkeypatch: pytest.MonkeyPatch, provider: str
@@ -190,8 +196,11 @@ def test_repeated_sync_calls_close_on_owning_loop_after_success_and_validation_f
 @pytest.mark.parametrize("provider", ["openai", "anthropic", "google"])
 def test_deadline_closes_actual_client_before_sync_loop_exits(monkeypatch: pytest.MonkeyPatch, provider: str) -> None:
     transports, clients = _service(monkeypatch, provider, block=True)
+    # The request must be in flight when the deadline fires. A cold SDK client took
+    # 61-301 ms to reach the transport (measured 2026-10-09), so the deadline sits well
+    # above that; the blocked transport means the test still waits only this long.
     with pytest.raises(LlmError, match="llm_transport_deadline_exceeded"):
-        _analyst(provider, deadline=0.05).extract("fixture claim")
+        _analyst(provider, deadline=2.0).extract("fixture claim")
     assert len(transports) == len(clients) == 1
     assert clients[0].is_closed
     assert transports[0].close_loops == transports[0].request_loops
