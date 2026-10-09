@@ -7,7 +7,6 @@ and [production ingest](../../docs/production-source-ingest.md). The package is
 
 ## Project framing
 
-- [Project status & ownership](project_status.md) — Steve's evolution of Elena's RST parser; not a tracking fork.
 - [Licensing constraints](licensing.md) — MIT source / CC BY-NC 4.0 weights; commercial use requires weight replacement.
 
 ## Dated observations (Docling work)
@@ -22,26 +21,19 @@ and [production ingest](../../docs/production-source-ingest.md). The package is
 
 ## Historical format-design decisions
 
-- [One tree per Docling JSON](decision_one_tree_per_document.md) — one Parser call, one DiscourseUnit tree, boundary metadata as annotation.
-- [Consumer-agnostic framing](decision_consumer_agnostic.md) — work is "Docling JSON in → RST relations indexed by self_ref → out"; no single-consumer coupling.
-- [Overlap rule](decision_overlap_rule.md) — any non-empty intersection → include; `note` field for ≥ 90% lopsided overlaps.
-- [Anchor on docling-core, not hand-rolled walker](decision_use_docling_core.md) — `docling-core` is an optional `formats` extra, not a core dep.
 
 ## Resolved questions (kept as historical record)
 
 - [Boundary preservation in harvested text](open_boundary_preservation.md) — RESOLVED: boundary metadata as annotation; not structural.
 - [Parse-per-boundary alternative architecture](open_parse_per_boundary.md) — REJECTED: one-tree-per-document wins.
-- [v1 policy knobs](open_v1_policy_knobs.md) — RESOLVED: every policy is a parameter on `parse_docling()` with a default.
 - [`Parser` facade output shape](open_parser_facade_unverified.md) — RESOLVED: returns `{'rst': [tree]}`; tree has character-level absolute offsets; strictly binary; leaves are EDUs.
 - [Device API public surface](open_device_api.md) — RESOLVED 2026-06-30: `device=` ("auto" default) is canonical on `Parser` + predictors; `cuda_device:int` is a deprecated warned shim.
 
 ## Feedback (HARD-RULE enforcement)
 
-- [No-assumptions HARD RULE — incident + hook](feedback_no_assumptions_hard_rule.md) — 2026-05-15. Inferred `meta.description` was an extension without reading PictureMeta. Hook at `.claude/hooks/no-assumptions-check.sh` blocks future occurrences. Steve does not tolerate this behaviour.
 
 ## Upstream tracking
 
-- [Upstream issue 14 — bug fixes offer to tchewik/isanlp_rst](upstream_issue_14.md) — Filed 2026-05-09; tracks PR-extraction plan if Elena signals interest. Moved 2026-05-15 from machine-local auto-memory into the repo per Steve's project-memory-lives-in-repo pattern.
 
 ## Historical open design questions
 

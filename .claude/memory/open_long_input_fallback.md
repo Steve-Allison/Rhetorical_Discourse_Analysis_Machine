@@ -51,4 +51,4 @@ The CLAUDE.md notes `tokenizer.model_max_length = 1e9` (sliding-window encoding 
 - If options 2 or 3 are needed, the build plan and proposal need amending — bring back to user for redesign approval.
 - Until empirically verified, the plan assumes option 0: parser works fine on all realistic Docling-document inputs.
 
-Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-rst-real-world-quality](open_rst_real_world_quality.md).
+Related: [open-rst-real-world-quality](open_rst_real_world_quality.md).

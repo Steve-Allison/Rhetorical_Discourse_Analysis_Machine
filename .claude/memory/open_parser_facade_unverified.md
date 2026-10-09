@@ -46,4 +46,4 @@ metadata:
 - Recurse via `node.left` and `node.right`; check `node.left is None and node.right is None` for leaf detection.
 - Use `node.start`, `node.end` directly for overlap-rule computation against `HarvestSpan`s.
 
-Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [verified-docling-core-api](verified_docling_core_api.md).
+Related: [verified-docling-core-api](verified_docling_core_api.md).

@@ -175,4 +175,4 @@ This memory is reference-only — design decisions belong in the plan doc. Key c
 5. **`<head>` is schema-free in v0.5.** Document metadata is whatever the producer puts there.
 6. **Must parse XML ourselves.** The `doclang` Python package is validator-only.
 
-Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [verified-docling-core-api](verified_docling_core_api.md), [verified-docling-schema](verified_docling_schema.md).
+Related: [verified-docling-core-api](verified_docling_core_api.md), [verified-docling-schema](verified_docling_schema.md).

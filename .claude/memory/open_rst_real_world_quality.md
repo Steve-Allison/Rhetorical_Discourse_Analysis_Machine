@@ -50,4 +50,4 @@ Docling-native input includes:
 - Resolve inventory-default question before Phase 1: `gumrrg` (English-only, prose-trained) vs `unirst` with `relinventory="eng.erst.gum"` (multilingual capable, may degrade on pure English). Empirically choose.
 - Document the limits honestly in the public docs. Don't oversell RST on slides if the empirical answer is "produces a tree but treat with caution".
 
-Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-schema-detail-verifications](open_schema_detail_verifications.md).
+Related: [open-schema-detail-verifications](open_schema_detail_verifications.md).

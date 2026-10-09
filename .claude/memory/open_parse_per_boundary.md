@@ -32,8 +32,8 @@ Cons that won:
 - N parser calls vs 1.
 - Discards potentially meaningful cross-boundary relations.
 
-**Replacement:** [decision-one-tree-per-document](decision_one_tree_per_document.md) — one parser call, one tree, with boundary metadata as annotation.
+**Replacement:** one tree per document — one parser call, one tree, with boundary metadata as annotation.
 
-**How to apply:** kept as historical record. If a future change re-proposes parse-per-boundary, re-read this and [decision-one-tree-per-document](decision_one_tree_per_document.md) before committing.
+**How to apply:** kept as historical record. If a future change re-proposes parse-per-boundary, re-read this before committing.
 
-Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-boundary-preservation](open_boundary_preservation.md).
+Related: [open-boundary-preservation](open_boundary_preservation.md).

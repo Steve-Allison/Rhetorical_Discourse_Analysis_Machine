@@ -84,4 +84,4 @@ For byte-identical reproducibility:
 
 Pin each of these before Phase 1 (Phase 3 orchestrator + serialiser depends on them). Add to the build plan's Phase 1 deliverables (schema.py + serialiser tests).
 
-Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-boundary-design-decisions](open_boundary_design_decisions.md).
+Related: [open-boundary-design-decisions](open_boundary_design_decisions.md).

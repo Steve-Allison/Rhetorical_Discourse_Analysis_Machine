@@ -15,7 +15,7 @@ metadata:
 
 **Status: RESOLVED 2026-05-15** (same day as the question was raised).
 
-The earlier framing held that boundary-handling was a structural problem: either insert boundary markers into harvested text, or parse-per-boundary, or accept cross-boundary noise. The resolution is none of these — see [decision-one-tree-per-document](decision_one_tree_per_document.md):
+The earlier framing held that boundary-handling was a structural problem: either insert boundary markers into harvested text, or parse-per-boundary, or accept cross-boundary noise. The resolution is none of these — one tree per document:
 
 - The Docling document is harvested into one cue-aware text input.
 - The RST parser sees the whole document and produces one tree.
@@ -25,6 +25,6 @@ The earlier framing held that boundary-handling was a structural problem: either
 
 **Why the original framing was wrong:** "cross-boundary RST relations are noise" was an assumption I had not verified. Cross-slide narrative arcs, cross-turn elaboration in conversations, section-to-section discourse — these are real RST phenomena. The parser was trained on document-scale prose; the output is honest, and consumers should be the ones to decide what counts as noise for their use case.
 
-**How to apply:** if a future change tempts you back toward parse-per-boundary, re-read [decision-one-tree-per-document](decision_one_tree_per_document.md) before committing.
+**How to apply:** if a future change tempts you back toward parse-per-boundary, re-read this memory before committing.
 
-Related: [decision-one-tree-per-document](decision_one_tree_per_document.md), [open-parse-per-boundary](open_parse_per_boundary.md) (also resolved).
+Related: [open-parse-per-boundary](open_parse_per_boundary.md) (also resolved).

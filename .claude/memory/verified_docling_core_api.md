@@ -45,4 +45,4 @@ Slide notes in real PPTX output are in the `NOTES` layer (verified on `tests/fix
 - Don't roll our own walker. Anchor on `iterate_items()`.
 - The default `with_groups=False` + `traverse_pictures=False` is correct for v1 of the Docling-native entry point — we want leaf-ish text-carrying items, not group markers, and we explicitly skip picture-caption recursion in v1.
 
-Related: [verified-docling-schema](verified_docling_schema.md), [decision-use-docling-core](decision_use_docling_core.md).
+Related: [verified-docling-schema](verified_docling_schema.md).

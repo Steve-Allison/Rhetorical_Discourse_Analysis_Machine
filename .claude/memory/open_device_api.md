@@ -37,5 +37,3 @@ and `device="mps"` (Apple Silicon); 440 fast tests + ruff + pyright green.
 Original problem (kept for record): `Parser(..., cuda_device=N)` was named for
 CUDA but on Apple Silicon selected MPS — the name was a lie and the integer was
 meaningless on MPS, so the docstring gave users a confusing picture.
-
-Related: [open-v1-policy-knobs](open_v1_policy_knobs.md) (similar "expose proper knobs" theme).
