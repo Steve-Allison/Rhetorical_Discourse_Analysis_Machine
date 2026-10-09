@@ -1,6 +1,8 @@
 """Release and canonical ingest-envelope version authority."""
 
 from importlib.metadata import version
+from pathlib import Path
+import tomllib
 
 import rdam.rst
 from rdam.rst import _version
@@ -11,7 +13,8 @@ from rdam.ingest.contracts.base import READABLE_CONTRACT_VERSIONS, WRITE_CONTRAC
 def test_installed_release_matches_package_authority() -> None:
     assert _version.PACKAGE_NAME == "rdam"
     assert _version.TOOL_NAME == "rdam"
-    assert _version.PACKAGE_VERSION == "6.0.0"
+    declared = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+    assert _version.PACKAGE_VERSION == declared
     assert version(_version.PACKAGE_NAME) == _version.PACKAGE_VERSION
     assert rdam.rst.__version__ == _version.PACKAGE_VERSION
 

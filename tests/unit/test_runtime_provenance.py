@@ -20,7 +20,7 @@ def _clear_runtime_caches() -> Iterator[None]:
 
 
 def test_tool_version_is_installed_distribution_version() -> None:
-    assert _provenance.resolve_package_version() == version("rdam") == "6.0.0"
+    assert _provenance.resolve_package_version() == version("rdam")
 
 
 def test_unknown_is_only_used_when_distribution_metadata_is_absent(monkeypatch: pytest.MonkeyPatch) -> None:

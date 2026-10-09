@@ -1,6 +1,7 @@
 """The release identity is derived once and rejects contradictory project metadata."""
 
 from pathlib import Path
+import tomllib
 
 import pytest
 
@@ -33,7 +34,7 @@ packages = [{wheel_packages}]
 def test_repository_release_identity_is_exactly_the_declared_rdam_root() -> None:
     identity = read_release_identity(Path.cwd())
     assert identity.distribution == "rdam"
-    assert identity.version == "6.0.0"
+    assert identity.version == tomllib.loads(Path("pyproject.toml").read_text())["project"]["version"]
     assert identity.package_dir == "rdam"
     assert identity.import_package == "rdam"
 
