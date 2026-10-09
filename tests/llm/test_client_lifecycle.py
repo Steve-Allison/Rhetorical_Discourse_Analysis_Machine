@@ -19,6 +19,26 @@ class Finding(BaseModel):
     claim: str
 
 
+def _anthropic_tool_use_events(tool_name: str) -> bytes:
+    """The Messages API server-sent events for one streamed tool-use response."""
+
+    events: tuple[tuple[str, dict[str, object]], ...] = (
+        ("message_start", {"type": "message_start", "message": {
+            "id": "msg_fixture", "type": "message", "role": "assistant", "model": "claude-sonnet-4-5",
+            "content": [], "stop_reason": None, "stop_sequence": None,
+            "usage": {"input_tokens": 1, "output_tokens": 1}}}),
+        ("content_block_start", {"type": "content_block_start", "index": 0, "content_block": {
+            "type": "tool_use", "id": "tool_fixture", "name": tool_name, "input": {}}}),
+        ("content_block_delta", {"type": "content_block_delta", "index": 0, "delta": {
+            "type": "input_json_delta", "partial_json": '{"claim":"fixture claim"}'}}),
+        ("content_block_stop", {"type": "content_block_stop", "index": 0}),
+        ("message_delta", {"type": "message_delta", "delta": {"stop_reason": "tool_use", "stop_sequence": None},
+                           "usage": {"output_tokens": 1}}),
+        ("message_stop", {"type": "message_stop"}),
+    )
+    return "".join(f"event: {name}\ndata: {json.dumps(data)}\n\n" for name, data in events).encode()
+
+
 class ServiceTransport(httpx2.AsyncBaseTransport):
     """Record real request/close loops and return provider-protocol fixture bytes."""
 
@@ -54,6 +74,11 @@ class ServiceTransport(httpx2.AsyncBaseTransport):
                     "output": [{"type": "function_call", "id": "fc_fixture", "call_id": "call_fixture",
                                 "name": tools[0]["name"], "arguments": '{"claim":"fixture claim"}'}],
                 }
+            case "anthropic" if body.get("stream") is True:
+                return httpx2.Response(
+                    200, request=request, headers={"content-type": "text/event-stream"},
+                    content=_anthropic_tool_use_events(str(tools[0]["name"])),
+                )
             case "anthropic":
                 payload = {
                     "id": "msg_fixture", "type": "message", "role": "assistant", "model": "claude-sonnet-4-5",
