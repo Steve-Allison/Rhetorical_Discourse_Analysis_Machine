@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/learning/learning_sciences
   title: Learning — Learning Sciences and Assessment Disciplines
-  last_updated: '2026-09-02'
+  last_updated: '2026-09-23'
   authority: Central_Configs
   scope: domain
   ontology_domain: learning
@@ -13,11 +13,9 @@ entity_collections:
   label: Learning and Cognitive Theories
   description: Named learning and cognitive theories recovered from the knowledge wiki, including two refuted-claim
     records kept for flagging.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: learning
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/bandura_social_cognitive_theory
     label: Bandura's Social Cognitive Theory
@@ -34,18 +32,12 @@ entity_collections:
         feedback response in Locke and Latham's model.
       statement_id: coe:edge/bandura-social-cognitive-theory-supports-goal-setting-theory
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - social cognitive theory
     - Bandura's self-efficacy
     - observational learning
     - reciprocal determinism
     - vicarious learning
-    anti_examples:
-    - social media theory
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/cognitive_apprenticeship
     label: Cognitive Apprenticeship
     description: Collins, Brown and Newman's instructional model making expert thinking visible through modelling,
@@ -61,8 +53,6 @@ entity_collections:
         articulation, reflection and fading.
       statement_id: coe:edge/cognitive-apprenticeship-specialises-situated-learning-theory
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - cognitive apprenticeship
     - modelling and fading
@@ -70,9 +60,6 @@ entity_collections:
     - coaching and scaffolding cycle
     anti_examples:
     - trade apprenticeship
-    - apprenticeship contract
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/connectivism
     label: Connectivism
     description: Siemens and Downes's digital-age learning theory locating knowledge in networks of human and
@@ -88,17 +75,11 @@ entity_collections:
         constructivism, locating learning in distributed networks rather than individual knowledge construction.
       statement_id: coe:edge/connectivism-contrasts-with-constructivism
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - connectivism
     - learning networks
     - personal learning network
     - cMOOC
-    anti_examples:
-    - network connectivity
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/critical_thinking
     label: Critical Thinking
     description: Good reasoning as a teachable discipline — the merits of a sound argument, intellectual virtues,
@@ -112,11 +93,6 @@ entity_collections:
     - sound argument
     - intellectual virtues
     - straw man argument
-    anti_examples:
-    - critical incident
-    - critical path
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/deliberate_practice
     label: Deliberate Practice
     description: Ericsson's expertise framework — purposeful, feedback-rich, expert-guided practice at the edge of
@@ -129,10 +105,6 @@ entity_collections:
     - purposeful practice
     - 10,000 hours myth
     - practice at the edge of ability
-    anti_examples:
-    - deliberate delay
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/goal_setting_theory
     label: Goal-Setting Theory
     description: Locke and Latham's theory of goals as immediate regulators of action — five design principles, four
@@ -146,10 +118,6 @@ entity_collections:
     - stretch goals
     - goal commitment
     - High Performance Cycle
-    anti_examples:
-    - goal difference
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/growth_mindset
     label: Growth Mindset
     description: Dweck's implicit-theory-of-intelligence construct — entity versus incremental beliefs about
@@ -166,18 +134,11 @@ entity_collections:
         presumes the malleability beliefs Dweck's construct names.
       statement_id: coe:edge/growth-mindset-supports-catalytic-feedback
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - growth mindset
     - fixed mindset
     - mindset intervention
     - malleable intelligence
-    anti_examples:
-    - growth rate
-    - growth market
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/learning_pyramid
     label: Learning Pyramid (Refuted)
     description: The refuted Learning Pyramid retention-percentage model (10/20/30/50/75/90 by modality), traced to
@@ -191,11 +152,6 @@ entity_collections:
     - retention rates by method
     - we remember 90% of what we teach
     - cone of experience percentages
-    anti_examples:
-    - pyramid principle
-    - food pyramid
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/learning_styles_meshing
     label: Learning Styles Meshing (Refuted)
     description: VARK and the meshing hypothesis — the refuted prescription that matching instruction to a learner's
@@ -211,19 +167,12 @@ entity_collections:
         design cycle survives, the matching claim does not.
       statement_id: coe:edge/learning-styles-meshing-rebuts-four-mat-model
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - learning styles
     - VARK
     - visual learner
     - auditory learner
     - meshing hypothesis
-    anti_examples:
-    - writing style
-    - leadership style
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/metacognition
     label: Metacognition
     description: The capacity to plan, monitor and evaluate one's own learning — Zimmerman's forethought, performance
@@ -239,16 +188,12 @@ entity_collections:
         their own learning.
       statement_id: coe:edge/metacognition-enables-assessment-as-learning
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - metacognition
     - metacognitive strategies
     - thinking about thinking
     - self-regulated learning
     - monitoring one's own understanding
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/nudge_theory
     label: Nudge Theory
     description: Thaler and Sunstein's choice architecture — non-coercive environmental design that alters behaviour
@@ -262,10 +207,6 @@ entity_collections:
     - default option
     - dark patterns
     - libertarian paternalism
-    anti_examples:
-    - a gentle nudge to the team
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/psychological_safety
     label: Psychological Safety
     description: Edmondson's team-level emergent climate — a shared belief that the team is safe for interpersonal risk
@@ -281,18 +222,11 @@ entity_collections:
         interpersonally safe.
       statement_id: coe:edge/psychological-safety-enables-discussion-activity
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - psychological safety
     - safe to take interpersonal risks
     - speak-up climate
     - Edmondson
-    anti_examples:
-    - physical safety
-    - safety training
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/schanks_script_theory
     label: Schank's Script Theory
     description: Schank's theory of learning as building episodic-memory event sequences (scripts) revised through
@@ -308,8 +242,6 @@ entity_collections:
         revised through expectation failure.
       statement_id: coe:edge/schanks-script-theory-supports-scenario-activity
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/schanks_script_theory
       predicate: coe:supports
       object_id: coe:entity/story_spine
@@ -318,19 +250,12 @@ entity_collections:
         Schank's sense.
       statement_id: coe:edge/schanks-script-theory-supports-story-spine
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - script theory
     - expectation failure
     - episodic scripts
     - restaurant script
     - learning from stories
-    anti_examples:
-    - video script
-    - script direction
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/theory_of_mind
     label: Theory of Mind
     description: The capacity to attribute unobservable mental states — beliefs, desires, intentions, emotions — to
@@ -346,8 +271,6 @@ entity_collections:
         audience design.
       statement_id: coe:edge/theory-of-mind-enables-audience-design
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/theory_of_mind
       predicate: coe:enables
       object_id: coe:entity/tom_prompting_architecture
@@ -356,18 +279,11 @@ entity_collections:
         perspective-taking.
       statement_id: coe:edge/theory-of-mind-enables-tom-prompting-architecture
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - theory of mind
     - false-belief task
     - mental state attribution
     - perspective taking
-    anti_examples:
-    - theory of change
-    - state of mind
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/tuckman_group_development
     label: Tuckman Group Development
     description: Tuckman's five-stage group-development model (Forming, Storming, Norming, Performing, Adjourning),
@@ -383,25 +299,17 @@ entity_collections:
         serve Forming than serve Storming or Performing.
       statement_id: coe:edge/tuckman-group-development-supports-icebreakers-and-group-formation
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - forming storming norming performing
     - Tuckman's stages
     - adjourning stage
     - group development stages
-    anti_examples:
-    - brainstorming session
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/learning/instructional_design_models
   label: Instructional Design Models and Frameworks
   description: Named instructional design models and frameworks recovered from the knowledge wiki.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: learning
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/boppps_model
     label: BOPPPS Model
@@ -418,15 +326,11 @@ entity_collections:
         they are alternative session architectures.
       statement_id: coe:edge/boppps-model-contrasts-with-instructional-event
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - BOPPPS
     - bridge-in
     - pre-assessment and post-assessment blocks
     - participatory learning segment
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/dick_carey_model
     label: Dick and Carey Systems Model
     description: Dick and Carey's rigorously sequential ten-step systems model for high-stakes instruction, built on
@@ -442,14 +346,10 @@ entity_collections:
         instructional design control.
       statement_id: coe:edge/dick-carey-model-contrasts-with-sam-model
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - Dick and Carey
     - systems approach model
     - ten-step design model
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/elaboration_theory
     label: Elaboration Theory
     description: Reigeluth's simple-to-complex sequencing model that opens with an epitome of the whole subject and
@@ -465,17 +365,11 @@ entity_collections:
         Morrison-Ross-Kemp design.
       statement_id: coe:edge/elaboration-theory-supports-morrison-ross-kemp-model
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - elaboration theory
     - epitome lesson
     - simple-to-complex sequencing
     - Reigeluth
-    anti_examples:
-    - elaborate on this point
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/baldwin_ford_transfer_model
     label: Baldwin-Ford Transfer Model
     description: Baldwin and Ford's three-condition transfer model — trainee characteristics, training design, work
@@ -491,18 +385,11 @@ entity_collections:
         trained skill reaches on-job behaviour and results.
       statement_id: coe:edge/baldwin-ford-transfer-model-supports-kirkpatrick-model
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - transfer of training
     - Baldwin and Ford
     - work environment support
     - training transfer conditions
-    anti_examples:
-    - file transfer
-    - transfer pricing
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/morrison_ross_kemp_model
     label: Morrison-Ross-Kemp Model
     description: Kemp, Morrison and Ross's non-linear oval instructional design model of nine interdependent elements
@@ -518,15 +405,11 @@ entity_collections:
         Carey's rectilinear sequence.
       statement_id: coe:edge/morrison-ross-kemp-model-contrasts-with-dick-carey-model
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - Morrison, Ross and Kemp
     - Kemp model
     - nine interdependent elements
     - oval design model
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/responsive_scaffold_model
     label: Responsive Scaffold Model
     description: Four-phase Model-Coach-Scaffold-Fade sequence for live soft-skills training whose visual, verbal and
@@ -542,14 +425,10 @@ entity_collections:
         slide-borne scaffold sequence for live soft-skills training.
       statement_id: coe:edge/responsive-scaffold-model-specialises-cognitive-apprenticeship
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - Responsive Scaffold Model
     - model-coach-scaffold-fade
     - scaffold fading tracks
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/rosenshines_principles
     label: Rosenshine's Principles
     description: Rosenshine's ten principles of explicit instruction, cross-validated from cognitive science,
@@ -566,8 +445,6 @@ entity_collections:
         frameworks, derived from different evidence bases.
       statement_id: coe:edge/rosenshines-principles-bridges-instructional-event
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/rosenshines_principles
       predicate: coe:supports
       object_id: coe:entity/scheme_of_work_design
@@ -576,16 +453,12 @@ entity_collections:
         lesson sequences.
       statement_id: coe:edge/rosenshines-principles-supports-scheme-of-work-design
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - Rosenshine's principles
     - principles of explicit instruction
     - daily review
     - guided practice
     - teach in small steps
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/scheme_of_work_design
     label: Scheme of Work Design
     description: UK curriculum methodology sequencing substantive and disciplinary knowledge into a key-stage scheme of
@@ -600,10 +473,6 @@ entity_collections:
     - long-term plan
     - misconception engineering
     - enquiry question
-    anti_examples:
-    - scheme of arrangement
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/three_cs_scenario_design
     label: Three Cs Scenario Design
     description: The Challenge-Choices-Consequences framework for designing a single realistic decision scenario — an
@@ -619,16 +488,10 @@ entity_collections:
         scenario within scenario-based training.
       statement_id: coe:edge/three-cs-scenario-design-specialises-scenario-activity
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - 3Cs scenario
     - challenge, choices, consequences
     - decision-point scenario
-    anti_examples:
-    - three Cs of marketing
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/udl_framework
     label: Universal Design for Learning
     description: CAST's Universal Design for Learning framework — inclusive design through multiple means of Engagement,
@@ -644,17 +507,13 @@ entity_collections:
     - CAST guidelines
     anti_examples:
     - universal design in architecture
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/learning/learning_methods_formats
   label: Learning Methods and Formats
   description: Learning methods, delivery formats, and audience-inclusion methodologies recovered from the knowledge
     wiki.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: learning
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/seventy_twenty_ten_model
     label: 70:20:10 Model
@@ -668,10 +527,6 @@ entity_collections:
     - '70:20:10'
     - 70-20-10 model
     - experiential learning ratio
-    anti_examples:
-    - 70/20/10 budget split
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/case_based_learning
     label: Case-Based Learning
     description: Pedagogy in which learners analyse realistic organisational narratives with incomplete information and
@@ -687,19 +542,11 @@ entity_collections:
         branching consequences cases deliberately lack.
       statement_id: coe:edge/case-based-learning-contrasts-with-scenario-activity
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - case-based learning
     - case study method
     - teaching case
     - case discussion
-    anti_examples:
-    - use case
-    - test case
-    - business case
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/coaching_frameworks
     label: Coaching Frameworks
     description: Workplace coaching conversation models — GROW, CLEAR, OSKAR, Co-Active and peers — that raise the
@@ -715,8 +562,6 @@ entity_collections:
         coaching-frameworks discipline owns.
       statement_id: coe:edge/coaching-frameworks-supports-manager-as-coach
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - GROW model
     - coaching conversation
@@ -725,9 +570,6 @@ entity_collections:
     - facilitative inquiry
     anti_examples:
     - sports coaching
-    - coach class
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/gamification_and_game_based_learning
     label: Gamification and Game-Based Learning
     description: Application of game design to learning across gamification, serious games and game-based learning,
@@ -743,18 +585,12 @@ entity_collections:
         learning discipline.
       statement_id: coe:edge/gamification-and-game-based-learning-contains-gaming-scenario
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - gamification
     - game-based learning
     - serious games
     - points, badges and leaderboards
     - game mechanics
-    anti_examples:
-    - video game review
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/icebreakers_and_group_formation
     label: Icebreakers and Group Formation
     description: Session-opening and group-formation activities deployed to build psychological safety, cohesion and
@@ -770,17 +606,11 @@ entity_collections:
         psychological safety in a cohort.
       statement_id: coe:edge/icebreakers-and-group-formation-enables-psychological-safety
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - icebreaker
     - energiser activity
     - two truths and a lie
     - group formation activity
-    anti_examples:
-    - icebreaker ship
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/immersive_learning
     label: Immersive Learning
     description: Learning delivered through the Extended Reality spectrum (AR, MR, VR), pairing immersive hardware and
@@ -794,10 +624,6 @@ entity_collections:
     - 360 video
     - extended reality
     - AR overlay
-    anti_examples:
-    - immersive theatre
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/manager_as_coach
     label: Manager as Coach
     description: Organisational discipline of equipping line managers to coach direct reports, distinguished from
@@ -809,8 +635,6 @@ entity_collections:
     - manager as coach
     - coaching your direct reports
     - leader as coach
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/spaced_repetition
     label: Spaced Repetition
     description: Distributing review over expanding intervals so each retrieval near the point of forgetting
@@ -826,8 +650,6 @@ entity_collections:
         and retrieval gives each spaced review its potency; neither is complete alone.
       statement_id: coe:edge/spaced-repetition-bridges-testing-effect
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/spaced_repetition
       predicate: coe:enables
       object_id: coe:entity/microlearning_format
@@ -836,18 +658,12 @@ entity_collections:
         expanding intervals.
       statement_id: coe:edge/spaced-repetition-enables-microlearning-format
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - spaced repetition
     - spacing effect
     - expanding intervals
     - forgetting curve
     - distributed practice
-    anti_examples:
-    - evenly spaced layout
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/inclusion_personas
     label: Inclusion Personas
     description: Persona methodology representing the permanent, temporary and situational capability spectrum
@@ -860,8 +676,6 @@ entity_collections:
     - situational disability
     - inclusive personas
     - temporary impairment
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/screencast
     label: Screencast
     description: A narrated recording of live software, code or screen activity produced as an instructional video
@@ -874,19 +688,13 @@ entity_collections:
     - screen recording tutorial
     - software walkthrough video
     - narrated demo recording
-    anti_examples:
-    - cast the screen to the TV
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/learning/assessment_disciplines
   label: Assessment and Measurement Disciplines
   description: Assessment method families and measurement disciplines recovered from the knowledge wiki, organising the
     instrument and statistic entities Central already holds.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: learning
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/multi_source_feedback
     label: Multi-Source (360-Degree) Feedback
@@ -900,10 +708,6 @@ entity_collections:
     - multi-source feedback
     - multi-rater assessment
     - self-other agreement
-    anti_examples:
-    - 360-degree video
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/ai_content_detection
     label: AI Content Detection
     description: Statistical classification of text as AI- or human-authored via perplexity and watermark signals, and
@@ -916,10 +720,6 @@ entity_collections:
     - AI-generated text detection
     - watermarking
     - perplexity-based detection
-    anti_examples:
-    - anomaly detection
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/assessment_method_selection
     label: Assessment Method Selection
     description: Assessment-design discipline choosing the method for a purpose by weighting reliability, validity,
@@ -932,10 +732,6 @@ entity_collections:
     - Miller's pyramid
     - shows-how level
     - method selection trade-offs
-    anti_examples:
-    - natural selection
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/automated_essay_scoring
     label: Automated Essay Scoring
     description: Machine scoring of essays predicting quality from text features — the PEG-to-Transformer lineage with
@@ -948,8 +744,6 @@ entity_collections:
     - AES engine
     - machine-scored essays
     - e-rater
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/cognitive_diagnostic_modelling
     label: Cognitive Diagnostic Modelling
     description: Psychometric framework classifying candidates into binary attribute-mastery profiles via a Q-matrix and
@@ -962,8 +756,6 @@ entity_collections:
     - Q-matrix
     - attribute mastery profile
     - G-DINA
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/computer_adaptive_testing
     label: Computer-Adaptive Testing
     description: Test-delivery method selecting each next item to maximise information at the candidate's current
@@ -979,17 +771,11 @@ entity_collections:
         discrete attribute-mastery profiles — alternative psychometric engines for different proficiency models.
       statement_id: coe:edge/computer-adaptive-testing-contrasts-with-cognitive-diagnostic-modelling
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - computer-adaptive testing
     - adaptive test
     - item exposure control
     - ability estimate
-    anti_examples:
-    - adaptive layout
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/construct_validity_under_ai
     label: Construct Validity under AI
     description: Construct substitution — AI access replaces the latent variable an assessment measures, forcing an
@@ -1005,16 +791,10 @@ entity_collections:
         construct, not the authorship, must be redesigned.
       statement_id: coe:edge/construct-validity-under-ai-rebuts-ai-content-detection
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - construct substitution
     - human-AI team construct
     - assessing with AI access
-    anti_examples:
-    - software construct
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/cross_cultural_assessment_validity
     label: Cross-Cultural Assessment Validity
     description: Discipline testing whether assessment evidence generalises across cultures and languages via the
@@ -1028,8 +808,6 @@ entity_collections:
     - test adaptation
     - ITC guidelines
     - cross-cultural comparability
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/demo_certification
     label: Demo Certification
     description: Performance-assessment programme certifying field sellers and solutions engineers on live product
@@ -1045,17 +823,11 @@ entity_collections:
         demonstrations.
       statement_id: coe:edge/demo-certification-specialises-performance-based-assessment
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - demo certification
     - certified demo
     - demo scenario bank
     - demo cut-score
-    anti_examples:
-    - demo environment
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/hard_soft_skills_assessment
     label: Hard and Soft Skills Assessment
     description: Assessment-methodology distinction routing objective, verifiable technical competencies and subjective
@@ -1068,10 +840,6 @@ entity_collections:
     - soft skills
     - behavioural competencies
     - technical competencies
-    anti_examples:
-    - hardware and software
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/inter_annotator_agreement
     label: Inter-Annotator Agreement
     description: Statistical discipline measuring whether independent coders label a corpus identically, via
@@ -1085,8 +853,6 @@ entity_collections:
     - Cohen's kappa
     - Krippendorff's alpha
     - Fleiss' kappa
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/kane_validity_framework
     label: Kane's Validity Framework
     description: Kane's argument-based validity — score interpretation defended as a four-inference chain of Scoring,
@@ -1102,15 +868,11 @@ entity_collections:
         argument chain.
       statement_id: coe:edge/kane-validity-framework-supports-performance-based-assessment
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - Kane's validity framework
     - interpretation/use argument
     - argument-based validity
     - scoring inference
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/microcredentialing
     label: Microcredentialing
     description: Design of portable, verifiable workplace credentials earned through summative performance evidence,
@@ -1123,8 +885,6 @@ entity_collections:
     - digital badge
     - open badges
     - stackable credentials
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/okr_kpi_frameworks
     label: OKR and KPI Frameworks
     description: Use of workplace KPIs and OKRs as post-training outcome measures, with Goodhart counter-balancing
@@ -1138,8 +898,6 @@ entity_collections:
     - objectives and key results
     - leading indicator
     - Goodhart's law
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/oral_assessment_design
     label: Oral Assessment Design
     description: Design of structured oral examinations and vivas — anchored question banks, multiple examiner-case
@@ -1155,17 +913,11 @@ entity_collections:
         substitutes the assessed construct.
       statement_id: coe:edge/oral-assessment-design-supports-construct-validity-under-ai
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - oral examination
     - viva voce
     - structured viva
     - examiner calibration
-    anti_examples:
-    - oral history
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/portfolio_assessment
     label: Portfolio Assessment
     description: Assessment method using a purposeful, reflectively annotated collection of authentic learner work as
@@ -1179,10 +931,7 @@ entity_collections:
     - reflective annotation
     - portfolio evidence
     anti_examples:
-    - investment portfolio
     - design portfolio
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/pre_employment_selection
     label: Pre-Employment Selection
     description: Design of hiring assessment batteries — structured interviews, work samples, general mental ability and
@@ -1195,10 +944,6 @@ entity_collections:
     - work sample test
     - situational judgement test
     - adverse impact analysis
-    anti_examples:
-    - natural selection
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/psychometrics
     label: Psychometrics
     description: The measurement-integrity discipline beneath assessment — classical test theory, item response theory
@@ -1214,8 +959,6 @@ entity_collections:
       description: Item response theory is one of psychometrics' measurement-model families.
       statement_id: coe:edge/psychometrics-contains-item-response-theory
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/psychometrics
       predicate: coe:contains
       object_id: coe:entity/generalizability_theory
@@ -1223,8 +966,6 @@ entity_collections:
       description: Generalizability theory is one of psychometrics' measurement-model families.
       statement_id: coe:edge/psychometrics-contains-generalizability-theory
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/psychometrics
       predicate: coe:contains
       object_id: coe:entity/differential_item_functioning
@@ -1233,8 +974,6 @@ entity_collections:
         group-conditional item behaviour.
       statement_id: coe:edge/psychometrics-contains-differential-item-functioning
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/psychometrics
       predicate: coe:supports
       object_id: coe:entity/kane_validity_framework
@@ -1243,16 +982,12 @@ entity_collections:
         Kane's Scoring, Generalisation and Implications inferences.
       statement_id: coe:edge/psychometrics-supports-kane-validity-framework
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - psychometrics
     - classical test theory
     - test reliability
     - measurement model
     - item banking
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/social_network_analysis
     label: Social Network Analysis
     description: Graph-theoretic evaluation methodology mapping learner relationships as networks — density, modularity,
@@ -1266,10 +1001,6 @@ entity_collections:
     - community detection
     - network density
     - sociogram
-    anti_examples:
-    - posting on social networks
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/stealth_assessment
     label: Stealth Assessment
     description: Shute's framework measuring competence unobtrusively from continuous telemetry inside games and
@@ -1285,25 +1016,17 @@ entity_collections:
         Q-matrix over test items.
       statement_id: coe:edge/stealth-assessment-bridges-cognitive-diagnostic-modelling
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - stealth assessment
     - evidence-centred design
     - telemetry-based measurement
     - in-game assessment
-    anti_examples:
-    - stealth game
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/learning/knowledge_organisation_disciplines
   label: Knowledge Organisation Disciplines
   description: Knowledge organisation and ontology-engineering disciplines recovered from the knowledge wiki.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: learning
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/knowledge_organisation
     label: Knowledge Organisation
@@ -1319,8 +1042,6 @@ entity_collections:
       description: Facet analysis is a member method of the knowledge organisation systems family.
       statement_id: coe:edge/knowledge-organisation-contains-facet-analysis
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/knowledge_organisation
       predicate: coe:bridges
       object_id: coe:entity/ontology_engineering
@@ -1329,17 +1050,11 @@ entity_collections:
         deferral boundary.
       statement_id: coe:edge/knowledge-organisation-bridges-ontology-engineering
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - knowledge organisation system
     - controlled vocabulary
     - thesaurus construction
     - KOS
-    anti_examples:
-    - organisation chart
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/ontology_engineering
     label: Ontology Engineering
     description: The formal methodology for building machine-interpretable ontologies — specifications of
@@ -1354,8 +1069,6 @@ entity_collections:
       description: Ontology engineering supplies the schema that extracted triples ground to and validate against.
       statement_id: coe:edge/ontology-engineering-supports-knowledge-graph-construction
       home_domain: learning
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - ontology engineering
     - OWL ontology
@@ -1364,5 +1077,3 @@ entity_collections:
     - ontology alignment
     anti_examples:
     - ontology in philosophy
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery

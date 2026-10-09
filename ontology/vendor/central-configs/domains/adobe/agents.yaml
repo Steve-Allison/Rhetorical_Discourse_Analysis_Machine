@@ -1,299 +1,429 @@
 _meta:
   file_id: coe:file/domain/adobe/agents
   title: Adobe — Agents
-  last_updated: '2026-09-02'
+  last_updated: '2026-10-02'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
   governing_class: coe:DomainModule
 module_id: coe:module/adobe/agents
 domain: adobe
-entity_collections:
-- id: coe:artifact/adobe/agents
-  label: Adobe Enterprise AI Agents
-  description: Experience Platform Agent Orchestrator and specialized autonomous agent instances.
-  last_updated: '2026-09-01'
-  entities:
-  - id: coe:entity/adobe/agent_orchestrator
-    label: Adobe Experience Platform Agent Orchestrator
-    description: Central orchestrator for enterprise AI agents on Adobe Experience Platform.
-    home_domain: adobe
-    status: canonical
-    evidence_ids: &id001
-    - coe:source/central-configs-legacy-f6eb98ff
-    - coe:decision/v4-migration/adobe/agents
-  - id: coe:entity/adobe/account_qualification_agent
-    label: Account Qualification Agent
-    description: Sales-qualification agent delivered through Sales Qualifier, the add-on to Adobe Journey Optimizer B2B
-      Edition — it reads account signals to judge which accounts are ready for the next sales step and assists business
-      development representatives with account research, outreach-email drafting, and CRM updates.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/account_qualification_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Account Qualification Agent is an autonomous agent specialized and managed by Adobe Experience Platform
-        Agent Orchestrator.
-      statement_id: coe:edge/38bf63e6cb6d0548efbb8534
-      home_domain: adobe
-      evidence_ids: &id002
-      - coe:source/central-configs-legacy-f6eb98ff
-      - coe:decision/v4-migration/adobe/agents
-    evidence_ids: *id001
-  - id: coe:entity/adobe/audience_agent
-    label: Audience Agent
-    description: Audience-management agent surfaced in AI Assistant within Real-Time CDP (B2C and B2B) and Adobe Journey
-      Optimizer — it lets practitioners explore, understand, and manage audiences in natural language, surfacing audience
-      inventory, detecting significant size changes and duplicates, and retrieving audience sizes to support targeting and
-      buying-group creation.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/audience_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Audience Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent Orchestrator.
-      statement_id: coe:edge/02f6088929343f1fe444788f
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/content_production_agent
-    label: Content Production Agent
-    description: On-brand content generation agent surfaced within GenStudio for Performance Marketing — it takes teams
-      from brief to content to activation through a conversational interface, covering campaign tactics ideation, ad and
-      email generation, brand-object creation, and brand validation.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/content_production_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Content Production Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/4d9be029f4fe24c67ae23404
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/data_insights_agent
-    label: Data Insights Agent
-    description: Analytics agent surfaced in AI Assistant inside Customer Journey Analytics Analysis Workspace — it answers
-      plain-language questions about the data and automatically builds the appropriate visualisations and tables, grounded
-      in the organisation's configured data views.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/data_insights_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Data Insights Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent Orchestrator.
-      statement_id: coe:edge/b3191627790f04a9f43f3a51
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/data_engineering_agent
-    label: Data Engineering Agent
-    description: Data-management agent for Adobe Experience Platform — it accelerates the onboarding and ongoing management
-      of data (schemas, mappings, and ingestion) so more downstream use cases can be supported without manual data
-      engineering effort.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/data_engineering_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Data Engineering Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/9c728f013c5ab1c893eb5dde
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/experimentation_agent
-    label: Experimentation Agent
-    description: Experimentation agent surfaced in AI Assistant within Adobe Journey Optimizer Experimentation Accelerator
-      — it centralises past and active experiments so teams can summarise tests, analyse results by audience, understand
-      what worked, and get proposals for the next test with suggested KPIs and sample sizes.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/experimentation_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Experimentation Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/2761b333edb7f76def6a608c
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/journey_agent
-    label: Journey Agent
-    description: Journey-orchestration agent surfaced in AI Assistant within the Adobe Journey Optimizer Journeys workspace
-      (B2C and B2B) — it builds journeys from natural-language prompts, analyses fallout, detects scheduling and audience
-      conflicts with existing campaigns, and proposes adjustments before publication.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/journey_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Journey Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent Orchestrator.
-      statement_id: coe:edge/b67641a514c269c92d568785
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/workflow_optimization_agent
-    label: Workflow Optimization Agent
-    description: Marketing-operations agent in Adobe Workfront — it generates Planning workspaces that connect campaigns,
-      budgets, and tasks into linked records, manages multi-stage content reviews (including automated checks of assets
-      against brand guidelines), transforms unstructured briefs into structured Planning records, and answers exploratory
-      natural-language questions across the work ecosystem.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/workflow_optimization_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Workflow Optimization Agent is an autonomous agent specialized and managed by Adobe Experience Platform
-        Agent Orchestrator.
-      statement_id: coe:edge/467e07f7a173325f7436f66d
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/product_advisor_agent
-    label: Product Advisor Agent
-    description: Product-recommendation agent available in Adobe Brand Concierge — it advises end customers in real time,
-      using unified profiles, behavioural data, and business rules to recommend the right products, plans, or offers,
-      typically within a conversational interface.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/product_advisor_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Product Advisor Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/48c54786c322462f23ff4a4f
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/site_optimization_agent
-    label: Site Optimization Agent
-    description: Website-optimisation agent available in Adobe Experience Manager Sites Optimizer — it analyses site
-      experiences across performance, accessibility, SEO, and engagement, surfaces problem pages, explains the defect
-      (such as poor Core Web Vitals or accessibility violations), and recommends concrete fixes.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/site_optimization_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Site Optimization Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/3bf6f05cc04dd28743ec51d6
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/brand_experience_agent
-    label: Brand Experience Agent
-    description: Experience-design agent available in Adobe Experience Manager — it helps teams design and orchestrate
-      brand-consistent customer experiences across channels, proposing campaign ideas and recommending content and journeys
-      that align with the brand's positioning end to end.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/brand_experience_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Brand Experience Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/4c56370b208d232b9183e902
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/content_advisor_agent
-    label: Content Advisor Agent
-    description: Content-recommendation agent available in Adobe Experience Manager Assets and Dynamic Media — it finds
-      and recommends existing content and assets that fit a brief, campaign, or audience, using metadata, tags, and
-      performance data to propose on-brand, high-performing candidates rather than generating new content.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/content_advisor_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Content Advisor Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/c7ea51c2ce5243cb91b7225e
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/brand_governance_agent
-    label: Brand Governance Agent
-    description: Governance agent available in Adobe Experience Manager Sites and Assets — it checks content, assets, and
-      pages against brand rules (tone, claims, logo use, typography, imagery) and governance policies such as usage rights
-      and expiry, flagging violations with remediation guidance.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/brand_governance_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Brand Governance Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/c3b11ea6308d3c169584092d
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/product_support_agent
-    label: Product Support Agent
-    description: Support agent surfaced in the AI Assistant panel across Adobe Experience Platform, Real-Time CDP, Adobe
-      Journey Optimizer, Customer Journey Analytics, and Adobe Experience Manager — it provides self-serve troubleshooting
-      grounded in product knowledge and the customer's environment context, and for support admins can create and track
-      support tickets directly.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/product_support_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: Product Support Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/3cbc8cbf6655359559cf8d1a
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
-  - id: coe:entity/adobe/llm_optimization_agent
-    label: LLM Optimization Agent
-    description: Generative-AI quality agent available in Adobe LLM Optimizer — it evaluates and improves generative AI
-      outputs and configurations, comparing model variants, detecting regressions, suggesting better prompts or guardrails,
-      and surfacing quality insights for AI-driven experiences.
-    home_domain: adobe
-    status: canonical
-    edges:
-    - subject_id: coe:entity/adobe/llm_optimization_agent
-      predicate: coe:specialises
-      object_id: coe:entity/adobe/agent_orchestrator
-      relationship_weight: required
-      description: LLM Optimization Agent is an autonomous agent specialized and managed by Adobe Experience Platform Agent
-        Orchestrator.
-      statement_id: coe:edge/5d47dfdbf851df257434fac0
-      home_domain: adobe
-      evidence_ids: *id002
-    evidence_ids: *id001
+agents:
+- id: coe:entity/adobe/account_qualification_agent
+  label: Account Qualification Agent
+  description: Adobe's sales-qualification agent in Journey Optimizer B2B Edition that reads account signals to judge
+    which accounts are ready for the next sales step and assists business-development representatives with account
+    research, outreach drafting and CRM updates.
   home_domain: adobe
   status: canonical
-  evidence_ids: *id001
+  families:
+  - coe:entity/adobe/customer_engagement
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/journey_optimizer_b2b_edition
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/audience_agent
+  label: Audience Agent
+  description: Adobe's audience-management agent in Real-Time CDP and Journey Optimizer that lets practitioners explore,
+    understand and manage audiences in natural language — surfacing inventory, detecting size changes and duplicates, and
+    retrieving audience sizes.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/customer_engagement
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/real_time_cdp
+  - coe:entity/adobe/real_time_cdp_b2b_edition
+  - coe:entity/adobe/journey_optimizer
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/content_production_agent
+  label: Content Production Agent
+  description: Adobe's on-brand content-generation agent in GenStudio for Performance Marketing that takes teams from brief
+    to content to activation — tactics ideation, ad and email generation, brand-object creation and brand validation.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/content_supply_chain_solution
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/genstudio_for_performance_marketing
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+  serves_stage:
+  - coe:entity/adobe/creation_production
+- id: coe:entity/adobe/data_insights_agent
+  label: Data Insights Agent
+  description: Adobe's analytics agent in Customer Journey Analytics that answers plain-language questions about the data
+    and builds the matching visualisations and tables, grounded in the organisation's configured data views.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/customer_engagement
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/customer_journey_analytics
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+  serves_stage:
+  - coe:entity/adobe/reporting_insights
+- id: coe:entity/adobe/data_engineering_agent
+  label: Data Engineering Agent
+  description: Adobe's data-management agent for Experience Platform that accelerates onboarding and ongoing management of
+    data — schemas, mappings and ingestion — without manual data-engineering effort.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_platform
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/experimentation_agent
+  label: Experimentation Agent
+  description: Adobe's experimentation agent in Journey Optimizer Experimentation Accelerator that summarises tests,
+    analyses results by audience, explains what worked and proposes the next test.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/customer_engagement
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/journey_optimizer_experimentation_accelerator
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+  serves_stage:
+  - coe:entity/adobe/delivery_activation
+- id: coe:entity/adobe/journey_agent
+  label: Journey Agent
+  description: Adobe's journey-orchestration agent in Journey Optimizer that builds journeys from natural-language prompts,
+    analyses fallout, detects scheduling and audience conflicts and proposes adjustments before publication.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/customer_engagement
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/journey_optimizer
+  - coe:entity/adobe/journey_optimizer_b2b_edition
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+  serves_stage:
+  - coe:entity/adobe/delivery_activation
+- id: coe:entity/adobe/workflow_optimization_agent
+  label: Workflow Optimization Agent
+  description: Adobe's marketing-operations agent in Workfront that generates Planning workspaces, manages multi-stage
+    content reviews, turns unstructured briefs into Planning records and answers questions across the work ecosystem.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/content_supply_chain_solution
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/workfront
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+  serves_stage:
+  - coe:entity/adobe/workflows_planning_metadata
+- id: coe:entity/adobe/product_advisor_agent
+  label: Product Advisor Agent
+  description: Adobe's product-recommendation agent in Brand Concierge that advises end customers in real time, using
+    unified profiles, behavioural data and business rules to recommend products, plans or offers.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/brand_visibility
+  available_in:
+  - coe:entity/adobe/brand_concierge
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/site_optimization_agent
+  label: Site Optimization Agent
+  description: Adobe's website-optimisation agent in Experience Manager Sites Optimizer that analyses site experiences for
+    performance, accessibility, SEO and engagement, explains each defect and recommends fixes.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/brand_visibility
+  available_in:
+  - coe:entity/adobe/experience_manager_sites_optimizer
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/brand_experience_agent
+  label: Brand Experience Agent
+  description: Adobe's domain agent in Experience Manager that keeps brand experiences current by delivering content
+    updates, site modernisation and technical troubleshooting through the Experience Production Agent, the Experience
+    Modernization Agent and the Development Agent.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_manager
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+  market_status: generally_available
+- id: coe:entity/adobe/content_advisor_agent
+  label: Content Advisor Agent
+  description: Adobe's content-recommendation agent in Experience Manager Assets that finds existing assets fitting a
+    brief, campaign or audience from metadata, tags and performance data rather than generating new content.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_manager_assets
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+  serves_stage:
+  - coe:entity/adobe/asset_management
+- id: coe:entity/adobe/brand_governance_agent
+  label: Brand Governance Agent
+  description: Adobe's governance agent in Experience Manager Sites and Assets that checks content, assets and pages
+    against brand rules and usage policies and flags violations with remediation guidance.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_manager_sites
+  - coe:entity/adobe/experience_manager_assets
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+  serves_stage:
+  - coe:entity/adobe/asset_management
+- id: coe:entity/adobe/product_support_agent
+  label: Product Support Agent
+  description: Adobe's support agent in the AI Assistant panel of the Experience Platform applications that provides
+    self-serve troubleshooting grounded in product knowledge and the customer's environment and can raise support tickets.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/customer_engagement
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_platform
+  - coe:entity/adobe/real_time_cdp
+  - coe:entity/adobe/journey_optimizer
+  - coe:entity/adobe/customer_journey_analytics
+  - coe:entity/adobe/experience_manager
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/llm_optimization_agent
+  label: LLM Optimization Agent
+  description: Adobe's generative-AI quality agent in Brand Visibility, formerly LLM Optimizer, that evaluates and improves
+    AI outputs and configurations, detecting regressions and suggesting better prompts or guardrails.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/brand_visibility
+  available_in:
+  - coe:entity/adobe/llm_optimizer
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/cx_enterprise_coworker
+  label: Adobe CX Enterprise Coworker
+  description: CX Enterprise's persistent, goal-oriented orchestrator agent that turns a business objective into a
+    multi-step plan across the Experience Platform applications, runs it with human approval gates, monitors the results and
+    learns from them.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise
+  - coe:entity/adobe/adobe_ai_platform
+  available_in:
+  - coe:entity/adobe/experience_platform
+  - coe:entity/adobe/real_time_cdp
+  - coe:entity/adobe/customer_journey_analytics
+  - coe:entity/adobe/journey_optimizer
+  market_status: generally_available
+  released_on: '2026-06-11'
+  terms:
+  - literal: CX Enterprise Coworker
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/experience_production_agent
+  label: Experience Production Agent
+  description: Adobe's content-production agent in Experience Manager that updates existing content fragments, pages, forms
+    and assets and creates new forms and communications, replacing manual high-volume content work.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_manager_sites
+  - coe:entity/adobe/experience_manager_assets
+  - coe:entity/adobe/experience_manager_forms
+  market_status: generally_available
+  released_on: '2025-11'
+- id: coe:entity/adobe/experience_modernization_agent
+  label: Experience Modernization Agent
+  description: Adobe's site-migration agent in Experience Manager Edge Delivery Services that analyses an existing website,
+    maps its pages to blocks, extracts the design system and generates the code that onboards the site, working in the
+    Experience Modernization Console.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_manager_edge_delivery_services
+  market_status: generally_available
+  released_on: '2026-01-30'
+- id: coe:entity/adobe/development_agent
+  label: Development Agent
+  description: Adobe's developer agent in Experience Manager that helps Java-stack developers and administrators write,
+    debug, deploy and optimise code, including finding the root cause of a Cloud Manager pipeline failure and suggesting the
+    fix.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_manager
+  market_status: generally_available
+  released_on: '2025-11'
+- id: coe:entity/adobe/firefly_ai_assistant
+  label: Firefly AI Assistant
+  description: Adobe's conversational creative agent that turns an outcome described in natural language into a multi-step
+    workflow run across Firefly, Creative Cloud applications and generative models, leaving the results editable.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/creative_cloud
+  available_in:
+  - coe:entity/adobe/firefly
+  - coe:entity/adobe/photoshop
+  - coe:entity/adobe/premiere_pro
+  - coe:entity/adobe/illustrator
+  - coe:entity/adobe/indesign
+  - coe:entity/adobe/lightroom
+  - coe:entity/adobe/express
+  - coe:entity/adobe/frame_io
+  market_status: preview
+- id: coe:entity/adobe/marketing_agent
+  label: Adobe Marketing Agent
+  description: Adobe's agent that brings the skills of the Experience Platform agents — operational insights, data
+    insights, audiences and journeys — plus Experience Manager asset discovery and Workfront workflows into the
+    conversational tools marketers already work in, such as Microsoft 365 Copilot, Gemini Enterprise, ChatGPT Enterprise
+    and Claude, through open agent protocols.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_platform
+  - coe:entity/adobe/real_time_cdp
+  - coe:entity/adobe/journey_optimizer
+  - coe:entity/adobe/customer_journey_analytics
+  - coe:entity/adobe/experience_manager_assets
+  - coe:entity/adobe/experience_manager_sites
+  - coe:entity/adobe/workfront
+  market_status: generally_available
+  released_on: '2026-03'
+  terms:
+  - literal: Adobe Marketing Agent for Microsoft 365 Copilot
+    term_type: full_form
+    term_status: admitted
+  - literal: AMA
+    term_type: initialism
+    term_status: admitted
+- id: coe:entity/adobe/merchant_productivity_agent
+  label: Merchant Productivity Agent
+  description: Adobe's conversational assistant embedded in the Adobe Commerce Admin through which a merchant carries out
+    merchandising tasks, looks up store data and gets in-context guidance in natural language.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/brand_visibility
+  available_in:
+  - coe:entity/adobe/commerce
+  market_status: preview
+  terms:
+  - literal: Merchant Productivity AI Assistant
+    term_type: full_form
+    term_status: admitted
+- id: coe:entity/adobe/productivity_agent
+  label: Adobe Productivity Agent
+  description: Adobe's purpose-built agent for business professionals and consumers that combines Acrobat and Express
+    capabilities through a planner, a router and specialised skills to answer questions about documents and carry out
+    multi-step document workflows.
+  home_domain: adobe
+  status: canonical
+  available_in:
+  - coe:entity/adobe/acrobat
+  - coe:entity/adobe/express
+  market_status: preview
+  terms:
+  - literal: APA
+    term_type: initialism
+    term_status: admitted
+- id: coe:entity/adobe/loyalty_agent
+  label: Loyalty Agent
+  description: Adobe's loyalty agent in Journey Optimizer Loyalty that gives challenge insights and recommendations,
+    monitors loyalty KPIs and detects anomalies through a conversational interface.
+  home_domain: adobe
+  status: canonical
+  available_in:
+  - coe:entity/adobe/journey_optimizer_loyalty
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/aem_onboarding_agent
+  label: AEM Onboarding Agent
+  description: Adobe's onboarding agent for Experience Manager Assets, exposed over A2A and integrated with Agent
+    Orchestrator, that proposes and creates folder hierarchies, tag taxonomies and metadata schemas and configures bulk
+    imports, through AI Assistant and CX Enterprise Coworker.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_manager_assets
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+  market_status: preview
+- id: coe:entity/adobe/content_discovery_agent
+  label: Content Discovery Agent
+  description: Adobe's discovery agent in the Content Advisor Agent that finds assets, content fragments and pages in
+    Experience Manager through conversation.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_manager
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/content_optimization_agent
+  label: Content Optimization Agent
+  description: Adobe's optimisation agent in the Content Advisor Agent that optimises images and renditions in Experience
+    Manager using Dynamic Media.
+  home_domain: adobe
+  status: canonical
+  families:
+  - coe:entity/adobe/cx_enterprise_agents
+  available_in:
+  - coe:entity/adobe/experience_manager
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/field_discovery_agent
+  label: Field Discovery Agent
+  description: Adobe's functional agent in Experience Platform, used by the Audience and Data Engineering agents, that
+    discovers the XDM fields needed to design audiences and schemas.
+  home_domain: adobe
+  status: canonical
+  available_in:
+  - coe:entity/adobe/experience_platform
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/operational_insights_agent
+  label: Operational Insights Agent
+  description: Adobe's functional agent, used by the Audience, Journey and Data Engineering agents, that surfaces anomalies
+    and usage across audiences, journeys and datasets.
+  home_domain: adobe
+  status: canonical
+  available_in:
+  - coe:entity/adobe/experience_platform
+  - coe:entity/adobe/real_time_cdp
+  - coe:entity/adobe/journey_optimizer
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/time_series_agent
+  label: Time Series Agent
+  description: Adobe's functional agent in the Audience Agent that detects significant changes in audience size over time.
+  home_domain: adobe
+  status: canonical
+  available_in:
+  - coe:entity/adobe/real_time_cdp
+  - coe:entity/adobe/journey_optimizer
+  orchestrated_by: coe:entity/adobe/agent_orchestrator
+- id: coe:entity/adobe/product_knowledge_agent
+  label: Product Knowledge Agent
+  description: Adobe's functional agent, used by the Product Support Agent and AI Assistant, that answers questions about
+    product documentation and explains product concepts.
+  home_domain: adobe
+  status: canonical
+  available_in:
+  - coe:entity/adobe/experience_platform
+  orchestrated_by: coe:entity/adobe/agent_orchestrator

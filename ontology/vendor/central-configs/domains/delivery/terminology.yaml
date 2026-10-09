@@ -15,31 +15,24 @@ entity_collections:
   last_updated: '2026-08-22'
   home_domain: delivery
   status: canonical
-  evidence_ids: &id001
-  - coe:source/central-configs-legacy-f6eb98ff
-  - coe:decision/v4-migration/delivery/terminology
   entities:
   - id: coe:entity/delivery/term/hook
     label: Hook
     description: An opening vocal, physical, or audience-interactive technique that captures attention in the moments before the audience has settled its judgement of the speaker.
     home_domain: delivery
     status: canonical
-    evidence_ids: *id001
   - id: coe:entity/delivery/term/pacing
     label: Pacing
     description: The temporal rhythm, speaking cadence (wpm), and strategic silence utilized by a live presenter.
     home_domain: delivery
     status: canonical
-    evidence_ids: *id001
   - id: coe:entity/delivery/term/tone
     label: Tone
     description: The acoustic timbre, pitch modulation, and vocal resonance produced by the human voice.
     home_domain: delivery
     status: canonical
-    evidence_ids: *id001
   - id: coe:entity/delivery/term/cadence
     label: Cadence
     description: The rhythmic inflection, melodic flow, and rhythmic repetition in spoken delivery.
     home_domain: delivery
     status: canonical
-    evidence_ids: *id001

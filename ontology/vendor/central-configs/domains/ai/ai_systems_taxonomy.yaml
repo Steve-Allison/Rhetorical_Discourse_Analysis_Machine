@@ -23,10 +23,6 @@ taxonomies:
     description: The fundamental approach to using AI for content generation
     home_domain: ai
     status: canonical
-    evidence_ids: &id001
-    - coe:source/central-configs-legacy-f6eb98ff
-    - coe:decision/v4-migration/ai/ai_systems_taxonomy
-    - coe:source/legacy-file/f891543a2bffa879
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/method_type
@@ -35,7 +31,6 @@ taxonomies:
     description: 'The AI method that guides model behaviour solely by crafting the input text, leaving model weights unmodified and drawing knowledge only from the prompt context rather than external retrieval or training data.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/method_type
@@ -44,7 +39,6 @@ taxonomies:
     description: 'The AI method that augments generation by retrieving relevant content from an external knowledge store at query time, distinguishing it from siblings that rely only on the prompt, pre-loaded context, or model weights.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/method_type
@@ -53,7 +47,6 @@ taxonomies:
     description: 'The AI method that adapts a model''s weights by training on domain-specific data for specialised behaviour — the only method type that modifies the model itself rather than its inputs or context.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/method_type
@@ -62,7 +55,6 @@ taxonomies:
     description: 'The AI method that pre-loads the full knowledge base into the model''s context window (cache/context-augmented generation), eliminating runtime retrieval — suited to small, stable corpora and low-latency or offline use where RAG''s retrieval step is unnecessary.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/method_type
@@ -71,7 +63,6 @@ taxonomies:
     description: 'The AI method in which the model plans multi-step work, invokes tools, and iterates toward a goal, rather than producing output in a single prompted pass.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/method_type
@@ -80,14 +71,12 @@ taxonomies:
     description: 'The AI method that expresses prompt programs in IBM''s Prompt Declaration Language, a declarative format that makes multi-step LLM pipelines structured and reproducible rather than hand-assembled per run.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     id: coe:concept/ai_systems_taxonomy/prompt_pattern
     label: Prompt Pattern
     description: The structural pattern used in prompt construction
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/prompt_pattern
@@ -96,7 +85,6 @@ taxonomies:
     description: 'The prompt pattern that issues a direct instruction with no worked examples, relying entirely on the model''s pretrained capability.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/prompt_pattern
@@ -105,7 +93,6 @@ taxonomies:
     description: 'The prompt pattern that includes a small set of input/output examples (typically 2-5) in the prompt to calibrate the model''s behaviour before the actual task.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/prompt_pattern
@@ -114,7 +101,6 @@ taxonomies:
     description: 'The prompt pattern that elicits explicit step-by-step reasoning before the final answer (chain-of-thought prompting, per Wei et al.), improving multi-step problem performance over direct answering.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/prompt_pattern
@@ -123,7 +109,6 @@ taxonomies:
     description: 'The prompt pattern that explores multiple reasoning branches and selects the most promising path — generalising chain-of-thought''s single linear trace into a search over a tree of intermediate thoughts (tree-of-thoughts, per Yao et al.).'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/prompt_pattern
@@ -132,7 +117,6 @@ taxonomies:
     description: 'The prompt pattern that interleaves reasoning traces with tool-using action steps (ReAct, per Yao et al.), letting each action''s observation inform the next thought instead of separating reasoning from acting.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/prompt_pattern
@@ -141,7 +125,6 @@ taxonomies:
     description: 'The prompt pattern that samples multiple independent reasoning paths and selects the most common answer (self-consistency, per Wang et al.), trading additional inference for reliability over a single reasoning chain.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/prompt_pattern
@@ -150,7 +133,6 @@ taxonomies:
     description: 'The prompt pattern that assigns the model a persona or expert identity to shape the style, depth, and framing of its response, rather than altering the task instruction itself.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/prompt_pattern
@@ -159,14 +141,12 @@ taxonomies:
     description: 'The prompt pattern that breaks a complex task into sequential sub-tasks with intermediate outputs, each feeding the next, instead of prompting for the end result in a single pass.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     id: coe:concept/ai_systems_taxonomy/retrieval_strategy
     label: Retrieval Strategy
     description: The approach used to find and surface relevant context
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/retrieval_strategy
@@ -175,7 +155,6 @@ taxonomies:
     description: 'The retrieval strategy that matches queries to passages by semantic similarity of embedding vectors, capturing paraphrase and meaning that keyword matching misses, at the cost of embedding-quality dependence and compute.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/retrieval_strategy
@@ -184,7 +163,6 @@ taxonomies:
     description: 'The retrieval strategy that matches on keyword statistics such as TF-IDF or BM25 — fast, interpretable, and faithful to exact terms, but blind to synonyms and vocabulary mismatch, in contrast to dense retrieval.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/retrieval_strategy
@@ -193,7 +171,6 @@ taxonomies:
     description: 'The retrieval strategy that combines dense and sparse retrieval and fuses their results, balancing semantic recall against exact-term precision at the cost of tuning complexity.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/retrieval_strategy
@@ -202,14 +179,12 @@ taxonomies:
     description: 'The retrieval strategy that retrieves iteratively, using each step''s results to inform the next query, so evidence spread across multiple linked documents can be assembled progressively.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     id: coe:concept/ai_systems_taxonomy/pipeline_stage
     label: Pipeline Stage
     description: The phase within an AI content generation pipeline
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/pipeline_stage
@@ -218,7 +193,6 @@ taxonomies:
     description: 'The pipeline stage that loads, parses, and preprocesses source documents, turning raw inputs into text and metadata the downstream stages can consume.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/pipeline_stage
@@ -227,7 +201,6 @@ taxonomies:
     description: 'The pipeline stage that splits ingested documents into retrieval-sized segments, choosing split strategy and overlap so each chunk stands alone as a unit of retrieval.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/pipeline_stage
@@ -236,7 +209,6 @@ taxonomies:
     description: 'The pipeline stage that converts text chunks into vector representations via an embedding model, producing the numeric form that indexing and dense retrieval operate on.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/pipeline_stage
@@ -245,7 +217,6 @@ taxonomies:
     description: 'The pipeline stage that stores embeddings and their metadata in a searchable vector store, making the processed corpus queryable by the retrieval stage.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/pipeline_stage
@@ -254,7 +225,6 @@ taxonomies:
     description: 'The pipeline stage that queries the index to find the chunks most relevant to a given input, supplying the context that generation will consume.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/pipeline_stage
@@ -265,7 +235,6 @@ taxonomies:
       or hybrid first-stage retrieval and composes with all of them.
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/pipeline_stage
@@ -274,7 +243,6 @@ taxonomies:
     description: 'The pipeline stage that produces the final output by applying the LLM to a prompt assembled from the task and any retrieved context.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/pipeline_stage
@@ -283,7 +251,6 @@ taxonomies:
     description: 'The pipeline stage that assesses generated output against quality criteria — via LLM judges, metric scorers, or human review — closing the loop on the pipeline.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     id: coe:concept/ai_systems_taxonomy/evaluation_dimension
     label: Evaluation Dimension
@@ -291,7 +258,6 @@ taxonomies:
       produces it
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/evaluation_dimension
@@ -300,7 +266,6 @@ taxonomies:
     description: 'The evaluation dimension measuring whether the claims in generated output are true and correctly grounded in the source or established knowledge, as distinct from how well-formed or on-topic the text is.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/evaluation_dimension
@@ -309,7 +274,6 @@ taxonomies:
     description: 'The evaluation dimension measuring whether generated output holds together logically and reads as a connected whole — internal consistency and flow, independent of whether its claims are true.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/evaluation_dimension
@@ -318,7 +282,6 @@ taxonomies:
     description: 'The evaluation dimension measuring how directly the generated output addresses the given query or task, regardless of its accuracy or fluency.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/evaluation_dimension
@@ -327,7 +290,6 @@ taxonomies:
     description: 'The evaluation dimension measuring whether generated output covers everything the task requires, leaving no required aspect of the query or source material unaddressed — the recall-side counterpart to relevance.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/evaluation_dimension
@@ -336,7 +298,6 @@ taxonomies:
     description: 'The evaluation dimension measuring how well generated output conforms to the intended voice, tone, and formatting conventions, as distinct from what it says.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/evaluation_dimension
@@ -345,7 +306,6 @@ taxonomies:
     description: 'The evaluation dimension measuring how often generated output contains fabricated content unsupported by the source or context — the unsupported-content counterpart of factual accuracy, scored as a rate rather than a correctness judgment.'
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/ai/ai_systems_taxonomy
     broader:
     - coe:concept/ai_systems_taxonomy/evaluation_dimension
@@ -355,15 +315,9 @@ taxonomies:
       not a property of the generated content
     home_domain: ai
     status: canonical
-    evidence_ids: *id001
   top_concepts:
   - coe:concept/ai_systems_taxonomy/method_type
   - coe:concept/ai_systems_taxonomy/prompt_pattern
   - coe:concept/ai_systems_taxonomy/retrieval_strategy
   - coe:concept/ai_systems_taxonomy/pipeline_stage
   - coe:concept/ai_systems_taxonomy/evaluation_dimension
-  evidence_ids:
-  - coe:source/central-configs-legacy-f6eb98ff
-  - coe:decision/v4-migration/ai/ai_systems_taxonomy
-  - coe:source/legacy-file/f891543a2bffa879
-  - coe:decision/curation/2026-09-01/taxonomy-broader-review

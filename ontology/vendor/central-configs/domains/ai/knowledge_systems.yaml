@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/ai/knowledge_systems
   title: AI — Knowledge Systems and Agentic Practices
-  last_updated: '2026-09-02'
+  last_updated: '2026-09-23'
   authority: Central_Configs
   scope: domain
   ontology_domain: ai
@@ -13,11 +13,9 @@ entity_collections:
   label: Knowledge Systems and Agentic Practices
   description: Knowledge-engineering pipelines, agentic architectures, AI-assessment instruments, and AI-capability
     frameworks recovered from the knowledge wiki.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: ai
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/agentic_instructional_pipeline
     label: Agentic Instructional Pipeline
@@ -33,10 +31,6 @@ entity_collections:
     - writer agent
     - validation swarm
     - human-in-the-loop gate
-    anti_examples:
-    - CI pipeline
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/ai_competency_framework
     label: UNESCO AI Competency Frameworks
     description: UNESCO's 2024 AI competency frameworks for teachers (five aspects by three levels) and students (four
@@ -48,8 +42,6 @@ entity_collections:
     - AI competency framework
     - UNESCO AI CFT
     - AI literacy levels
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/agent_skill
     label: Agent Skill
     description: A packaged folder of instructions — a skill manifest plus scripts, references and assets — teaching an
@@ -66,19 +58,12 @@ entity_collections:
         production stages.
       statement_id: coe:edge/agent-skill-enables-agentic-instructional-pipeline
       home_domain: ai
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - SKILL.md
     - agent skill
     - Claude skill
     - progressive disclosure levels
     - skill frontmatter
-    anti_examples:
-    - soft skill
-    - skill gap
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/tom_prompting_architecture
     label: Theory-of-Mind Prompting Architectures
     description: Prompting architectures for Theory-of-Mind perspective-taking in LLMs — SimToM, Decompose-ToM,
@@ -91,8 +76,6 @@ entity_collections:
     - perspective-taking prompt
     - Decompose-ToM
     - ToMAP
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/knowledge_graph_construction
     label: Knowledge Graph Construction
     description: The text-to-triples pipeline transforming unstructured text into typed entity-relation graphs via
@@ -106,10 +89,6 @@ entity_collections:
     - entity linking
     - relation extraction
     - GraphRAG communities
-    anti_examples:
-    - graph paper
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/human_ai_curation
     label: Human-AI Curation
     description: Hybrid knowledge-curation pattern combining high-recall AI proposal, human filtering, grounding to a
@@ -124,17 +103,11 @@ entity_collections:
       description: The propose-filter-ground-provenance curation workflow is the semantic wiki's content control plane.
       statement_id: coe:edge/human-ai-curation-supports-semantic-wiki-architecture
       home_domain: ai
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - human-in-the-loop curation
     - AI-proposed, human-approved
     - high-recall proposal
     - curation queue
-    anti_examples:
-    - museum curation
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/semantic_wiki_architecture
     label: Semantic Wiki Architecture
     description: System design of a local agent-readable Markdown wiki — separated raw, curated and system layers,
@@ -149,8 +122,6 @@ entity_collections:
     - wiki integrity gates
     anti_examples:
     - Wikipedia article
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/topic_modelling
     label: Topic Modelling
     description: Unsupervised discovery of latent themes in a text corpus by inferring topic mixtures from co-occurrence
@@ -164,10 +135,6 @@ entity_collections:
     - BERTopic
     - topic coherence
     - latent themes
-    anti_examples:
-    - topic sentence
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/llm_as_judge
     label: LLM as Judge
     description: Using large language models as automated graders of constructed responses, engineered as measurement
@@ -183,8 +150,6 @@ entity_collections:
         failure modes across different task scopes.
       statement_id: coe:edge/llm-as-judge-bridges-automated-essay-scoring
       home_domain: ai
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/llm_as_judge
       predicate: coe:limits
       object_id: coe:entity/inter_annotator_agreement
@@ -193,15 +158,9 @@ entity_collections:
         — panels of near-clone judges inflate apparent consensus.
       statement_id: coe:edge/llm-as-judge-limits-inter-annotator-agreement
       home_domain: ai
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - LLM-as-judge
     - model-graded evaluation
     - golden set
     - judge panel
     - grader drift
-    anti_examples:
-    - judge and jury
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery

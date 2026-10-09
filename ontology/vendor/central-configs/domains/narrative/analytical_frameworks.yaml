@@ -25,9 +25,6 @@ taxonomies:
       structural commitment — a single complete tree, local relation pairs only, or a directed acyclic graph
     home_domain: narrative
     status: canonical
-    evidence_ids: &id001
-    - coe:source/nine-frameworks-research-45b6a77f
-    - coe:decision/rdam-006/narrative/analytical_frameworks
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework
@@ -38,7 +35,6 @@ taxonomies:
       1988)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework
@@ -48,7 +44,6 @@ taxonomies:
       tree (Zeldes et al. 2025)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework
@@ -58,7 +53,6 @@ taxonomies:
       with no commitment to global text structure (Prasad et al. 2008; Webber et al. 2019)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework
@@ -68,7 +62,6 @@ taxonomies:
       multiple parents and crossing edges, built for non-linear conversation (Asher & Lascarides 2003)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     id: coe:concept/analytical_frameworks_taxonomy/argumentation_framework
     label: Argumentation Framework
@@ -76,7 +69,6 @@ taxonomies:
       of arguments rather than general text coherence
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/argumentation_framework
@@ -86,7 +78,6 @@ taxonomies:
       rebuttal — with field-invariant structure and field-dependent standards (Toulmin 1958)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/argumentation_framework
@@ -96,7 +87,6 @@ taxonomies:
       defeat the presumption the scheme licenses (Walton, Reed & Macagno 2008)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/argumentation_framework
@@ -106,7 +96,6 @@ taxonomies:
       a deliberately constrained link grammar; records what was said, not what is valid (Kunz & Rittel 1970)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/argumentation_framework
@@ -117,7 +106,6 @@ taxonomies:
       (Dung 1995)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/argumentation_framework
@@ -127,7 +115,6 @@ taxonomies:
       operationalising claim-premise, Toulmin, and scheme-based models (Stab & Gurevych 2017; Lawrence & Reed 2019)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     id: coe:concept/analytical_frameworks_taxonomy/communication_framework
     label: Communication Framework
@@ -135,7 +122,6 @@ taxonomies:
       that represent what an existing text or argument is
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - in_scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
     broader:
     - coe:concept/analytical_frameworks_taxonomy/communication_framework
@@ -145,9 +131,7 @@ taxonomies:
       SCQA introductions (Minto 1985)
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   top_concepts:
   - coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework
   - coe:concept/analytical_frameworks_taxonomy/argumentation_framework
   - coe:concept/analytical_frameworks_taxonomy/communication_framework
-  evidence_ids: *id001

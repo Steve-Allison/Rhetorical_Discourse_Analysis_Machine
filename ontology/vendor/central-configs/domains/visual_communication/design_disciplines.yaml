@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/visual_communication/design_disciplines
   title: Visual Communication — Design and Media Disciplines
-  last_updated: '2026-09-02'
+  last_updated: '2026-09-23'
   authority: Central_Configs
   scope: domain
   ontology_domain: visual_communication
@@ -12,11 +12,9 @@ entity_collections:
 - id: coe:artifact/visual_communication/visual_design_disciplines
   label: Visual Design Disciplines
   description: Visual design theory, frameworks, and visualisation disciplines recovered from the knowledge wiki.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: visual_communication
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/accessible_data_visualisation
     label: Accessible Data Visualisation
@@ -33,16 +31,12 @@ entity_collections:
         visualisation supplies for non-visual access.
       statement_id: coe:edge/accessible-data-visualisation-enables-multivariate-data-visualisation
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - accessible chart
     - sonification
     - audio description of data
     - ARIA live region
     - screen-reader-accessible visualisation
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/art_direction
     label: Art Direction
     description: The craft and direction of non-data visual assets — iconography systems, illustration parameter
@@ -55,10 +49,6 @@ entity_collections:
     - iconography system
     - illustration style guide
     - photo art direction
-    anti_examples:
-    - stage direction
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/crap_design_principles
     label: CRAP Design Principles
     description: Robin Williams's four foundational layout principles — Contrast, Repetition, Alignment, Proximity — a
@@ -74,13 +64,9 @@ entity_collections:
         design and learning-science traditions.
       statement_id: coe:edge/crap-design-principles-bridges-mayers-multimedia-principles
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - contrast, repetition, alignment, proximity
     - CRAP principles
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/graphic_encoding_theory
     label: Graphic Encoding Theory
     description: The formal theory of choosing which visual variable encodes which information and designing cognitively
@@ -96,18 +82,11 @@ entity_collections:
         ranking — that graphic encoding theory owns.
       statement_id: coe:edge/graphic-encoding-theory-supports-infographic-design
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - visual variable
     - Bertin's variables
     - encoding accuracy ranking
     - position beats angle
-    anti_examples:
-    - character encoding
-    - video encoding
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/honeycomb_model_ux
     label: UX Honeycomb Model
     description: Morville's seven-factor user-experience framework — Useful, Usable, Desirable, Findable, Accessible,
@@ -119,10 +98,6 @@ entity_collections:
     - UX honeycomb
     - Morville's honeycomb
     - useful, usable, desirable
-    anti_examples:
-    - honeycomb structure material
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/image_production
     label: Image Production
     description: The production and delivery pipeline for visual assets — raster and vector models, file formats, ICC
@@ -138,18 +113,12 @@ entity_collections:
         works within.
       statement_id: coe:edge/image-production-enables-lottie-authoring
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - image pipeline
     - ICC profile
     - export optimisation
     - raster versus vector
     - colour management
-    anti_examples:
-    - brand image
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/infographic_design
     label: Infographic Design
     description: Evidence-based design of learning infographics — perceptual encoding, a structural typology of
@@ -162,8 +131,6 @@ entity_collections:
     - data-driven graphic
     - infographic layout
     - visual explainer
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/knowledge_visualisation
     label: Knowledge Visualisation
     description: The discipline of using visual representations — concept maps, mind maps, conceptual diagrams, visual
@@ -177,8 +144,6 @@ entity_collections:
     - knowledge map
     - rich picture
     - visual metaphor diagram
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/lottie_authoring
     label: Lottie Authoring
     description: The Lottie JSON vector-animation schema as a programmatic authoring target — composition, layer and
@@ -191,8 +156,6 @@ entity_collections:
     - Lottie JSON
     - bodymovin
     - vector animation file
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/multivariate_data_visualisation
     label: Multivariate Data Visualisation
     description: The discipline of visualising four or more dimensions — parallel coordinate plots, scatterplot matrices
@@ -206,8 +169,6 @@ entity_collections:
     - SPLOM
     - t-SNE plot
     - UMAP projection
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/system_dynamics_visualisation
     label: System Dynamics Visualisation
     description: Narrating dynamic systems through causal loop and stock-and-flow diagrams — loop polarity notation,
@@ -223,8 +184,6 @@ entity_collections:
     - system archetype
     anti_examples:
     - system architecture diagram
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/visual_modality_decision
     label: Visual Modality Decision
     description: The first-order choice of which visual modality a message needs — a seven-category taxonomy of photo,
@@ -241,17 +200,11 @@ entity_collections:
         begins.
       statement_id: coe:edge/visual-modality-decision-precedes-infographic-design
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - photo or illustration
     - chart versus table
     - which visual format
     - modality decision tree
-    anti_examples:
-    - sensory modality
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/whiteboarding
     label: Whiteboarding
     description: Visual facilitation as cognitive practice — shared boards as working-memory offload, session
@@ -267,27 +220,19 @@ entity_collections:
         grammar of the formats drawn.
       statement_id: coe:edge/whiteboarding-bridges-knowledge-visualisation
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - whiteboarding
     - whiteboard session
     - sketchnoting
     - graphic recording
     - live scribing
-    anti_examples:
-    - whiteboard marker
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
 - id: coe:artifact/visual_communication/media_preproduction
   label: Media Pre-Production Artefacts and Constraints
   description: Video and motion pre-production artefact types and motion-safety constraints recovered from the knowledge
     wiki.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: visual_communication
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/synthetic_presenter
     label: Synthetic Presenter
@@ -301,10 +246,6 @@ entity_collections:
     - synthetic presenter
     - AI-generated instructor
     - digital human presenter
-    anti_examples:
-    - synthetic data
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/directors_treatment
     label: Director's Treatment
     description: A multi-page prose-plus-image pitch-and-planning document in which a director sets out the intended
@@ -319,17 +260,11 @@ entity_collections:
       description: A treatment's visual sections absorb the moodboard's role for live-action commissions.
       statement_id: coe:edge/directors-treatment-contains-moodboard
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - director's treatment
     - lookbook
     - treatment deck
     - pitch treatment
-    anti_examples:
-    - medical treatment
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/moodboard
     label: Moodboard
     description: A curated pre-production collection of images, colour, type, texture and clips that defines a video
@@ -345,17 +280,11 @@ entity_collections:
         pre-production pipeline.
       statement_id: coe:edge/moodboard-precedes-style-frame
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - moodboard
     - mood board
     - reference board
     - look and feel board
-    anti_examples:
-    - mood tracking
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/style_frame
     label: Style Frame
     description: An original full-fidelity still rendered in a project's own visual language that proves a motion
@@ -367,10 +296,6 @@ entity_collections:
     - style frame
     - styleframe
     - proof-of-look still
-    anti_examples:
-    - picture frame style
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/motion_flash_accessibility
     label: Motion and Flash Accessibility
     description: The safety constraints on on-screen movement — photosensitive flash thresholds, vestibular risk, and
@@ -386,8 +311,6 @@ entity_collections:
         reduced-motion honouring bound what motion is permissible.
       statement_id: coe:edge/motion-flash-accessibility-limits-slide-transition
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     - subject_id: coe:entity/motion_flash_accessibility
       predicate: coe:limits
       object_id: coe:entity/animation_type
@@ -396,16 +319,9 @@ entity_collections:
         constraints and be defeatable.
       statement_id: coe:edge/motion-flash-accessibility-limits-animation-type
       home_domain: visual_communication
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - flash threshold
     - three flashes per second
     - prefers-reduced-motion
     - vestibular trigger
     - photosensitive seizure risk
-    anti_examples:
-    - Adobe Flash
-    - camera flash
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery

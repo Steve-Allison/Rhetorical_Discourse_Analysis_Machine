@@ -1,8 +1,8 @@
 """Canonical framework identities, referenced from Central_Configs and never redefined.
 
 The eight identities live in Central's ``coe:artifact/narrative/analytical_frameworks_taxonomy``.
-Verified 2026-09-02 at Central_Configs ``ontology/data/domains/narrative/analytical_frameworks.yaml``
-lines 34-113 (commit ``46056cd``): concept ids are
+Verified 2026-10-09 at Central_Configs ``ontology/data/domains/narrative/analytical_frameworks.yaml``
+lines 31-102 (commit ``9971b77``): concept ids are
 ``coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/{rst,erst,pdtb,sdrt}``
 and ``coe:concept/analytical_frameworks_taxonomy/argumentation_framework/{toulmin,walton,dung,ibis}``,
 each with ``in_scheme`` naming the taxonomy and one ``broader`` parent concept.

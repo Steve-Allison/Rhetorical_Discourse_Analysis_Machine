@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/language_editorial/style_rules
   title: Language Editorial — Style Rules
-  last_updated: '2026-09-02'
+  last_updated: '2026-09-23'
   authority: Central_Configs
   scope: domain
   ontology_domain: language_editorial
@@ -20,11 +20,6 @@ entity_collections:
     - Using 'guys' to address mixed groups
     - Using 'blind spot' as a metaphor
     - Using 'master/slave' in technical docs
-    evidence_ids: &id001
-    - coe:source/central-configs-legacy-f6eb98ff
-    - coe:decision/v4-migration/language_editorial/style_rules
-    - coe:source/legacy-file/60f3d82274294110
-    - coe:source/legacy-file/b49e31dbd93e9ea8
   - id: coe:entity/cultural_sensitivity_issue
     label: Cultural Sensitivity Issue
     description: Cultural appropriation insensitivity stereotype regional assumption localisation problem global audience
@@ -35,7 +30,6 @@ entity_collections:
     - USA-centric pop culture references
     - Assuming Western calendar/holidays
     - Sports metaphors (baseball, cricket)
-    evidence_ids: *id001
   - id: coe:entity/accessibility_violation
     label: Accessibility Violation
     description: WCAG violation accessibility barrier screen reader keyboard caption alt text contrast colour blindness
@@ -46,7 +40,6 @@ entity_collections:
     - Image without alt text
     - Colour-only information
     - Insufficient contrast
-    evidence_ids: *id001
   last_updated: '2026-08-12'
   id: coe:artifact/language_editorial/inclusion_standards_entities
   label: Inclusion Standards
@@ -54,7 +47,6 @@ entity_collections:
     in content.
   home_domain: language_editorial
   status: canonical
-  evidence_ids: *id001
 - entities:
   - edges:
     - subject_id: coe:entity/formal_register
@@ -65,9 +57,6 @@ entity_collections:
         ISO 24495-1
       statement_id: coe:edge/cf3115b30b88c26268807ec2
       home_domain: language_editorial
-      evidence_ids: &id002
-      - coe:source/central-configs-legacy-f6eb98ff
-      - coe:decision/v4-migration/language_editorial/style_rules
     - subject_id: coe:entity/formal_register
       predicate: coe:limits
       object_id: coe:entity/mayer_generative_principle
@@ -76,7 +65,6 @@ entity_collections:
         Applying Mayer's Principles Practical Checklist
       statement_id: coe:edge/bd2e7a8180de3478cf0106d1
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/formal_register
       predicate: coe:supports
       object_id: coe:entity/academic_bundle
@@ -85,7 +73,6 @@ entity_collections:
         hedging that characterize academic/Technocrat speech (elite_speaker_taxonomy)
       statement_id: coe:edge/bdc8a51be81c90d4cfff44fa
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/formal_register
     label: Formal Register
     description: Language markers indicating formal or academic tone in corporate writing
@@ -97,10 +84,6 @@ entity_collections:
     - notwithstanding the challenges
     - it is incumbent upon
     - henceforth all submissions
-    anti_examples:
-    - furthermore is a long word
-    - moreover brand name
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/conversational_register
       predicate: coe:contains
@@ -110,7 +93,6 @@ entity_collections:
         informal, audience-bridging style per Ethos and Physicality research
       statement_id: coe:edge/d7b6a4bb46c48bddede28f2d
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/conversational_register
       predicate: coe:enables
       object_id: coe:entity/engagement_cue
@@ -119,7 +101,6 @@ entity_collections:
         rhetorical questions, direct address) create participatory tone per Best Practices for Writing
       statement_id: coe:edge/69592c5a2c442ed854577e6f
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/conversational_register
       predicate: coe:enables
       object_id: coe:entity/mayer_generative_principle
@@ -128,7 +109,6 @@ entity_collections:
         Applying Mayer's Principles Practical Checklist
       statement_id: coe:edge/e4165f6387e98fcd967d1ae7
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/conversational_register
       predicate: coe:enables
       object_id: coe:entity/narrative_hook
@@ -137,7 +117,6 @@ entity_collections:
         Script Prompts)
       statement_id: coe:edge/7473ae4850dd6449cf3efa31
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/conversational_register
       predicate: coe:bridges
       object_id: coe:entity/formal_register
@@ -146,7 +125,6 @@ entity_collections:
         an expert' — directly bridging formal and conversational registers per tone_of_voice_guide
       statement_id: coe:edge/b4a9d2a8df8db813a3d68071
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/conversational_register
       predicate: coe:supports
       object_id: coe:entity/motivation_element
@@ -155,7 +133,6 @@ entity_collections:
         Principles Practical Checklist
       statement_id: coe:edge/af73a0226150857cb13664ec
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/conversational_register
       predicate: coe:supports
       object_id: coe:entity/readability_flag
@@ -164,7 +141,6 @@ entity_collections:
         Video Script Prompts)
       statement_id: coe:edge/55e169b5d058e7dd7f6351d4
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/conversational_register
       predicate: coe:supports
       object_id: coe:entity/visionary_bundle
@@ -173,7 +149,6 @@ entity_collections:
         me tell you') that simulate casual dialogue (elite_speaker_taxonomy)
       statement_id: coe:edge/625a9ab73d1bf8fc10365683
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/conversational_register
       predicate: coe:contrasts_with
       object_id: coe:entity/passive_voice_marker
@@ -182,7 +157,6 @@ entity_collections:
         learning designers should default to active per Clark LxD
       statement_id: coe:edge/51533cb7e312faf39e350531
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/conversational_register
     label: Conversational Register
     description: Informal or conversational language patterns in corporate content
@@ -195,10 +169,6 @@ entity_collections:
     - you know what works?
     - let's be real
     - the thing is
-    anti_examples:
-    - deal closed
-    - check the box
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/passive_voice_marker
       predicate: coe:limits
@@ -208,7 +178,6 @@ entity_collections:
         weakening the declarative force of the insight statement (Canonical Presentation Methodology)
       statement_id: coe:edge/de7c89bb3775fe6c19dd3022
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/passive_voice_marker
       predicate: coe:limits
       object_id: coe:entity/ethos_appeal
@@ -217,7 +186,6 @@ entity_collections:
         and can signal passivity (elite_speaker_taxonomy)
       statement_id: coe:edge/7cc365b3688f9e5280e627ae
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/passive_voice_marker
       predicate: coe:limits
       object_id: coe:entity/performance_tier
@@ -226,7 +194,6 @@ entity_collections:
         verb dynamism through passive voice per Elite Speaker Linguistic Analysis
       statement_id: coe:edge/19b5ccf9b3aac6ba0629fddb
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/passive_voice_marker
       predicate: coe:triggers
       object_id: coe:entity/extraneous_load_marker
@@ -235,7 +202,6 @@ entity_collections:
         active declarative titles per Slide Deck Design Playbook
       statement_id: coe:edge/1a1ac6d75f765394c3eae4bd
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/passive_voice_marker
       predicate: coe:triggers
       object_id: coe:entity/readability_flag
@@ -244,7 +210,6 @@ entity_collections:
         and reduces directness per Best Practices for Writing
       statement_id: coe:edge/7738decd594335208b642bec
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/passive_voice_marker
       predicate: coe:contrasts_with
       object_id: coe:entity/power_verb
@@ -255,7 +220,6 @@ entity_collections:
         verbs signal agency (elite_speaker_taxonomy)
       statement_id: coe:edge/a48b170784aa53e026d9ddd7
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/passive_voice_marker
     label: Passive Voice Marker
     description: Passive voice constructions that may reduce clarity and directness
@@ -270,7 +234,6 @@ entity_collections:
     anti_examples:
     - the team was large
     - she was happy
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/nominalisation_marker
       predicate: coe:specialises
@@ -279,7 +242,6 @@ entity_collections:
       description: Writing-level nominalisation marker specialises discourse-level nominalisation
       statement_id: coe:edge/e4a7874a3a7a4fcf9c25f1e6
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/nominalisation_marker
       predicate: coe:triggers
       object_id: coe:entity/extraneous_load_marker
@@ -288,7 +250,6 @@ entity_collections:
         principle requires plain language that nominalisations violate (Cognitive Interface, §5.1)
       statement_id: coe:edge/d750df0b22a9c161cbe427f5
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/nominalisation_marker
     label: Nominalisation Marker
     description: Verbs converted to nouns that add unnecessary abstraction and reduce readability
@@ -303,7 +264,6 @@ entity_collections:
     anti_examples:
     - implementation details
     - API utilisation metrics
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/jargon_marker
       predicate: coe:enables
@@ -313,7 +273,6 @@ entity_collections:
         Speaker Linguistic Analysis
       statement_id: coe:edge/2e40e5cfd6812554dd725dab
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/jargon_marker
       predicate: coe:limits
       object_id: coe:entity/claim
@@ -322,7 +281,6 @@ entity_collections:
         premises undermine argument clarity per a-guide-to-good-reasoning
       statement_id: coe:edge/324f364e29badaebb4fabb65
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/jargon_marker
       predicate: coe:limits
       object_id: coe:entity/ethos_appeal
@@ -331,7 +289,6 @@ entity_collections:
         barriers that erode perceived trustworthiness per Ethos and Physicality research
       statement_id: coe:edge/670c4dd23415e52841ed085d
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/jargon_marker
       predicate: coe:limits
       object_id: coe:entity/performance_tier
@@ -340,7 +297,6 @@ entity_collections:
         high cognitive load for the audience (elite_speaker_taxonomy)
       statement_id: coe:edge/2a5ca21ebf9c0bec139b9211
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/jargon_marker
       predicate: coe:limits
       object_id: coe:entity/readability_flag
@@ -349,7 +305,6 @@ entity_collections:
         accessible terms with specialised ones per tone_of_voice_guide
       statement_id: coe:edge/5d68ce6d7a80d1bbded6113d
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/jargon_marker
     label: Jargon Marker
     description: Industry jargon, buzzwords, or unnecessarily complex terminology
@@ -363,10 +318,6 @@ entity_collections:
     - boil the ocean
     - circle back on this
     - take this offline
-    anti_examples:
-    - leverage the crane
-    - ocean temperature
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/cliche_marker
       predicate: coe:limits
@@ -376,7 +327,6 @@ entity_collections:
         per tone_of_voice_guide
       statement_id: coe:edge/ea513fb29edd562d856a627f
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/cliche_marker
     label: Cliche Marker
     description: Overused phrases and clichés that weaken impact in professional writing
@@ -390,10 +340,6 @@ entity_collections:
     - best in class
     - cutting edge
     - it goes without saying
-    anti_examples:
-    - end of the day shift
-    - outside the box dimensions
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/script_direction
       predicate: coe:contains
@@ -403,7 +349,6 @@ entity_collections:
         research
       statement_id: coe:edge/eb98ccdb8c61b1e87400aec1
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/script_direction
       predicate: coe:contains
       object_id: coe:entity/vocal_emphasis_marker
@@ -412,7 +357,6 @@ entity_collections:
         enhancements research
       statement_id: coe:edge/4ab67413f5e1fdf73d7b1959
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/script_direction
       predicate: coe:bridges
       object_id: coe:entity/storyboard_element
@@ -421,7 +365,6 @@ entity_collections:
         content (Best Video Script Prompts)
       statement_id: coe:edge/8d49408d1177f67c4824e47d
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/script_direction
       predicate: coe:triggers
       object_id: coe:entity/video_shot_type
@@ -430,7 +373,6 @@ entity_collections:
         Prompts)
       statement_id: coe:edge/6e6c80f334a931ad290ea860
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/script_direction
       predicate: coe:supports
       object_id: coe:entity/delivery_modality
@@ -439,7 +381,6 @@ entity_collections:
         support delivery execution across modalities per tone_of_voice_guide
       statement_id: coe:edge/25c9e1fd3af5093a7a10dccd
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/script_direction
       predicate: coe:supports
       object_id: coe:entity/facilitation_technique
@@ -448,7 +389,6 @@ entity_collections:
         guiding delivery nuance per tone_of_voice_guide
       statement_id: coe:edge/1bf2301d1555028b8c002db0
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/script_direction
     label: Script Direction
     description: Stage directions, speaker notes, or production cues embedded in script content
@@ -461,10 +401,6 @@ entity_collections:
     - '[B-ROLL: office footage]'
     - '[LOWER THIRD: Speaker Name]'
     - '[MUSIC: upbeat transition]'
-    anti_examples:
-    - cut the budget
-    - show me the data
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/readability_flag
       predicate: coe:enables
@@ -474,7 +410,6 @@ entity_collections:
         language that anyone outside the field could understand per Personal Branding Framework
       statement_id: coe:edge/a874b8f99d8970275045a150
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/readability_flag
       predicate: coe:limits
       object_id: coe:entity/claim
@@ -483,7 +418,6 @@ entity_collections:
         and must be eliminated before assessing soundness per a-guide-to-good-reasoning
       statement_id: coe:edge/b8fc4203bad9d73441223f76
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/readability_flag
       predicate: coe:limits
       object_id: coe:entity/extraneous_load_marker
@@ -492,7 +426,6 @@ entity_collections:
         cognitive load by reducing processing demands per Best Practices for Writing
       statement_id: coe:edge/23412575cde1b2fc79caaa71
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/readability_flag
       predicate: coe:triggers
       object_id: coe:entity/working_memory_marker
@@ -500,7 +433,6 @@ entity_collections:
       description: Poor readability can overload working memory
       statement_id: coe:edge/25e7a4cf629f03453d15ebe7
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/readability_flag
       predicate: coe:supports
       object_id: coe:entity/accessibility_dimension
@@ -509,7 +441,6 @@ entity_collections:
         Usable)
       statement_id: coe:edge/d36c9f21151e0a51d0ee1a69
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/readability_flag
       predicate: coe:supports
       object_id: coe:entity/clarity_dimension
@@ -519,7 +450,6 @@ entity_collections:
         Script Prompts)
       statement_id: coe:edge/486fcd96f6d8011ea074c38d
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/readability_flag
     label: Readability Flag
     description: Indicators of readability issues including long sentences, complex words, and dense paragraphs
@@ -529,10 +459,6 @@ entity_collections:
     - sentence exceeding 30 words with multiple subordinate clauses
     - polysyllabic terminology without definition
     - paragraph exceeding 150 words without visual break
-    anti_examples:
-    - readable font size
-    - flag the issue
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/transition_phrase
       predicate: coe:specialises
@@ -541,7 +467,6 @@ entity_collections:
       description: Writing transition phrases specialise narrative transition markers
       statement_id: coe:edge/2a28de222242898f3c7dd070
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/transition_phrase
       predicate: coe:supports
       object_id: coe:entity/cause_marker
@@ -550,7 +475,6 @@ entity_collections:
         relationships in written arguments per a-guide-to-good-reasoning
       statement_id: coe:edge/9680c49852917f6ef28725b3
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/transition_phrase
       predicate: coe:supports
       object_id: coe:entity/content_structure_marker
@@ -559,7 +483,6 @@ entity_collections:
         flow markers (in summary, moving on, building on this) reinforce structural coherence per Best Practices for Writing
       statement_id: coe:edge/e3109016ca8ad546ec93e193
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/transition_phrase
       predicate: coe:supports
       object_id: coe:entity/readability_flag
@@ -568,7 +491,6 @@ entity_collections:
         sentences for rhythm — transitions support readability flow per tone_of_voice_guide
       statement_id: coe:edge/ed251f967a6c7ee29e0cbbda
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/transition_phrase
     label: Transition Phrase
     description: Phrases that signal structural transitions between content sections
@@ -582,10 +504,6 @@ entity_collections:
     - moving on to
     - building on this
     - to wrap up
-    anti_examples:
-    - summary report
-    - moving furniture
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/marketing_superlative
       predicate: coe:specialises
@@ -594,7 +512,6 @@ entity_collections:
       description: Marketing superlatives are a commercial form of hyperbole
       statement_id: coe:edge/cb60780496fcb8bbb649128d
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/marketing_superlative
       predicate: coe:limits
       object_id: coe:entity/readability_flag
@@ -603,7 +520,6 @@ entity_collections:
         readability (Best-Practice Product Descriptions)
       statement_id: coe:edge/e9cc755e48df687a3255ad43
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/marketing_superlative
     label: Marketing Superlative
     description: Evaluative claims or superlative adjectives used to imply exceptional quality without factual substantiation
@@ -621,7 +537,6 @@ entity_collections:
     - supports a wide range of formats
     - allows users to retouch digital images
     - rated highest by G2 users in 2024
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/presentation_headline_writing
       predicate: coe:supports
@@ -631,7 +546,6 @@ entity_collections:
         insight per Slide Deck Design Playbook
       statement_id: coe:edge/38dcca4704c153854845d102
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/presentation_headline_writing
       predicate: coe:supports
       object_id: coe:entity/readability_flag
@@ -640,7 +554,6 @@ entity_collections:
         readers to search for the insight per Slide Deck Design Playbook
       statement_id: coe:edge/ce955efbe1eca6f26fec9c8b
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/presentation_headline_writing
     label: Presentation Headline Writing
     description: Headline/title writing for presentations — conclusion-led titles
@@ -652,26 +565,23 @@ entity_collections:
     anti_examples:
     - Marketing Results
     - Architecture Overview
-    evidence_ids: *id001
   - id: coe:entity/linguistic_style_metrics
     label: Linguistic Style Metrics
     description: Quantitative linguistic style metrics for writing/speech craft derived from elite speaker corpus analysis
     home_domain: language_editorial
     status: canonical
     edges: []
-    evidence_ids: *id001
-  last_updated: '2026-08-12'
+  last_updated: '2026-09-23'
   id: coe:artifact/language_editorial/writing_entities
   label: Writing Entities
   description: NER entity definitions for content writing analysis including tone registers, editorial markers, script format
     cues, readability indicators, and style pattern detection.
   home_domain: language_editorial
   status: canonical
-  evidence_ids: *id001
 - id: coe:artifact/language_editorial/reallocated_delivery_concepts
   label: Reallocated Language Editorial Concepts
   description: Concepts moved from Delivery because their semantic meaning is owned by this domain.
-  last_updated: '2026-08-22'
+  last_updated: '2026-09-23'
   home_domain: language_editorial
   status: canonical
   entities:
@@ -683,7 +593,6 @@ entity_collections:
       description: Speaker notes contain pause markers for timing cues per Slide Deck Design Playbook
       statement_id: coe:edge/a9a1710c92031a2212050133
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/presentation_speaker_notes
       predicate: coe:contains
       object_id: coe:entity/vocal_emphasis_marker
@@ -691,7 +600,6 @@ entity_collections:
       description: Speaker notes contain emphasis markers for vocal stress placement per Slide Deck Design Playbook
       statement_id: coe:edge/8f4a42f5019d61878cb7a60a
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/presentation_speaker_notes
     label: Presentation Speaker Notes
     description: The other half of the Minimalist presentation — text removed from slides (to obey Redundancy Principle) moves
@@ -703,7 +611,6 @@ entity_collections:
     - keyword-based notes with pause markers
     anti_examples:
     - verbatim script read aloud from notes
-    evidence_ids: *id001
   - edges:
     - subject_id: coe:entity/power_verb
       predicate: coe:enables
@@ -713,7 +620,6 @@ entity_collections:
         enabling pathos appeal per Ethos and Physicality research
       statement_id: coe:edge/ced3f4fce086c8a75861580d
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/power_verb
       predicate: coe:enables
       object_id: coe:entity/performance_tier
@@ -722,7 +628,6 @@ entity_collections:
         speakers show low passive verb dynamism per Elite Speaker Linguistic Analysis
       statement_id: coe:edge/c60be4cb3d5ac7e31ddaaac3
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/power_verb
       predicate: coe:limits
       object_id: coe:entity/delivery_rate_issue
@@ -731,7 +636,6 @@ entity_collections:
         land with emphasis (Architecture of Influence, Sections 1.2, 1.4)
       statement_id: coe:edge/2882c345b95300711ffadb53
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/power_verb
       predicate: coe:supports
       object_id: coe:entity/authority_opener
@@ -740,7 +644,6 @@ entity_collections:
         certainty and authority in initial interactions per Anatomy of Presence research
       statement_id: coe:edge/d2666b491b0ad7e5aa5488eb
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/power_verb
       predicate: coe:supports
       object_id: coe:entity/bluf_hook
@@ -749,7 +652,6 @@ entity_collections:
         opening statements authoritative and impactful per Crafting Powerful Opening Plays
       statement_id: coe:edge/4c8dd48eac17d6c1eebdea61
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/power_verb
       predicate: coe:supports
       object_id: coe:entity/boost_marker
@@ -760,7 +662,6 @@ entity_collections:
         Framework
       statement_id: coe:edge/acb83f829e53c0294d6d70a3
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/power_verb
       predicate: coe:supports
       object_id: coe:entity/call_to_action
@@ -769,7 +670,6 @@ entity_collections:
         competence, directly strengthening calls to action (Architecture of Influence, Section 1.2)
       statement_id: coe:edge/959155f04f19e7c3141b4008
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/power_verb
       predicate: coe:supports
       object_id: coe:entity/ethos_appeal
@@ -780,7 +680,6 @@ entity_collections:
         signals executive presence per Canonical Methodology
       statement_id: coe:edge/2242684b5d8b577f5f6c76c5
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/power_verb
       predicate: coe:supports
       object_id: coe:entity/rhetorical_pattern
@@ -790,7 +689,6 @@ entity_collections:
         a consistent voice of authority and agency.
       statement_id: coe:edge/bcec3f845ed6095bbbc6ef77
       home_domain: language_editorial
-      evidence_ids: *id002
     - subject_id: coe:entity/power_verb
       predicate: coe:supports
       object_id: coe:entity/value_proposition
@@ -801,7 +699,6 @@ entity_collections:
         authority per Best-Practice Elevator Pitches
       statement_id: coe:edge/1c85169c7931af01db26c17e
       home_domain: language_editorial
-      evidence_ids: *id002
     id: coe:entity/power_verb
     label: Power Verb
     description: High-impact action verbs that convey authority and leadership
@@ -815,19 +712,12 @@ entity_collections:
     - championed the cause
     - orchestrated the rollout
     - catalyzed innovation
-    anti_examples:
-    - spearhead mint plant
-    - ignited the fire
-    evidence_ids: *id001
-  evidence_ids: *id001
 - id: coe:artifact/language_editorial/editorial_disciplines
   label: Editorial Disciplines
   description: Editorial and localisation disciplines recovered from the knowledge wiki.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: language_editorial
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/localisation
     label: Localisation
@@ -842,10 +732,6 @@ entity_collections:
     - MTPE
     - machine translation post-editing
     - XLIFF
-    anti_examples:
-    - fault localisation
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/culture_as_audience_variable
     label: Culture as Audience Variable
     description: Culture treated as an audience and message-design variable whose national-dimension models explain
@@ -861,8 +747,6 @@ entity_collections:
         boundary — designing for culture versus flagging violations of it.
       statement_id: coe:edge/culture-as-audience-variable-bridges-cultural-sensitivity-issue
       home_domain: language_editorial
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - Hofstede dimensions
     - power distance
@@ -870,8 +754,6 @@ entity_collections:
     - ecological fallacy
     anti_examples:
     - company culture
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/critical_finding_craft
     label: Critical Finding Craft
     description: The written critical finding as an artefact — precise locus, exposed criterion, honestly bounded
@@ -887,14 +769,8 @@ entity_collections:
         loop.
       statement_id: coe:edge/critical-finding-craft-bridges-feedback-bridge
       home_domain: language_editorial
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - critical finding
     - review finding
     - severity rating
     - finding locus
-    anti_examples:
-    - court finding
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery

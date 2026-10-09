@@ -1,0 +1,262 @@
+_meta:
+  file_id: coe:file/domain/adobe/services
+  title: Adobe — Services
+  last_updated: '2026-10-02'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: adobe
+  governing_class: coe:DomainModule
+module_id: coe:module/adobe/services
+domain: adobe
+services:
+- id: coe:entity/adobe/adobe_developer
+  label: Adobe Developer Platform
+  description: Adobe's developer platform — the APIs, events and runtime through which external code integrates with and
+    extends Adobe products, published at developer.adobe.com.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  market_status: generally_available
+  terms:
+  - literal: Adobe Developer
+    term_type: short_form
+    term_status: admitted
+  - literal: ADP
+    term_type: initialism
+    term_status: admitted
+  - literal: Adobe I/O
+    term_type: full_form
+    term_status: superseded
+- id: coe:entity/adobe/pdf_services_api
+  label: Adobe PDF Services API
+  description: Adobe's developer API for programmatic PDF operations — creating, converting, recognising text in,
+    extracting from and manipulating documents inside applications and pipelines.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/document_cloud
+  market_status: generally_available
+  terms:
+  - literal: PDF Services
+    term_type: short_form
+    term_status: admitted
+    usage_note: Here the developer API product with its own credentials and metering. The same name also refers to Acrobat Online Services.
+- id: coe:entity/adobe/acrobat_services
+  label: Adobe Acrobat Services
+  description: Adobe's developer brand for Acrobat's cloud APIs — PDF Services, Sign and embedding — for building document
+    workflows into applications.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/document_cloud
+  market_status: generally_available
+  terms:
+  - literal: Acrobat Services
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/firefly_services
+  label: Adobe Firefly Services
+  description: Adobe's enterprise APIs exposing Firefly and Creative Cloud automation for high-volume content production —
+    generating variants, localising and refreshing assets programmatically.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/creative_cloud
+  - coe:entity/adobe/content_supply_chain_solution
+  market_status: generally_available
+  serves_stage:
+  - coe:entity/adobe/creation_production
+  terms:
+  - literal: Firefly Services
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/genstudio_services
+  label: GenStudio Services
+  description: GenStudio's public REST API for retrieving approved experiences, listing and filtering experience summaries
+    and downloading assets, so GenStudio content flows into external workflows.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/genstudio
+  market_status: generally_available
+- id: coe:entity/adobe/web_sdk
+  label: Web SDK
+  description: Adobe's client-side JavaScript library that sends website data to the Experience Platform Edge Network and
+    receives audience qualifications and personalised content back.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+  market_status: generally_available
+  conforms_to:
+  - coe:entity/adobe/experience_data_model
+- id: coe:entity/adobe/mobile_sdk
+  label: Mobile SDK
+  description: Adobe's mobile-application library that collects app events into the Experience Platform Edge Network and
+    returns audience qualifications and personalised content in-session.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+  market_status: generally_available
+  conforms_to:
+  - coe:entity/adobe/experience_data_model
+- id: coe:entity/adobe/edge_network_server_api
+  label: Experience Platform Edge Network Server API
+  description: Experience Platform's REST API that sends events from servers, devices and other non-browser clients into the
+    Edge Network, as an alternative to the Web and Mobile SDKs.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+  market_status: generally_available
+  terms:
+  - literal: Edge Network Server API
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/data_access_api
+  label: Experience Platform Data Access API
+  description: Experience Platform's REST API for reading and exporting Data Lake datasets from external tools and partner
+    applications.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+  market_status: generally_available
+  terms:
+  - literal: Data Access API
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/visitor_id_service
+  label: Adobe Visitor ID Service
+  description: Adobe's JavaScript identity library that sets the Experience Cloud ID for Analytics, Audience Manager and
+    Target; it is distinct from Experience Platform Identity Service and is built into the Web SDK.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+  market_status: generally_available
+  terms:
+  - literal: Visitor ID Service
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/pdf_embed_api
+  label: Adobe PDF Embed API
+  description: Acrobat Services' client-side JavaScript API that embeds a PDF viewer with collaboration and analytics
+    features in a web application.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/document_cloud
+  market_status: generally_available
+  terms:
+  - literal: PDF Embed API
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/document_generation_api
+  label: Adobe Document Generation API
+  description: Acrobat Services' cloud API that merges Word or HTML templates with JSON data to produce PDF or Word
+    documents such as contracts and invoices.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/document_cloud
+  market_status: generally_available
+  terms:
+  - literal: Document Generation API
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/acrobat_sign_api
+  label: Adobe Acrobat Sign API
+  description: Acrobat Sign's REST API for creating and managing agreements, embedding signing and retrieving signed
+    documents in applications.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/document_cloud
+  market_status: generally_available
+  terms:
+  - literal: Acrobat Sign API
+    term_type: short_form
+    term_status: admitted
+  - literal: Acrobat Sign REST API
+    term_type: full_form
+    term_status: admitted
+  - literal: Adobe Sign API
+    term_type: full_form
+    term_status: superseded
+- id: coe:entity/adobe/pdf_extract_api
+  label: Adobe PDF Extract API
+  description: Acrobat Services' API that extracts text, tables, images and logical structure from PDFs as JSON for
+    analytics, AI and downstream processing, bundled with the PDF Services API.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/document_cloud
+  market_status: generally_available
+  terms:
+  - literal: PDF Extract API
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/pdf_accessibility_auto_tag_api
+  label: Adobe PDF Accessibility Auto-Tag API
+  description: Acrobat Services' API that automatically tags a PDF for accessibility — headings, reading order and
+    structure — and checks the result, bundled with the PDF Services API.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/document_cloud
+  market_status: generally_available
+  terms:
+  - literal: PDF Accessibility Auto-Tag API
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/pdf_electronic_seal_api
+  label: Adobe PDF Electronic Seal API
+  description: Acrobat Services' API that applies an organisation's electronic seal to a PDF with a certificate, to
+    establish the document's authenticity and origin at scale, bundled with the PDF Services API.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/document_cloud
+  market_status: generally_available
+  terms:
+  - literal: PDF Electronic Seal API
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/cascade_contractai_api
+  label: Adobe Acrobat Analyzer API
+  description: Acrobat Sign's contract-intelligence API, listed under Acrobat Services, that uploads contracts, extracts
+    structured terms and clauses with AI, searches and filters across collections and answers questions over contracts; it
+    is an entitlement-gated feature of Acrobat Sign and Acrobat, not a separately sold Acrobat Services product.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/document_cloud
+  market_status: generally_available
+  terms:
+  - literal: Analyzer API
+    term_type: short_form
+    term_status: admitted
+  - literal: Cascade ContractAI API
+    term_type: codename
+    term_status: admitted
+  - literal: Project Cascade
+    term_type: codename
+    term_status: superseded

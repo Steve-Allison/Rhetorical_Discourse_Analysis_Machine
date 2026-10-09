@@ -1,0 +1,264 @@
+_meta:
+  file_id: coe:file/domain/adobe/organisation
+  title: Adobe — Organisation and Product Families
+  last_updated: '2026-10-02'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: adobe
+  governing_class: coe:DomainModule
+module_id: coe:module/adobe/organisation
+domain: adobe
+organisations:
+- id: coe:entity/adobe/adobe
+  label: Adobe
+  description: The software company that makes and markets the Experience Cloud, Creative Cloud and Document Cloud
+    portfolios.
+  home_domain: adobe
+  status: canonical
+  terms:
+  - literal: Adobe Inc.
+    term_type: full_form
+    term_status: admitted
+business_units:
+- id: coe:entity/adobe/customer_experience_orchestration
+  label: Customer Experience Orchestration
+  description: Adobe's business unit that delivers end-to-end customer-experience solutions — brand visibility, content
+    supply chain and customer engagement — spanning the Experience Cloud products and the field, professional-services,
+    customer-success and support teams behind them.
+  home_domain: adobe
+  status: canonical
+  unit_of: coe:entity/adobe/adobe
+  terms:
+  - literal: CXO
+    term_type: initialism
+    term_status: admitted
+  - literal: Digital Experience
+    term_type: full_form
+    term_status: superseded
+  - literal: DX
+    term_type: initialism
+    term_status: superseded
+- id: coe:entity/adobe/creativity_productivity
+  label: Creativity & Productivity
+  description: Adobe's business unit for its creative and document-productivity portfolio, renamed from Digital Media in
+    the same reorganisation that renamed Digital Experience.
+  home_domain: adobe
+  status: canonical
+  unit_of: coe:entity/adobe/adobe
+  terms:
+  - literal: C&P
+    term_type: initialism
+    term_status: admitted
+  - literal: Digital Media
+    term_type: full_form
+    term_status: superseded
+- id: coe:entity/adobe/digital_advertising_learning_publishing
+  label: Digital Advertising, Learning & Publishing
+  description: Adobe's business unit for its digital-learning, technical-publishing, web-conferencing, application-platform
+    and advertising products, renamed from the Print & Publishing Business Unit.
+  home_domain: adobe
+  status: canonical
+  unit_of: coe:entity/adobe/adobe
+  terms:
+  - literal: D-ALP
+    term_type: initialism
+    term_status: admitted
+  - literal: Print & Publishing Business Unit
+    term_type: full_form
+    term_status: superseded
+  - literal: PPBU
+    term_type: initialism
+    term_status: superseded
+product_families:
+- id: coe:entity/adobe/experience_cloud
+  label: Adobe Experience Cloud
+  description: Adobe's product family for delivering, personalising, measuring and optimising customer-facing digital
+    experiences — content management, customer data, journeys, analytics, commerce and marketing work management.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  terms:
+  - literal: Experience Cloud
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/cx_enterprise
+  label: Adobe CX Enterprise
+  description: Adobe's commercial framing of its Customer Experience Orchestration portfolio, announced at Adobe Summit
+    2026 — a unified, agentic front door and shared-services layer over Experience Platform and its applications. It is
+    not a product sold on its own, and it does not replace Adobe Experience Cloud as the formal Cloud brand.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  terms:
+  - literal: CX Enterprise
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/creative_cloud
+  label: Adobe Creative Cloud
+  description: Adobe's product family of creative applications and services for image, video, design, illustration, 3D
+    and audio work, licensed as a subscription.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/content_supply_chain_solution
+  terms:
+  - literal: Creative Cloud
+    term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/document_cloud
+  label: Adobe Document Cloud
+  description: Adobe's product family for document productivity — creating, editing, reviewing, signing and scanning PDFs
+    — spanning Acrobat, Acrobat Sign, Scan and their shared cloud services.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  terms:
+  - literal: Document Cloud
+    term_type: short_form
+    term_status: admitted
+  - literal: DC
+    term_type: initialism
+    term_status: admitted
+- id: coe:entity/adobe/substance_3d
+  label: Adobe Substance 3D
+  description: Adobe's product line of 3D applications for authoring materials, texturing models and staging and rendering
+    scenes, marketed within Creative Cloud.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/creative_cloud
+  terms:
+  - literal: S3D
+    term_type: abbreviation
+    term_status: admitted
+- id: coe:entity/adobe/genstudio
+  label: Adobe GenStudio
+  description: Adobe's product family of generative-AI content-supply-chain applications — planning, creating, activating
+    and measuring on-brand marketing content — connecting Workfront, Firefly, Experience Manager and Content Analytics.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+  - coe:entity/adobe/content_supply_chain_solution
+  terms:
+  - literal: GenStudio
+    term_type: short_form
+    term_status: admitted
+  - literal: GEN
+    term_type: abbreviation
+    term_status: admitted
+- id: coe:entity/adobe/content_and_commerce
+  label: Content & Commerce
+  description: Adobe Experience Cloud's product category for managing and delivering content and commerce experiences —
+    content management, digital asset management, forms, signage, technical documentation, storefronts and learning.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+- id: coe:entity/adobe/data_insights_and_audiences
+  label: Data Insights & Audiences
+  description: Adobe Experience Cloud's product category for collecting and analysing customer data and building the
+    audiences activated from it — analytics, customer data platform, audience management, measurement and advertising.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+  terms:
+  - literal: Data Insights & Activation
+    term_type: full_form
+    term_status: admitted
+- id: coe:entity/adobe/customer_journeys
+  label: Customer Journeys
+  description: Adobe Experience Cloud's product category for orchestrating and personalising customer engagement —
+    journeys, campaigns, testing and personalisation, and marketing automation.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+- id: coe:entity/adobe/marketing_workflow
+  label: Marketing Workflow
+  description: Adobe Experience Cloud's product category for planning and managing marketing work — projects, workflows,
+    approvals and resourcing.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/experience_cloud
+  terms:
+  - literal: Marketing Planning & Workflow
+    term_type: full_form
+    term_status: admitted
+- id: coe:entity/adobe/customer_engagement
+  label: Customer Engagement
+  description: CX Enterprise's pillar for orchestrating the customer lifecycle — journey orchestration, audience management,
+    decisioning and analytics — on Experience Platform and its applications.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/cx_enterprise
+- id: coe:entity/adobe/brand_visibility
+  label: Brand Visibility
+  description: CX Enterprise's pillar for making a brand visible, trusted and chosen across AI surfaces and owned channels,
+    and for optimising web experiences for both human and agentic traffic.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/cx_enterprise
+- id: coe:entity/adobe/content_supply_chain_solution
+  label: Content Supply Chain
+  description: CX Enterprise's pillar of a unified platform on GenStudio for planning, creating, managing, activating and
+    measuring content at scale, from a foundational to an agentic content supply chain.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/cx_enterprise
+- id: coe:entity/adobe/ai_first_applications
+  label: AI-first applications
+  description: CX Enterprise's group of purpose-built AI applications that draw on several Experience Platform agents in
+    their workflows and are licensed separately.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/adobe_ai_platform
+  terms:
+  - literal: Agent-based offerings
+    term_type: full_form
+    term_status: admitted
+- id: coe:entity/adobe/cx_enterprise_agents
+  label: CX Enterprise Agents
+  description: The group of purpose-built AI agents that live inside existing CX Enterprise applications, are reached
+    through Agent Orchestrator and draw on AI credits.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  families:
+  - coe:entity/adobe/adobe_ai_platform
+- id: coe:entity/adobe/adobe_ai_platform
+  label: Adobe AI Platform
+  description: The platform on which CX Enterprise's solutions run — Experience Platform, Agent Orchestrator, the CX
+    Enterprise agents, the AI-first applications and CX Enterprise Coworker.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+- id: coe:entity/adobe/sensei
+  label: Adobe Sensei
+  description: Adobe's brand for the machine-intelligence capabilities embedded across Creative Cloud, Document Cloud and
+    Experience Cloud — auto-tagging, subject selection, personalisation scoring and anomaly detection — rather than a
+    product sold on its own.
+  home_domain: adobe
+  status: canonical
+  vendor: coe:entity/adobe/adobe
+  terms:
+  - literal: Sensei
+    term_type: short_form
+    term_status: admitted

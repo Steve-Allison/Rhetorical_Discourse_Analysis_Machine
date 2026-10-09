@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/narrative/quality_rubrics
   title: Narrative — Quality Rubrics
-  last_updated: '2026-09-02'
+  last_updated: '2026-09-25'
   authority: Central_Configs
   scope: domain
   ontology_domain: narrative
@@ -15,49 +15,35 @@ scoring_models:
     description: SOAR framework completeness - all narrative elements present
     home_domain: narrative
     status: canonical
-    evidence_ids: &id001
-    - coe:source/central-configs-legacy-f6eb98ff
-    - coe:decision/v4-migration/narrative/quality_rubrics
-    - coe:source/legacy-file/e7718e47042f199b
   - id: coe:artifact/narrative/narrative_quality_rubric/dimension/coherence
     label: Coherence
     description: Logical flow, transitions, and narrative structure
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/narrative/narrative_quality_rubric/dimension/clarity
     label: Clarity
-    description: Plain language, one idea per section, readability
+    description: Plain language, one governing thought per section, readability
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/narrative/narrative_quality_rubric/dimension/audience_fit
     label: Audience Fit
     description: WIIFM focus and persona relevance
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/narrative/narrative_quality_rubric/dimension/evidence
     label: Evidence
     description: Proof points, metrics, and credibility
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/narrative/narrative_quality_rubric/dimension/reusability
     label: Reusability
     description: Template compliance and lexicon adherence
     home_domain: narrative
     status: canonical
-    evidence_ids: *id001
-  last_updated: '2026-09-02'
+  last_updated: '2026-09-25'
   id: coe:artifact/narrative/narrative_quality_rubric
   label: Narrative Quality Rubric
   description: Rubric for narrative quality assessment covering SOAR coverage, coherence, clarity, audience fit, evidence,
     and reusability
   home_domain: narrative
   status: canonical
-  evidence_ids:
-  - coe:source/central-configs-legacy-f6eb98ff
-  - coe:decision/v4-migration/narrative/quality_rubrics
-  - coe:source/legacy-file/e7718e47042f199b
-  - coe:decision/curation/2026-09-01/threshold-typing

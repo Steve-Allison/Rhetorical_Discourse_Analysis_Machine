@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/business/buyer_personas
   title: Business — Buyer Personas
-  last_updated: '2026-09-02'
+  last_updated: '2026-09-23'
   authority: Central_Configs
   scope: domain
   ontology_domain: business
@@ -12,25 +12,28 @@ entity_collections:
 - id: coe:artifact/business/buyer_audience_roles
   label: Buyer Audience Roles
   description: Genuine commercial buyer personas separated from competitor, objection, and sales-concept records.
-  last_updated: '2026-08-22'
+  last_updated: '2026-09-23'
   home_domain: business
   status: canonical
-  evidence_ids: &id001
-  - coe:source/legacy-file/c2919dd7ade0f905
-  - coe:decision/migration/c74a5e7118940847
   entities:
   - id: coe:entity/business/buyer_audience
     label: Buyer Audience
     description: People participating in a commercial buying decision, represented by explicit buying roles and personas.
     home_domain: business
     status: canonical
-    evidence_ids: *id001
+    terms:
+    - literal: Audience
+      term_type: short_form
+      term_status: admitted
+      usage_note: Use when the people addressed participate in a commercial buying decision.
+    - literal: Buyer
+      term_type: short_form
+      term_status: admitted
   - id: coe:entity/business/buyer_persona/economic_buyer
     label: Economic Buyer
     description: Executive with budget authority and final purchase approval
     home_domain: business
     status: canonical
-    evidence_ids: *id001
     examples:
     - CFO
     - CMO
@@ -40,16 +43,11 @@ entity_collections:
     - budget holder
     - economic decision maker
     - executive sponsor
-    anti_examples:
-    - economy class
-    - economic conditions
-    - economic forecast
   - id: coe:entity/business/buyer_persona/technical_buyer
     label: Technical Buyer
     description: Technical evaluator with product veto power based on technical requirements
     home_domain: business
     status: canonical
-    evidence_ids: *id001
     examples:
     - CTO
     - CIO
@@ -59,16 +57,11 @@ entity_collections:
     - Solutions Architect
     - technical evaluator
     - IT stakeholder
-    anti_examples:
-    - technical documentation
-    - technical support
-    - technical issues
   - id: coe:entity/business/buyer_persona/user_buyer
     label: User Buyer
     description: End-user champion who will use the product daily
     home_domain: business
     status: canonical
-    evidence_ids: *id001
     examples:
     - Marketing Manager
     - Content Creator
@@ -78,16 +71,11 @@ entity_collections:
     - power user
     - end user
     - practitioner
-    anti_examples:
-    - user manual
-    - user interface
-    - user experience
   - id: coe:entity/business/buyer_persona/champion
     label: Champion
     description: Internal advocate driving the purchase decision forward
     home_domain: business
     status: canonical
-    evidence_ids: *id001
     examples:
     - project sponsor
     - internal champion
@@ -101,7 +89,6 @@ entity_collections:
     description: Stakeholder who shapes opinions but doesn't have final authority
     home_domain: business
     status: canonical
-    evidence_ids: *id001
     examples:
     - subject matter expert
     - SME
@@ -109,40 +96,29 @@ entity_collections:
     - advisor
     - thought leader
     - key stakeholder
-    anti_examples:
-    - social media influencer
-    - Instagram influencer
   - id: coe:entity/business/buyer_persona/enterprise_buyer
     label: Enterprise Buyer
     description: Large-organisation buyer characterised by complex procurement, multiple stakeholders, and extended sales
       cycles
     home_domain: business
     status: canonical
-    evidence_ids: *id001
     examples:
     - enterprise customer
     - large organisation buyer
     - Fortune 500 prospect
     - enterprise procurement
     - buying committee
-    anti_examples:
-    - enterprise software feature
-    - enterprise architecture pattern
   - id: coe:entity/business/buyer_persona/smb_buyer
     label: Smb Buyer
     description: Small or medium business buyer characterised by streamlined decisions, budget sensitivity, and personal rapport
     home_domain: business
     status: canonical
-    evidence_ids: *id001
     examples:
     - small business owner
     - SMB prospect
     - startup founder
     - mid-market buyer
     - small team lead
-    anti_examples:
-    - SMB server configuration
-    - small business accounting
 - id: coe:artifact/business/buyer_personas
   label: B2B Enterprise Buyer Personas
   description: CXO decision-makers, buying center archetypes, commercial priorities.
@@ -160,9 +136,6 @@ entity_collections:
     - Google Analytics
     - Sitecore
     - Canva
-    evidence_ids: &id002
-    - coe:source/central-configs-legacy-f6eb98ff
-    - coe:decision/v4-migration/business/buyer_personas
   - id: coe:entity/competitive_claim
     label: Competitive Claim
     description: Competitor comparison differentiation advantage better than versus alternative claim positioning
@@ -173,7 +146,6 @@ entity_collections:
     - Unlike HubSpot, Adobe offers...
     - While competitors require multiple tools...
     - Adobe is the only platform that...
-    evidence_ids: *id002
   - id: coe:entity/objection
     label: Objection
     description: Customer objection concern hesitation pushback too expensive too complex switch cost
@@ -185,10 +157,8 @@ entity_collections:
     - We can't afford
     - Too complex for our team
     - We're happy with our current solution
-    evidence_ids: *id002
   home_domain: business
   status: canonical
-  evidence_ids: *id002
 - id: coe:artifact/business/sales_plays_and_market_competitors
   label: Enterprise Sales Plays & Market Competitor Ontologies
   description: Governed sales plays, strategic solution plays, and market competitors.
@@ -201,7 +171,6 @@ entity_collections:
       formerly Pardot), Oracle Eloqua, and Mailchimp.
     home_domain: business
     status: canonical
-    evidence_ids: *id002
   - id: coe:entity/business/competitor_analytics
     label: Analytics Competitors
     description: Competitor market segment for digital analytics, customer insights, and attribution — vendors competing
@@ -209,7 +178,6 @@ entity_collections:
       and Heap.
     home_domain: business
     status: canonical
-    evidence_ids: *id002
   - id: coe:entity/business/competitor_content_management
     label: Content Management Competitors
     description: Competitor market segment for web CMS, headless CMS, and digital experience platforms — vendors competing
@@ -217,7 +185,6 @@ entity_collections:
       Bloomreach, Drupal/Acquia) to SMB publishing platforms (WordPress, Squarespace, Wix).
     home_domain: business
     status: canonical
-    evidence_ids: *id002
   - id: coe:entity/business/competitor_creative_tools
     label: Creative Tools Competitors
     description: Competitor market segment for design, video, and creative collaboration — vendors competing with Creative
@@ -225,7 +192,6 @@ entity_collections:
       Stability AI, Runway, Descript, Jasper, Typeface).
     home_domain: business
     status: canonical
-    evidence_ids: *id002
   - id: coe:entity/business/competitor_ecommerce
     label: Ecommerce Competitors
     description: Competitor market segment for commerce platforms, storefronts, and B2B commerce — vendors competing with
@@ -233,17 +199,14 @@ entity_collections:
       Path.
     home_domain: business
     status: canonical
-    evidence_ids: *id002
   - id: coe:entity/business/competitor_search_and_discovery
     label: Search and Discovery Competitors
     description: Competitor market segment for site search, product discovery, and merchandising — vendors competing with
       Adobe Target and Adobe Commerce search, principally Algolia.
     home_domain: business
     status: canonical
-    evidence_ids: *id002
   home_domain: business
   status: canonical
-  evidence_ids: *id002
 - id: coe:artifact/business/reallocated_delivery_concepts
   label: Reallocated Business Concepts
   description: Concepts moved from Delivery because their semantic meaning is owned by this domain.
@@ -258,17 +221,13 @@ entity_collections:
     home_domain: business
     status: canonical
     edges: []
-    evidence_ids: *id002
-  evidence_ids: *id002
 - id: coe:artifact/business/audience_method_disciplines
   label: Audience Method Disciplines
   description: Audience-research and demonstration method disciplines recovered from the knowledge wiki, governing the
     persona instances this module holds.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: business
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/empathy_mapping
     label: Empathy Mapping
@@ -285,14 +244,10 @@ entity_collections:
         construction consumes.
       statement_id: coe:edge/empathy-mapping-supports-persona-method
       home_domain: business
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - empathy map
     - says, thinks, does, feels
     - pains and gains canvas
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/jobs_to_be_done
     label: Jobs to Be Done
     description: Framework locating the causal driver of buying and learning behaviour in situational progress rather
@@ -308,19 +263,12 @@ entity_collections:
         they are rival and complementary audience frames.
       statement_id: coe:edge/jobs-to-be-done-contrasts-with-persona-method
       home_domain: business
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - jobs to be done
     - JTBD
     - job story
     - hire a product
     - struggling moment
-    anti_examples:
-    - job listing
-    - jobs report
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/persona_method
     label: Persona Method
     description: The general method of constructing, validating, maintaining and retiring evidence-based audience
@@ -336,17 +284,11 @@ entity_collections:
         general persona method.
       statement_id: coe:edge/persona-method-supports-inclusion-personas
       home_domain: business
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - persona construction
     - persona validation
     - proto-persona
     - persona retirement
-    anti_examples:
-    - stage persona
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/product_demo_delivery
     label: Product Demo Delivery
     description: Methodology for designing and delivering high-stakes B2B product demonstrations — inverted-pyramid
@@ -361,15 +303,9 @@ entity_collections:
       description: Demo certification measures the demonstration methodology product demo delivery owns.
       statement_id: coe:edge/product-demo-delivery-supports-demo-certification
       home_domain: business
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - product demo
     - demo flow
     - inverted-pyramid demo
     - glitch recovery
     - value delta
-    anti_examples:
-    - demo tape
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery

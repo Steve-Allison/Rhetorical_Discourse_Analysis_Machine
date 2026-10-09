@@ -15,30 +15,21 @@ scoring_models:
     description: Kirkpatrick-Phillips model level (L1-L5) determining evaluation depth and ROI measurement
     home_domain: learning
     status: canonical
-    evidence_ids: &id001
-    - coe:source/central-configs-legacy-f6eb98ff
-    - coe:decision/v4-migration/learning/assessment_rubrics
-    - coe:source/legacy-file/6700375c542d2ccc
-    - coe:source/legacy-file/c04e4cd69304fbed
-    - coe:source/legacy-file/76aeaac2cc5e291f
   - id: coe:artifact/learning/assessment_scoring_frameworks_rubric/dimension/assessment_timing
     label: assessment_timing
     description: Alignment of assessment events to learning milestones (pre, during, post, transfer)
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/assessment_scoring_frameworks_rubric/dimension/rubric_design_quality
     label: rubric_design_quality
     description: Adherence to rubric design standards for objectivity, clarity, and inter-rater reliability
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/assessment_scoring_frameworks_rubric/dimension/modality_specification
     label: modality_specification
     description: Assessment design appropriateness for delivery modality (elearning, ILT, blended)
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   last_updated: '2026-09-02'
   id: coe:artifact/learning/assessment_scoring_frameworks_rubric
   label: Assessment Frameworks
@@ -46,38 +37,32 @@ scoring_models:
     rubric design standards, and quality metrics for corporate learning assessment.
   home_domain: learning
   status: canonical
-  evidence_ids: *id001
 - dimensions:
   - id: coe:artifact/learning/cognitive_load_rubric/dimension/intrinsic_load_management
     label: intrinsic_load_management
     description: Management of inherent content complexity through sequencing, chunking, and element count control
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/cognitive_load_rubric/dimension/extraneous_load_reduction
     label: extraneous_load_reduction
     description: Reduction of unnecessary cognitive effort via text density, typography, and reading physiology standards
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/cognitive_load_rubric/dimension/germane_load_facilitation
     label: germane_load_facilitation
     description: Active schema formation supported by Mayer's multimedia principles and progressive disclosure
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/cognitive_load_rubric/dimension/visual_organisation
     label: visual_organisation
     description: Gestalt principles, information architecture, and structural affordances applied to reduce cognitive effort
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/cognitive_load_rubric/dimension/compliance_and_checks
     label: compliance_and_checks
     description: Adherence to ISO 24495-1 plain language standard and quantitative threshold compliance
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   last_updated: '2026-09-02'
   id: coe:artifact/learning/cognitive_load_rubric
   label: Cognitive Load Rubric
@@ -85,13 +70,6 @@ scoring_models:
     standards, and document design for corporate presentations and learning materials.
   home_domain: learning
   status: canonical
-  evidence_ids: &id002
-  - coe:source/central-configs-legacy-f6eb98ff
-  - coe:decision/v4-migration/learning/assessment_rubrics
-  - coe:source/legacy-file/6700375c542d2ccc
-  - coe:source/legacy-file/c04e4cd69304fbed
-  - coe:source/legacy-file/76aeaac2cc5e291f
-  - coe:decision/curation/2026-09-01/threshold-typing
 - dimensions:
   - id: coe:artifact/learning/instructional_design_rubric/dimension/objective_alignment
     label: Objective Alignment
@@ -100,7 +78,6 @@ scoring_models:
       distinguishes terminal from enabling objectives.
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/instructional_design_rubric/dimension/activity_mapping
     label: Activity-Objective Mapping (Constructive Alignment)
     description: Evaluates whether activities engage the cognitive process demanded by the objective's Bloom's verb. A 'remember'
@@ -108,7 +85,6 @@ scoring_models:
       below the objective's Bloom's level constitute the primary constructive misalignment failure.
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/instructional_design_rubric/dimension/assessment_validity
     label: Assessment Validity
     description: Evaluates whether the assessment instruments can validly measure what the objective demands, whether formative
@@ -116,7 +92,6 @@ scoring_models:
       rather than stopping at Level 2 (learning).
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/instructional_design_rubric/dimension/scaffold_progression
     label: Scaffold Progression
     description: Evaluates whether the instructional sequence builds competence incrementally from simple to complex whole
@@ -124,7 +99,6 @@ scoring_models:
       (Principle 5) is the most commonly omitted principle in corporate L&D and is weighted heavily.
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/learning/instructional_design_rubric/dimension/learner_engagement
     label: Learner Engagement
     description: 'Evaluates the ratio of active to passive learning, the variety of interaction types, the presence of retrieval
@@ -132,7 +106,6 @@ scoring_models:
       scaffolding; the interaction-frequency benchmark it applies is library knowledge.'
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   last_updated: '2026-09-02'
   id: coe:artifact/learning/instructional_design_rubric
   label: Instructional Design Rubric
@@ -140,4 +113,3 @@ scoring_models:
     validity, scaffold progression, and learner engagement strategies
   home_domain: learning
   status: canonical
-  evidence_ids: *id002

@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/narrative/discourse_argumentation
   title: Narrative — Discourse and Argumentation
-  last_updated: '2026-09-01'
+  last_updated: '2026-10-05'
   authority: Central_Configs
   scope: domain
   ontology_domain: narrative
@@ -9,12 +9,12 @@ _meta:
 module_id: coe:module/narrative/discourse_argumentation
 domain: narrative
 taxonomies:
-- last_updated: '2026-09-01'
+- last_updated: '2026-10-05'
   id: coe:artifact/narrative/discourse_argumentation_taxonomy
   label: Discourse and Argumentation Taxonomy
   description: Classification of discourse and argumentation constructs by relation sense (PDTB Level-2 profile), relation
-    explicitness, Toulmin argument role, component state, ASPIC+ conflict type, rhetorical discourse role, and argument link
-    type
+    explicitness, Toulmin argument role, component state, ASPIC+ conflict type, rhetorical discourse role, argument link
+    type, and governing statement basis
   home_domain: narrative
   status: canonical
   concepts:
@@ -25,8 +25,6 @@ taxonomies:
       3.0 sense hierarchy at Level-2 granularity
     home_domain: narrative
     status: canonical
-    evidence_ids: &id016
-    - coe:decision/specs-016/narrative/discourse_argumentation
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense
@@ -35,7 +33,6 @@ taxonomies:
     description: One span gives the reason for, or the result of, the other
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense
@@ -44,7 +41,6 @@ taxonomies:
     description: One span creates an expectation the other denies while both stand
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense
@@ -53,7 +49,6 @@ taxonomies:
     description: One span holds only under the circumstance the other states
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense
@@ -62,7 +57,6 @@ taxonomies:
     description: One span gives a specific instance of the generalisation the other states
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense
@@ -71,7 +65,6 @@ taxonomies:
     description: The spans are set against each other on a shared dimension of difference
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     id: coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness
     label: Discourse Relation Explicitness
@@ -79,7 +72,6 @@ taxonomies:
       the PDTB explicit and implicit method in which an implied relation records the connective that would make it explicit
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness
@@ -88,7 +80,6 @@ taxonomies:
     description: The relation is overtly signalled by connective or construction text quotable from the source
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness
@@ -98,7 +89,6 @@ taxonomies:
       is recorded as its basis
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     id: coe:concept/discourse_argumentation_taxonomy/argument_role
     label: Argument Role
@@ -109,9 +99,6 @@ taxonomies:
     status: canonical
     close_match:
     - https://www.wikidata.org/wiki/Q1323298
-    evidence_ids:
-    - coe:decision/specs-016/narrative/discourse_argumentation
-    - coe:decision/rdam-006/narrative/argument_role_backing_amendment
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_role
@@ -120,7 +107,6 @@ taxonomies:
     description: The assertion or conclusion the argument establishes
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_role
@@ -129,7 +115,6 @@ taxonomies:
     description: The facts, evidence, or reasons offered in support of the claim
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_role
@@ -138,7 +123,6 @@ taxonomies:
     description: The general licence connecting the grounds to the claim
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_role
@@ -148,9 +132,6 @@ taxonomies:
       the warrant rests
     home_domain: narrative
     status: canonical
-    evidence_ids:
-    - coe:decision/rdam-006/narrative/argument_role_backing_amendment
-    - coe:source/nine-frameworks-research-45b6a77f
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_role
@@ -159,7 +140,6 @@ taxonomies:
     description: The modal force with which the claim is advanced
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_role
@@ -168,7 +148,6 @@ taxonomies:
     description: The condition of exception under which the claim does not hold
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     id: coe:concept/discourse_argumentation_taxonomy/argument_component_state
     label: Argument Component State
@@ -176,7 +155,6 @@ taxonomies:
       are recorded as fact rather than authored
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_component_state
@@ -185,7 +163,6 @@ taxonomies:
     description: The source asserts the component in its own words
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_component_state
@@ -194,7 +171,31 @@ taxonomies:
     description: The source does not assert the component; its absence is the recorded fact
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
+  - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
+    id: coe:concept/discourse_argumentation_taxonomy/governing_statement_basis
+    label: Governing Statement Basis
+    description: The grounds on which the one proposition that governs a unit of content is held, either a span the source
+      asserts in its own words or a sentence constructed over claims the source makes. The set is closed; membership grows
+      only by registered amendment
+    home_domain: narrative
+    status: canonical
+  - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
+    broader:
+    - coe:concept/discourse_argumentation_taxonomy/governing_statement_basis
+    id: coe:concept/discourse_argumentation_taxonomy/governing_statement_basis/stated
+    label: Stated Basis
+    description: The governing proposition is a span the source itself asserts, reproduced verbatim and locatable in the source
+    home_domain: narrative
+    status: canonical
+  - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
+    broader:
+    - coe:concept/discourse_argumentation_taxonomy/governing_statement_basis
+    id: coe:concept/discourse_argumentation_taxonomy/governing_statement_basis/inferred
+    label: Inferred Basis
+    description: The governing proposition is a sentence constructed over claims the source makes, adding no claim the source
+      does not carry, with the spans it rests on kept as its basis
+    home_domain: narrative
+    status: canonical
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     id: coe:concept/discourse_argumentation_taxonomy/argument_conflict_type
     label: Argument Conflict Type
@@ -202,7 +203,6 @@ taxonomies:
       it
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_conflict_type
@@ -211,7 +211,6 @@ taxonomies:
     description: Denies the other position's conclusion
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_conflict_type
@@ -220,7 +219,6 @@ taxonomies:
     description: Denies the evidence or premises the other position rests on
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_conflict_type
@@ -229,7 +227,6 @@ taxonomies:
     description: Denies the inference connecting the other position's evidence to its conclusion
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     id: coe:concept/discourse_argumentation_taxonomy/discourse_role
     label: Discourse Role
@@ -237,7 +234,6 @@ taxonomies:
       rhetorical structure theory's nuclearity
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_role
@@ -246,7 +242,6 @@ taxonomies:
     description: Central to the purpose; what is kept when one unit must be deleted
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_role
@@ -255,7 +250,6 @@ taxonomies:
     description: Ancillary material serving a nucleus with evidence, elaboration, or explanation
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/discourse_role
@@ -264,7 +258,6 @@ taxonomies:
     description: Context that orients without carrying the purpose's substance
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     id: coe:concept/discourse_argumentation_taxonomy/argument_link_type
     label: Argument Link Type
@@ -272,7 +265,6 @@ taxonomies:
       attack relations
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_link_type
@@ -281,7 +273,6 @@ taxonomies:
     description: This claim gives support to the target claim
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_link_type
@@ -290,7 +281,6 @@ taxonomies:
     description: The target claim attacks this claim
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   - in_scheme: coe:artifact/narrative/discourse_argumentation_taxonomy
     broader:
     - coe:concept/discourse_argumentation_taxonomy/argument_link_type
@@ -299,7 +289,6 @@ taxonomies:
     description: The objection or caveat this claim carries is answered by the target
     home_domain: narrative
     status: canonical
-    evidence_ids: *id016
   top_concepts:
   - coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense
   - coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness
@@ -308,4 +297,4 @@ taxonomies:
   - coe:concept/discourse_argumentation_taxonomy/argument_conflict_type
   - coe:concept/discourse_argumentation_taxonomy/discourse_role
   - coe:concept/discourse_argumentation_taxonomy/argument_link_type
-  evidence_ids: *id016
+  - coe:concept/discourse_argumentation_taxonomy/governing_statement_basis

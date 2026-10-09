@@ -12,10 +12,12 @@ prefixes:
   rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
   rdfs: http://www.w3.org/2000/01/rdf-schema#
   skos: http://www.w3.org/2004/02/skos/core#
+  skosxl: http://www.w3.org/2008/05/skos-xl#
   sh: http://www.w3.org/ns/shacl#
   xsd: http://www.w3.org/2001/XMLSchema#
 imports:
 - linkml:types
+- ./terminology.linkml
 types:
   Date:
     typeof: date
@@ -56,12 +58,13 @@ slots:
     description: Semantic version of the resource that carries it. Only the distribution
       manifest is versioned; ordinary authored artifacts carry no version because Git
       is their history.
-  evidence_ids:
-    range: EvidenceRecord
+  terms:
+    range: Term
     multivalued: true
-    inlined: false
-    slot_uri: coe:supportedByEvidence
-    description: Evidence records supporting this semantic resource or statement.
+    inlined_as_list: true
+    slot_uri: skosxl:altLabel
+    description: Every name other than its label by which this resource is known, each typed and dated; the label stays
+      the one current official name.
   edges:
     range: SemanticEdge
     multivalued: true
@@ -133,27 +136,20 @@ classes:
     description: Mixin granting an explicit semantic version. Applied only where the version
       is itself authoritative shared meaning — the distribution manifest — never to ordinary
       authored artifacts, whose history lives in Git.
-  EvidenceRecord:
-    abstract: true
-    is_a: IdentifiedThing
-    class_uri: coe:EvidenceRecord
-    description: Provenance or governance record supporting a semantic resource or statement.
   SemanticResource:
     abstract: true
     is_a: IdentifiedThing
     class_uri: coe:SemanticResource
-    description: First-class meaning owned by exactly one canonical domain and grounded in evidence.
+    description: One first-class meaning owned by exactly one canonical domain. Its provenance is the Git history of the
+      file that defines it, never a field of its own.
     slots:
     - home_domain
     - status
-    - evidence_ids
+    - terms
     - edges
     slot_usage:
       home_domain:
         required: true
-      evidence_ids:
-        required: true
-        minimum_cardinality: 1
     attributes:
       exact_match:
         multivalued: true
@@ -168,7 +164,7 @@ classes:
   Statement:
     abstract: true
     class_uri: rdf:Statement
-    description: Addressable, evidence-grounded semantic statement authored in canonical predicate direction.
+    description: One addressable semantic statement authored in canonical predicate direction.
     attributes:
       statement_id:
         identifier: true
@@ -200,14 +196,6 @@ classes:
         range: OntologyDomainEnum
         slot_uri: coe:homeDomain
         description: Canonical domain that owns and curates this statement.
-      evidence_ids:
-        required: true
-        minimum_cardinality: 1
-        range: EvidenceRecord
-        multivalued: true
-        inlined: false
-        slot_uri: coe:supportedByEvidence
-        description: Evidence records grounding this statement; at least one is required.
       description:
         slot_uri: dcterms:description
         description: Optional prose qualifying the statement beyond what subject, predicate,
@@ -241,13 +229,16 @@ classes:
       examples:
         multivalued: true
         slot_uri: skos:example
-        description: Positive instances that fall under this entity, sharpening its boundary.
+        description: Positive instances that fall under this entity, sharpening its boundary — items a subject expert would
+          give when explaining what the entity means. A phrase that only signals the entity in text is a library recognition
+          surface, not an example.
       anti_examples:
         multivalued: true
         slot_uri: coe:antiExample
         description: Near-miss instances that do not fall under this entity, marking its
-          boundary against confusable neighbours.
-    description: One named, evidence-grounded unit of domain meaning — the entity that recognition,
+          boundary against confusable neighbours in meaning. A phrase that merely shares words with the entity's names is a
+          library negative surface, not an anti-example.
+    description: One named unit of domain meaning — the entity that recognition,
       retrieval, and semantic edges attach to; how to recognise it in text is library knowledge. Distinguished from Concept by standing alone
       rather than as a member of a governed taxonomy.
 enums:
@@ -298,8 +289,6 @@ enums:
     permissible_values:
       domain:
         description: DomainModule root owned by exactly one canonical domain.
-      evidence:
-        description: SourceCatalog root holding source records and governance decisions.
       distribution:
         description: OntologyDistribution manifest root.
       stewardship:
@@ -310,6 +299,9 @@ enums:
       library:
         description: LibraryModule or LibraryDistribution root under library/ — shared craft
           knowledge keyed to ontology identifiers, authored in this repository beside the ontology.
+      pack:
+        description: PackDefinition root under packs/ — declares one self-contained domain pack that stage-packs builds
+          from the ontology and the library.
     description: Kinds of authored root a file in this repository may declare; domain roots
       additionally name their owning domain.
   RelationshipWeightEnum:

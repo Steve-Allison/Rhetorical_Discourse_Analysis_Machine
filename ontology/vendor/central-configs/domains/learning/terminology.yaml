@@ -15,19 +15,14 @@ entity_collections:
   last_updated: '2026-08-22'
   home_domain: learning
   status: canonical
-  evidence_ids: &id001
-  - coe:source/central-configs-legacy-f6eb98ff
-  - coe:decision/v4-migration/learning/terminology
   entities:
   - id: coe:entity/learning/term/scaffolding
     label: Scaffolding
     description: Temporary instructional support provided to learners in their Zone of Proximal Development, gradually faded.
     home_domain: learning
     status: canonical
-    evidence_ids: *id001
   - id: coe:entity/learning/term/bridge
     label: Bridge
     description: A cognitive connection linking a learner's prior knowledge to a newly introduced complex concept.
     home_domain: learning
     status: canonical
-    evidence_ids: *id001

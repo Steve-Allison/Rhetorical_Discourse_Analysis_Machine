@@ -17,7 +17,3 @@ scoring_models:
     criteria that make prose cognitively accessible; its numeric bounds live in the library's readability module
   home_domain: language_editorial
   status: canonical
-  evidence_ids:
-  - coe:source/central-configs-legacy-f6eb98ff
-  - coe:decision/v4-migration/language_editorial/accessibility
-  - coe:decision/curation/2026-09-01/threshold-typing

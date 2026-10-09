@@ -20,7 +20,7 @@ slots:
 classes:
   OntologyDistribution:
     class_uri: coe:OntologyDistribution
-    description: Versioned distribution manifest listing the canonical schema, domain bundles, domain modules, and evidence catalogue.
+    description: Versioned distribution manifest listing the canonical schema, domain bundles, and domain modules.
     mixins:
     - Versioned
     slots:
@@ -50,7 +50,3 @@ classes:
         multivalued: true
         slot_uri: coe:domain_module_paths
         description: Complete set of focused DomainModule paths in this distribution.
-      evidence_catalog_path:
-        required: true
-        slot_uri: coe:evidence_catalog_path
-        description: SourceCatalog path included in this distribution.

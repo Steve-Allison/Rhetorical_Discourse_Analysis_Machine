@@ -17,11 +17,6 @@ scoring_models:
       aligns with the task the viewer must perform.'
     home_domain: visual_communication
     status: canonical
-    evidence_ids: &id001
-    - coe:source/central-configs-legacy-f6eb98ff
-    - coe:decision/v4-migration/visual_communication/design_quality_gates
-    - coe:source/legacy-file/b1d39aa30588112c
-    - coe:source/legacy-file/c74fa337caf6512b
   - id: coe:artifact/visual_communication/data_visualisation_rubric/dimension/data_ink_ratio
     label: Data-Ink Ratio
     description: 'Proportion of visual ink actually encoding data versus total ink in the graphic; its target ratio is library
@@ -29,7 +24,6 @@ scoring_models:
       fills) is extraneous cognitive load and must be eliminated. Formula: Data-Ink / Total Ink used to print the graphic.'
     home_domain: visual_communication
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/visual_communication/data_visualisation_rubric/dimension/labelling_clarity
     label: Labelling Clarity
     description: Quality of axis labels, data labels, title informativeness, and absence of separate legends requiring lookup.
@@ -38,7 +32,6 @@ scoring_models:
       subject.
     home_domain: visual_communication
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/visual_communication/data_visualisation_rubric/dimension/colour_accessibility
     label: Colour Accessibility
     description: 'Use of colorblind-safe palettes, adequate contrast ratios for chart elements per WCAG 2.1 AA, and avoidance
@@ -47,7 +40,6 @@ scoring_models:
       shape/pattern/label) is required for accessible charts.'
     home_domain: visual_communication
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/visual_communication/data_visualisation_rubric/dimension/insight_communication
     label: Insight Communication
     description: Degree to which the chart's title and annotations communicate the key analytical conclusion rather than merely
@@ -56,7 +48,6 @@ scoring_models:
       increasing decision-making speed. Annotation quality and key takeaway visibility are also assessed.
     home_domain: visual_communication
     status: canonical
-    evidence_ids: *id001
   last_updated: '2026-09-02'
   id: coe:artifact/visual_communication/data_visualisation_rubric
   label: Data Visualisation Rubric
@@ -64,12 +55,6 @@ scoring_models:
     clarity, colour accessibility, and insight communication
   home_domain: visual_communication
   status: canonical
-  evidence_ids:
-  - coe:source/central-configs-legacy-f6eb98ff
-  - coe:decision/v4-migration/visual_communication/design_quality_gates
-  - coe:source/legacy-file/b1d39aa30588112c
-  - coe:source/legacy-file/c74fa337caf6512b
-  - coe:decision/curation/2026-09-01/threshold-typing
 - dimensions:
   - id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/audio_clarity
     label: Audio Clarity
@@ -77,7 +62,6 @@ scoring_models:
       treatment. Crisp audio is the single highest-leverage production variable for learner engagement.
     home_domain: visual_communication
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/visual_narration_sync
     label: Visual-Narration Synchronisation
     description: Evaluates temporal alignment of visuals with speech, spatial placement of on-screen text relative to corresponding
@@ -85,7 +69,6 @@ scoring_models:
       temporal contiguity and spatial contiguity principles.
     home_domain: visual_communication
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/segment_pacing
     label: Segment Pacing
     description: Evaluates video segment lengths against engagement research, information density per minute, learner cognitive
@@ -93,7 +76,6 @@ scoring_models:
       are library knowledge.
     home_domain: visual_communication
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/transition_quality
     label: Transition Quality
     description: Evaluates scene-to-scene cut quality, topic transition signposting, visual continuity across angles and backgrounds,
@@ -101,14 +83,12 @@ scoring_models:
       load; consistent transition style creates predictable mental checkpoints.
     home_domain: visual_communication
     status: canonical
-    evidence_ids: *id001
   - id: coe:artifact/visual_communication/video_multimedia_rubric/dimension/production_value
     label: Production Value
     description: 'Evaluates technical output quality: video resolution, camera framing, lighting quality, graphics fidelity,
       and brand consistency. High production value signals credibility and maintains learner attention.'
     home_domain: visual_communication
     status: canonical
-    evidence_ids: *id001
   last_updated: '2026-09-02'
   id: coe:artifact/visual_communication/video_multimedia_rubric
   label: Video and Multimedia Rubric
@@ -116,9 +96,3 @@ scoring_models:
     segment pacing, transition quality, and production value
   home_domain: visual_communication
   status: canonical
-  evidence_ids:
-  - coe:source/central-configs-legacy-f6eb98ff
-  - coe:decision/v4-migration/visual_communication/design_quality_gates
-  - coe:source/legacy-file/b1d39aa30588112c
-  - coe:source/legacy-file/c74fa337caf6512b
-  - coe:decision/curation/2026-09-01/threshold-typing

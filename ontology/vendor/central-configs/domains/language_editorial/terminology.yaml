@@ -15,13 +15,9 @@ entity_collections:
   last_updated: '2026-08-22'
   home_domain: language_editorial
   status: canonical
-  evidence_ids: &id001
-  - coe:source/central-configs-legacy-f6eb98ff
-  - coe:decision/v4-migration/language_editorial/terminology
   entities:
   - id: coe:entity/language_editorial/term/tone
     label: Tone
     description: The stylistic and emotional quality of written expression (e.g. authoritative, conversational, urgent).
     home_domain: language_editorial
     status: canonical
-    evidence_ids: *id001

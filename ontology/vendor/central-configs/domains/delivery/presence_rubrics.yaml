@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/delivery/presence_rubrics
   title: Delivery — Presence Rubrics
-  last_updated: '2026-09-02'
+  last_updated: '2026-09-23'
   authority: Central_Configs
   scope: domain
   ontology_domain: delivery
@@ -12,7 +12,7 @@ entity_collections:
 - id: coe:artifact/delivery/presence_rubrics
   label: Physical Presence & Executive Gravitas
   description: Facilitation models, body language, audience engagement.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   entities:
   - edges:
     - subject_id: coe:entity/facilitation_technique
@@ -23,9 +23,6 @@ entity_collections:
         facilitated interactions with observer feedback and debrief
       statement_id: coe:edge/dfdb7aad28fb5a45c57df56b
       home_domain: delivery
-      evidence_ids: &id001
-      - coe:source/central-configs-legacy-f6eb98ff
-      - coe:decision/v4-migration/delivery/presence_rubrics
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:enables
       object_id: coe:entity/call_to_action
@@ -34,7 +31,6 @@ entity_collections:
         through structured interaction and practice activities
       statement_id: coe:edge/cbd7a573ce98bf2312894237
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:enables
       object_id: coe:entity/collaborative_activity
@@ -43,7 +39,6 @@ entity_collections:
         to coach, and structured debrief require skilled facilitation (Gold Standard Structure)
       statement_id: coe:edge/6eff2716a69b8da41fd9a327
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:enables
       object_id: coe:entity/engagement_cue
@@ -52,7 +47,6 @@ entity_collections:
         prompts like polls, quizzes, and breakout discussions are deployed
       statement_id: coe:edge/b40d7f3854d011917733290e
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:enables
       object_id: coe:entity/engagement_marker
@@ -61,7 +55,6 @@ entity_collections:
         collaborative dialogue that draw audience participation per Personal Branding Framework
       statement_id: coe:edge/a71b0767a0b7c771a1ae2264
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:enables
       object_id: coe:entity/formative_assessment
@@ -71,7 +64,6 @@ entity_collections:
         Learning Assessment research
       statement_id: coe:edge/c1e255fe90244f09ccafcdce
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:enables
       object_id: coe:entity/nonverbal_cue
@@ -80,7 +72,6 @@ entity_collections:
         looking into camera for virtual eye contact, and nodding to show engagement per ILT&VILT Best Practice
       statement_id: coe:edge/c7cb82123f55df63ee8aaba2
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:enables
       object_id: coe:entity/reflection_activity
@@ -89,7 +80,6 @@ entity_collections:
         action plan guidance per Merrill
       statement_id: coe:edge/2d6cfe0c22e906cf748000d4
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:enables
       object_id: coe:entity/roleplay_activity
@@ -98,7 +88,6 @@ entity_collections:
         debrief cycles that make simulation-based practice effective
       statement_id: coe:edge/3bc95e124c3cb835910c7048
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:bridges
       object_id: coe:entity/session_structure_marker
@@ -107,7 +96,6 @@ entity_collections:
         structural segment from icebreakers to closing debriefs
       statement_id: coe:edge/cfa349d7033c529b3c36ee7d
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:limits
       object_id: coe:entity/presentation_anxiety_marker
@@ -116,7 +104,6 @@ entity_collections:
         by distributing attention across the group reducing sole scrutiny
       statement_id: coe:edge/4d3341c3aa425b317d9e6da3
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:triggers
       object_id: coe:entity/germane_load_marker
@@ -125,7 +112,6 @@ entity_collections:
         load per Slide Deck Design Playbook
       statement_id: coe:edge/eec66326671f2ee09e048c84
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:resolves
       object_id: coe:entity/extraneous_load_marker
@@ -134,7 +120,6 @@ entity_collections:
         cues, and steering discussions back on-topic resolve extraneous load in live delivery (Applying_Learning_Theory_Practical_Checklist)
       statement_id: coe:edge/84420248eeb30fc521c3b422
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:resolves
       object_id: coe:entity/vocal_quality_issue
@@ -143,7 +128,6 @@ entity_collections:
         your voice as a tool to maintain interest per ILT&VILT Best Practice
       statement_id: coe:edge/13e773d46433e1b4af539fd1
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:supports
       object_id: coe:entity/confidence_technique
@@ -152,7 +136,6 @@ entity_collections:
         contributions, and handling wrong answers tactfully builds presenter and learner confidence per ILT&VILT Best Practice
       statement_id: coe:edge/17744ca4287acea221f71fa5
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:supports
       object_id: coe:entity/ethos_appeal
@@ -161,7 +144,6 @@ entity_collections:
         over-produced audio — authentic delivery signals credibility per Clark LxD
       statement_id: coe:edge/da4a580bab000fc5cd0a0938
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:supports
       object_id: coe:entity/instructional_event
@@ -172,7 +154,6 @@ entity_collections:
         debriefing events per theory_gagne_s_nine_events_of_instruction
       statement_id: coe:edge/967af064f37cb9d5d2b33242
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:supports
       object_id: coe:entity/progressive_disclosure_marker
@@ -181,7 +162,6 @@ entity_collections:
         information flow during live delivery per slide deck design playbook
       statement_id: coe:edge/06f7f7dda12043d648005f04
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:supports
       object_id: coe:entity/scenario_activity
@@ -190,7 +170,6 @@ entity_collections:
         using verbal sign-posting and open-ended probing questions per SBT guide
       statement_id: coe:edge/2ce2fdbff1d03371607eb824
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/facilitation_technique
       predicate: coe:supports
       object_id: coe:entity/webinar_format
@@ -199,7 +178,6 @@ entity_collections:
         and real-time audience reading
       statement_id: coe:edge/5cd93b741dd77c237ba651c8
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/facilitation_technique
     label: Facilitation Technique
     description: Named facilitation methods and instructor techniques for live delivery
@@ -214,12 +192,6 @@ entity_collections:
     - round-robin check-in
     - fishbowl discussion
     - jigsaw method
-    anti_examples:
-    - cold weather
-    - parking lot space
-    evidence_ids: &id002
-    - coe:source/central-configs-legacy-f6eb98ff
-    - coe:decision/v4-migration/delivery/presence_rubrics
   - edges:
     - subject_id: coe:entity/engagement_cue
       predicate: coe:bridges
@@ -229,7 +201,6 @@ entity_collections:
         engagement signals like the Duchenne smile and eyebrow flash per Anatomy of Presence research
       statement_id: coe:edge/1a54d9671c36b1e17b2ce9a1
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:limits
       object_id: coe:entity/delivery_rate_issue
@@ -239,7 +210,6 @@ entity_collections:
         per Clark LxD
       statement_id: coe:edge/a98ce34232c8a9ce2d275ff6
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:limits
       object_id: coe:entity/extraneous_load_marker
@@ -248,7 +218,6 @@ entity_collections:
         reset the attention clock and keep learners mentally present, limiting extraneous cognitive load from monotony
       statement_id: coe:edge/ed565667977ec20306f40da7
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:limits
       object_id: coe:entity/presentation_anxiety_marker
@@ -257,7 +226,6 @@ entity_collections:
         into nods, smiles, and reactions replaces inward fear with dialogue
       statement_id: coe:edge/05a1b081c13f2d731cf4eb9c
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:triggers
       object_id: coe:entity/germane_load_marker
@@ -266,7 +234,6 @@ entity_collections:
         (germane load) per Slide Deck Design Playbook
       statement_id: coe:edge/f4366892e3c24b22cf99f598
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:supports
       object_id: coe:entity/delivery_mode
@@ -274,7 +241,6 @@ entity_collections:
       description: Live modes (vILT, webinar) require frequent engagement cues; asynchronous modes need visual signposting
       statement_id: coe:edge/dd0dc5c8bec77486be17335e
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:supports
       object_id: coe:entity/engagement_dimension
@@ -285,7 +251,6 @@ entity_collections:
         detection per Unified Performance Framework
       statement_id: coe:edge/0b640bf851cb1ed687b874f9
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:supports
       object_id: coe:entity/formative_assessment
@@ -294,7 +259,6 @@ entity_collections:
         chat answers, and hand-raise patterns serve as informal knowledge checks per Corporate Learning Assessment research
       statement_id: coe:edge/6a59cfe010c89eb9131fb8b2
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:supports
       object_id: coe:entity/instructional_event
@@ -303,7 +267,6 @@ entity_collections:
         interaction through polls, questions, and participation activities per theory_gagne_s_nine_events_of_instruction
       statement_id: coe:edge/42467a920537ed884274b76a
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:supports
       object_id: coe:entity/pathos_appeal
@@ -312,7 +275,6 @@ entity_collections:
         to interact, directly serving the emotional connection that pathos requires per Anatomy of Presence research
       statement_id: coe:edge/6a9048fd10b6b2296085ed7b
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:supports
       object_id: coe:entity/roleplay_activity
@@ -321,7 +283,6 @@ entity_collections:
         practice activities per roleplay research
       statement_id: coe:edge/f2f5508910d3d90277f2e067
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:precedes
       object_id: coe:entity/pause_marker
@@ -330,7 +291,6 @@ entity_collections:
         must allow longer silence for participants to unmute or type responses
       statement_id: coe:edge/5665293f8115cda8afe50db4
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/engagement_cue
       predicate: coe:contrasts_with
       object_id: coe:entity/vocal_quality_issue
@@ -339,7 +299,6 @@ entity_collections:
         sell voices for engagement per Elite Speaker Linguistic Analysis
       statement_id: coe:edge/5986726a63fcafb203d96169
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/engagement_cue
     label: Engagement Cue
     description: Verbal and structural cues used to maintain learner engagement during live delivery
@@ -354,10 +313,6 @@ entity_collections:
     - emoji reaction
     - energy check
     - who can tell me
-    anti_examples:
-    - hand sanitiser
-    - chat application
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:enables
@@ -367,7 +322,6 @@ entity_collections:
         alternatives, and assistive technology support are platform-dependent capabilities per ILT&VILT Best Practice
       statement_id: coe:edge/95eb15779e70e18c1f083f27
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:enables
       object_id: coe:entity/delivery_modality
@@ -376,7 +330,6 @@ entity_collections:
         tools, and recording capability for review (Comprehensive Learning Design Framework)
       statement_id: coe:edge/b4682945565444fd69925626
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:enables
       object_id: coe:entity/facilitation_technique
@@ -385,7 +338,6 @@ entity_collections:
         discussions, whiteboards enable brainstorming, annotations enable collaboration
       statement_id: coe:edge/fce4ee73abb0c0ea2053beaf
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:enables
       object_id: coe:entity/quiz_activity
@@ -395,7 +347,6 @@ entity_collections:
         research
       statement_id: coe:edge/077963c26fcdb7c4c0049e7e
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:enables
       object_id: coe:entity/roleplay_activity
@@ -404,7 +355,6 @@ entity_collections:
         video for observation and feedback per roleplay research
       statement_id: coe:edge/d763d34e5533b029247d297f
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:limits
       object_id: coe:entity/missing_alt_indicator
@@ -413,7 +363,6 @@ entity_collections:
         limit accessibility gaps when properly configured
       statement_id: coe:edge/b21bba890ee5ee2ece1517c9
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:limits
       object_id: coe:entity/nonverbal_cue
@@ -423,7 +372,6 @@ entity_collections:
         research
       statement_id: coe:edge/35e82d2f6e871fe4ac7db3c9
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:triggers
       object_id: coe:entity/extraneous_load_marker
@@ -432,7 +380,6 @@ entity_collections:
         and grid-of-faces fatigue create unique VILT cognitive strain
       statement_id: coe:edge/f608bb9ee4c0a88b70ebf913
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:triggers
       object_id: coe:entity/presentation_anxiety_marker
@@ -441,7 +388,6 @@ entity_collections:
         groups — directly triggering presenter anxiety per Clark LxD
       statement_id: coe:edge/0626e91379d80c695b603e71
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:supports
       object_id: coe:entity/confidence_technique
@@ -450,7 +396,6 @@ entity_collections:
         and software in advance to reduce technical anxiety (Mastering Presentation Nerves)
       statement_id: coe:edge/60a28489b8dc860da2d0ebdf
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:supports
       object_id: coe:entity/engagement_cue
@@ -459,7 +404,6 @@ entity_collections:
         and hand-raise mechanisms that deliver cues in VILT contexts
       statement_id: coe:edge/a011d4daecac709517729887
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:supports
       object_id: coe:entity/ethos_appeal
@@ -469,7 +413,6 @@ entity_collections:
         research
       statement_id: coe:edge/dd6ee032b7ce197aa43fda6a
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:supports
       object_id: coe:entity/formative_assessment
@@ -479,7 +422,6 @@ entity_collections:
         Learning Assessment research
       statement_id: coe:edge/0ea528395d739bf2cab4807d
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:supports
       object_id: coe:entity/microlearning_format
@@ -488,7 +430,6 @@ entity_collections:
         enable microlearning delivery features per AI Microlearning Guide
       statement_id: coe:edge/812329db173b833f5509633c
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/virtual_platform_feature
       predicate: coe:supports
       object_id: coe:entity/webinar_format
@@ -497,7 +438,6 @@ entity_collections:
         annotation tools
       statement_id: coe:edge/ec63680046d0cc46cb15fc3a
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/virtual_platform_feature
     label: Virtual Platform Feature
     description: Virtual meeting platform features used for instructional delivery
@@ -512,10 +452,6 @@ entity_collections:
     - waiting room
     - hand raise feature
     - live captioning
-    anti_examples:
-    - break room
-    - white board marker
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/presentation_anxiety_marker
       predicate: coe:limits
@@ -525,7 +461,6 @@ entity_collections:
         avoid interactive techniques, limiting learner participation
       statement_id: coe:edge/257e85d281d6ec7d178f747c
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/presentation_anxiety_marker
       predicate: coe:triggers
       object_id: coe:entity/delivery_rate_issue
@@ -534,7 +469,6 @@ entity_collections:
         triggers delivery rate issues and rushed pacing
       statement_id: coe:edge/9cb135e82c7d8cf6b4c91f20
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/presentation_anxiety_marker
       predicate: coe:triggers
       object_id: coe:entity/filler_word
@@ -543,7 +477,6 @@ entity_collections:
         words due to nervousness and fear of judgment
       statement_id: coe:edge/296336741bfebb7852e55307
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/presentation_anxiety_marker
       predicate: coe:triggers
       object_id: coe:entity/nonverbal_cue
@@ -553,7 +486,6 @@ entity_collections:
         Performance Framework
       statement_id: coe:edge/ae5c3c06d1645344cb2de21e
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/presentation_anxiety_marker
       predicate: coe:triggers
       object_id: coe:entity/uptalk_indicator
@@ -562,7 +494,6 @@ entity_collections:
         manifestations of anxiety in vocal delivery per Anatomy of Presence research
       statement_id: coe:edge/7483258399406ee7af8f18bb
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/presentation_anxiety_marker
       predicate: coe:triggers
       object_id: coe:entity/vocal_hedge_marker
@@ -571,7 +502,6 @@ entity_collections:
         that undermines speaker authority and credibility
       statement_id: coe:edge/a01c3bc499fc7744734fbcaa
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/presentation_anxiety_marker
       predicate: coe:triggers
       object_id: coe:entity/vocal_quality_issue
@@ -580,7 +510,6 @@ entity_collections:
         breathlessness through the fight-or-flight physiological response
       statement_id: coe:edge/2b00aacefb19c2cbe8db8d53
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/presentation_anxiety_marker
       predicate: coe:supports
       object_id: coe:entity/apology_opener
@@ -589,7 +518,6 @@ entity_collections:
         of anxiety through pre-emptive face-saving per Ethos research
       statement_id: coe:edge/bb7ebcb80275b622021f68d6
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/presentation_anxiety_marker
       predicate: coe:supports
       object_id: coe:entity/confidence_technique
@@ -598,7 +526,6 @@ entity_collections:
         positive visualization reduce anxiety markers (tremor, rushed speech, shallow breathing) and improve delivery quality.
       statement_id: coe:edge/6076009ce554cb38d8a4ef44
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/presentation_anxiety_marker
     label: Presentation Anxiety Marker
     description: Terms and indicators related to public speaking anxiety and nervousness management
@@ -614,8 +541,6 @@ entity_collections:
     - imposter syndrome
     anti_examples:
     - anxiety medication
-    - stage design
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/confidence_technique
       predicate: coe:contains
@@ -624,7 +549,6 @@ entity_collections:
       description: Confidence techniques include strategic pausing with higher silence ratios per voice metric research
       statement_id: coe:edge/25611869f0d2bb93510ca46a
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:enables
       object_id: coe:entity/authority_opener
@@ -633,7 +557,6 @@ entity_collections:
         opening statements per voice enhancements research
       statement_id: coe:edge/2e9f5a1df72fcd8d7818ddf1
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:enables
       object_id: coe:entity/boost_marker
@@ -642,7 +565,6 @@ entity_collections:
         Quality Metric Research
       statement_id: coe:edge/c3a90cc1b4a79ca54ebd0136
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:enables
       object_id: coe:entity/engagement_cue
@@ -652,7 +574,6 @@ entity_collections:
         Nerves)
       statement_id: coe:edge/e0ff0dadd3184805e5d5aad9
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:enables
       object_id: coe:entity/ethos_appeal
@@ -661,7 +582,6 @@ entity_collections:
         authority that directly enables ethos credibility per Ethos and Physicality research
       statement_id: coe:edge/43c95c07b44955ada501947e
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:enables
       object_id: coe:entity/facilitation_technique
@@ -670,7 +590,6 @@ entity_collections:
         to manage difficult group dynamics effectively
       statement_id: coe:edge/640d928721cd861fb32ee5c2
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:enables
       object_id: coe:entity/nonverbal_cue
@@ -679,7 +598,6 @@ entity_collections:
         nonverbal delivery that projects authority and engagement
       statement_id: coe:edge/21f7acec0801cf66a7009f70
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:resolves
       object_id: coe:entity/delivery_rate_issue
@@ -688,7 +606,6 @@ entity_collections:
         delivery rate issues and rushed speaking patterns
       statement_id: coe:edge/8878129c99aa0bcad612b831
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:resolves
       object_id: coe:entity/presentation_anxiety_marker
@@ -697,7 +614,6 @@ entity_collections:
         anxiety symptoms per Ethos and Physicality research
       statement_id: coe:edge/ba847a58292facbf24f85cec
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:resolves
       object_id: coe:entity/vocal_quality_issue
@@ -706,7 +622,6 @@ entity_collections:
         vocal quality issues like trembling voice and breathlessness
       statement_id: coe:edge/9ac2780a3496675ba9a259ae
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:supports
       object_id: coe:entity/story_hook
@@ -715,7 +630,6 @@ entity_collections:
         by confidence technique per Public Speaking research
       statement_id: coe:edge/d6ac952a6d8eaff2e44d7afd
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/confidence_technique
       predicate: coe:contrasts_with
       object_id: coe:entity/uptalk_indicator
@@ -724,7 +638,6 @@ entity_collections:
         by falling terminal pitch per Unified Performance Framework
       statement_id: coe:edge/26edca44a6d67ef870b7db3b
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/confidence_technique
     label: Confidence Technique
     description: Methods and techniques for building presenter confidence and managing delivery anxiety
@@ -739,10 +652,6 @@ entity_collections:
     - anchoring technique
     - progressive muscle relaxation
     - positive self-talk
-    anti_examples:
-    - power outage
-    - box set
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/slide_speech_alignment
       predicate: coe:triggers
@@ -752,7 +661,6 @@ entity_collections:
         per Slide Deck Design Playbook
       statement_id: coe:edge/982fef3fb5687b6c24848590
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/slide_speech_alignment
     label: Slide Speech Alignment
     description: The live application of Temporal Contiguity Principle — the click to reveal a new slide or build must be
@@ -762,23 +670,18 @@ entity_collections:
     examples:
     - click to reveal aligned with spoken explanation
     - the animation must sync with the narration
-    anti_examples:
-    - the speech was well-aligned with the topic
-    evidence_ids: *id002
   - id: coe:entity/elite_delivery_metrics
     label: Elite Delivery Metrics
     description: Empirical delivery metrics with thresholds distinguishing elite from average speakers
     home_domain: delivery
     status: canonical
     edges: []
-    evidence_ids: *id002
   - id: coe:entity/say_show_support_model
     label: Say Show Support Model
     description: 'Three-deliverable approach: verbal script (Say) + cinematic aid (Show) + detailed document (Support).'
     home_domain: delivery
     status: canonical
     edges: []
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/filler_word
       predicate: coe:limits
@@ -788,7 +691,6 @@ entity_collections:
         and perceived competence per Ethos and Physicality research
       statement_id: coe:edge/fc890705b46d271d838e35fd
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/filler_word
       predicate: coe:limits
       object_id: coe:entity/performance_tier
@@ -797,7 +699,6 @@ entity_collections:
         default to disfluencies per Ethos and Physicality research
       statement_id: coe:edge/fadf2e40231b44560c04c069
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/filler_word
       predicate: coe:limits
       object_id: coe:entity/working_memory_marker
@@ -806,7 +707,6 @@ entity_collections:
         with content comprehension; the tolerable filler rate is the library's filler-rate record per Research_Corpus_Public_Speaking_Full
       statement_id: coe:edge/f0b92f96c6e61c6bf7fd10f7
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/filler_word
       predicate: coe:triggers
       object_id: coe:entity/extraneous_load_marker
@@ -814,7 +714,6 @@ entity_collections:
       description: Filler words add extraneous cognitive load to spoken delivery
       statement_id: coe:edge/c02e0035992a15421f0298d2
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/filler_word
       predicate: coe:triggers
       object_id: coe:entity/vocal_quality_issue
@@ -823,7 +722,6 @@ entity_collections:
         clarity and perceived confidence in personal brand delivery per Personal Branding Framework
       statement_id: coe:edge/b286d69ba680ebc62be4e7c2
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/filler_word
       predicate: coe:rebuts
       object_id: coe:entity/confidence_technique
@@ -832,7 +730,6 @@ entity_collections:
         with downward inflection, which is incompatible with filler-laden speech per Anatomy of Presence research
       statement_id: coe:edge/2872300a79427c26cd3348c5
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/filler_word
       predicate: coe:contrasts_with
       object_id: coe:entity/pause_marker
@@ -843,7 +740,6 @@ entity_collections:
         Performance Framework
       statement_id: coe:edge/9ff303c20b9dbb1e2b82a83f
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/filler_word
       predicate: coe:contrasts_with
       object_id: coe:entity/power_verb
@@ -852,7 +748,6 @@ entity_collections:
         power verbs signal competence while fillers undermine it (Architecture of Influence)
       statement_id: coe:edge/77ccc4886792af7a838f1aa0
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/filler_word
     label: Filler Word
     description: Verbal disfluencies that interrupt speech flow and undermine authority
@@ -869,11 +764,6 @@ entity_collections:
     - basically
     - actually
     - right
-    anti_examples:
-    - I like this approach
-    - What kind of solution
-    - Sort the results
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/vocal_hedge_marker
       predicate: coe:limits
@@ -883,7 +773,6 @@ entity_collections:
         certainty rather than weakened assertions
       statement_id: coe:edge/b414db0473c30bf9e4dea233
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_hedge_marker
       predicate: coe:supports
       object_id: coe:entity/negative_qualifier
@@ -892,7 +781,6 @@ entity_collections:
         and reduced assertiveness per Voice Quality Metric Research
       statement_id: coe:edge/f041e1d4a235ec34309581ee
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/vocal_hedge_marker
     label: Vocal Hedge Marker
     description: Language that weakens assertions and undermines speaker certainty
@@ -906,10 +794,6 @@ entity_collections:
     - perhaps
     - sort of like
     - it seems like
-    anti_examples:
-    - I think therefore I am
-    - Maybe is a song title
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/vocal_quality_issue
       predicate: coe:limits
@@ -920,7 +804,6 @@ entity_collections:
         per Voice Quality Metric Research
       statement_id: coe:edge/0c7c0e713ad70985351a8760
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_quality_issue
       predicate: coe:limits
       object_id: coe:entity/engagement_dimension
@@ -929,7 +812,6 @@ entity_collections:
         per voice metric research
       statement_id: coe:edge/1973dd03e3080140d56b0abc
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_quality_issue
       predicate: coe:limits
       object_id: coe:entity/ethos_appeal
@@ -938,7 +820,6 @@ entity_collections:
         limiting ethos appeal per Ethos and Physicality research
       statement_id: coe:edge/e89f3d246d176979a4ea48fd
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_quality_issue
       predicate: coe:triggers
       object_id: coe:entity/delivery_rate_issue
@@ -946,7 +827,6 @@ entity_collections:
       description: Vocal quality issues like breathiness/roughness correlate with speech rate anomalies per voice metric research
       statement_id: coe:edge/b00f73361fd8ed02836e0ee4
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_quality_issue
       predicate: coe:triggers
       object_id: coe:entity/extraneous_load_marker
@@ -955,7 +835,6 @@ entity_collections:
         Mayer's Principles Practical Checklist
       statement_id: coe:edge/ae6535b4d026628d29407bf7
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_quality_issue
       predicate: coe:triggers
       object_id: coe:entity/filler_word
@@ -964,7 +843,6 @@ entity_collections:
         control per voice metric research
       statement_id: coe:edge/ef565ac8301317fedf87f837
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_quality_issue
       predicate: coe:triggers
       object_id: coe:entity/negative_qualifier
@@ -973,7 +851,6 @@ entity_collections:
         qualifiers per Voice Quality Metric Research
       statement_id: coe:edge/53e46489071834309bd7b34d
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_quality_issue
       predicate: coe:triggers
       object_id: coe:entity/performance_tier
@@ -982,7 +859,6 @@ entity_collections:
         — directly determine performance tier placement per Unified Performance Framework
       statement_id: coe:edge/ae1a79cf1c53ac5195a252f0
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/vocal_quality_issue
     label: Vocal Quality Issue
     description: Terms indicating voice quality problems requiring coaching or clinical attention
@@ -997,11 +873,6 @@ entity_collections:
     - creaky voice
     - thin voice
     - weak projection
-    anti_examples:
-    - voice of the customer
-    - brand voice
-    - vocal supporter
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:bridges
@@ -1012,7 +883,6 @@ entity_collections:
         frozen posture and rapid speech co-occur as anxiety indicators per Unified Performance Framework
       statement_id: coe:edge/6be7bff41d874c467b5333a5
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:limits
       object_id: coe:entity/engagement_dimension
@@ -1021,7 +891,6 @@ entity_collections:
         backlog) and monotone pitch measurably reduce audience engagement per Voice Quality Metric Research
       statement_id: coe:edge/2f02cecad2fc5c305c9bd22d
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:limits
       object_id: coe:entity/logos_appeal
@@ -1030,7 +899,6 @@ entity_collections:
         reducing retention of logical arguments per Vocal Profiling research
       statement_id: coe:edge/242723c7f24b018fedda3dac
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:limits
       object_id: coe:entity/performance_tier
@@ -1039,7 +907,6 @@ entity_collections:
         elite-persuasive-rate record states per Elite Speaker Linguistic Analysis
       statement_id: coe:edge/61de7ab4cba91748edb07857
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:limits
       object_id: coe:entity/working_memory_marker
@@ -1048,7 +915,6 @@ entity_collections:
         metric research
       statement_id: coe:edge/63467cc6c517e34532ffe53b
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:triggers
       object_id: coe:entity/extraneous_load_marker
@@ -1057,7 +923,6 @@ entity_collections:
         dual-channel processing theory
       statement_id: coe:edge/93da164ca80fc5778334fa6d
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:triggers
       object_id: coe:entity/vocal_quality_issue
@@ -1066,7 +931,6 @@ entity_collections:
         intelligibility and acoustic clarity per Voice Coaching and Clinical Analysis
       statement_id: coe:edge/5cc47a5626eccfccd0ad69bf
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:supports
       object_id: coe:entity/clarity_dimension
@@ -1075,7 +939,6 @@ entity_collections:
         archetype
       statement_id: coe:edge/0b3c33e0cc7ad257054d5e3b
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:supports
       object_id: coe:entity/cognitive_load_dimension
@@ -1084,7 +947,6 @@ entity_collections:
         cause measurable comprehension loss per voice metric research
       statement_id: coe:edge/63a9f2ab171b1a21ba3cc920
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:supports
       object_id: coe:entity/intrinsic_load_marker
@@ -1093,7 +955,6 @@ entity_collections:
         inherently complex material without overwhelming working memory per Anatomy of Presence research
       statement_id: coe:edge/9186ccba3078023e9c4215db
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/delivery_rate_issue
       predicate: coe:contrasts_with
       object_id: coe:entity/filler_word
@@ -1102,7 +963,6 @@ entity_collections:
         and processing time, filler words signal uncertainty and planning load. Elite speakers replace filler words with silence.
       statement_id: coe:edge/130e024174c330f15787c95e
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/delivery_rate_issue
     label: Delivery Rate Issue
     description: Speech rate and pacing problems identified in coaching feedback
@@ -1117,11 +977,6 @@ entity_collections:
     - mumbling
     - hard to hear
     - swallowed syllables
-    anti_examples:
-    - fast track project
-    - delivery service
-    - flat design
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/speaker_bundle
       predicate: coe:contains
@@ -1131,7 +986,6 @@ entity_collections:
         bundles identified in academic lecture corpus analysis (Architecture of Influence)
       statement_id: coe:edge/3af565ac50adf65d297e63e9
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/speaker_bundle
       predicate: coe:contains
       object_id: coe:entity/visionary_bundle
@@ -1140,7 +994,6 @@ entity_collections:
         which are a type of lexical bundle per Elite Speaker Linguistic Analysis
       statement_id: coe:edge/0fdf7dff311ff3f969d7dc6f
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/speaker_bundle
       predicate: coe:enables
       object_id: coe:entity/bluf_hook
@@ -1149,7 +1002,6 @@ entity_collections:
         you need to know' is both a bundle and a BLUF delivery mechanism
       statement_id: coe:edge/f8ae1f0641bb9dae6e41dc01
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/speaker_bundle
       predicate: coe:supports
       object_id: coe:entity/authority_opener
@@ -1159,7 +1011,6 @@ entity_collections:
         and 'Let me be direct' as syntactic scaffolding for declarative first statements
       statement_id: coe:edge/2963fe5a8c07055976d13b33
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/speaker_bundle
       predicate: coe:supports
       object_id: coe:entity/engagement_marker
@@ -1170,7 +1021,6 @@ entity_collections:
         participation per elite_speaker_taxonomy
       statement_id: coe:edge/80fcfebd0149b44d4309d7d6
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/speaker_bundle
       predicate: coe:supports
       object_id: coe:entity/ethos_appeal
@@ -1179,7 +1029,6 @@ entity_collections:
         'Here is what I know' signal directness and credibility
       statement_id: coe:edge/c1ad4378d0c5725814016217
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/speaker_bundle
       predicate: coe:supports
       object_id: coe:entity/rhetorical_pattern
@@ -1188,7 +1037,6 @@ entity_collections:
         staircase intonation structure of persuasive speech per Vocal Profiling research
       statement_id: coe:edge/7b44e628f6d51a1da709b842
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/speaker_bundle
       predicate: coe:supports
       object_id: coe:entity/working_memory_marker
@@ -1197,7 +1045,6 @@ entity_collections:
         working memory per Elite Speaker Linguistic Analysis
       statement_id: coe:edge/ddb943456e2cad9276212158
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/speaker_bundle
     label: Speaker Bundle
     description: Multi-word formulaic sequences characteristic of elite speakers
@@ -1212,10 +1059,6 @@ entity_collections:
     - Here's what I know
     - Let me be clear
     - Make no mistake
-    anti_examples:
-    - bundle of sticks
-    - product bundle
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/pause_marker
       predicate: coe:enables
@@ -1225,7 +1068,6 @@ entity_collections:
         load by allowing reflection and integration (Architecture of Influence)
       statement_id: coe:edge/5a1d9287cb1b1c652bc35df1
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:enables
       object_id: coe:entity/nonverbal_cue
@@ -1234,7 +1076,6 @@ entity_collections:
         the Power Box per Ethos and Physicality research
       statement_id: coe:edge/42df182aebac03428f281879
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:enables
       object_id: coe:entity/performance_tier
@@ -1243,7 +1084,6 @@ entity_collections:
         while novices fill silence with disfluencies
       statement_id: coe:edge/0958ace93039063074f90077
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:enables
       object_id: coe:entity/rhetorical_pattern
@@ -1252,7 +1092,6 @@ entity_collections:
         rhythmic and persuasive impact
       statement_id: coe:edge/86880842e8cc747fac9d2f8c
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:enables
       object_id: coe:entity/tricolon
@@ -1261,7 +1100,6 @@ entity_collections:
         structures land with full impact per Ethos and Physicality research
       statement_id: coe:edge/09e73f54cf5bf999e05b3d57
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:resolves
       object_id: coe:entity/extraneous_load_marker
@@ -1270,7 +1108,6 @@ entity_collections:
         measurably improve retention per Vocal Profiling research
       statement_id: coe:edge/b566038f3fedc833eca7bb0d
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:resolves
       object_id: coe:entity/working_memory_marker
@@ -1279,7 +1116,6 @@ entity_collections:
         length allows audience consolidation per dual-channel theory
       statement_id: coe:edge/d405f0b46a740441f23e4acb
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/clarity_dimension
@@ -1288,7 +1124,6 @@ entity_collections:
         as deliberate allow audience information encoding per Voice Quality Metric Research
       statement_id: coe:edge/cc9242cc586bcd76b62dc813
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/delivery_rate_issue
@@ -1299,7 +1134,6 @@ entity_collections:
         for audiences. The target rate for each delivery context is achieved through strategic pause placement.
       statement_id: coe:edge/77cb2454e5c7a010cb0a3270
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/emphasis_marker
@@ -1308,7 +1142,6 @@ entity_collections:
         The pause provides time for cognitive consolidation and emotional resonance of emphasized content.
       statement_id: coe:edge/8289e73c102847e7b87e941d
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/engagement_cue
@@ -1317,7 +1150,6 @@ entity_collections:
         responses after participation prompts per Elite Speaker Linguistic Analysis
       statement_id: coe:edge/5acadbf1c772d3308adc97cf
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/engagement_dimension
@@ -1325,7 +1157,6 @@ entity_collections:
       description: Engagement scoring benefits from strategic pause usage and varied silence ratio per voice metric research
       statement_id: coe:edge/d4f0f15dfcce02c381b77294
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/facilitation_technique
@@ -1335,7 +1166,6 @@ entity_collections:
         research
       statement_id: coe:edge/18a2a9cd00877f9d28f26a9d
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/logos_appeal
@@ -1344,7 +1174,6 @@ entity_collections:
         of arguments per World-Class Public Speaking Research
       statement_id: coe:edge/7aa813591b810da772b06fc9
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/narrative_tension
@@ -1355,7 +1184,6 @@ entity_collections:
         Opening Plays
       statement_id: coe:edge/d289d1ad6aa5d6e006820be8
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/structure_dimension
@@ -1364,7 +1192,6 @@ entity_collections:
         speech delivery
       statement_id: coe:edge/6677eac2785c48ee49ef9578
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/transition_marker
@@ -1373,7 +1200,6 @@ entity_collections:
         signal structural shifts per World-Class Public Speaking Research
       statement_id: coe:edge/4ede3432948372c95ea9f2ae
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/pause_marker
       predicate: coe:supports
       object_id: coe:entity/vocal_emphasis_marker
@@ -1382,7 +1208,6 @@ entity_collections:
         while a post-emphasis pause allows cognitive consolidation
       statement_id: coe:edge/51aaaf0e96a7a2a33941d2de
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/pause_marker
     label: Pause Marker
     description: Notations indicating strategic or problematic pauses in speech
@@ -1396,10 +1221,6 @@ entity_collections:
     - '...'
     - (pause for effect)
     - '[2-second pause]'
-    anti_examples:
-    - pause the video
-    - press pause
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:enables
@@ -1409,7 +1230,6 @@ entity_collections:
         perception of confidence by observers per Unified Performance Framework
       statement_id: coe:edge/263b58305113ac859967ba91
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:enables
       object_id: coe:entity/engagement_cue
@@ -1418,7 +1238,6 @@ entity_collections:
         engagement per voice metric research
       statement_id: coe:edge/29c49ac5bb41fe0045f3aadd
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:enables
       object_id: coe:entity/pathos_appeal
@@ -1427,7 +1246,6 @@ entity_collections:
         read pathos through nonverbal channels first
       statement_id: coe:edge/f6d8e1facefbb0c9be978147
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:bridges
       object_id: coe:entity/pause_marker
@@ -1436,7 +1254,6 @@ entity_collections:
         the Power Box framework per Ethos research
       statement_id: coe:edge/652c73c903bae1c0d7467fbd
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:bridges
       object_id: coe:entity/vocal_quality_issue
@@ -1447,7 +1264,6 @@ entity_collections:
         research
       statement_id: coe:edge/8997a6b5614be5473dfaf7b7
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:triggers
       object_id: coe:entity/performance_tier
@@ -1456,7 +1272,6 @@ entity_collections:
         library's self-adaptor record indicates the anxiety tier per Unified Performance Framework
       statement_id: coe:edge/770b43a97a341fd2952581bb
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/authority_opener
@@ -1465,7 +1280,6 @@ entity_collections:
         stance from the first moments, before thin-slice judgements settle, per thin-slicing research
       statement_id: coe:edge/cc9d8a125da44a1d849b3358
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/engagement_dimension
@@ -1475,7 +1289,6 @@ entity_collections:
         Research | Synchronized nonverbal cues enhance audience engagement assessment scores per Voice Quality Metric Research
       statement_id: coe:edge/f1979e73bc1ff9d46fcb95fd
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/ethos_appeal
@@ -1486,7 +1299,6 @@ entity_collections:
         within moments, based on nonverbal signals, before processing verbal content.
       statement_id: coe:edge/9b9cfe97ec285b9d7ab74ddd
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/facilitation_technique
@@ -1496,7 +1308,6 @@ entity_collections:
         contributions per Clark LxD'
       statement_id: coe:edge/538319d168dc28421bd41b29
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/logos_appeal
@@ -1507,7 +1318,6 @@ entity_collections:
         of Presence research
       statement_id: coe:edge/3bc92b73b8d5aab17ec8feec
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/narrative_hook
@@ -1516,7 +1326,6 @@ entity_collections:
         the hook all physically amplify the hook's attention-grabbing effect per Ethos and Physicality research
       statement_id: coe:edge/2da32c2c58d057d1d981cb4f
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/presentation_anxiety_marker
@@ -1525,7 +1334,6 @@ entity_collections:
         voice metric research
       statement_id: coe:edge/138ffb99579dfb198aadf333
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/rhetorical_pattern
@@ -1534,7 +1342,6 @@ entity_collections:
         supports parallel structure delivery per Ethos research
       statement_id: coe:edge/b1c7b7a483f4264e967d9401
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/vocal_emphasis_marker
@@ -1544,7 +1351,6 @@ entity_collections:
         authority gestures and forward lean reinforce stressed content per dual coding theory
       statement_id: coe:edge/8599b349fe7e970f75376868
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/nonverbal_cue
       predicate: coe:supports
       object_id: coe:entity/working_memory_marker
@@ -1553,7 +1359,6 @@ entity_collections:
         encoding that disambiguates pronoun references and reduces cognitive load per elite_speaker_taxonomy
       statement_id: coe:edge/d1529c5bf2a8e06aa04b1ffb
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/nonverbal_cue
     label: Nonverbal Cue
     description: Descriptions of body language, gestures, and physical presence in speaker notes
@@ -1570,11 +1375,6 @@ entity_collections:
     - making eye contact
     - looking at slides
     - head tilt
-    anti_examples:
-    - nonverbal agreement
-    - cue the music
-    - cue card
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/uptalk_indicator
       predicate: coe:bridges
@@ -1585,7 +1385,6 @@ entity_collections:
         intonation on declaratives and hedge words frequently co-occur in low-authority delivery patterns
       statement_id: coe:edge/7011bcbc69e53182e11c34f9
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/uptalk_indicator
       predicate: coe:bridges
       object_id: coe:entity/vocal_quality_issue
@@ -1595,7 +1394,6 @@ entity_collections:
         vocal authority and undermine perceived competence per Ethos research
       statement_id: coe:edge/4c1f1bd3f6d465773f215bc8
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/uptalk_indicator
       predicate: coe:limits
       object_id: coe:entity/ethos_appeal
@@ -1604,7 +1402,6 @@ entity_collections:
         signals low status in executive communication contexts
       statement_id: coe:edge/65a8bcbb8f56be8adf516294
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/uptalk_indicator
       predicate: coe:limits
       object_id: coe:entity/performance_tier
@@ -1613,7 +1410,6 @@ entity_collections:
         terminal intonation on key claims per Ethos research
       statement_id: coe:edge/dc5a0728b66d85b9f456c925
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/uptalk_indicator
       predicate: coe:supports
       object_id: coe:entity/hedge_marker
@@ -1623,7 +1419,6 @@ entity_collections:
         per prosodic research
       statement_id: coe:edge/8a79ac2e3a156896b91bad37
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/uptalk_indicator
     label: Uptalk Indicator
     description: Markers of High Rising Terminal (HRT) that undermine speaker authority
@@ -1639,7 +1434,6 @@ entity_collections:
     anti_examples:
     - What did you launch?
     - Were the results positive?
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/performance_tier
       predicate: coe:specialises
@@ -1649,7 +1443,6 @@ entity_collections:
         generic proficiency level descriptors for speaker assessment
       statement_id: coe:edge/80fe9a238f7bbcc600559714
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/performance_tier
       predicate: coe:contains
       object_id: coe:entity/delivery_rate_issue
@@ -1658,7 +1451,6 @@ entity_collections:
         archetypes (The Manic rushing, The Drone dragging) per Unified Performance Framework
       statement_id: coe:edge/2913c76e2655fb81b16e229b
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/performance_tier
       predicate: coe:contains
       object_id: coe:entity/nonverbal_cue
@@ -1667,7 +1459,6 @@ entity_collections:
         range are tier-differentiating metrics per Unified Performance Framework
       statement_id: coe:edge/018bba1f0c13b02a73d352c8
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/performance_tier
       predicate: coe:contains
       object_id: coe:entity/vocal_quality_issue
@@ -1676,7 +1467,6 @@ entity_collections:
         directly to tier placement per Unified Performance Framework
       statement_id: coe:edge/7212f1157b919a54be2c6af8
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/performance_tier
       predicate: coe:supports
       object_id: coe:entity/clarity_dimension
@@ -1685,7 +1475,6 @@ entity_collections:
         per voice metric research
       statement_id: coe:edge/82bce06ba0061c468c4137c9
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/performance_tier
       predicate: coe:supports
       object_id: coe:entity/ethos_appeal
@@ -1695,7 +1484,6 @@ entity_collections:
         Clinical Analysis
       statement_id: coe:edge/8b0399ef4908a2d9dd0874e1
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/performance_tier
       predicate: coe:supports
       object_id: coe:entity/structure_dimension
@@ -1705,7 +1493,6 @@ entity_collections:
         tier strongly correlates with structure dimension scores.
       statement_id: coe:edge/e2e2b279e0f6795c9f02c8eb
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/performance_tier
     label: Performance Tier
     description: Labels from the performance scoring framework indicating speaker level
@@ -1720,10 +1507,6 @@ entity_collections:
     - Good Voice Quality
     - Acceptable Voice Quality
     - Voice Quality Concern
-    anti_examples:
-    - elite membership
-    - developing country
-    evidence_ids: *id002
   - edges:
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:enables
@@ -1733,7 +1516,6 @@ entity_collections:
         research
       statement_id: coe:edge/187ba4615e20dcc0fa0a5ce0
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:enables
       object_id: coe:entity/rhetorical_pattern
@@ -1742,7 +1524,6 @@ entity_collections:
         anaphora openings amplifies their persuasive effect
       statement_id: coe:edge/090a4b23161333c5d1c758bf
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:limits
       object_id: coe:entity/delivery_rate_issue
@@ -1751,7 +1532,6 @@ entity_collections:
         eliminating the pitch and duration variation they require
       statement_id: coe:edge/abe95b8b1ee43e5d2a7a0425
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:supports
       object_id: coe:entity/call_to_action
@@ -1760,7 +1540,6 @@ entity_collections:
         importance and drive audience response per Ethos and Physicality research
       statement_id: coe:edge/1f6f1586c6fec310ae1ca0ac
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:supports
       object_id: coe:entity/engagement_dimension
@@ -1769,7 +1548,6 @@ entity_collections:
         engagement per Voice Quality Metric Research
       statement_id: coe:edge/d1e3c40b80117c5307d7740e
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:supports
       object_id: coe:entity/germane_load_marker
@@ -1780,7 +1558,6 @@ entity_collections:
         record states is optimal for audience digestion per World-Class Public Speaking research
       statement_id: coe:edge/875899061404475091791c57
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:supports
       object_id: coe:entity/narrative_tension
@@ -1789,7 +1566,6 @@ entity_collections:
         tension through escalating contours per World-Class Public Speaking Research
       statement_id: coe:edge/d52f89d56b5f5ce03b1ad055
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:supports
       object_id: coe:entity/pathos_appeal
@@ -1798,7 +1574,6 @@ entity_collections:
         extreme dynamic range is the acoustic signature of passion per Vocal Profiling research
       statement_id: coe:edge/9376209e864f59e020944dd3
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:supports
       object_id: coe:entity/power_verb
@@ -1807,7 +1582,6 @@ entity_collections:
         signalling effect per Ethos and Physicality research
       statement_id: coe:edge/a16358aff5fbd7983bbe10d5
       home_domain: delivery
-      evidence_ids: *id001
     - subject_id: coe:entity/vocal_emphasis_marker
       predicate: coe:supports
       object_id: coe:entity/speaker_bundle
@@ -1816,7 +1590,6 @@ entity_collections:
         you' or 'If you look at' gain power through vocal emphasis and strategic pausing that marks them as important.
       statement_id: coe:edge/c63861dacd041fc116aacdb0
       home_domain: delivery
-      evidence_ids: *id001
     id: coe:entity/vocal_emphasis_marker
     label: Vocal Emphasis Marker
     description: Text formatting indicating vocal emphasis in speaker scripts
@@ -1828,10 +1601,6 @@ entity_collections:
     - '*absolutely essential*'
     - __key takeaway__
     - NEVER do this
-    anti_examples:
-    - README file
-    - API_KEY constant
-    evidence_ids: *id002
   - id: coe:entity/stereotype_content_model
     label: Stereotype Content Model
     description: Stereotype Content Model (SCM) speaker evaluation framework — two primary perception dimensions that determine
@@ -1839,7 +1608,6 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    evidence_ids: *id002
   - id: coe:entity/acoustic_leadership_pillars
     label: Acoustic Leadership Pillars
     description: 'Four core pillars of executive presence measurable through digital signal processing: Authority, Engagement,
@@ -1847,7 +1615,6 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    evidence_ids: *id002
   - id: coe:entity/jitter_metric
     label: Jitter Metric
     description: Frequency perturbation measuring cycle-to-cycle variation in the period of vocal fold vibration. It is
@@ -1856,7 +1623,6 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    evidence_ids: *id002
   - id: coe:entity/shimmer_metric
     label: Shimmer Metric
     description: Amplitude perturbation measuring cycle-to-cycle variation in the intensity of vocal fold vibration. It
@@ -1865,7 +1631,6 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    evidence_ids: *id002
   - id: coe:entity/modality_conflict_marker
     label: Modality Conflict Marker
     description: Detection of non-congruent signals across audio and video (e.g., authoritative voice with nervous visual
@@ -1873,19 +1638,15 @@ entity_collections:
     home_domain: delivery
     status: canonical
     edges: []
-    evidence_ids: *id002
   home_domain: delivery
   status: canonical
-  evidence_ids: *id002
 - id: coe:artifact/delivery/live_delivery_disciplines
   label: Live Delivery Disciplines
   description: Live-delivery craft disciplines recovered from the knowledge wiki — stagecraft environment, gesture,
     identity, audience response and rehearsal.
-  last_updated: '2026-09-01'
+  last_updated: '2026-09-23'
   home_domain: delivery
   status: canonical
-  evidence_ids:
-  - coe:decision/curation/2026-09-01/wiki-entry-recovery
   entities:
   - id: coe:entity/live_presentation_scenography
     label: Live Presentation Scenography
@@ -1900,8 +1661,6 @@ entity_collections:
     - sightlines
     - show calling
     - stage safety
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/mcneill_gesture_taxonomy
     label: McNeill Gesture Taxonomy
     description: McNeill's four-type classification of co-speech gestures — Iconic, Metaphoric, Deictic, Beat — as
@@ -1915,8 +1674,6 @@ entity_collections:
     - beat gesture
     - metaphoric gesture
     - McNeill
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/personal_branding
     label: Personal Branding
     description: Strategic construction and maintenance of a professional identity through mental, vocal and physical
@@ -1932,8 +1689,6 @@ entity_collections:
     anti_examples:
     - product branding
     - brand guidelines
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/qa_handling
     label: Q&A Handling
     description: Discipline of answering live audience questions by classify, acknowledge, bridge and communicate —
@@ -1946,11 +1701,6 @@ entity_collections:
     - bridging technique
     - acknowledge and bridge
     - hostile question
-    anti_examples:
-    - QA testing
-    - quality assurance
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/reading_the_room
     label: Reading the Room
     description: Real-time interpretation of audience posture, gaze, expression and gesture cues and selection of an
@@ -1966,17 +1716,11 @@ entity_collections:
         questions.
       statement_id: coe:edge/reading-the-room-supports-qa-handling
       home_domain: delivery
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - reading the room
     - audience cues
     - disengaged audience
     - adjust on the fly
-    anti_examples:
-    - reading room in the library
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery
   - id: coe:entity/rehearsal_and_dry_run
     label: Rehearsal and Dry Run
     description: Staged rehearsal method — content, interaction, technical and dress runs plus red-team and contingency
@@ -1991,15 +1735,9 @@ entity_collections:
       description: Staged rehearsal removes under-preparation, the dominant controllable source of presentation anxiety.
       statement_id: coe:edge/rehearsal-and-dry-run-limits-presentation-anxiety-marker
       home_domain: delivery
-      evidence_ids:
-      - coe:decision/curation/2026-09-01/wiki-relational-mining
     examples:
     - dry run
     - dress rehearsal
     - technical rehearsal
     - red-team rehearsal
     - run-through
-    anti_examples:
-    - deployment dry run
-    evidence_ids:
-    - coe:decision/curation/2026-09-01/wiki-entry-recovery

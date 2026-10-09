@@ -27,12 +27,9 @@ taxonomies:
     description: A defeasible inference pattern whose presumption is assessable only with its declared premise slots and critical questions.
     home_domain: narrative
     status: canonical
-    evidence_ids: &evidence
-    - coe:source/nine-frameworks-research-45b6a77f
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/practical_reasoning
     label: Argument from Practical Reasoning
@@ -40,7 +37,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/expert_opinion
     label: Argument from Expert Opinion
@@ -48,7 +44,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/analogy
     label: Argument from Analogy
@@ -56,7 +51,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: &expanded_evidence [coe:source/discourse-frameworks-reference-5475d9fa]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/position_to_know
     label: Argument from Position to Know
@@ -64,7 +58,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/popular_opinion
     label: Argument from Popular Opinion
@@ -72,7 +65,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *expanded_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/example
     label: Argument from Example
@@ -80,7 +72,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *expanded_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/sign
     label: Argument from Sign
@@ -88,7 +79,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *expanded_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/cause_to_effect
     label: Argument from Cause to Effect
@@ -96,7 +86,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *expanded_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/consequences
     label: Argument from Consequences
@@ -104,7 +93,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-verbal-classification-2008]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/verbal_classification
     label: Argument from Verbal Classification
@@ -112,7 +100,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *expanded_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/slippery_slope
     label: Slippery Slope Argument
@@ -120,7 +107,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *expanded_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme]
     id: coe:concept/argumentation_schemes_taxonomy/scheme/ad_hominem
     label: Ad Hominem Argument
@@ -128,14 +114,12 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot
     label: Scheme Premise Slot
     description: A named semantic role that an instantiated scheme must bind to actual argument components or support sets.
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/goal
     label: Practical Reasoning Goal Premise
@@ -143,7 +127,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/action
     label: Practical Reasoning Action Premise
@@ -151,7 +134,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/practical_reasoning/means_goal
     label: Practical Reasoning Means–Goal Premise
@@ -159,7 +141,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/expertise
     label: Expert Opinion Expertise Premise
@@ -167,7 +148,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/assertion
     label: Expert Opinion Assertion Premise
@@ -175,7 +155,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/expert_opinion/field
     label: Expert Opinion Field Premise
@@ -183,7 +162,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/source_case
     label: Analogy Source-Case Premise
@@ -191,7 +169,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/target_case
     label: Analogy Target-Case Premise
@@ -199,7 +176,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/analogy/relevant_similarity
     label: Analogy Relevant-Similarity Premise
@@ -207,14 +183,12 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     id: coe:concept/argumentation_schemes_taxonomy/critical_question
     label: Scheme Critical Question
     description: A scheme-specific challenge whose answer can sustain, qualify, or defeat the defeasible inference.
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/goal_legitimacy
     label: Is the goal legitimate and genuinely valued?
@@ -222,7 +196,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/feasibility
     label: Is the proposed action feasible?
@@ -230,7 +203,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/goal_advancement
     label: Will the action advance the goal?
@@ -238,7 +210,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/alternatives
     label: Is there a materially better alternative action?
@@ -246,7 +217,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/consequences
     label: Do adverse consequences outweigh the expected benefit?
@@ -254,7 +224,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/expertise
     label: How credible is the source as an expert?
@@ -262,7 +231,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/field
     label: Is the assertion within the source's field?
@@ -270,7 +238,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/assertion
     label: What exactly did the source assert?
@@ -278,7 +245,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/trustworthiness
     label: Is the source trustworthy in this instance?
@@ -286,7 +252,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/consistency
     label: Is the assertion consistent with other qualified opinion?
@@ -294,7 +259,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-macagno-common-knowledge-2005]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/expert_opinion/evidence
     label: Is the assertion supported by evidence?
@@ -302,7 +266,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/similarity
     label: Are the cited similarities relevant to the conclusion?
@@ -310,7 +273,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/difference
     label: Is there a relevant difference between the cases?
@@ -318,7 +280,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/source_case
     label: Is the source case itself established?
@@ -326,7 +287,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/counteranalogy
     label: Is there a stronger counteranalogy?
@@ -334,14 +294,12 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-reed-diagramming-2002]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable
     label: Scheme Variable
     description: A parameter of an inference pattern, distinct from a premise asserting a relationship among parameters.
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-reed-diagramming-2002]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme_variable]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable/expert_opinion/source
     label: Expert Opinion Source Variable
@@ -349,7 +307,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-reed-diagramming-2002]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme_variable]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable/expert_opinion/domain
     label: Expert Opinion Domain Variable
@@ -357,7 +314,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-reed-diagramming-2002]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme_variable]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable/sign/indicated_proposition
     label: Sign Indicated Proposition Variable
@@ -365,7 +321,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-reed-diagramming-2002]
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/sign/observation
     label: Sign Observation Premise
@@ -373,7 +328,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-reed-diagramming-2002]
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/sign/indicator_warrant
     label: Sign Indicator Warrant
@@ -381,7 +335,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: &mining_evidence [coe:source/walton-argument-mining-2021]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme_variable]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable/position_to_know/source
     label: Position to Know Source
@@ -389,7 +342,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *mining_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/position_to_know/assertion
     label: Position to Know Assertion
@@ -397,7 +349,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *mining_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/position_to_know/access
     label: Access to Knowledge
@@ -405,7 +356,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *mining_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/position_to_know/reliability
     label: Informant Reliability
@@ -413,7 +363,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *mining_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/position_to_know/assertion
     label: Assertion Verification
@@ -421,7 +370,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *mining_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/slippery_slope/first_step
     label: Slippery Slope First Step
@@ -429,7 +377,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *mining_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/slippery_slope/recursive
     label: Slippery Slope Recursive Premise
@@ -437,7 +384,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: *mining_evidence
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/slippery_slope/bad_outcome
     label: Slippery Slope Bad Outcome
@@ -445,7 +391,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/godden-walton-schemes-critical-questions-2007]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/practical_reasoning/alternative_means
     label: Alternative Means Question
@@ -453,7 +398,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-verbal-classification-2008]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/verbal_classification/individual_property
     label: Individual Property Question
@@ -461,7 +405,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/walton-verbal-classification-2008]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/verbal_classification/classification_strength
     label: Classification Strength Question
@@ -469,7 +412,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme_variable]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable/popular_opinion/proposition
     label: Popular Opinion Proposition
@@ -477,7 +419,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/popular_opinion/acceptance
     label: Popular Opinion Acceptance Premise
@@ -485,7 +426,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme_variable]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable/analogy/conclusion_property
     label: Analogy Transferred Proposition
@@ -493,7 +433,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/analogy/claimed_similarity
     label: Claimed Similarity Question
@@ -501,7 +440,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/example/instance
     label: Example Instance Premise
@@ -509,7 +447,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/example/truth
     label: Example Truth Question
@@ -517,7 +454,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/example/instantiation
     label: Example Instantiation Question
@@ -525,7 +461,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/example/typicality
     label: Example Typicality Question
@@ -533,7 +468,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/example/strength
     label: Generalisation Strength Question
@@ -541,7 +475,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/sign/correlation_strength
     label: Sign Correlation Strength Question
@@ -549,7 +482,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme_variable]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable/cause_to_effect/cause
     label: Cause Variable
@@ -557,7 +489,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme_variable]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable/cause_to_effect/effect
     label: Effect Variable
@@ -565,7 +496,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/premise_slot]
     id: coe:concept/argumentation_schemes_taxonomy/premise_slot/cause_to_effect/generalisation
     label: Causal Generalisation Premise
@@ -573,7 +503,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/cause_to_effect/strength
     label: Causal Strength Question
@@ -581,7 +510,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/cause_to_effect/evidence
     label: Causal Evidence Question
@@ -589,7 +517,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/cause_to_effect/interference
     label: Causal Interference Question
@@ -597,7 +524,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/scheme_variable]
     id: coe:concept/argumentation_schemes_taxonomy/scheme_variable/consequences/action
     label: Consequences Action Variable
@@ -605,7 +531,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/consequences/likelihood
     label: Consequence Likelihood Question
@@ -613,7 +538,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/consequences/evidence
     label: Consequence Evidence Question
@@ -621,7 +545,6 @@ taxonomies:
   - in_scheme: coe:artifact/narrative/argumentation_schemes_taxonomy
     home_domain: narrative
     status: canonical
-    evidence_ids: [coe:source/araucaria-walton-schemes-1996]
     broader: [coe:concept/argumentation_schemes_taxonomy/critical_question]
     id: coe:concept/argumentation_schemes_taxonomy/critical_question/consequences/opposite_value
     label: Opposite Consequences Question
@@ -631,4 +554,3 @@ taxonomies:
   - coe:concept/argumentation_schemes_taxonomy/scheme
   - coe:concept/argumentation_schemes_taxonomy/premise_slot
   - coe:concept/argumentation_schemes_taxonomy/critical_question
-  evidence_ids: *evidence
