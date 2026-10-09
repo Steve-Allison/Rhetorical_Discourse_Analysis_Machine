@@ -42,9 +42,9 @@
     "semantic_hash": "e2f0ea9b7af09d55313f43a42ab88783"
   },
   "pyproject.toml": {
-    "mtime": 1791540780.242853,
-    "seen": 1791540847.878313,
-    "ast_hash": "e6ab293c40a7350b2f83109965332d6d",
+    "mtime": 1791555346.0257843,
+    "seen": 1791555984.224243,
+    "ast_hash": "6b07962d6c234ee43656e3d80079f08d",
     "semantic_hash": ""
   },
   "rdam/__init__.py": {
@@ -1902,9 +1902,9 @@
     "semantic_hash": ""
   },
   "tests/production_boundary/test_rst_baseline.py": {
-    "mtime": 1788608404.8198571,
-    "seen": 1788608440.4636118,
-    "ast_hash": "091936591f1ccf3993ef3fdf75fe3658",
+    "mtime": 1791555309.419768,
+    "seen": 1791555984.2245278,
+    "ast_hash": "ca37a2010874d898143e10d276d2dd15",
     "semantic_hash": ""
   },
   "tests/rst/__init__.py": {
@@ -2280,9 +2280,9 @@
     "semantic_hash": ""
   },
   "tools/production_boundary/rst_baseline.py": {
-    "mtime": 1791539494.3896217,
-    "seen": 1791539499.9930959,
-    "ast_hash": "ad5ad8eb00c82bf94821ea3833ec8a11",
+    "mtime": 1791555299.796557,
+    "seen": 1791555984.22456,
+    "ast_hash": "fbb5703bc459d87b1dde61f86546ea6b",
     "semantic_hash": ""
   },
   "tools/production_boundary/schemas.py": {
@@ -2946,9 +2946,9 @@
     "semantic_hash": "723256b401268701202ce0a0a2e78aa4"
   },
   "AGENTS.md": {
-    "mtime": 1791540309.9755735,
-    "seen": 1791540642.9578009,
-    "ast_hash": "b96eb9d36936f7c671b57f08aaccf1f9",
+    "mtime": 1791555353.2109358,
+    "seen": 1791555984.2246232,
+    "ast_hash": "bf49841ad6c8c271139753b268364908",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -4242,9 +4242,9 @@
     "semantic_hash": ""
   },
   "docs/production-source-ingest.md": {
-    "mtime": 1788693419.0789368,
-    "seen": 1788693536.122617,
-    "ast_hash": "17576b99a9c2981437360b10b167997e",
+    "mtime": 1791555353.153994,
+    "seen": 1791555984.224633,
+    "ast_hash": "41a9bb8643bbece75ef668c00784bf5d",
     "semantic_hash": ""
   },
   "docs/raw-material-ingest-forensic-analysis.md": {
