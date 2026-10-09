@@ -19,21 +19,12 @@ and [production ingest](../../docs/production-source-ingest.md). The package is
 - [DocLang 0.7 spec](verified_doclang_spec.md) — XML-based; lock `doclang[schematron-saxon]>=0.7,<0.8` (PyPI 0.7.3 as of 2026-08-16); no stable element IDs; `<layer>` ∈ {body, background, furniture}; no slide concept. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md). Historical notes in that file still mention 0.5; fixtures remirrored 2026-08-16 (42 files).
 - [DocLang fixture verifications (Phase 1)](verified_doclang_fixtures.md) — Q1–Q6 verified against the then-40 valid fixtures. Remirror 2026-08-16 added `ok_description_element_head` and `ok_namespaced_and_versioned`.
 
-## Historical format-design decisions
-
-
 ## Resolved questions (kept as historical record)
 
 - [Boundary preservation in harvested text](open_boundary_preservation.md) — RESOLVED: boundary metadata as annotation; not structural.
 - [Parse-per-boundary alternative architecture](open_parse_per_boundary.md) — REJECTED: one-tree-per-document wins.
 - [`Parser` facade output shape](open_parser_facade_unverified.md) — RESOLVED: returns `{'rst': [tree]}`; tree has character-level absolute offsets; strictly binary; leaves are EDUs.
 - [Device API public surface](open_device_api.md) — RESOLVED 2026-06-30: `device=` ("auto" default) is canonical on `Parser` + predictors; `cuda_device:int` is a deprecated warned shim.
-
-## Feedback (HARD-RULE enforcement)
-
-
-## Upstream tracking
-
 
 ## Historical open design questions
 
