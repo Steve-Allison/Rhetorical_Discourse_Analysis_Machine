@@ -24,11 +24,13 @@ Core import and capability discovery do not import the optional adapters.
 Attempting an unavailable form produces `source_adapter_distribution_unavailable`
 with the required `formats` extra, never a raw `ModuleNotFoundError`.
 
-Dependency status checked on 2026-09-06: the installed and locked versions are
-Docling Core 2.94.1 and DocLang 0.7.3. PyPI reports [Docling Core 2.95.0](https://pypi.org/project/docling-core/)
-and [DocLang 0.7.3](https://pypi.org/project/doclang/). The current Docling range
-`>=2.94.1,<2.95` excludes 2.95.0; compatibility with that release has not been
-verified. Do not equate locked compatibility with latest-upstream conformance.
+Docling Core always tracks its latest release: the range is `>=<latest>,<3`, so
+`pixi update` picks up every new minor release. Dependency status checked on
+2026-10-09: the installed and locked versions are Docling Core 2.101.1 and
+DocLang 0.7.3, both the latest on PyPI ([Docling Core](https://pypi.org/project/docling-core/),
+[DocLang](https://pypi.org/project/doclang/)). DocLang's unreleased `main` adds
+`<track>` and multiple captions, which 0.7.3 does not validate. Do not equate
+locked compatibility with latest-upstream conformance.
 The normative sources are the [Docling model](https://github.com/docling-project/docling-core/blob/main/docling_core/types/doc/document.py)
 and [DocLang specification](https://github.com/doclang-project/doclang/blob/main/spec.md).
 Fixture schemas and RDAM's own v3 envelope are independently versioned.

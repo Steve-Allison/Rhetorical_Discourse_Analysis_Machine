@@ -79,6 +79,25 @@ def test_comparator_classifies_valid_package_versions_as_identity() -> None:
     ) is DifferenceClass.PACKAGE_IDENTITY
 
 
+def test_comparator_classifies_same_upstream_decoder_release_as_dependency_version() -> None:
+    assert _difference_class(
+        {"source_contract": {"upstream_format": "docling-core", "upstream_version": "2.94.1"}},
+        {"source_contract": {"upstream_format": "docling-core", "upstream_version": "2.101.1"}},
+    ) is DifferenceClass.UPSTREAM_DEPENDENCY_VERSION
+
+
+def test_comparator_keeps_upstream_version_analytical_when_decoder_or_version_is_not_comparable() -> None:
+    differences = diff_records(
+        json.dumps({"source_contract": {"upstream_format": "docling-core", "upstream_version": "2.94.1"}}).encode(),
+        json.dumps({"source_contract": {"upstream_format": "doclang", "upstream_version": "0.7.3"}}).encode(),
+    )
+    assert {item.classification for item in differences} == {DifferenceClass.ANALYTICAL}
+    assert _difference_class(
+        {"source_contract": {"upstream_format": "docling-core", "upstream_version": "2.94.1"}},
+        {"source_contract": {"upstream_format": "docling-core", "upstream_version": "unknown"}},
+    ) is DifferenceClass.ANALYTICAL
+
+
 def test_comparator_classifies_declared_derived_digest_changes() -> None:
     assert _difference_class(
         {"semantic_digest": {"hex_digest": "a" * 64}},

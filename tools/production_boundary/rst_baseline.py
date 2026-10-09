@@ -102,6 +102,7 @@ class DifferenceClass(StrEnum):
     EXECUTION = "execution"
     PACKAGE_IDENTITY = "package_identity"
     PACKAGE_SOURCE_IDENTITY = "package_source_identity"
+    UPSTREAM_DEPENDENCY_VERSION = "upstream_dependency_version"
     DERIVED_DIGEST = "derived_digest"
     CONTRACT_FIELD_RENAME = "contract_field_rename"
     CONTRACT_VERSION_TRANSITION = "contract_version_transition"
@@ -272,6 +273,15 @@ def classify(path: JsonPath, baseline: dict[JsonPath, Any], actual: dict[JsonPat
         name_path = (*path[:-1], name_key)
         if baseline.get(name_path) != actual.get(name_path) and actual.get(name_path) == PACKAGE_NAME:
             return DifferenceClass.PACKAGE_IDENTITY
+        # The same external decoder at a newer release: the project tracks upstream decoders at
+        # their latest version, so the recorded version moves; any content it changes is still
+        # classified on its own path.
+        if (
+            leaf == "upstream_version"
+            and baseline.get(name_path) == actual.get(name_path) != PACKAGE_NAME
+            and _is_version(baseline.get(path)) and _is_version(actual.get(path))
+        ):
+            return DifferenceClass.UPSTREAM_DEPENDENCY_VERSION
         return DifferenceClass.ANALYTICAL
     if _is_package_source_path(path, actual) and _is_package_source_path(path, baseline):
         return DifferenceClass.PACKAGE_SOURCE_IDENTITY
