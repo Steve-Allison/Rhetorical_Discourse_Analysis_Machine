@@ -43,7 +43,7 @@ serving it, remove that mechanism rather than asking the user to satisfy it.
 
 ## HARD RULE — Docling / DocLang spec currency
 
-Before changing `parse_docling`, `parse_doclang`, format harvest / boundaries / mappers, fixtures, or docs that describe those contracts, **verify we are compliant with the current Docling and DocLang specs**. Do this even when the task looks unrelated to a version bump.
+Before changing Docling JSON loading (`_inventory_docling` in `rdam/ingest/_harvest.py`), DocLang loading (`inventory_doclang` in `rdam/ingest/_doclang.py` and the `rdam.ingest.doclang` decoder), format harvest / boundaries / mappers, fixtures, or docs that describe those contracts, **verify we are compliant with the current Docling and DocLang specs**. Do this even when the task looks unrelated to a version bump.
 
 The pixi lock, in-repo fixtures, and [`.claude/memory/`](.claude/memory/) notes are **what we last shipped**, not what upstream is today. Stating a lock version as “the spec” is a no-assumptions violation.
 

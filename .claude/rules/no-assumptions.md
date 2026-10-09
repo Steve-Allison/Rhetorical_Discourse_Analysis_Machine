@@ -105,8 +105,7 @@ When you catch any of these in flight, stop. Either run the verification now and
 
 ## Cross-reference
 
-- Global rule `~/.claude/rules/trust-but-verify-agents.md` is the analogous discipline for agent-spawned output.
-- Global rule `~/.claude/CLAUDE.md` §1 (Verify, Don't Assume) is the parent.
-- Global rule `~/.claude/CLAUDE.md` §6 (Report Honestly) is what gets violated when assumptions are written as fact.
+- Global rule `~/.claude/CLAUDE.md` §2 (Read before you speak) is the parent.
+- Global rule `~/.claude/CLAUDE.md` §7 (Tests and checks) is what gets violated when an unchecked result is reported as done or passing.
 
-The difference: §1 is about reading code before editing it. This rule is about *what you write down* — the discipline of marking the evidence chain so readers (including future you) can audit the trail.
+The difference: §2 is about reading before stating what something says or does. This rule is about *what you write down* — the discipline of marking the evidence chain so readers (including future you) can audit the trail.

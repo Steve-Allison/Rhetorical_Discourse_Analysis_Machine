@@ -19,7 +19,6 @@ Two licences govern this project, with different scopes:
 
 **How to apply:**
 
-- Treat any user query that smells like commercial deployment as a flag — confirm with Steve before designing for it.
 - Never strip Elena's copyright from `LICENSE` or `LICENSE_MODELS`.
 - The MIT licence permits us to modify, redistribute, and commercialise the *code* without restriction — only the *weights* carry the NC clause.
 - If the project ever ships pre-trained weights of our own, they go under a separate (permissive) licence and replace the HF download path.

@@ -50,7 +50,7 @@ If new code lands outside `tool.pyright.include`, add it to that list.
 ## Tests
 
 - Real test suite under `tests/`: `pixi run test` is the fast set, `pixi run test-all` is everything.
-- New code lands with new tests in the same commit (or the next, if scope permits). Not "later".
+- Run the existing targeted tests for what you changed; add tests only when asked.
 - Markers (defined in `pyproject.toml`):
   - `slow` — tests that load models (local releases from `models/model-releases`, or HF downloads). Excluded from `pixi run test`; included in `pixi run test-all`.
   - `stress` — concurrency, megadoc, and memory-leak tests; `pixi run test-stress`.
@@ -61,7 +61,7 @@ If new code lands outside `tool.pyright.include`, add it to that list.
 - **No mocks for internal code.** Mock only truly external systems (the HF Hub, the network).
 - **Default to KEEP for tests during audits.** Tests are evidence; don't remove them unless they encode something demonstrably false (and you have the verbatim evidence).
 - **Don't modify a test to make it pass.** Fix the code instead. The only exception: the test is provably wrong, and you've explained why before changing it.
-- **`tests/integration/test_integration.py`** is the dtype-equivalence + end-to-end suite and **`tests/integration/test_production_smoke.py`** is the release smoke. If you change any part of the predictor stack, run `pixi run test-all` and check both still pass.
+- **`tests/integration/test_integration.py`** is the dtype-equivalence + end-to-end suite and **`tests/integration/test_production_smoke.py`** is the release smoke. If you change any part of the predictor stack, run `pixi run test-all` once at the end of the work and check both still pass.
 
 ## Gotchas
 

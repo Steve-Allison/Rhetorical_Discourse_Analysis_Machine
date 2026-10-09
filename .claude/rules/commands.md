@@ -23,8 +23,7 @@ consumer tasks. The explicit `offline` environment is an alias for offline work.
   `model_loading/`): `pixi run test-all`. It includes the dtype-equivalence suite and the
   production smoke, which loads every release in `models/model-releases` on every
   available device. `pixi run smoke` runs the smoke alone.
-- **Before committing substantive changes**: `pixi run lint && pixi run typecheck && pixi run test`,
-  plus `test-all` for predictor-stack changes.
+- **While working**: targeted tests. Once at the end of predictor-stack work: `test-all`.
 - **Local package build**: use clean committed inputs; a tag is optional, and any
   HEAD tag must match `v<version>` from `pyproject.toml`. Run `pixi run build-production`, `pixi run validate-production-artifacts`, and
   `pixi run -e production production-clean-install --model-store <store> --release-id <id>`. `dist/<version>/` is ignored build
