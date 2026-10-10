@@ -16,7 +16,7 @@ and [production ingest](../../docs/production-source-ingest.md). The package is
 
 ## Dated observations (DocLang work)
 
-- [DocLang 0.7 spec](verified_doclang_spec.md) — XML-based; lock `doclang[schematron-saxon]>=0.7,<0.8` (PyPI 0.7.3 as of 2026-08-16); no stable element IDs; `<layer>` ∈ {body, background, furniture}; no slide concept. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md). Historical notes in that file still mention 0.5; fixtures remirrored 2026-08-16 (42 files).
+- [DocLang 0.7 spec](verified_doclang_spec.md) — XML-based; as of 2026-08-16 locked `doclang[schematron-saxon]>=0.7,<0.8` (PyPI 0.7.3). Since 2026-10-09 `doclang` is pinned to upstream `main` by git commit — see `pyproject.toml` and `tests/fixtures/doclang/README.md`; no stable element IDs; `<layer>` ∈ {body, background, furniture}; no slide concept. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md). Historical notes in that file still mention 0.5; fixtures remirrored 2026-08-16 (42 files).
 - [DocLang fixture verifications (Phase 1)](verified_doclang_fixtures.md) — Q1–Q6 verified against the then-40 valid fixtures. Remirror 2026-08-16 added `ok_description_element_head` and `ok_namespaced_and_versioned`.
 
 ## Resolved questions (kept as historical record)

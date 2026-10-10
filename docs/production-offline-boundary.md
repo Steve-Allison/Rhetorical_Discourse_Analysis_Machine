@@ -25,10 +25,10 @@ when both document adapters and HTTP are wanted.
 
 ```bash
 # Core runtime (after `pixi run build-production`; dist/<version>/ is ignored build output)
-pip install dist/6.0.0/rdam-6.0.0-py3-none-any.whl
+pip install dist/6.1.0/rdam-6.1.0-py3-none-any.whl
 
 # Core plus Markdown, Docling, DocLang XML, and DocLang archive ingest
-pip install "dist/6.0.0/rdam-6.0.0-py3-none-any.whl[formats]"
+pip install "dist/6.1.0/rdam-6.1.0-py3-none-any.whl[formats]"
 
 # Repository development environments
 pixi install -e production

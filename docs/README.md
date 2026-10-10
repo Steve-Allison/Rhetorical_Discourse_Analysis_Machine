@@ -57,7 +57,8 @@ documentation; their contents must retain source fidelity.
 
 ## Local deliverables
 
-The local wheel and sdist are in `dist/6.0.0/`. They are ignored outputs, not an
+`pixi run build-production` writes the local wheel and sdist to `dist/<version>/`
+(version from `pyproject.toml`). They are ignored outputs, not an
 external publication. A remote Git install can differ from the local package.
 The standard source builder requires a clean checkout; it cannot certify
 uncommitted changes merely because an older tag exists.
@@ -72,5 +73,5 @@ summary/view commands do not require companion text or HTML reports.
 
 Broader analytical-quality research remains distinct from production engineering.
 SOTA, universal calibration and complete held-out validation have not been
-established. Dependency currency and the unverified Docling Core 2.95.0 gap are
-recorded in the [source ingest guide](production-source-ingest.md).
+established. Dependency currency — Docling Core tracks its latest release and DocLang
+tracks upstream `main` — is recorded in the [source ingest guide](production-source-ingest.md).

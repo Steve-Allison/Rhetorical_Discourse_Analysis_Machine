@@ -8,14 +8,15 @@ schema guarantees. Source filenames are recorded under Provenance; public
 availability and redistribution permission have not been independently verified
 in the 2026-09-04 preflight.
 
-## Current loading check — 2026-09-04
+## Current loading check — 2026-10-10
 
-All four fixtures loaded with Docling Core 2.94.1 using
+All four fixtures loaded with Docling Core 2.101.1 using
 `DoclingDocument.load_from_json`. Each stores schema 1.10.0 and loaded as 1.10.0.
 Traversal with `with_groups=True`, `traverse_pictures=True` and all `ContentLayer`
-values yielded 63 items for Markdown, 767 for PDF, 43 for PPTX and 38 for VTT.
-These are fixture-specific observations. Full preflight scope and test results
-are recorded in [Feature 019 research](../../../specs/019-unified-machine-interfaces/research.md).
+values yielded 63 items for Markdown, 767 for PDF, 43 for PPTX and 38 for VTT —
+the same counts as the 2026-09-04 check under 2.94.1. These are fixture-specific
+observations. The 2026-09-04 preflight scope and test results are recorded in
+[Feature 019 research](../../../specs/019-unified-machine-interfaces/research.md).
 
 ## Historical file-by-file observations — 2026-05-15
 
