@@ -34,3 +34,15 @@ def resolve_speaker(text: str, attributes: tuple[tuple[str, str], ...] = ()) -> 
     identity = explicit_id or "label:" + sha256_bytes(display_name.encode("utf-8"))
     return SpeakerIdentity(resolution="resolved", participant_id=identity, display_name=display_name,
                            evidence="Explicit source speaker prefix: " + match.group(0).strip())
+
+
+def resolve_voice(name: str | None) -> SpeakerIdentity:
+    """Resolve a DocLang <voice> attribution; the spec leaves unattributed text uninterpreted."""
+    if name is None:
+        return SpeakerIdentity(resolution="unresolved",
+                               evidence="The DocLang turn has no <voice> attribution, or follows an empty <voice/>.")
+    if name.casefold() in _UNATTRIBUTED:
+        return SpeakerIdentity(resolution="unresolved", display_name=name,
+                               evidence="Source explicitly labels this turn " + name)
+    return SpeakerIdentity(resolution="resolved", participant_id="label:" + sha256_bytes(name.encode("utf-8")),
+                           display_name=name, evidence="DocLang <voice> attribution: " + name)

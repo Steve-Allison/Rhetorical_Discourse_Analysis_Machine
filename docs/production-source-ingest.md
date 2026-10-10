@@ -25,12 +25,20 @@ Attempting an unavailable form produces `source_adapter_distribution_unavailable
 with the required `formats` extra, never a raw `ModuleNotFoundError`.
 
 Docling Core always tracks its latest release: the range is `>=<latest>,<3`, so
-`pixi update` picks up every new minor release. Dependency status checked on
-2026-10-09: the installed and locked versions are Docling Core 2.101.1 and
-DocLang 0.7.3, both the latest on PyPI ([Docling Core](https://pypi.org/project/docling-core/),
-[DocLang](https://pypi.org/project/doclang/)). DocLang's unreleased `main` adds
-`<track>` and multiple captions, which 0.7.3 does not validate. Do not equate
-locked compatibility with latest-upstream conformance.
+`pixi update` picks up every new minor release. DocLang tracks upstream `main`: the
+`formats` extra installs `doclang` from git at the commit `tests/fixtures/doclang/`
+mirrors, so the validator and the conformance fixtures always come from one commit,
+and the source contract records it (`upstream_version` `0.7.3+git.<commit>`). Status
+checked on 2026-10-09: Docling Core 2.101.1 ([PyPI](https://pypi.org/project/docling-core/))
+and DocLang `main` at `7f53133`. Do not equate locked compatibility with
+latest-upstream conformance.
+
+A DocLang `<track>` (a time-aligned media transcript) decodes into speaker turns:
+each turn's text is primary `turn` content, attributed to its `<voice>` speaker or
+explicitly unresolved, with its cue block's inclusive start and end milliseconds in
+`cue_start_ms` / `cue_end_ms`. A `<chapter>` is a heading placed before its cue's
+text; `<cover>`, `<frame>` and `<audio>` are retained media with their source
+references.
 The normative sources are the [Docling model](https://github.com/docling-project/docling-core/blob/main/docling_core/types/doc/document.py)
 and [DocLang specification](https://github.com/doclang-project/doclang/blob/main/spec.md).
 Fixture schemas and RDAM's own v3 envelope are independently versioned.

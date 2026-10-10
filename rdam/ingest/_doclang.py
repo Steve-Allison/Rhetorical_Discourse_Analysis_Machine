@@ -1,13 +1,14 @@
 """Direct DocLang mapping into the current immutable ingestion contract."""
 
-from importlib.metadata import version
+from importlib.metadata import distribution
+import json
 from pathlib import Path
 import re
 
 from rdam.ingest.doclang import decoder, document, loader, text_walker
 from rdam.ingest.doclang.decoder import DecodedDoclangItem, decode_document, item_index
 from rdam.ingest.doclang.document import DoclangDocument
-from rdam.ingest import _classification
+from rdam.ingest import _classification, speakers
 from rdam.ingest.contracts.base import SemanticVersion, Sha256Identity
 from rdam.ingest.contracts.source import (
     AnnotationRepresentation,
@@ -41,7 +42,7 @@ from rdam.ingest.contracts.source import (
     TextRepresentation,
 )
 from rdam.ingest.identity import semantic_sha256, sha256_file
-from rdam.ingest.speakers import resolve_speaker
+from rdam.ingest.speakers import resolve_speaker, resolve_voice
 
 
 def implementation_digest() -> str:
@@ -53,8 +54,17 @@ def implementation_digest() -> str:
         Path(decoder.__file__),
         Path(loader.__file__),
         Path(text_walker.__file__),
+        Path(speakers.__file__),
     )
     return semantic_sha256(tuple((path.name, sha256_file(path)) for path in paths))
+
+
+def upstream_version() -> str:
+    """The installed DocLang version, qualified by the upstream commit when installed from git."""
+    installed = distribution("doclang")
+    direct_url = installed.read_text("direct_url.json")
+    commit = json.loads(direct_url).get("vcs_info", {}).get("commit_id") if direct_url else None
+    return f"{installed.version}+git.{commit}" if commit else installed.version
 
 
 def _classification_for(item: DecodedDoclangItem) -> ContentClass:
@@ -86,9 +96,19 @@ def _classification_for(item: DecodedDoclangItem) -> ContentClass:
         "value": ContentClass.FIELD,
         "asset": ContentClass.ASSET,
         "group": ContentClass.GROUP,
+        "track": ContentClass.GROUP,
+        "chapter": ContentClass.HEADING,
+        "cover": ContentClass.PICTURE,
+        "frame": ContentClass.PICTURE,
+        "audio": ContentClass.ASSET,
     }.get(
-        item.tag, ContentClass.METADATA if item.tag in {"label", "thread", "layer", "location"} else ContentClass.OTHER
+        item.tag,
+        ContentClass.METADATA
+        if item.tag in {"label", "thread", "layer", "location", "hours", "minutes", "seconds", "msecs"}
+        else ContentClass.OTHER,
     )
+    if item.turn is not None:
+        classification = ContentClass.TURN
     if "table" in item.ancestors and item.tag != "table":
         return ContentClass.TABLE_CELL
     if "picture" in item.ancestors and classification is ContentClass.PARAGRAPH:
@@ -200,12 +220,17 @@ def inventory_doclang(artifact: SourceArtifact) -> tuple[tuple[ContentInventoryI
             for key, target in item.attributes
             if key in {"href", "uri", "target"}
         )
+        cue_attributes = (
+            (("cue_id", item.cue.path), ("cue_start_ms", str(item.cue.start_ms)), ("cue_end_ms", str(item.cue.end_ms)))
+            if item.cue is not None
+            else ()
+        )
         items.append(
             ContentInventoryItem(
                 item_id=item.path,
                 classification=classification,
                 origin=SourceOrigin(
-                    authorship=AuthorshipRole.AUTHORED,
+                    authorship=AuthorshipRole.TRANSCRIBED if item.turn is not None else AuthorshipRole.AUTHORED,
                     source_layer=item.layer,
                     producer="isanlp_rst.doclang.inventory/v1",
                 ),
@@ -214,8 +239,12 @@ def inventory_doclang(artifact: SourceArtifact) -> tuple[tuple[ContentInventoryI
                 parent_id=item.parent_path,
                 child_ids=item.child_paths,
                 relationships=relationships,
-                provider_attributes=item.attributes,
-                speaker=resolve_speaker(item.text or "", item.attributes)
+                provider_attributes=item.attributes + cue_attributes,
+                speaker=(
+                    resolve_voice(item.turn.speaker)
+                    if item.turn is not None
+                    else resolve_speaker(item.text or "", item.attributes)
+                )
                 if classification is ContentClass.TURN
                 else None,
                 disposition=Disposition(
@@ -257,7 +286,7 @@ def inventory_doclang(artifact: SourceArtifact) -> tuple[tuple[ContentInventoryI
         adapter="isanlp_rst.ingest.doclang",
         adapter_contract_version=SemanticVersion(root="2.0.0"),
         upstream_format="doclang",
-        upstream_version=version("doclang"),
+        upstream_version=upstream_version(),
         schema_identity=Sha256Identity(hex_digest=implementation_digest()),
         assumptions=("allow_empty_namespace=true", "xsd=true", "schematron=true"),
     )

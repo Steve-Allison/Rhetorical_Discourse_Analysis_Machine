@@ -1,6 +1,6 @@
 """Source-only DocLang decoding with local cell ownership and exact text slots."""
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Literal
@@ -12,7 +12,12 @@ from .text_walker import body_text, iter_body_slots, iter_sibling_slots
 
 CELL_TOKENS = frozenset({"ched", "rhed", "corn", "srow", "fcel", "ecel", "lcel", "ucel", "xcel"})
 CONTINUATIONS = frozenset({"lcel", "ucel", "xcel"})
-TEXT_ELEMENTS = frozenset({"text", "heading", "footnote", "code", "formula", "caption", "description", "key", "value"})
+TEXT_ELEMENTS = frozenset(
+    {"text", "heading", "footnote", "code", "formula", "caption", "description", "key", "value", "chapter"}
+)
+# A track timestamp is a run of these in order; only <seconds> is required (DocLang spec, Tracks).
+TIME_ELEMENTS = ("hours", "minutes", "seconds", "msecs")
+TRACK_MEDIA_ELEMENTS = frozenset({"cover", "frame", "audio"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -62,6 +67,22 @@ class DecodedDoclangCell:
 
 
 @dataclass(frozen=True, slots=True)
+class DecodedTrackCue:
+    """A <track> cue block: the <bdiv> that opens it and its inclusive interval in milliseconds."""
+
+    path: str
+    start_ms: int
+    end_ms: int
+
+
+@dataclass(frozen=True, slots=True)
+class DecodedTrackTurn:
+    """One speaker turn; ``speaker`` is the <voice> body text, absent when the turn is unattributed."""
+
+    speaker: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class DecodedDoclangItem:
     path: str
     parent_path: str | None
@@ -74,6 +95,8 @@ class DecodedDoclangItem:
     surface: TextSurface | None
     cell: DecodedDoclangCell | None
     cells: tuple[DecodedDoclangCell, ...]
+    cue: DecodedTrackCue | None = None
+    turn: DecodedTrackTurn | None = None
 
     @property
     def text(self) -> str | None:
@@ -173,6 +196,105 @@ def _list_surfaces(
     return result
 
 
+def cue_interval(path: str, timing: Sequence[XmlElement]) -> tuple[int, int]:
+    """Read a cue block's start and optional end time runs as inclusive milliseconds."""
+    runs: list[dict[str, int]] = []
+    previous = len(TIME_ELEMENTS)
+    for element in timing:
+        name = local_name(element)
+        order = TIME_ELEMENTS.index(name)
+        if order <= previous:
+            runs.append({})
+        previous = order
+        try:
+            runs[-1][name] = int(element.get("value", ""))
+        except ValueError as exc:
+            raise InvalidDoclangError(f"non-integer DocLang timestamp at {path}") from exc
+    if not 1 <= len(runs) <= 2 or any("seconds" not in run for run in runs):
+        raise InvalidDoclangError(f"DocLang cue block needs a start time and at most one end time at {path}")
+    start, end = (
+        ((run.get("hours", 0) * 60 + run.get("minutes", 0)) * 60 + run["seconds"]) * 1000 + run.get("msecs", 0)
+        for run in (runs[0], runs[-1])
+    )
+    if end < start:
+        raise InvalidDoclangError(f"DocLang cue block ends before it starts at {path}")
+    return start, end
+
+
+def _track(
+    document: DoclangDocument, track: XmlElement
+) -> tuple[dict[str, TextSurface], dict[str, DecodedTrackCue], dict[str, DecodedTrackTurn], dict[str, str]]:
+    """Split each cue block's transcript into speaker turns owned by their <voice> (or the <bdiv>).
+
+    The last mapping places a <bdiv>-owned turn in reading order: after the timestamps,
+    chapter and media that precede its text.
+    """
+    surfaces: dict[str, TextSurface] = {}
+    cues: dict[str, DecodedTrackCue] = {}
+    turns: dict[str, DecodedTrackTurn] = {}
+    positions: dict[str, str] = {}
+    for marker, siblings, _row, _column in _intervals(track, frozenset({"bdiv"})):
+        timing: list[XmlElement] = []
+        for sibling in siblings:
+            if not isinstance(sibling.tag, str):
+                continue
+            if local_name(sibling) not in TIME_ELEMENTS:
+                break
+            timing.append(sibling)
+        cue_path = document.paths[marker]
+        cue = DecodedTrackCue(cue_path, *cue_interval(cue_path, timing))
+        # Text before any <voice> is an unattributed turn owned by the <bdiv>; an empty
+        # <voice/> ends the current turn, and the text after it is unattributed.
+        owners: list[tuple[str, str | None, list[DoclangTextFragment]]] = [
+            (cue_path, None, list(_surface(document, cue_path, ((marker, "tail"),)).fragments))
+        ]
+        leading = True
+        for sibling in siblings:
+            tag = local_name(sibling) if isinstance(sibling.tag, str) else ""
+            owner = owners[-1][0]
+            leading = leading and (tag in TIME_ELEMENTS or tag == "chapter" or tag in TRACK_MEDIA_ELEMENTS or not tag)
+            if leading and tag:
+                positions[cue_path] = document.paths[sibling]
+            if tag == "voice":
+                path = document.paths[sibling]
+                owners.append((path, body_text(sibling) or None, list(_surface(document, path, ((sibling, "tail"),)).fragments)))
+            elif tag in TIME_ELEMENTS or tag == "chapter" or tag in TRACK_MEDIA_ELEMENTS:
+                if tag not in TIME_ELEMENTS:
+                    cues[document.paths[sibling]] = cue
+                owners[-1][2].extend(_surface(document, owner, ((sibling, "tail"),)).fragments)
+            else:
+                owners[-1][2].extend(_surface(document, owner, iter_sibling_slots(sibling)).fragments)
+        for owner, speaker, fragments in owners:
+            surface = TextSurface.build(fragments)
+            if surface.text:
+                surfaces[owner] = surface
+                cues[owner] = cue
+                turns[owner] = DecodedTrackTurn(speaker)
+    return surfaces, cues, turns, {owner: anchor for owner, anchor in positions.items() if owner in turns}
+
+
+def _reading_order(
+    items: list[DecodedDoclangItem], positions: Mapping[str, str]
+) -> tuple[DecodedDoclangItem, ...]:
+    """Move each positioned item to just after the subtree of the element its text follows."""
+    held: dict[str, DecodedDoclangItem] = {}
+    ordered: list[DecodedDoclangItem] = []
+    open_anchor: tuple[str, DecodedDoclangItem] | None = None
+    for item in items:
+        if open_anchor is not None and not (item.path == open_anchor[0] or item.path.startswith(open_anchor[0] + "/")):
+            ordered.append(open_anchor[1])
+            open_anchor = None
+        if item.path in positions:
+            held[positions[item.path]] = item
+            continue
+        ordered.append(item)
+        if item.path in held:
+            open_anchor = item.path, held.pop(item.path)
+    if open_anchor is not None:
+        ordered.append(open_anchor[1])
+    return tuple(ordered)
+
+
 def _table(document: DoclangDocument, table: XmlElement) -> tuple[DecodedDoclangCell, ...]:
     positions: dict[str, tuple[int, int]] = {}
     owners: dict[tuple[int, int], str] = {}
@@ -205,7 +327,7 @@ def _table(document: DoclangDocument, table: XmlElement) -> tuple[DecodedDoclang
             if isinstance(sibling.tag, str)
             and (
                 (local_name(sibling) in TEXT_ELEMENTS and body_text(sibling))
-                or local_name(sibling) in {"list", "table", "picture"}
+                or local_name(sibling) in {"list", "table", "picture", "track"}
             )
         )
         decoded.append(
@@ -238,10 +360,13 @@ def _table(document: DoclangDocument, table: XmlElement) -> tuple[DecodedDoclang
 
 
 def decode_document(document: DoclangDocument) -> tuple[DecodedDoclangItem, ...]:
-    """Decode all elements in source order; no policy or public models live here."""
+    """Decode all elements in reading order; no policy or public models live here."""
     surfaces: dict[str, TextSurface] = {}
     tables: dict[str, tuple[DecodedDoclangCell, ...]] = {}
     cells: dict[str, DecodedDoclangCell] = {}
+    cues: dict[str, DecodedTrackCue] = {}
+    turns: dict[str, DecodedTrackTurn] = {}
+    positions: dict[str, str] = {}
     elements = tuple(element for element in document.root.iter() if isinstance(element.tag, str))
     for element in reversed(elements):
         path = document.paths[element]
@@ -251,6 +376,12 @@ def decode_document(document: DoclangDocument) -> tuple[DecodedDoclangItem, ...]
             cells.update((cell.path, cell) for cell in tables[path])
         elif tag == "list":
             surfaces.update(_list_surfaces(document, element, surfaces))
+        elif tag == "track":
+            track_surfaces, track_cues, track_turns, track_positions = _track(document, element)
+            surfaces.update(track_surfaces)
+            cues.update(track_cues)
+            turns.update(track_turns)
+            positions.update(track_positions)
     result: list[DecodedDoclangItem] = []
     ancestry: dict[str, frozenset[str]] = {}
     for element in document.root.iter():
@@ -297,9 +428,11 @@ def decode_document(document: DoclangDocument) -> tuple[DecodedDoclangItem, ...]
                 surface,
                 cell,
                 tables.get(path, ()),
+                cues.get(path),
+                turns.get(path),
             )
         )
-    return tuple(result)
+    return _reading_order(result, positions)
 
 
 def item_index(items: tuple[DecodedDoclangItem, ...]) -> Mapping[str, DecodedDoclangItem]:
