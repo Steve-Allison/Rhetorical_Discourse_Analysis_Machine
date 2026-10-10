@@ -1,3 +1,5 @@
+from importlib.metadata import version
+import json
 from pathlib import Path
 
 from rdam.ingest import SourceArtifact, SourceForm
@@ -13,7 +15,8 @@ def test_doclang_empty_namespace_validates_under_current_contract() -> None:
     )
     inventory, contract = inventory_source(artifact)
     assert inventory
-    assert contract.upstream_version == "0.7.3"
+    manifest = json.loads(Path("tests/fixtures/doclang/upstream-manifest.json").read_text(encoding="utf-8"))
+    assert contract.upstream_version == f"{version('doclang')}+git.{manifest['upstream_commit']}"
 
 
 def test_doclang_table_is_retained_but_not_primary() -> None:

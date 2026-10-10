@@ -2,6 +2,7 @@
 
 from collections import Counter
 from hashlib import sha256
+from importlib.metadata import version
 from io import BytesIO
 import json
 from pathlib import Path
@@ -27,11 +28,12 @@ VALID_DOCLANG_FIXTURES = tuple(sorted(DOCLANG_FIXTURES.glob("*.dclg")))
 INVALID_DOCLANG_FIXTURES = tuple(sorted((DOCLANG_FIXTURES / "invalid").glob("*.dclg")))
 REAL_WORLD_DOCLANG_FIXTURE = DOCLANG_FIXTURES / "real_world/change-of-tenancy.dclg"
 REAL_WORLD_DOCLANG_SHA256 = "bd0e7d861054842e2e6993c4d92367a54a20cdb1ba21a8eb1d7640c642747449"
+# The installed DocLang validator is pinned to the upstream commit the fixtures mirror.
+DOCLANG_UPSTREAM_VERSION = f"{version('doclang')}+git.{DOCLANG_MANIFEST['upstream_commit']}"
 
 
 def test_pinned_doclang_fixture_corpora_are_complete() -> None:
-    assert len(VALID_DOCLANG_FIXTURES) == 42
-    assert len(INVALID_DOCLANG_FIXTURES) == 59
+    assert VALID_DOCLANG_FIXTURES and INVALID_DOCLANG_FIXTURES
     assert {path.name for path in VALID_DOCLANG_FIXTURES} == DOCLANG_MANIFEST["files"].keys()
     assert {path.name for path in INVALID_DOCLANG_FIXTURES} == DOCLANG_MANIFEST["invalid_files"].keys()
 
@@ -140,4 +142,4 @@ def test_current_doclang_opc_specimen_validates_and_retains_only_payload_as_asse
     inventory, contract = inventory_source(artifact)
     archive_assets = {item.item_id for item in inventory if item.classification is ContentClass.ASSET}
     assert archive_assets == {"archive:assets/chart.svg", "archive:pages/2.png"}
-    assert contract.upstream_version == "0.7.3"
+    assert contract.upstream_version == DOCLANG_UPSTREAM_VERSION

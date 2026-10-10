@@ -2,8 +2,9 @@
 
 This directory mirrors both the valid and invalid DocLang examples from
 [`doclang-project/doclang`](https://github.com/doclang-project/doclang/tree/main/tests/data)
-at commit `6d3b3d3c195d1f63333c5c5fcba8da17937a33bd`. The 42 valid specimens are in
-this directory and the 59 invalid specimens are in `invalid/`. Upstream files
+at commit `7f53133d47e1424fb18c3a53faed4df43f21a86b` (`main`, 2026-10-09). The 60 valid
+specimens are in this directory and the 79 invalid specimens are in `invalid/`. The
+`formats` extra installs the DocLang validator from the same commit. Upstream files
 and local files both use the recommended `.dclg` extension.
 
 The upstream repository is Apache-2.0 licensed. The fixtures are mirrored
@@ -17,8 +18,9 @@ upstream DocLang and RDAM ingest to reject every invalid fixture with the locked
 that can silently become stale or a validator call that can silently disappear.
 
 Refreshes must use the GitHub Contents API at the selected immutable commit,
-replace the manifest hashes, and pass
-`tests/ingest/test_doclang_fixture_parity.py`.
+replace the manifest hashes, move the `doclang` pin in `pyproject.toml` to the same
+commit, and pass `tests/ingest/test_doclang_fixture_parity.py` and
+`pixi run python scripts/verify_doclang_fixtures.py`.
 
 ## Real-world preparation specimen
 

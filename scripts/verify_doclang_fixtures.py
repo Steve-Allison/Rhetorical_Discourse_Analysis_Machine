@@ -17,6 +17,7 @@ class _Manifest(BaseModel):
 
     upstream_commit: str
     files: dict[str, str]
+    invalid_files: dict[str, str]
 
 
 class _GithubEntry(BaseModel):
@@ -35,6 +36,8 @@ class FixtureParityReceipt(BaseModel):
     upstream_commit: str
     local_files: int
     upstream_files: int
+    local_invalid_files: int
+    upstream_invalid_files: int
     names_match: bool
     hashes_match: bool
 
@@ -42,7 +45,7 @@ class FixtureParityReceipt(BaseModel):
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_DIR = REPOSITORY_ROOT / "tests" / "fixtures" / "doclang"
 MANIFEST_PATH = FIXTURE_DIR / "upstream-manifest.json"
-GITHUB_CONTENTS_URL = "https://api.github.com/repos/doclang-project/doclang/contents/tests/data/valid"
+GITHUB_CONTENTS_URL = "https://api.github.com/repos/doclang-project/doclang/contents/tests/data"
 USER_AGENT = "isanlp-rst-doclang-fixture-audit"
 
 
@@ -52,38 +55,46 @@ def _read_url(url: str) -> bytes:
         return response.read()
 
 
-def verify_doclang_fixtures() -> FixtureParityReceipt:
-    """Compare local names and bytes with the pinned manifest and upstream API."""
-
-    manifest = _Manifest.model_validate_json(MANIFEST_PATH.read_text(encoding="utf-8"))
-    api_url = f"{GITHUB_CONTENTS_URL}?ref={manifest.upstream_commit}"
+def _verify_corpus(kind: str, directory: Path, pinned: dict[str, str], commit: str) -> tuple[int, int]:
+    api_url = f"{GITHUB_CONTENTS_URL}/{kind}?ref={commit}"
     entries = TypeAdapter(list[_GithubEntry]).validate_json(_read_url(api_url))
     upstream = {
         entry.name: entry.download_url
         for entry in entries
         if entry.type == "file" and entry.name.endswith(".dclg") and entry.download_url is not None
     }
-    local = {path.name: path for path in FIXTURE_DIR.glob("*.dclg")}
-    names_match = local.keys() == manifest.files.keys() == upstream.keys()
-    if not names_match:
+    local = {path.name: path for path in directory.glob("*.dclg")}
+    if not local.keys() == pinned.keys() == upstream.keys():
         raise FixtureParityError(
-            "DocLang fixture names differ across local files, the pinned manifest, and the upstream API"
+            f"DocLang {kind} fixture names differ across local files, the pinned manifest, and the upstream API"
         )
-
     with ThreadPoolExecutor(max_workers=8) as executor:
         upstream_bytes = dict(zip(upstream, executor.map(_read_url, upstream.values()), strict=True))
     mismatches = [
         name
         for name, path in local.items()
-        if sha256(path.read_bytes()).hexdigest() != manifest.files[name]
-        or sha256(upstream_bytes[name]).hexdigest() != manifest.files[name]
+        if sha256(path.read_bytes()).hexdigest() != pinned[name]
+        or sha256(upstream_bytes[name]).hexdigest() != pinned[name]
     ]
     if mismatches:
-        raise FixtureParityError(f"DocLang fixture hashes differ for: {', '.join(sorted(mismatches))}")
+        raise FixtureParityError(f"DocLang {kind} fixture hashes differ for: {', '.join(sorted(mismatches))}")
+    return len(local), len(upstream)
+
+
+def verify_doclang_fixtures() -> FixtureParityReceipt:
+    """Compare local valid and invalid names and bytes with the pinned manifest and upstream API."""
+
+    manifest = _Manifest.model_validate_json(MANIFEST_PATH.read_text(encoding="utf-8"))
+    local_files, upstream_files = _verify_corpus("valid", FIXTURE_DIR, manifest.files, manifest.upstream_commit)
+    local_invalid, upstream_invalid = _verify_corpus(
+        "invalid", FIXTURE_DIR / "invalid", manifest.invalid_files, manifest.upstream_commit
+    )
     return FixtureParityReceipt(
         upstream_commit=manifest.upstream_commit,
-        local_files=len(local),
-        upstream_files=len(upstream),
+        local_files=local_files,
+        upstream_files=upstream_files,
+        local_invalid_files=local_invalid,
+        upstream_invalid_files=upstream_invalid,
         names_match=True,
         hashes_match=True,
     )
