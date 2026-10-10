@@ -5,7 +5,7 @@ analysis-only machine that runs several discourse and argumentation techniques n
 side by side, without collapsing them into a common formalism. One distribution, one
 package, every technique a sub-package:
 
-| Sub-package | Technique | State (2026-09-06) |
+| Sub-package | Technique | State (2026-10-10) |
 |---|---|---|
 | `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.prepare()` and `Machine.analyse()`, unified CLI and optional HTTP | features 007, 017–019 |
 | `rdam.ingest` | shared source inventory, provider-specific projections, capacity planning, speaker evidence and anchors | feature 017 |
@@ -16,6 +16,7 @@ package, every technique a sub-package:
 | `rdam.walton` | Walton scheme instances with exact premise roles and critical-question states | `available` with a resolvable configured LLM model |
 | `rdam.dung` | Dung abstract argumentation: grounded, complete, preferred, stable semantics over a supplied or explicitly derived framework | `available` |
 | `rdam.ibis` | IBIS: issue–position–argument structures validated under the gIBIS link grammar | `available` |
+| `rdam.concepts` | Exact lexical links from source surfaces to Central's semantic resources (labels and typed terms); never semantic acceptance | feature 021 |
 
 Pixi-managed, MPS-aware, Apple-Silicon-first, real test suite, real CI.
 
@@ -33,7 +34,7 @@ Single remote: `origin` → `Steve-Allison/Rhetorical_Discourse_Analysis_Machine
 
 Two environment roles, with an additional explicit `offline` alias: **`default`** (everything for daily work; active without `-e`) and **`production`** (isolated clean-room environment; its installed distribution is the editable source). The task table in `pyproject.toml` is the authority — `pixi task list` shows every task with its description, and [`commands.md`](.claude/rules/commands.md) says when to use which. Adding dependencies: `pixi add <package>`. Use Pixi for repository work; wheel installation instructions for other projects are in the README.
 
-CI (`.github/workflows/ci.yml`) runs lint, typecheck, mdlint, and the fast tests on macOS arm64 with the pixi lock (**Python 3.14**; `requires-python` is `>=3.14`); the slow suite runs nightly. The model smoke is local-only because weights are not in git: `pixi run smoke`.
+CI (`.github/workflows/ci.yml`) runs lint, typecheck, mdlint, the fast tests, `rst-format-coverage` and `rst-mutation-test` on macOS arm64 with the pixi lock (**Python 3.14**; `requires-python` is `>=3.14`); the slow suite runs nightly (`integration.yml`) and `deps-compat.yml` re-tests the latest Docling Core and DocLang weekly. The model smoke is local-only because weights are not in git: `pixi run smoke`.
 
 ## Project-specific overrides of global rules
 
@@ -73,7 +74,8 @@ The promotion-evidence system (feature 008) was removed on 2026-09-02 by owner r
 Persisted identifiers remain unchanged unless the owner explicitly authorizes a contract migration.
 
 Features 017–019 implement shared source preparation, runtime hardening and unified
-Python/CLI/HTTP interfaces. eRST is workbench-only by owner instruction on 2026-09-06.
+Python/CLI/HTTP interfaces. Feature 020 consolidates DocLang decoding (now including
+`<track>` transcripts); feature 021 adds shared concept linking. eRST is workbench-only by owner instruction on 2026-09-06.
 The current seven-technique verification and its limits are recorded in
 [Feature 019 tasks](specs/019-unified-machine-interfaces/tasks.md); dated research
 records do not establish current runtime or SOTA quality. See [documentation guide](docs/README.md).
@@ -109,6 +111,15 @@ Project memory at [`.claude/memory/MEMORY.md`](.claude/memory/MEMORY.md) tracks 
 It emits exact lexical mention evidence, independent of analytical vocabulary alignment.
 See [concept linking](docs/concept-linking.md) for Python, CLI, HTTP and downstream examples.
 
+### Refreshing from Central_Configs
+
+Central_Configs (sibling repo) is the authority. After it changes: sync
+`ontology/vendor/central-configs/` (its `ontology/data/{distribution.yaml,domains,manifests}`
+and `ontology/schema/{coe.linkml.yaml,modules}`), then
+`pixi run project-framework-identities`, `pixi run python -m tools.ontology.project_discourse_concepts`,
+`pixi run python tools/compile_concept_index.py ../Central_Configs rdam/resources/concept-index.json`,
+and `pixi run ontology-validate`. `tests/concepts/test_ontology.py` recompiles from the live sibling repo.
+
 ## Files worth knowing
 
 - [`rdam/machine.py`](rdam/machine.py), [`rdam/contracts.py`](rdam/contracts.py) — the machine and its typed contracts.
@@ -143,4 +154,4 @@ Rules:
 - For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+- The `post-commit` and `post-checkout` git hooks rebuild the graph in the background, so `graphify-out/` shows as modified afterwards; commit it with the next change.
