@@ -1,20 +1,14 @@
 {
-  ".claude/hooks/grep-locate-only.py": {
-    "mtime": 1791540801.2415361,
-    "seen": 1791540847.878303,
-    "ast_hash": "10dfab7161e09d5a0e9a68e167b2cb29",
+  ".claude/hooks/no-assumptions-check.sh": {
+    "mtime": 1792489509.404948,
+    "seen": 1792570603.049623,
+    "ast_hash": "abee44e9a56d809708ab604cb7645b45",
     "semantic_hash": ""
   },
-  ".claude/hooks/no-assumptions-check.sh": {
-    "mtime": 1781760684.788211,
-    "seen": 1788447399.543307,
-    "ast_hash": "d05602d6d2eff35b20e3583dfed6a774",
-    "semantic_hash": "d05602d6d2eff35b20e3583dfed6a774"
-  },
   ".claude/settings.json": {
-    "mtime": 1791540310.10771,
-    "seen": 1791540642.957393,
-    "ast_hash": "70e5a678c92e5f479f516afefcf111f9",
+    "mtime": 1792489509.5103292,
+    "seen": 1792570603.0496268,
+    "ast_hash": "827dce82eb7464d5d8978cef29e1ae69",
     "semantic_hash": ""
   },
   ".codex/hooks.json": {
@@ -2940,27 +2934,21 @@
     "semantic_hash": ""
   },
   ".specify/memory/constitution.md": {
-    "mtime": 1788425582.480282,
-    "seen": 1788447399.543481,
-    "ast_hash": "723256b401268701202ce0a0a2e78aa4",
-    "semantic_hash": "723256b401268701202ce0a0a2e78aa4"
+    "mtime": 1792489665.4147723,
+    "seen": 1792570603.0500312,
+    "ast_hash": "bf2a1726e3b83f5f28713ba692f5da61",
+    "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1791564450.5147233,
-    "seen": 1791611500.316997,
-    "ast_hash": "7a71f3a1b38368f5a045bbbb89129588",
+    "mtime": 1792489713.5218883,
+    "seen": 1792570603.0500321,
+    "ast_hash": "f924267a8a4b0efe7d7bf4c10252dfaa",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1791619021.8118637,
-    "seen": 1791622158.145391,
-    "ast_hash": "ec586b395f23dc79e0cccd09310dc9d0",
-    "semantic_hash": ""
-  },
-  "GEMINI.md": {
-    "mtime": 1788692916.3596737,
-    "seen": 1788693416.8682828,
-    "ast_hash": "2447500dfe1fb1a3741d0087b0bdb26c",
+    "mtime": 1792489634.4461179,
+    "seen": 1792570603.0500321,
+    "ast_hash": "fcf9f6d43f32e038b646f368299350b0",
     "semantic_hash": ""
   },
   "README.md": {
@@ -4475,34 +4463,16 @@
     "ast_hash": "8001a7f72f8a41bf122449e43a8810d5",
     "semantic_hash": "8001a7f72f8a41bf122449e43a8810d5"
   },
-  ".claude/CLAUDE.md": {
-    "mtime": 1788446644.0070415,
-    "seen": 1788447730.086394,
-    "ast_hash": "33f2709753552eed15d7393fceb2af86",
-    "semantic_hash": "33f2709753552eed15d7393fceb2af86"
-  },
   ".claude/rules/architecture.md": {
-    "mtime": 1788692930.2096994,
-    "seen": 1788693416.868278,
-    "ast_hash": "d6191ae902c1928a929c636587b5f293",
+    "mtime": 1792567746.4422402,
+    "seen": 1792570603.050029,
+    "ast_hash": "5dee5604a693964435b1791866ed27f8",
     "semantic_hash": ""
   },
   ".claude/rules/code-standards.md": {
-    "mtime": 1791540309.7635987,
-    "seen": 1791540642.957798,
-    "ast_hash": "f5f09ec13af3879b062e8f7dc2e42a6f",
-    "semantic_hash": ""
-  },
-  ".claude/rules/commands.md": {
-    "mtime": 1791540309.836504,
-    "seen": 1791540642.957799,
-    "ast_hash": "5fc507cd4e25993c99bb2589261a3e48",
-    "semantic_hash": ""
-  },
-  ".claude/rules/no-assumptions.md": {
-    "mtime": 1791540309.9072533,
-    "seen": 1791540642.957799,
-    "ast_hash": "a6446419981d9731ddb699bb1030b543",
+    "mtime": 1792567751.6343782,
+    "seen": 1792570603.050029,
+    "ast_hash": "c8c68053f8ea5d5d9c706129a59629ac",
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
@@ -7161,6 +7131,18 @@
     "mtime": 1791564205.4962015,
     "seen": 1791611500.316837,
     "ast_hash": "81f2989d620404accea4a82e7a91d611",
+    "semantic_hash": ""
+  },
+  ".agents/rules/architecture.md": {
+    "mtime": 1792567746.4422402,
+    "seen": 1792570603.050028,
+    "ast_hash": "5dee5604a693964435b1791866ed27f8",
+    "semantic_hash": ""
+  },
+  ".agents/rules/code-standards.md": {
+    "mtime": 1792567751.6343782,
+    "seen": 1792570603.050028,
+    "ast_hash": "c8c68053f8ea5d5d9c706129a59629ac",
     "semantic_hash": ""
   }
 }
