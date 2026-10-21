@@ -1,6 +1,17 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 -> 2.0.0
+- Version change: 2.0.0 -> 2.0.1 (PATCH, non-semantic clarification, 2026-10-20)
+- Modified principles: none
+- Modified constraints: none
+- Modified wording: the Pixi-task reference in Development Workflow and the
+  authority description in Governance now name `AGENTS.md` as the operating manual and
+  `CLAUDE.md` as the Claude Code adapter; `.claude/rules/commands.md` no longer exists
+  (its content moved into `AGENTS.md`).
+- Added sections: none
+- Removed sections: none
+- Follow-up TODOs: none
+
+Previous report (1.1.0 -> 2.0.0)
 - Modified principles: none (core principles I-V remain inviolate)
 - Modified constraints:
   - Project identity: `isanlp_rst` -> Rhetorical Discourse Analysis Machine (`rdam`)
@@ -109,9 +120,9 @@ reliably expose.
   resolved before it is encoded as design intent.
 - Defects encountered during approved work MUST be fixed forward in the same pass and reported.
   The fix MUST remain as narrow as the actual defect unless broader scope is required for truth.
-- Verification MUST use the applicable Pixi tasks documented in `AGENTS.md`, `CLAUDE.md`, and
-  `.claude/rules/commands.md`. Reports MUST distinguish verified results, failures, unverified
-  work, and assumptions.
+- Verification MUST use the applicable Pixi tasks documented in `AGENTS.md` and declared in
+  `pyproject.toml`. Reports MUST distinguish verified results, failures, unverified work, and
+  assumptions.
 - No work is complete merely because artifacts exist. Completion requires reconciled authority,
   applicable quality gates, inspection of persisted or rendered outputs where relevant, and a
   clean review of the exact delivery candidate.
@@ -119,11 +130,11 @@ reliably expose.
 ## Governance
 
 This constitution governs durable Spec Kit principles. The root `AGENTS.md` is the single
-canonical operational authority for all agents; `CLAUDE.md` and `.claude/rules/` provide the
-project briefing and detailed rules. Agent-specific directories contain integrations and skills,
-not competing governance. All of these authorities are binding within their stated roles. If they
-conflict, work MUST stop until Steve approves an explicit reconciliation; no file silently
-overrides another.
+canonical operational authority and project briefing for all agents; `CLAUDE.md` is the Claude
+Code adapter that imports it, and `.claude/rules/` holds path-scoped detail. Agent-specific
+directories contain integrations and skills, not competing governance. All of these authorities
+are binding within their stated roles. If they conflict, work MUST stop until Steve approves an
+explicit reconciliation; no file silently overrides another.
 
 Amendments require Steve's approval, an updated Sync Impact Report, and corresponding updates to
 dependent guidance when necessary. Versioning follows semantic governance rules: MAJOR for
@@ -134,4 +145,4 @@ Specifications, plans, tasks, implementations, and completion reviews MUST check
 this constitution. Any deviation MUST be identified before implementation and justified explicitly;
 unjustified complexity or an unverified exception is non-compliant.
 
-**Version**: 2.0.0 | **Ratified**: 2026-08-24 | **Last Amended**: 2026-09-03
+**Version**: 2.0.1 | **Ratified**: 2026-08-24 | **Last Amended**: 2026-10-20

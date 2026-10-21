@@ -1,0 +1,246 @@
+---
+trigger: glob
+globs: "rdam/**, workbench/**, tools/**, tests/**"
+paths:
+  - "rdam/**"
+  - "workbench/**"
+  - "tools/**"
+  - "tests/**"
+---
+
+# Architecture
+
+## The machine (features 006–019; owner rulings 2026-09-02 and 2026-09-04)
+
+`specs/006-rhetorical-discourse-machine/` is the decision-closed authority for the
+machine's rules; `specs/007-…` to `specs/016-…` record what was built against them; the
+owner rulings of 2026-09-02 on layout are recorded in
+[`specs/010-repository-migration/spec.md`](../../specs/010-repository-migration/spec.md)
+and supersede the 006 boundary roster. Where a rule here and a feature disagree, the
+feature wins.
+
+### One package, one wheel
+
+```text
+rdam/                  the distribution `rdam` and the import package `rdam` — the machine
+├── contracts.py       provider/formalism declarations, capability states, native results, outcomes
+├── machine.py         Machine.capabilities() (side-effect-free), Machine.analyse() (N outcomes)
+├── cli.py, http.py    unified command and optional loopback /v1/ interfaces
+├── composition.py     lazy registration of the seven production providers
+├── ingest/            shared source inventory, provider projections, capacity plans and anchors
+├── frameworks.py      Technique, coe: identities from resources/framework-identities.json
+├── rst/               RST provider: parser, converter, viewer, provider.py
+├── pdtb/              PDTB-3 native relations and LLM-backed provider
+├── sdrt/              native SDRS graphs and LLM-backed provider
+├── toulmin/           native Toulmin layouts and LLM-backed provider
+├── walton/            native Walton scheme instances and LLM-backed provider
+├── dung/              Dung provider: semantics.py, provider.py
+└── ibis/              IBIS provider: grammar.py, provider.py
+ontology/              vendored Central distribution + rdam LinkML profile (repository, not shipped)
+workbench/             the one experimentation root; never imported by rdam
+tools/production_boundary/   boundary inspection, reproducible build, validation, clean install
+```
+
+- Every technique is a real sub-package of `rdam`, created with its provider. The
+  supported `production_machine()` composition registers exactly all seven.
+- No top-level import name other than `rdam` is ever created (`rst`, `dung`, `ibis`, … are
+  never packages; `ibis` would shadow the PyPI Ibis dataframe library).
+- Exactly one `workbench/`. Production code never imports `workbench.*`, directly or
+  transitively, and no wheel or sdist member carries a `workbench/` path (006 FR-006).
+  Enforcement: `tools.production_boundary` walks imports from `rdam` and admits only the
+  `rdam/` import root in a wheel — `pixi run -e default production-boundary` (source boundary; built archives require artifact validation).
+- Release tooling derives distribution name, version, and package directory from
+  `pyproject.toml` (`tools/production_boundary/identity.py`); no tool restates them.
+
+### Capability reports checked local prerequisites
+
+`rdam.ingest` owns source material for every technique. `rdam.rst.ingest` has no
+compatibility shim. Generic machine orchestration imports no technique package;
+the separate composition module imports providers only when called. Requests for
+files or bytes carry immutable source material. Inventory and default disposition
+run once, followed by one pure projection per distinct content requirement.
+
+Text providers declare admitted classes, representation transformations, capacity,
+boundary preferences, normalization and speaker needs. Dung and IBIS declare no
+content requirement and receive no projection. The aggregate carries the complete
+inventory, distinct projections, transformation records and speaker coverage.
+
+Execution is in-process with four workers by default and request-ordered results.
+Provider-declared safety controls locking; locks never retain provider instances.
+RST CPU/MPS safety, including cold initialization, is measured in Feature 017's
+`evidence/parser-concurrency.md`. Other devices are serialized. eRST execution is workbench-only.
+Typed failures preserve other successes; non-provider exceptions propagate.
+The optional cache binds source, projection, provider, contract, model and
+instructions. Analytical identity excludes explicitly declared execution fields;
+native artifact integrity still covers those fields.
+
+> The promotion-evidence gate (feature 008) was removed on 2026-09-02 by owner ruling. It
+> was never requested and it reported working parsers as `unavailable`. Capability is now
+> exactly what it says: can this provider run?
+
+- `rdam.rst.provider.RstProvider` is `available` when the configured `hf_model_version` is
+  one the façade knows how to load, or when the named local release validates.
+  The check loads no model and touches no network; the parser is built on first `analyse`.
+- `rdam.dung` and `rdam.ibis` are exact and deterministic, so they are `available`
+  whenever imported. Each still reports the digest of its own source files as
+  `provenance.source_revision`.
+- `rdam.pdtb`, `rdam.sdrt`, `rdam.toulmin`, and `rdam.walton` are available when their
+  configured LLM model resolves. Declarations do not construct an LLM client; model
+  proposals pass each technique's deterministic native validator before becoming results.
+  Discovery does not test credentials against a remote service or guarantee inference success.
+- The three unavailability reasons are `not_implemented`, `model_unavailable`, and
+  `missing_structured_input`. None of them is retryable.
+
+eRST execution, checkpoint handling and research contracts live in `workbench/erst/`
+by owner instruction on 2026-09-06. Production retains only passive saved-report
+graph/evidence data; it cannot select or load eRST.
+
+### Identity binding
+
+Each technique declares exactly one canonical framework identity from
+`coe:artifact/narrative/analytical_frameworks_taxonomy` in Central_Configs. `coe:`
+identifiers are **referenced, never redefined locally**; the projection the package ships
+(`rdam/resources/framework-identities.json`) is generated from the vendored taxonomy and
+checked current by `pixi run ontology-validate`. The RST provider binds to `…/rst` and
+declares only `rst_tree → …/rst`. The canonical eRST identity remains available
+for historical records and workbench evaluation.
+
+### Persisted identifiers
+
+The package, distribution, command, and provider ids are `rdam`-named. The persisted
+contract identifiers are not: `isanlp_rst.production` 3.0.0 (historical 2.0.0 remains readable), `isanlp_rst.parser/modernbert-v1`
+(a historical immutable manifest identity, not the active architecture), `isanlp_rst.build_provenance`,
+`isanlp_rst.public_surface`, the schema `$id`s, and `ISANLP_RST_ERST_CHECKPOINT`. They
+name contracts and stored releases; changing them is an owner ruling, not a refactor.
+
+### Analysis-only scope, and scale
+
+The machine analyses discourse; it never generates or rewrites it. It serves one person
+on one local machine (006 FR-028) — no multi-user, distributed, remote-control-plane, or
+enterprise infrastructure without a new explicit requirement. A shared production
+abstraction is introduced only when at least two proven production callers need the same
+semantic contract with unambiguous ownership (FR-029); the aggregate contract in `rdam`
+is the single approved instance.
+
+### Preservation across the migration and the rename
+
+The RST public surface was preserved across the relocation byte-for-byte (010 baseline,
+`equivalent: true`). Across the rename to `rdam` 6.0.0 it is preserved **analytically**:
+`pixi run rst-baseline compare` diffs every serialized record field by field and
+classifies each difference as execution, package identity, package source identity,
+derived digest, or analytical; the verdict against the pre-migration baseline is zero
+analytical differences
+([`specs/010-repository-migration/evidence/release/rename-6.0.0-baseline-comparison.json`](../../specs/010-repository-migration/evidence/release/rename-6.0.0-baseline-comparison.json)).
+
+Immutable release manifests declare `compatibility_range` as of release time. A stored
+release is shown to run under a later package line by a manifest-bound
+`CompatibilityRedeclaration` sidecar (`<store>/<release_id>.compatibility.json`, written
+by `pixi run python -m workbench.promotion.compatibility` with its evidence), never by editing the manifest.
+
+## The RST parser (`rdam.rst`)
+
+The parser is a thin façade over predictor families that share a `BasePredictor`
+(tokenisation, batching, offset remapping, MPS-safe init, mixed-precision dispatch).
+
+> **Production status**: The active production families are **DMRST** and **UniRST**
+> (`rdam.rst.dmrst_parser.predictor.PredictorDMRST` and `rdam.rst.universal_parser.PredictorUniRST`),
+> loaded either via `hf_model_version` or from an immutable local release via
+> `Parser.from_model_release(store, release_id)`. Experimental pure-transformer
+> research architectures reside strictly under `workbench/training/modern/` and are not
+> in production code.
+
+### Production families
+
+`rdam.rst.parser.Parser` dispatched on either `hf_model_version` (HF-pulled) or `family=` / auto-detection (`model_dir=` for local checkpoints):
+
+| Family | Versions | Predictor |
+|---|---|---|
+| **DMRST** (monolingual / bilingual) | `rstdt`, `gumrrg`, `rstreebank` | `PredictorDMRST` |
+| **UniRST** (multilingual, 11 languages) | `rrtrrg`, `unirst` | `PredictorUniRST` |
+
+Each family retains its own neural modules under `src/parser/` to preserve trained
+parameter and pickle identities. Shared infrastructure covers metrics, device/dtype
+selection and base predictor behavior; corpus construction lives in `workbench`.
+See the [consolidation decision](../../artifacts/reviews/architecture-decisions/parser-infrastructure-consolidation.md).
+
+`UniRST` adds a `relinventory` parameter so a single multilingual model can target a specific corpus's relation set (e.g. `eng.erst.gum`, `rus.rst.rrt`). Available inventories: [`UniRST_Metrics.md`](../../docs/metrics/UniRST_Metrics.md).
+
+### Shared base (`BasePredictor`)
+
+- razdel / word-level tokenisation and offset bookkeeping
+- subword EDU-break recounting (`_recount_spans`)
+- offset remapping from tokenised space back to original-text character offsets (`remap_tree_offsets`) — every leaf and internal node ends up with `start` / `end` / `text` fields aligned to the input string
+- `_collect_leaf_texts` for round-trip validation against pre-segmented EDUs
+- MPS-safe initialisation (orthogonal init routed via CPU on MPS tensors)
+- mixed-precision dispatch via `torch.autocast` (`dtype=float32 | bf16 | fp16`)
+
+### Device handling
+
+`device=` is the canonical knob (default `"auto"`):
+
+- `"auto"` (default) → CUDA if present, else MPS on Apple Silicon, else CPU
+- `"cpu"` → CPU
+- `"mps"` → Apple Silicon Metal backend (`RuntimeError` if unavailable)
+- `"cuda"` / `"cuda:N"` → a specific NVIDIA device (`RuntimeError` if no CUDA)
+- a `torch.device` → used as-is
+
+The resolved device is stored on the predictor as `self._device` (a `torch.device`). PyTorch has no MPS kernel for `torch.linalg.qr` (used by `torch.nn.init.orthogonal_`); the parser routes this via CPU automatically. No manual env-var hacks required.
+
+### Mixed precision (`dtype=`)
+
+Forward passes go through `torch.autocast`. The model runs in `float32`, `float16`, or `bfloat16` without changing trained weights. Default is `float32` on every device.
+
+- **Apple Silicon (~1k-char inputs):** `float32` beat `bfloat16` / `float16` for every published research model — measured by the maintainer at the time (source comment in the archived base predictor).
+- **Large-batch CUDA (Hopper / Ada Tensor Cores):** `bfloat16` is likely faster. Measure with `pixi run bench` before pinning.
+- **The dtype fixtures check tree topology and EDU segmentation across three dtypes**; this is sample-scoped evidence for the published models — **but relation / nuclearity labels are not.** A node's label is an argmax over a per-node distribution; on a near-tied (high-entropy) node, bf16/fp16 can flip the winner with no structural change. Verified 2026-06-27 (numpy 2.5.0, MPS): rrtrrg on `LONG_EN` flips one entropy-0.40 node from `Elaboration`/NS to `Cause-effect`/SN under bf16 while every span stays byte-identical. Assertion source: `tests/integration/test_integration.py` (the dtype-equivalence suite compares fp16/bf16 **topology**, labels deliberately excluded, against an fp32-CPU baseline).
+
+### Visualisation (`rdam.rst.rstviewer`)
+
+Standalone subpackage ported from `rstviewer`. Public surface lives in `rdam/rst/__init__.py`:
+
+- `render(rs3_source)` — Jupyter / Colab inline render
+- `to_html(rs3_path, html_path)` — write standalone HTML
+- `to_png(rs3_path, png_path)` / `to_pdf(rs3_path, pdf_path)` — Playwright / Chromium-driven; both have sync and async paths. They detect a running event loop (e.g. inside Jupyter) and dispatch via a worker thread when needed.
+- `DiscourseUnit.to_rs3(filename, encoding='utf8')` is the bridge from a parsed tree to the visualiser format.
+
+Chromium launch, the offline navigation guard, viewport JS, graph-bbox JS, and PNG whitespace trim live in [`rdam/rst/rstviewer/_chromium.py`](../../rdam/rst/rstviewer/_chromium.py). The viewer is on the same ruff / pyright bar as the rest of `rdam/`.
+
+The async / sync dispatch in `rdam/rst/__init__.py:_run_coro_sync_result` is load-bearing — don't simplify it without checking notebook compatibility.
+
+### Memory management
+
+`DiscourseUnit` trees keep the substring per node, which dominates memory on large corpora. Pattern:
+
+```python
+res["rst"][0].clear_textfields()  # drop .text on every node — keep structure
+# … serialise / store …
+tree.fill_textfields(full_text)  # repopulate from the original document
+```
+
+Calling `.to_rs3()` on a tree with cleared textfields will fail.
+
+### Output shape (`DiscourseUnit`)
+
+Each node carries:
+
+```python
+{
+ 'id': 21,
+ 'left':  (id=14, start=1,   end=323),  # child node refs
+ 'right': (id=20, start=324, end=570),
+ 'relation':    'elaboration',           # rhetorical relation
+ 'nuclearity':  'NS',                    # nucleus-satellite status (NS / NN / "")
+ 'entropy':     0.92,                    # entropy of the split
+ 'start':       1,                       # original-text character offset
+ 'end':         570,
+ 'text':        "On Saturday, ... took two wickets."
+}
+```
+
+Leaves are EDUs; internal nodes are relations. Every node has `start` / `end` in **original-text character coordinates** after `remap_tree_offsets`.
+
+### Native RST tree representation (`DiscourseUnit`)
+
+`DiscourseUnit` is natively provided in [`rdam/rst/annotation_rst.py`](../../rdam/rst/annotation_rst.py) in modern Python 3.14 (slotted, strictly typed). The legacy `iinemo/isanlp` Git dependency has been retired; `rdam.rst` provides transparent `sys.modules` backward-compatibility aliasing for legacy `from isanlp.annotation_rst import DiscourseUnit` imports.
+
+`DiscourseUnit` fields: `id`, `left`, `right`, `text`, `start`, `end`, `orig_text`, `relation`, `nuclearity`, `proba`, `entropy`. Methods: `clear_textfields()` (recursively sets `.text = ''`), `fill_textfields(full_text)` (re-extracts substring per node), `to_rs3(filename, encoding='utf8')` (writes RS3 XML via internal `Exporter`).

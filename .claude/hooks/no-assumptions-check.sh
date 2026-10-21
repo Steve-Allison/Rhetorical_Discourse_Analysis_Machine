@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # .claude/hooks/no-assumptions-check.sh
 #
-# PreToolUse hook enforcing .claude/rules/no-assumptions.md at write time.
+# PreToolUse hook enforcing AGENTS.md § "HARD RULE: evidence marking" at write time.
 # Blocks Write / Edit / MultiEdit when the proposed content makes a
 # canonicity, custom-field, or extension claim WITHOUT a nearby evidence
 # anchor or ASSUMED marker.
@@ -55,8 +55,8 @@ fi
   echo
   echo "The proposed content contains a canonicity / custom-field / extension"
   echo "claim WITHOUT a nearby evidence anchor or ASSUMED marker. This violates"
-  echo ".claude/rules/no-assumptions.md (anti-pattern #2: pattern-matched"
-  echo "conclusion as verified fact)."
+  echo "AGENTS.md § 'HARD RULE: evidence marking' (a pattern-matched conclusion"
+  echo "written as verified fact)."
   echo
   echo "Triggered phrases (first 10 lines containing them):"
   printf '%s\n' "$triggered_phrases" | head -10 | sed 's/^/  > /'

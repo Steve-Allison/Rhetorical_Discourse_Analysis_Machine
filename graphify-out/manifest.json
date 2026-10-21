@@ -2952,9 +2952,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1791539494.3185215,
-    "seen": 1791539499.993162,
-    "ast_hash": "a63127ff1f7b53dc99063b1254451fdb",
+    "mtime": 1791619021.8118637,
+    "seen": 1791622158.145391,
+    "ast_hash": "ec586b395f23dc79e0cccd09310dc9d0",
     "semantic_hash": ""
   },
   "GEMINI.md": {
@@ -3876,9 +3876,9 @@
     "semantic_hash": ""
   },
   "tests/fixtures/docling/README.md": {
-    "mtime": 1788536899.08501,
-    "seen": 1788537110.1967518,
-    "ast_hash": "50b79cf817df7c44b0f47ce7565ea73e",
+    "mtime": 1791619108.9001737,
+    "seen": 1791622158.1455371,
+    "ast_hash": "9f22fcff233f7bef553737bfa7103534",
     "semantic_hash": ""
   },
   "tests/fixtures/gum/README.md": {
@@ -4200,9 +4200,9 @@
     "semantic_hash": ""
   },
   "docs/production-offline-boundary.md": {
-    "mtime": 1791539494.3201911,
-    "seen": 1791539499.993171,
-    "ast_hash": "ddda25c2805686307621cf19fa6468e0",
+    "mtime": 1791619109.6092339,
+    "seen": 1791622158.1454022,
+    "ast_hash": "74227a97a35e324e8ba22add3fc37edd",
     "semantic_hash": ""
   },
   "docs/production-source-ingest.md": {
@@ -6636,9 +6636,9 @@
     "semantic_hash": ""
   },
   "docs/README.md": {
-    "mtime": 1791539494.3193548,
-    "seen": 1791539499.993165,
-    "ast_hash": "8b8c4cdfc11e6f8072da694f183a1d67",
+    "mtime": 1791619109.5314288,
+    "seen": 1791622158.145395,
+    "ast_hash": "765a362a36eb65a9c62af7269ea2c2c7",
     "semantic_hash": ""
   },
   "workbench/erst/README.md": {
