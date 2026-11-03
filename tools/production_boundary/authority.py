@@ -93,7 +93,6 @@ class OwnershipAuthority:
                     ".claude",
                     ".codex",
                     ".cursor",
-                    ".github",
                     ".specify",
                     "artifacts",
                     "config",

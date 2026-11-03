@@ -97,10 +97,9 @@ its description. When to use what:
 - **Quality diagnostics:** `pixi run rst-diag <paths>` (`--json` for machine output):
   preparation coverage, content-class decisions, anchor integrity, tree structure, relation
   distribution, subdivision and timing across the canonical source forms.
-- **CI** (`.github/workflows/`): lint, typecheck, mdlint, the fast tests,
-  `rst-format-coverage` and `rst-mutation-test` on every push; the slow suite nightly;
-  `deps-compat.yml` re-tests the latest Docling Core and DocLang weekly. The model smoke is
-  local-only because weights are not in git.
+- **Format & mutation gates:** `pixi run rst-format-coverage` and
+  `pixi run rst-mutation-test` locally. All verification and release gates are local-only
+  (no GitHub Actions workflows).
 
 ## HARD RULE: no invented release theatre
 

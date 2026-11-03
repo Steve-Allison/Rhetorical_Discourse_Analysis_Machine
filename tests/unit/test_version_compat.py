@@ -7,11 +7,9 @@ a release that moves the schema version, the XML namespace, or the validator
 turns the suite red instead of letting current-output breakage pass silently.
 
 Coverage:
-- Run against the **locked** packages on every push via `.github/workflows/ci.yml`
-  (these are fast / not slow).
-- Run against the **latest** packages weekly via `.github/workflows/deps-compat.yml`,
-  which `pixi update`s docling-core / doclang first — that is the "check on every
-  new version" guarantee.
+- Run against the **locked** packages locally in the fast suite (`pixi run test`).
+- Run against the **latest** packages locally by running
+  `pixi update docling-core doclang` and then `pixi run pytest tests/unit/test_version_compat.py`.
 """
 
 import json

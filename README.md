@@ -68,7 +68,7 @@ One distribution, one import package, every technique a sub-package.
   structure and never extract one from text. A text-only request for them is
   `unavailable(missing_structured_input)`, not a guess.
 - **One person, one machine.** No multi-user, distributed, or enterprise machinery.
-  Pixi-managed, Apple-Silicon-first, MPS-aware, with a real test suite and CI.
+  Pixi-managed, Apple-Silicon-first, MPS-aware, with a real local test suite.
 
 ## Installation
 
