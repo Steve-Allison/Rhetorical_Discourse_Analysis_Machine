@@ -182,13 +182,6 @@ def test_real_comparison_cli_checks_contents_and_preserves_baseline(tmp_path: Pa
         path.write_text(json.dumps(record), encoding="utf-8")
     elif mutation == "missing_record":
         (tmp_path / "prepare-text.json").unlink()
-    else:
-        # Preserve historical records for formats with unchanged accepted inputs.
-        # DocLang now uses a valid current specimen; its historical correction
-        # is independently exercised by the snapshot-based tests above.
-        for form in (SourceForm.MARKDOWN, SourceForm.DOCLING_JSON):
-            name = f"prepare-{form.value}.json"
-            (tmp_path / name).write_bytes((BASELINE / name).read_bytes())
     original = {path.name: path.read_bytes() for path in tmp_path.iterdir()}
     result = subprocess.run(
         [sys.executable, "-m", "tools.production_boundary.rst_baseline", "compare", "--baseline", str(tmp_path), "--no-analysis"],
@@ -199,8 +192,8 @@ def test_real_comparison_cli_checks_contents_and_preserves_baseline(tmp_path: Pa
     assert report["no_unexplained_regressions"] == (mutation is None)
     if mutation is None:
         assert report["equivalent"] is False
-        assert report["analytically_equivalent"] is False
-        assert report["difference_counts_by_class"]["source_identity_correction"] > 0
+        assert report["analytically_equivalent"] is True
+        assert set(report["difference_counts_by_class"]) == {"execution"}
     else:
         assert report["analytical_differences"]["prepare-text"]
     assert {path.name: path.read_bytes() for path in tmp_path.iterdir()} == original

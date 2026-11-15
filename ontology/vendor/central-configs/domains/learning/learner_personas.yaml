@@ -28,6 +28,7 @@ entity_collections:
     - literal: Learner
       term_type: short_form
       term_status: admitted
+      usage_note: Use when the people addressed participate in learning; learner alone is not the Learner Audience resource when it names one individual.
   - id: coe:entity/learning/learner_ks3_foundation_explorer
     label: KS3 Foundation Explorer
     description: UK Learner Profile for KS3 Foundation Explorer.

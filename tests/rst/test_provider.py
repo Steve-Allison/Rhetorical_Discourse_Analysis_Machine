@@ -348,12 +348,20 @@ class TestAnalyseGuards:
         )
 
     def test_declared_projection_excludes_tables_without_losing_inventory(
-        self, monkeypatch: pytest.MonkeyPatch,
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         provider = ObservableRstProvider(device="cpu")
         monkeypatch.setattr(provider, "_load_parser", build_deterministic_parser)
+        doc = tmp_path / "tabular-evidence.dclg"
+        doc.write_text(
+            '<doclang version="0.9">'
+            "<text>Quarterly reliability improved after the migration.</text>"
+            "<table><ched/>Metric<ched/>Value<nl/><fcel/>Latency<fcel/>12ms<nl/></table>"
+            "</doclang>",
+            encoding="utf-8",
+        )
         result = Machine([provider]).analyse(AggregateRequest.for_source(
-            ROOT / "tests/fixtures/pipeline/tabular-evidence.md", (Technique.RST,),
+            doc, (Technique.RST,),
         ))
         assert isinstance(result.outcome_for(Technique.RST), ResultOutcome)
         assert result.preparation is not None

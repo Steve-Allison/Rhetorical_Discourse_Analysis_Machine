@@ -32,7 +32,6 @@ def table_requirement() -> ContentRequirement:
 
 
 @pytest.mark.parametrize("name", (
-    "tabular-evidence.md", "merged-table.docling.json",
     "../doclang/ok_table_class_data.dclg", "../doclang/ok_table_raw_before.dclg",
     "../doclang/ok_table_raw_none.dclg", "../doclang/ok_table_rectangular.dclg",
     "../doclang/ok_table_wrapped_before.dclg", "../doclang/ok_table_wrapped_none.dclg",
@@ -91,7 +90,16 @@ def test_doclang_wrappers_and_row_markers_are_not_invented_cells() -> None:
 
 
 def test_repeated_headers_are_source_contributors() -> None:
-    source = SourceArtifact.from_path(Path("tests/fixtures/pipeline/tabular-evidence.md"))
+    source = SourceArtifact.from_bytes(
+        (
+            b"<doclang><heading level=\"1\">Replacement decision</heading>"
+            b"<table><ched/>Option<ched/>Annual Cost<nl/>"
+            b"<fcel/>Current<fcel/>120<nl/>"
+            b"<fcel/>Replacement<fcel/>80<nl/></table></doclang>"
+        ),
+        source_form=SourceForm.DOCLANG_XML,
+        source_name="tabular-evidence.dclg",
+    )
     inventory = ContentInventory.from_preparation(ProductionIngestor().prepare(source))
     result = project(inventory, table_requirement())
     for table in inventory.items:

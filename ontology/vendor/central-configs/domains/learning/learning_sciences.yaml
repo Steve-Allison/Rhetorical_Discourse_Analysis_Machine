@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/learning/learning_sciences
   title: Learning — Learning Sciences and Assessment Disciplines
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-12'
   authority: Central_Configs
   scope: domain
   ontology_domain: learning
@@ -13,24 +13,623 @@ entity_collections:
   label: Learning and Cognitive Theories
   description: Named learning and cognitive theories recovered from the knowledge wiki, including two refuted-claim
     records kept for flagging.
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-11'
   home_domain: learning
   status: canonical
   entities:
+  - id: coe:entity/cognitive_load_theory
+    label: Cognitive Load Theory
+    source: wiki:cognitive-load-theory
+    exact_match:
+    - https://www.wikidata.org/wiki/Q5141237
+    description: John Sweller's theory that working memory has limited capacity, so instruction must minimise extraneous
+      load, manage intrinsic load arising from element interactivity, and foster germane load for schema construction.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Cognitive Load (intrinsic)
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: Cognitive Load (extraneous)
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: Cognitive Load (germane)
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: CLT
+      term_type: initialism
+      term_status: admitted
+      language: en
+    - literal: Sweller's Cognitive Load Theory
+      term_type: full_form
+      term_status: admitted
+      language: en
+    edges:
+    - subject_id: coe:entity/cognitive_load_theory
+      predicate: coe:contains
+      object_id: coe:concept/cognitive_load_taxonomy/load_type
+      relationship_weight: required
+      description: Cognitive Load Theory is the parent theory whose intrinsic, extraneous and germane load types the
+        cognitive-load taxonomy classifies.
+      statement_id: coe:edge/cognitive-load-theory-contains-load-type
+      home_domain: learning
+    - subject_id: coe:entity/cognitive_load_theory
+      predicate: coe:supports
+      object_id: coe:entity/clt_compliance_dimension
+      relationship_weight: expected
+      description: CLT compliance scoring evaluates designs against Cognitive Load Theory constraints such as split-attention
+        and redundancy avoidance.
+      statement_id: coe:edge/cognitive-load-theory-supports-clt-compliance-dimension
+      home_domain: learning
+    - subject_id: coe:entity/cognitive_load_theory
+      predicate: coe:enables
+      object_id: coe:entity/mayer_extraneous_principle
+      relationship_weight: expected
+      description: Mayer's extraneous-reduction multimedia principles operationalise Cognitive Load Theory for dual-channel
+        instructional media.
+      statement_id: coe:edge/cognitive-load-theory-enables-mayer-extraneous-principle
+      home_domain: learning
+    examples:
+    - intrinsic load
+    - extraneous load
+    - germane load
+    - element interactivity
+    - expertise reversal effect
+  - id: coe:entity/andragogy
+    label: Andragogy
+    source: wiki:andragogy
+    exact_match:
+    - https://www.wikidata.org/wiki/Q512288
+    description: Malcolm Knowles's adult-learning theory that adults learn best when instruction is relevant, self-directed,
+      experiential, problem-centred and intrinsically motivated, contrasting with pedagogy for dependent learners.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Knowles's andragogy
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: Staged Self-Directed Learning
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: SSDL
+      term_type: initialism
+      term_status: admitted
+      language: en
+    - literal: Grow's SSDL model
+      term_type: full_form
+      term_status: admitted
+      language: en
+    edges:
+    - subject_id: coe:entity/andragogy
+      predicate: coe:contrasts_with
+      object_id: coe:entity/motivation_theory
+      relationship_weight: optional
+      description: Andragogy states adult-learning process assumptions; Motivation Theory supplies complementary motivational
+        frameworks adults bring to those situations — related but not the same construct.
+      statement_id: coe:edge/andragogy-contrasts-with-motivation-theory
+      home_domain: learning
+    - subject_id: coe:entity/andragogy
+      predicate: coe:bridges
+      object_id: coe:entity/seventy_twenty_ten_model
+      relationship_weight: optional
+      description: Andragogy's experiential bias bridges workplace 70:20:10 heuristics that also privilege experience over
+        coursework — without endorsing the fixed ratio.
+      statement_id: coe:edge/andragogy-bridges-seventy-twenty-ten-model
+      home_domain: learning
+    examples:
+    - adult learning principles
+    - self-directed learning
+    - andragogy versus pedagogy
+  - id: coe:entity/motivation_theory
+    label: Motivation Theory
+    source: wiki:motivation-theory
+    description: The complementary adult-learning motivation cluster spanning Self-Determination Theory (autonomy, competence,
+      relatedness), Expectancy-Value Theory, and the Fogg Behaviour Model (behaviour when motivation, ability and prompt converge).
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Conversions Heuristic
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: Self-Determination Theory
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: Self-Determination Theory (Deci & Ryan)
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: SDT
+      term_type: initialism
+      term_status: admitted
+      language: en
+    - literal: Fogg Behavior Model
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: Fogg Behaviour Model
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: Expectancy-Value Theory
+      term_type: full_form
+      term_status: admitted
+      language: en
+    edges:
+    - subject_id: coe:entity/motivation_theory
+      predicate: coe:bridges
+      object_id: coe:entity/nudge_theory
+      relationship_weight: expected
+      description: Nudge theory supplies choice-architecture interventions that complement the motivational frameworks owned
+        by Motivation Theory.
+      statement_id: coe:edge/motivation-theory-bridges-nudge-theory
+      home_domain: learning
+    examples:
+    - autonomy competence relatedness
+    - B equals MAP
+    - expectancy times value
+  - id: coe:entity/blooms_taxonomy
+    label: Bloom's Taxonomy
+    source: wiki:blooms-taxonomy
+    exact_match:
+    - https://www.wikidata.org/wiki/Q878070
+    description: Anderson and Krathwohl's revised six-level cognitive taxonomy from Remember through Create, used to align
+      learning objectives, instructional activities and assessments to a target cognitive process level.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Bloom's Revised Taxonomy
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: Anderson and Krathwohl taxonomy
+      term_type: full_form
+      term_status: admitted
+      language: en
+    edges:
+    - subject_id: coe:entity/blooms_taxonomy
+      predicate: coe:contains
+      object_id: coe:concept/activity_types_taxonomy/bloom_level
+      relationship_weight: required
+      description: Bloom's Taxonomy is the parent theory whose Remember-through-Create levels the activity-types Bloom scheme
+        classifies.
+      statement_id: coe:edge/blooms-taxonomy-contains-activity-types-bloom-level
+      home_domain: learning
+    - subject_id: coe:entity/blooms_taxonomy
+      predicate: coe:contains
+      object_id: coe:concept/bloom_knowledge_dimension_taxonomy/factual
+      relationship_weight: required
+      description: Bloom's revised taxonomy includes the factual member of the knowledge dimension alongside the cognitive-process levels.
+      statement_id: coe:edge/blooms-taxonomy-contains-knowledge-dimension-factual
+      home_domain: learning
+    - subject_id: coe:entity/blooms_taxonomy
+      predicate: coe:contains
+      object_id: coe:concept/bloom_knowledge_dimension_taxonomy/conceptual
+      relationship_weight: required
+      description: Bloom's revised taxonomy includes the conceptual member of the knowledge dimension alongside the cognitive-process levels.
+      statement_id: coe:edge/blooms-taxonomy-contains-knowledge-dimension-conceptual
+      home_domain: learning
+    - subject_id: coe:entity/blooms_taxonomy
+      predicate: coe:contains
+      object_id: coe:concept/bloom_knowledge_dimension_taxonomy/procedural
+      relationship_weight: required
+      description: Bloom's revised taxonomy includes the procedural member of the knowledge dimension alongside the cognitive-process levels.
+      statement_id: coe:edge/blooms-taxonomy-contains-knowledge-dimension-procedural
+      home_domain: learning
+    - subject_id: coe:entity/blooms_taxonomy
+      predicate: coe:contains
+      object_id: coe:concept/bloom_knowledge_dimension_taxonomy/metacognitive
+      relationship_weight: required
+      description: Bloom's revised taxonomy includes the metacognitive member of the knowledge dimension alongside the cognitive-process levels.
+      statement_id: coe:edge/blooms-taxonomy-contains-knowledge-dimension-metacognitive
+      home_domain: learning
+    examples:
+    - remember understand apply analyze evaluate create
+    - Bloom's verbs
+    - cognitive process dimension
+  - id: coe:entity/brain_rules
+    label: Brain Rules
+    source: wiki:brain-rules
+    description: John Medina's twelve practitioner rules summarising how the brain learns, remembers and performs, recorded
+      as taught with their learning-and-development design implications.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Medina's Brain Rules
+      term_type: full_form
+      term_status: admitted
+      language: en
+    edges:
+    - subject_id: coe:entity/brain_rules
+      predicate: coe:bridges
+      object_id: coe:entity/working_memory
+      relationship_weight: expected
+      description: Several Brain Rules rest on working-memory and attention limits that Medina popularises for practitioners.
+      statement_id: coe:edge/brain-rules-bridges-working-memory
+      home_domain: learning
+    examples:
+    - twelve brain rules
+    - exercise and learning
+    - repeat to remember
+  - id: coe:entity/working_memory
+    label: Working Memory
+    source: wiki:working-memory
+    description: Baddeley's limited-capacity cognitive workspace that temporarily holds and manipulates information via the
+      central executive, phonological loop and visuospatial sketchpad during complex mental operations.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Memory chunk
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: working memory capacity
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: WMC
+      term_type: initialism
+      term_status: admitted
+      language: en
+    - literal: Automated Working Memory Assessment
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: AWMA
+      term_type: initialism
+      term_status: admitted
+      language: en
+    - literal: Working Memory Rating Scale
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: WMRS
+      term_type: initialism
+      term_status: admitted
+      language: en
+    - literal: central executive
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: phonological loop
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: visuospatial sketchpad
+      term_type: full_form
+      term_status: admitted
+      language: en
+    edges:
+    - subject_id: coe:entity/working_memory
+      predicate: coe:enables
+      object_id: coe:entity/cognitive_load_theory
+      relationship_weight: required
+      description: Cognitive Load Theory is grounded in working-memory capacity limits as the architectural constraint on
+        instructional design.
+      statement_id: coe:edge/working-memory-enables-cognitive-load-theory
+      home_domain: learning
+    - subject_id: coe:entity/working_memory
+      predicate: coe:enables
+      object_id: coe:entity/working_memory_marker
+      relationship_weight: expected
+      description: Working-memory markers in quality scoring detect designs that overload the limited workspace Baddeley
+        describes.
+      statement_id: coe:edge/working-memory-enables-working-memory-marker
+      home_domain: learning
+    examples:
+    - Baddeley model
+    - memory chunk
+    - four-chunk capacity
+  - id: coe:entity/kolbs_experiential_learning
+    label: Kolb's Experiential Learning Theory
+    source: wiki:kolbs-experiential-learning
+    description: Kolb's four-stage experiential cycle (Concrete Experience, Reflective Observation, Abstract Conceptualisation,
+      Active Experimentation) describing how experience becomes understanding across two dialectical axes.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Concrete Experience (CE)
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: first stage of Kolb's experiential learning cycle
+      term_type: full_form
+      term_status: admitted
+      language: en
+      usage_note: Descriptive alias for the Concrete Experience stage, not a separate cycle stage resource.
+    - literal: Experiential Learning Theory
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: ELT
+      term_type: initialism
+      term_status: admitted
+      language: en
+    - literal: Concrete Experience
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: CE
+      term_type: initialism
+      term_status: admitted
+      language: en
+      usage_note: Kolb cycle stage abbreviation; not the Customer Experience initialism used in business domains.
+    edges:
+    - subject_id: coe:entity/kolbs_experiential_learning
+      predicate: coe:enables
+      object_id: coe:entity/four_mat_model
+      relationship_weight: expected
+      description: McCarthy's 4MAT instructional cycle builds on Kolb's experiential modes while discarding meshing-based
+        learner-type matching.
+      statement_id: coe:edge/kolbs-experiential-learning-enables-four-mat-model
+      home_domain: learning
+    examples:
+    - Kolb cycle
+    - reflective observation
+    - abstract conceptualisation
+  - id: coe:entity/mece_principle
+    label: MECE Principle
+    description: The Mutually Exclusive, Collectively Exhaustive structuring test that categories, objectives and course
+      architectures must show no overlap and no gaps.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: MECE
+      term_type: initialism
+      term_status: admitted
+    - literal: Mutually Exclusive Collectively Exhaustive
+      term_type: full_form
+      term_status: admitted
+    examples:
+    - no overlap no gaps
+    - MECE audit
+  - id: coe:entity/attention_span_during_lectures
+    label: Attention Span During Lectures
+    description: The evidence record that the 10–15-minute lecture attention-limit claim lacks a primary attention study,
+      with cognitive backlog and mind wandering proposed as mechanisms instead of a fixed interval.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: 10–15-minute attention estimate
+      term_type: full_form
+      term_status: admitted
+    - literal: cognitive backlog
+      term_type: full_form
+      term_status: admitted
+    - literal: mind wandering
+      term_type: full_form
+      term_status: admitted
+    examples:
+    - lecture attention myth
+    - Wilson and Korn
+  - id: coe:entity/pedagogic_mentalising
+    label: Pedagogic Mentalising
+    description: Theory of Mind applied in instruction — teachers attributing mental states to learners to provide instructional
+      and affective scaffolding, including teacher reflective functioning and mind-mindedness.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Variety Hypothesis
+      term_type: full_form
+      term_status: admitted
+    - literal: Teacher Reflective Functioning
+      term_type: full_form
+      term_status: admitted
+    - literal: Mind-Mindedness
+      term_type: full_form
+      term_status: admitted
+    - literal: Affective Scaffolding
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/pedagogic_mentalising
+      predicate: coe:specialises
+      object_id: coe:entity/theory_of_mind
+      relationship_weight: required
+      description: Pedagogic mentalising is Theory of Mind applied to classroom scaffolding rather than the general mental-state
+        attribution capacity.
+      statement_id: coe:edge/pedagogic-mentalising-specialises-theory-of-mind
+      home_domain: learning
+    examples:
+    - instructional scaffolding via ToM
+    - variety hypothesis
+  - id: coe:entity/personal_epistemology
+    label: Personal Epistemology
+    description: Learners' beliefs about the nature of knowledge and knowing — including Perry's scheme and Schommer's dimensions
+      — that act as cognitive filters on study habits and self-evaluation.
+    home_domain: learning
+    status: canonical
+    examples:
+    - Perry's scheme
+    - Schommer dimensions
+    - beliefs about knowledge
+  - id: coe:entity/macrostructure_theory
+    label: Macrostructure Theory
+    description: Van Dijk and Kintsch's account that a text's gist is constructed through recursive macrorules of deletion,
+      generalisation and construction, with construction–integration linking textbase to situation model.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: macrorules
+      term_type: full_form
+      term_status: admitted
+    - literal: macroproposition
+      term_type: full_form
+      term_status: admitted
+    - literal: construction-integration model
+      term_type: full_form
+      term_status: admitted
+    examples:
+    - text gist construction
+    - Meyer top-level structures
+  - id: coe:entity/flow_experience
+    label: Flow Experience
+    description: Csikszentmihalyi's optimal experience construct in which absorbed engagement arises when challenge and skill
+      are balanced, with moderate and often non-causal links to learning performance.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: flow
+      term_type: short_form
+      term_status: admitted
+      usage_note: Names Csikszentmihalyi's flow experience only in learning-science context; flow alone also means any process or workflow.
+    - literal: Flow Short Scale
+      term_type: full_form
+      term_status: admitted
+    - literal: autotelic personality
+      term_type: full_form
+      term_status: admitted
+    examples:
+    - challenge-skill balance
+    - dispositional flow
+  - id: coe:entity/scarf_model
+    label: SCARF Model
+    description: David Rock's five-domain social threat and reward model — Status, Certainty, Autonomy, Relatedness, Fairness
+      — used as a teaching vocabulary whose model-level claims lack peer-reviewed validation as a unit.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: SCARF
+      term_type: acronym
+      term_status: admitted
+    - literal: Status Certainty Autonomy Relatedness Fairness
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/scarf_model
+      predicate: coe:bridges
+      object_id: coe:entity/psychological_safety
+      relationship_weight: expected
+      description: SCARF's relatedness and fairness domains neighbour Edmondson's psychological-safety construct without
+        replacing it.
+      statement_id: coe:edge/scarf-model-bridges-psychological-safety
+      home_domain: learning
+    examples:
+    - social threat domains
+    - neuroleadership SCARF
+  - id: coe:entity/piaget_cognitive_development
+    label: Piaget's Cognitive Development Theory
+    description: Piaget's stage theory of cognitive development through sensorimotor, preoperational, concrete operational
+      and formal operational periods via assimilation and accommodation.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Piaget
+      term_type: short_form
+      term_status: admitted
+      usage_note: Names Piaget's cognitive-development theory when used as a theory name; the surname alone also names the person.
+    edges:
+    - subject_id: coe:entity/piaget_cognitive_development
+      predicate: coe:bridges
+      object_id: coe:entity/bruner_constructivist_instruction
+      relationship_weight: optional
+      description: Bruner's constructivist instruction extends Piagetian stage ideas into guided discovery, representation
+        modes and spiral curriculum design.
+      statement_id: coe:edge/piaget-cognitive-development-bridges-bruner-constructivist-instruction
+      home_domain: learning
+    examples:
+    - assimilation and accommodation
+    - formal operations
+  - id: coe:entity/bruner_constructivist_instruction
+    label: Bruner's Constructivist Instruction
+    description: Bruner's theory of instruction emphasising discovery learning, scaffolding of representation modes (enactive,
+      iconic, symbolic) and the spiral curriculum.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Bruner
+      term_type: short_form
+      term_status: admitted
+      usage_note: Names Bruner's constructivist instruction when used as a theory name; the surname alone also names the person.
+    - literal: spiral curriculum
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/bruner_constructivist_instruction
+      predicate: coe:enables
+      object_id: coe:entity/cognitive_apprenticeship
+      relationship_weight: expected
+      description: Bruner's scaffolding and representation modes inform the modelling and fading moves in cognitive apprenticeship.
+      statement_id: coe:edge/bruner-constructivist-instruction-enables-cognitive-apprenticeship
+      home_domain: learning
+    examples:
+    - discovery learning
+    - enactive iconic symbolic
+  - id: coe:entity/premise_truth_evaluation
+    label: Premise Truth Evaluation
+    description: The discipline of judging whether a premise is true by resolving referential ambiguity, assigning epistemic
+      probability, and weighing self-evidence, observation, memory and authority as evidence sources.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Epistemic probability
+      term_type: full_form
+      term_status: admitted
+    examples:
+    - epistemic probability
+    - two laws of truth
+    - stipulative definition
+  - id: coe:entity/deductive_argument_forms
+    label: Deductive Argument Forms
+    description: The catalogue of valid and invalid deductive forms — including if-then, either-or and categorical patterns
+      — used to test whether an argument's form alone guarantees its conclusion when premises are true.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Denying the consequent
+      term_type: full_form
+      term_status: admitted
+    - literal: Affirming the antecedent
+      term_type: full_form
+      term_status: admitted
+    examples:
+    - validity counterexample
+    - modus ponens
+    - fallacy of composition
+  - id: coe:entity/inductive_argument_evaluation
+    label: Inductive Argument Evaluation
+    description: The two-condition test for inductive arguments — correct form and total evidence — applied to frequency
+      arguments, inductive generalisations, analogies and explanatory arguments.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Inductive generalisation
+      term_type: full_form
+      term_status: admitted
+    - literal: Explanatory argument
+      term_type: full_form
+      term_status: admitted
+    examples:
+    - total evidence condition
+    - sample size and margin of error
+    - argument from analogy
   - id: coe:entity/bandura_social_cognitive_theory
     label: Bandura's Social Cognitive Theory
     description: Bandura's theory that learning occurs through observing others, mediated by self-efficacy, with person,
       behaviour and environment in reciprocal determinism.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: SCT
+      term_type: initialism
+      term_status: admitted
+    - literal: social cognitive theory
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/bandura_social_cognitive_theory
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/goal_setting_theory
       relationship_weight: expected
       description: Self-efficacy from social cognitive theory moderates goal level, commitment, persistence, and
         feedback response in Locke and Latham's model.
-      statement_id: coe:edge/bandura-social-cognitive-theory-supports-goal-setting-theory
+      statement_id: coe:edge/bandura-social-cognitive-theory-bridges-goal-setting-theory
       home_domain: learning
     examples:
     - social cognitive theory
@@ -44,6 +643,11 @@ entity_collections:
       coaching, scaffolding, articulation, reflection, exploration and fading.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Collins, Brown and Newman model
+      term_type: full_form
+      term_status: admitted
+      language: en
     edges:
     - subject_id: coe:entity/cognitive_apprenticeship
       predicate: coe:specialises
@@ -66,6 +670,13 @@ entity_collections:
       technological nodes, with learning as network creation and pattern recognition.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: cMOOC
+      term_type: full_form
+      term_status: admitted
+    - literal: xMOOC
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/connectivism
       predicate: coe:contrasts_with
@@ -86,7 +697,30 @@ entity_collections:
       misleading heuristics, and recognised logical fallacies.
     home_domain: learning
     status: canonical
-    edges: []
+    terms:
+    - literal: Slippery slope fallacy
+      term_type: full_form
+      term_status: admitted
+    - literal: Empirical inquiry
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/critical_thinking
+      predicate: coe:contains
+      object_id: coe:entity/deductive_argument_forms
+      relationship_weight: expected
+      description: Critical thinking as taught here includes testing deductive validity and common fallacies alongside premise
+        truth evaluation.
+      statement_id: coe:edge/critical-thinking-contains-deductive-argument-forms
+      home_domain: learning
+    - subject_id: coe:entity/critical_thinking
+      predicate: coe:contains
+      object_id: coe:entity/inductive_argument_evaluation
+      relationship_weight: expected
+      description: Inductive argument evaluation — form plus total evidence — is part of the critical-thinking discipline
+        for non-deductive reasoning.
+      statement_id: coe:edge/critical-thinking-contains-inductive-argument-evaluation
+      home_domain: learning
     examples:
     - critical thinking
     - logical fallacy
@@ -99,7 +733,15 @@ entity_collections:
       current ability, against naive hour-counting.
     home_domain: learning
     status: canonical
-    edges: []
+    edges:
+    - subject_id: coe:entity/deliberate_practice
+      predicate: coe:bridges
+      object_id: coe:entity/cognitive_apprenticeship
+      relationship_weight: expected
+      description: Deliberate practice's expert-guided repetition at the edge of ability aligns with cognitive apprenticeship's
+        coaching, modelling and fading moves.
+      statement_id: coe:edge/deliberate-practice-bridges-cognitive-apprenticeship
+      home_domain: learning
     examples:
     - deliberate practice
     - purposeful practice
@@ -111,7 +753,19 @@ entity_collections:
       motivational mechanisms, and the High Performance Cycle.
     home_domain: learning
     status: canonical
-    edges: []
+    terms:
+    - literal: High Performance Cycle
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/goal_setting_theory
+      predicate: coe:bridges
+      object_id: coe:entity/motivation_theory
+      relationship_weight: expected
+      description: Goal-setting's commitment and expectancy mechanisms intersect SDT and expectancy-value accounts owned
+        by Motivation Theory without replacing them.
+      statement_id: coe:edge/goal-setting-theory-bridges-motivation-theory
+      home_domain: learning
     examples:
     - goal-setting theory
     - Locke and Latham
@@ -125,14 +779,18 @@ entity_collections:
       replication-corrected.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Fixed Mindset
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/growth_mindset
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/catalytic_feedback
       relationship_weight: expected
       description: Process-over-trait praise operationalises the incremental-mindset discipline; catalytic feedback
         presumes the malleability beliefs Dweck's construct names.
-      statement_id: coe:edge/growth-mindset-supports-catalytic-feedback
+      statement_id: coe:edge/growth-mindset-enables-catalytic-feedback
       home_domain: learning
     examples:
     - growth mindset
@@ -146,6 +804,22 @@ entity_collections:
       wherever they appear.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Learning Pyramid
+      term_type: full_form
+      term_status: admitted
+    - literal: Cone of Experience (descriptive model)
+      term_type: full_form
+      term_status: admitted
+    - literal: Affirmative citation bias
+      term_type: full_form
+      term_status: admitted
+    - literal: Treichler 1967
+      term_type: full_form
+      term_status: admitted
+    - literal: Generation effect
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - learning pyramid
@@ -179,6 +853,10 @@ entity_collections:
       and self-reflection cycle plus metaconceptual awareness and regulation.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Confidence-weighted scoring
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/metacognition
       predicate: coe:enables
@@ -200,6 +878,13 @@ entity_collections:
       predictably without forbidding options, bounded by the dark-patterns line.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Dark Pattern
+      term_type: full_form
+      term_status: admitted
+    - literal: Roach Motel
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - nudge theory
@@ -235,12 +920,12 @@ entity_collections:
     status: canonical
     edges:
     - subject_id: coe:entity/schanks_script_theory
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/scenario_activity
       relationship_weight: expected
       description: Script theory supplies the cognitive substrate of scenario learning — episodic event sequences
         revised through expectation failure.
-      statement_id: coe:edge/schanks-script-theory-supports-scenario-activity
+      statement_id: coe:edge/schanks-script-theory-enables-scenario-activity
       home_domain: learning
     - subject_id: coe:entity/schanks_script_theory
       predicate: coe:supports
@@ -262,6 +947,19 @@ entity_collections:
       oneself and others (Premack and Woodruff 1978).
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Implicit Theory of Mind
+      term_type: full_form
+      term_status: admitted
+    - literal: Explicit Theory of Mind
+      term_type: full_form
+      term_status: admitted
+    - literal: Relational Frame Theory
+      term_type: full_form
+      term_status: admitted
+    - literal: Cross-cultural ToM Milestone Sequence
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/theory_of_mind
       predicate: coe:enables
@@ -290,14 +988,30 @@ entity_collections:
       qualified by non-linear and regressive alternatives such as Gersick's punctuated equilibrium.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Tuckman's Stages
+      term_type: full_form
+      term_status: admitted
+    - literal: Punctuated Equilibrium Model
+      term_type: full_form
+      term_status: admitted
+    - literal: Integrated Model of Group Development
+      term_type: full_form
+      term_status: admitted
+    - literal: Group Decay Model
+      term_type: full_form
+      term_status: admitted
+    - literal: Basic Assumption Group
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/tuckman_group_development
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/icebreakers_and_group_formation
       relationship_weight: expected
       description: Stage-appropriate activity selection rests on Tuckman's development sequence — different openers
         serve Forming than serve Storming or Performing.
-      statement_id: coe:edge/tuckman-group-development-supports-icebreakers-and-group-formation
+      statement_id: coe:edge/tuckman-group-development-enables-icebreakers-and-group-formation
       home_domain: learning
     examples:
     - forming storming norming performing
@@ -307,7 +1021,7 @@ entity_collections:
 - id: coe:artifact/learning/instructional_design_models
   label: Instructional Design Models and Frameworks
   description: Named instructional design models and frameworks recovered from the knowledge wiki.
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-11'
   home_domain: learning
   status: canonical
   entities:
@@ -317,6 +1031,13 @@ entity_collections:
       Participatory Learning, Post-Assessment, Summary — giving roughly half of session time to participatory learning.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Bridge-In
+      term_type: full_form
+      term_status: admitted
+    - literal: Stacked BOPPPS
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/boppps_model
       predicate: coe:contrasts_with
@@ -337,6 +1058,10 @@ entity_collections:
       criterion-referenced testing and formative evaluation of the materials rather than the learners.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Dick & Carey Systems Approach
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/dick_carey_model
       predicate: coe:contrasts_with
@@ -358,12 +1083,12 @@ entity_collections:
     status: canonical
     edges:
     - subject_id: coe:entity/elaboration_theory
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/morrison_ross_kemp_model
       relationship_weight: optional
       description: Reigeluth's simple-to-complex sequencing supplies the content-sequencing element of the
         Morrison-Ross-Kemp design.
-      statement_id: coe:edge/elaboration-theory-supports-morrison-ross-kemp-model
+      statement_id: coe:edge/elaboration-theory-enables-morrison-ross-kemp-model
       home_domain: learning
     examples:
     - elaboration theory
@@ -378,12 +1103,12 @@ entity_collections:
     status: canonical
     edges:
     - subject_id: coe:entity/baldwin_ford_transfer_model
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/kirkpatrick_model
       relationship_weight: expected
       description: Baldwin and Ford's transfer conditions explain what Kirkpatrick Levels 3 and 4 measure — whether
         trained skill reaches on-job behaviour and results.
-      statement_id: coe:edge/baldwin-ford-transfer-model-supports-kirkpatrick-model
+      statement_id: coe:edge/baldwin-ford-transfer-model-bridges-kirkpatrick-model
       home_domain: learning
     examples:
     - transfer of training
@@ -396,6 +1121,10 @@ entity_collections:
       enterable in any order, uniquely including support-services and resource planning.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Morrison-Ross-Kemp
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/morrison_ross_kemp_model
       predicate: coe:contrasts_with
@@ -436,6 +1165,13 @@ entity_collections:
       independent practice.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Sherrington's Four Strands
+      term_type: full_form
+      term_status: admitted
+    - literal: Cold Calling
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/rosenshines_principles
       predicate: coe:bridges
@@ -466,6 +1202,22 @@ entity_collections:
       engineering.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Substantive knowledge
+      term_type: full_form
+      term_status: admitted
+    - literal: Disciplinary knowledge
+      term_type: full_form
+      term_status: admitted
+    - literal: Semantic waves
+      term_type: full_form
+      term_status: admitted
+    - literal: Enquiry Question (history)
+      term_type: full_form
+      term_status: admitted
+    - literal: Five Big Ideas (NCETM)
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - scheme of work
@@ -498,6 +1250,15 @@ entity_collections:
       Representation, and Action and Expression, with guideline checkpoints.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Gradual Release of Responsibility
+      term_type: full_form
+      term_status: admitted
+      usage_note: Adjacent scaffolding pattern often paired with UDL practice; also listed on universal_learning_design architecture.
+    - literal: GGOO model
+      term_type: full_form
+      term_status: admitted
+      usage_note: I do / We do / You do gradual-release shorthand adjacent to UDL practice; also listed on universal_learning_design.
     edges: []
     examples:
     - Universal Design for Learning
@@ -507,11 +1268,740 @@ entity_collections:
     - CAST guidelines
     anti_examples:
     - universal design in architecture
+  - id: coe:entity/backward_design
+    label: Backward Design
+    description: Wiggins and McTighe's Understanding by Design sequence — desired outcomes, then assessment evidence,
+      then learning experiences — plus course-blueprint components and concept mapping as planning tools.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Understanding by Design
+      term_type: full_form
+      term_status: admitted
+    - literal: UbD
+      term_type: acronym
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/backward_design
+      predicate: coe:bridges
+      object_id: coe:entity/constructive_alignment
+      relationship_weight: expected
+      description: Backward Design sequences outcomes-to-evidence-to-experiences while Biggs' constructive alignment
+        tests ILO–TLA–assessment coherence — sibling alignment frameworks with different emphases.
+      statement_id: coe:edge/backward-design-bridges-constructive-alignment
+      home_domain: learning
+    examples:
+    - three stages of backward design
+    - course blueprint
+    - enduring understandings
+    - essential questions
+  - id: coe:entity/constructive_alignment
+    label: Constructive Alignment
+    description: John Biggs' alignment framework requiring Intended Learning Outcomes, Teaching and Learning Activities
+      and Assessment Tasks to cohere because learners construct knowledge through activity rather than passive reception.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: ILO
+      term_type: acronym
+      term_status: admitted
+    - literal: intended learning outcomes
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/constructive_alignment
+      predicate: coe:contrasts_with
+      object_id: coe:entity/backward_design
+      relationship_weight: expected
+      description: Constructive alignment is an alignment test across ILOs, TLAs and assessment where backward design
+        is a three-stage authoring sequence — related but not interchangeable.
+      statement_id: coe:edge/constructive-alignment-contrasts-with-backward-design
+      home_domain: learning
+    examples:
+    - teaching and learning activities
+    - alignment audit
+    - Biggs
+  - id: coe:entity/arcs_model
+    label: ARCS Model of Motivation
+    description: John Keller's motivational design model structuring learning sequences through Attention, Relevance,
+      Confidence and Satisfaction so engagement is planned rather than assumed.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: ARCS
+      term_type: acronym
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/arcs_model
+      predicate: coe:enables
+      object_id: coe:entity/motivation_theory
+      relationship_weight: expected
+      description: ARCS operationalises motivational design questions that SDT, expectancy-value and Fogg models explain
+        at theory level.
+      statement_id: coe:edge/arcs-model-enables-motivation-theory
+      home_domain: learning
+    - subject_id: coe:entity/arcs_model
+      predicate: coe:bridges
+      object_id: coe:entity/instructional_event
+      relationship_weight: optional
+      description: ARCS motivational components map onto several Gagné nine-event lesson moves without replacing
+        that sequencing framework.
+      statement_id: coe:edge/arcs-model-bridges-instructional-event
+      home_domain: learning
+    examples:
+    - attention relevance confidence satisfaction
+    - motivational design
+    - Keller
+  - id: coe:entity/merrills_principles_of_instruction
+    label: Merrill's Principles of Instruction
+    description: M. David Merrill's First Principles macro-cycle — Problem-Centred, Activation, Demonstration, Application
+      and Integration — distilling shared effective-instruction patterns from multiple design models.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: MPI
+      term_type: acronym
+      term_status: admitted
+    - literal: First Principles of Instruction
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/merrills_principles_of_instruction
+      predicate: coe:contains
+      object_id: coe:entity/component_display_theory
+      relationship_weight: expected
+      description: First Principles provide the macro problem-centred cycle whose micro-level tactic counterpart is
+        Component Display Theory.
+      statement_id: coe:edge/merrills-principles-of-instruction-contains-component-display-theory
+      home_domain: learning
+    examples:
+    - problem-centred instruction
+    - activation demonstration application integration
+    - Merrill First Principles
+  - id: coe:entity/component_display_theory
+    label: Component Display Theory
+    description: Merrill's 1983 micro-level design theory matching instructional strategy to a content-by-performance
+      matrix — Facts, Concepts, Procedures and Principles crossed with Remember, Use and Find — plus primary and secondary
+      presentation forms.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: CDT
+      term_type: acronym
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/component_display_theory
+      predicate: coe:specialises
+      object_id: coe:entity/merrills_principles_of_instruction
+      relationship_weight: expected
+      description: Component Display Theory prescribes matrix-level tactics that instantiate Merrill's First Principles
+        macro-cycle.
+      statement_id: coe:edge/component-display-theory-specialises-merrills-principles-of-instruction
+      home_domain: learning
+    examples:
+    - content performance matrix
+    - primary presentation forms
+    - facts concepts procedures principles
+  - id: coe:entity/four_component_instructional_design
+    label: Four-Component Instructional Design
+    description: Jeroen van Merriënboer's whole-task model for complex skills — learning tasks, supportive information,
+      procedural information and part-task practice — with the Ten Steps design procedure.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Task class
+      term_type: full_form
+      term_status: admitted
+    - literal: Supportive information
+      term_type: full_form
+      term_status: admitted
+    - literal: Procedural information
+      term_type: full_form
+      term_status: admitted
+    - literal: Part-task practice
+      term_type: full_form
+      term_status: admitted
+    - literal: Transfer paradox
+      term_type: full_form
+      term_status: admitted
+    - literal: 4C/ID
+      term_type: acronym
+      term_status: admitted
+    - literal: 4C-ID
+      term_type: acronym
+      term_status: admitted
+    - literal: Ten Steps to Complex Learning
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/four_component_instructional_design
+      predicate: coe:enables
+      object_id: coe:entity/cognitive_load_theory
+      relationship_weight: expected
+      description: 4C/ID balances intrinsic and germane load while fading support within task classes per cognitive load
+        theory.
+      statement_id: coe:edge/four-component-instructional-design-enables-cognitive-load-theory
+      home_domain: learning
+    - subject_id: coe:entity/four_component_instructional_design
+      predicate: coe:specialises
+      object_id: coe:entity/cognitive_apprenticeship
+      relationship_weight: expected
+      description: Whole-task design extends cognitive apprenticeship's modelling, coaching and fading into a four-component
+        blueprint for complex professional skills.
+      statement_id: coe:edge/four-component-instructional-design-specialises-cognitive-apprenticeship
+      home_domain: learning
+    - subject_id: coe:entity/four_component_instructional_design
+      predicate: coe:contrasts_with
+      object_id: coe:entity/instructional_event
+      relationship_weight: expected
+      description: 4C/ID integrates whole authentic tasks where objectives-based Gagné-style sequencing atomises lessons
+        into discrete events.
+      statement_id: coe:edge/four-component-instructional-design-contrasts-with-instructional-event
+      home_domain: learning
+    examples:
+    - learning tasks and task classes
+    - supportive information
+    - part-task practice
+    - van Merriënboer
+  - id: coe:entity/action_mapping
+    label: Action Mapping
+    description: Cathy Moore's performance-first design workflow starting from a measurable business goal, diagnosing
+      ESKM barriers, cutting nonessential content and building realistic practice for required actions.
+    home_domain: learning
+    status: canonical
+    edges:
+    - subject_id: coe:entity/action_mapping
+      predicate: coe:contrasts_with
+      object_id: coe:entity/backward_design
+      relationship_weight: expected
+      description: Action Mapping prioritises business-goal diagnosis and practice over UbD's three-stage curriculum
+        authoring sequence.
+      statement_id: coe:edge/action-mapping-contrasts-with-backward-design
+      home_domain: learning
+    examples:
+    - ESKM barriers
+    - business goal formula
+    - stream of activities
+    - Cathy Moore
+  - id: coe:entity/learning_gap_analysis
+    label: Learning Gap Analysis
+    description: Corporate needs-diagnosis discipline producing gap statements, three-tiered needs analysis and terminal
+      versus enabling objective hierarchies with HTA, JTA and DIF inputs.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Hierarchical Task Analysis
+      term_type: full_form
+      term_status: admitted
+    - literal: Job Task Analysis
+      term_type: full_form
+      term_status: admitted
+    - literal: DIF matrix
+      term_type: full_form
+      term_status: admitted
+    - literal: terminal learning objective
+      term_type: full_form
+      term_status: admitted
+    - literal: enabling learning objective
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/learning_gap_analysis
+      predicate: coe:precedes
+      object_id: coe:entity/backward_design
+      relationship_weight: expected
+      description: Documented learning gaps and objective hierarchies are design inputs that precede backward-design
+        blueprint authoring.
+      statement_id: coe:edge/learning-gap-analysis-precedes-backward-design
+      home_domain: learning
+    - subject_id: coe:entity/learning_gap_analysis
+      predicate: coe:supports
+      object_id: coe:entity/backward_design
+      relationship_weight: expected
+      description: Gap analysis and terminal/enabling objectives supply Stage 1 outcome definition for backward design.
+      statement_id: coe:edge/learning-gap-analysis-supports-backward-design
+      home_domain: learning
+    - subject_id: coe:entity/learning_gap_analysis
+      predicate: coe:supports
+      object_id: coe:entity/action_mapping
+      relationship_weight: optional
+      description: Needs analysis and objective hierarchies feed Action Mapping's action and obstacle identification.
+      statement_id: coe:edge/learning-gap-analysis-supports-action-mapping
+      home_domain: learning
+    examples:
+    - learning gap statement
+    - hierarchical task analysis
+    - DIF matrix
+    - GGOO chain
+  - id: coe:entity/gold_standard_learning_asset
+    label: Gold Standard Learning Asset Structure
+    description: Seven-stage corporate learning asset template — Hook, Roadmap, Pre-training, Segmented Content, Retrieval,
+      Summary and Assessment — with modality adaptations for consistent storyboarding.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: seven-stage learning asset
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/gold_standard_learning_asset
+      predicate: coe:specialises
+      object_id: coe:entity/learning_design_hierarchy
+      relationship_weight: expected
+      description: The seven-stage asset structure operationalises the strip-and-card module topology within each strip-sized
+        unit.
+      statement_id: coe:edge/gold-standard-learning-asset-specialises-learning-design-hierarchy
+      home_domain: learning
+    examples:
+    - hook and roadmap
+    - retrieval practice stage
+    - pre-training segment
+  - id: coe:entity/learning_design_hierarchy
+    label: Learning Design Hierarchy
+    description: Four-level corporate architecture — Module, Topic, Strip and Card — with duration bands, seven card types,
+      strip assembly timings and a scaffolding gradient for cognitive-load control.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: strip and card architecture
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/learning_design_hierarchy
+      predicate: coe:specialises
+      object_id: coe:entity/universal_learning_design
+      relationship_weight: expected
+      description: Module–Topic–Strip–Card topology refines the universal framework's course–module–activity MECE levels
+        for granular authoring.
+      statement_id: coe:edge/learning-design-hierarchy-specialises-universal-learning-design
+      home_domain: learning
+    - subject_id: coe:entity/learning_design_hierarchy
+      predicate: coe:bridges
+      object_id: coe:entity/cognitive_load_theory
+      relationship_weight: expected
+      description: Fixed durations and card-level purposes apply cognitive load management at each hierarchy level.
+      statement_id: coe:edge/learning-design-hierarchy-bridges-cognitive-load-theory
+      home_domain: learning
+    examples:
+    - module topic strip card
+    - scaffolding gradient
+    - seven card types
+  - id: coe:entity/universal_learning_design
+    label: Universal Learning Design Framework
+    description: MECE three-level course–module–activity architecture for corporate learning with Essential versus Flexible
+      elements, Gap/Goal/Driver distinctions and a front-matter course brief — distinct from CAST Universal Design for
+      Learning.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: ULD framework
+      term_type: acronym
+      term_status: admitted
+    - literal: Gradual Release of Responsibility
+      term_type: full_form
+      term_status: admitted
+      usage_note: Scaffolding pattern used inside the corporate ULD architecture; also listed as adjacent practice on udl_framework.
+    - literal: GGOO model
+      term_type: full_form
+      term_status: admitted
+      usage_note: I do / We do / You do gradual-release shorthand inside ULD course architecture; also listed on udl_framework.
+    edges:
+    - subject_id: coe:entity/universal_learning_design
+      predicate: coe:contrasts_with
+      object_id: coe:entity/udl_framework
+      relationship_weight: required
+      description: Universal Learning Design names a corporate MECE course architecture whereas Universal Design for Learning
+        is CAST's accessibility framework — homonymous but unrelated models.
+      statement_id: coe:edge/universal-learning-design-contrasts-with-udl-framework
+      home_domain: learning
+    examples:
+    - course module activity MECE
+    - essential and flexible elements
+    - I do we do you do
+    anti_examples:
+    - Universal Design for Learning (CAST)
+  - id: coe:entity/progressive_disclosure
+    label: Progressive Disclosure
+    description: Content-design discipline for staged revelation of complexity — tier nuclei, visual barriers, navigation
+      signals and consistency — controlling when chunked information appears to manage cognitive load.
+    home_domain: learning
+    status: canonical
+    edges:
+    - subject_id: coe:entity/progressive_disclosure
+      predicate: coe:enables
+      object_id: coe:entity/cognitive_load_theory
+      relationship_weight: expected
+      description: Tiered revelation reduces extraneous load and sequences intrinsic load in line with cognitive load
+        theory.
+      statement_id: coe:edge/progressive-disclosure-enables-cognitive-load-theory
+      home_domain: learning
+    examples:
+    - staged revelation
+    - primary secondary tertiary tiers
+    - conditional disclosure
+  - id: coe:entity/learning_transfer_design
+    label: Learning Transfer Design
+    description: Transfer-by-design methodology addressing Baldwin and Ford's trainee, training-design and work-environment
+      conditions through near versus far transfer tasks, authentic practice and manager enablement.
+    home_domain: learning
+    status: canonical
+    edges:
+    - subject_id: coe:entity/learning_transfer_design
+      predicate: coe:enables
+      object_id: coe:entity/baldwin_ford_transfer_model
+      relationship_weight: expected
+      description: Transfer design operationalises Baldwin and Ford's three-condition model with task design and workplace
+        enablement tactics.
+      statement_id: coe:edge/learning-transfer-design-enables-baldwin-ford-transfer-model
+      home_domain: learning
+    - subject_id: coe:entity/learning_transfer_design
+      predicate: coe:enables
+      object_id: coe:entity/kirkpatrick_model
+      relationship_weight: optional
+      description: Transfer design targets Kirkpatrick Levels 3 and 4 behaviour and results evidence.
+      statement_id: coe:edge/learning-transfer-design-enables-kirkpatrick-model
+      home_domain: learning
+    examples:
+    - near and far transfer
+    - manager enablement
+    - authentic task design
+  - id: coe:entity/project_management_for_learning
+    label: Project Management for Learning Design
+    description: L&D project-management discipline mapping ADDIE deliverables, triple constraints, phased planning, stakeholder
+      and risk work, SME management and digital leadership onto learning design projects.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Work Breakdown Structure
+      term_type: full_form
+      term_status: admitted
+    - literal: RAG status
+      term_type: full_form
+      term_status: admitted
+    - literal: L&D project management
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/project_management_for_learning
+      predicate: coe:enables
+      object_id: coe:entity/addie_model
+      relationship_weight: expected
+      description: Learning PM overlays schedules, scope and governance on ADDIE phase deliverables without replacing
+        the design model.
+      statement_id: coe:edge/project-management-for-learning-enables-addie-model
+      home_domain: learning
+    examples:
+    - work breakdown structure
+    - RAG status reporting
+    - SME management
+    - triple constraint
+  - id: coe:entity/digital_learning_roles
+    label: Digital Learning Roles
+    description: Role taxonomy for digital learning projects — management, design, development and rollout — with remits
+      and deliverables for instructional designers, SMEs, developers and programme managers.
+    home_domain: learning
+    status: canonical
+    edges:
+    - subject_id: coe:entity/digital_learning_roles
+      predicate: coe:supports
+      object_id: coe:entity/project_management_for_learning
+      relationship_weight: expected
+      description: Digital learning role categories align with PM staffing, RACI and SME management on design projects.
+      statement_id: coe:edge/digital-learning-roles-supports-project-management-for-learning
+      home_domain: learning
+    examples:
+    - instructional designer role
+    - learning experience designer
+    - educational technologist
+    - programme manager
+  - id: coe:entity/change_management_frameworks
+    label: Change Management Frameworks
+    description: Operational change frameworks — ADKAR, Prosci, Bridges, Lewin, 7-S, Beckhard-Harris and Switch — applied
+      to L&D rollout adoption and behaviour change at scale.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Prosci 3-Phase Process
+      term_type: full_form
+      term_status: admitted
+    - literal: ABCs of Sponsorship
+      term_type: full_form
+      term_status: admitted
+    - literal: CLARC
+      term_type: initialism
+      term_status: admitted
+    - literal: Bridges Transition Model
+      term_type: full_form
+      term_status: admitted
+    - literal: Neutral Zone (Bridges)
+      term_type: full_form
+      term_status: admitted
+    - literal: Lewin Three-Stage Model
+      term_type: full_form
+      term_status: admitted
+    - literal: McKinsey 7-S
+      term_type: full_form
+      term_status: admitted
+    - literal: Beckhard-Harris Change Equation
+      term_type: full_form
+      term_status: admitted
+    - literal: Switch framework
+      term_type: full_form
+      term_status: admitted
+    - literal: 70% failure rate myth
+      term_type: full_form
+      term_status: admitted
+    - literal: ADKAR
+      term_type: acronym
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/change_management_frameworks
+      predicate: coe:supports
+      object_id: coe:entity/learning_transfer_design
+      relationship_weight: optional
+      description: ADKAR reinforcement and adoption tactics extend transfer design into sustained workplace behaviour.
+      statement_id: coe:edge/change-management-frameworks-supports-learning-transfer-design
+      home_domain: learning
+    examples:
+    - Prosci three-phase process
+    - Bridges transition model
+    - Lewin unfreeze change refreeze
+  - id: coe:entity/kotter_4e_leadership
+    label: Kotter 4E Leadership Framework
+    description: Leadership-capability model — Envision, Enable, Empower and Energize — paired with Kotter's eight-step
+      change roadmap for learning-programme rollout and organisational adoption.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Guiding Coalition
+      term_type: full_form
+      term_status: admitted
+    - literal: 4E leadership
+      term_type: acronym
+      term_status: admitted
+    - literal: Kotter 8 Accelerators
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/kotter_4e_leadership
+      predicate: coe:enables
+      object_id: coe:entity/change_management_frameworks
+      relationship_weight: expected
+      description: Four-E leadership capability enables execution of the operational change frameworks used in L&D rollout.
+      statement_id: coe:edge/kotter-4e-leadership-enables-change-management-frameworks
+      home_domain: learning
+    examples:
+    - guiding coalition
+    - eight-step process
+    - sustain acceleration
+  - id: coe:entity/concept_based_curriculum
+    label: Concept-Based Curriculum and Instruction
+    description: Erickson and Lanning's concept-based curriculum model building units on transferable generalisations,
+      conceptual lenses and factual, conceptual and debatable guiding questions rather than topic coverage alone.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Structure of Knowledge
+      term_type: full_form
+      term_status: admitted
+    - literal: Structure of Process
+      term_type: full_form
+      term_status: admitted
+    - literal: Conceptual lens
+      term_type: full_form
+      term_status: admitted
+    - literal: Synergistic thinking
+      term_type: full_form
+      term_status: admitted
+    - literal: Threshold concepts
+      term_type: full_form
+      term_status: admitted
+    - literal: CBCI
+      term_type: acronym
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/concept_based_curriculum
+      predicate: coe:bridges
+      object_id: coe:entity/backward_design
+      relationship_weight: expected
+      description: Concept-based units share UbD's emphasis on enduring generalisations and transfer while adding structures
+        of knowledge and process.
+      statement_id: coe:edge/concept-based-curriculum-bridges-backward-design
+      home_domain: learning
+    - subject_id: coe:entity/concept_based_curriculum
+      predicate: coe:supports
+      object_id: coe:entity/learning_transfer_design
+      relationship_weight: optional
+      description: Generalisation-level planning targets far transfer beyond isolated facts and skills.
+      statement_id: coe:edge/concept-based-curriculum-supports-learning-transfer-design
+      home_domain: learning
+    examples:
+    - conceptual lens
+    - structure of knowledge
+    - guiding questions
+    - synergistic thinking
+  - id: coe:entity/lx_design_framework
+    label: LX Design Framework
+    description: Digital Learning Institute learning experience design framework answering Who, Why, What, What If and How
+      to produce an LX Design and Assessment Plan feeding instructional design, development, rollout and evaluation.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: DLI LX Design framework
+      term_type: full_form
+      term_status: admitted
+    - literal: LX Design & Assessment Plan
+      term_type: full_form
+      term_status: admitted
+    - literal: DLI building blocks
+      term_type: full_form
+      term_status: admitted
+    - literal: Classroom with technology-enhanced learning
+      term_type: full_form
+      term_status: admitted
+    - literal: LX Design
+      term_type: acronym
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/lx_design_framework
+      predicate: coe:enables
+      object_id: coe:entity/addie_model
+      relationship_weight: expected
+      description: DLI's five-question scoping feeds ADDIE phase documents and the ADDIE plus LX document flow.
+      statement_id: coe:edge/lx-design-framework-enables-addie-model
+      home_domain: learning
+    - subject_id: coe:entity/lx_design_framework
+      predicate: coe:supports
+      object_id: coe:entity/learning_gap_analysis
+      relationship_weight: optional
+      description: LX scoping distinguishes learning aim, outcomes, gap and objectives as design inputs.
+      statement_id: coe:edge/lx-design-framework-supports-learning-gap-analysis
+      home_domain: learning
+    examples:
+    - LX Design and Assessment Plan
+    - learner persona template
+    - modular framework and content map
+  - id: coe:entity/ai_learning_design_system
+    label: AI Learning Design System
+    description: Layered specification for AI-generated courses — input schema, five-phase cycle, strip-card template,
+      modality rules, evaluation, scope logic and quality assurance in unified and enhanced versions.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Universal 5-Phase Learning Cycle
+      term_type: full_form
+      term_status: admitted
+    - literal: Enhanced AI Learning Design System
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/ai_learning_design_system
+      predicate: coe:specialises
+      object_id: coe:entity/learning_design_hierarchy
+      relationship_weight: expected
+      description: AI design system encodes strip-card templates, card scaling and module integration atop the four-level
+        hierarchy.
+      statement_id: coe:edge/ai-learning-design-system-specialises-learning-design-hierarchy
+      home_domain: learning
+    - subject_id: coe:entity/ai_learning_design_system
+      predicate: coe:supports
+      object_id: coe:entity/universal_learning_design
+      relationship_weight: optional
+      description: System input schema assumes the universal course brief and three-level MECE architecture.
+      statement_id: coe:edge/ai-learning-design-system-supports-universal-learning-design
+      home_domain: learning
+    examples:
+    - universal five-phase learning cycle
+    - card scaling rules
+    - module integration strategy
+  - id: coe:entity/donald_clark_learning_design
+    label: Donald Clark Learning Design Principles
+    description: Donald Clark's evidence-citing online learning design rules for openings, test items, feedback, spaced practice,
+      audio, games, social learning, screen text, graphics and video.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Plan B blog design rules
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/donald_clark_learning_design
+      predicate: coe:enables
+      object_id: coe:entity/gold_standard_learning_asset
+      relationship_weight: optional
+      description: Clark's opening, retrieval and segmentation rules inform the seven-stage asset template stages.
+      statement_id: coe:edge/donald-clark-learning-design-enables-gold-standard-learning-asset
+      home_domain: learning
+    examples:
+    - course opening rules
+    - MCQ and feedback design
+    - spaced practice routes
+  - id: coe:entity/soft_skills_training_deck_design
+    label: Soft Skills Training Deck Design
+    description: Discipline for behaviour-change slide decks — Andragogy–Kolb–Gagné triad, four-week spaced practice arc,
+      InQuire engagement framework and point-based behavioural rubrics distinct from technical training decks.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: PREP Model
+      term_type: full_form
+      term_status: admitted
+    - literal: Body Language Four Pillars
+      term_type: full_form
+      term_status: admitted
+    - literal: 4-Week Spaced Practice Learning Arc
+      term_type: full_form
+      term_status: admitted
+    - literal: InQuire Engagement Framework
+      term_type: full_form
+      term_status: admitted
+    - literal: Corporate Skills Matrix
+      term_type: full_form
+      term_status: admitted
+    - literal: Point-Based Behavioural Rubric
+      term_type: full_form
+      term_status: admitted
+    - literal: Skills to Pay the Bills
+      term_type: full_form
+      term_status: admitted
+    - literal: Barclays LifeSkills
+      term_type: full_form
+      term_status: admitted
+    - literal: GIZ Soft Skills Curricula
+      term_type: full_form
+      term_status: admitted
+    - literal: REDF Soft Skills Readiness
+      term_type: full_form
+      term_status: admitted
+    - literal: soft skills deck design
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/soft_skills_training_deck_design
+      predicate: coe:specialises
+      object_id: coe:entity/responsive_scaffold_model
+      relationship_weight: expected
+      description: Soft-skills deck design applies the Responsive Scaffold Model's model-coach-scaffold-fade sequence
+        in live slide-borne training.
+      statement_id: coe:edge/soft-skills-training-deck-design-specialises-responsive-scaffold-model
+      home_domain: learning
+    - subject_id: coe:entity/soft_skills_training_deck_design
+      predicate: coe:supports
+      object_id: coe:entity/andragogy
+      relationship_weight: optional
+      description: Soft-skills deck architecture assumes adult problem-centred, experiential learning per Knowles.
+      statement_id: coe:edge/soft-skills-training-deck-design-supports-andragogy
+      home_domain: learning
+    examples:
+    - PREP model
+    - four-week spaced practice arc
+    - InQuire engagement framework
+    - point-based behavioural rubric
 - id: coe:artifact/learning/learning_methods_formats
   label: Learning Methods and Formats
   description: Learning methods, delivery formats, and audience-inclusion methodologies recovered from the knowledge
     wiki.
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-11'
   home_domain: learning
   status: canonical
   entities:
@@ -553,14 +2043,60 @@ entity_collections:
       coachee's awareness through facilitative inquiry rather than instruction.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: GROW model
+      term_type: full_form
+      term_status: admitted
+    - literal: Inner Game
+      term_type: full_form
+      term_status: admitted
+    - literal: Socratic questioning (in coaching)
+      term_type: full_form
+      term_status: admitted
+    - literal: Appreciative Inquiry
+      term_type: full_form
+      term_status: admitted
+    - literal: CLEAR model
+      term_type: full_form
+      term_status: admitted
+    - literal: OSKAR model
+      term_type: full_form
+      term_status: admitted
+    - literal: Crucial Conversations
+      term_type: full_form
+      term_status: admitted
+    - literal: STATE technique
+      term_type: full_form
+      term_status: admitted
+    - literal: Co-Active Coaching
+      term_type: full_form
+      term_status: admitted
+    - literal: Designed Alliance
+      term_type: full_form
+      term_status: admitted
+    - literal: Three Levels of Listening
+      term_type: full_form
+      term_status: admitted
+    - literal: Checklist Trap (in coaching)
+      term_type: full_form
+      term_status: admitted
+    - literal: Directive Masquerade
+      term_type: full_form
+      term_status: admitted
+    - literal: Coaching-as-Cover
+      term_type: full_form
+      term_status: admitted
+    - literal: SWOT
+      term_type: initialism
+      term_status: admitted
     edges:
     - subject_id: coe:entity/coaching_frameworks
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/manager_as_coach
       relationship_weight: expected
       description: The manager-as-coach role runs on the conversation models — GROW and its peers — that the
         coaching-frameworks discipline owns.
-      statement_id: coe:edge/coaching-frameworks-supports-manager-as-coach
+      statement_id: coe:edge/coaching-frameworks-bridges-manager-as-coach
       home_domain: learning
     examples:
     - GROW model
@@ -576,6 +2112,16 @@ entity_collections:
       whose small-to-moderate effects depend on design quality rather than the medium.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Gamification
+      term_type: full_form
+      term_status: admitted
+    - literal: Serious game
+      term_type: full_form
+      term_status: admitted
+    - literal: Octalysis
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/gamification_and_game_based_learning
       predicate: coe:contains
@@ -597,6 +2143,22 @@ entity_collections:
       cognitive readiness before substantive collaborative work.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Forced Vulnerability
+      term_type: full_form
+      term_status: admitted
+    - literal: Four Stages of Psychological Safety (Clark)
+      term_type: full_form
+      term_status: admitted
+    - literal: Telepresence
+      term_type: full_form
+      term_status: admitted
+    - literal: Costly signalling
+      term_type: full_form
+      term_status: admitted
+    - literal: Challenge by Choice
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/icebreakers_and_group_formation
       predicate: coe:enables
@@ -617,6 +2179,19 @@ entity_collections:
       360-video simulation with cognitive-load and dual-coding design constraints.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Extended Reality
+      term_type: full_form
+      term_status: admitted
+    - literal: Augmented Reality
+      term_type: full_form
+      term_status: admitted
+    - literal: Mixed Reality
+      term_type: full_form
+      term_status: admitted
+    - literal: Virtual Reality
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - immersive learning
@@ -630,6 +2205,13 @@ entity_collections:
       external coaching by power asymmetry, role conflict and time constraints.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Manager-as-Coach (MAC)
+      term_type: full_form
+      term_status: admitted
+    - literal: Coaching Behaviours Measure
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - manager as coach
@@ -664,12 +2246,549 @@ entity_collections:
     - expanding intervals
     - forgetting curve
     - distributed practice
+  - id: coe:entity/interleaved_practice
+    label: Interleaved Practice
+    description: Practice schedule that mixes problem types or categories rather than blocking them, producing contextual
+      interference whose moderate delayed-test advantage is material-dependent and often confounded with spacing.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Contextual interference
+      term_type: full_form
+      term_status: admitted
+    - literal: Blocked practice
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/interleaved_practice
+      predicate: coe:bridges
+      object_id: coe:entity/spaced_repetition
+      relationship_weight: expected
+      description: Interleaved schedules guarantee spacing between repetitions of the same type, so spacing and juxtaposition
+        must be separated when attributing effects.
+      statement_id: coe:edge/interleaved-practice-bridges-spaced-repetition
+      home_domain: learning
+    - subject_id: coe:entity/interleaved_practice
+      predicate: coe:bridges
+      object_id: coe:entity/retrieval_practice
+      relationship_weight: expected
+      description: Delayed mixed tests that reveal interleaving benefits rely on retrieval events whose potency the testing
+        effect supplies.
+      statement_id: coe:edge/interleaved-practice-bridges-retrieval-practice
+      home_domain: learning
+    examples:
+    - interleaved practice
+    - contextual interference
+    - blocked versus interleaved
+    - discriminative contrast
+  - id: coe:entity/retrieval_practice
+    label: Retrieval Practice
+    description: Learning technique that strengthens memory by requiring recall rather than re-exposure — the testing effect
+      distinguishing storage strength from retrieval strength, with format, scheduling and transfer implications for workplace
+      design.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Testing effect
+      term_type: full_form
+      term_status: admitted
+      usage_note: Here the learning-science name for retrieval-based strengthening of memory. The same name also refers to the Testing Effect entity in instructional methods.
+    - literal: Fluency illusion
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/retrieval_practice
+      predicate: coe:bridges
+      object_id: coe:entity/testing_effect
+      relationship_weight: required
+      description: The testing-effect entity in instructional methods names the same mechanism retrieval practice operationalises
+        as a deliberate learning technique.
+      statement_id: coe:edge/retrieval-practice-bridges-testing-effect
+      home_domain: learning
+    - subject_id: coe:entity/retrieval_practice
+      predicate: coe:bridges
+      object_id: coe:entity/spaced_repetition
+      relationship_weight: expected
+      description: Spaced schedules deliver the retrieval events that give each review its potency; neither spacing nor retrieval
+        alone completes the other.
+      statement_id: coe:edge/retrieval-practice-bridges-spaced-repetition
+      home_domain: learning
+    examples:
+    - retrieval practice
+    - test-enhanced learning
+    - recall versus recognition
+    - the 85 percent rule
+  - id: coe:entity/worked_examples
+    label: Worked Examples
+    description: Instructional method presenting expert-modelled step-by-step solutions for novices, whose worked-example
+      effect reverses at higher expertise and is managed through self-explanation, fading and subgoal labelling.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Worked-example effect
+      term_type: full_form
+      term_status: admitted
+    - literal: Expertise reversal effect
+      term_type: full_form
+      term_status: admitted
+    - literal: Self-explanation effect
+      term_type: full_form
+      term_status: admitted
+    - literal: Subgoal labelling
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/worked_examples
+      predicate: coe:supports
+      object_id: coe:entity/cognitive_load_theory
+      relationship_weight: required
+      description: Worked examples reduce extraneous load for novices by replacing search with study, grounding the effect
+        in Cognitive Load Theory.
+      statement_id: coe:edge/worked-examples-supports-cognitive-load-theory
+      home_domain: learning
+    examples:
+    - faded worked examples
+    - completion problems
+    - process-oriented worked examples
+    - productive failure
+  - id: coe:entity/blended_learning_design
+    label: Blended Learning Design
+    description: Design discipline for learning delivered across modalities and time — blend taxonomies, modality-by-objective
+      choice, flipped and cohort models, HyFlex delivery and the confounded evidence record for blended versus face-to-face
+      comparisons.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Picciano Multimodal Model
+      term_type: full_form
+      term_status: admitted
+    - literal: Flipped classroom
+      term_type: full_form
+      term_status: admitted
+      usage_note: Here a blended-learning design pattern within multimodal programmes. The same name also refers to the Flipped Classroom instructional strategy entity.
+    - literal: HyFlex
+      term_type: initialism
+      term_status: admitted
+    - literal: Transactional Distance
+      term_type: full_form
+      term_status: admitted
+    - literal: SAMR
+      term_type: initialism
+      term_status: admitted
+    - literal: Cohort-based course
+      term_type: full_form
+      term_status: admitted
+    - literal: CBC
+      term_type: initialism
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/blended_learning_design
+      predicate: coe:bridges
+      object_id: coe:entity/blended_learning_sequence
+      relationship_weight: expected
+      description: Blended-learning sequences in instructional methods instantiate the modality-and-time design patterns
+        this discipline governs.
+      statement_id: coe:edge/blended-learning-design-bridges-blended-learning-sequence
+      home_domain: learning
+    - subject_id: coe:entity/blended_learning_design
+      predicate: coe:contains
+      object_id: coe:entity/ilt_vilt_best_practices
+      relationship_weight: expected
+      description: Live and virtual instructor-led sessions are primary synchronous modalities within blended programmes.
+      statement_id: coe:edge/blended-learning-design-contains-ilt-vilt-best-practices
+      home_domain: learning
+    examples:
+    - blended learning
+    - multimodal course design
+    - Picciano multimodal model
+    - flipped classroom design
+  - id: coe:entity/ilt_vilt_best_practices
+    label: ILT and VILT Best Practices
+    description: Design and facilitation discipline for live instructor-led and virtual training — social presence, Community
+      of Inquiry, session pacing, room configuration and platform management for synchronous cohorts.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Load Reduction Instruction
+      term_type: full_form
+      term_status: admitted
+    - literal: LMS
+      term_type: initialism
+      term_status: admitted
+    - literal: Community of Inquiry (CoI)
+      term_type: full_form
+      term_status: admitted
+    - literal: Instructor-Led Training
+      term_type: full_form
+      term_status: admitted
+    - literal: ILT
+      term_type: initialism
+      term_status: admitted
+      usage_note: Here instructor-led live training as a synchronous modality within ILT and VILT best practices. The same initialism also labels the ILT delivery-mode concept in the content-format taxonomy.
+    - literal: Virtual Instructor-Led Training
+      term_type: full_form
+      term_status: admitted
+    - literal: VILT
+      term_type: initialism
+      term_status: admitted
+    - literal: Process-Oriented Guided Inquiry Learning
+      term_type: full_form
+      term_status: admitted
+    - literal: POGIL
+      term_type: initialism
+      term_status: admitted
+    - literal: Community of Inquiry
+      term_type: full_form
+      term_status: admitted
+    - literal: CoI
+      term_type: initialism
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/ilt_vilt_best_practices
+      predicate: coe:bridges
+      object_id: coe:entity/discussion_based_learning
+      relationship_weight: expected
+      description: Structured dialogue formats depend on live-session facilitation mechanics owned by ILT and VILT best
+        practices.
+      statement_id: coe:edge/ilt-vilt-best-practices-bridges-discussion-based-learning
+      home_domain: learning
+    examples:
+    - virtual classroom facilitation
+    - load reduction instruction
+    - webinar design
+    - synchronous cohort pacing
+  - id: coe:entity/discussion_based_learning
+    label: Discussion-Based Learning
+    description: Facilitation design for structured dialogue — phased session architecture, format catalogue from Socratic
+      seminar to Philosophical Chairs, question sequencing and group sizing for durable discussion gains.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Harkness Method
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/discussion_based_learning
+      predicate: coe:bridges
+      object_id: coe:entity/retrieval_practice
+      relationship_weight: expected
+      description: Structured discussion elicits retrieval and elaboration that explain durable gains without relying on
+        debunked retention-percentage claims.
+      statement_id: coe:edge/discussion-based-learning-bridges-retrieval-practice
+      home_domain: learning
+    examples:
+    - Socratic seminar
+    - fishbowl discussion
+    - world café
+    - philosophical chairs
+    - jigsaw discussion
+  - id: coe:entity/social_learning_design
+    label: Social Learning Design
+    description: Design discipline for online social learning — co-creation, social presence, collaborative versus personal
+      spaces, Gilly Salmon's E-tivities framework and development flows for social activities.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: E-tivities
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/social_learning_design
+      predicate: coe:contains
+      object_id: coe:entity/discussion_based_learning
+      relationship_weight: expected
+      description: Structured dialogue formats are one social-learning activity family within the broader online social-learning
+        design discipline.
+      statement_id: coe:edge/social-learning-design-contains-discussion-based-learning
+      home_domain: learning
+    - subject_id: coe:entity/social_learning_design
+      predicate: coe:bridges
+      object_id: coe:entity/learning_platform_rollout
+      relationship_weight: optional
+      description: Salmon's five-stage e-moderation model governs facilitator progression during platform rollout rather
+        than activity design alone.
+      statement_id: coe:edge/social-learning-design-bridges-learning-platform-rollout
+      home_domain: learning
+    examples:
+    - collaborative learning space
+    - personal learning space
+    - social presence design
+    - crowdsourcing in learning
+  - id: coe:entity/digital_learning_tools_and_trends
+    label: Digital Learning Tools and Trends
+    description: Framework for choosing digital learning tools and platforms — outcome-linked selection, four evaluation
+      criteria, platform-type taxonomy and survey of adaptive, mobile and data-driven design trends.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Digital Body Language
+      term_type: full_form
+      term_status: admitted
+    - literal: Digital Data-Led Design
+      term_type: full_form
+      term_status: admitted
+    - literal: Learning Experience Platform
+      term_type: full_form
+      term_status: admitted
+    - literal: LXP
+      term_type: initialism
+      term_status: admitted
+    - literal: Learning Record Store
+      term_type: full_form
+      term_status: admitted
+      usage_note: Here an xAPI learning-analytics store in the digital tools and platform taxonomy. The same name also refers to Corporate Learning Assessment's LRS plumbing term.
+    - literal: LRS
+      term_type: initialism
+      term_status: admitted
+      usage_note: Here the xAPI Learning Record Store initialism in platform selection. The same initialism also refers to Corporate Learning Assessment's LRS term.
+    edges:
+    - subject_id: coe:entity/digital_learning_tools_and_trends
+      predicate: coe:supports
+      object_id: coe:entity/learning_platform_rollout
+      relationship_weight: expected
+      description: Platform rollout applies the tool-and-platform taxonomy and evaluation criteria from the fundamentals
+        module.
+      statement_id: coe:edge/digital-learning-tools-and-trends-supports-learning-platform-rollout
+      home_domain: learning
+    examples:
+    - LMS selection
+    - adaptive learning platform
+    - digital body language
+    - personalised learning path
+  - id: coe:entity/learning_platform_rollout
+    label: Learning Platform Rollout
+    description: Discipline for rolling out digital learning on a platform — rollout planning, provider selection, launch
+      and testing, administration, marketing, pathways and engagement at go-live.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Seek–Sense–Share
+      term_type: full_form
+      term_status: admitted
+    - literal: Five-stage e-moderation model
+      term_type: full_form
+      term_status: admitted
+    - literal: Learning marketing
+      term_type: full_form
+      term_status: admitted
+    - literal: Salmon's five-stage e-moderation model
+      term_type: full_form
+      term_status: admitted
+    - literal: Seek, Sense, Share
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/learning_platform_rollout
+      predicate: coe:precedes
+      object_id: coe:entity/social_learning_design
+      relationship_weight: optional
+      description: Platform launch and e-moderation staging typically precede sustained social-learning activity design
+        on the same platform.
+      statement_id: coe:edge/learning-platform-rollout-precedes-social-learning-design
+      home_domain: learning
+    examples:
+    - soft launch
+    - platform provider checklist
+    - learning marketing
+    - content curation workflow
+  - id: coe:entity/educational_podcasting_efficacy
+    label: Educational Podcasting Efficacy
+    description: Evidence and design discipline for audio-only learning — reading-versus-listening comparisons, fluency-illusion
+      risks, active-audio mechanisms, series sequencing and outcome measurement beyond vanity metrics.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Active audio learning
+      term_type: full_form
+      term_status: admitted
+    - literal: Podography
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/educational_podcasting_efficacy
+      predicate: coe:limits
+      object_id: coe:entity/retrieval_practice
+      relationship_weight: optional
+      description: Passive listening without generative activity limits the retrieval benefits that make practice schedules
+        effective.
+      statement_id: coe:edge/educational-podcasting-efficacy-limits-retrieval-practice
+      home_domain: learning
+    examples:
+    - podcast learning outcomes
+    - audio fluency illusion
+    - episode sequencing
+    - learning podcast measurement
+  - id: coe:entity/corporate_learning_activities
+    label: Corporate Learning Activities
+    description: Catalogue of synchronous and asynchronous skill-practice activities for tech-sector adult learners spanning
+      product knowledge, presentation, demo delivery and leadership, with Bloom's and Gagné alignment guidance.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Speak Nonsense
+      term_type: full_form
+      term_status: admitted
+    - literal: PowerPoint Karaoke
+      term_type: full_form
+      term_status: admitted
+    - literal: Story Circles
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/corporate_learning_activities
+      predicate: coe:contains
+      object_id: coe:entity/ilt_vilt_best_practices
+      relationship_weight: expected
+      description: Synchronous activity catalogues assume live facilitation practices from ILT and VILT best practices.
+      statement_id: coe:edge/corporate-learning-activities-contains-ilt-vilt-best-practices
+      home_domain: learning
+    examples:
+    - speak nonsense activity
+    - demo practice drill
+    - leadership skill practice
+    - formative activity bank
+  - id: coe:entity/dramatic_and_antagonistic_inquiry
+    label: Dramatic and Antagonistic Inquiry
+    description: Learning methods built on structured conflict and role-play — Mantle of the Expert, Theatre of the Oppressed,
+      forum theatre, structured academic controversy and analysis of competing hypotheses for professional and educational
+      design.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Mantle of the Expert
+      term_type: full_form
+      term_status: admitted
+    - literal: Theatre of the Oppressed
+      term_type: full_form
+      term_status: admitted
+    - literal: Forum Theatre
+      term_type: full_form
+      term_status: admitted
+    - literal: Structured Academic Controversy
+      term_type: full_form
+      term_status: admitted
+    - literal: Analysis of Competing Hypotheses
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/dramatic_and_antagonistic_inquiry
+      predicate: coe:specialises
+      object_id: coe:entity/discussion_based_learning
+      relationship_weight: expected
+      description: Antagonistic inquiry methods are high-conflict specialisations of structured dialogue rather than generic
+        discussion facilitation.
+      statement_id: coe:edge/dramatic-and-antagonistic-inquiry-specialises-discussion-based-learning
+      home_domain: learning
+    examples:
+    - red teaming as learning
+    - wargaming exercise
+    - role-play inquiry
+    - structured controversy
+  - id: coe:entity/content_to_format_selection
+    label: Content-to-Format Selection
+    description: Governed decision discipline for matching content to delivery format — six routing dimensions, nine-format
+      fit matrix, CE-versus-PC evidence grading and the one-versus-three-formats question.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: CE evidence grade
+      term_type: full_form
+      term_status: admitted
+    - literal: PC evidence grade
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/content_to_format_selection
+      predicate: coe:bridges
+      object_id: coe:entity/assessment_method_selection
+      relationship_weight: expected
+      description: Format routing and assessment-method selection both apply utility trade-offs across purpose, evidence
+        and cost, at different grain sizes.
+      statement_id: coe:edge/content-to-format-selection-bridges-assessment-method-selection
+      home_domain: learning
+    examples:
+    - format fit matrix
+    - routing dimensions
+    - modality choice
+    - evidence-graded format list
+  - id: coe:entity/chunking_strategies
+    label: Chunking Strategies
+    description: Cross-domain discipline for decomposing information into retrievable units — granularity rules, the one-nucleus
+      test, semantic and heading-aware chunking, metadata coupling and common chunking pitfalls.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Information typing
+      term_type: full_form
+      term_status: admitted
+    - literal: Expertise chunk
+      term_type: full_form
+      term_status: admitted
+    - literal: Chunk
+      term_type: full_form
+      term_status: admitted
+    - literal: Semantic chunking
+      term_type: full_form
+      term_status: admitted
+    - literal: Heading-aware chunking
+      term_type: full_form
+      term_status: admitted
+    - literal: Recursive character splitting
+      term_type: full_form
+      term_status: admitted
+    - literal: Power of Three
+      term_type: full_form
+      term_status: admitted
+    - literal: DITA
+      term_type: initialism
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/chunking_strategies
+      predicate: coe:limits
+      object_id: coe:entity/cognitive_load_theory
+      relationship_weight: expected
+      description: Chunk granularity manages element interactivity and intrinsic load within working-memory limits.
+      statement_id: coe:edge/chunking-strategies-limits-cognitive-load-theory
+      home_domain: learning
+    examples:
+    - information typing
+    - one-nucleus test
+    - chunk metadata
+    - RAG chunking tactics
+  - id: coe:entity/university_teaching_experiments
+    label: University Teaching Experiments
+    description: Case corpus from the University of Minnesota monograph of fifteen teaching experiments — active learning,
+      new course structures and reframed assessment as exported tables and instruments record them.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Innovative Learning and Teaching Experiments Across the Disciplines
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/university_teaching_experiments
+      predicate: coe:bridges
+      object_id: coe:entity/corporate_learning_assessment
+      relationship_weight: optional
+      description: Several monograph cases reframe assessment and self-review in ways that parallel corporate assessment
+        design concerns.
+      statement_id: coe:edge/university-teaching-experiments-bridges-corporate-learning-assessment
+      home_domain: learning
+    examples:
+    - telehealth simulation case
+    - branching genetic counseling case
+    - grand challenge course
+    - video skills annotation
   - id: coe:entity/inclusion_personas
     label: Inclusion Personas
     description: Persona methodology representing the permanent, temporary and situational capability spectrum
       (Microsoft Persona Spectrum, GDS personas), grounded in the social model of disability.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Persona Spectrum
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - persona spectrum
@@ -692,16 +2811,499 @@ entity_collections:
   label: Assessment and Measurement Disciplines
   description: Assessment method families and measurement disciplines recovered from the knowledge wiki, organising the
     instrument and statistic entities Central already holds.
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-11'
   home_domain: learning
   status: canonical
   entities:
+  - id: coe:entity/assessment_ecosystem
+    label: Assessment Ecosystem
+    description: Earl's Assessment OF, FOR and AS Learning framework — functional intent, not the instrument alone, decides
+      which assessment mode is in play and which educator role applies.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Assessment OF Learning
+      term_type: full_form
+      term_status: admitted
+      usage_note: Here Earl's summative judge role name within the OF/FOR/AS ecosystem framework. The same phrase also labels the Assessment Of Learning entity.
+    - literal: Assessment FOR Learning
+      term_type: full_form
+      term_status: admitted
+      usage_note: Here Earl's formative coach role name within the OF/FOR/AS ecosystem framework. The same phrase also labels the Assessment For Learning entity.
+    - literal: Assessment AS Learning
+      term_type: full_form
+      term_status: admitted
+      usage_note: Here Earl's self-regulatory facilitator role name within the OF/FOR/AS ecosystem framework. The same phrase also labels the Assessment As Learning entity.
+    edges:
+    - subject_id: coe:entity/assessment_ecosystem
+      predicate: coe:contains
+      object_id: coe:entity/assessment_of_learning
+      relationship_weight: required
+      description: Assessment OF Learning is the summative judge role within Earl's tripartite functional-intent framework.
+      statement_id: coe:edge/assessment-ecosystem-contains-assessment-of-learning
+      home_domain: learning
+    - subject_id: coe:entity/assessment_ecosystem
+      predicate: coe:contains
+      object_id: coe:entity/assessment_for_learning
+      relationship_weight: required
+      description: Assessment FOR Learning is the formative coach role within Earl's tripartite functional-intent framework.
+      statement_id: coe:edge/assessment-ecosystem-contains-assessment-for-learning
+      home_domain: learning
+    - subject_id: coe:entity/assessment_ecosystem
+      predicate: coe:contains
+      object_id: coe:entity/assessment_as_learning
+      relationship_weight: required
+      description: Assessment AS Learning is the self-regulatory facilitator role within Earl's tripartite functional-intent
+        framework.
+      statement_id: coe:edge/assessment-ecosystem-contains-assessment-as-learning
+      home_domain: learning
+    examples:
+    - OF FOR AS framework
+    - judge coach facilitator roles
+    - Assessment Reform Group
+    - Black and Wiliam formative assessment
+  - id: coe:entity/feedback_design
+    label: Feedback Design
+    description: Discipline treating feedback as a loop rather than a delivery — Hattie's three questions, Feed Up, Feed
+      Back and Feed Forward architecture, and feedback literacy for learners and educators.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Feed Up
+      term_type: full_form
+      term_status: admitted
+    - literal: Feed Back
+      term_type: full_form
+      term_status: admitted
+    - literal: Feed Forward
+      term_type: full_form
+      term_status: admitted
+    - literal: Feedback literacy
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/feedback_design
+      predicate: coe:enables
+      object_id: coe:entity/assessment_ecosystem
+      relationship_weight: required
+      description: The Feed Up, Feed Back and Feed Forward loop operationalises formative Assessment FOR Learning within
+        the OF/FOR/AS ecosystem.
+      statement_id: coe:edge/feedback-design-enables-assessment-ecosystem
+      home_domain: learning
+    - subject_id: coe:entity/feedback_design
+      predicate: coe:bridges
+      object_id: coe:entity/rubric_design
+      relationship_weight: expected
+      description: Rubric descriptors supply the success criteria that make feedback specific and actionable.
+      statement_id: coe:edge/feedback-design-bridges-rubric-design
+      home_domain: learning
+    examples:
+    - Hattie three feedback questions
+    - external to internal feedback
+    - summative to formative bridge
+  - id: coe:entity/rubric_design
+    label: Rubric Design
+    description: Discipline for building rubrics that hold up — four architectures, descriptor-writing rules, performance-level
+      design, calibration for inter-rater reliability and AI-assisted grading guardrails.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Behaviourally Anchored Rating Scale
+      term_type: full_form
+      term_status: admitted
+    - literal: BARS
+      term_type: initialism
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/rubric_design
+      predicate: coe:enables
+      object_id: coe:entity/feedback_design
+      relationship_weight: expected
+      description: Descriptor craft and success criteria enable the specific Feed Back that feedback design requires.
+      statement_id: coe:edge/rubric-design-enables-feedback-design
+      home_domain: learning
+    - subject_id: coe:entity/rubric_design
+      predicate: coe:supports
+      object_id: coe:entity/demo_certification
+      relationship_weight: expected
+      description: Demo certification applies behaviourally anchored rubrics to live product demonstrations.
+      statement_id: coe:edge/rubric-design-supports-demo-certification
+      home_domain: learning
+    examples:
+    - analytic rubric
+    - holistic rubric
+    - single-point rubric
+    - rater calibration
+  - id: coe:entity/corporate_learning_assessment
+    label: Corporate Learning Assessment
+    description: Design discipline for assessment inside corporate L&D — formative, summative, diagnostic and ipsative types,
+      modality-specific methods and xAPI learning-analytics plumbing.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Learning Record Store
+      term_type: full_form
+      term_status: admitted
+      usage_note: Here xAPI analytics plumbing within corporate L&D assessment design. The same name also refers to Digital Learning Tools and Trends' platform term.
+    - literal: LRS
+      term_type: initialism
+      term_status: admitted
+      usage_note: Here the Learning Record Store initialism in corporate assessment and xAPI design. The same initialism also refers to Digital Learning Tools and Trends.
+    - literal: MCQ
+      term_type: initialism
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/corporate_learning_assessment
+      predicate: coe:bridges
+      object_id: coe:entity/assessment_ecosystem
+      relationship_weight: required
+      description: Corporate assessment types map to Earl's OF, FOR and AS functional intents at programme and activity
+        grain.
+      statement_id: coe:edge/corporate-learning-assessment-bridges-assessment-ecosystem
+      home_domain: learning
+    - subject_id: coe:entity/corporate_learning_assessment
+      predicate: coe:bridges
+      object_id: coe:entity/kirkpatrick_model
+      relationship_weight: expected
+      description: Programme-level evaluation in corporate L&D typically reports against Kirkpatrick-style outcome tiers.
+      statement_id: coe:edge/corporate-learning-assessment-bridges-kirkpatrick-model
+      home_domain: learning
+    examples:
+    - corporate formative checkpoint
+    - ipsative assessment
+    - xAPI analytics
+    - learning analytics dashboard
+  - id: coe:entity/learning_transfer_evaluation_model
+    label: Learning-Transfer Evaluation Model
+    description: Will Thalheimer's eight-tier evaluation framework across Participation, Learning and Impact zones — Line
+      of Sight backward design, SEDA scenarios and Key Behavior Indicators that extend and critique Kirkpatrick.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: LTEM
+      term_type: initialism
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/learning_transfer_evaluation_model
+      predicate: coe:contains
+      object_id: coe:concept/assessment_taxonomy/ltem_tier
+      relationship_weight: required
+      description: The LTEM tier scheme in the assessment taxonomy classifies the eight ordered evidence tiers this framework
+        defines.
+      statement_id: coe:edge/learning-transfer-evaluation-model-contains-ltem-tier
+      home_domain: learning
+    - subject_id: coe:entity/learning_transfer_evaluation_model
+      predicate: coe:bridges
+      object_id: coe:entity/kirkpatrick_model
+      relationship_weight: required
+      description: LTEM refines and critiques Kirkpatrick's four levels by splitting weak tiers and naming transfer evidence
+        explicitly.
+      statement_id: coe:edge/learning-transfer-evaluation-model-bridges-kirkpatrick-model
+      home_domain: learning
+    examples:
+    - LTEM tiers
+    - Line of Sight design
+    - Key Behavior Indicators
+    - Devastating Question
+    - stealth messages in evaluation
+  - id: coe:entity/language_proficiency_standards
+    label: Language Proficiency Standards
+    description: Language-proficiency standard frameworks — especially the CEFR six levels from A1 to C2 with can-do descriptors,
+      alongside ACTFL and Canadian Language Benchmarks named for comparison.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Common European Framework of Reference for Languages
+      term_type: full_form
+      term_status: admitted
+    - literal: CEFR
+      term_type: initialism
+      term_status: admitted
+    - literal: ACTFL Proficiency Guidelines
+      term_type: full_form
+      term_status: admitted
+    - literal: Canadian Language Benchmarks
+      term_type: full_form
+      term_status: admitted
+    examples:
+    - CEFR A1 to C2
+    - can-do descriptors
+    - language proficiency scale
+  - id: coe:entity/multiple_choice_item_design
+    label: Multiple-Choice Item Design
+    description: Engineering discipline for multiple-choice items as cognitive routers — Haladyna and Downing rules, distractor
+      craft, hinge questions, three-option optimisation and AI-assisted item generation pipelines.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Hinge question
+      term_type: full_form
+      term_status: admitted
+      usage_note: Here a diagnostic MCQ item type within multiple-choice item design. The same name also labels the Hinge Question formative-assessment entity.
+    edges:
+    - subject_id: coe:entity/multiple_choice_item_design
+      predicate: coe:bridges
+      object_id: coe:entity/retrieval_practice
+      relationship_weight: expected
+      description: Well-built MCQs supply the retrieval events retrieval practice schedules depend on.
+      statement_id: coe:edge/multiple-choice-item-design-bridges-retrieval-practice
+      home_domain: learning
+    - subject_id: coe:entity/multiple_choice_item_design
+      predicate: coe:supports
+      object_id: coe:entity/psychometrics
+      relationship_weight: expected
+      description: Post-administration item statistics validate the items this design discipline engineers.
+      statement_id: coe:edge/multiple-choice-item-design-supports-psychometrics
+      home_domain: learning
+    examples:
+    - stem-first drafting
+    - distractor engineering
+    - three-option MCQ
+    - scenario-based MCQ
+  - id: coe:entity/digital_assessment_interaction_design
+    label: Digital Assessment Interaction Design
+    description: Interaction-layer discipline for digital assessment items — touch-target geometry, per-cohort element budgets,
+      accessible control substitution, misconception-mapped routing and SurveyJS architectures.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Target Size (WCAG)
+      term_type: full_form
+      term_status: admitted
+    - literal: Element budget (assessment UI)
+      term_type: full_form
+      term_status: admitted
+    - literal: Misconception-mapped routing
+      term_type: full_form
+      term_status: admitted
+    - literal: Target Size
+      term_type: full_form
+      term_status: admitted
+    - literal: Element budget
+      term_type: full_form
+      term_status: admitted
+    - literal: SurveyJS
+      term_type: product_code
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/digital_assessment_interaction_design
+      predicate: coe:supports
+      object_id: coe:entity/multiple_choice_item_design
+      relationship_weight: expected
+      description: Accessible item controls implement the stems and options the MCQ design discipline specifies.
+      statement_id: coe:edge/digital-assessment-interaction-design-supports-multiple-choice-item-design
+      home_domain: learning
+    - subject_id: coe:entity/digital_assessment_interaction_design
+      predicate: coe:limits
+      object_id: coe:entity/cognitive_load_theory
+      relationship_weight: expected
+      description: Element budgets enforce working-memory limits on simultaneous on-screen assessment controls.
+      statement_id: coe:edge/digital-assessment-interaction-design-limits-cognitive-load-theory
+      home_domain: learning
+    examples:
+    - WCAG target size
+    - misconception routing
+    - assessment UI budget
+    - accessible item controls
+  - id: coe:entity/peer_assessment
+    label: Peer Assessment
+    description: Structured candidate-on-candidate evaluation — revised Falchikov baseline, criteria co-development, cognitive
+      distance, Frame-of-Reference calibration, anonymity trade-offs and classroom versus MOOC-scale protocols.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Frame-of-Reference calibration
+      term_type: full_form
+      term_status: admitted
+    - literal: Topping's typology
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/peer_assessment
+      predicate: coe:supports
+      object_id: coe:entity/rubric_design
+      relationship_weight: required
+      description: Peer raters need shared rubric architectures and calibrated descriptors to score consistently.
+      statement_id: coe:edge/peer-assessment-supports-rubric-design
+      home_domain: learning
+    - subject_id: coe:entity/peer_assessment
+      predicate: coe:contrasts_with
+      object_id: coe:entity/multi_source_feedback
+      relationship_weight: expected
+      description: Peer assessment is learner-to-learner rating within a cohort; multi-source feedback gathers supervisor,
+        peer and external ratings of a single target's workplace behaviour.
+      statement_id: coe:edge/peer-assessment-contrasts-with-multi-source-feedback
+      home_domain: learning
+    examples:
+    - peer grading
+    - peer feedback protocol
+    - free-rider mitigation
+    - MOOC peer assessment
+  - id: coe:entity/ai_assessment_regulation
+    label: AI Assessment Regulation
+    description: Legal and compliance discipline for AI-mediated assessment — EU AI Act high-risk duties, GDPR Article
+      22 human review, and US municipal and state selection statutes as the source corpus records them.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: EU AI Act
+      term_type: full_form
+      term_status: admitted
+    - literal: GDPR Article 22
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/ai_assessment_regulation
+      predicate: coe:supports
+      object_id: coe:entity/kane_validity_framework
+      relationship_weight: expected
+      description: Regulatory human-review and documentation duties align with Kane's Implications inference for high-stakes
+        score use.
+      statement_id: coe:edge/ai-assessment-regulation-supports-kane-validity-framework
+      home_domain: learning
+    - subject_id: coe:entity/ai_assessment_regulation
+      predicate: coe:limits
+      object_id: coe:entity/automated_essay_scoring
+      relationship_weight: expected
+      description: Automated scoring systems in hiring and education face conformity, bias-audit and appeal obligations
+        under AI assessment regulation.
+      statement_id: coe:edge/ai-assessment-regulation-limits-automated-essay-scoring
+      home_domain: learning
+    examples:
+    - high-risk AI assessment
+    - conformity assessment
+    - NYC Local Law 144
+    - human review right
+  - id: coe:entity/constructed_response_design
+    label: Constructed-Response Design
+    description: Design discipline for short-answer, structured-response and essay items and their mark schemes — when production
+      cost is justified and how to score open responses reliably.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Constructed response
+      term_type: full_form
+      term_status: admitted
+      usage_note: Here open-response item design in the constructed-response discipline. The same phrase also labels the Constructed Response item-format concept in the assessment taxonomy.
+    - literal: CR item
+      term_type: initialism
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/constructed_response_design
+      predicate: coe:contrasts_with
+      object_id: coe:entity/multiple_choice_item_design
+      relationship_weight: expected
+      description: Constructed-response items require production and human or machine scoring where selected-response items
+        trade authenticity for efficiency.
+      statement_id: coe:edge/constructed-response-design-contrasts-with-multiple-choice-item-design
+      home_domain: learning
+    - subject_id: coe:entity/constructed_response_design
+      predicate: coe:supports
+      object_id: coe:entity/rubric_design
+      relationship_weight: required
+      description: Open-response scoring depends on rubric architectures and mark schemes this discipline pairs with item
+        stems.
+      statement_id: coe:edge/constructed-response-design-supports-rubric-design
+      home_domain: learning
+    examples:
+    - extended essay item
+    - short-answer item
+    - mark scheme
+    - double rating workflow
+  - id: coe:entity/pre_assessment_and_diagnostics
+    label: Pre-Assessment and Diagnostics
+    description: Discipline for diagnosing what a learner already knows before instruction — instrument taxonomy, gating
+      timeline, learner-safety safeguards and deployed diagnostic case studies.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Predictive Index
+      term_type: full_form
+      term_status: admitted
+    - literal: EF SET
+      term_type: initialism
+      term_status: admitted
+    - literal: McKinsey Solve
+      term_type: full_form
+      term_status: admitted
+    - literal: Knowledge Space Theory
+      term_type: full_form
+      term_status: admitted
+    - literal: Situational Judgement Test
+      term_type: full_form
+      term_status: admitted
+    - literal: SJT
+      term_type: initialism
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/pre_assessment_and_diagnostics
+      predicate: coe:precedes
+      object_id: coe:entity/corporate_learning_assessment
+      relationship_weight: expected
+      description: Diagnostic gating and pre-tests typically precede the formative and summative assessments a programme
+        deploys.
+      statement_id: coe:edge/pre-assessment-and-diagnostics-precedes-corporate-learning-assessment
+      home_domain: learning
+    - subject_id: coe:entity/pre_assessment_and_diagnostics
+      predicate: coe:bridges
+      object_id: coe:entity/cognitive_diagnostic_modelling
+      relationship_weight: expected
+      description: Attribute-mastery profiles from cognitive diagnostic modelling are one psychometric engine for fine-grained
+        pre-instruction diagnosis.
+      statement_id: coe:edge/pre-assessment-and-diagnostics-bridges-cognitive-diagnostic-modelling
+      home_domain: learning
+    examples:
+    - pre-test gating
+    - diagnostic assessment
+    - learner-safe diagnostics
+    - EF SET placement
+  - id: coe:entity/self_assessment
+    label: Self-Assessment
+    description: Discipline for learners rating their own competence — why summative self-grading fails, what makes formative
+      self-assessment accurate, and ability-based models such as Alverno.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Core Self-Evaluations
+      term_type: full_form
+      term_status: admitted
+    - literal: CSE
+      term_type: initialism
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/self_assessment
+      predicate: coe:supports
+      object_id: coe:entity/assessment_as_learning
+      relationship_weight: required
+      description: Formative self-assessment is the learner-facing practice of Assessment AS Learning within the ecosystem
+        framework.
+      statement_id: coe:edge/self-assessment-supports-assessment-as-learning
+      home_domain: learning
+    - subject_id: coe:entity/self_assessment
+      predicate: coe:bridges
+      object_id: coe:entity/metacognition
+      relationship_weight: expected
+      description: Accurate self-assessment depends on metacognitive monitoring and calibration against external criteria.
+      statement_id: coe:edge/self-assessment-bridges-metacognition
+      home_domain: learning
+    examples:
+    - self-rating against rubric
+    - formative self-check
+    - Alverno ability-based assessment
+    - calibration training
   - id: coe:entity/multi_source_feedback
     label: Multi-Source (360-Degree) Feedback
     description: Multi-source feedback — the structured practice of gathering supervisor, peer, direct-report and
       external ratings of a target's observable behaviour for development.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: ESCI
+      term_type: initialism
+      term_status: admitted
+    - literal: Strategic 360
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - 360-degree feedback
@@ -726,6 +3328,16 @@ entity_collections:
       educational impact, acceptability and cost — the van der Vleuten utility model and Miller's pyramid.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Utility model
+      term_type: full_form
+      term_status: admitted
+    - literal: Programmatic assessment
+      term_type: full_form
+      term_status: admitted
+    - literal: Miller's Pyramid
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - utility model
@@ -762,6 +3374,10 @@ entity_collections:
       ability estimate, with exposure control and measurement-error-based stopping rules.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Shadow-test approach
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/computer_adaptive_testing
       predicate: coe:contrasts_with
@@ -782,6 +3398,10 @@ entity_collections:
       explicit human-alone versus human-AI-team construct choice and process-evidence redesign.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Construct substitution
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/construct_validity_under_ai
       predicate: coe:rebuts
@@ -802,6 +3422,16 @@ entity_collections:
       standards.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Measurement invariance
+      term_type: full_form
+      term_status: admitted
+    - literal: WEIRD samples
+      term_type: full_form
+      term_status: admitted
+    - literal: Etic / emic
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - measurement invariance
@@ -814,6 +3444,16 @@ entity_collections:
       demonstrations via OSCE-derived scenario banks, behaviourally anchored rubrics and defensible cut-scores.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Objective Structured Clinical Examination
+      term_type: full_form
+      term_status: admitted
+    - literal: Global Rating Scale
+      term_type: full_form
+      term_status: admitted
+    - literal: Intraclass Correlation Coefficient
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/demo_certification
       predicate: coe:specialises
@@ -834,6 +3474,21 @@ entity_collections:
       behavioural competencies to structurally different instruments.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: MSSAT
+      term_type: acronym
+      term_status: admitted
+      language: en
+      usage_note: Multiple Soft Skills Assessment Tool — instrument family for soft-skill scoring, not a hard-skill exam format.
+    - literal: Multiple Soft Skills Assessment Tool
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: hard-skills-soft-skills
+      term_type: short_form
+      term_status: admitted
+      language: en
+      usage_note: Wiki slug alias for this assessment methodology distinction.
     edges: []
     examples:
     - hard skills
@@ -846,6 +3501,28 @@ entity_collections:
       chance-corrected coefficients — Cohen's and Fleiss's kappa, Krippendorff's alpha, Gwet's AC1.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Cohen's Kappa
+      term_type: full_form
+      term_status: admitted
+    - literal: Fleiss' Kappa
+      term_type: full_form
+      term_status: admitted
+    - literal: Krippendorff's Alpha
+      term_type: full_form
+      term_status: admitted
+    - literal: Gwet's AC1
+      term_type: full_form
+      term_status: admitted
+    - literal: Kappa Paradox
+      term_type: full_form
+      term_status: admitted
+    - literal: MASI
+      term_type: initialism
+      term_status: admitted
+    - literal: Gamma coefficient
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - inter-annotator agreement
@@ -891,6 +3568,10 @@ entity_collections:
       metrics, leading-to-lagging causal chains and attribution designs.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: KPI
+      term_type: initialism
+      term_status: admitted
     edges: []
     examples:
     - OKR
@@ -904,6 +3585,10 @@ entity_collections:
       sampling, calibration and severity adjustment for defensible reliability.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Structured Oral Examination (SOE)
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/oral_assessment_design
       predicate: coe:supports
@@ -951,6 +3636,22 @@ entity_collections:
       governance.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Classical Test Theory
+      term_type: full_form
+      term_status: admitted
+    - literal: Standard Error of Measurement
+      term_type: full_form
+      term_status: admitted
+    - literal: Total Evaluation Error
+      term_type: full_form
+      term_status: admitted
+    - literal: Graded Response Model
+      term_type: full_form
+      term_status: admitted
+    - literal: Table of Specifications
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/psychometrics
       predicate: coe:contains
@@ -994,6 +3695,22 @@ entity_collections:
       centrality, community detection — to assess knowledge flow and community health.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Constant Potts Model (CPM)
+      term_type: full_form
+      term_status: admitted
+    - literal: Leiden
+      term_type: full_form
+      term_status: admitted
+    - literal: Louvain
+      term_type: full_form
+      term_status: admitted
+    - literal: Infomap
+      term_type: full_form
+      term_status: admitted
+    - literal: Modularity resolution limit
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - social network analysis
@@ -1034,6 +3751,22 @@ entity_collections:
       Knowledge Organisation Systems ranging from term lists and thesauri to formal ontologies.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: KOS
+      term_type: initialism
+      term_status: admitted
+    - literal: BT / NT / RT / USE / UF
+      term_type: full_form
+      term_status: admitted
+    - literal: SN
+      term_type: initialism
+      term_status: admitted
+    - literal: Scope note
+      term_type: full_form
+      term_status: admitted
+    - literal: skos:exactMatch / closeMatch / broadMatch / relatedMatch
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/knowledge_organisation
       predicate: coe:contains
@@ -1061,13 +3794,65 @@ entity_collections:
       conceptualisations defining classes, properties and axioms that support automated reasoning and validation.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Competency Question
+      term_type: full_form
+      term_status: admitted
+    - literal: T-Box / A-Box
+      term_type: full_form
+      term_status: admitted
+    - literal: Property chain
+      term_type: full_form
+      term_status: admitted
+    - literal: Punning
+      term_type: full_form
+      term_status: admitted
+    - literal: owl:sameAs
+      term_type: full_form
+      term_status: admitted
+    - literal: SPAR ontologies
+      term_type: full_form
+      term_status: admitted
+    - literal: Hypertableau Calculus
+      term_type: full_form
+      term_status: admitted
+    - literal: OCHRE
+      term_type: initialism
+      term_status: admitted
+    - literal: Hearst Patterns
+      term_type: full_form
+      term_status: admitted
+    - literal: RAKE
+      term_type: initialism
+      term_status: admitted
+    - literal: YAKE
+      term_type: initialism
+      term_status: admitted
+    - literal: KeyBERT
+      term_type: full_form
+      term_status: admitted
+    - literal: Maedche-Staab Layer Cake
+      term_type: full_form
+      term_status: admitted
+    - literal: LogMap
+      term_type: full_form
+      term_status: admitted
+    - literal: AML
+      term_type: initialism
+      term_status: admitted
+    - literal: SILK
+      term_type: initialism
+      term_status: admitted
+    - literal: OWL 2 profiles
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/ontology_engineering
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/knowledge_graph_construction
       relationship_weight: expected
       description: Ontology engineering supplies the schema that extracted triples ground to and validate against.
-      statement_id: coe:edge/ontology-engineering-supports-knowledge-graph-construction
+      statement_id: coe:edge/ontology-engineering-enables-knowledge-graph-construction
       home_domain: learning
     examples:
     - ontology engineering

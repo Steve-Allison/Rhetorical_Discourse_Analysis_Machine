@@ -17,7 +17,10 @@ sys.addaudithook(reject_network)
 from rdam.concepts import ConceptIndex, link_source
 from rdam.ingest import SourceArtifact, SourceForm
 index = ConceptIndex.load()
-for form, content in ((SourceForm.TEXT, "Adobe Analytics"), (SourceForm.MARKDOWN, "# Adobe Analytics")):
+for form, content in (
+    (SourceForm.TEXT, "Adobe Analytics"),
+    (SourceForm.DOCLANG_XML, "<doclang><heading>Adobe Analytics</heading></doclang>"),
+):
     source = SourceArtifact.from_bytes(content.encode(), source_name="example", source_form=form)
     result = link_source(source, index)
     assert any(mention.quote == "Adobe Analytics" for mention in result.mentions)

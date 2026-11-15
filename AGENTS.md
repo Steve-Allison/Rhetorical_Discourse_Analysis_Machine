@@ -12,22 +12,29 @@ formalism. One distribution, one package, every technique a sub-package:
 
 | Sub-package | Technique |
 |---|---|
-| `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.prepare()` and `Machine.analyse()`, unified CLI and optional HTTP |
-| `rdam.ingest` | shared source inventory, provider-specific projections, capacity planning, speaker evidence and anchors |
+| `rdam` | the machine: provider and formalism declarations, capability states, native results, `Machine.prepare()` and `Machine.analyse()`, 2-wave derivations, `xpath_alignment`, unified CLI and optional HTTP |
+| `rdam.ingest` | `dclq` + DocLang 0.9 single-stream source inventory, `LinguisticSubstrate`, provider-specific projections, capacity planning, speaker evidence and anchors |
 | `rdam.rst` | RST: DMRST and UniRST discourse parsers (Steve's evolution of Elena Chistova's IsaNLP RST Parser), viewer, and the machine adapter `rdam.rst.provider.RstProvider` |
+| `rdam.centering` | Centering Theory & Entity Grid: deterministic `Cb`/`Cp`/`Cf` transitions and Barzilay–Lapata role grids |
 | `rdam.pdtb` | PDTB-3 binary relations with exact source spans, all seven relation types, signal evidence, canonical senses |
-| `rdam.sdrt` | SDRS graphs with EDUs, CDUs, coordinating/subordinating relations, deterministic graph and right-frontier validation |
-| `rdam.toulmin` | complete Toulmin layouts with claim, grounds, warrant and optional qualifiers |
-| `rdam.walton` | Walton scheme instances with exact premise roles and critical-question states |
-| `rdam.dung` | Dung abstract argumentation: grounded, complete, preferred and stable semantics over a supplied or explicitly derived framework |
-| `rdam.ibis` | IBIS: issue–position–argument structures validated under the gIBIS link grammar |
-| `rdam.concepts` | exact lexical links from source surfaces to Central's semantic resources (labels and typed terms); never semantic acceptance |
+| `rdam.sdrt` | SDRS graphs with EDUs, CDUs, coordinating/subordinating relations, DISCOR polarity, deterministic graph and right-frontier validation |
+| `rdam.speech_acts` | Searle & Vanderveken illocutionary force, direction of fit, felicity conditions, and conversational uptake |
+| `rdam.classical_rhetoric` | Aristotelian rhetorical pisteis (`ethos`, `pathos`, `logos`), enthymemes, stasis, kairos, and figures |
+| `rdam.argument_mining` | Inference Anchoring Theory (IAT) propositions (`I`-nodes) and `RA`/`CA`/`MA`/`PA` relational anchors |
+| `rdam.toulmin` | complete Toulmin layouts with claim, grounds, warrant, backing, qualifiers, and source-anchored rebuttals |
+| `rdam.walton` | 12 typed Walton scheme instances with exact premise roles and critical-question states |
+| `rdam.pragma_dialectics` | four dialectical stages, strategic manoeuvring, and ten-rule fallacy violations |
+| `rdam.ibis` | dual-mode IBIS: deterministic validation on supplied structures or grounded DocLang/text extraction under the gIBIS link grammar |
+| `rdam.aspic` | dual-mode ASPIC+: structured argumentation theories, preferences, defeats, and rationality postulates on supplied theories or grounded source documents |
+| `rdam.dung` | Dung abstract argumentation: grounded, complete, preferred and stable semantics via bitmask kernel + CaDiCaL 1.9.5 (`cadical-sat-v2`, capacity 128) over a supplied or explicitly derived framework |
+| `rdam.concepts` | exact Rust `ahocorasick_rs` lexical links from source surfaces to Central's semantic resources (labels and typed terms); never semantic acceptance |
 
 The machine analyses discourse; it never generates or rewrites it. It serves one person on
-one local machine. `rdam.production_machine()` is the supported composition of all seven
-provider boundaries; each provider remains directly callable. eRST is workbench-only (owner
-instruction 2026-09-06). What a provider can run is what `describe_capabilities()` reports;
-that call is the authority, not this file.
+one local machine. `rdam.production_machine()` is the supported composition of all thirteen
+provider boundaries (`rdam/composition.py:14-73`); each provider remains directly callable.
+eRST is workbench-only (owner instruction 2026-09-06). What a provider can run is what
+`describe_capabilities()` / `machine.capabilities()` reports; that call is the authority,
+not this file.
 
 ## Provenance and licence
 
@@ -70,9 +77,11 @@ history, not a quality waiver.
 Two environments, declared in `pyproject.toml`:
 
 - **`default`** (the `offline` feature; `offline` is an explicit alias): everything for
-  daily work (`dev`, `formats`, `offline`). Every everyday task runs here without `-e`.
+  daily work (`dev`, `offline`, `http`; `pyproject.toml:136-140`). Every everyday task runs
+  here without `-e`.
 - **`production`**: the isolated clean-room consumer environment holding only what
-  `pip install rdam` provides, installed as the editable source.
+  `pip install rdam` provides (`dclq` and `doclang[schematron-saxon]` included in core
+  `[project.dependencies]` at `pyproject.toml:44-45`), installed as the editable source.
 
 Production code (everything under `rdam/`) never imports offline or dev packages
 (`pytest`, `nltk`, `peft`, `fire`, `jsonnet`, `blake3`) or `workbench`;
@@ -122,28 +131,31 @@ satisfy it. The promotion-evidence system was removed on 2026-09-02 for exactly 
 reason; discovery checks local prerequisites without probing a remote model, and actual
 analysis determines runtime success.
 
-## HARD RULE: Docling and DocLang spec currency
+## HARD RULE: `dclq` and DocLang spec currency
 
-Before changing Docling JSON loading (`_inventory_docling` in `rdam/ingest/_harvest.py`),
-DocLang loading (`inventory_doclang` in `rdam/ingest/_doclang.py` and the
-`rdam.ingest.doclang` decoder), format harvest, boundaries, mappers, fixtures, or docs that
-describe those contracts, **verify compliance with the current Docling and DocLang specs**,
-even when the task looks unrelated to a version bump. The pixi lock, the in-repo fixtures
-and `.claude/memory/` are what was last shipped, not what upstream is today; stating a lock
-version as "the spec" is an evidence-marking violation.
+Before changing DocLang loading (`inventory_doclang` in `rdam/ingest/_doclang.py` and the
+`rdam.ingest.doclang` decoder/loader), `dclq` XPath handling (`rdam/ingest/doclang/loader.py`
+and `rdam/ingest/substrate.py`), format harvest (`rdam/ingest/_harvest.py`), boundaries,
+mappers, fixtures, or docs that describe those contracts, **verify compliance with the
+current `dclq` and DocLang specs**, even when the task looks unrelated to a version bump.
+The pixi lock, the in-repo fixtures, and `.claude/memory/` are what was last shipped, not
+what upstream is today; stating a lock version as "the spec" is an evidence-marking
+violation.
 
-1. **Docling:** `docling-core` PyPI latest vs the `pyproject.toml` pin vs `pixi.lock`;
-   fixture `DoclingDocument` `version` vs what the current `load_from_json` accepts;
-   `iterate_items` and `ContentLayer` against the current `docling-core` source. Owner
-   instruction 2026-10-09: "we should stay up to date with docling - always." The range is
-   `>=<latest>,<3`; never cap it below the next major version.
+1. **`dclq`:** `dclq` PyPI latest vs the `pyproject.toml` pin (`dclq>=2.107.0,<3`,
+   `pyproject.toml:44`) vs `pixi.lock`; verify `LoadedDocument`, `NS`, and canonical XPath
+   indexing against the installed `dclq` source. Raw `DoclingDocument` JSON and Markdown
+   ingestion (`_inventory_docling`, `rdam.rst.markdown`) were retired in `6.1.0` in favour
+   of unified DocLang-native ingestion (`SourceForm.TEXT`, `EDUS`, `DOCLANG_XML`,
+   `DOCLANG_ARCHIVE` at `rdam/ingest/contracts/source.py:17-21`).
 2. **DocLang:** owner instruction 2026-10-09: "yes, track main and build track support."
-   Upstream `main` latest commit vs the `doclang` git pin in `pyproject.toml` vs the fixture
-   manifest commit (all three match); the current upstream `spec.md`; upstream
+   Upstream `main` latest commit vs the `doclang` git pin in `pyproject.toml:45` vs the
+   fixture manifest commit (all three match); the current upstream `spec.md`; upstream
    `tests/data/valid` vs `tests/fixtures/doclang/` (count, names, `.dclg` extension);
    whether `validate()` still needs `doclang[schematron-saxon]`.
-3. **Our envelopes:** `isanlp_rst_docling` / `isanlp_rst_doclang` `schema_version` bumps
-   only when *our* result shape changes, never with an upstream package version.
+3. **Our envelopes:** `isanlp_rst.production` / `isanlp_rst_doclang` contract and schema
+   versions bump only when *our* result shape changes, never with an upstream package
+   version.
 
 If lock, fixtures or harvest behaviour lag the current spec, update them in the same work
 or flag the gap explicitly. Never document a stale contract as current.
@@ -177,9 +189,9 @@ code) and the ingest and execution mechanics are in `.claude/rules/architecture.
 loads whenever a file under `rdam/`, `workbench/`, `tools/` or `tests/` is touched. Two
 facts needed everywhere: `rdam.ingest` is the one public ingest surface
 (`ProductionIngestor.capabilities()`, `.prepare()`, `.analyse()`), with no compatibility
-shim for the removed format-specific functions; and the optional `formats` extra
-(`docling-core`, `doclang`, `markdown-it-py`, `mdit-py-plugins`) is installed by
-`pixi install` and stays outside `[project.dependencies]`.
+shim for removed format-specific functions; and `dclq` + `doclang[schematron-saxon]` now
+ship in core `[project.dependencies]` (`pyproject.toml:44-45`), leaving `http`, `dev`, and
+`offline` as the optional extras (`pyproject.toml:58-82`).
 
 ## Shared subject-matter linking and Central_Configs
 

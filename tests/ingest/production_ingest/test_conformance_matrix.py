@@ -1,4 +1,4 @@
-"""Six-source-form analysed/empty and canonical round-trip matrix."""
+"""Four-source-form analysed/empty and canonical round-trip matrix."""
 
 from collections.abc import Callable
 from pathlib import Path
@@ -28,14 +28,6 @@ def _edus() -> SourceArtifact:
     return SourceArtifact.from_edus(("First.", "Second."), source_name="matrix.edus")
 
 
-def _markdown() -> SourceArtifact:
-    return SourceArtifact.from_path(_FIXTURES / "mixed.md")
-
-
-def _docling() -> SourceArtifact:
-    return SourceArtifact.from_path(_FIXTURES / "mixed.docling.json")
-
-
 def _doclang() -> SourceArtifact:
     return SourceArtifact.from_path(_FIXTURES / "mixed.dclg")
 
@@ -51,8 +43,8 @@ def _archive() -> SourceArtifact:
 
 @pytest.mark.parametrize(
     "source_builder",
-    (_text, _edus, _markdown, _docling, _doclang, _archive),
-    ids=("text", "edus", "markdown", "docling", "doclang", "doclang-archive"),
+    (_text, _edus, _doclang, _archive),
+    ids=("text", "edus", "doclang", "doclang-archive"),
 )
 def test_every_source_form_analyses_and_round_trips_canonically(
     source_builder: Callable[[], SourceArtifact],

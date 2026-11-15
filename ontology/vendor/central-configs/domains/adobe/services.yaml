@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/services
   title: Adobe — Services
-  last_updated: '2026-10-02'
+  last_updated: '2026-10-18'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -11,12 +11,12 @@ domain: adobe
 services:
 - id: coe:entity/adobe/adobe_developer
   label: Adobe Developer Platform
-  description: Adobe's developer platform — the APIs, events and runtime through which external code integrates with and
-    extends Adobe products, published at developer.adobe.com.
+  description: Adobe Developer Platform is Adobe's open developer platform, centered on developer.adobe.com, that provides
+    APIs, events, SDKs, runtimes, tools, and documentation so developers can integrate with and extend Adobe Creative Cloud,
+    Experience Cloud, Document Cloud, and Firefly Services across web and enterprise workflows.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
-  market_status: generally_available
   terms:
   - literal: Adobe Developer
     term_type: short_form
@@ -36,37 +36,32 @@ services:
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/document_cloud
-  market_status: generally_available
-  terms:
-  - literal: PDF Services
-    term_type: short_form
-    term_status: admitted
-    usage_note: Here the developer API product with its own credentials and metering. The same name also refers to Acrobat Online Services.
 - id: coe:entity/adobe/acrobat_services
   label: Adobe Acrobat Services
-  description: Adobe's developer brand for Acrobat's cloud APIs — PDF Services, Sign and embedding — for building document
-    workflows into applications.
+  description: Adobe Acrobat Services is Adobe's family of cloud-based document APIs—including PDF Services, PDF Embed, Document
+    Generation, PDF Extract, PDF Electronic Seal, PDF Accessibility Auto-Tag, and Acrobat Sign APIs—that lets developers embed
+    rich PDF and agreement workflows into web and server applications.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/document_cloud
-  market_status: generally_available
   terms:
   - literal: Acrobat Services
     term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/firefly_services
   label: Adobe Firefly Services
-  description: Adobe's enterprise APIs exposing Firefly and Creative Cloud automation for high-volume content production —
-    generating variants, localising and refreshing assets programmatically.
+  description: Adobe Firefly Services (Firefly Creative Production for Enterprise) is an enterprise-only collection of generative
+    and creative APIs—including Firefly image/video generation plus Photoshop, Lightroom, InDesign, audio/video and content-tagging
+    services—that lets organizations automate high-volume, brand-safe content production such as variants, localization and
+    asset refreshes via REST APIs.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/creative_cloud
   - coe:entity/adobe/content_supply_chain_solution
-  market_status: generally_available
   serves_stage:
   - coe:entity/adobe/creation_production
   terms:
@@ -75,16 +70,17 @@ services:
     term_status: admitted
 - id: coe:entity/adobe/genstudio_services
   label: GenStudio Services
-  description: GenStudio's public REST API for retrieving approved experiences, listing and filtering experience summaries
-    and downloading assets, so GenStudio content flows into external workflows.
+  description: GenStudio Services (GenStudio Experience API) is GenStudio's public, read-only REST API that lets partner and
+    enterprise applications list and filter approved experiences, retrieve full experience metadata, templates and short-lived
+    asset delivery URLs, so GenStudio content can flow programmatically into external channels and workflows using Adobe IMS
+    OAuth server-to-server credentials.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/genstudio
-  market_status: generally_available
 - id: coe:entity/adobe/web_sdk
-  label: Web SDK
+  label: Adobe Experience Platform Web SDK
   description: Adobe's client-side JavaScript library that sends website data to the Experience Platform Edge Network and
     receives audience qualifications and personalised content back.
   home_domain: adobe
@@ -92,87 +88,95 @@ services:
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/experience_cloud
-  market_status: generally_available
   conforms_to:
   - coe:entity/adobe/experience_data_model
+  terms:
+  - literal: Web SDK
+    term_type: short_form
+    term_status: admitted
 - id: coe:entity/adobe/mobile_sdk
-  label: Mobile SDK
-  description: Adobe's mobile-application library that collects app events into the Experience Platform Edge Network and
-    returns audience qualifications and personalised content in-session.
+  label: Adobe Experience Platform Mobile SDK
+  description: Adobe Experience Platform Mobile SDK is a modular mobile SDK that sends app data in XDM format to the Adobe
+    Experience Platform Edge Network and integrates with solutions such as Analytics, Campaign, Audience Manager and Target
+    to power real-time personalization, consent management and end-to-end engagement in mobile applications.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/experience_cloud
-  market_status: generally_available
   conforms_to:
   - coe:entity/adobe/experience_data_model
+  terms:
+  - literal: Mobile SDK
+    term_type: short_form
+    term_status: admitted
 - id: coe:entity/adobe/edge_network_server_api
   label: Experience Platform Edge Network Server API
-  description: Experience Platform's REST API that sends events from servers, devices and other non-browser clients into the
-    Edge Network, as an alternative to the Web and Mobile SDKs.
+  description: The Adobe Experience Platform Edge Network Server API is a secure, authenticated REST API for sending events
+    from servers, IoT devices and other non-browser clients to the Platform Edge Network for data collection, personalization,
+    advertising and marketing use cases, as a server-side alternative to the Web and Mobile SDKs.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/experience_cloud
-  market_status: generally_available
   terms:
   - literal: Edge Network Server API
     term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/data_access_api
-  label: Experience Platform Data Access API
-  description: Experience Platform's REST API for reading and exporting Data Lake datasets from external tools and partner
-    applications.
+  label: Data Access API in Adobe Experience Platform
+  description: Adobe Experience Platform Data Access API is a RESTful interface that provides raw and XDM-level access to
+    ingested Data Lake datasets for discoverability and export to external tools, but it is now deprecated and new implementations
+    should use dataset export destinations in Adobe Experience Platform instead.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/experience_cloud
-  market_status: generally_available
   terms:
   - literal: Data Access API
     term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/visitor_id_service
   label: Adobe Visitor ID Service
-  description: Adobe's JavaScript identity library that sets the Experience Cloud ID for Analytics, Audience Manager and
-    Target; it is distinct from Experience Platform Identity Service and is built into the Web SDK.
+  description: Adobe Visitor ID Service is the legacy JavaScript library that assigns a universal Experience Cloud ID (ECID)
+    shared across CX Enterprise solutions such as Analytics, Audience Manager and Target; it is distinct from Adobe Experience
+    Platform Identity Service, and when using the Adobe Experience Platform Web SDK you typically rely on its built-in identity
+    capabilities rather than deploying the Visitor ID Service library.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/experience_cloud
-  market_status: generally_available
   terms:
   - literal: Visitor ID Service
     term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/pdf_embed_api
   label: Adobe PDF Embed API
-  description: Acrobat Services' client-side JavaScript API that embeds a PDF viewer with collaboration and analytics
-    features in a web application.
+  description: Adobe PDF Embed API is a free, client-side JavaScript API from Acrobat Services that embeds a rich PDF viewer
+    in web applications, providing consistent in-browser document viewing along with collaboration, review workflows and analytics
+    integration.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/document_cloud
-  market_status: generally_available
   terms:
   - literal: PDF Embed API
     term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/document_generation_api
   label: Adobe Document Generation API
-  description: Acrobat Services' cloud API that merges Word or HTML templates with JSON data to produce PDF or Word
-    documents such as contracts and invoices.
+  description: Adobe Document Generation API is a cloud service that dynamically merges JSON data into Word (DOCX) or HTML
+    templates with conditional logic to generate PDF or Word documents such as contracts, invoices and sales proposals, often
+    used to automate agreement workflows.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/document_cloud
-  market_status: generally_available
   terms:
   - literal: Document Generation API
     term_type: short_form
@@ -186,7 +190,6 @@ services:
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/document_cloud
-  market_status: generally_available
   terms:
   - literal: Acrobat Sign API
     term_type: short_form
@@ -199,64 +202,61 @@ services:
     term_status: superseded
 - id: coe:entity/adobe/pdf_extract_api
   label: Adobe PDF Extract API
-  description: Acrobat Services' API that extracts text, tables, images and logical structure from PDFs as JSON for
-    analytics, AI and downstream processing, bundled with the PDF Services API.
+  description: Adobe PDF Extract API is an Acrobat Services API that uses machine learning to unlock unstructured content
+    in PDFs by extracting text, complex tables, images, figures, and document structure into structured data (such as JSON)
+    for analytics, AI, and downstream processing, offered alongside Adobe PDF Services API within Acrobat Services.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/document_cloud
-  market_status: generally_available
   terms:
   - literal: PDF Extract API
     term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/pdf_accessibility_auto_tag_api
   label: Adobe PDF Accessibility Auto-Tag API
-  description: Acrobat Services' API that automatically tags a PDF for accessibility — headings, reading order and
-    structure — and checks the result, bundled with the PDF Services API.
+  description: Adobe PDF Accessibility Auto-Tag API is an Acrobat Services API that uses AI to automatically tag PDFs for
+    accessibility—headings, reading order, and structure—and can generate a detailed accessibility report, available as part
+    of the Acrobat Services family and through Adobe PDF Services integrations.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/document_cloud
-  market_status: generally_available
   terms:
   - literal: PDF Accessibility Auto-Tag API
     term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/pdf_electronic_seal_api
   label: Adobe PDF Electronic Seal API
-  description: Acrobat Services' API that applies an organisation's electronic seal to a PDF with a certificate, to
-    establish the document's authenticity and origin at scale, bundled with the PDF Services API.
+  description: Adobe PDF Electronic Seal API is an Acrobat Services API that applies a tamper-evident electronic seal to PDFs
+    at scale using certificates from trust service providers on Adobe's Approved Trust List (AATL), helping verify document
+    identity and integrity for invoices, financial statements, and other regulated workflows, and is included with the PDF
+    Services API.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/document_cloud
-  market_status: generally_available
   terms:
   - literal: PDF Electronic Seal API
     term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/cascade_contractai_api
   label: Adobe Acrobat Analyzer API
-  description: Acrobat Sign's contract-intelligence API, listed under Acrobat Services, that uploads contracts, extracts
-    structured terms and clauses with AI, searches and filters across collections and answers questions over contracts; it
-    is an entitlement-gated feature of Acrobat Sign and Acrobat, not a separately sold Acrobat Services product.
+  description: Analyzer in Acrobat Studio is a GenAI document-intelligence capability for Acrobat and Acrobat Sign that provides
+    REST APIs to upload contracts and other documents, extract structured, cited attributes (such as terms and clauses), search
+    and filter across large collections, and integrate those insights into enterprise workflows.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/document_cloud
-  market_status: generally_available
   terms:
   - literal: Analyzer API
     term_type: short_form
     term_status: admitted
-  - literal: Cascade ContractAI API
-    term_type: codename
-    term_status: admitted
   - literal: Project Cascade
     term_type: codename
-    term_status: superseded
+    term_status: admitted

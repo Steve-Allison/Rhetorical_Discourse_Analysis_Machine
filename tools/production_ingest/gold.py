@@ -264,13 +264,6 @@ def _materials(real_root: Path, repository_root: Path) -> tuple[_Material, ...]:
         )
     materials.extend(
         (
-            _copy("markdown-gfm", SourceForm.MARKDOWN, repository_root / "tests/fixtures/markdown/gfm-rich.md", "code_raw_markup_markdown", "repeated_content"),
-            _generated_markdown("markdown-html", "code_raw_markup_markdown", "unicode_coordinates"),
-            _copy("markdown-eacl", SourceForm.MARKDOWN, real_root / "2024_eacl_long_171.md", "long_structured_prose", "repeated_content"),
-            _copy("markdown-cxo", SourceForm.MARKDOWN, real_root / "2026_cxo_pov_short_draft.md", "presentation_notes", "unicode_coordinates"),
-            _copy("docling-eacl", SourceForm.DOCLING_JSON, real_root / "2024_eacl_long_171.docling.json", "long_structured_prose", "repeated_content"),
-            _copy("docling-cxo", SourceForm.DOCLING_JSON, real_root / "2026_cxo_pov_short_draft.docling.json", "presentation_notes", "repeated_content"),
-            _copy("docling-sebl", SourceForm.DOCLING_JSON, real_root / "sebl_-_moving_premises_form_2024_8.docling.json", "ocr_heavy", "rich_nested_tables"),
             _copy("doclang-sebl", SourceForm.DOCLANG_XML, real_root / "sebl_-_moving_premises_form_2024_8.dclg", "ocr_heavy", "rich_nested_tables"),
             _copy("doclang-speakers", SourceForm.DOCLANG_XML, real_root / "thoughts_on_enablement_with_eyeful.dclg", "multi_speaker", "unicode_coordinates"),
             _generated_archive("doclang-archive-table", "rich_nested_tables", "repeated_content"),
@@ -341,23 +334,6 @@ def _write_deterministic_zip_member(archive: ZipFile, name: str, data: bytes) ->
     entry.create_system = 3
     entry.external_attr = 0o100644 << 16
     archive.writestr(entry, data)
-
-
-def _generated_markdown(source_id: str, *risks: str) -> _Material:
-    source = (
-        "# Unicode HTML\n\n"
-        "<article><p>Café 👩🏽‍💻 authored prose.</p><script>excluded()</script></article>\n\n"
-        "```python\nprint('side channel')\n```\n"
-    ).encode("utf-8")
-    return _Material(
-        source_id=source_id,
-        source_form=SourceForm.MARKDOWN,
-        source=None,
-        destination=PurePosixPath("sources") / f"{source_id}.md",
-        provenance=ProvenanceClass.NORMATIVE,
-        risks=tuple(risks),
-        generated=source,
-    )
 
 
 def _rs4_edus(path: Path) -> tuple[str, ...]:

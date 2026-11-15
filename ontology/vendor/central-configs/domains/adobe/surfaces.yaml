@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/surfaces
   title: Adobe — Surfaces
-  last_updated: '2026-10-02'
+  last_updated: '2026-10-18'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -17,7 +17,6 @@ surfaces:
   status: canonical
   surface_of: coe:entity/adobe/acrobat
   surface_form: desktop
-  market_status: generally_available
 - id: coe:entity/adobe/acrobat_web
   label: Adobe Acrobat (Web)
   description: The browser surface of Acrobat for viewing, editing, converting and signing PDFs without an install.
@@ -25,13 +24,12 @@ surfaces:
   status: canonical
   surface_of: coe:entity/adobe/acrobat
   surface_form: web
-  market_status: generally_available
   terms:
   - literal: DC Web
-    term_type: abbreviation
+    term_type: codename
     term_status: admitted
-  - literal: Acrobat online
-    term_type: full_form
+  - literal: Acrobat Web
+    term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/acrobat_mobile
   label: Adobe Acrobat (Mobile)
@@ -40,28 +38,31 @@ surfaces:
   status: canonical
   surface_of: coe:entity/adobe/acrobat
   surface_form: mobile
-  market_status: generally_available
   terms:
   - literal: Acrobat Reader mobile
+    term_type: short_form
+    term_status: admitted
+  - literal: Adobe Acrobat Reader mobile app
     term_type: full_form
     term_status: admitted
 - id: coe:entity/adobe/photoshop_web
   label: Adobe Photoshop (web)
-  description: The browser surface of Photoshop for editing PSDs and making quick generative edits without a desktop
-    install.
+  description: Photoshop on the web is a browser-based version of Photoshop that lets you open cloud documents and edit images
+    with many of Photoshop's most common tools and generative AI capabilities, directly in Chrome, Edge, or Firefox, without
+    installing the desktop app.
   home_domain: adobe
   status: canonical
   surface_of: coe:entity/adobe/photoshop
   surface_form: web
-  market_status: generally_available
 - id: coe:entity/adobe/illustrator_web
   label: Adobe Illustrator (web)
-  description: The browser surface of Illustrator for vector editing in lightweight and collaborative workflows.
+  description: Illustrator on the web (Beta) is a browser-based Illustrator experience that lets you create and edit vector
+    graphics using essential shape, path, typography, color, and collaboration tools, working with Creative Cloud-synced documents
+    from anywhere.
   home_domain: adobe
   status: canonical
   surface_of: coe:entity/adobe/illustrator
   surface_form: web
-  market_status: generally_available
 - id: coe:entity/adobe/lightroom_web
   label: Adobe Lightroom (web)
   description: The browser surface of Lightroom for viewing, culling and editing synced photos from any machine.
@@ -69,7 +70,6 @@ surfaces:
   status: canonical
   surface_of: coe:entity/adobe/lightroom
   surface_form: web
-  market_status: generally_available
 - id: coe:entity/adobe/premiere_mobile
   label: Adobe Premiere (Mobile)
   description: The mobile surface of Premiere for editing and publishing video on phones and tablets with the Premiere
@@ -78,4 +78,7 @@ surfaces:
   status: canonical
   surface_of: coe:entity/adobe/premiere_pro
   surface_form: mobile
-  market_status: generally_available
+  terms:
+  - literal: Premiere on mobile
+    term_type: full_form
+    term_status: admitted

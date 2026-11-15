@@ -259,9 +259,19 @@ class SdrtAnalysis(_ClosedModel):
     def validate_source(self, source: str) -> Self:
         """Prove every EDU quote against the submitted source without repairing offsets."""
 
+        errors: list[str] = []
         for unit in self.edus:
             if unit.end > len(source) or source[unit.start : unit.end] != unit.text:
-                raise GraphError(f"EDU {unit.unit_id!r} text does not equal source slice")
+                first = source.find(unit.text)
+                if first < 0:
+                    detail = "quotation has no literal occurrence in source"
+                elif first != source.rfind(unit.text):
+                    detail = "quotation has multiple literal occurrences"
+                else:
+                    detail = f"quotation occurs at [{first}, {first + len(unit.text)})"
+                errors.append(f"EDU {unit.unit_id!r} text does not equal source slice ({detail})")
+        if errors:
+            raise GraphError("; ".join(errors))
         return self
 
     def to_payload(self) -> dict[str, JsonValue]:

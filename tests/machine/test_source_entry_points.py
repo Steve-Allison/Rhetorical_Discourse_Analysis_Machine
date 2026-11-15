@@ -13,12 +13,12 @@ from rdam.ingest.contracts.source import SourceForm
 
 
 def test_file_and_bytes_bind_exact_payload(tmp_path: Path) -> None:
-    payload = b"# Evidence\n\nThe result follows.\n"
-    path = tmp_path / "evidence.md"
+    payload = b"<doclang><heading>Evidence</heading><text>The result follows.</text></doclang>"
+    path = tmp_path / "evidence.dclg"
     path.write_bytes(payload)
     requests = (
         AggregateRequest.for_source(path, (Technique.TOULMIN,)),
-        AggregateRequest.for_bytes(payload, SourceForm.MARKDOWN, "evidence.md", (Technique.TOULMIN,)),
+        AggregateRequest.for_bytes(payload, SourceForm.DOCLANG_XML, "evidence.dclg", (Technique.TOULMIN,)),
     )
     for request in requests:
         assert request.source.source_id.hex_digest == sha256(payload).hexdigest()

@@ -485,15 +485,9 @@ def _representation(
             if (uri := dict(child.attributes).get("uri")) is not None:
                 child_reference = uri
                 break
-        markdown_reference = (
-            match.group(1)
-            if item.text is not None
-            and (match := re.fullmatch(r"!\[[^\]]*\]\(([^)]+)\)", item.text.strip())) is not None
-            else None
-        )
         return MediaReferenceRepresentation(
             media_identity=item.item_id,
-            source_reference=child_reference or markdown_reference,
+            source_reference=child_reference,
             description=item.text,
         )
     if item.text is not None:

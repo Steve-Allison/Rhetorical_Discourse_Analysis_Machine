@@ -125,18 +125,20 @@ class OwnershipAuthority:
                 "python-dotenv",
                 "rfc8785",
                 "safetensors",
+                "dclq",
                 "doclang",
-                "isanlp",
                 "docling-core",
-                "markdown-it-py",
-                "mdit-py-plugins",
-                # The LLM boundary (006 FR-032): the Toulmin, Walton, SDRT, and PDTB providers
-                # are model-backed, so their client is production runtime, not tooling.
+                "ahocorasick-rs",
+                "python-sat",
+                # The LLM boundary (006 FR-032): LLM-backed providers require vendor SDKs
+                # at production runtime, not tooling.
                 "pydantic-ai-slim",
                 "starlette",
                 "uvicorn",
                 "h11",
                 "openai",
+                "anthropic",
+                "google-genai",
                 "httpx2",
                 # Required by pydantic-ai-slim's OpenAI runtime extra.
                 "tiktoken",

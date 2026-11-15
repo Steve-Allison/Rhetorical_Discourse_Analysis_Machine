@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/brand
   title: Adobe — Brand Identity
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-18'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -11,8 +11,10 @@ domain: adobe
 entity_collections:
 - id: coe:artifact/adobe/brand_identity
   label: Adobe Brand Identity
-  description: The named parts of Adobe's corporate brand — its voice, its visual style, and the colour, typeface, marks and
-    template treatments that carry it; their values, rules and markup are library records about these entities.
+  description: Adobe Brand Identity is Adobe's unified visual and verbal system—our mission and brand belief, brand personality
+    and voice, color palette, Adobe Clean typeface, marks (wordmark and icon), patterns, imagery, and templates—governed by
+    corporate and product brand guidelines to ensure consistent, on-brand expression across all channels and surfaces, including
+    structured brand libraries used by AI and design tools.
   last_updated: '2026-09-23'
   home_domain: adobe
   status: canonical

@@ -9,38 +9,49 @@ Format adapters remain private. `parse_markdown`, `parse_docling`,
 `parse_doclang`, their historical result envelopes, and format-owned caches are
 not public aliases.
 
-## Source forms and optional packages
+## Source forms and core dependencies
 
 | Form | Construction | Provider evidence |
 |---|---|---|
-| `text` | `SourceArtifact.from_text()` or explicit bytes/path | exact UTF-8 text and source spans |
+| `text` | `SourceArtifact.from_text()` or `.txt` / `.text` path/bytes | synthesized into namespaced `<doclang>` XML; exact UTF-8 text and source spans |
 | `edus` | `SourceArtifact.from_edus()` | exact indivisible EDU sequence |
-| `markdown` | path or bytes, `formats` extra | GFM blocks, hierarchy, lists, tables, HTML, metadata, images, and source paths |
-| `docling_json` | explicit/inferred `.docling.json`, `formats` extra | validated items, layers, groups, tables, pages, boxes, captions, provenance, and provider attributes |
-| `doclang_xml` | `.dclg` path or bytes, `formats` extra | supported element heads, layers, tables, lists, notes, captions, metadata, links, paths, and locations |
-| `doclang_archive` | `.dclx` path or bytes, `formats` extra | validated OPC members, document XML, asset identities, and archive-member anchors |
+| `doclang_xml` | `.dclg` / `.dclg.xml` path or bytes | `dclq` `LoadedDocument` XPath/page/section indexing + `doclang` XSD/Schematron-validated elements, layers, tables, lists, notes, captions, descriptions, `<track>` turns, metadata, links, and locations |
+| `doclang_archive` | `.dclx` path or bytes | validated OPC members, `document.xml`, asset identities, and archive-member anchors |
 
-Core import and capability discovery do not import the optional adapters.
-Attempting an unavailable form produces `source_adapter_distribution_unavailable`
-with the required `formats` extra, never a raw `ModuleNotFoundError`.
+`dclq` (`>=2.107.0,<3`) and `doclang[schematron-saxon]` ship in core
+`[project.dependencies]` (`pyproject.toml:44-45`); raw `DoclingDocument` JSON and
+Markdown ingestion (`_inventory_docling`, `rdam.rst.markdown`, and the separate
+`formats` extra) were retired in `rdam` `6.1.0` (`rdam/ingest/contracts/source.py:17-21`).
 
-Docling Core always tracks its latest release: the range is `>=<latest>,<3`, so
-`pixi update` picks up every new minor release. DocLang tracks upstream `main`: the
-`formats` extra installs `doclang` from git at the commit `tests/fixtures/doclang/`
-mirrors, so the validator and the conformance fixtures always come from one commit,
-and the source contract records it (`upstream_version` `0.7.3+git.<commit>`). Status
-checked on 2026-10-09: Docling Core 2.101.1 ([PyPI](https://pypi.org/project/docling-core/))
-and DocLang `main` at `7f53133`. Do not equate locked compatibility with
-latest-upstream conformance.
+DocLang tracks upstream `main` by immutable commit: `pyproject.toml:45` and
+`tests/fixtures/doclang/upstream-manifest.json` both pin
+`ae8ad5490b9b03b344e3e49dcb0f6f2209795de6` (`v0.9.0`, 62 valid specimens and 78
+invalid specimens), and the source contract records `upstream_version`
+(`0.9.0+git.ae8ad5490b9b03b344e3e49dcb0f6f2209795de6` at `rdam/ingest/_doclang.py:74-80`).
+`dclq` tracks its latest `2.x` release (`>=2.107.0,<3`). Status verified on
+2026-11-15. Do not equate locked compatibility with latest-upstream conformance.
+
+Only non-content `furniture`, decorative picture wrappers (`logo`, `icon`,
+`qr_code`, `barcode`, `stamp`, `signature`, `decorative` at
+`rdam/ingest/_doclang.py:54-56`), and operational provenance are pruned from
+substantive projections. Centering and all ten LLM-capable providers consume one
+unified XPath-anchored stream (`SUBSTANTIVE_CLASSES` at
+`rdam/ingest/requirements.py:10-24`) admitting titles, headings, paragraphs,
+list items, turns, captions, VLM `<description>` blocks (`picture_description`),
+speaker `<notes>`, code, formulas, tables, cells, and fields, enriched by the
+shared `LinguisticSubstrate` (`rdam/ingest/substrate.py:330-346`). Neural
+`RstProvider` uses `AUTHORED_PROSE_V1` so trained prose segmenters and tree
+decoders receive prose, headings, list items, and turns while retaining tables,
+notes, code, formulas, and visual descriptions as receipted side channels.
 
 A DocLang `<track>` (a time-aligned media transcript) decodes into speaker turns:
 each turn's text is primary `turn` content, attributed to its `<voice>` speaker or
 explicitly unresolved, with its cue block's inclusive start and end milliseconds in
 `cue_start_ms` / `cue_end_ms`. A `<chapter>` is a heading placed before its cue's
-text; `<cover>`, `<frame>` and `<audio>` are retained media with their source
-references.
-The normative sources are the [Docling model](https://github.com/docling-project/docling-core/blob/main/docling_core/types/doc/document.py)
-and [DocLang specification](https://github.com/doclang-project/doclang/blob/main/spec.md).
+text; `<cover>`, `<frame>`, and `<audio>` are retained media with their source
+references (`rdam/ingest/_doclang.py:147-160,310-336`).
+The normative upstream authority is the
+[DocLang specification](https://github.com/doclang-project/doclang/blob/main/spec.md).
 Fixture schemas and RDAM's own v3 envelope are independently versioned.
 
 ## Prepare without inference
@@ -51,8 +62,8 @@ from pathlib import Path
 from rdam.ingest import ProductionIngestor, SourceArtifact
 
 source = SourceArtifact.from_path(
-    Path("example.md"),
-    original_source="urn:example:markdown",
+    Path("tests/fixtures/doclang/real_world/change-of-tenancy.dclg"),
+    original_source="urn:example:doclang",
 )
 prepared = ProductionIngestor().prepare(source)
 
@@ -73,12 +84,14 @@ boundaries, plan, exact coverage, and warnings. `execution` contains only
 observed adapter and timing facts. The semantic digest excludes execution
 variation.
 
-Every valid inventory item has exactly one final disposition:
+Every valid inventory item has a typed `DispositionDecision`
+(`rdam/ingest/contracts/source.py:64-70`):
 
 - `primary` contributes source text to analysis;
-- `retained` remains accessible as a typed value;
-- `excluded` records a stable reason without pretending the item vanished;
-- `duplicate` links to exactly one canonical item.
+- `retained` remains accessible as a typed non-primary value;
+- `transformed` records normalized or linearised representations;
+- `duplicate` links to exactly one primary item;
+- `rejected_invalid` records an invalid source item.
 
 Representations are closed typed variants for text, tables and cells, lists,
 metadata, annotations, media references, structure, cross-references, and

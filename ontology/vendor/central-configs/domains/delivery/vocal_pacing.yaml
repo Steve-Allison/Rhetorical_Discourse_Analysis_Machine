@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/delivery/vocal_pacing
   title: Delivery — Vocal Pacing
-  last_updated: '2026-09-02'
+  last_updated: '2026-10-11'
   authority: Central_Configs
   scope: domain
   ontology_domain: delivery
@@ -26,5 +26,68 @@ entity_collections:
     home_domain: delivery
     edges: []
     status: canonical
+  - id: coe:entity/vocal_delivery
+    label: Vocal Delivery
+    description: The voice as a persuasion instrument — the four acoustic pillars, measurable benchmarks, pause science
+      and diagnostic speaker archetypes.
+    home_domain: delivery
+    status: canonical
+    terms:
+    - literal: Intonational Phrase
+      term_type: full_form
+      term_status: admitted
+    - literal: Vocal Fry
+      term_type: full_form
+      term_status: admitted
+    - literal: Uptalk
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - vocal delivery
+  - id: coe:entity/voice_quality_measurement
+    label: Voice-Quality Measurement
+    description: Which acoustic voice-quality indices are actually validated, what they measure, and why a clinical
+      dysphonia score is the wrong tool for coaching.
+    home_domain: delivery
+    status: canonical
+    terms:
+    - literal: CSID
+      term_type: initialism
+      term_status: admitted
+    - literal: AVQI
+      term_type: initialism
+      term_status: admitted
+    - literal: ABI
+      term_type: initialism
+      term_status: admitted
+    - literal: CPP
+      term_type: initialism
+      term_status: admitted
+    edges: []
+    examples:
+    - voice-quality measurement
+    - voice quality measurement
+  - id: coe:entity/speech_rate
+    label: Speech Rate and Pacing
+    description: Delivery speed as a reception-side variable — the bandwidth gap, comprehension and persuasion curves,
+      accent and playback effects, and pacing drills.
+    home_domain: delivery
+    status: canonical
+    terms:
+    - literal: Speech rate
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/speech_rate
+      predicate: coe:specialises
+      object_id: coe:entity/target_speaking_rate
+      relationship_weight: expected
+      description: Speech-rate science informs the target speaking rate bands used in delivery rubrics.
+      statement_id: coe:edge/speech-rate-specialises-target-speaking-rate
+      home_domain: delivery
+    examples:
+    - speech rate and pacing
+    - speech rate
   home_domain: delivery
   status: canonical

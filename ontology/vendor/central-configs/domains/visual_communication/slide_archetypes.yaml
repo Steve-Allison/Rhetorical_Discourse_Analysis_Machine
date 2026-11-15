@@ -505,7 +505,7 @@ entity_collections:
       statement_id: coe:edge/9d27a5ec8b8a61e2aff22e8d
       home_domain: visual_communication
     - subject_id: coe:entity/video_shot_type
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/content_slide
       relationship_weight: expected
       description: Content slides are supported by video shot types — side-by-side lecture framing places the presenter alongside
@@ -513,7 +513,7 @@ entity_collections:
       statement_id: coe:edge/478a7436fba25b7411578ba7
       home_domain: visual_communication
     - subject_id: coe:entity/video_shot_type
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/data_proof_slide
       relationship_weight: expected
       description: Data proof slides are supported by specific video shot types — green screen compositing shows charts and
@@ -577,7 +577,7 @@ entity_collections:
       statement_id: coe:edge/b812b17ba0361dbef36243d0
       home_domain: visual_communication
     - subject_id: coe:entity/video_edit_transition
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/progressive_disclosure_marker
       relationship_weight: expected
       description: Progressive disclosure is supported by video edit transitions that chunk content into short chapters
@@ -855,7 +855,7 @@ entity_collections:
       statement_id: coe:edge/4184e5467e495bf87ae05acf
       home_domain: visual_communication
     - subject_id: coe:entity/storyboard_element
-      predicate: coe:supports
+      predicate: coe:contains
       object_id: coe:entity/script_direction
       relationship_weight: required
       description: Script directions are supported by storyboard elements — storyboards contain full on-screen text, voice-over
@@ -1029,7 +1029,7 @@ entity_collections:
       statement_id: coe:edge/3f5644f14ea137e1a7cf2bc6
       home_domain: visual_communication
     - subject_id: coe:entity/structural_slide
-      predicate: coe:supports
+      predicate: coe:contains
       object_id: coe:entity/narrative_hook
       relationship_weight: expected
       description: Narrative hooks are supported by structural slides which provide the visual scaffolding (agenda, section
@@ -1038,7 +1038,7 @@ entity_collections:
       statement_id: coe:edge/680dee13fb53156939a7a359
       home_domain: visual_communication
     - subject_id: coe:entity/structural_slide
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/progressive_disclosure_marker
       relationship_weight: expected
       description: Progressive disclosure is supported by structural slides that serve as chapter headings and visual signposts
@@ -1056,7 +1056,7 @@ entity_collections:
       statement_id: coe:edge/a4c4f89a5658f1b9cc19b2da
       home_domain: visual_communication
     - subject_id: coe:entity/structural_slide
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/transition_marker
       relationship_weight: expected
       description: Transition markers are supported by structural slides which provide the visual counterpart to verbal transitions
@@ -1127,7 +1127,7 @@ entity_collections:
       statement_id: coe:edge/42aeb2e2787d75f77b1de661
       home_domain: visual_communication
     - subject_id: coe:entity/data_proof_slide
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/value_proposition
       relationship_weight: expected
       description: Value propositions are supported by data proof slides which provide the statistical evidence and business
@@ -1277,7 +1277,7 @@ entity_collections:
     - read-ahead document
   - edges:
     - subject_id: coe:entity/functional_slide
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/call_to_action
       relationship_weight: expected
       description: Calls to action are supported by functional slides which provide the interactive mechanisms (QR codes,
@@ -1376,7 +1376,7 @@ entity_collections:
       statement_id: coe:edge/bcb359758e8f4b996a050433
       home_domain: visual_communication
     - subject_id: coe:entity/chart_type
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/claim
       relationship_weight: required
       description: Claims are supported by chart types that provide visual evidence — bar charts, line graphs, and scatter
@@ -1418,7 +1418,7 @@ entity_collections:
       statement_id: coe:edge/fb5147c722cb4ae63df12629
       home_domain: visual_communication
     - subject_id: coe:entity/chart_type
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/logos_appeal
       relationship_weight: expected
       description: Logos appeals in data storytelling are supported by chart types that transform raw data into interpretable
@@ -1477,7 +1477,7 @@ entity_collections:
       statement_id: coe:edge/1564c6a1363eb382746232d8
       home_domain: visual_communication
     - subject_id: coe:entity/layout_pattern
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/chart_type
       relationship_weight: expected
       description: Chart types depend on layout patterns for proper spatial positioning and sizing within slide compositions
@@ -1602,7 +1602,7 @@ entity_collections:
       statement_id: coe:edge/56440b51d846d09e9f3de534
       home_domain: visual_communication
     - subject_id: coe:entity/visual_element
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/analogy
       relationship_weight: expected
       description: Analogies are supported by visual elements — visual metaphors, diagrams, and illustrations make abstract
@@ -1610,7 +1610,7 @@ entity_collections:
       statement_id: coe:edge/b2d1d90148d763bcdfb60f76
       home_domain: visual_communication
     - subject_id: coe:entity/visual_element
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/call_to_action
       relationship_weight: expected
       description: Calls to action are supported by visual elements — prominent buttons, directional cues, and high-contrast
@@ -1626,7 +1626,7 @@ entity_collections:
       statement_id: coe:edge/759f64afe6ceddaa7c7b248c
       home_domain: visual_communication
     - subject_id: coe:entity/visual_element
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/engagement_dimension
       relationship_weight: expected
       description: Engagement scoring is supported by visual elements — well-designed icons, photographs, diagrams, and infographics
@@ -1642,7 +1642,7 @@ entity_collections:
       statement_id: coe:edge/19ac6760ab0386035ddfec5e
       home_domain: visual_communication
     - subject_id: coe:entity/visual_element
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/storyboard_element
       relationship_weight: optional
       description: Storyboard elements for high-fidelity digital narratives are supported by low-fidelity sketchnote visual
@@ -1962,7 +1962,7 @@ entity_collections:
       statement_id: coe:edge/6d5d82cbb1cc225fdc7cbca7
       home_domain: visual_communication
     - subject_id: coe:entity/design_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/cognitive_load_dimension
       relationship_weight: expected
       description: Cognitive load dimension scoring is supported by design principles (C.R.A.P. — Contrast, Repetition, Alignment,
@@ -2288,7 +2288,7 @@ entity_collections:
       statement_id: coe:edge/d71400b0f84df1ff3511cce1
       home_domain: visual_communication
     - subject_id: coe:entity/accessibility_feature
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/accessibility_dimension
       relationship_weight: required
       description: Accessibility scoring dimension is supported by accessibility features including WCAG contrast ratios and
@@ -2501,7 +2501,7 @@ entity_collections:
       statement_id: coe:edge/e8f876f761838b4f6ea4c7a7
       home_domain: visual_communication
     - subject_id: coe:entity/semiotic_arrangement
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/visual_demonstration
       relationship_weight: expected
       description: Visual demonstrations depend on semiotic arrangement for structural meaning — Elaboration mode clarifies
@@ -2671,7 +2671,7 @@ entity_collections:
       statement_id: coe:edge/3b5f9e6a9ac1c000a2ba00e4
       home_domain: visual_communication
     - subject_id: coe:entity/visual_narrative_element
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/pedagogical_sequence_marker
       relationship_weight: expected
       description: Pedagogical sequencing is supported by the three synchronized arcs narrative visual and emotional progression

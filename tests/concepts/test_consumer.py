@@ -11,18 +11,24 @@ from rdam.ingest.contracts.source import SourceArtifact
 
 
 def test_consumer_reads_json_and_jsonl_and_selects_identifier(tmp_path: Path) -> None:
-    result = link_source(SourceArtifact.from_text("Adobe Analytics. Adobe Firefly.", source_name="test"), ConceptIndex.load())
+    result = link_source(
+        SourceArtifact.from_text("Adobe Experience Manager. Adobe Firefly.", source_name="test"),
+        ConceptIndex.load(),
+    )
     for name, payload in (("links.json", serialize(result)), ("mentions.jsonl", export_jsonl(result))):
         path = tmp_path / name
         path.write_bytes(payload)
         assert tuple(records(path))
-        run = subprocess.run([sys.executable, "examples/concept_passages.py", str(path), "coe:entity/adobe/analytics"],
+        run = subprocess.run([sys.executable, "examples/concept_passages.py", str(path), "coe:entity/adobe/experience_manager"],
                              capture_output=True, text=True, check=False)
         assert run.returncode == 0, run.stderr
-        assert '"quote": "Adobe Analytics"' in run.stdout
+        assert '"quote": "Adobe Experience Manager"' in run.stdout
         assert '"status": "pending"' in run.stdout
-        # The label and, overlapping it, Central's short-form term "Analytics".
-        assert [json.loads(line)["quote"] for line in run.stdout.splitlines()] == ["Adobe Analytics", "Analytics"]
+        # The label and, overlapping it, Central's short-form term "Experience Manager".
+        assert [json.loads(line)["quote"] for line in run.stdout.splitlines()] == [
+            "Adobe Experience Manager",
+            "Experience Manager",
+        ]
     old = tmp_path / "old.jsonl"
     old.write_text('{"schema_version":"5.2","slug":"old-card"}\n')
     assert tuple(records(old)) == ()

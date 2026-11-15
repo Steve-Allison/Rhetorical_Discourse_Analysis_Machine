@@ -18,7 +18,6 @@ from collections import defaultdict
 import hashlib
 from io import BytesIO
 from pathlib import PurePosixPath
-import re
 import stat
 from urllib.parse import unquote, urlsplit
 from zipfile import BadZipFile, ZipFile, ZipInfo
@@ -41,7 +40,7 @@ _RELATIONSHIPS_NAMESPACE = "http://schemas.openxmlformats.org/package/2006/relat
 _DOCUMENT_CONTENT_TYPE = "application/vnd.doclang.document+xml"
 _RELATIONSHIPS_CONTENT_TYPE = "application/vnd.openxmlformats-package.relationships+xml"
 _DOCUMENT_RELATIONSHIP_TYPE = "http://doclang.ai/ns/package/2026/relationships/document"
-_PAGE_IMAGE = re.compile(r"pages/([1-9][0-9]*)\.(png|jpg|jpeg|webp)", re.IGNORECASE)
+_PAGE_IMAGE_SUFFIXES = frozenset({".png", ".jpg", ".jpeg", ".webp"})
 
 
 class XmlElement(Protocol):
@@ -122,6 +121,16 @@ def local_path(element: XmlElement) -> str:
         parts.append(f"/{my_local}[{pos}]")
         cur = parent
     return "".join(reversed(parts))
+
+
+def to_dclq_xpath(path: str) -> str:
+    """Convert local_path (/doclang[1]/heading[2]) to dclq's namespaced XPath (/d:doclang/d:heading[2])."""
+    segments = [segment for segment in path.split("/") if segment]
+    converted = [
+        "d:doclang" if index == 0 and segment == "doclang[1]" else f"d:{segment}"
+        for index, segment in enumerate(segments)
+    ]
+    return "/" + "/".join(converted)
 
 
 def local_path_index(root: XmlElement) -> dict[XmlElement, str]:
@@ -283,15 +292,33 @@ def _validate_document_references(root: XmlElement, member_names: frozenset[str]
             raise InvalidDoclangError(f"DocLang archive references a missing asset part: {decoded_path!r}")
 
 
+def _parse_page_image_number(member_name: str) -> int | None:
+    path = PurePosixPath(member_name)
+    if len(path.parts) != 2 or path.parts[0] != "pages":
+        return None
+    stem = path.stem
+    suffix = path.suffix.lower()
+    if (
+        not stem
+        or stem.startswith("0")
+        or not stem.isascii()
+        or not stem.isdigit()
+        or suffix not in _PAGE_IMAGE_SUFFIXES
+        or path.name != f"{stem}{path.suffix}"
+    ):
+        return None
+    return int(stem)
+
+
 def _validate_page_images(root: XmlElement, member_names: frozenset[str]) -> None:
     page_count = 1 + sum(1 for child in root if isinstance(child.tag, str) and local_name(child) == "page_break")
     for member_name in member_names:
         if not member_name.startswith("pages/"):
             continue
-        match = _PAGE_IMAGE.fullmatch(member_name)
-        if match is None:
+        page_number = _parse_page_image_number(member_name)
+        if page_number is None:
             raise InvalidDoclangError(f"DocLang page image has a non-conforming part name: {member_name!r}")
-        if int(match.group(1)) > page_count:
+        if page_number > page_count:
             raise InvalidDoclangError(
                 f"DocLang page image {member_name!r} exceeds the document page count {page_count}"
             )
@@ -328,4 +355,5 @@ __all__ = [
     "local_name",
     "local_path",
     "local_path_index",
+    "to_dclq_xpath",
 ]

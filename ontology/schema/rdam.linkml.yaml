@@ -42,8 +42,8 @@ classes:
         identifier: true
         required: true
         range: string
-        pattern: "^(rst|pdtb|sdrt|toulmin|walton|dung|ibis)$"
-        description: The boundary directory name (FR-002); never an importable package name.
+        pattern: "^(rst|centering|pdtb|sdrt|speech_acts|classical_rhetoric|argument_mining|toulmin|walton|pragma_dialectics|ibis|aspic|dung)$"
+        description: The boundary directory name; never an importable package name.
       framework:
         required: true
         range: uriorcurie
@@ -51,7 +51,11 @@ classes:
       requires_structured_input:
         required: true
         range: boolean
-        description: True for techniques that analyse a supplied structure rather than raw text (FR-016, FR-017).
+        description: True for techniques that exclusively analyse a supplied or derived formal structure rather than raw text.
+      accepts_structured_input:
+        required: false
+        range: boolean
+        description: True for techniques that accept caller-supplied structured input either exclusively or alongside source-document extraction.
       formalisms:
         multivalued: true
         range: FormalismBinding

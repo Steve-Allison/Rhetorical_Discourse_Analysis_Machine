@@ -5,13 +5,16 @@ metadata:
   type: reference
 ---
 
-> **Historical note — current status reconciled 2026-09-06.** The observations,
-> proposed APIs and open questions below describe the dated work recorded here.
-> They are not current installation or implementation instructions. The current
-> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
-> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
-> and [documentation guide](../../docs/README.md). Original decisions and measurements
-> remain below for traceability; eRST work is suspended.
+> **Historical note — current status reconciled 2026-11-15.** The observations,
+> proposed APIs and open questions below describe the initial 2026-05-15 v0.5
+> investigation. As of `rdam` `6.1.0` (`pyproject.toml:44-45`), `dclq>=2.107.0,<3`
+> and `doclang[schematron-saxon]` at commit `ae8ad5490b9b03b344e3e49dcb0f6f2209795de6`
+> (`v0.9.0`, including `DocLangXDocument` `.dclx` archive support, `<description>`,
+> `<summary>`, `<track>`, and 62 valid / 78 invalid conformance specimens) ship in
+> core dependencies under `rdam.ingest` (`rdam/ingest/_doclang.py:280-379`). See the
+> [current ingest guide](../../docs/production-source-ingest.md) and
+> [documentation guide](../../docs/README.md). Original v0.5 notes remain below for
+> traceability; eRST work is suspended.
 
 Investigated 2026-05-15 by reading the **full** `spec.md` (3734 lines) at <https://github.com/doclang-project/doclang>, the `doclang` Python package source (`__init__.py`, `validation.py`, `cli.py`), and two real `.dclg.xml` fixtures from `tests/data/valid/`. Line numbers below cite `spec.md` on the `main` branch.
 

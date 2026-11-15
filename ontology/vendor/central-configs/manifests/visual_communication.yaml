@@ -14,3 +14,4 @@ modules:
 - coe:module/visual_communication/presentation_quality
 - coe:module/visual_communication/slide_archetypes
 - coe:module/visual_communication/terminology
+- coe:module/visual_communication/media_production

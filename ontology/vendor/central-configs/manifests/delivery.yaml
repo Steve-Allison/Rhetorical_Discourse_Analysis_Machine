@@ -12,3 +12,4 @@ modules:
 - coe:module/delivery/presence_rubrics
 - coe:module/delivery/terminology
 - coe:module/delivery/vocal_pacing
+- coe:module/delivery/media_delivery

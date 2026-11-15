@@ -10,69 +10,94 @@ paths:
 
 # Architecture
 
-## The machine (features 006–019; owner rulings 2026-09-02 and 2026-09-04)
+## The machine (features 006–019 and 2026-11-15 13-technique `dclq`/DocLang runtime)
 
 `specs/006-rhetorical-discourse-machine/` is the decision-closed authority for the
-machine's rules; `specs/007-…` to `specs/016-…` record what was built against them; the
+machine's core rules; `specs/007-…` to `specs/021-…` record subsequent features; the
 owner rulings of 2026-09-02 on layout are recorded in
 [`specs/010-repository-migration/spec.md`](../../specs/010-repository-migration/spec.md)
-and supersede the 006 boundary roster. Where a rule here and a feature disagree, the
-feature wins.
+and supersede the 006 boundary roster; the 2026-11-15 expansion unified source ingestion
+around `dclq` + DocLang (`6.1.0`) and expanded the composition to thirteen production
+technique boundaries (`rdam/frameworks.py:55-69`, `rdam/composition.py:14-73`).
 
 ### One package, one wheel
 
 ```text
-rdam/                  the distribution `rdam` and the import package `rdam` — the machine
-├── contracts.py       provider/formalism declarations, capability states, native results, outcomes
-├── machine.py         Machine.capabilities() (side-effect-free), Machine.analyse() (N outcomes)
-├── cli.py, http.py    unified command and optional loopback /v1/ interfaces
-├── composition.py     lazy registration of the seven production providers
-├── ingest/            shared source inventory, provider projections, capacity plans and anchors
-├── frameworks.py      Technique, coe: identities from resources/framework-identities.json
-├── rst/               RST provider: parser, converter, viewer, provider.py
-├── pdtb/              PDTB-3 native relations and LLM-backed provider
-├── sdrt/              native SDRS graphs and LLM-backed provider
-├── toulmin/           native Toulmin layouts and LLM-backed provider
-├── walton/            native Walton scheme instances and LLM-backed provider
-├── dung/              Dung provider: semantics.py, provider.py
-└── ibis/              IBIS provider: grammar.py, provider.py
-ontology/              vendored Central distribution + rdam LinkML profile (repository, not shipped)
-workbench/             the one experimentation root; never imported by rdam
+rdam/                        the distribution `rdam` and the import package `rdam` — the machine
+├── contracts.py             provider/formalism declarations, capability states, derivations, xpath_alignment, outcomes
+├── machine.py               Machine.capabilities() (side-effect-free), Machine.prepare(), Machine.analyse() (2-wave DAG)
+├── _llm.py, _grounding.py   vendor KV-cache + Google v1 Interactions adapters, single-turn QuoteRef grounder
+├── cli.py, http.py          unified command and optional loopback /v1/ interfaces
+├── composition.py           lazy registration of the thirteen production providers
+├── ingest/                  dclq + DocLang 0.9 inventory, substrate.py, provider projections, plans, and anchors
+├── concepts/                Rust ahocorasick_rs lexical linker over Central semantic resources
+├── frameworks.py            Technique, coe: identities from resources/framework-identities.json
+├── rst/                     RST provider: DMRST/UniRST parsers, converter, viewer, provider.py
+├── centering/               deterministic Centering Theory & Entity Grid provider
+├── pdtb/                    PDTB-3 native relations and LLM-backed provider
+├── sdrt/                    native SDRS graphs, DISCOR polarity, RFC validator, and LLM-backed provider
+├── speech_acts/             Searle & Vanderveken illocutionary acts, felicity conditions, and uptake provider
+├── classical_rhetoric/      Aristotelian pisteis, enthymemes, stasis, kairos, and figures provider
+├── argument_mining/         Inference Anchoring Theory (IAT) propositions and RA/CA/MA/PA provider
+├── toulmin/                 native Toulmin layouts, source-anchored rebuttals, and LLM-backed provider
+├── walton/                  12 discriminated Walton scheme instances, critical questions, and provider
+├── pragma_dialectics/       four dialectical stages, strategic manoeuvring, and ten-rule fallacy provider
+├── ibis/                    dual-mode IBIS provider: gIBIS grammar.py + DocLang extraction
+├── aspic/                   dual-mode ASPIC+ provider: structured theory.py + DocLang extraction
+└── dung/                    Dung provider: CaDiCaL SAT semantics.py, Wave-2 compilers.py, provider.py
+ontology/                    vendored Central distribution + rdam LinkML profile (repository, not shipped)
+workbench/                   the one experimentation root; never imported by rdam
 tools/production_boundary/   boundary inspection, reproducible build, validation, clean install
 ```
 
 - Every technique is a real sub-package of `rdam`, created with its provider. The
-  supported `production_machine()` composition registers exactly all seven.
+  supported `production_machine()` composition registers all thirteen boundaries in
+  `BOUNDARY_TECHNIQUES` order (`rdam/frameworks.py:55-69`, `rdam/composition.py:47-73`).
 - No top-level import name other than `rdam` is ever created (`rst`, `dung`, `ibis`, … are
   never packages; `ibis` would shadow the PyPI Ibis dataframe library).
 - Exactly one `workbench/`. Production code never imports `workbench.*`, directly or
   transitively, and no wheel or sdist member carries a `workbench/` path (006 FR-006).
   Enforcement: `tools.production_boundary` walks imports from `rdam` and admits only the
-  `rdam/` import root in a wheel — `pixi run -e default production-boundary` (source boundary; built archives require artifact validation).
+  `rdam/` import root in a wheel — `pixi run -e default production-boundary` (source
+  boundary; built archives require artifact validation).
 - Release tooling derives distribution name, version, and package directory from
   `pyproject.toml` (`tools/production_boundary/identity.py`); no tool restates them.
 
 ### Capability reports checked local prerequisites
 
-`rdam.ingest` owns source material for every technique. `rdam.rst.ingest` has no
-compatibility shim. Generic machine orchestration imports no technique package;
-the separate composition module imports providers only when called. Requests for
-files or bytes carry immutable source material. Inventory and default disposition
-run once, followed by one pure projection per distinct content requirement.
+`rdam.ingest` owns source material for every technique across the four supported
+`SourceForm` values (`text`, `edus`, `doclang_xml`, `doclang_archive`;
+`rdam/ingest/contracts/source.py:17-21`), backed by `dclq` (`LoadedDocument`, `NS`) and
+`doclang` (`pyproject.toml:44-45`). `rdam.rst.ingest`, `_inventory_docling`, and
+`rdam.rst.markdown` have no compatibility shims. Generic machine orchestration imports no
+technique package; `rdam/composition.py` imports providers lazily when called.
 
-Text providers declare admitted classes, representation transformations, capacity,
-boundary preferences, normalization and speaker needs. Dung and IBIS declare no
-content requirement and receive no projection. The aggregate carries the complete
-inventory, distinct projections, transformation records and speaker coverage.
+Inventory and default disposition run once per source, followed by a shared
+`LinguisticSubstrate` (`rdam/ingest/substrate.py:330-346` — Razdel sentences/tokens,
+Rust `ahocorasick_rs` discourse/epistemic/speech-act cues, and `rdam.concepts` lexical
+mentions) and one pure projection per distinct content requirement:
 
-Execution is in-process with four workers by default and request-ordered results.
-Provider-declared safety controls locking; locks never retain provider instances.
-RST CPU/MPS safety, including cold initialization, is measured in Feature 017's
-`evidence/parser-concurrency.md`. Other devices are serialized. eRST execution is workbench-only.
-Typed failures preserve other successes; non-provider exceptions propagate.
-The optional cache binds source, projection, provider, contract, model and
-instructions. Analytical identity excludes explicitly declared execution fields;
-native artifact integrity still covers those fields.
+- Centering and all ten LLM-capable text providers share `SUBSTANTIVE_CLASSES`
+  (`rdam/ingest/requirements.py:10-24`), admitting prose, headings, lists, dialogue turns,
+  captions, VLM `<description>` blocks, speaker `<notes>`, code, formulas, tables, cells,
+  and fields into one XPath-anchored stream.
+- Neural `RstProvider` uses `AUTHORED_PROSE_V1`, keeping tables, code, formulas, pictures,
+  notes, and machine-generated descriptions as receipted side channels.
+- `DungProvider` declares no content requirement and receives no text projection
+  (`rdam/dung/provider.py:85-109`). Dual-mode `IbisProvider` and `AspicProvider` bypass
+  text projections when caller-supplied `StructuredInput` is given and consume the
+  substantive projection when analysing a source document (`rdam/frameworks.py:75-79`).
+
+Execution is in-process with four workers by default (bounded 1–13) and request-ordered
+results (`rdam/machine.py`). Wave-1 techniques execute concurrently (with a Prefix-Warmth
+Coordinator in `rdam/_llm.py` warming shared vendor KV caches across OpenAI
+`prompt_cache_key`, Anthropic `cache_control`, and Google GA `v1` Interactions
+`aclient.interactions.create(..., store=False)`). When `AggregateRequest.derivations`
+specifies `DerivationSpec` (`from_aspic`, `from_argument_mining`, `from_ibis`, or
+`from_toulmin_walton`), Wave-2 `DungProvider` compiles the completed Wave-1 payload(s)
+deterministically (`rdam/dung/compilers.py:213-236`) and records exact `lineage`. Across
+all aligned outcomes, `AggregateAnalysis.xpath_alignment` indexes findings by canonical
+`dclq` XPath (`rdam/contracts.py:508`).
 
 > The promotion-evidence gate (feature 008) was removed on 2026-09-02 by owner ruling. It
 > was never requested and it reported working parsers as `unavailable`. Capability is now
@@ -81,37 +106,45 @@ native artifact integrity still covers those fields.
 - `rdam.rst.provider.RstProvider` is `available` when the configured `hf_model_version` is
   one the façade knows how to load, or when the named local release validates.
   The check loads no model and touches no network; the parser is built on first `analyse`.
-- `rdam.dung` and `rdam.ibis` are exact and deterministic, so they are `available`
-  whenever imported. Each still reports the digest of its own source files as
-  `provenance.source_revision`.
-- `rdam.pdtb`, `rdam.sdrt`, `rdam.toulmin`, and `rdam.walton` are available when their
-  configured LLM model resolves. Declarations do not construct an LLM client; model
-  proposals pass each technique's deterministic native validator before becoming results.
-  Discovery does not test credentials against a remote service or guarantee inference success.
+- `rdam.centering` (`entity-grid-v1`) and `rdam.dung` (`cadical-sat-v2`, capacity 128 via
+  `python-sat` CaDiCaL 1.9.5) are exact and deterministic, so they are `available`
+  whenever imported.
+- `rdam.ibis` (`gibis-v2`) and `rdam.aspic` (`aspic-plus-v1`) are dual-mode: deterministic
+  validation/evaluation on `structured_input` is always available, while document
+  extraction requires a resolved LLM model (`rdam/ibis/provider.py:203-237`,
+  `rdam/aspic/provider.py:276-310`).
+- `rdam.pdtb`, `rdam.sdrt`, `rdam.speech_acts`, `rdam.classical_rhetoric`,
+  `rdam.argument_mining`, `rdam.toulmin`, `rdam.walton`, and `rdam.pragma_dialectics` are
+  available when their configured LLM model resolves. Declarations do not construct an LLM
+  client; model proposals resolve `QuoteRef` spans via `rdam/_grounding.py` and pass each
+  technique's deterministic native validator before becoming results.
 - The three unavailability reasons are `not_implemented`, `model_unavailable`, and
   `missing_structured_input`. None of them is retryable.
 
-eRST execution, checkpoint handling and research contracts live in `workbench/erst/`
+eRST execution, checkpoint handling, and research contracts live in `workbench/erst/`
 by owner instruction on 2026-09-06. Production retains only passive saved-report
 graph/evidence data; it cannot select or load eRST.
 
 ### Identity binding
 
-Each technique declares exactly one canonical framework identity from
-`coe:artifact/narrative/analytical_frameworks_taxonomy` in Central_Configs. `coe:`
-identifiers are **referenced, never redefined locally**; the projection the package ships
-(`rdam/resources/framework-identities.json`) is generated from the vendored taxonomy and
-checked current by `pixi run ontology-validate`. The RST provider binds to `…/rst` and
-declares only `rst_tree → …/rst`. The canonical eRST identity remains available
-for historical records and workbench evaluation.
+Each technique declares exactly one framework identity from
+`coe:artifact/narrative/analytical_frameworks_taxonomy` in Central_Configs
+(`rdam/frameworks.py:1-19`, verified at
+`ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml:21-176`).
+`coe:` identifiers are **referenced, never redefined locally**; the projection the package
+ships (`rdam/resources/framework-identities.json`) is generated from the vendored taxonomy
+and checked current by `pixi run ontology-validate`. The RST provider binds to `…/rst` and
+declares only `rst_tree → …/rst`. The `erst` identity remains in `rdam/frameworks.py` for
+historical records and workbench evaluation.
 
 ### Persisted identifiers
 
 The package, distribution, command, and provider ids are `rdam`-named. The persisted
-contract identifiers are not: `isanlp_rst.production` 3.0.0 (historical 2.0.0 remains readable), `isanlp_rst.parser/modernbert-v1`
-(a historical immutable manifest identity, not the active architecture), `isanlp_rst.build_provenance`,
-`isanlp_rst.public_surface`, the schema `$id`s, and `ISANLP_RST_ERST_CHECKPOINT`. They
-name contracts and stored releases; changing them is an owner ruling, not a refactor.
+contract identifiers are not: `isanlp_rst.production` 3.0.0 (historical 2.0.0 remains
+readable), `isanlp_rst.parser/modernbert-v1` (a historical immutable manifest identity,
+not the active architecture), `isanlp_rst.build_provenance`, `isanlp_rst.public_surface`,
+the schema `$id`s, and `ISANLP_RST_ERST_CHECKPOINT`. They name contracts and stored
+releases; changing them is an owner ruling, not a refactor.
 
 ### Analysis-only scope, and scale
 
@@ -135,7 +168,8 @@ analytical differences
 Immutable release manifests declare `compatibility_range` as of release time. A stored
 release is shown to run under a later package line by a manifest-bound
 `CompatibilityRedeclaration` sidecar (`<store>/<release_id>.compatibility.json`, written
-by `pixi run python -m workbench.promotion.compatibility` with its evidence), never by editing the manifest.
+by `pixi run python -m workbench.promotion.compatibility` with its evidence), never by
+editing the manifest.
 
 ## The RST parser (`rdam.rst`)
 
@@ -176,7 +210,7 @@ See the [consolidation decision](../../artifacts/reviews/architecture-decisions/
 
 ### Device handling
 
-`device=` is the canonical knob (default `"auto"`):
+`device=` is the default-auto device selector (`rdam/rst/parser.py`):
 
 - `"auto"` (default) → CUDA if present, else MPS on Apple Silicon, else CPU
 - `"cpu"` → CPU

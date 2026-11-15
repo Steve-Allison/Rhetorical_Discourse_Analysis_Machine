@@ -14,7 +14,7 @@ from tests.dung.test_output import mutual_attack
 
 
 def native_bytes(
-    *, corrupt: bool = False, version: str = "1.0.0", formalism: str = "dung_extensions",
+    *, corrupt: bool = False, version: str = "2.0.0", formalism: str = "dung_extensions",
     technique: Technique = Technique.DUNG,
 ) -> bytes:
     payload = mutual_attack().model_dump(mode="json")

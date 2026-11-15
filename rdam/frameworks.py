@@ -1,10 +1,11 @@
 """Canonical framework identities, referenced from Central_Configs and never redefined.
 
-The eight identities live in Central's ``coe:artifact/narrative/analytical_frameworks_taxonomy``.
-Verified 2026-10-09 at Central_Configs ``ontology/data/domains/narrative/analytical_frameworks.yaml``
-lines 31-102 (commit ``9971b77``): concept ids are
-``coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/{rst,erst,pdtb,sdrt}``
-and ``coe:concept/analytical_frameworks_taxonomy/argumentation_framework/{toulmin,walton,dung,ibis}``,
+The fourteen identities live in Central's ``coe:artifact/narrative/analytical_frameworks_taxonomy``.
+Verified 2026-11-14 at ``ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml:21-176``:
+concept ids are
+``coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/{rst,erst,pdtb,sdrt,centering,speech_acts}``,
+``coe:concept/analytical_frameworks_taxonomy/rhetorical_framework/{classical_rhetoric}``, and
+``coe:concept/analytical_frameworks_taxonomy/argumentation_framework/{toulmin,walton,ibis,dung,argument_mining,aspic,pragma_dialectics}``,
 each with ``in_scheme`` naming the taxonomy and one ``broader`` parent concept.
 
 This module ships a *projection* of them — ``resources/framework-identities.json``, generated
@@ -13,7 +14,7 @@ by ``tools/ontology/project_framework_identities.py`` from the vendored distribu
 ``rdam`` resolves identities without a repository checkout, as Central's consumer contract
 prescribes ("generate or author that projection inside the consumer").
 
-Seven of the eight are production technique boundaries. The ``erst`` identity remains
+Thirteen of the fourteen are production technique boundaries. The ``erst`` identity remains
 for saved records and workbench evaluation; production providers do not execute it.
 """
 
@@ -37,27 +38,45 @@ class Technique(StrEnum):
 
     RST = "rst"
     ERST = "erst"
+    CENTERING = "centering"
     PDTB = "pdtb"
     SDRT = "sdrt"
+    SPEECH_ACTS = "speech_acts"
+    CLASSICAL_RHETORIC = "classical_rhetoric"
+    ARGUMENT_MINING = "argument_mining"
     TOULMIN = "toulmin"
     WALTON = "walton"
-    DUNG = "dung"
+    PRAGMA_DIALECTICS = "pragma_dialectics"
     IBIS = "ibis"
+    ASPIC = "aspic"
+    DUNG = "dung"
 
 
 BOUNDARY_TECHNIQUES: Final[tuple[Technique, ...]] = (
     Technique.RST,
+    Technique.CENTERING,
     Technique.PDTB,
     Technique.SDRT,
+    Technique.SPEECH_ACTS,
+    Technique.CLASSICAL_RHETORIC,
+    Technique.ARGUMENT_MINING,
     Technique.TOULMIN,
     Technique.WALTON,
-    Technique.DUNG,
+    Technique.PRAGMA_DIALECTICS,
     Technique.IBIS,
+    Technique.ASPIC,
+    Technique.DUNG,
 )
-"""The seven technique boundaries of FR-002, in the spec's order. ``erst`` is retained for saved records and workbench evaluation."""
+"""The thirteen production technique boundaries in canonical order. ``erst`` is retained for saved records and workbench evaluation."""
 
-STRUCTURED_INPUT_TECHNIQUES: Final[frozenset[Technique]] = frozenset({Technique.DUNG, Technique.IBIS})
-"""Techniques that analyse a supplied structure, not raw text (FR-016, FR-017)."""
+STRUCTURED_INPUT_TECHNIQUES: Final[frozenset[Technique]] = frozenset({Technique.DUNG})
+"""Techniques that exclusively analyse a supplied or explicitly derived formal structure rather than raw text."""
+
+DUAL_MODE_TECHNIQUES: Final[frozenset[Technique]] = frozenset({Technique.IBIS, Technique.ASPIC})
+"""Techniques that analyse either a source document or a caller-supplied formal structure."""
+
+ACCEPTS_STRUCTURED_INPUT_TECHNIQUES: Final[frozenset[Technique]] = STRUCTURED_INPUT_TECHNIQUES | DUAL_MODE_TECHNIQUES
+"""Every technique boundary that accepts caller-supplied ``StructuredInput``."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -155,7 +174,9 @@ def technique_curie(technique: Technique) -> str:
 
 
 __all__ = [
+    "ACCEPTS_STRUCTURED_INPUT_TECHNIQUES",
     "BOUNDARY_TECHNIQUES",
+    "DUAL_MODE_TECHNIQUES",
     "FRAMEWORK_SCHEME",
     "STRUCTURED_INPUT_TECHNIQUES",
     "FrameworkAuthority",

@@ -130,9 +130,9 @@ def all_techniques_request(text: str = "shared source") -> AggregateRequest:
 
 
 class TestExecutionPolicy:
-    @pytest.mark.parametrize("workers", (True, 0, 8))
-    def test_worker_count_is_bounded_by_the_seven_technique_boundaries(self, workers: int) -> None:
-        with pytest.raises(ValueError, match="between 1 and 7"):
+    @pytest.mark.parametrize("workers", (True, 0, 14))
+    def test_worker_count_is_bounded_by_the_thirteen_technique_boundaries(self, workers: int) -> None:
+        with pytest.raises(ValueError, match="between 1 and 13"):
             ExecutionPolicy(max_workers=workers)
 
     def test_registry_exposure_is_immutable(self) -> None:
@@ -453,8 +453,8 @@ def test_machine_and_rst_share_byte_identical_canonical_serialization() -> None:
     assert rst_serialization_canonical(value) == expected
 
 
-def test_production_composition_covers_all_seven_source_revisions(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_production_composition_covers_all_thirteen_source_revisions(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-used")
     machine = production_machine(config=MachineConfig(llm=LlmSettings(model="openai:gpt-5.6-sol")))
-    assert len(machine.providers) == 7
+    assert len(machine.providers) == 13
     assert all(item.declaration.provenance.source_revision for item in machine.providers.values())

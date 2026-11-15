@@ -40,7 +40,7 @@ def test_available_form_enters_machine(form: SourceForm, monkeypatch: pytest.Mon
 
 
 def test_malformed_form_fails_typed_at_classification() -> None:
-    request = AggregateRequest.for_bytes(b"{}", SourceForm.DOCLING_JSON, "invalid.json", (Technique.RST,))
+    request = AggregateRequest.for_bytes(b"<not_doclang/>", SourceForm.DOCLANG_XML, "invalid.dclg", (Technique.RST,))
     with pytest.raises(OperationError) as raised:
         Machine().analyse(request)
     assert raised.value.failure.category == "preparation_failed"
@@ -51,25 +51,25 @@ def test_malformed_form_fails_typed_at_classification() -> None:
 
 def test_unavailable_form_fails_typed_before_inventory(monkeypatch: pytest.MonkeyPatch) -> None:
     def installed_version(distribution: str) -> str:
-        if distribution == "docling-core":
+        if distribution == "doclang":
             raise PackageNotFoundError(distribution)
         return version(distribution)
 
     monkeypatch.setattr("rdam.ingest.contracts.capabilities.version", installed_version)
-    monkeypatch.setitem(sys.modules, "docling_core.types.doc", None)
+    monkeypatch.setitem(sys.modules, "doclang", None)
     capability = next(item for item in describe_capabilities().semantic.source_forms
-                      if item.source_form is SourceForm.DOCLING_JSON)
+                      if item.source_form is SourceForm.DOCLANG_XML)
     assert capability.availability is Availability.UNAVAILABLE
-    artifact, _ = source_case(SourceForm.DOCLING_JSON)
+    artifact, _ = source_case(SourceForm.DOCLANG_XML)
     assert artifact.raw_bytes is not None
-    request = AggregateRequest.for_bytes(artifact.raw_bytes, SourceForm.DOCLING_JSON, artifact.source_name, (Technique.RST,))
+    request = AggregateRequest.for_bytes(artifact.raw_bytes, SourceForm.DOCLANG_XML, artifact.source_name, (Technique.RST,))
     with pytest.raises(OperationError) as raised:
         Machine().analyse(request)
     assert raised.value.failure.category == "dependency_unavailable"
     cause = raised.value.__cause__
     assert isinstance(cause, ProductionIngestError)
     assert cause.failure.failed_stage is LifecycleStage.CLASSIFICATION
-    assert "docling-core" in str(cause.failure)
+    assert "doclang" in str(cause.failure.diagnostic_context)
 
 
 def test_machine_has_no_second_source_form_registry() -> None:

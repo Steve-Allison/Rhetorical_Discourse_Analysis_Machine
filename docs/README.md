@@ -19,14 +19,18 @@ contains runnable unified CLI, Python and HTTP examples.
 | Loopback routes and request limits | [http.py](../rdam/http.py) |
 | Persisted machine versions and schemas | [serialization.py](../rdam/serialization.py); `pixi run rdam version` |
 | Nested ingest versions | [contracts/base.py](../rdam/ingest/contracts/base.py) |
-| Canonical ontology authority | Central_Configs; generated consumer resources in [rdam/resources](../rdam/resources/) |
-| Current production verification | [Feature 019 tasks](../specs/019-unified-machine-interfaces/tasks.md) |
+| Shared linguistic substrate and KV-cache prefix | [substrate.py](../rdam/ingest/substrate.py), [_llm.py](../rdam/_llm.py), [_grounding.py](../rdam/_grounding.py) |
+| Ontology authority | Central_Configs; generated consumer resources in [rdam/resources](../rdam/resources/) |
+| Verification suites | `pyproject.toml` Pixi tasks (`test`, `smoke`, `shared-runtime-coverage`, `shared-runtime-mutation-test`, `rst-format-coverage`, `rst-mutation-test`, `ontology-validate`, `production-boundary`) |
 
-Seven technique boundaries are implemented: RST, PDTB, SDRT, Toulmin, Walton,
-Dung and IBIS. Dung and IBIS consume supplied structures. eRST is retained in
-[the workbench](../workbench/erst/README.md) for testing and evaluation, excluded
-from production by owner instruction on 2026-09-06. Code presence,
-capability discovery and successful inference are separate facts.
+Thirteen technique boundaries are implemented (`rdam/frameworks.py:55-69`): `rst`,
+`centering`, `pdtb`, `sdrt`, `speech_acts`, `classical_rhetoric`, `argument_mining`,
+`toulmin`, `walton`, `pragma_dialectics`, `ibis`, `aspic`, and `dung`. `dung` evaluates
+supplied or explicitly derived frameworks (`rdam/dung/compilers.py:213-236`); `ibis` and
+`aspic` are dual-mode (deterministic on supplied structures or grounded extraction on
+source documents). eRST is retained in [the workbench](../workbench/erst/README.md) for
+testing and evaluation, excluded from production by owner instruction on 2026-09-06. Code
+presence, capability discovery, and successful inference are separate facts.
 
 ## Reading historical material
 
@@ -73,5 +77,6 @@ summary/view commands do not require companion text or HTML reports.
 
 Broader analytical-quality research remains distinct from production engineering.
 SOTA, universal calibration and complete held-out validation have not been
-established. Dependency currency — Docling Core tracks its latest release and DocLang
-tracks upstream `main` — is recorded in the [source ingest guide](production-source-ingest.md).
+established. Dependency currency — `dclq` tracks its latest `2.x` release (`>=2.107.0,<3`)
+and DocLang tracks upstream `main` (`ae8ad5490b9b03b344e3e49dcb0f6f2209795de6`, `v0.9.0`) —
+is recorded in the [source ingest guide](production-source-ingest.md).

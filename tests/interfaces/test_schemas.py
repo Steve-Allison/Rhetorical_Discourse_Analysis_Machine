@@ -207,7 +207,7 @@ def test_saved_historical_records_match_their_advertised_schemas(name: str, mode
 @pytest.mark.parametrize("state", ("complete", "partial", "unsuccessful", "unavailable"))
 def test_aggregate_and_selected_view_schemas_cover_every_outcome_kind(state: str, mode: SchemaMode) -> None:
     if state == "unavailable":
-        request = AggregateRequest.for_text("No supplied framework.", (Technique.DUNG, Technique.IBIS))
+        request = AggregateRequest.for_text("No supplied framework.", (Technique.DUNG,))
     else:
         request = AggregateRequest.for_structured((
             StructuredInput(technique=Technique.DUNG, payload={
@@ -224,7 +224,7 @@ def test_aggregate_and_selected_view_schemas_cover_every_outcome_kind(state: str
         assert all(outcome.kind == "unavailable" for outcome in aggregate.outcomes)
     _validate("request", serialize_request(request), mode)
     _validate("aggregate", serialize(aggregate), mode)
-    selection = (Technique.IBIS,)
+    selection = (Technique.DUNG,) if state == "unavailable" else (Technique.IBIS,)
     _validate("analysis-view", serialize(select_analysis(aggregate, techniques=selection)), mode)
     _validate("view-request", serialize_view_request(ViewRequest(analysis=aggregate, techniques=selection)), mode)
 

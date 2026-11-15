@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "rdam"
 version = "6.1.0"
 import-names = ["rdam"]
-description = "Rhetorical Discourse Analysis Machine: native RST, PDTB, SDRT, Toulmin, Walton, Dung, and IBIS analysis side by side."
+description = "Rhetorical Discourse Analysis Machine: native RST, Centering, PDTB, SDRT, Speech Acts, Classical Rhetoric, Argument Mining, Toulmin, Walton, Pragma-Dialectics, IBIS, ASPIC+, and Dung analysis side by side."
 readme = "README.md"
 requires-python = ">=3.14"
 license = "MIT"
@@ -20,25 +20,31 @@ maintainers = [
 #   - Code:    MIT, copyright Elena Chistova 2020 (see LICENSE)
 #   - Weights: CC BY-NC 4.0 (see LICENSE_MODELS)
 dependencies = [
-  "playwright>=1.63.0,<2",
+  "playwright>=1.65.2,<2",
   "razdel>=0.5.0,<0.6",
   "lxml>=6.1.3,<7",
   "numpy>=2.5.3,<3",
-  "transformers>=5.15.1,<5.16",
-  "torch>=2.13,<2.14",
-  "huggingface-hub>=1.33.0,<2",
+  "transformers>=5.23.0,<5.24",
+  "torch>=2.15.0,<2.16",
+  "huggingface-hub>=2.4.0,<3",
   "tqdm>=4.70.1,<5",
-  "pillow>=12.3.0,<13",
+  "pillow>=13.0.0,<14",
   "networkx>=3.7,<4",
   "packaging>=26.3,<27",
-  "pydantic>=2.14.0,<3",
+  "pydantic>=2.14.3,<3",
   "rfc8785>=0.1.4,<0.2",
   "python-dotenv>=1.2.4,<2",
   "safetensors>=0.8.0,<0.9",
-  "openai>=3.26.1,<4",
+  "openai>=3.51.0,<4",
+  "anthropic>=2.8.0,<3",
+  "google-genai>=3.3.0,<4",
   "httpx2>=2.13.1,<3",
-  "pydantic-ai-slim[openai,anthropic,google]>=2.54.0,<3",
+  "pydantic-ai-slim[openai,anthropic]>=2.68.0,<3",
   "tiktoken>=0.14.0,<0.15",
+  "dclq>=2.107.0,<3",
+  "doclang[schematron-saxon] @ git+https://github.com/doclang-project/doclang@ae8ad5490b9b03b344e3e49dcb0f6f2209795de6",
+  "ahocorasick-rs>=1.0.3,<2",
+  "python-sat>=1.9.dev22,<2",
 ]
 
 [project.scripts]
@@ -57,24 +63,12 @@ http = [
 ]
 dev = [
   "build>=1.6.1,<2",
-  "coverage>=7.16.2,<8",
+  "coverage>=7.17.3,<8",
   "hatchling>=1.32.4,<2",
   "pytest>=9.1.1,<10",
-  "ruff>=0.16.10,<0.17",
+  "ruff>=0.17.5,<0.18",
   "pyright>=1.1.414,<2",
   "types-lxml>=2026.2.16",
-]
-
-# Canonical production-source ingest dependencies. Consumers that use only the
-# core `Parser` can install without this extra and avoid the format dependency
-# chain. Docling Core always tracks its latest release (owner instruction 2026-10-09):
-# never cap it below the next major version. DocLang tracks upstream `main` (owner
-# instruction 2026-10-09), pinned to the commit tests/fixtures/doclang mirrors.
-formats = [
-  "doclang[schematron-saxon] @ git+https://github.com/doclang-project/doclang@7f53133d47e1424fb18c3a53faed4df43f21a86b",
-  "docling-core>=2.101.1,<3",
-  "markdown-it-py>=4.2.0,<5",
-  "mdit-py-plugins>=0.6.1,<0.7",
 ]
 
 # Corpus preparation, training, evaluation, and research dependencies. These
@@ -84,7 +78,7 @@ offline = [
   "fire>=0.7.1,<0.8",
   "jsonnet>=0.22.0,<0.23",
   "nltk>=3.10.3,<4",
-  "peft>=0.21.2,<0.22",
+  "peft>=0.21.3,<0.22",
 ]
 
 # One distribution, one package (owner ruling 2026-09-02): `rdam` is the machine, and every
@@ -93,7 +87,7 @@ offline = [
 [tool.hatch.build.targets.wheel]
 packages = ["rdam"]
 
-# The `formats` extra pins DocLang to an upstream git commit.
+# Core dependencies pin DocLang to an upstream git commit.
 [tool.hatch.metadata]
 allow-direct-references = true
 
@@ -133,16 +127,16 @@ rdam = { path = ".", editable = true }
 # restating them.
 [tool.pixi.feature.production.tasks]
 production-artifacts = { cmd = "python -m tools.production_boundary --root . --release", description = "Boundary inspection plus full validation of the built dist/<version> pair (version from pyproject.toml)" }
-production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --root . --full", description = "Wheel certification: supply --model-store and --release-id for a local production release; install fresh core/core+http/formats/formats+http venvs and run full installed acceptance with external network disabled" }
+production-clean-install = { cmd = "python tools/production_boundary/clean_install.py --root . --full", description = "Wheel certification: supply --model-store and --release-id for a local production release; install fresh core and core+http venvs and run full installed acceptance with external network disabled" }
 
 [tool.pixi.feature.offline.dependencies]
 python = "3.14.*"
 markdownlint-cli2 = ">=0.23.3,<0.24"
 
 [tool.pixi.feature.offline.pypi-dependencies]
-rdam = { path = ".", editable = true, extras = ["dev", "formats", "offline", "http"] }
+rdam = { path = ".", editable = true, extras = ["dev", "offline", "http"] }
 linkml = ">=1.12.0, <2"
-graphifyy = { version = ">=0.9.82, <0.10", extras = ["gemini"] }
+graphifyy = { version = ">=0.9.108, <0.10", extras = ["gemini"] }
 
 [tool.ruff]
 line-length = 120
@@ -186,6 +180,14 @@ include = [
   "tests/ingest/test_doclang_decoder.py",
   "tests/ingest/test_doclang_identity.py",
   "tests/ingest/test_doclang_track.py",
+  "tests/ingest/test_substrate.py",
+  "tests/centering",
+  "tests/speech_acts",
+  "tests/classical_rhetoric",
+  "tests/argument_mining",
+  "tests/pragma_dialectics",
+  "tests/aspic",
+  "tests/machine/test_derivations_and_xpath.py",
   "tests/production_boundary/test_rst_mutation_verdict.py",
   "tools/production_boundary/installed_acceptance.py",
 ]
@@ -210,15 +212,15 @@ reportPrivateImportUsage = "none"
 # restating them.
 [tool.pixi.feature.offline.tasks]
 graphify-code = { cmd = "PYTHONHASHSEED=0 graphify update .", description = "Incrementally refresh deterministic code structure in the repository knowledge graph" }
-graphify-refresh = { cmd = "PYTHONHASHSEED=0 dotenv -f .env run -- graphify extract . --backend gemini --model gemini-3.5-flash --token-budget 60000 --max-concurrency 4 --api-timeout 600", description = "Refresh the complete deterministic AST and Gemini semantic knowledge graph with Gemini 3.5 Flash, Graphify's 60,000-token semantic context, four concurrent requests, and credentials from the ignored repository .env" }
-graphify-label = { cmd = "PYTHONHASHSEED=0 dotenv -f .env run -- graphify label . --backend gemini --model gemini-3.5-flash --missing-only", description = "Name only missing Graphify communities with Gemini 3.5 Flash using the ignored repository .env" }
+graphify-refresh = { cmd = "PYTHONHASHSEED=0 dotenv -f .env run -- graphify extract . --backend gemini --model gemini-3.8-flash --token-budget 60000 --max-concurrency 4 --api-timeout 600", description = "Refresh the complete deterministic AST and Gemini semantic knowledge graph with Gemini 3.8 Flash, Graphify's 60,000-token semantic context, four concurrent requests, and credentials from the ignored repository .env" }
+graphify-label = { cmd = "PYTHONHASHSEED=0 dotenv -f .env run -- graphify label . --backend gemini --model gemini-3.8-flash --missing-only", description = "Name only missing Graphify communities with Gemini 3.8 Flash using the ignored repository .env" }
 graphify-freshness = { cmd = "graphify check-update .", description = "Report whether Graphify semantic re-extraction is pending" }
 graphify-diagnose = { cmd = "graphify diagnose multigraph --json", description = "Read-only Graphify integrity diagnostics for missing, dangling, duplicate, collapsed, and self-loop edges" }
 test = { cmd = "pytest -m 'not slow and not stress' -q", description = "Fast suite: no model loads" }
 test-all = { cmd = "pytest -q", description = "Every test, including slow model-loading tests and the production smoke" }
 test-live-models = { cmd = "pytest -m live -q", description = "Opt-in live LLM checks; requires RDAM_RUN_LIVE_MODEL_TESTS=1 and valid configured credentials" }
 test-stress = { cmd = "pytest tests/stress -q", description = "Concurrency, megadoc, and memory-leak stress tests" }
-shared-runtime-test = { cmd = "pytest tests/machine tests/llm tests/pdtb/test_provider.py tests/sdrt/test_provider.py tests/toulmin/test_provider.py tests/walton/test_provider.py tests/dung/test_provider.py tests/ibis/test_provider.py tests/rst/test_provider.py -q -m 'not slow'", description = "Feature 018 canonical data, provenance, LLM boundary, parallel execution, and cache regressions" }
+shared-runtime-test = { cmd = "pytest tests/machine tests/llm tests/centering/test_provider.py tests/pdtb/test_provider.py tests/sdrt/test_provider.py tests/speech_acts/test_provider.py tests/classical_rhetoric/test_provider.py tests/argument_mining/test_provider.py tests/toulmin/test_provider.py tests/walton/test_provider.py tests/pragma_dialectics/test_provider.py tests/ibis/test_provider.py tests/aspic/test_provider.py tests/dung/test_provider.py tests/rst/test_provider.py -q -m 'not slow'", description = "Feature 018 canonical data, provenance, LLM boundary, parallel execution, and cache regressions across all 13 techniques" }
 shared-runtime-coverage = { cmd = "coverage erase && coverage run --branch --source=rdam._canonical,rdam._immutable_json,rdam._execution,rdam._result_cache,rdam._provenance,rdam._provider_provenance -m pytest tests/machine/test_shared_runtime.py tests/machine/test_shared_runtime_internals.py tests/machine/test_contracts.py tests/llm/test_provider_consistency.py tests/llm/test_instruction_provenance.py -q && coverage report --fail-under=100 rdam/_canonical.py rdam/_immutable_json.py rdam/_execution.py rdam/_result_cache.py rdam/_provenance.py rdam/_provider_provenance.py", description = "100% statement and branch coverage for Feature 018 shared-runtime modules" }
 shared-runtime-mutation-test = { cmd = "python tools/shared_runtime_mutation_test.py", description = "Deterministic mutation gate for deep freeze, deadlines, cache identity and single flight, ordering, and provenance" }
 smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every parser release in the configured model releases store on every available device through the public façade" }
@@ -230,17 +232,17 @@ typecheck = { cmd = "pyright", description = "Pyright, strict" }
 mdlint = { cmd = "python scripts/lint_markdown.py --lint", description = "markdownlint-cli2 over the tracked Markdown manifest" }
 cleanup = { cmd = "python scripts/cleanup.py", description = "Remove bytecode, tool caches, and dist/ (never .pixi)" }
 bench = { cmd = "python -m scripts.bench", description = "Performance bench across models and dtypes" }
-rst-diag = { cmd = "python scripts/rst_diag.py", description = "RST quality proxy metrics over .md / Docling / DocLang sources; --json for machine output" }
-rst-format-test = { cmd = "pytest tests/ingest/test_doclang_document.py tests/ingest/test_doclang_decoder.py tests/ingest/test_doclang_identity.py tests/ingest/test_doclang_track.py tests/ingest/test_doclang_fixture_parity.py tests/ingest/test_doclang_loader.py tests/ingest/test_doclang_text_walker.py tests/ingest/test_markdown_loader.py tests/ingest/production_ingest/test_doclang_complex.py tests/ingest/production_ingest/test_doclang_ingest.py tests/ingest/production_ingest/test_docling_complex.py tests/ingest/production_ingest/test_docling_ingest.py tests/ingest/production_ingest/test_markdown_complex.py tests/ingest/production_ingest/test_markdown_conformance.py tests/ingest/production_ingest/test_markdown_ingest.py tests/ingest/production_ingest/test_native_anchors.py tests/ingest/production_ingest/test_upstream_conformance.py -q", description = "Normative, adversarial, and native-anchor tests for DocLang, Docling, and Markdown" }
-rst-format-coverage = { cmd = "coverage erase && coverage run --source=rdam -m pytest tests/ingest -q && coverage report --fail-under=90 rdam/ingest/doclang/loader.py rdam/ingest/doclang/text_walker.py rdam/ingest/doclang/document.py rdam/ingest/doclang/decoder.py rdam/ingest/_doclang.py rdam/ingest/_classification.py rdam/rst/markdown/loader.py rdam/ingest/_harvest.py", description = "Branch-coverage gate for DocLang, Docling, and Markdown loaders and harvesters" }
-rst-mutation-test = { cmd = "python tools/rst_mutation_test.py", description = "Deterministic mutation gate for DocLang validation and archive safety, Docling layer retention, and Markdown fidelity" }
+rst-diag = { cmd = "python scripts/rst_diag.py", description = "RST quality proxy metrics over DocLang and plain-text sources; --json for machine output" }
+rst-format-test = { cmd = "pytest tests/ingest/test_doclang_document.py tests/ingest/test_doclang_decoder.py tests/ingest/test_doclang_identity.py tests/ingest/test_doclang_track.py tests/ingest/test_doclang_fixture_parity.py tests/ingest/test_doclang_loader.py tests/ingest/test_doclang_text_walker.py tests/ingest/test_substrate.py tests/ingest/production_ingest/test_doclang_complex.py tests/ingest/production_ingest/test_doclang_ingest.py tests/ingest/production_ingest/test_native_anchors.py tests/ingest/production_ingest/test_upstream_conformance.py -q", description = "Normative, adversarial, and native-anchor tests for dclq + DocLang and shared substrate" }
+rst-format-coverage = { cmd = "coverage erase && coverage run --source=rdam -m pytest tests/ingest -q && coverage report --fail-under=90 rdam/ingest/doclang/loader.py rdam/ingest/doclang/text_walker.py rdam/ingest/doclang/document.py rdam/ingest/doclang/decoder.py rdam/ingest/_doclang.py rdam/ingest/_classification.py rdam/ingest/_harvest.py rdam/ingest/substrate.py", description = "Branch-coverage gate for DocLang/dclq loaders, harvesters, and linguistic substrate" }
+rst-mutation-test = { cmd = "python tools/rst_mutation_test.py", description = "Deterministic mutation gate for DocLang validation, archive safety, and decoder fidelity" }
 rst-quality = { cmd = "pytest tests/offline/test_gum_gold.py -m quality -q", description = "Model-backed RST quality regression floors against ten human-annotated GUM gold trees" }
 build-production = { cmd = "python -m tools.production_boundary.build --evidence-dir specs/010-repository-migration/evidence/release", description = "Reproducibly double-build the wheel and sdist from the clean, tagged HEAD into ignored dist/<version>/ (name and version from pyproject.toml) and write the release evidence JSON under specs/010-repository-migration/evidence/release/" }
 validate-production-artifacts = { cmd = "python -m tools.production_boundary --root . --release", description = "Boundary gate plus full validation of the built dist/<version> pair: RECORD, provenance, metadata, forbidden members" }
 production-boundary = { cmd = "python -m tools.production_boundary --root .", description = "Ownership and import boundary inspection of the source tree (no artifacts)" }
 production-import-check = { cmd = "python -m tools.production_boundary.import_check", description = "Import the installed distribution without loading weights; here that is the editable source, so it certifies no wheel" }
 production-api-contract = { cmd = "pytest tests/ingest/production_ingest tests/production_boundary -q", description = "Production ingest contract and production-boundary tool suites" }
-rst-baseline = { cmd = "python -m tools.production_boundary.rst_baseline", description = "capture --output DIR | compare --baseline DIR: serialized RST public-contract outputs across all six source forms plus CPU analysis on the named release (006 rst-preservation equivalence procedure)" }
+rst-baseline = { cmd = "python -m tools.production_boundary.rst_baseline", description = "capture --output DIR | compare --baseline DIR: serialized RST public-contract outputs across all four source forms plus CPU analysis on the named release" }
 production-ingest-test = { cmd = "pytest tests/ingest -q", description = "All ingest tests" }
 production-ingest-conformance = { cmd = "pytest tests/ingest -q -k 'conformance or ingest'", description = "Ingest conformance subset" }
 production-ingest-determinism = { cmd = "pytest tests/ingest/production_ingest/test_determinism.py tests/ingest/production_ingest/test_cache.py -q", description = "Ingest determinism and cache tests" }

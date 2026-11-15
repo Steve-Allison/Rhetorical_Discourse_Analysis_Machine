@@ -106,6 +106,8 @@ def compile_distribution(root: Path) -> IndexProjection:
                 "usage_note": value.get("usage_note"),
             }))
         for key, content in value.items():
+            if content is None:
+                continue
             definition = definitions[key]
             target = definition.get("range")
             if target not in classes or not (definition.get("inlined") or definition.get("inlined_as_list")):

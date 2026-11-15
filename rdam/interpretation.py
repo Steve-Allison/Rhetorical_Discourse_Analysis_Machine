@@ -20,6 +20,7 @@ from rdam.contracts import (
     ProviderDeclaration,
     ResultOutcome,
     UnavailableOutcome,
+    XPathAlignmentEntry,
     boundary_for,
     outcome_technique,
     AggregateAnalysis,
@@ -82,20 +83,25 @@ def validate_observed_section(record: Mapping[str, object], section: NativeSecti
 
 def bind_descriptor(result: NativeTechniqueResult, declaration: ProviderDeclaration) -> NativeInterpretationDescriptor:
     descriptor = next(item for item in declaration.interpretations if item.formalism_id == result.formalism_id)
+    dumped_result = result.model_dump()
     sections: list[NativeSectionDescription] = []
     for section in descriptor.sections:
         try:
-            resolve_pointer(result.model_dump(), section.pointer)
+            resolve_pointer(dumped_result, section.pointer)
         except ValueError:
             sections.append(section.model_copy(update={"availability": "not_recorded"}))
         else:
-            observation = _observed_section(result.model_dump(), section.pointer)
+            observation = _observed_section(dumped_result, section.pointer)
             if observation is not None:
                 section = section.model_copy(update={"observed_vocabulary": observation})
             sections.append(section)
+    base = descriptor.model_dump(exclude={"identity", "sections"})
+    if result.technique in {Technique.IBIS, Technique.ASPIC} and result.payload.get("extraction") is None:
+        base["input_basis"] = "caller_structure"
+        base["method"] = "deterministic_computation"
     return NativeInterpretationDescriptor.model_validate(
         {
-            **descriptor.model_dump(exclude={"identity", "sections"}),
+            **base,
             "sections": tuple(sections),
         }
     )
@@ -173,6 +179,10 @@ def _selection(requested: tuple[Technique, ...], selected: tuple[Technique, ...]
     return tuple(technique for technique in requested if technique in selected)
 
 
+def _no_xpath_alignment(value: tuple[XPathAlignmentEntry, ...]) -> bool:
+    return not value
+
+
 class AnalysisView(StrictModel):
     contract: Literal["rdam.analysis_view"] = "rdam.analysis_view"
     contract_version: Literal["1.0.0"] = "1.0.0"
@@ -185,6 +195,7 @@ class AnalysisView(StrictModel):
     excluded_outcomes: tuple[ExcludedOutcome, ...]
     upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...]
     lineage: tuple[ProviderDependencyReference, ...]
+    xpath_alignment: tuple[XPathAlignmentEntry, ...] = Field(default=(), exclude_if=_no_xpath_alignment)
     configurations: tuple[BoundaryConfiguration, ...]
     preparation: MachinePreparation | HistoricalMachinePreparation | None
     reading_guide: AnalysisReadingGuide
@@ -247,6 +258,7 @@ class AnalysisView(StrictModel):
         if len(set(retained)) != len(retained) or set(retained).intersection(self.requested_techniques):
             raise ValueError("view retained results collide with original requested boundaries")
         selected_results = {item.technique: item.result for item in self.outcomes if isinstance(item, ResultOutcome)}
+        excluded_successful = {item.technique for item in self.excluded_outcomes if item.state == "result"}
         upstreams = {item.semantic_digest: item for item in (*self.upstream_results, *selected_results.values())}
         for reference in self.lineage:
             if reference.consumer_technique not in successful:
@@ -257,7 +269,10 @@ class AnalysisView(StrictModel):
             if consumer is not None and consumer.provider_contract_version != reference.consumer_contract_version:
                 raise ValueError("view lineage consumer contract differs from selected result")
             upstream = upstreams.get(reference.upstream_result_identity)
-            if upstream is None or (
+            if upstream is None:
+                if reference.upstream_technique not in excluded_successful:
+                    raise ValueError("view lineage differs from its retained upstream result")
+            elif (
                 upstream.technique, upstream.provider_id, upstream.provider_contract_version,
                 upstream.provenance.model_identity
             ) != (
@@ -282,10 +297,11 @@ class AnalysisView(StrictModel):
             != expected_entries
         ):
             raise ValueError("view guide must address actual records")
+        dumped_view = self.model_dump()
         for entry in self.reading_guide.entries:
             if entry.scope == "requested" and entry.state == "result" and entry.descriptor_status != "available":
                 raise ValueError("requested successful results require native descriptions")
-            record = resolve_pointer(self.model_dump(), entry.record_pointer)
+            record = resolve_pointer(dumped_view, entry.record_pointer)
             if entry.descriptor is not None:
                 target = cast(Mapping[str, object], record)
                 if (
@@ -350,6 +366,15 @@ def select_analysis(analysis: AggregateAnalysis, *, techniques: tuple[Technique,
         ),
         upstream_results=analysis.upstream_results,
         lineage=analysis.lineage,
+        xpath_alignment=tuple(
+            XPathAlignmentEntry(
+                xpath=item.xpath,
+                item_ids=item.item_ids,
+                occurrences=filtered,
+            )
+            for item in analysis.xpath_alignment
+            if (filtered := tuple(occ for occ in item.occurrences if occ.technique in selected))
+        ),
         configurations=analysis.configurations,
         preparation=analysis.preparation,
         reading_guide=AnalysisReadingGuide(

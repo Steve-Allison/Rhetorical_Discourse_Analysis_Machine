@@ -177,6 +177,12 @@ class ToulminAnalysis(BaseModel):
                     span.validate_source(text)
                 except ValueError as error:
                     failures.append((f"/layouts/{layout_index}/warrant_evidence/{evidence_index}", error))
+            for rebuttal_index, rebuttal in enumerate(layout.rebuttals):
+                if rebuttal.source_text is not None and rebuttal.source_text not in text:
+                    failures.append((
+                        f"/layouts/{layout_index}/rebuttals/{rebuttal_index}/source_text",
+                        ValueError(f"rebuttal source_text {rebuttal.source_text!r} does not appear literally in source"),
+                    ))
         if failures:
             raise LayoutError("\n".join(f"{path}: {error}" for path, error in failures)) from failures[0][1]
 

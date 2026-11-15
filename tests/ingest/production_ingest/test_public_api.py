@@ -4,7 +4,6 @@ from importlib.util import find_spec
 
 import rdam.ingest.doclang as doclang_helpers
 import rdam.ingest as ingest
-import rdam.rst.markdown as markdown_helpers
 
 
 def _module_exists(module_name: str) -> bool:
@@ -24,8 +23,9 @@ def test_canonical_ingest_exports_complete_public_service() -> None:
 
 
 def test_obsolete_public_entry_points_are_absent() -> None:
-    assert not hasattr(markdown_helpers, "parse_markdown")
     assert not hasattr(doclang_helpers, "parse_doclang")
+    assert not _module_exists("rdam.rst.markdown")
+    assert not _module_exists("rdam.ingest.markdown")
     assert find_spec("rdam.rst.docling") is None
 
 

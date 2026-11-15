@@ -58,11 +58,16 @@ class DoclangDocument:
         loaded = load_doclang_archive(data) if archive else None
         xml = loaded.document_bytes if loaded is not None else data
         try:
+            root = loaded.document_root if loaded is not None else parse_control_xml(xml, part_name="document.xml")
+            declared_version = root.get("version")
             with NamedTemporaryFile(suffix=".dclg") as stream:
                 stream.write(xml)
                 stream.flush()
-                validate(stream.name, allow_empty_namespace=True)
-            root = loaded.document_root if loaded is not None else parse_control_xml(xml, part_name="document.xml")
+                validate(
+                    stream.name,
+                    spec_version="0.9" if declared_version is None else None,
+                    allow_empty_namespace=True,
+                )
         except (ValidationError, InvalidDoclangError) as exc:
             raise InvalidDoclangError(f"DocLang XML failed current validation ({type(exc).__name__})") from exc
         paths = local_path_index(root)

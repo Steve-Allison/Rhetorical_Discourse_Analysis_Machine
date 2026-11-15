@@ -18,9 +18,14 @@ def test_empty_edu_fails() -> None:
 
 
 def test_path_detection_is_bounded(tmp_path: Path) -> None:
+    doclang_file = tmp_path / "source.dclg"
+    doclang_file.write_text("<doclang><text>Text</text></doclang>", encoding="utf-8")
+    assert SourceArtifact.from_path(doclang_file).source_form is SourceForm.DOCLANG_XML
+
     markdown = tmp_path / "source.md"
     markdown.write_text("# Heading\n\nText", encoding="utf-8")
-    assert SourceArtifact.from_path(markdown).source_form is SourceForm.MARKDOWN
+    with pytest.raises(ValueError, match="source_form"):
+        SourceArtifact.from_path(markdown)
 
     text = tmp_path / "source.txt"
     text.write_text("Text", encoding="utf-8")

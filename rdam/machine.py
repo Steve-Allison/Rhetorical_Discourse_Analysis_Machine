@@ -23,19 +23,19 @@ Rules implemented here, from the 006 contracts:
   output itself.
 """
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextvars import copy_context
 from threading import Lock
 from types import MappingProxyType
-from typing import Protocol
+from typing import Protocol, cast
 from weakref import ReferenceType, ref
 from contextlib import nullcontext
 from importlib.util import find_spec
 
 from rdam._execution import ExecutionPolicy
 from rdam._result_cache import ResultCache, revision_is_cacheable
-from rdam._strict import semantic_sha256
+from rdam._strict import JsonValue, semantic_sha256
 from rdam.contracts import (
     AggregateAnalysis,
     AggregateRequest,
@@ -45,6 +45,10 @@ from rdam.contracts import (
     ProjectedPreparationBinding,
     StructuredPreparationBinding,
     UnavailablePreparationBinding,
+    UpstreamResultReference,
+    XPathAlignmentEntry,
+    XPathTechniqueOccurrence,
+    boundary_for,
     NATIVE_RESULT_VERSION,
     AvailableCapability,
     FailedOutcome,
@@ -63,6 +67,7 @@ from rdam.contracts import (
     UnavailableReason,
 )
 from rdam.frameworks import BOUNDARY_TECHNIQUES, STRUCTURED_INPUT_TECHNIQUES, Technique, technique_curie
+from rdam.historical import HistoricalNativeTechniqueResult
 from rdam.ingest.contracts.preparation import PreparationReceipt, SourceProjection
 from rdam.ingest.contracts.source import SourceArtifact
 
@@ -157,52 +162,156 @@ class Machine:
         """
 
         preparation, projections = self._prepare(request)
-        executor = ThreadPoolExecutor(
-            max_workers=min(self._execution_policy.max_workers, len(request.techniques)),
-            thread_name_prefix="rdam-provider",
-        )
-        futures = {
-            executor.submit(
-                copy_context().run, self._analyse_one, technique, request,
-                None if preparation is None else preparation.receipt(), projections.get(technique)
-            ): technique
-            for technique in request.techniques
-        }
+        derivation_specs = {spec.consumer: spec for spec in request.derivations}
+        wave1_techniques = tuple(t for t in request.techniques if t not in derivation_specs)
         requested_outcomes: dict[Technique, ResultOutcome | UnavailableOutcome | FailedOutcome] = {}
-        try:
-            for future in as_completed(futures):
-                requested_outcomes[futures[future]] = future.result()
-        finally:
-            if len(requested_outcomes) != len(futures):
-                for future in futures:
-                    future.cancel()
-            executor.shutdown(wait=True, cancel_futures=True)
+        if wave1_techniques:
+            executor = ThreadPoolExecutor(
+                max_workers=min(self._execution_policy.max_workers, len(wave1_techniques)),
+                thread_name_prefix="rdam-provider",
+            )
+            futures = {
+                executor.submit(
+                    copy_context().run, self._analyse_one, technique, request,
+                    None if preparation is None else preparation.receipt(), projections.get(technique)
+                ): technique
+                for technique in wave1_techniques
+            }
+            try:
+                for future in as_completed(futures):
+                    requested_outcomes[futures[future]] = future.result()
+            finally:
+                if len(requested_outcomes) != len(futures):
+                    for future in futures:
+                        future.cancel()
+                executor.shutdown(wait=True, cancel_futures=True)
+
+        wave2_upstreams: dict[Technique, dict[Technique, NativeTechniqueResult | HistoricalNativeTechniqueResult]] = {}
+        retained_by_boundary = {boundary_for(item.technique): item for item in request.upstream_results}
+        for consumer, spec in derivation_specs.items():
+            consumer_provider = self._providers.get(consumer)
+            if consumer_provider is None:
+                requested_outcomes[consumer] = UnavailableOutcome(
+                    technique=consumer,
+                    reason=UnavailableReason.NOT_IMPLEMENTED,
+                )
+                continue
+            consumer_decl = consumer_provider.declaration
+            if isinstance(consumer_decl.capability, UnavailableCapability):
+                requested_outcomes[consumer] = UnavailableOutcome(
+                    technique=consumer,
+                    reason=consumer_decl.capability.reason,
+                )
+                continue
+            resolved_upstreams: dict[Technique, NativeTechniqueResult | HistoricalNativeTechniqueResult] = {}
+            missing_upstream = False
+            for upstream_tech in spec.upstreams:
+                wave1_outcome = requested_outcomes.get(upstream_tech)
+                if isinstance(wave1_outcome, ResultOutcome):
+                    resolved_upstreams[upstream_tech] = wave1_outcome.result
+                elif upstream_tech in retained_by_boundary:
+                    resolved_upstreams[upstream_tech] = retained_by_boundary[upstream_tech]
+                else:
+                    missing_upstream = True
+                    break
+            if missing_upstream:
+                requested_outcomes[consumer] = UnavailableOutcome(
+                    technique=consumer,
+                    reason=UnavailableReason.MISSING_STRUCTURED_INPUT,
+                )
+                continue
+            compile_fn = getattr(consumer_provider, "compile_derivation", None)
+            if not callable(compile_fn):
+                requested_outcomes[consumer] = UnavailableOutcome(
+                    technique=consumer,
+                    reason=UnavailableReason.NOT_IMPLEMENTED,
+                )
+                continue
+            try:
+                compiled_payload = cast(
+                    dict[str, JsonValue],
+                    compile_fn(
+                        spec.compiler,
+                        {u: res.payload for u, res in resolved_upstreams.items()},
+                    ),
+                )
+            except ProviderError as error:
+                violation = _failure_contract_violation(consumer_decl, error.failure)
+                requested_outcomes[consumer] = FailedOutcome(
+                    failure=error.failure
+                    if violation is None
+                    else _contract_failure(
+                        consumer,
+                        consumer_decl,
+                        code="provider_failure_contract_violation",
+                        violation=violation,
+                    )
+                )
+                continue
+            primary_upstream = resolved_upstreams[spec.upstreams[0]]
+            if primary_upstream.semantic_digest is None:
+                raise ValueError("upstream result has no semantic digest")
+            compiled_derived_from = UpstreamResultReference(
+                technique=primary_upstream.technique,
+                result_identity=primary_upstream.semantic_digest,
+            )
+            wave2_upstreams[consumer] = resolved_upstreams
+            requested_outcomes[consumer] = self._analyse_one(
+                consumer,
+                request,
+                None,
+                None,
+                compiled_structured_input=compiled_payload,
+                compiled_derived_from=compiled_derived_from,
+            )
+
         outcomes = tuple(requested_outcomes[technique] for technique in request.techniques)
         lineage: list[ProviderDependencyReference] = []
         for technique in request.techniques:
             outcome = requested_outcomes[technique]
-            derivation = request.derivation_for(technique)
-            if derivation is None or not isinstance(outcome, ResultOutcome):
+            if not isinstance(outcome, ResultOutcome):
                 continue
-            upstream = request.upstream_result(derivation)
-            if upstream is None or upstream.semantic_digest is None:
-                raise ValueError("a validated request carries every upstream result its derivations name")
-            lineage.append(
-                ProviderDependencyReference(
-                    consumer_technique=technique,
-                    consumer_provider_id=outcome.result.provider_id,
-                    consumer_contract_version=outcome.result.provider_contract_version,
-                    upstream_technique=upstream.technique,
-                    upstream_provider_id=upstream.provider_id,
-                    upstream_contract_version=upstream.provider_contract_version,
-                    upstream_result_identity=upstream.semantic_digest,
-                    upstream_model_identity=upstream.provenance.model_identity,
+            derivation = request.derivation_for(technique)
+            if derivation is not None:
+                upstream = request.upstream_result(derivation)
+                if upstream is None or upstream.semantic_digest is None:
+                    raise ValueError("a validated request carries every upstream result its derivations name")
+                lineage.append(
+                    ProviderDependencyReference(
+                        consumer_technique=technique,
+                        consumer_provider_id=outcome.result.provider_id,
+                        consumer_contract_version=outcome.result.provider_contract_version,
+                        upstream_technique=upstream.technique,
+                        upstream_provider_id=upstream.provider_id,
+                        upstream_contract_version=upstream.provider_contract_version,
+                        upstream_result_identity=upstream.semantic_digest,
+                        upstream_model_identity=upstream.provenance.model_identity,
+                    )
                 )
-            )
+            spec = request.derivation_spec_for(technique)
+            if spec is not None and technique in wave2_upstreams:
+                for upstream_tech in spec.upstreams:
+                    upstream = wave2_upstreams[technique][upstream_tech]
+                    if upstream.semantic_digest is None:
+                        raise ValueError("upstream result has no semantic digest")
+                    lineage.append(
+                        ProviderDependencyReference(
+                            consumer_technique=technique,
+                            consumer_provider_id=outcome.result.provider_id,
+                            consumer_contract_version=outcome.result.provider_contract_version,
+                            upstream_technique=upstream.technique,
+                            upstream_provider_id=upstream.provider_id,
+                            upstream_contract_version=upstream.provider_contract_version,
+                            upstream_result_identity=upstream.semantic_digest,
+                            upstream_model_identity=upstream.provenance.model_identity,
+                        )
+                    )
         from rdam.interpretation import reading_guide
         successes = sum(isinstance(outcome, ResultOutcome) for outcome in outcomes)
         return AggregateAnalysis(
-            source=request.source, outcomes=outcomes, lineage=tuple(lineage), preparation=preparation,
+            source=request.source, outcomes=outcomes, lineage=tuple(lineage),
+            xpath_alignment=_build_xpath_alignment(outcomes, preparation),
+            preparation=preparation,
             requested_techniques=request.techniques, upstream_results=request.upstream_results,
             configurations=self._configurations(request.techniques),
             status="complete" if successes == len(outcomes) else "partial" if successes else "unsuccessful",
@@ -244,6 +353,12 @@ class Machine:
             if provider is None:
                 bindings.append(UnavailablePreparationBinding(technique=technique).model_dump())
                 continue
+            if isinstance(request, AggregateRequest) and (
+                request.structured_input_for(technique) is not None
+                or request.derivation_spec_for(technique) is not None
+            ):
+                bindings.append(StructuredPreparationBinding(technique=technique).model_dump())
+                continue
             requirement = provider.declaration.content_requirement
             if requirement is None:
                 bindings.append(StructuredPreparationBinding(technique=technique).model_dump())
@@ -265,6 +380,9 @@ class Machine:
         request: AggregateRequest,
         preparation: PreparationReceipt | None = None,
         projection: SourceProjection | None = None,
+        *,
+        compiled_structured_input: Mapping[str, JsonValue] | None = None,
+        compiled_derived_from: UpstreamResultReference | None = None,
     ) -> ResultOutcome | UnavailableOutcome | FailedOutcome:
         provider = self._providers.get(technique)
         if provider is None:
@@ -272,9 +390,22 @@ class Machine:
         declaration = provider.declaration
         if isinstance(declaration.capability, UnavailableCapability):
             return UnavailableOutcome(technique=technique, reason=declaration.capability.reason)
-        structured_input = request.structured_input_for(technique)
+        structured_input = (
+            compiled_structured_input
+            if compiled_structured_input is not None
+            else request.structured_input_for(technique)
+        )
         if declaration.requires_structured_input and structured_input is None:
             return UnavailableOutcome(technique=technique, reason=UnavailableReason.MISSING_STRUCTURED_INPUT)
+        if not declaration.requires_structured_input and declaration.accepts_structured_input and structured_input is None:
+            if projection is None and request.text is None:
+                return UnavailableOutcome(technique=technique, reason=UnavailableReason.MISSING_STRUCTURED_INPUT)
+            if declaration.provenance.model_identity is not None:
+                from rdam._llm import unavailable_reason
+
+                model_reason = unavailable_reason(declaration.provenance.model_identity)
+                if model_reason is not None:
+                    return UnavailableOutcome(technique=technique, reason=model_reason)
         chosen = request.formalism_for(technique)
         if chosen is not None:
             formalism = declaration.formalism(chosen)
@@ -282,14 +413,20 @@ class Machine:
                 return UnavailableOutcome(technique=technique, reason=UnavailableReason.NOT_IMPLEMENTED)
             if isinstance(formalism.capability, UnavailableCapability):
                 return UnavailableOutcome(technique=technique, reason=formalism.capability.reason)
+        effective_projection = None if structured_input is not None else projection
+        effective_preparation = (
+            None
+            if (declaration.requires_structured_input or structured_input is not None)
+            else preparation
+        )
         provider_request = ProviderRequest(
             source=request.source,
-            text=projection.prepared_document.text if projection is not None else request.text,
-            projection=projection,
-            preparation=None if declaration.requires_structured_input else preparation,
+            text=effective_projection.prepared_document.text if effective_projection is not None else request.text,
+            projection=effective_projection,
+            preparation=effective_preparation,
             structured_input=structured_input,
             formalism_id=chosen,
-            derived_from=request.derivation_for(technique),
+            derived_from=compiled_derived_from if compiled_derived_from is not None else request.derivation_for(technique),
         )
         if self._cache is not None and declaration.configuration.cache_eligible and revision_is_cacheable(declaration.provenance.source_revision):
             cache_key = _cache_key(technique, declaration, provider_request)
@@ -443,6 +580,132 @@ def _provider_lock(provider: Provider) -> Lock:
         lock = Lock()
         _PROVIDER_LOCKS[identity] = ref(lock, lambda reference, key=identity: _remove_provider_lock(key, reference))
         return lock
+
+
+def _record_rst_edus(
+    payload: Mapping[str, JsonValue],
+    recorder: Callable[[Iterable[str], XPathTechniqueOccurrence], None],
+) -> None:
+    semantic = payload.get("semantic")
+    if not isinstance(semantic, Mapping):
+        return
+    parser_result = semantic.get("parser_result")
+    analysis_parent: Mapping[str, object] | None = None
+    pointer_prefix = ""
+    if isinstance(parser_result, Mapping):
+        pr_sem = parser_result.get("semantic")
+        if isinstance(pr_sem, Mapping):
+            analysis_parent = cast(Mapping[str, object], pr_sem)
+            pointer_prefix = "/semantic/parser_result/semantic"
+    elif "analysis" in semantic:
+        analysis_parent = cast(Mapping[str, object], semantic)
+        pointer_prefix = "/semantic"
+    if analysis_parent is None:
+        return
+    analysis = analysis_parent.get("analysis")
+    if not isinstance(analysis, Mapping):
+        return
+    document = cast(Mapping[str, object], analysis).get("document")
+    if not isinstance(document, Mapping):
+        return
+    edus = cast(Mapping[str, object], document).get("edus")
+    if not isinstance(edus, (list, tuple)):
+        return
+    for idx, edu_obj in enumerate(cast(list[object] | tuple[object, ...], edus)):
+        if not isinstance(edu_obj, Mapping):
+            continue
+        edu = cast(Mapping[str, object], edu_obj)
+        text = edu.get("text")
+        anchor = edu.get("source_anchor")
+        if not isinstance(text, str) or not text or not isinstance(anchor, Mapping):
+            continue
+        item_ids_raw = cast(Mapping[str, object], anchor).get("contributing_item_ids")
+        if not isinstance(item_ids_raw, (list, tuple)):
+            continue
+        item_ids = [item_id for item_id in cast(list[object] | tuple[object, ...], item_ids_raw) if isinstance(item_id, str)]
+        if item_ids:
+            recorder(
+                item_ids,
+                XPathTechniqueOccurrence(
+                    technique=Technique.RST,
+                    payload_path=f"{pointer_prefix}/analysis/document/edus/{idx}/text",
+                    relationship="supporting_passage",
+                    quote=text,
+                ),
+            )
+
+
+def _build_xpath_alignment(
+    outcomes: tuple[ResultOutcome | UnavailableOutcome | FailedOutcome, ...],
+    preparation: MachinePreparation | None,
+) -> tuple[XPathAlignmentEntry, ...]:
+    if preparation is None:
+        return ()
+    from rdam.ingest.doclang.loader import to_dclq_xpath
+
+    item_xpath: dict[str, str] = {}
+    xpath_order: list[str] = []
+    seen_xpaths: set[str] = set()
+    for item in preparation.preparation.inventory:
+        attrs = dict(item.provider_attributes)
+        xpath = attrs.get("dclq_xpath")
+        if xpath is None:
+            for anchor in item.anchors:
+                if getattr(anchor, "path_kind", None) == "xml_path":
+                    raw_path = getattr(anchor, "path", None)
+                    if isinstance(raw_path, str) and raw_path:
+                        xpath = to_dclq_xpath(raw_path)
+                        break
+        if xpath:
+            item_xpath[item.item_id] = xpath
+            if xpath not in seen_xpaths:
+                seen_xpaths.add(xpath)
+                xpath_order.append(xpath)
+    if not item_xpath:
+        return ()
+
+    grouped_items: dict[str, list[str]] = {}
+    grouped_occs: dict[str, list[XPathTechniqueOccurrence]] = {}
+
+    def _record(item_ids: Iterable[str], occ: XPathTechniqueOccurrence) -> None:
+        visited: set[str] = set()
+        for item_id in item_ids:
+            xpath = item_xpath.get(item_id)
+            if xpath is None:
+                continue
+            id_list = grouped_items.setdefault(xpath, [])
+            if item_id not in id_list:
+                id_list.append(item_id)
+            if xpath not in visited:
+                visited.add(xpath)
+                grouped_occs.setdefault(xpath, []).append(occ)
+
+    for outcome in outcomes:
+        if not isinstance(outcome, ResultOutcome):
+            continue
+        result = outcome.result
+        for alignment in result.source_alignment:
+            _record(
+                alignment.contributing_item_ids,
+                XPathTechniqueOccurrence(
+                    technique=outcome.technique,
+                    payload_path=alignment.payload_path,
+                    relationship=alignment.relationship,
+                    quote=alignment.quote,
+                ),
+            )
+        if outcome.technique is Technique.RST and not result.source_alignment:
+            _record_rst_edus(result.payload, _record)
+
+    return tuple(
+        XPathAlignmentEntry(
+            xpath=xpath,
+            item_ids=tuple(grouped_items[xpath]),
+            occurrences=tuple(grouped_occs[xpath]),
+        )
+        for xpath in xpath_order
+        if xpath in grouped_occs
+    )
 
 
 def _remove_provider_lock(identity: int, owner: ReferenceType[Lock]) -> None:

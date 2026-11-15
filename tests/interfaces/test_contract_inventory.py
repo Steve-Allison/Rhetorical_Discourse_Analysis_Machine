@@ -38,7 +38,7 @@ MAPPING_FLAGS = {"--structured", "--formalism", "--technique-model"}
 CURRENT_SCHEMAS = {"request", "preparation-request", "configuration", "preparation", "aggregate", "capabilities",
                    "native-result", "operation-error", "version", "analysis-view", "view-request"}
 HISTORICAL_SCHEMAS = {"aggregate-v1", "capabilities-v1", "native-result-v1", "preparation-v1", "toulmin-result-v1", "walton-result-v1"}
-INPUT_SCHEMAS = {"dung-input", "ibis-input"}
+INPUT_SCHEMAS = {"dung-input", "ibis-input", "aspic-input"}
 OUTPUT_SCHEMAS = {f"{technique.value}-result" for technique in BOUNDARY_TECHNIQUES}
 
 
@@ -53,7 +53,7 @@ def _flags(command: str) -> dict[str, str | None]:
     if command in {"prepare", "analyse", "view"}:
         flags["--techniques"] = "dung"
     if command == "analyse":
-        flags.update({"--structured": "dung=structure.json", "--formalism": "dung=dung_extensions"})
+        flags.update({"--structured": "dung=structure.json", "--formalism": "dung=dung_extensions", "--derive": "from_ibis"})
     if command == "schema":
         flags["--mode"] = "validation"
     if command == "serve":
@@ -332,8 +332,8 @@ def test_wire_source_validation_matches_convenience_constructor_restrictions(kin
     document["source"] = SourceIdentity.from_bytes(source_bytes).model_dump(mode="json")
     if kind == "preparation-request":
         document["contract"] = "rdam.preparation_request"
-        for field in ("structured_inputs", "formalisms", "upstream_results"):
-            del document[field]
+        for field in ("structured_inputs", "formalisms", "upstream_results", "derivations"):
+            document.pop(field, None)
         loader = load_preparation_request
     else:
         loader = load_request

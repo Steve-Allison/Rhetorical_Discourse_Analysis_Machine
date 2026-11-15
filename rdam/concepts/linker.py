@@ -1,21 +1,24 @@
 """Deterministic lexical matching with reversible Unicode normalization."""
 
 from collections import defaultdict
-from collections.abc import Iterator
-from dataclasses import dataclass, field
+from collections.abc import Iterator, Mapping
+from dataclasses import dataclass
 from functools import cache
 from importlib.resources import files
 import unicodedata
+
+from ahocorasick_rs import AhoCorasick, MatchKind
+from pydantic import BaseModel
 
 from rdam._canonical import semantic_sha256, sha256_bytes
 from rdam.concepts.contracts import (
     Candidate, CandidateSpan, ConceptLinkRequest, ConceptLinkResult, MatchingOptions, Mention,
     Surface, occurrence_identity,
 )
-from rdam.concepts.index import ConceptIndex, LexicalEntry
+from rdam.concepts.index import ConceptIndex, LexicalEntry, SemanticResource
 from rdam.concepts.surfaces import inventory_surfaces
 from rdam.ingest.contracts.preparation import ContentInventory
-from rdam.ingest.contracts.source import SourceArtifact
+from rdam.ingest.contracts.source import AuthorshipRole, ContentClass, ItemAnchor, SourceArtifact, SourceOrigin
 from rdam.ingest.prepare import prepare_source
 
 
@@ -60,71 +63,113 @@ def _word(character: str) -> bool:
     return character == "_" or character.isalnum() or unicodedata.category(character).startswith("M")
 
 
-@dataclass(slots=True)
-class _Trie:
-    children: dict[str, _Trie] = field(default_factory=lambda: dict[str, _Trie]())
-    entries: list[LexicalEntry] = field(default_factory=list[LexicalEntry])
+@dataclass(frozen=True, slots=True)
+class _CompiledMatcher:
+    automaton: AhoCorasick | None
+    pattern_entries: tuple[tuple[LexicalEntry, ...], ...]
+    case_sensitive: bool
 
 
-def _trie(entries: tuple[LexicalEntry, ...], *, case_sensitive: bool) -> _Trie:
-    root = _Trie()
+_MATCHER_CACHE: dict[
+    tuple[str, tuple[str, ...], bool],
+    tuple[Mapping[str, SemanticResource], tuple[_CompiledMatcher, _CompiledMatcher]],
+] = {}
+
+
+def _compile_matcher(entries: tuple[LexicalEntry, ...], *, case_sensitive: bool) -> _CompiledMatcher:
+    buckets: dict[str, list[LexicalEntry]] = {}
     for entry in entries:
         literal, _, _ = _normalise(entry.literal, case_sensitive=case_sensitive)
         if not literal.strip():
             raise ValueError("ontology literal cannot be whitespace-only")
-        node = root
-        for character in literal:
-            node = node.children.setdefault(character, _Trie())
-        node.entries.append(entry)
-    return root
+        buckets.setdefault(literal, []).append(entry)
+    if not buckets:
+        return _CompiledMatcher(automaton=None, pattern_entries=(), case_sensitive=case_sensitive)
+    patterns = tuple(buckets)
+    pattern_entries = tuple(tuple(buckets[pattern]) for pattern in patterns)
+    automaton = AhoCorasick(patterns, matchkind=MatchKind.Standard, store_patterns=False)
+    return _CompiledMatcher(automaton=automaton, pattern_entries=pattern_entries, case_sensitive=case_sensitive)
 
 
-def _matches(surface: Surface, root: _Trie, *, case_sensitive: bool) -> Iterator[tuple[tuple[int, int], LexicalEntry]]:
-    text, starts, ends = _normalise(surface.text, case_sensitive=case_sensitive)
-    for position, start in enumerate(starts):
-        if position and start == starts[position - 1]:
+def _compiled_index(
+    index: ConceptIndex,
+    *,
+    acronym_case_sensitive: bool,
+) -> tuple[Mapping[str, SemanticResource], tuple[_CompiledMatcher, _CompiledMatcher]]:
+    cache_key = (index.projection.content_digest, index.domains, acronym_case_sensitive)
+    cached = _MATCHER_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+    resources = {item.identifier: item for item in index.projection.resources}
+    domain_set = set(index.domains)
+    entries = tuple(
+        entry
+        for entry in index.projection.entries
+        if resources[entry.target].status != "retired" and resources[entry.target].domain in domain_set
+    )
+    sensitive_entries = tuple(entry for entry in entries if acronym_case_sensitive and entry.case_sensitive)
+    ordinary_entries = tuple(entry for entry in entries if not (acronym_case_sensitive and entry.case_sensitive))
+    compiled = (
+        resources,
+        (
+            _compile_matcher(ordinary_entries, case_sensitive=False),
+            _compile_matcher(sensitive_entries, case_sensitive=True),
+        ),
+    )
+    if len(_MATCHER_CACHE) >= 32:
+        _MATCHER_CACHE.clear()
+    _MATCHER_CACHE[cache_key] = compiled
+    return compiled
+
+
+def _matches(surface: Surface, matcher: _CompiledMatcher) -> Iterator[tuple[tuple[int, int], LexicalEntry]]:
+    if matcher.automaton is None:
+        return
+    raw_text = surface.text
+    text, starts, ends = _normalise(raw_text, case_sensitive=matcher.case_sensitive)
+    text_len = len(text)
+    raw_len = len(raw_text)
+    pattern_entries = matcher.pattern_entries
+    for pattern_id, pos_start, pos_end in matcher.automaton.find_matches_as_indexes(text, overlapping=True):
+        if pos_start and starts[pos_start] == starts[pos_start - 1]:
             continue
-        if start and _word(surface.text[start - 1]) and _word(surface.text[start]):
+        start = starts[pos_start]
+        if start and _word(raw_text[start - 1]) and _word(raw_text[start]):
             continue
-        node = root
-        for cursor in range(position, len(text)):
-            child = node.children.get(text[cursor])
-            if child is None:
-                break
-            node = child
-            finish = cursor + 1
-            if finish < len(text) and ends[cursor] == ends[finish]:
-                continue
-            end = ends[cursor]
-            if end < len(surface.text) and _word(surface.text[end - 1]) and _word(surface.text[end]):
-                continue
-            for entry in node.entries:
-                yield (start, end), entry
+        if pos_end < text_len and ends[pos_end - 1] == ends[pos_end]:
+            continue
+        end = ends[pos_end - 1]
+        if end < raw_len and _word(raw_text[end - 1]) and _word(raw_text[end]):
+            continue
+        for entry in pattern_entries[pattern_id]:
+            yield (start, end), entry
+
+
+def _coerce[T: BaseModel](value: T, model_cls: type[T]) -> T:
+    raw: object = value
+    if isinstance(raw, model_cls):
+        return raw
+    return model_cls.model_validate(raw)
 
 
 def _link(
     inventory: ContentInventory, index: ConceptIndex, options: MatchingOptions,
     supplied: tuple[CandidateSpan, ...] | None,
 ) -> ConceptLinkResult:
-    inventory = ContentInventory.model_validate(inventory.model_dump())
-    index = ConceptIndex.model_validate(index.model_dump())
-    options = MatchingOptions.model_validate(options.model_dump())
+    inventory = _coerce(inventory, ContentInventory)
+    index = _coerce(index, ConceptIndex)
+    options = _coerce(options, MatchingOptions)
     surfaces, exclusions = inventory_surfaces(inventory)
     lookup = {(item.item_id, item.field_pointer): item for item in surfaces}
     requested: dict[tuple[str, str], set[tuple[int, int]]] = defaultdict(set)
     if supplied is not None:
         for span in supplied:
-            span = CandidateSpan.model_validate(span.model_dump())
+            span = _coerce(span, CandidateSpan)
             surface = lookup.get((span.item_id, span.field_pointer))
             if surface is None or surface.text[span.start:span.end] != span.quote:
                 raise ValueError("supplied candidate does not resolve to its exact source surface")
             requested[span.item_id, span.field_pointer].add((span.start, span.end))
-    resources = {item.identifier: item for item in index.projection.resources}
-    entries = tuple(entry for entry in index.projection.entries
-                    if resources[entry.target].status != "retired" and resources[entry.target].domain in index.domains)
-    sensitive_entries = tuple(entry for entry in entries if options.acronym_case_sensitive and entry.case_sensitive)
-    ordinary_entries = tuple(entry for entry in entries if not (options.acronym_case_sensitive and entry.case_sensitive))
-    tries = ((_trie(ordinary_entries, case_sensitive=False), False), (_trie(sensitive_entries, case_sensitive=True), True))
+    resources, matchers = _compiled_index(index, acronym_case_sensitive=options.acronym_case_sensitive)
     mentions: list[Mention] = []
     identity = inventory.semantic_digest
     if identity is None:
@@ -133,8 +178,8 @@ def _link(
         reasons: dict[tuple[int, int], dict[str, list[LexicalEntry]]] = {}
         if supplied is not None:
             reasons = {span: {} for span in requested[surface.item_id, surface.field_pointer]}
-        for trie, sensitive in tries:
-            for span, entry in _matches(surface, trie, case_sensitive=sensitive):
+        for matcher in matchers:
+            for span, entry in _matches(surface, matcher):
                 if supplied is not None and span not in reasons:
                     continue
                 targets = reasons.setdefault(span, {})
@@ -146,7 +191,13 @@ def _link(
                                  start=start, end=end, quote=surface.text[start:end])
             candidates = tuple(Candidate(resource=resources[target], reasons=tuple(targets[target])) for target in sorted(targets))
             mentions.append(Mention(
-                **span.model_dump(), occurrence_id=occurrence_identity(identity, span), candidates=candidates,
+                item_id=span.item_id,
+                field_pointer=span.field_pointer,
+                start=span.start,
+                end=span.end,
+                quote=span.quote,
+                occurrence_id=occurrence_identity(identity, span),
+                candidates=candidates,
                 resolution="unmapped" if not candidates else "unique" if len(candidates) == 1 else "ambiguous",
             ))
     return ConceptLinkResult(
@@ -154,6 +205,37 @@ def _link(
         ontology=index.identity, implementation_identity=implementation_identity(), options=options,
         surfaces=surfaces, exclusions=exclusions, supplied_candidates=supplied, mentions=tuple(mentions),
     )
+
+
+def scan_text_mentions(
+    text: str,
+    index: ConceptIndex | None = None,
+) -> tuple[tuple[int, int, str], ...]:
+    """Scan prepared text for non-overlapping ontology mentions using the cached matcher."""
+    if not text:
+        return ()
+    resolved_index = index or ConceptIndex.load()
+    _, matchers = _compiled_index(resolved_index, acronym_case_sensitive=_DEFAULT_OPTIONS.acronym_case_sensitive)
+    synthetic = Surface(
+        item_id="prepared:text",
+        field_pointer="/text",
+        text=text,
+        classification=ContentClass.PARAGRAPH,
+        origin=SourceOrigin(authorship=AuthorshipRole.AUTHORED),
+        anchors=(ItemAnchor(artifact_identity="prepared", item_identity="prepared:text"),),
+    )
+    hits: dict[tuple[int, int], str] = {}
+    for matcher in matchers:
+        for (start, end), entry in _matches(synthetic, matcher):
+            if (start, end) not in hits:
+                hits[start, end] = entry.target
+    ordered: list[tuple[int, int, str]] = []
+    last_end = -1
+    for (start, end), target in sorted(hits.items(), key=lambda item: (item[0][0], -(item[0][1] - item[0][0]))):
+        if start >= last_end:
+            ordered.append((start, end, target))
+            last_end = end
+    return tuple(ordered)
 
 
 def link_inventory(inventory: ContentInventory, index: ConceptIndex, *, options: MatchingOptions = _DEFAULT_OPTIONS) -> ConceptLinkResult:

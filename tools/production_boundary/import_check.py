@@ -22,19 +22,25 @@ _PUBLIC_MODULES = (
     "rdam.rst.parser",
     "rdam.rst.contracts",
     "rdam.rst.model_loading.parser_input",
-    "rdam.sdrt",
+    "rdam.centering",
     "rdam.pdtb",
+    "rdam.sdrt",
+    "rdam.speech_acts",
+    "rdam.classical_rhetoric",
+    "rdam.argument_mining",
     "rdam.toulmin",
     "rdam.walton",
-    "rdam.dung",
+    "rdam.pragma_dialectics",
     "rdam.ibis",
+    "rdam.aspic",
+    "rdam.dung",
     "rdam.machine",
     "rdam.composition",
     "rdam.ingest",
+    "rdam.ingest.doclang",
 )
 _FORMAT_MODULES = (
     "rdam.ingest.doclang",
-    "rdam.rst.markdown",
 )
 _FORBIDDEN_PREFIXES = ("workbench", "workbench.research")
 _PACKAGE_NAME = "rdam"

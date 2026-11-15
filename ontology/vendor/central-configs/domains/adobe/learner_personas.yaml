@@ -135,10 +135,6 @@ entity_collections:
     description: 'An Adobe field role in the core sellers and account owners family responsible for overall account leadership, ecosystem orchestration, executive relationships, forecast discipline; it resolves to the Commercial Account Seller learner persona.'
     home_domain: adobe
     status: canonical
-    terms:
-    - literal: 'AD'
-      term_type: initialism
-      term_status: admitted
     edges:
     - subject_id: coe:entity/adobe/seller_role/account_director
       predicate: coe:specialises
@@ -153,10 +149,6 @@ entity_collections:
     home_domain: adobe
     status: canonical
     terms:
-    - literal: 'AE'
-      term_type: initialism
-      term_status: admitted
-      usage_note: 'Here the Adobe field name for the Account Executive role. The same name also refers to Adobe After Effects.'
     - literal: 'seller'
       term_type: full_form
       term_status: admitted
@@ -183,9 +175,6 @@ entity_collections:
     home_domain: adobe
     status: canonical
     terms:
-    - literal: 'AM'
-      term_type: initialism
-      term_status: admitted
     - literal: 'NAM'
       term_type: initialism
       term_status: admitted
@@ -266,11 +255,6 @@ entity_collections:
     description: 'An Adobe field role in the specialist overlays family responsible for product-specific value narrative, cross-sell and upsell, and single-solution opportunities; it resolves to the Solution Specialist learner persona. Product Specialist is the DX name for the role.'
     home_domain: adobe
     status: canonical
-    terms:
-    - literal: 'PS'
-      term_type: initialism
-      term_status: admitted
-      usage_note: 'Here the Adobe field name for the Product Specialist role. In a selling-motion context PS means Product Specialist and in a delivery context Professional Services, so it is always expanded. The same name also refers to Adobe Photoshop.'
     edges:
     - subject_id: coe:entity/adobe/seller_role/product_specialist
       predicate: coe:specialises
@@ -350,9 +334,6 @@ entity_collections:
     home_domain: adobe
     status: canonical
     terms:
-    - literal: 'SC'
-      term_type: initialism
-      term_status: admitted
     - literal: 'TPS'
       term_type: initialism
       term_status: admitted
@@ -436,10 +417,6 @@ entity_collections:
     description: 'An Adobe field role in the technical pre-sales family responsible for cross-solution / architecture-heavy technical guidance, above SC; it resolves to the Technical Pre-Sales learner persona.'
     home_domain: adobe
     status: canonical
-    terms:
-    - literal: 'SA'
-      term_type: initialism
-      term_status: admitted
     edges:
     - subject_id: coe:entity/adobe/seller_role/solution_architect
       predicate: coe:specialises
@@ -453,10 +430,6 @@ entity_collections:
     description: 'An Adobe field role in the technical pre-sales family responsible for future-state architecture, integration patterns, scalability, executive technical credibility; it resolves to the Technical Pre-Sales learner persona.'
     home_domain: adobe
     status: canonical
-    terms:
-    - literal: 'EA'
-      term_type: initialism
-      term_status: admitted
     edges:
     - subject_id: coe:entity/adobe/seller_role/enterprise_architect
       predicate: coe:specialises
@@ -472,9 +445,6 @@ entity_collections:
     status: canonical
     terms:
     - literal: 'RSS'
-      term_type: initialism
-      term_status: admitted
-    - literal: 'RS'
       term_type: initialism
       term_status: admitted
     - literal: 'renewal specialist'
@@ -504,6 +474,7 @@ entity_collections:
     - literal: 'SAM'
       term_type: initialism
       term_status: admitted
+      usage_note: 'Here Adobe''s Solution Account Manager field role in post-sale growth. The same initialism also refers to Allen''s Successive Approximation Model in learning design.'
     - literal: 'success account manager'
       term_type: full_form
       term_status: admitted
@@ -524,6 +495,7 @@ entity_collections:
     - literal: 'VSM'
       term_type: initialism
       term_status: admitted
+      usage_note: Value Success Manager Adobe field role; not the Vector Space Model initialism on information_retrieval_foundations.
     edges:
     - subject_id: coe:entity/adobe/seller_role/value_success_manager
       predicate: coe:specialises

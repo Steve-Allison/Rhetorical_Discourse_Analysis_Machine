@@ -241,7 +241,13 @@ entity_collections:
     anti_examples:
     - manual chart creation
     - hand-drawn diagrams
-  - edges:
+  - id: coe:entity/presentation_generation_pipeline
+    label: Presentation Generation Pipeline
+    description: Multi-agent AI pipeline for autonomous presentation generation — 4 specialised agents (Strategist, Architect,
+      Artist, Critic) with HITL checkpoints
+    home_domain: ai
+    status: canonical
+    edges:
     - subject_id: coe:entity/presentation_generation_pipeline
       predicate: coe:supports
       object_id: coe:entity/adult_professional_learner
@@ -249,12 +255,6 @@ entity_collections:
       description: AI systems adapt generative learning experiences for adult professional learners.
       statement_id: coe:edge/9f6f27f6b1e1a8f13cccd743
       home_domain: ai
-    id: coe:entity/presentation_generation_pipeline
-    label: Presentation Generation Pipeline
-    description: Multi-agent AI pipeline for autonomous presentation generation — 4 specialised agents (Strategist, Architect,
-      Artist, Critic) with HITL checkpoints
-    home_domain: ai
-    status: canonical
     examples:
     - multi-agent presentation pipeline
     - automated slide deck generation

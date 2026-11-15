@@ -44,10 +44,10 @@ def test_capacity_returns_single_or_subdivided_complete_plan() -> None:
 
 def test_boundary_reason_states_the_actual_boundary_kind() -> None:
     source = SourceArtifact.from_bytes(
-        b"# Title\n\nBody paragraph text.",
-        source_form=SourceForm.MARKDOWN,
-        source_name="doc.md",
-        media_type="text/markdown; charset=utf-8",
+        b"<doclang><heading>Title</heading><text>Body paragraph text.</text></doclang>",
+        source_form=SourceForm.DOCLANG_XML,
+        source_name="doc.dclg",
+        media_type="application/vnd.doclang+xml",
     )
     prepared = ProductionIngestor().prepare(source).semantic.prepared_document
     capacity = AnalysisCapacity(

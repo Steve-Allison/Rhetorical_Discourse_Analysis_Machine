@@ -1,27 +1,25 @@
 <!--
 Sync Impact Report
-- Version change: 2.0.0 -> 2.0.1 (PATCH, non-semantic clarification, 2026-10-20)
+- Version change: 2.0.1 -> 2.1.0 (MINOR, material expansion of technique boundaries and core DocLang/dclq runtime, 2026-11-15)
+- Modified principles:
+  - Principle V wording updated from "Docling- or DocLang-native" to "`dclq`- or DocLang-native"
+- Modified constraints:
+  - Production technique boundaries expanded from seven to thirteen (`rst`, `centering`,
+    `pdtb`, `sdrt`, `speech_acts`, `classical_rhetoric`, `argument_mining`, `toulmin`,
+    `walton`, `pragma_dialectics`, `ibis`, `aspic`, `dung`) beneath `rdam` (`rdam/frameworks.py:55-69`)
+  - Core dependencies now include `dclq` and `doclang[schematron-saxon]` (`pyproject.toml:44-45`);
+    the separate `formats` extra is retired while optional `http` remains an explicit extra
+- Added sections: none
+- Removed sections: none
+- Follow-up TODOs: none
+
+Previous report (2.0.0 -> 2.0.1, 2026-10-20)
 - Modified principles: none
 - Modified constraints: none
 - Modified wording: the Pixi-task reference in Development Workflow and the
   authority description in Governance now name `AGENTS.md` as the operating manual and
   `CLAUDE.md` as the Claude Code adapter; `.claude/rules/commands.md` no longer exists
   (its content moved into `AGENTS.md`).
-- Added sections: none
-- Removed sections: none
-- Follow-up TODOs: none
-
-Previous report (1.1.0 -> 2.0.0)
-- Modified principles: none (core principles I-V remain inviolate)
-- Modified constraints:
-  - Project identity: `isanlp_rst` -> Rhetorical Discourse Analysis Machine (`rdam`)
-  - Production RST architecture: ModernBERT mandate -> DMRST and UniRST families;
-    experimental ModernBERT remains workbench-only
-  - Product surface: single-parser CLI framing -> one package containing seven native
-    discourse and argumentation technique boundaries
-- Added sections: none
-- Removed sections: obsolete production ModernBERT mandate
-- Follow-up TODOs: none
 -->
 
 # Rhetorical Discourse Analysis Machine Constitution
@@ -77,7 +75,7 @@ Rationale: a check is useful only when it demonstrates the real property it clai
 
 Each governed fact MUST have one canonical authority; derived files MUST be regenerated from that
 authority rather than edited as competing sources. Public request, result, schema, serialization,
-and model-licensing contracts MUST remain explicit and tested. Before Docling- or DocLang-native
+and model-licensing contracts MUST remain explicit and tested. Before `dclq`- or DocLang-native
 work, the current upstream specifications and accepted runtime behaviour MUST be verified; pins,
 locks, fixtures, and memory record what was last shipped, not what is current. Trained model
 licensing and optional-dependency boundaries MUST remain visible in design and distribution
@@ -91,22 +89,24 @@ reliably expose.
 - Project Python MUST remain `>=3.14`; Python commands and dependency changes MUST run through the
   repository's locked Pixi environment. Bare `python`, `pip`, Conda, Poetry, and manual edits to
   `pixi.lock` are prohibited.
-- The repository MUST maintain a two-environment topology: `default` (containing all developer, format,
-  and offline tools for daily work) and `production` (isolated clean-room consumer environment for release
-  certification). Production code MUST NOT import offline or dev dependencies.
-- The production distribution and import root MUST remain `rdam`, with RST, PDTB, SDRT,
-  Toulmin, Walton, Dung, and IBIS kept as separate native technique boundaries beneath
-  that one package. Technique results MUST NOT be collapsed into a shared formalism.
+- The repository MUST maintain a two-environment topology: `default` (containing all developer, HTTP,
+  and offline tools for daily work; `pyproject.toml:136-140`) and `production` (isolated clean-room consumer
+  environment for release certification). Production code MUST NOT import offline or dev dependencies.
+- The production distribution and import root MUST remain `rdam`, with RST, Centering, PDTB, SDRT,
+  Speech Acts, Classical Rhetoric, Argument Mining, Toulmin, Walton, Pragma-Dialectics, IBIS,
+  ASPIC+, and Dung kept as thirteen separate native technique boundaries beneath that one package
+  (`rdam/frameworks.py:55-69`). Technique results MUST NOT be collapsed into a shared formalism.
 - Production RST inference MUST use the DMRST and UniRST families. Experimental
-  ModernBERT architectures MUST remain under `workbench/` unless a separately specified,
+  ModernBERT and eRST architectures MUST remain under `workbench/` unless a separately specified,
   evidence-backed promotion changes that boundary.
 - The RST parser MUST preserve its Apple-Silicon-first, MPS-aware behaviour, CPU fallback, and explicit
   CUDA paths unless an approved feature changes those supported targets.
 - Original source licensing MUST remain attributed. Published model weights are CC BY-NC 4.0 and
   MUST NOT be represented as commercially usable; commercial distribution requires permissively
   licensed replacement or retrained weights.
-- Core imports MUST remain usable without optional format and serialization extras. Changes to
-  dependency boundaries MUST be specified, tested, and reflected in packaging metadata.
+- Core imports MUST remain usable without optional HTTP or offline extras (`pyproject.toml:58-82`);
+  `dclq` and `doclang[schematron-saxon]` ship in core `[project.dependencies]` (`pyproject.toml:44-45`).
+  Changes to dependency boundaries MUST be specified, tested, and reflected in packaging metadata.
 - Secrets MUST NOT be committed or printed. Local data and machine safety MUST be protected without
   introducing enterprise security machinery that the project does not require.
 
@@ -145,4 +145,4 @@ Specifications, plans, tasks, implementations, and completion reviews MUST check
 this constitution. Any deviation MUST be identified before implementation and justified explicitly;
 unjustified complexity or an unverified exception is non-compliant.
 
-**Version**: 2.0.1 | **Ratified**: 2026-08-24 | **Last Amended**: 2026-10-20
+**Version**: 2.1.0 | **Ratified**: 2026-08-24 | **Last Amended**: 2026-11-15

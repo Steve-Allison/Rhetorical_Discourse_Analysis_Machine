@@ -11,5 +11,5 @@ Claude Code.
   canonicity, custom-field or extension claim without an evidence anchor or `ASSUMED`
   marker (AGENTS.md § Evidence marking). The global hooks apply, and the Stop gate runs
   `pixi run lint`, `typecheck`, `mdlint` and `test`.
-- `.claude/memory/` is hand-maintained; read `MEMORY.md` there when a Docling, DocLang
+- `.claude/memory/` is hand-maintained; read `MEMORY.md` there when a `dclq`, DocLang
   or boundary question comes up.

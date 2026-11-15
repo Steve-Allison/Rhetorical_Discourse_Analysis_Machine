@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+import math
 from typing import Any, cast, override
 
 import torch
@@ -974,9 +975,8 @@ class ParsingNet(nn.Module):
 
             probs = torch.exp(log_atten_weights.detach())
             raw_entropy = -torch.sum(probs * log_atten_weights.detach(), dim=-1)
-            max_entropy = torch.log(torch.tensor(N, device=probs.device, dtype=probs.dtype))
-            normalized_entropy = raw_entropy / max_entropy
-            return normalized_entropy.cpu().item()
+            normalized_entropy = raw_entropy / math.log(N)
+            return float(normalized_entropy.cpu().item())
 
     def eval_loss(
         self,

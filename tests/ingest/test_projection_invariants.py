@@ -42,7 +42,13 @@ def test_reconstruct_and_transformation_invariants(form: SourceForm, tables: boo
 
 
 def test_projection_admits_tables_only_when_declared() -> None:
-    source, _ = source_case(SourceForm.DOCLING_JSON)
+    from rdam.ingest.contracts.source import SourceArtifact
+
+    source = SourceArtifact.from_bytes(
+        b"<doclang><text>Prose.</text><table><ched/>Region<nl/><fcel/>North<nl/></table></doclang>",
+        source_form=SourceForm.DOCLANG_XML,
+        source_name="table.dclg",
+    )
     inventory = ContentInventory.from_preparation(ProductionIngestor().prepare(source))
     assert "North" in project(inventory, table_requirement()).prepared_document.text
     assert "North" not in project(inventory, prose_requirement()).prepared_document.text

@@ -1,14 +1,19 @@
-# Docling JSON fixtures
+# Docling JSON fixtures (historical)
 
-Real-world Docling JSON files used to test the Docling JSON source form through
-the shared public production ingest API, `rdam.ingest`. Docling deserialization
-is a private implementation detail. The file-by-file observations below record
+> **Status reconciled 2026-11-15:** Raw `DoclingDocument` JSON ingestion was retired
+> in `rdam` `6.1.0` in favour of unified `dclq` + DocLang ingestion (`SourceForm` at
+> `rdam/ingest/contracts/source.py:17-21`). These unmodified specimen files and their
+> dated observations are retained for historical audit traceability; active format
+> conformance fixtures live in [`../doclang/`](../doclang/README.md).
+
+Real-world Docling JSON files previously used to test the historical Docling JSON
+source form. The file-by-file observations below record
 the fixture inspection performed on 2026-05-15; they are not universal Docling
 schema guarantees. Source filenames are recorded under Provenance; public
 availability and redistribution permission have not been independently verified
 in the 2026-09-04 preflight.
 
-## Current loading check — 2026-10-10
+## Historical loading check — 2026-10-10
 
 All four fixtures loaded with Docling Core 2.101.1 using
 `DoclingDocument.load_from_json`. Each stores schema 1.10.0 and loaded as 1.10.0.

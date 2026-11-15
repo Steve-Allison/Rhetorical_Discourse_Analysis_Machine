@@ -323,60 +323,94 @@ class EncoderRNN(nn.Module):
 
         slide_steps = int(np.ceil(sequence_length / self.window_size))
         window_embed_list: list[Tensor] = []
-        for tmp_step in range(slide_steps):
-            if tmp_step == 0:
-                end = self.window_size + 2 * self.window_padding
-                cur_token_ids = token_ids[:, :end]
-
-                if use_entities:
-                    if entity_ids is None or entity_position_ids is None:
-                        raise RuntimeError("entity tensors are required for entity-aware encoding")
-                    # print(f'{entity_position_ids = }') [[[ 27,  ...
-                    cur_entities = [
-                        i for i, entity_positions in enumerate(entity_position_ids[0]) if entity_positions[0] < end
-                    ]
-                    one_win_res = self.transformer(
-                        cur_token_ids,
-                        entity_ids=entity_ids[:, cur_entities],
-                        entity_position_ids=entity_position_ids[:, cur_entities],
-                    )[0][:, : self.window_size, :]
-                else:
-                    one_win_res = self.transformer(cur_token_ids)[0][:, : self.window_size, :]
-
-            elif tmp_step == slide_steps - 1:
-                start = sequence_length - ((sequence_length - (self.window_size * tmp_step)) + 2 * self.window_padding)
-                one_win_res = self.transformer(token_ids[:, start:])[0][:, 2 * self.window_padding :, :]
-            else:
+        if not use_entities and slide_steps > 2:
+            full_window_length = self.window_size + 2 * self.window_padding
+            full_windows = [token_ids[:, :full_window_length]]
+            for tmp_step in range(1, slide_steps - 1):
                 start = self.window_size * tmp_step - self.window_padding
-                end = self.window_size * (tmp_step + 1) + self.window_padding
-
-                if use_entities:
-                    if entity_ids is None or entity_position_ids is None:
-                        raise RuntimeError("entity tensors are required for entity-aware encoding")
-                    cur_entities = [
-                        i
-                        for i, entity_positions in enumerate(entity_position_ids[0])
-                        if start <= entity_positions[0] <= max(entity_positions) < end
-                    ]
-                    current_position_ids = entity_position_ids[:, cur_entities].clone()
-                    current_position_ids = torch.where(current_position_ids == -1, -1, current_position_ids - start)
-
-                    one_win_res = self.transformer(
-                        token_ids[:, start:end],
-                        entity_ids=entity_ids[:, cur_entities],
-                        entity_position_ids=current_position_ids,
-                    )[0][:, self.window_padding : self.window_size + self.window_padding, :]
+                full_windows.append(token_ids[:, start : start + full_window_length])
+            batched_encoded = self.transformer(torch.cat(full_windows, dim=0))[0]
+            for tmp_step in range(slide_steps - 1):
+                if tmp_step == 0:
+                    one_win_res = batched_encoded[0:1, : self.window_size, :]
                 else:
-                    one_win_res = self.transformer(token_ids[:, start:end])[0][
-                        :, self.window_padding : self.window_size + self.window_padding, :
+                    one_win_res = batched_encoded[
+                        tmp_step : tmp_step + 1,
+                        self.window_padding : self.window_size + self.window_padding,
+                        :,
                     ]
-
+                if use_bilstm:
+                    one_win_res, _ = self._embedding_bilstm(
+                        one_win_res.to(next(self._embedding_bilstm.parameters()).dtype)
+                    )
+                window_embed_list.append(one_win_res)
+            tail_start = sequence_length - (
+                (sequence_length - (self.window_size * (slide_steps - 1))) + 2 * self.window_padding
+            )
+            tail_res = self.transformer(token_ids[:, tail_start:])[0][:, 2 * self.window_padding :, :]
             if use_bilstm:
-                one_win_res, _ = self._embedding_bilstm(
-                    one_win_res.to(next(self._embedding_bilstm.parameters()).dtype)
+                tail_res, _ = self._embedding_bilstm(
+                    tail_res.to(next(self._embedding_bilstm.parameters()).dtype)
                 )
+            window_embed_list.append(tail_res)
+        else:
+            for tmp_step in range(slide_steps):
+                if tmp_step == 0:
+                    end = self.window_size + 2 * self.window_padding
+                    cur_token_ids = token_ids[:, :end]
 
-            window_embed_list.append(one_win_res)
+                    if use_entities:
+                        if entity_ids is None or entity_position_ids is None:
+                            raise RuntimeError("entity tensors are required for entity-aware encoding")
+                        cur_entities = [
+                            i for i, entity_positions in enumerate(entity_position_ids[0]) if entity_positions[0] < end
+                        ]
+                        one_win_res = self.transformer(
+                            cur_token_ids,
+                            entity_ids=entity_ids[:, cur_entities],
+                            entity_position_ids=entity_position_ids[:, cur_entities],
+                        )[0][:, : self.window_size, :]
+                    else:
+                        one_win_res = self.transformer(cur_token_ids)[0][:, : self.window_size, :]
+
+                elif tmp_step == slide_steps - 1:
+                    start = sequence_length - (
+                        (sequence_length - (self.window_size * tmp_step)) + 2 * self.window_padding
+                    )
+                    one_win_res = self.transformer(token_ids[:, start:])[0][:, 2 * self.window_padding :, :]
+                else:
+                    start = self.window_size * tmp_step - self.window_padding
+                    end = self.window_size * (tmp_step + 1) + self.window_padding
+
+                    if use_entities:
+                        if entity_ids is None or entity_position_ids is None:
+                            raise RuntimeError("entity tensors are required for entity-aware encoding")
+                        cur_entities = [
+                            i
+                            for i, entity_positions in enumerate(entity_position_ids[0])
+                            if start <= entity_positions[0] <= max(entity_positions) < end
+                        ]
+                        current_position_ids = entity_position_ids[:, cur_entities].clone()
+                        current_position_ids = torch.where(
+                            current_position_ids == -1, -1, current_position_ids - start
+                        )
+
+                        one_win_res = self.transformer(
+                            token_ids[:, start:end],
+                            entity_ids=entity_ids[:, cur_entities],
+                            entity_position_ids=current_position_ids,
+                        )[0][:, self.window_padding : self.window_size + self.window_padding, :]
+                    else:
+                        one_win_res = self.transformer(token_ids[:, start:end])[0][
+                            :, self.window_padding : self.window_size + self.window_padding, :
+                        ]
+
+                if use_bilstm:
+                    one_win_res, _ = self._embedding_bilstm(
+                        one_win_res.to(next(self._embedding_bilstm.parameters()).dtype)
+                    )
+
+                window_embed_list.append(one_win_res)
 
         embeddings = torch.cat(window_embed_list, dim=1)
         if embeddings.size(1) != sequence_length:

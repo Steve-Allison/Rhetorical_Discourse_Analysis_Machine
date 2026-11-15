@@ -62,14 +62,14 @@ entity_collections:
       statement_id: coe:edge/dd358e581af0f38e03a92a4d
       home_domain: learning
     - subject_id: coe:entity/discussion_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/analyze_verb
       relationship_weight: expected
       description: Discussion activities support analysis-level learning objectives requiring critical evaluation of ideas
       statement_id: coe:edge/1165588d128f46cb2b1f4486
       home_domain: learning
     - subject_id: coe:entity/discussion_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_event
       relationship_weight: expected
       description: Gagné's Event 3 (Stimulate Recall) explicitly uses discussions and questions to activate prior knowledge
@@ -77,7 +77,7 @@ entity_collections:
       statement_id: coe:edge/534baa3fd356053308ef7bb6
       home_domain: learning
     - subject_id: coe:entity/discussion_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/understand_verb
       relationship_weight: expected
       description: Discussion activities support understand-level learning objectives — collaborative discourse requires learners
@@ -176,7 +176,7 @@ entity_collections:
       statement_id: coe:edge/74877bcf8c59c1423ba4e916
       home_domain: learning
     - subject_id: coe:entity/roleplay_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/confidence_technique
       relationship_weight: expected
       description: Confidence techniques are supported by roleplay as a safe practice environment for building presenter confidence
@@ -184,7 +184,7 @@ entity_collections:
       statement_id: coe:edge/f0e865278440eed6acf541ce
       home_domain: learning
     - subject_id: coe:entity/roleplay_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_event
       relationship_weight: expected
       description: Gagné's Event 6 (Elicit Performance) explicitly cites role-playing as a technique for learners to practice
@@ -192,7 +192,7 @@ entity_collections:
       statement_id: coe:edge/dcdabff8dd3721d0cd13f38d
       home_domain: learning
     - subject_id: coe:entity/roleplay_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/live_demonstration
       relationship_weight: expected
       description: Live demonstrations are supported by roleplay as expert modelling of interpersonal skills before learner
@@ -252,14 +252,14 @@ entity_collections:
       statement_id: coe:edge/8aaa6f9ad4499cf193015944
       home_domain: learning
     - subject_id: coe:entity/collaborative_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/analyze_verb
       relationship_weight: expected
       description: Collaborative activities support analysis-level Bloom's objectives through group evaluation of problems
       statement_id: coe:edge/4cc9d12e57aa36c4d40e110d
       home_domain: learning
     - subject_id: coe:entity/collaborative_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/create_verb
       relationship_weight: required
       description: Collaborative activities support creation-level Bloom's objectives through joint artifact production |
@@ -268,7 +268,7 @@ entity_collections:
       statement_id: coe:edge/1e13c768c8109244b1ff25e5
       home_domain: learning
     - subject_id: coe:entity/collaborative_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/evaluate_verb
       relationship_weight: expected
       description: Collaborative activities like group case studies and team projects support Bloom's Evaluate level — teams
@@ -276,7 +276,7 @@ entity_collections:
       statement_id: coe:edge/54eb72cd5b6ae96050f0f859
       home_domain: learning
     - subject_id: coe:entity/collaborative_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/formative_assessment
       relationship_weight: expected
       description: Collaborative activities like hackathons, action learning projects, and group case studies support formative
@@ -284,7 +284,7 @@ entity_collections:
       statement_id: coe:edge/445d988dfac1fccaaec70676
       home_domain: learning
     - subject_id: coe:entity/collaborative_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/motivation_element
       relationship_weight: expected
       description: FPI Activation phase uses group discussions where learners share prior experience insights activating engagement
@@ -293,7 +293,7 @@ entity_collections:
       statement_id: coe:edge/5bea781f64cc6598468374f5
       home_domain: learning
     - subject_id: coe:entity/collaborative_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/reflection_activity
       relationship_weight: optional
       description: Reflect & Transfer Cards use collaborative elements — 'Share with peer', 'Share on collaborative board',
@@ -369,7 +369,7 @@ entity_collections:
       statement_id: coe:edge/f113b3479be215b020e8b0a9
       home_domain: learning
     - subject_id: coe:entity/demonstration_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_event
       relationship_weight: expected
       description: Gagné's Event 5 (Provide Guidance) explicitly cites step-by-step demonstrations and worked examples as
@@ -377,14 +377,14 @@ entity_collections:
       statement_id: coe:edge/c79b3b71a44d1bc198e2bb18
       home_domain: learning
     - subject_id: coe:entity/demonstration_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/practice_activity
       relationship_weight: required
       description: Practice activities are supported by prior demonstration that models correct performance
       statement_id: coe:edge/0e280e891bdf54c0ce96b3fb
       home_domain: learning
     - subject_id: coe:entity/demonstration_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/remember_verb
       relationship_weight: expected
       description: Guided demonstrations support Bloom's Remember/Understand levels — lecturettes and demonstrations introduce
@@ -408,7 +408,7 @@ entity_collections:
       statement_id: coe:edge/04ac11a858861a9e4b4b7932
       home_domain: learning
     - subject_id: coe:entity/demonstration_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/understand_verb
       relationship_weight: expected
       description: Demonstrations support comprehension-level Bloom's objectives through expert modelling
@@ -468,7 +468,7 @@ entity_collections:
       statement_id: coe:edge/adde671bb8ddc5342df30eb1
       home_domain: learning
     - subject_id: coe:entity/quiz_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/engagement_cue
       relationship_weight: expected
       description: Engagement cues are supported by quiz activities including real-time polls, live quizzes, and embedded
@@ -476,7 +476,7 @@ entity_collections:
       statement_id: coe:edge/fac6cbaeed6d6b2db402f4b6
       home_domain: learning
     - subject_id: coe:entity/quiz_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_event
       relationship_weight: expected
       description: Gagné's Event 6 (Elicit Performance) lists quizzes as a key technique for encouraging learners to apply
@@ -484,7 +484,7 @@ entity_collections:
       statement_id: coe:edge/9b30d5e35e9a2dd63973c22f
       home_domain: learning
     - subject_id: coe:entity/quiz_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/remember_verb
       relationship_weight: required
       description: Quiz activities support recall-level Bloom's objectives through knowledge retrieval practice | Remember-level
@@ -493,7 +493,7 @@ entity_collections:
       statement_id: coe:edge/acb8100821e5a9fd437c6a4e
       home_domain: learning
     - subject_id: coe:entity/quiz_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/summative_assessment
       relationship_weight: optional
       description: Quiz activities can support summative assessment when requiring passing scores for certification or module
@@ -596,7 +596,7 @@ entity_collections:
       statement_id: coe:edge/995b7a8ada496f3cee8c89b8
       home_domain: learning
     - subject_id: coe:entity/scenario_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/analyze_verb
       relationship_weight: expected
       description: Case study and problem-solving scenarios support Bloom's Analyze/Evaluate/Create levels — presenting realistic
@@ -614,7 +614,7 @@ entity_collections:
       statement_id: coe:edge/3fe02c434573541fc6f4e04e
       home_domain: learning
     - subject_id: coe:entity/scenario_activity
-      predicate: coe:supports
+      predicate: coe:contains
       object_id: coe:entity/discussion_activity
       relationship_weight: expected
       description: Tabletop exercises use discussion-based sessions to validate plans, clarify roles, and identify coordination
@@ -630,7 +630,7 @@ entity_collections:
       statement_id: coe:edge/440ef505d438385980768547
       home_domain: learning
     - subject_id: coe:entity/scenario_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/evaluate_verb
       relationship_weight: expected
       description: Scenario activities support evaluation-level Bloom's objectives through decision-making under constraints
@@ -656,7 +656,7 @@ entity_collections:
       statement_id: coe:edge/c7e32a0212934823fd53a2de
       home_domain: learning
     - subject_id: coe:entity/scenario_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/motivation_element
       relationship_weight: expected
       description: FPI's problem-centered anchor creates intrinsic need-to-know motivation by presenting authentic real-world
@@ -672,7 +672,7 @@ entity_collections:
       statement_id: coe:edge/0b6609ccf164d01914c0934c
       home_domain: learning
     - subject_id: coe:entity/scenario_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/summative_assessment
       relationship_weight: expected
       description: Scenario-based assessments in simulated environments support summative evaluation at Kirkpatrick L2 (scenario
@@ -686,6 +686,13 @@ entity_collections:
     description: References to scenario-based and branching learning activities
     home_domain: learning
     status: canonical
+    terms:
+    - literal: SBT
+      term_type: initialism
+      term_status: admitted
+    - literal: Scenario-Based Training
+      term_type: full_form
+      term_status: admitted
     examples:
     - branching scenario exercise
     - decision tree activity
@@ -731,7 +738,7 @@ entity_collections:
       statement_id: coe:edge/109a85e21027e1fbdaeb81ab
       home_domain: learning
     - subject_id: coe:entity/reflection_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/evaluate_verb
       relationship_weight: expected
       description: Reflection activities support evaluation-level Bloom's objectives through self-assessment and critique
@@ -748,7 +755,7 @@ entity_collections:
       statement_id: coe:edge/e7f76680f5f21b8ebdea1518
       home_domain: learning
     - subject_id: coe:entity/reflection_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:concept/assessment_taxonomy/kirkpatrick_level
       relationship_weight: optional
       description: Reflection activities support Kirkpatrick evaluation — action plan reflections and service pledge cards
@@ -764,7 +771,7 @@ entity_collections:
       statement_id: coe:edge/3a9e880a9d592b8783e3cd11
       home_domain: learning
     - subject_id: coe:entity/reflection_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/learning_objective
       relationship_weight: expected
       description: FPI Integration phase uses reflection activities (teach-backs, action plans) to transfer learning to real-world
@@ -840,7 +847,7 @@ entity_collections:
       statement_id: coe:edge/721b308253510ec9ede1cba1
       home_domain: learning
     - subject_id: coe:entity/practice_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/apply_verb
       relationship_weight: required
       description: Practice activities directly support application-level Bloom's objectives through hands-on skill use |
@@ -849,7 +856,7 @@ entity_collections:
       statement_id: coe:edge/b56b593c6d9804884dafec4b
       home_domain: learning
     - subject_id: coe:entity/practice_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/cognitive_level
       relationship_weight: expected
       description: Practice activities support progression through cognitive levels — guided→independent practice maps to
@@ -857,7 +864,7 @@ entity_collections:
       statement_id: coe:edge/e73b5ae55606507315c37d5d
       home_domain: learning
     - subject_id: coe:entity/practice_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/engagement_dimension
       relationship_weight: expected
       description: Engagement scoring dimension is supported by practice activities including gamified challenges, hands-on
@@ -873,14 +880,14 @@ entity_collections:
       statement_id: coe:edge/fea67c2ee95a7320b017f197
       home_domain: learning
     - subject_id: coe:entity/practice_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/reflection_activity
       relationship_weight: expected
       description: Reflection is supported by prior practice activities that provide concrete experiences to reflect upon
       statement_id: coe:edge/a91e579b388ef5a7871ac2e7
       home_domain: learning
     - subject_id: coe:entity/practice_activity
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/remember_verb
       relationship_weight: expected
       description: Retrieval practice activities directly support remember-level learning objectives — frequent knowledge
@@ -926,6 +933,10 @@ entity_collections:
     description: References to structured peer teaching where learners explain concepts to each other
     home_domain: learning
     status: canonical
+    terms:
+    - literal: ConcepTest
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - peer instruction activity
@@ -1153,7 +1164,7 @@ entity_collections:
       statement_id: coe:edge/250e1780e549ddf2ba189da4
       home_domain: learning
     - subject_id: coe:entity/formative_assessment
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/motivation_element
       relationship_weight: expected
       description: Formative assessments enhanced with emotional framing (encouragement messages, low-stakes framing, retry
@@ -1163,7 +1174,7 @@ entity_collections:
       statement_id: coe:edge/e7951a6c407b88d9ef58b552
       home_domain: learning
     - subject_id: coe:entity/formative_assessment
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/practice_activity
       relationship_weight: required
       description: FPI Application phase functions as formative assessment with immediate corrective feedback guiding learner
@@ -1220,7 +1231,7 @@ entity_collections:
       statement_id: coe:edge/cdd7ed9260da2726f584564a
       home_domain: learning
     - subject_id: coe:entity/summative_assessment
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:concept/assessment_taxonomy/kirkpatrick_level
       relationship_weight: expected
       description: Summative assessments support Kirkpatrick evaluation levels — end-of-course tests map to Level 2 (Learning),
@@ -1318,7 +1329,7 @@ entity_collections:
       statement_id: coe:edge/a139c218325d8c5fbfbada95
       home_domain: learning
     - subject_id: coe:entity/rubric_component
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/facilitation_technique
       relationship_weight: optional
       description: Facilitation techniques are supported by rubric components that define observable criteria for evaluating
@@ -1327,7 +1338,7 @@ entity_collections:
       statement_id: coe:edge/d536cef6f6014ac7e70a8d36
       home_domain: learning
     - subject_id: coe:entity/rubric_component
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/formative_assessment
       relationship_weight: optional
       description: Formative assessments like peer video reviews and slide deck critiques are supported by rubric components
@@ -1360,7 +1371,7 @@ entity_collections:
       statement_id: coe:edge/66fb31151d303aa356c54bd5
       home_domain: learning
     - subject_id: coe:entity/rubric_component
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/summative_assessment
       relationship_weight: expected
       description: Summative assessments need rubric criteria for consistent evaluation | Rubric components support summative
@@ -1467,7 +1478,7 @@ entity_collections:
       statement_id: coe:edge/594fcfbddf0c6caa9686a17c
       home_domain: learning
     - subject_id: coe:entity/feedback_modality
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:concept/assessment_taxonomy/kirkpatrick_level
       relationship_weight: expected
       description: Kirkpatrick evaluation levels are supported by feedback modalities — Level 1 (Reaction) uses learner surveys,
@@ -1580,6 +1591,8 @@ entity_collections:
     description: Specific question or task formats used in assessments
     home_domain: learning
     status: canonical
+    close_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/assessmentItem
     examples:
     - multiple choice question
     - true/false item
@@ -1628,7 +1641,7 @@ entity_collections:
       statement_id: coe:edge/ac4168cf5a0f782d4ce0afea
       home_domain: learning
     - subject_id: coe:entity/meaningful_distractor
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/hinge_question
       relationship_weight: required
       description: Hinge questions depend on meaningful distractors that map one-to-one to known misconceptions for diagnostic
@@ -2094,7 +2107,7 @@ entity_collections:
       statement_id: coe:edge/22525db287d29bb488169971
       home_domain: learning
     - subject_id: coe:entity/mayer_extraneous_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/delivery_modality_marker
       relationship_weight: expected
       description: Delivery modality design is supported by Mayer's extraneous processing principles — coherence, signaling,
@@ -2119,7 +2132,7 @@ entity_collections:
       statement_id: coe:edge/4c942eda53b78a3548215f69
       home_domain: learning
     - subject_id: coe:entity/mayer_extraneous_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_strategy
       relationship_weight: expected
       description: Instructional strategies for multimedia design are supported by Mayer's extraneous principles — Coherence
@@ -2255,7 +2268,7 @@ entity_collections:
       statement_id: coe:edge/5115f653434b0dcebb61f57e
       home_domain: learning
     - subject_id: coe:entity/mayer_essential_principle
-      predicate: coe:supports
+      predicate: coe:limits
       object_id: coe:entity/delivery_modality
       relationship_weight: expected
       description: Segmenting and pre-training align delivery modality pacing with essential processing limits per Applying
@@ -2298,7 +2311,7 @@ entity_collections:
       statement_id: coe:edge/72964951cbf42480969ad286
       home_domain: learning
     - subject_id: coe:entity/mayer_essential_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_strategy
       relationship_weight: expected
       description: Instructional strategies are supported by Mayer's essential principles — Segmenting prescribes chunking,
@@ -2315,7 +2328,7 @@ entity_collections:
       statement_id: coe:edge/d4dc64675a5aebe7df22787e
       home_domain: learning
     - subject_id: coe:entity/mayer_essential_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/pedagogical_sequence_marker
       relationship_weight: expected
       description: Mayer's essential principles support pedagogical sequencing — segmenting and pre-training ensure learners
@@ -2462,7 +2475,7 @@ entity_collections:
       statement_id: coe:edge/5a188a58b97ac2627143dea5
       home_domain: learning
     - subject_id: coe:entity/mayer_generative_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_strategy
       relationship_weight: expected
       description: Instructional strategies for active learning are supported by Mayer's generative principles — Generative
@@ -2470,7 +2483,7 @@ entity_collections:
       statement_id: coe:edge/6bdc30f923f9c123eedd5b2a
       home_domain: learning
     - subject_id: coe:entity/mayer_generative_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/quiz_activity
       relationship_weight: expected
       description: Quiz activities are supported by Mayer's generative principle — the testing effect demonstrates that retrieval
@@ -2576,7 +2589,7 @@ entity_collections:
       statement_id: coe:edge/07904fb4e363b0b0cabc286b
       home_domain: learning
     - subject_id: coe:entity/working_memory_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/chunking_presentation
       relationship_weight: required
       description: Presentation chunking is grounded in working memory capacity limits — 3-5 chunks per Cowan (2001) per Slide
@@ -2601,14 +2614,14 @@ entity_collections:
       statement_id: coe:edge/f28a6ad8aa636dd5dfbe8ce5
       home_domain: learning
     - subject_id: coe:entity/working_memory_marker
-      predicate: coe:supports
+      predicate: coe:limits
       object_id: coe:entity/learning_principle
       relationship_weight: required
       description: Learning principles constrained by working memory limits; all design accommodates limited processing capacity
       statement_id: coe:edge/15bd062b4ecf7ef6710dfbfd
       home_domain: learning
     - subject_id: coe:entity/working_memory_marker
-      predicate: coe:supports
+      predicate: coe:limits
       object_id: coe:entity/objective_stem
       relationship_weight: expected
       description: CLT limits objective quantity to 5-9 per course and 2-3 per module due to adult working memory processing
@@ -2616,7 +2629,7 @@ entity_collections:
       statement_id: coe:edge/bf062a86952ad87328107842
       home_domain: learning
     - subject_id: coe:entity/working_memory_marker
-      predicate: coe:supports
+      predicate: coe:limits
       object_id: coe:entity/remember_verb
       relationship_weight: expected
       description: CLT research limits remember-level objective quantity per lesson to 1-2 maximum due to working memory constraints
@@ -2788,7 +2801,7 @@ entity_collections:
       statement_id: coe:edge/b7f4ae8f78454c9b4b6f8d99
       home_domain: learning
     - subject_id: coe:entity/progressive_disclosure_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_strategy
       relationship_weight: expected
       description: FPI's problem progression principle prescribes starting with simple whole tasks and gradually increasing
@@ -2796,7 +2809,7 @@ entity_collections:
       statement_id: coe:edge/0a58fe0fac1774d6e706c648
       home_domain: learning
     - subject_id: coe:entity/progressive_disclosure_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/job_aid_format
       relationship_weight: expected
       description: Job aid format is supported by progressive disclosure, providing only essential task-focused information
@@ -2805,7 +2818,7 @@ entity_collections:
       statement_id: coe:edge/c3de2a8ed9ef8f6064f7d197
       home_domain: learning
     - subject_id: coe:entity/progressive_disclosure_marker
-      predicate: coe:supports
+      predicate: coe:limits
       object_id: coe:entity/mayer_essential_principle
       relationship_weight: required
       description: Progressive disclosure (revealing information in sequence rather than all at once) is a primary strategy
@@ -2813,7 +2826,7 @@ entity_collections:
       statement_id: coe:edge/17ed86c9402ead2ae0bca3ad
       home_domain: learning
     - subject_id: coe:entity/progressive_disclosure_marker
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/microlearning_format
       relationship_weight: expected
       description: Progressive disclosure aligns with microlearning's staged content delivery, revealing complexity incrementally
@@ -2830,7 +2843,7 @@ entity_collections:
       statement_id: coe:edge/84fbabbcad0aaebcaa1b5c75
       home_domain: learning
     - subject_id: coe:entity/progressive_disclosure_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/practice_activity
       relationship_weight: expected
       description: Practice activities are supported by progressive disclosure — scaffolding fades from maximum support in
@@ -2900,14 +2913,14 @@ entity_collections:
     status: canonical
     edges:
     - subject_id: coe:entity/mayers_multimedia_principles
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:artifact/visual_communication/video_multimedia_rubric
       relationship_weight: expected
       description: Mayer's multimedia principles are the evidential basis of the video multimedia rubric — its visual-narration
         synchronisation dimension operationalises temporal contiguity (effect size 1.30) and spatial contiguity (effect size
         0.82), and its mayer_critical_principles_required threshold demands that at least 4 of coherence, signalling, redundancy,
         and contiguity are demonstrably met
-      statement_id: coe:edge/mayer-supports-video-multimedia-rubric
+      statement_id: coe:edge/mayer-enables-video-multimedia-rubric
       home_domain: learning
     close_match:
     - https://www.wikidata.org/wiki/Q5819925
@@ -3018,11 +3031,31 @@ entity_collections:
     edges: []
   - id: coe:entity/dual_coding_theory
     label: Dual Coding Theory
+    source: wiki:dual-coding-theory
+    exact_match:
+    - https://www.wikidata.org/wiki/Q1262864
     description: Theory (Paivio) stating that verbal and visual information are processed through distinct, parallel cognitive
       channels (logogens and imagens).
     home_domain: learning
     status: canonical
-    edges: []
+    terms:
+    - literal: DCT
+      term_type: initialism
+      term_status: admitted
+      language: en
+    - literal: Paivio's dual coding
+      term_type: full_form
+      term_status: admitted
+      language: en
+    edges:
+    - subject_id: coe:entity/dual_coding_theory
+      predicate: coe:bridges
+      object_id: coe:entity/cognitive_load_theory
+      relationship_weight: expected
+      description: Dual-channel verbal/nonverbal processing is a cognitive-architecture premise that Cognitive Load Theory
+        and multimedia design share.
+      statement_id: coe:edge/dual-coding-theory-bridges-cognitive-load-theory
+      home_domain: learning
   - edges:
     - subject_id: coe:entity/planning_artefact_marker
       predicate: coe:contains
@@ -3084,7 +3117,7 @@ entity_collections:
       statement_id: coe:edge/4f01ffae56cb868cec316843
       home_domain: learning
     - subject_id: coe:entity/planning_artefact_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/course_format
       relationship_weight: required
       description: Course format is supported by planning artefacts — the blueprint defines the overall course structure including
@@ -3101,7 +3134,7 @@ entity_collections:
       statement_id: coe:edge/5590372ea557021f93875592
       home_domain: learning
     - subject_id: coe:entity/planning_artefact_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_strategy
       relationship_weight: expected
       description: Instructional strategies are supported by planning artefacts — action mapping and backward design both
@@ -3110,7 +3143,7 @@ entity_collections:
       statement_id: coe:edge/69818d1c2e81a30e8d8c019e
       home_domain: learning
     - subject_id: coe:entity/planning_artefact_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/job_aid_format
       relationship_weight: expected
       description: Job aid format is supported by planning artefacts — action mapping explicitly includes deciding whether
@@ -3119,7 +3152,7 @@ entity_collections:
       statement_id: coe:edge/0015ba0f4ca63240c2dea334
       home_domain: learning
     - subject_id: coe:entity/planning_artefact_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/layout_pattern
       relationship_weight: optional
       description: Layout patterns are supported by planning artefacts — LXD recommends sketching sample screen layouts or
@@ -3128,7 +3161,7 @@ entity_collections:
       statement_id: coe:edge/53b61bce03b03e48fef3d33b
       home_domain: learning
     - subject_id: coe:entity/planning_artefact_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/objective_stem
       relationship_weight: expected
       description: Objective stems are supported by planning artefact markers — content structure planning documents embed
@@ -3243,7 +3276,7 @@ entity_collections:
       statement_id: coe:edge/3485b794729b68f0dd21b046
       home_domain: learning
     - subject_id: coe:entity/content_structure_marker
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/alignment_marker
       relationship_weight: required
       description: Quality Assurance Checklist requires assessment aligns with strip objective and progressive skill building
@@ -3251,7 +3284,7 @@ entity_collections:
       statement_id: coe:edge/d95817d9af15527316b26ebc
       home_domain: learning
     - subject_id: coe:entity/content_structure_marker
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/content_slide
       relationship_weight: expected
       description: Content slides depend on content structure markers for proper pedagogical sequencing per slide design research
@@ -3267,7 +3300,7 @@ entity_collections:
       statement_id: coe:edge/944a913aaf565492809cda6f
       home_domain: learning
     - subject_id: coe:entity/content_structure_marker
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/formative_assessment
       relationship_weight: expected
       description: Formative assessments depend on content structure markers — modular section boundaries and progress checkpoints
@@ -3275,7 +3308,7 @@ entity_collections:
       statement_id: coe:edge/c920186c398f7ae42a23e007
       home_domain: learning
     - subject_id: coe:entity/content_structure_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/job_aid_format
       relationship_weight: required
       description: Job aid format is supported by content structure — modular content organisation with clear hierarchies
@@ -3298,7 +3331,7 @@ entity_collections:
       statement_id: coe:edge/3be0e7b9cf51a9661635924a
       home_domain: learning
     - subject_id: coe:entity/content_structure_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/microlearning_format
       relationship_weight: expected
       description: Content chunking strategies recognise 2-5 minutes as optimal duration for maintaining attention and facilitating
@@ -3437,7 +3470,7 @@ entity_collections:
       statement_id: coe:edge/377be318777bdc3729a9ded5
       home_domain: learning
     - subject_id: coe:entity/pedagogical_sequence_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_event
       relationship_weight: required
       description: FPI's five-phase cycle (Problem, Activate, Demonstrate, Apply, Integrate) defines the pedagogical sequence
@@ -3446,7 +3479,7 @@ entity_collections:
       statement_id: coe:edge/1016de25c67a22a066b50c80
       home_domain: learning
     - subject_id: coe:entity/pedagogical_sequence_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_strategy
       relationship_weight: expected
       description: Instructional strategies are supported by pedagogical sequence markers that implement the seven-stage gold-standard
@@ -3471,7 +3504,7 @@ entity_collections:
       statement_id: coe:edge/970b05727239dd45b92ceffb
       home_domain: learning
     - subject_id: coe:entity/pedagogical_sequence_marker
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/objective_stem
       relationship_weight: expected
       description: Objective stems depend on pedagogical sequencing — terminal objectives require hierarchically ordered enabling
@@ -3479,7 +3512,7 @@ entity_collections:
       statement_id: coe:edge/a82cf5b1ae4c629bed15cb39
       home_domain: learning
     - subject_id: coe:entity/pedagogical_sequence_marker
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/practice_activity
       relationship_weight: expected
       description: Practice activities depend on pedagogical sequencing — guided practice must follow instructional presentation
@@ -3495,7 +3528,7 @@ entity_collections:
       statement_id: coe:edge/fd014f11b40305adb81fd066
       home_domain: learning
     - subject_id: coe:entity/pedagogical_sequence_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/reflection_activity
       relationship_weight: expected
       description: Reflection activities depend on pedagogical sequencing — structured reflection points must be placed after
@@ -3519,7 +3552,7 @@ entity_collections:
       statement_id: coe:edge/84e66671a02c79633d1d46f9
       home_domain: learning
     - subject_id: coe:entity/pedagogical_sequence_marker
-      predicate: coe:supports
+      predicate: coe:limits
       object_id: coe:entity/working_memory_marker
       relationship_weight: expected
       description: Structured pedagogical sequencing supports working memory by chunking content into discrete stages (hook,
@@ -3857,6 +3890,13 @@ entity_collections:
     description: Hierarchical structure where nodes can have multiple parent concepts (overlapping trees).
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Monohierarchy
+      term_type: full_form
+      term_status: admitted
+    - literal: True Path Rule
+      term_type: full_form
+      term_status: admitted
     edges: []
   - id: coe:entity/dag_hierarchy
     label: Dag Hierarchy
@@ -3870,6 +3910,19 @@ entity_collections:
       categories called facets.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: PMEST
+      term_type: initialism
+      term_status: admitted
+    - literal: Analytico-synthetic
+      term_type: full_form
+      term_status: admitted
+    - literal: Logical Division
+      term_type: full_form
+      term_status: admitted
+    - literal: Citation order
+      term_type: full_form
+      term_status: admitted
     edges: []
   - id: coe:entity/information_ecology
     label: Information Ecology
@@ -4191,7 +4244,7 @@ entity_collections:
       statement_id: coe:edge/e031dcc3ff7f974de759808c
       home_domain: learning
     - subject_id: coe:entity/microlearning_format
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/call_to_action
       relationship_weight: expected
       description: Calls to action are supported by microlearning formats — concise bite-sized modules create natural CTA
@@ -4207,7 +4260,7 @@ entity_collections:
       statement_id: coe:edge/9c73093eb8f4a247146545ef
       home_domain: learning
     - subject_id: coe:entity/microlearning_format
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/cognitive_load_dimension
       relationship_weight: expected
       description: Cognitive load scoring dimension is supported by microlearning format which segments content into 3-10
@@ -4296,7 +4349,7 @@ entity_collections:
       statement_id: coe:edge/ebae03714cae87b8f707b719
       home_domain: learning
     - subject_id: coe:entity/job_aid_format
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/reflection_activity
       relationship_weight: expected
       description: FPI Integration phase prescribes job aids as performance support tools that sustain learning transfer at
@@ -4304,7 +4357,7 @@ entity_collections:
       statement_id: coe:edge/5a34dd39aa1d2d2f3787d07e
       home_domain: learning
     - subject_id: coe:entity/job_aid_format
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/working_memory_marker
       relationship_weight: expected
       description: Working memory limitations are supported by job aids — quick reference cards and decision trees offload
@@ -5021,7 +5074,7 @@ entity_collections:
       statement_id: coe:edge/aaef15291d6531c76bbb0dcb
       home_domain: learning
     - subject_id: coe:entity/instructional_strategy
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/collaborative_activity
       relationship_weight: expected
       description: Collaborative activities are grounded in cooperative learning instructional strategies
@@ -5036,14 +5089,14 @@ entity_collections:
       statement_id: coe:edge/67fbff212007d7a3b3681186
       home_domain: learning
     - subject_id: coe:entity/instructional_strategy
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/discussion_activity
       relationship_weight: expected
       description: Discussion activities are grounded in pedagogical instructional strategies such as Socratic questioning
       statement_id: coe:edge/c87a5b0a318e48afdf8580b9
       home_domain: learning
     - subject_id: coe:entity/instructional_strategy
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/germane_load_marker
       relationship_weight: expected
       description: Germane load is supported by instructional strategies that inject emotional moments — curiosity gaps and
@@ -5183,7 +5236,7 @@ entity_collections:
       statement_id: coe:edge/5d9acec585412d0fec6bcba9
       home_domain: learning
     - subject_id: coe:entity/learning_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/learning_objective
       relationship_weight: required
       description: FPI's five principles (problem-centered, activation, demonstration, application, integration) each directly
@@ -5191,7 +5244,7 @@ entity_collections:
       statement_id: coe:edge/e14692edea34e83b00870e06
       home_domain: learning
     - subject_id: coe:entity/learning_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/roleplay_activity
       relationship_weight: expected
       description: Learning principles (experiential learning, situated cognition) support roleplay as authentic practice
@@ -5199,7 +5252,7 @@ entity_collections:
       statement_id: coe:edge/9e49e71cd11800fb44f93acc
       home_domain: learning
     - subject_id: coe:entity/learning_principle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/scenario_activity
       relationship_weight: required
       description: 'SBT is grounded in four established learning theories: Experiential Learning, Constructivism, Situated
@@ -5582,7 +5635,7 @@ entity_collections:
       statement_id: coe:edge/6857762f13ebd44d4559fc6c
       home_domain: learning
     - subject_id: coe:entity/learner_characteristic
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/learning_objective
       relationship_weight: expected
       description: Person analysis evaluates individual learner characteristics, prior knowledge, and learning preferences
@@ -5591,7 +5644,7 @@ entity_collections:
       statement_id: coe:edge/5779104bacbda91e7a9d3fb5
       home_domain: learning
     - subject_id: coe:entity/learner_characteristic
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/learning_principle
       relationship_weight: required
       description: Learning principles are supported by learner characteristics — andragogy's 5 principles (relevance, self-direction,
@@ -5599,7 +5652,7 @@ entity_collections:
       statement_id: coe:edge/edd1f39c4423839c6d9d80e8
       home_domain: learning
     - subject_id: coe:entity/learner_characteristic
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/narrative_hook
       relationship_weight: expected
       description: Audience Simulator step requires narrative hooks to be grounded in audience Point A analysis across KNOW/BELIEVE/FEEL/DO
@@ -6030,7 +6083,7 @@ entity_collections:
       statement_id: coe:edge/8582f3b9ecb0fb0fbbce30de
       home_domain: learning
     - subject_id: coe:entity/pedagogical_model
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/course_format
       relationship_weight: expected
       description: FPI provides the macro-strategic cycle for full course design with CDT providing micro-level component
@@ -6085,14 +6138,41 @@ entity_collections:
       slate'. Focuses on conditioning and stimulus-response.
     home_domain: learning
     status: canonical
-    edges: []
+    terms:
+    - literal: Behaviorism
+      term_type: full_form
+      term_status: admitted
+      usage_note: US spelling of the same paradigm; UK form Behaviourism is the resource label.
+    edges:
+    - subject_id: coe:entity/behaviourism
+      predicate: coe:contrasts_with
+      object_id: coe:entity/cognitivism
+      relationship_weight: expected
+      description: Behaviourism locates learning in observable stimulus-response change; cognitivism locates it in internal
+        information processing.
+      statement_id: coe:edge/behaviourism-contrasts-with-cognitivism
+      home_domain: learning
+    examples:
+    - classical conditioning
+    - operant conditioning
   - id: coe:entity/cognitivism
     label: Cognitivism
     description: Learning theory focusing on internal mental processes; the mind is seen as a processor that receives, organizes,
       and stores information.
     home_domain: learning
     status: canonical
-    edges: []
+    edges:
+    - subject_id: coe:entity/cognitivism
+      predicate: coe:contrasts_with
+      object_id: coe:entity/constructivism
+      relationship_weight: expected
+      description: Cognitivism emphasises processing and storage of information; constructivism emphasises knowledge built
+        through experience and social interaction.
+      statement_id: coe:edge/cognitivism-contrasts-with-constructivism
+      home_domain: learning
+    examples:
+    - information processing model
+    - schema theory
   - id: coe:entity/constructivism
     label: Constructivism
     description: Learning theory based on the premise that learners actively build knowledge based on prior experiences and
@@ -6101,40 +6181,159 @@ entity_collections:
     status: canonical
     edges: []
   - id: coe:entity/solo_taxonomy
-    label: Solo Taxonomy
-    description: 'Structure of Observed Learning Outcomes; categorizes learning into five levels: Prestructural, Unistructural,
-      Multistructural, Relational, and Extended Abstract.'
+    label: SOLO Taxonomy
+    description: Biggs and Collis's Structure of Observed Learning Outcomes — five levels from Prestructural through Extended
+      Abstract describing increasing structural complexity of learner responses.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Structure of Observed Learning Outcomes
+      term_type: full_form
+      term_status: admitted
+    - literal: SOLO
+      term_type: initialism
+      term_status: admitted
+    examples:
+    - prestructural
+    - unistructural
+    - multistructural
+    - relational
+    - extended abstract
     edges: []
   - id: coe:entity/zpd
-    label: Zpd
-    description: Vygotsky's Zone of Proximal Development; the gap between what a learner can do alone and what they can achieve
-      with guidance.
+    label: Zone of Proximal Development
+    source: wiki:zone-of-proximal-development
+    exact_match:
+    - https://www.wikidata.org/wiki/Q209372
+    description: Vygotsky's Zone of Proximal Development — the gap between what a learner can do alone and what they can achieve
+      with guidance from a More Knowledgeable Other.
     home_domain: learning
     status: canonical
-    edges: []
+    terms:
+    - literal: ZPD
+      term_type: initialism
+      term_status: admitted
+      language: en
+    - literal: Vygotsky's ZPD
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: More Knowledgeable Other
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: MKO
+      term_type: initialism
+      term_status: admitted
+      language: en
+    edges:
+    - subject_id: coe:entity/zpd
+      predicate: coe:enables
+      object_id: coe:entity/cognitive_apprenticeship
+      relationship_weight: expected
+      description: The zone of proximal development defines the band where coaching, scaffolding and fading in cognitive
+        apprenticeship are meant to operate.
+      statement_id: coe:edge/zpd-enables-cognitive-apprenticeship
+      home_domain: learning
+    - subject_id: coe:entity/zpd
+      predicate: coe:bridges
+      object_id: coe:entity/bruner_constructivist_instruction
+      relationship_weight: optional
+      description: Bruner's scaffolding and spiral curriculum assume guided performance within the learner's proximal developmental
+        range.
+      statement_id: coe:edge/zpd-bridges-bruner-constructivist-instruction
+      home_domain: learning
   - id: coe:entity/abcd_method
-    label: Abcd Method
-    description: 'Framework for writing learning outcomes: Actor, Behaviour, Conditions, and Degree.'
+    label: ABCD Method
+    description: 'Mager''s framework for writing learning outcomes: Actor, Behaviour, Conditions, and Degree.'
     home_domain: learning
     status: canonical
-    edges: []
+    terms:
+    - literal: ABCD
+      term_type: initialism
+      term_status: admitted
+    - literal: Mager's ABCD
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/abcd_method
+      predicate: coe:enables
+      object_id: coe:entity/blooms_taxonomy
+      relationship_weight: expected
+      description: ABCD outcome statements operationalise Bloom-aligned objectives with explicit actor, behaviour, conditions
+        and degree of mastery.
+      statement_id: coe:edge/abcd-method-enables-blooms-taxonomy
+      home_domain: learning
   - id: coe:entity/four_mat_model
-    label: Four Mat Model
+    label: 4MAT Model
     description: 'McCarthy''s 4MAT learning framework built on Kolb''s experiential cycle, sequencing instruction through
       four questions: Why? What? How? If? The four-question design cycle stands, but its learner-type-matching prescription
       rests on the refuted meshing hypothesis and its hemispheric-brain rationale is superseded.'
     home_domain: learning
     status: canonical
-    edges: []
+    terms:
+    - literal: Imaginative / Analytic / Common Sense / Dynamic learner
+      term_type: full_form
+      term_status: admitted
+    - literal: 4MAT
+      term_type: acronym
+      term_status: admitted
+    - literal: Four Mat Model
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/four_mat_model
+      predicate: coe:bridges
+      object_id: coe:entity/kolbs_experiential_learning
+      relationship_weight: expected
+      description: 4MAT sequences instruction through Kolb-aligned Why–What–How–If questions while omitting refuted meshing prescriptions.
+      statement_id: coe:edge/four-mat-model-bridges-kolbs-experiential-learning
+      home_domain: learning
+  - id: coe:entity/addie_model
+    label: ADDIE Model
+    description: The five-phase instructional design process model — Analysis, Design, Development, Implementation, Evaluation
+      — used as a generic lifecycle for designing learning experiences.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: SME
+      term_type: initialism
+      term_status: admitted
+    - literal: ADDIE
+      term_type: acronym
+      term_status: admitted
+    - literal: instructional systems design
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/addie_model
+      predicate: coe:contains
+      object_id: coe:entity/learning_gap_analysis
+      relationship_weight: expected
+      description: ADDIE's Analysis phase typically includes needs and gap analysis inputs that the learning-gap-analysis discipline
+        formalises.
+      statement_id: coe:edge/addie-model-contains-learning-gap-analysis
+      home_domain: learning
+    examples:
+    - analysis design development implementation evaluation
   - id: coe:entity/addie_iterative
-    label: Addie Iterative
+    label: ADDIE Iterative
     description: Iterative application of the ADDIE model within project management, featuring a central evaluation hub and
       continuous monitoring and control.
     home_domain: learning
     status: canonical
-    edges: []
+    terms:
+    - literal: iterative ADDIE
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/addie_iterative
+      predicate: coe:specialises
+      object_id: coe:entity/addie_model
+      relationship_weight: expected
+      description: ADDIE Iterative is a project-managed application of the same five ADDIE phases with continuous evaluation.
+      statement_id: coe:edge/addie-iterative-specialises-addie-model
+      home_domain: learning
   - id: coe:entity/triple_constraints
     label: Triple Constraints
     description: Core project management framework balancing Cost, Time, and Quality to define success.
@@ -6161,11 +6360,42 @@ entity_collections:
     status: canonical
     edges: []
   - id: coe:entity/sam_model
-    label: Sam Model
-    description: Successive Approximation Model; an agile, iterative instructional design process focusing on rapid prototyping.
+    label: Successive Approximation Model
+    description: Allen's Successive Approximation Model — an agile, iterative instructional design process focusing on rapid
+      prototyping rather than a linear waterfall.
     home_domain: learning
     status: canonical
-    edges: []
+    terms:
+    - literal: Savvy Start
+      term_type: full_form
+      term_status: admitted
+    - literal: Design Proof / Alpha / Beta / Gold
+      term_type: full_form
+      term_status: admitted
+    - literal: 3M Learning Experiences
+      term_type: full_form
+      term_status: admitted
+    - literal: SAM
+      term_type: acronym
+      term_status: admitted
+      usage_note: Here Allen's Successive Approximation Model for agile instructional design. The same initialism also refers to Adobe's Solution Account Manager seller role.
+    - literal: SAM model
+      term_type: full_form
+      term_status: admitted
+    - literal: Successive Approximation
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/sam_model
+      predicate: coe:contrasts_with
+      object_id: coe:entity/addie_model
+      relationship_weight: expected
+      description: SAM emphasises rapid iterative prototypes where classic ADDIE emphasises sequenced phase completion.
+      statement_id: coe:edge/sam-model-contrasts-with-addie-model
+      home_domain: learning
+    examples:
+    - successive approximation
+    - rapid prototyping ID
   - id: coe:entity/strip_card_methodology
     label: Strip Card Methodology
     description: Hierarchical design system using strips and their component cards to manage cognitive load and flow; their
@@ -6245,6 +6475,16 @@ entity_collections:
       within a dataset.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Codebook TA
+      term_type: full_form
+      term_status: admitted
+    - literal: Reflexive TA
+      term_type: full_form
+      term_status: admitted
+    - literal: Coding Reliability TA
+      term_type: full_form
+      term_status: admitted
     edges: []
   - id: coe:entity/card_sorting
     label: Card Sorting
@@ -6252,6 +6492,16 @@ entity_collections:
       (Open, Closed, or Hybrid).
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Open card sort
+      term_type: full_form
+      term_status: admitted
+    - literal: Closed card sort
+      term_type: full_form
+      term_status: admitted
+    - literal: Affinity Diagramming
+      term_type: full_form
+      term_status: admitted
     edges: []
   - id: coe:entity/grounded_theory
     label: Grounded Theory
@@ -6259,6 +6509,16 @@ entity_collections:
       data.
     home_domain: learning
     status: canonical
+    terms:
+    - literal: Theoretical saturation
+      term_type: full_form
+      term_status: admitted
+    - literal: Constant comparison
+      term_type: full_form
+      term_status: admitted
+    - literal: Open coding / Axial coding / Selective coding
+      term_type: full_form
+      term_status: admitted
     edges: []
   - id: coe:entity/five_consecutive_rule
     label: Five Consecutive Rule
@@ -6883,11 +7143,15 @@ entity_collections:
       statement_id: coe:edge/ec0e829fce6357a50207691c
       home_domain: learning
     id: coe:entity/clt_compliance_dimension
-    label: Clt Compliance Dimension
+    label: CLT Compliance Dimension
     description: Reference to Cognitive Load Theory compliance — CLT anti-patterns (split-attention, redundancy, wall-of-text)
       and design efficiency
     home_domain: learning
     status: canonical
+    terms:
+    - literal: CLT compliance
+      term_type: full_form
+      term_status: admitted
     examples:
     - Split-attention effect present.
     - Wall of text violates CLT principles.
@@ -7241,7 +7505,7 @@ entity_collections:
       statement_id: coe:edge/c74abc44f155155153b3dd99
       home_domain: learning
     - subject_id: coe:entity/delivery_modality
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/collaborative_activity
       relationship_weight: expected
       description: Collaborative activities depend on delivery modality configuration for synchronous group interaction
@@ -7272,7 +7536,7 @@ entity_collections:
       statement_id: coe:edge/8fcd5fcb6fc1c34072f1f4fa
       home_domain: learning
     - subject_id: coe:entity/delivery_modality
-      predicate: coe:supports
+      predicate: coe:contains
       object_id: coe:entity/job_aid_format
       relationship_weight: optional
       description: Job aids serve as performance support tools within blended delivery approaches; framework identifies them
@@ -7288,7 +7552,7 @@ entity_collections:
       statement_id: coe:edge/d62194aa082e55469fd979b2
       home_domain: learning
     - subject_id: coe:entity/delivery_modality
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/roleplay_activity
       relationship_weight: expected
       description: Delivery modality determines roleplay format — ILT enables face-to-face roleplay while VILT requires breakout
@@ -7391,7 +7655,7 @@ entity_collections:
       statement_id: coe:edge/5f850ea56955aa4d419f612b
       home_domain: learning
     - subject_id: coe:entity/session_structure_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_event
       relationship_weight: expected
       description: Instructional events (Engage-Educate-Apply sequence) are supported by session structure markers that organize
@@ -7399,7 +7663,7 @@ entity_collections:
       statement_id: coe:edge/0bb1c4bfcc3906e90b5e453a
       home_domain: learning
     - subject_id: coe:entity/session_structure_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/progressive_disclosure_marker
       relationship_weight: optional
       description: Progressive disclosure is directly supported by clear session structure — breaking presentations into well-organized

@@ -228,9 +228,15 @@ class TestAnalyseGuards:
 
 
 class TestThroughTheMachine:
-    def test_tabular_grounds_anchor_to_the_source_cell(self, with_credentials: None) -> None:
+    def test_tabular_grounds_anchor_to_the_source_cell(self, with_credentials: None, tmp_path: Path) -> None:
         provider = ToulminProvider(model=MODEL)
-        source = Path("tests/fixtures/pipeline/tabular-evidence.md")
+        source = tmp_path / "tabular-evidence.dclg"
+        source.write_bytes(
+            b"<doclang><heading level=\"1\">Replacement decision</heading>"
+            b"<table><ched/>Option<ched/>Annual Cost<nl/>"
+            b"<fcel/>Current<fcel/>120<nl/>"
+            b"<fcel/>Replacement<fcel/>80<nl/></table></doclang>"
+        )
         prepared = Machine([provider]).prepare(PreparationRequest.for_source(source, (Technique.TOULMIN,)))
         text = prepared.projections[0].prepared_document.text
         start = text.index("80")
@@ -240,7 +246,7 @@ class TestThroughTheMachine:
                     "warrant_evidence": [{"start": start, "end": start + len("80"), "text": "80"}]}
         with provider._built().agent.override(model=_proposing([proposal])):
             result = Machine([provider]).analyse(AggregateRequest.for_source(
-                Path("tests/fixtures/pipeline/tabular-evidence.md"), (Technique.TOULMIN,),
+                source, (Technique.TOULMIN,),
             ))
         outcome = result.outcome_for(Technique.TOULMIN)
         assert isinstance(outcome, ResultOutcome)

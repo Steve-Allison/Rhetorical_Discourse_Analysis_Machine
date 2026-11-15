@@ -10,9 +10,7 @@ from rdam.ingest.contracts.source import (
     AnnotationRepresentation,
     ArchiveMemberAnchor,
     ContentInventoryItem,
-    CrossReferenceRepresentation,
     ListRepresentation,
-    MediaReferenceRepresentation,
     MetadataRepresentation,
     TableRepresentation,
 )
@@ -45,30 +43,6 @@ def test_plain_text_and_presegmented_edu_fixtures_preserve_exact_primary_content
         SourceArtifact.from_edus(edus, source_name="mixed.edus.json")
     )
     assert edu_outcome.semantic.prepared_document.text == " ".join(edus)
-
-
-def test_gfm_preserves_front_matter_lists_tables_hierarchy_and_spans() -> None:
-    outcome = ProductionIngestor().prepare(SourceArtifact.from_path(FIXTURES / "mixed.md"))
-    inventory = outcome.semantic.inventory
-    assert any(isinstance(item.representation, MetadataRepresentation) for item in inventory)
-    assert any(isinstance(item.representation, ListRepresentation) for item in inventory)
-    assert any(
-        isinstance(item.representation, CrossReferenceRepresentation) or item.relationships
-        for item in inventory
-    )
-    assert any(isinstance(item.representation, TableRepresentation) for item in inventory)
-    assert all(item.anchors for item in inventory)
-    _assert_hierarchy_reconciles(inventory)
-
-
-def test_docling_preserves_media_hierarchy_and_page_anchors() -> None:
-    outcome = ProductionIngestor().prepare(
-        SourceArtifact.from_path(FIXTURES / "mixed.docling.json")
-    )
-    inventory = outcome.semantic.inventory
-    assert any(isinstance(item.representation, MediaReferenceRepresentation) for item in inventory)
-    assert any(anchor.kind == "page_box" for item in inventory for anchor in item.anchors)
-    _assert_hierarchy_reconciles(inventory)
 
 
 def test_doclang_preserves_tables_headers_spans_annotations_metadata_and_lists() -> None:

@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/narrative/argument_structures
   title: Narrative — Argument Structures
-  last_updated: '2026-09-25'
+  last_updated: '2026-10-11'
   authority: Central_Configs
   scope: domain
   ontology_domain: narrative
@@ -1098,7 +1098,7 @@ entity_collections:
       statement_id: coe:edge/ce26e0536b0c79b1faa750f0
       home_domain: narrative
     - subject_id: coe:entity/cause_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/logos_appeal
       relationship_weight: required
       description: Cause markers (because, since, as, caused by) explicitly establish causal reasoning. They enable logos
@@ -1275,7 +1275,7 @@ entity_collections:
       statement_id: coe:edge/355ba030ffe9af1a34905021
       home_domain: narrative
     - subject_id: coe:entity/elaboration_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/progressive_disclosure_marker
       relationship_weight: expected
       description: Elaboration markers signal deep-dive content for nested card reveals preserving simple initial views |
@@ -1426,7 +1426,7 @@ entity_collections:
       statement_id: coe:edge/5bc2339bd520940d12a23085
       home_domain: narrative
     - subject_id: coe:entity/summary_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/resolution_signal
       relationship_weight: required
       description: Summary markers (in summary, to recap, in conclusion, the bottom line) signal narrative closure and consolidation.
@@ -1524,7 +1524,7 @@ entity_collections:
       statement_id: coe:edge/9e4ff595421f4f9edc0c03be
       home_domain: narrative
     - subject_id: coe:entity/concession_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/ethos_appeal
       relationship_weight: required
       description: Concession markers (admittedly, I grant that, it's true that) enable ethos appeals by demonstrating fairness
@@ -1557,7 +1557,7 @@ entity_collections:
     - to be fair the process
   - edges:
     - subject_id: coe:entity/reformulation_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/clarity_dimension
       relationship_weight: required
       description: Reformulation markers (put differently, to put it another way, in simpler terms) allow speakers to rephrase
@@ -1694,7 +1694,7 @@ entity_collections:
     - it is certain that
   - edges:
     - subject_id: coe:entity/evaluation_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/pathos_appeal
       relationship_weight: required
       description: Evaluation markers (tragically, fortunately, remarkably) signal emotional stances toward propositions.
@@ -2233,7 +2233,7 @@ entity_collections:
       statement_id: coe:edge/247f053df0004a3f2ed7ebc0
       home_domain: narrative
     - subject_id: coe:entity/research_citation
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/learning_principle
       relationship_weight: required
       description: FPI's five principles are validated by empirical research including Thompson 2002 corporate study and MOOC
@@ -2310,7 +2310,7 @@ entity_collections:
       statement_id: coe:edge/363ba835ad1413e026692f35
       home_domain: narrative
     - subject_id: coe:entity/customer_story
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/ethos_appeal
       relationship_weight: expected
       description: Ethos appeals are supported by customer stories and peer testimonials that build trust through social proof
@@ -2351,7 +2351,7 @@ entity_collections:
       statement_id: coe:edge/34c9dc83c5c81191cb274d4a
       home_domain: narrative
     - subject_id: coe:entity/customer_story
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/scenario_activity
       relationship_weight: expected
       description: FPI prescribes realistic case studies and customer scenarios as authentic problem-centered learning contexts
@@ -2406,7 +2406,7 @@ entity_collections:
       statement_id: coe:edge/b9d5267f50d338dd730bab45
       home_domain: narrative
     - subject_id: coe:entity/personal_anecdote
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/ethos_appeal
       relationship_weight: expected
       description: Personal anecdotes build speaker credibility by demonstrating lived experience and authentic vulnerability,
@@ -2439,7 +2439,7 @@ entity_collections:
       statement_id: coe:edge/59b3ae1a31500f03e86b33cf
       home_domain: narrative
     - subject_id: coe:entity/personal_anecdote
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/value_proposition
       relationship_weight: expected
       description: Personal brand value propositions are supported by personal anecdotes — practitioners recount scenarios
@@ -2447,7 +2447,7 @@ entity_collections:
       statement_id: coe:edge/d9e4d4c991ddc973b4db3a57
       home_domain: narrative
     - subject_id: coe:entity/personal_anecdote
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/vendor_as_mentor
       relationship_weight: optional
       description: Vendor-as-mentor archetype is supported by personal vulnerability anecdotes — 'I was scared' from a powerful
@@ -2475,7 +2475,7 @@ entity_collections:
       statement_id: coe:edge/cec3e3c58e2c37d6c157e645
       home_domain: narrative
     - subject_id: coe:entity/expert_testimony
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/demonstration_activity
       relationship_weight: expected
       description: FPI Demonstration phase prescribes expert modeling where real or virtual experts perform tasks and explain
@@ -2603,7 +2603,7 @@ entity_collections:
       statement_id: coe:edge/c0f1a7b5ec2f355ffa9fb4b9
       home_domain: narrative
     - subject_id: coe:entity/analogy
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_event
       relationship_weight: expected
       description: FPI Activation phase prescribes analogies to relate new concepts to familiar experiences activating prior
@@ -3181,15 +3181,7 @@ entity_collections:
     - Q4 2023 results show 15% growth
     - Independent audit verified zero vulnerabilities
     - Over 500 Fortune 500 companies use...
-  - edges:
-    - subject_id: coe:entity/warrant
-      predicate: coe:supports
-      object_id: coe:entity/claim
-      relationship_weight: expected
-      description: Warrants provide the logical reasoning that connects evidence to this claim
-      statement_id: coe:edge/5d09c53fdc0ddef2788b71f1
-      home_domain: narrative
-    id: coe:entity/warrant
+  - id: coe:entity/warrant
     label: Warrant
     description: Logical bridges connecting evidence to claims
     home_domain: narrative
@@ -3623,7 +3615,7 @@ entity_collections:
       statement_id: coe:edge/35bcbfd50c7433a8d664376b
       home_domain: narrative
     - subject_id: coe:entity/value_proposition
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/resolution_signal
       relationship_weight: required
       description: Value propositions signal narrative resolution by articulating how the product/solution resolves identified
@@ -3684,7 +3676,7 @@ entity_collections:
       statement_id: coe:edge/a4cb321d40d8104d6814ead5
       home_domain: narrative
     - subject_id: coe:entity/pain_point
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/customer_hero
       relationship_weight: expected
       description: Customer Hero's journey begins with their pain point — SOAR Situation/Obstacle maps to the hero's challenge
@@ -4150,6 +4142,102 @@ entity_collections:
     anti_examples:
     - Various factors include...
     - Some of the reasons are...
+  - id: coe:entity/pyramid_principle
+    label: 'Pyramid Principle'
+    description: 'Barbara Minto''s answer-first architecture for executive communication — pyramidal grouping, vertical and horizontal logic, SCQA variants, issue trees, and its cross-framework comparison against RST/Toulmin/IBIS/Dung.'
+    home_domain: narrative
+    status: canonical
+    terms:
+      - literal: 'SCQA'
+        term_type: initialism
+        term_status: admitted
+        usage_note: 'Here the Situation-Complication-Question-Answer structure named within Minto''s Pyramid Principle discipline. The same initialism also labels the SCQA structural-framework concept in the rhetorical-devices taxonomy.'
+    edges:
+      - subject_id: coe:entity/pyramid_principle
+        predicate: coe:bridges
+        object_id: coe:entity/minto_pyramid
+        relationship_weight: required
+        description: 'The wiki discipline names Minto''s method; minto_pyramid is the canonical operational entity for the same framework.'
+        statement_id: coe:edge/pyramid-principle-bridges-minto-pyramid
+        home_domain: narrative
+    examples:
+      - 'pyramid principle'
+  - id: coe:entity/business_evidence_arguments
+    label: 'Business-Evidence Arguments'
+    description: 'The experimental record on whether evidence-backed business arguments land — warrant explicitness, sidedness, confidence calibration and numeric framing.'
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Refutational two-sided message
+      term_type: full_form
+      term_status: admitted
+    - literal: Natural frequencies
+      term_type: full_form
+      term_status: admitted
+    - literal: Confidence heuristic
+      term_type: full_form
+      term_status: admitted
+    - literal: Sleeper effect
+      term_type: full_form
+      term_status: admitted
+    - literal: Identifiable-victim effect
+      term_type: full_form
+      term_status: admitted
+    - literal: Stealing thunder
+      term_type: full_form
+      term_status: admitted
+    - literal: Reference-class forecasting
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+      - 'business-evidence arguments'
+      - 'business evidence arguments'
+  - id: coe:entity/data_storytelling
+    label: 'Data Storytelling'
+    description: 'Turning quantitative analysis into decision-driving narrative — Knaflic''s decluttering and preattentive craft plus Duarte''s DataPOV and annotation toolkit.'
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: DataPOV
+      term_type: full_form
+      term_status: admitted
+    edges:
+      - subject_id: coe:entity/data_storytelling
+        predicate: coe:contains
+        object_id: coe:entity/data_story_arc
+        relationship_weight: expected
+        description: 'Data storytelling practice embeds three-act data narrative arcs as one structural pattern.'
+        statement_id: coe:edge/data-storytelling-contains-data-story-arc
+        home_domain: narrative
+    examples:
+      - 'data storytelling'
+  - id: coe:entity/governing_units
+    label: 'Governing Units — Cross-Domain Hierarchical Structure'
+    description: 'The cross-domain theory of hierarchical structure — every unit at every level has one typed governing element and parts related to it — with its invariants, level crosswalk, point-versus-label tests and review procedure.'
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Governing element
+      term_type: full_form
+      term_status: admitted
+    - literal: Governing statement
+      term_type: full_form
+      term_status: admitted
+    - literal: Periodicity
+      term_type: full_form
+      term_status: admitted
+    edges:
+      - subject_id: coe:entity/governing_units
+        predicate: coe:specialises
+        object_id: coe:entity/governing_thought
+        relationship_weight: expected
+        description: 'Governing units generalise the governing-thought discipline across nested communication units.'
+        statement_id: coe:edge/governing-units-specialises-governing-thought
+        home_domain: narrative
+    examples:
+      - 'governing units — cross-domain hierarchical structure'
+      - 'governing units'
   last_updated: '2026-09-25'
   id: coe:artifact/narrative/narrative_entities
   label: Narrative Entities
@@ -4291,7 +4379,7 @@ entity_collections:
       statement_id: coe:edge/66b406778bfc545163c69df7
       home_domain: narrative
     - subject_id: coe:entity/statistic_hook
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/logos_appeal
       relationship_weight: required
       description: A statistic hook supports logos appeals by providing numerical evidence and logical reasoning. Statistics
@@ -4393,7 +4481,7 @@ entity_collections:
       statement_id: coe:edge/3bdaed5395c6444c8a98c2fe
       home_domain: narrative
     - subject_id: coe:entity/story_hook
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/narrative_quality_dimension
       relationship_weight: expected
       description: Narrative quality dimension scoring is supported by story hooks which demonstrate narrative architecture
@@ -4570,7 +4658,7 @@ entity_collections:
       statement_id: coe:edge/c91508cbf280c13ab46f8ec9
       home_domain: narrative
     - subject_id: coe:entity/bluf_hook
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/clarity_dimension
       relationship_weight: expected
       description: Clarity dimension scoring is supported by BLUF hooks which demonstrate conclusion-first structure, reducing
@@ -4578,7 +4666,7 @@ entity_collections:
       statement_id: coe:edge/b79ef7de95f58e99e383fc95
       home_domain: narrative
     - subject_id: coe:entity/bluf_hook
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/scqa_marker
       relationship_weight: expected
       description: BLUF (Bottom Line Up Front) hook aligns with SCQA structure by placing the Answer (key message) at the
@@ -4637,7 +4725,7 @@ entity_collections:
       statement_id: coe:edge/321505b99fd4658a56a8dcc6
       home_domain: narrative
     - subject_id: coe:entity/quote_hook
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/authority_opener
       relationship_weight: expected
       description: Authority openers are supported by quote hooks which lend borrowed credibility from recognised authorities,
@@ -4862,7 +4950,7 @@ entity_collections:
       statement_id: coe:edge/b04f1500d3f155abddf3cf07
       home_domain: narrative
     - subject_id: coe:entity/anaphora
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/emphasis_marker
       relationship_weight: expected
       description: Emphasis markers are supported by anaphora which creates emphatic repetition at the beginning of successive
@@ -4891,7 +4979,7 @@ entity_collections:
     - Not about the technology. Not about the budget. Not about the timeline.
   - edges:
     - subject_id: coe:entity/epistrophe
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/logos_appeal
       relationship_weight: expected
       description: Epistrophe's repetitive end-position emphasis creates logical cumulation — each clause builds on the prior,
@@ -4933,7 +5021,7 @@ entity_collections:
       statement_id: coe:edge/7c21593205e0002a37711770
       home_domain: narrative
     - subject_id: coe:entity/tricolon
-      predicate: coe:supports
+      predicate: coe:limits
       object_id: coe:entity/tricolon_marker
       relationship_weight: required
       description: The tricolon device (three parallel elements) creates the tricolon_marker discourse phenomenon. It satisfies
@@ -5124,7 +5212,7 @@ entity_collections:
       statement_id: coe:edge/0ade394403e1ad086ff10fba
       home_domain: narrative
     - subject_id: coe:entity/inclusive_we
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/customer_hero
       relationship_weight: expected
       description: Customer hero archetype is supported by inclusive 'we' — elite speakers dissolve the barrier between stage
@@ -5272,7 +5360,7 @@ entity_collections:
       statement_id: coe:edge/ba553f103f5707e35b19b1ec
       home_domain: narrative
     - subject_id: coe:entity/metaphor
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/working_memory_marker
       relationship_weight: expected
       description: Metaphors support working memory by mapping abstract concepts onto familiar concrete domains; exporting
@@ -5376,7 +5464,7 @@ entity_collections:
     - Therefore, the conclusion is clear.
   - edges:
     - subject_id: coe:entity/ethos_appeal
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/attribution_marker
       relationship_weight: expected
       description: Ethos appeal is supported by attribution markers — RST Attribution relation marks source credibility and
@@ -5446,7 +5534,7 @@ entity_collections:
       statement_id: coe:edge/5bd305b8352aafcd402fd120
       home_domain: narrative
     - subject_id: coe:entity/pathos_appeal
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/call_to_action
       relationship_weight: expected
       description: Calls to action are supported by pathos appeal; emotional connection (warmth, Duchenne smile) drives audience
@@ -5556,7 +5644,7 @@ entity_collections:
       statement_id: coe:edge/be863dd046f0e7e93733e2f5
       home_domain: narrative
     - subject_id: coe:entity/academic_bundle
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/hedge_marker
       relationship_weight: expected
       description: Academic bundles function as stance hedges — 'It is likely that...' signals uncertainty and qualifies claims
@@ -5691,7 +5779,7 @@ entity_collections:
       statement_id: coe:edge/cbf7e233bf32783f4998527f
       home_domain: narrative
     - subject_id: coe:entity/scqa_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/structure_dimension
       relationship_weight: expected
       description: Structure dimension scoring is supported by the SCQA framework (Situation-Complication-Question-Answer)
@@ -5774,7 +5862,7 @@ entity_collections:
       statement_id: coe:edge/282ea3c1339bbae47338eb1e
       home_domain: narrative
     - subject_id: coe:entity/monroe_sequence_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/instructional_event
       relationship_weight: expected
       description: 'Each MMS stage maps to instructional events: Attention = gaining attention, Need = stimulating recall,
@@ -5799,7 +5887,7 @@ entity_collections:
       statement_id: coe:edge/4817c61541871c695797c42b
       home_domain: narrative
     - subject_id: coe:entity/monroe_sequence_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/motivation_element
       relationship_weight: expected
       description: MMS parallels Keller's ARCS model — Attention maps to Attention, Need maps to Relevance, Visualization
@@ -5886,6 +5974,40 @@ entity_collections:
     - This is why this moment matters. (Attention stage)
     - The solution is already proven. Let me show you what it looks like in practice.
     - Imagine a world where this problem is solved. Here is how we get there.
+  - id: coe:entity/aristotelian_rhetoric
+    label: 'Aristotelian Rhetoric'
+    description: 'Aristotle''s classical persuasion architecture — the artistic proofs, kairos, the three genres, five canons, style registers and four-part arrangement.'
+    home_domain: narrative
+    status: canonical
+    edges: []
+    examples:
+      - 'aristotelian rhetoric'
+  - id: coe:entity/metaphor_analogy_framing
+    label: 'Metaphor, Analogy, and Framing for Explanation and Persuasion'
+    description: 'The cognitive science of metaphor, analogy and framing as meaning-transfer devices, and the asymmetry between robust equivalence framing and small metaphor effects.'
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Conceptual Metaphor Theory
+      term_type: full_form
+      term_status: admitted
+    - literal: Framing effect
+      term_type: full_form
+      term_status: admitted
+    - literal: Structure-mapping
+      term_type: full_form
+      term_status: admitted
+    edges:
+      - subject_id: coe:entity/metaphor_analogy_framing
+        predicate: coe:specialises
+        object_id: coe:entity/metaphor
+        relationship_weight: expected
+        description: 'The framing discipline operationalises metaphor alongside analogy and frame for explanation and persuasion.'
+        statement_id: coe:edge/metaphor-analogy-framing-specialises-metaphor
+        home_domain: narrative
+    examples:
+      - 'metaphor, analogy, and framing for explanation and persuasion'
+      - 'metaphor analogy framing'
   last_updated: '2026-08-12'
   id: coe:artifact/narrative/rhetorical_devices_entities
   label: Rhetorical Devices Entities
@@ -6105,7 +6227,7 @@ entity_collections:
       statement_id: coe:edge/0ab6e547a4eb97bb39295dda
       home_domain: narrative
     - subject_id: coe:entity/position_marker
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/ethos_appeal
       relationship_weight: expected
       description: Ethos appeals are supported by position markers — declarative brand statements asserting expertise and
@@ -6424,7 +6546,7 @@ entity_collections:
       statement_id: coe:edge/fcfcc67aac8c32935daadbbf
       home_domain: narrative
     - subject_id: coe:entity/authority_opener
-      predicate: coe:supports
+      predicate: coe:bridges
       object_id: coe:entity/bluf_hook
       relationship_weight: expected
       description: Authority openers function as BLUF (Bottom Line Up Front) delivery mechanisms; leading with the key message

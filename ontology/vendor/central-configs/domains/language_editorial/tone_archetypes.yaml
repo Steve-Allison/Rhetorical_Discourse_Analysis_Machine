@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/language_editorial/tone_archetypes
   title: Language Editorial — Tone Archetypes
-  last_updated: '2026-09-25'
+  last_updated: '2026-10-11'
   authority: Central_Configs
   scope: domain
   ontology_domain: language_editorial
@@ -694,5 +694,27 @@ entity_collections:
     description: 'The register of prompts that direct generated or produced media — images, motion and video — including their pacing and tone.'
     home_domain: language_editorial
     status: canonical
+  - id: coe:entity/tone_of_voice
+    label: Tone of Voice
+    description: The discipline of specifying and judging a communicator's voice — what a voice is made of, what is
+      actually specifiable, and whether tone moves outcomes.
+    home_domain: language_editorial
+    status: canonical
+    terms:
+    - literal: Voice (communication)
+      term_type: full_form
+      term_status: admitted
+    - literal: Register (linguistics)
+      term_type: full_form
+      term_status: admitted
+    - literal: Burrows's Delta
+      term_type: full_form
+      term_status: admitted
+    - literal: Powerless language
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - tone of voice
   home_domain: language_editorial
   status: canonical

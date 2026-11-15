@@ -1,4 +1,4 @@
-"""Current normative Docling, DocLang, and DocLang-archive conformance."""
+"""Current normative DocLang and DocLang-archive conformance."""
 
 from collections import Counter
 from hashlib import sha256
@@ -9,7 +9,6 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import doclang
-from docling_core.types.doc import ContentLayer, DoclingDocument
 from lxml import etree
 import pytest
 
@@ -22,7 +21,6 @@ from rdam.ingest.validation import validate_preparation_outcome
 
 
 DOCLANG_FIXTURES = Path("tests/fixtures/doclang")
-DOCLING_FIXTURES = Path("tests/fixtures/docling")
 DOCLANG_MANIFEST = json.loads((DOCLANG_FIXTURES / "upstream-manifest.json").read_text(encoding="utf-8"))
 VALID_DOCLANG_FIXTURES = tuple(sorted(DOCLANG_FIXTURES.glob("*.dclg")))
 INVALID_DOCLANG_FIXTURES = tuple(sorted((DOCLANG_FIXTURES / "invalid").glob("*.dclg")))
@@ -64,27 +62,6 @@ def test_current_upstream_invalid_doclang_specimen_is_unmodified_and_rejected(fi
         inventory_source(SourceArtifact.from_path(fixture, source_form=SourceForm.DOCLANG_XML))
 
 
-def test_every_docling_specimen_loads_and_traverses_the_current_complete_api() -> None:
-    fixtures = tuple(sorted(DOCLING_FIXTURES.glob("*.docling.json")))
-    assert {path.name for path in fixtures} == {
-        "markdown.docling.json",
-        "pdf.docling.json",
-        "pptx.docling.json",
-        "vtt.docling.json",
-    }
-    for fixture in fixtures:
-        document = DoclingDocument.load_from_json(fixture)
-        items = tuple(
-            document.iterate_items(
-                with_groups=True,
-                traverse_pictures=True,
-                included_content_layers=set(ContentLayer),
-            )
-        )
-        assert items
-        assert str(document.version) == "1.10.0"
-
-
 def test_real_world_doclang_document_is_completely_accounted_for_by_preparation() -> None:
     assert sha256(REAL_WORLD_DOCLANG_FIXTURE.read_bytes()).hexdigest() == REAL_WORLD_DOCLANG_SHA256
     doclang.validate(REAL_WORLD_DOCLANG_FIXTURE, allow_empty_namespace=True)
@@ -94,13 +71,14 @@ def test_real_world_doclang_document_is_completely_accounted_for_by_preparation(
 
     assert Counter(item.classification.value for item in evidence.inventory) == {
         "formula": 1,
-        "metadata": 4,
-        "other": 17,
+        "furniture": 7,
+        "metadata": 9,
+        "other": 5,
         "paragraph": 28,
         "picture": 4,
         "picture_description": 2,
-        "table": 7,
-        "table_cell": 325,
+        "table": 8,
+        "table_cell": 324,
     }
     assert all(item.disposition.decision is not DispositionDecision.REJECTED_INVALID for item in evidence.inventory)
     assert evidence.inventory_coverage.covered_units == evidence.inventory_coverage.total_units == 388

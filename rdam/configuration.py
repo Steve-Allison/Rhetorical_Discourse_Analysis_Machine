@@ -54,10 +54,27 @@ class LlmSettings(StrictModel):
 class TechniqueModels(StrictModel):
     pdtb: str | None = None
     sdrt: str | None = None
+    speech_acts: str | None = None
+    classical_rhetoric: str | None = None
+    argument_mining: str | None = None
     toulmin: str | None = None
     walton: str | None = None
+    pragma_dialectics: str | None = None
+    ibis: str | None = None
+    aspic: str | None = None
 
-    @field_validator("pdtb", "sdrt", "toulmin", "walton")
+    @field_validator(
+        "pdtb",
+        "sdrt",
+        "speech_acts",
+        "classical_rhetoric",
+        "argument_mining",
+        "toulmin",
+        "walton",
+        "pragma_dialectics",
+        "ibis",
+        "aspic",
+    )
     @classmethod
     def canonical_model(cls, value: str | None) -> str | None:
         from rdam._llm import normalize_model_identity

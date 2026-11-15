@@ -89,15 +89,11 @@ def _archive_bytes(document: bytes) -> bytes:
 
 def _prepare_sources(
     *,
-    markdown: Path | None,
     doclang: Path | None,
-    docling: Path | None,
 ) -> dict[str, object]:
     from rdam.ingest import (
         Availability,
-        ProductionIngestError,
         ProductionIngestor,
-        SafeProductionFailureRecord,
         SourceArtifact,
         SourceForm,
         describe_capabilities,
@@ -109,19 +105,22 @@ def _prepare_sources(
     artifacts = [
         SourceArtifact.from_text(_TEXT, source_name="acceptance.txt"),
         SourceArtifact.from_edus(_EDUS, source_name="acceptance.edus"),
+        SourceArtifact.from_bytes(
+            _archive_bytes(_DOCLANG_ARCHIVE_DOCUMENT),
+            source_form=SourceForm.DOCLANG_ARCHIVE,
+            source_name="acceptance.dclx",
+            media_type="application/vnd.doclang.archive+zip",
+        ),
     ]
-    if markdown is not None and doclang is not None and docling is not None:
-        artifacts.extend(
-            (
-                SourceArtifact.from_path(markdown),
-                SourceArtifact.from_path(docling, source_form=SourceForm.DOCLING_JSON),
-                SourceArtifact.from_path(doclang),
-                SourceArtifact.from_bytes(
-                    _archive_bytes(_DOCLANG_ARCHIVE_DOCUMENT),
-                    source_form=SourceForm.DOCLANG_ARCHIVE,
-                    source_name="acceptance.dclx",
-                    media_type="application/vnd.doclang.archive+zip",
-                ),
+    if doclang is not None:
+        artifacts.append(SourceArtifact.from_path(doclang))
+    else:
+        artifacts.append(
+            SourceArtifact.from_bytes(
+                _DOCLANG_ARCHIVE_DOCUMENT,
+                source_form=SourceForm.DOCLANG_XML,
+                source_name="acceptance.dclg",
+                media_type="application/vnd.doclang.document+xml",
             )
         )
     results: dict[str, object] = {}
@@ -144,40 +143,8 @@ def _prepare_sources(
         item.source_form.value: item.availability.value
         for item in capabilities.semantic.source_forms
     }
-    formats_installed = markdown is not None
-    if formats_installed and set(availability.values()) != {Availability.AVAILABLE.value}:
-        raise AssertionError("formats installation does not advertise all six source forms")
-    if not formats_installed:
-        optional = {
-            SourceForm.MARKDOWN,
-            SourceForm.DOCLING_JSON,
-            SourceForm.DOCLANG_XML,
-            SourceForm.DOCLANG_ARCHIVE,
-        }
-        advertised = {
-            item.source_form
-            for item in capabilities.semantic.source_forms
-            if item.availability is Availability.UNAVAILABLE
-        }
-        if advertised != optional:
-            raise AssertionError("core capability discovery contradicts optional format availability")
-        try:
-            ingestor.prepare(
-                SourceArtifact.from_bytes(
-                    b"# Heading",
-                    source_form=SourceForm.MARKDOWN,
-                    source_name="unavailable.md",
-                    media_type="text/markdown; charset=utf-8",
-                )
-            )
-        except ProductionIngestError as error:
-            record = load_contract(serialize_contract(error.failure))
-            if not isinstance(record, SafeProductionFailureRecord):
-                raise AssertionError(
-                    "unavailable format did not yield a safe typed failure"
-                ) from error
-        else:
-            raise AssertionError("core installation unexpectedly prepared Markdown")
+    if set(availability.values()) != {Availability.AVAILABLE.value}:
+        raise AssertionError("installed core distribution does not advertise all four source forms")
     return {
         "capability_identity": _required_digest(
             capabilities.semantic_digest,
@@ -378,12 +345,9 @@ def main() -> int:
     parser.add_argument("--model-store", type=Path, required=True)
     parser.add_argument("--release-id")
     parser.add_argument("--device", default="cpu")
-    parser.add_argument("--formats", action="store_true")
     parser.add_argument("--http", action="store_true")
     parser.add_argument("--full", action="store_true")
-    parser.add_argument("--markdown", type=Path)
     parser.add_argument("--doclang", type=Path)
-    parser.add_argument("--docling", type=Path)
     args = parser.parse_args()
 
     _disable_external_network()
@@ -421,9 +385,6 @@ def main() -> int:
     if any(marker in name for marker in forbidden for name in names):
         raise AssertionError("installed public surface exposes forbidden scientific internals")
 
-    formats = args.formats
-    if formats and (args.markdown is None or args.doclang is None or args.docling is None):
-        raise ValueError("formats acceptance requires --markdown, --doclang, and --docling")
     result: dict[str, object] = {
         "package_file": str(package_file),
         "package_version": installed_version,
@@ -432,11 +393,7 @@ def main() -> int:
         "public_surface_entries": len(entries),
         "machine_interfaces": _machine_interfaces(http=args.http),
         "concept_interfaces": _concept_interfaces(),
-        "source_contract": _prepare_sources(
-            markdown=args.markdown if formats else None,
-            doclang=args.doclang if formats else None,
-            docling=args.docling if formats else None,
-        ),
+        "source_contract": _prepare_sources(doclang=args.doclang),
     }
     if args.full:
         if args.release_id is None:

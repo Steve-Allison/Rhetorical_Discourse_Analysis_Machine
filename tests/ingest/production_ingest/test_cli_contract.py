@@ -46,8 +46,8 @@ raise SystemExit(status)
 
 
 @pytest.mark.parametrize(("filename", "source_form"), (
-    ("source.txt", SourceForm.TEXT), ("source.md", SourceForm.MARKDOWN),
-    ("source.docling.json", SourceForm.DOCLING_JSON), ("source.dclg", SourceForm.DOCLANG_XML),
+    ("source.txt", SourceForm.TEXT),
+    ("source.dclg", SourceForm.DOCLANG_XML),
     ("source.dclx", SourceForm.DOCLANG_ARCHIVE),
 ))
 def test_cli_routes_path_source_forms_through_source_artifact(filename: str, source_form: SourceForm, tmp_path: Path) -> None:

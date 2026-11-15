@@ -14,7 +14,7 @@ def mutual_attack() -> DungOutput:
         "input_origin": "supplied",
         "extensions": {"grounded": [], "complete": [[], ["a"], ["b"]],
                        "preferred": [["a"], ["b"]], "stable": [["a"], ["b"]]},
-        "algorithm": {"name": "exhaustive-subset", "version": "1", "capacity": 2},
+        "algorithm": {"name": "cadical-sat", "version": "2", "capacity": 2},
     }))
 
 

@@ -15,8 +15,7 @@ from typing import Final
 from threading import Lock
 
 from rdam.ingest.contracts.preparation import ContentRequirement
-from rdam.ingest.contracts.source import ContentClass
-from rdam.ingest.requirements import llm_requirement
+from rdam.ingest.requirements import SUBSTANTIVE_CLASSES, llm_requirement
 from rdam.ingest.alignment import SourceSelection, align_payload
 
 from rdam import (
@@ -38,8 +37,17 @@ from rdam import (
 )
 from rdam.toulmin.interpretation import describe
 from rdam.toulmin.output import ToulminOutput
-from rdam._llm import DEFAULT_OUTPUT_RETRIES, DEFAULT_TRANSPORT_RETRIES, DEFAULT_TRANSPORT_DEADLINE_SECONDS
-from rdam._llm import LlmError, StructuredAnalyst, resolved_model_identity, unavailable_reason
+from rdam._grounding import prompt_payload_for_request
+from rdam._llm import (
+    DEFAULT_OUTPUT_RETRIES,
+    DEFAULT_TRANSPORT_DEADLINE_SECONDS,
+    DEFAULT_TRANSPORT_RETRIES,
+    LlmError,
+    StructuredAnalyst,
+    load_shared_system_prompt,
+    resolved_model_identity,
+    unavailable_reason,
+)
 from rdam._provider_provenance import (
     llm_provider_failure,
     llm_configuration,
@@ -153,6 +161,10 @@ class ToulminProvider:
         return f"{PROVIDER_ID_PREFIX}/{self._model}"
 
     @property
+    def effective_instructions(self) -> str:
+        return f"{load_shared_system_prompt()}\n\n{INSTRUCTIONS}"
+
+    @property
     def declaration(self) -> ProviderDeclaration:
         """Side-effect-free: resolves a key, never opens a connection."""
 
@@ -162,6 +174,7 @@ class ToulminProvider:
             if reason is None
             else UnavailableCapability(reason=reason)
         )
+        effective = self.effective_instructions
         return ProviderDeclaration(
             provider_id=self.provider_id,
             technique=Technique.TOULMIN,
@@ -179,7 +192,7 @@ class ToulminProvider:
                 package="rdam.toulmin",
                 model_identity=self._model,
                 licence=LICENCE,
-                instructions=INSTRUCTIONS,
+                instructions=effective,
             ),
             capability=capability,
             requires_structured_input=False,
@@ -190,16 +203,20 @@ class ToulminProvider:
             interpretations=(describe(FORMALISM_ID, str(CONTRACT_VERSION)),),
             content_requirement=self.content_requirement,
             parallel_safety="concurrent",
-            instructions_identity=Sha256Identity(hex_digest=semantic_sha256(INSTRUCTIONS)),
+            instructions_identity=Sha256Identity(hex_digest=semantic_sha256(effective)),
         )
 
     @property
     def content_requirement(self) -> ContentRequirement:
         return llm_requirement(
-            "toulmin/argument-evidence-v1",
-            (ContentClass.TITLE, ContentClass.HEADING, ContentClass.PARAGRAPH, ContentClass.LIST_ITEM, ContentClass.TURN, ContentClass.CAPTION, ContentClass.TABLE, ContentClass.TABLE_CELL),
+            "rdam/substantive-stream-v2",
+            SUBSTANTIVE_CLASSES,
             requires_speaker_identity=False,
         )
+
+    @property
+    def analyst(self) -> StructuredAnalyst[ToulminAnalysis]:
+        return self._built()
 
     def _built(self) -> StructuredAnalyst[ToulminAnalysis]:
         with self._build_lock:
@@ -212,6 +229,7 @@ class ToulminProvider:
                     transport_retries=self._transport_retries,
                     transport_deadline_seconds=self._transport_deadline_seconds,
                     source_validator=ToulminAnalysis.validate_source,
+                    use_shared_constitution=True,
                 )
         return self._analyst
 
@@ -236,8 +254,14 @@ class ToulminProvider:
             request.projection.prepared_document.text if request.projection is not None else request.text,
             technique=Technique.TOULMIN, provider_id=self.provider_id,
         )
+        prompt_payload = prompt_payload_for_request(request)
         try:
-            extraction = self._built().extract(text)
+            analyst = self._built()
+            extraction = (
+                analyst.extract_prompt(prompt_payload)
+                if prompt_payload is not None
+                else analyst.extract(text)
+            )
             extraction.structure.validate_source(text)
         except LayoutError as error:
             raise ProviderError(
@@ -253,7 +277,7 @@ class ToulminProvider:
                 "model": extraction.model,
                 "output_attempts": extraction.output_attempts,
                 "transport_attempts": extraction.transport_attempts,
-                "instructions_digest": semantic_sha256(INSTRUCTIONS),
+                "instructions_digest": semantic_sha256(self.effective_instructions),
             },
         }
         ToulminOutput.model_validate_json(canonical_json_bytes(payload))

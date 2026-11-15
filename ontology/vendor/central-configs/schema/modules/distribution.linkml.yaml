@@ -43,6 +43,8 @@ classes:
       domain_bundle_paths:
         required: true
         multivalued: true
+        minimum_cardinality: 8
+        maximum_cardinality: 8
         slot_uri: coe:domain_bundle_paths
         description: Exactly eight canonical DomainBundle manifest paths.
       domain_module_paths:

@@ -201,7 +201,7 @@ class ProductionIngestor:
                     cause=_safe_cause(exc, FailureCategory.INTERNAL_PROCESSING_FAILURE),
                 )
                 raise ProductionIngestError(failure) from exc
-            distribution, extra = _source_requirement(source)
+            distribution, extra = _source_requirement(source, missing_root)
             failure = ProductionFailure(
                 failed_stage=LifecycleStage.CLASSIFICATION,
                 category=FailureCategory.PROVIDER_UNAVAILABLE,
@@ -752,21 +752,15 @@ def _root_cause(exc: Exception) -> Exception:
 
 
 _ADAPTER_IMPORT_ROOTS: Final = {
-    SourceForm.MARKDOWN: frozenset({"markdown_it", "mdit_py_plugins"}),
-    SourceForm.DOCLING_JSON: frozenset({"docling_core"}),
-    SourceForm.DOCLANG_XML: frozenset({"doclang"}),
-    SourceForm.DOCLANG_ARCHIVE: frozenset({"doclang"}),
+    SourceForm.TEXT: frozenset({"dclq", "doclang"}),
+    SourceForm.DOCLANG_XML: frozenset({"dclq", "doclang"}),
+    SourceForm.DOCLANG_ARCHIVE: frozenset({"dclq", "doclang"}),
 }
 
 
-def _source_requirement(source: SourceArtifact) -> tuple[str, str | None]:
-    requirement = {
-        SourceForm.MARKDOWN: "markdown-it-py",
-        SourceForm.DOCLING_JSON: "docling-core",
-        SourceForm.DOCLANG_XML: "doclang",
-        SourceForm.DOCLANG_ARCHIVE: "doclang",
-    }.get(source.source_form)
-    return (requirement or PACKAGE_NAME, "formats" if requirement is not None else None)
+def _source_requirement(source: SourceArtifact, missing_root: str) -> tuple[str, str | None]:
+    del source
+    return (missing_root or PACKAGE_NAME, None)
 
 
 def _resolve_empty_cache(

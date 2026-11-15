@@ -17,8 +17,6 @@ from rdam.ingest.identity import semantic_sha256, sha256_bytes
 class SourceForm(StrEnum):
     TEXT = "text"
     EDUS = "edus"
-    MARKDOWN = "markdown"
-    DOCLING_JSON = "docling_json"
     DOCLANG_XML = "doclang_xml"
     DOCLANG_ARCHIVE = "doclang_archive"
 
@@ -105,7 +103,7 @@ class RawContractDeclaration(StrictContractModel):
 
 
 class SourceArtifact(StrictContractModel):
-    """Exact in-memory submission boundary for all six supported source forms."""
+    """Exact in-memory submission boundary for all four supported source forms."""
 
     source_id: str = ""
     source_name: str = Field(min_length=1)
@@ -618,6 +616,11 @@ class ContentInventoryItem(StrictContractModel):
     def text(self) -> str | None:
         if isinstance(self.representation, TextRepresentation | AnnotationRepresentation):
             return self.representation.text
+        if self.classification is ContentClass.FIELD and isinstance(self.representation, MetadataRepresentation):
+            return next(
+                (entry.value for entry in self.representation.entries if entry.key == "text" and entry.value),
+                None,
+            )
         return None
 
 
@@ -626,19 +629,6 @@ def _canonical_edus(edus: tuple[str, ...]) -> bytes:
 
 
 def _raw_contract(data: bytes, source_form: SourceForm) -> RawContractDeclaration | None:
-    if source_form is SourceForm.DOCLING_JSON:
-        try:
-            payload = json.loads(data)
-        except json.JSONDecodeError:
-            return None
-        if isinstance(payload, dict):
-            document = cast(dict[object, object], payload)
-            schema_name = document.get("schema_name")
-            version = document.get("version")
-            return RawContractDeclaration(
-                schema_name=schema_name if isinstance(schema_name, str) else None,
-                version=version if isinstance(version, str) else None,
-            )
     if source_form is SourceForm.DOCLANG_XML:
         prefix = data.decode("utf-8", errors="strict")[:4096]
         namespace = prefix.split('xmlns="', 1)[1].split('"', 1)[0] if 'xmlns="' in prefix else None
@@ -646,25 +636,14 @@ def _raw_contract(data: bytes, source_form: SourceForm) -> RawContractDeclaratio
     return None
 
 
-def _identify_path(path: Path, data: bytes) -> SourceForm:
+def _identify_path(path: Path, _data: bytes) -> SourceForm:
     name = path.name.casefold()
     if name.endswith((".txt", ".text")):
         return SourceForm.TEXT
-    if name.endswith((".md", ".markdown")):
-        return SourceForm.MARKDOWN
     if name.endswith((".dclg", ".dclg.xml")):
         return SourceForm.DOCLANG_XML
     if name.endswith(".dclx"):
         return SourceForm.DOCLANG_ARCHIVE
-    if name.endswith(".docling.json"):
-        return SourceForm.DOCLING_JSON
-    if name.endswith(".json"):
-        try:
-            payload = json.loads(data)
-        except json.JSONDecodeError as exc:
-            raise ValueError("JSON source is invalid and source_form cannot be inferred") from exc
-        if isinstance(payload, dict) and cast(dict[object, object], payload).get("schema_name") == "DoclingDocument":
-            return SourceForm.DOCLING_JSON
     raise ValueError(f"source_form is required for ambiguous path {path.name!r}")
 
 
@@ -672,8 +651,6 @@ def _media_type(source_form: SourceForm) -> str:
     return {
         SourceForm.TEXT: "text/plain; charset=utf-8",
         SourceForm.EDUS: "application/vnd.isanlp-rst.edus+json",
-        SourceForm.MARKDOWN: "text/markdown; charset=utf-8",
-        SourceForm.DOCLING_JSON: "application/vnd.docling.document+json",
         SourceForm.DOCLANG_XML: "application/vnd.doclang+xml",
         SourceForm.DOCLANG_ARCHIVE: "application/vnd.doclang.archive+zip",
     }[source_form]

@@ -75,9 +75,15 @@ classes:
     slot_usage:
       in_scheme:
         required: true
+    attributes:
+      scope_note:
+        slot_uri: skos:scopeNote
+        description: Instructional note clarifying what this concept includes or excludes in this scheme (ISO 25964 /
+          Z39.19 scope note). Homonym disambiguation between resources stays on Term usage_note.
     description: One unit of meaning within a governed taxonomy (skos:Concept). Every concept
       declares its owning scheme and resolves without application context; hierarchy is
-      expressed only through broader and narrower.
+      expressed only through broader and narrower. A concept may have more than one broader
+      parent when the meaning is multidimensional (polyhierarchy).
   Taxonomy:
     is_a: KnowledgeArtifact
     class_uri: skos:ConceptScheme

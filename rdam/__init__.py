@@ -18,6 +18,8 @@ from rdam.contracts import (
     MachinePreparation,
     ProviderConfiguration,
     BoundaryConfiguration,
+    DerivationCompiler,
+    DerivationSpec,
     OperationFailure,
     OperationError,
     VersionInfo,
@@ -46,10 +48,14 @@ from rdam.contracts import (
     UnavailableOutcome,
     UnavailableReason,
     UpstreamResultReference,
+    XPathAlignmentEntry,
+    XPathTechniqueOccurrence,
     outcome_technique,
 )
 from rdam.frameworks import (
+    ACCEPTS_STRUCTURED_INPUT_TECHNIQUES,
     BOUNDARY_TECHNIQUES,
+    DUAL_MODE_TECHNIQUES,
     FRAMEWORK_SCHEME,
     STRUCTURED_INPUT_TECHNIQUES,
     FrameworkIdentity,
@@ -72,7 +78,9 @@ except PackageNotFoundError:
     __version__ = "unknown"
 
 __all__ = [
+    "ACCEPTS_STRUCTURED_INPUT_TECHNIQUES",
     "BOUNDARY_TECHNIQUES",
+    "DUAL_MODE_TECHNIQUES",
     "FRAMEWORK_SCHEME",
     "STRUCTURED_INPUT_TECHNIQUES",
     "AggregateAnalysis",
@@ -82,6 +90,8 @@ __all__ = [
     "AvailableCapability",
     "BoundaryConfiguration",
     "CapabilityState",
+    "DerivationCompiler",
+    "DerivationSpec",
     "ExecutionPolicy",
     "ExecutionSettings",
     "FailedOutcome",
@@ -132,6 +142,8 @@ __all__ = [
     "UpstreamResultReference",
     "VersionInfo",
     "ViewRequest",
+    "XPathAlignmentEntry",
+    "XPathTechniqueOccurrence",
     "__version__",
     "canonical_json_bytes",
     "framework_identities",

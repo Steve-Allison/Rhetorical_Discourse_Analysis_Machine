@@ -79,15 +79,9 @@ def get_left_right(
             min_left = node.left
         if max_right < node.right or max_right == 0:
             max_right = node.right
-        if node.relname == "span":
+        if node.relname == "span" or node.relname in rel_hash and parent.kind == "multinuc" and rel_hash[node.relname] == "multinuc":
             if parent.left > min_left or parent.left == 0:
                 parent.left = min_left
             if parent.right < max_right:
                 parent.right = max_right
-        elif node.relname in rel_hash:
-            if parent.kind == "multinuc" and rel_hash[node.relname] == "multinuc":
-                if parent.left > min_left or parent.left == 0:
-                    parent.left = min_left
-                if parent.right < max_right:
-                    parent.right = max_right
         current_id = parent.id

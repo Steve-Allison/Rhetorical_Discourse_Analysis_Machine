@@ -1,0 +1,48 @@
+_meta:
+  file_id: coe:file/domain/delivery/media_delivery
+  title: Delivery — Media Authoring and Voice
+  last_updated: '2026-10-11'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: delivery
+  governing_class: coe:DomainModule
+module_id: coe:module/delivery/media_delivery
+domain: delivery
+entity_collections:
+- id: coe:artifact/delivery/media_delivery
+  label: Media Delivery Craft
+  description: eLearning packaging and voiceover delivery practices for produced media.
+  last_updated: '2026-10-11'
+  home_domain: delivery
+  status: canonical
+  entities:
+  - id: coe:entity/voiceover_and_narration
+    label: Voiceover And Narration
+    description: The human-narration discipline — casting, script markup, the directed session, pacing targets, the contested voice principle, and voice-replica consent law.
+    home_domain: delivery
+    status: canonical
+    terms:
+    - literal: Voiceover (VO)
+      term_type: full_form
+      term_status: admitted
+    - literal: Punch-and-roll
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - voiceover and narration
+  - id: coe:entity/elearning_authoring_and_delivery
+    label: Elearning Authoring And Delivery
+    description: The packaging, launch and tracking stack for digital learning content — SCORM, AICC, xAPI and cmi5 — with the authoring-tool landscape and publish-test-deploy workflow.
+    home_domain: delivery
+    status: canonical
+    terms:
+    - literal: xAPI
+      term_type: full_form
+      term_status: admitted
+    - literal: cmi5
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - elearning authoring and delivery

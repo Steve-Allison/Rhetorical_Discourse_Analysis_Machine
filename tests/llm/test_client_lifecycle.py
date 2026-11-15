@@ -24,7 +24,7 @@ def _anthropic_tool_use_events(tool_name: str) -> bytes:
 
     events: tuple[tuple[str, dict[str, object]], ...] = (
         ("message_start", {"type": "message_start", "message": {
-            "id": "msg_fixture", "type": "message", "role": "assistant", "model": "claude-sonnet-4-5",
+            "id": "msg_fixture", "type": "message", "role": "assistant", "model": "claude-sonnet-4-6",
             "content": [], "stop_reason": None, "stop_sequence": None,
             "usage": {"input_tokens": 1, "output_tokens": 1}}}),
         ("content_block_start", {"type": "content_block_start", "index": 0, "content_block": {
@@ -65,9 +65,9 @@ class ServiceTransport(httpx2.AsyncBaseTransport):
                 json={"error": {"type": "api_error", "message": "fixture unavailable",
                                 "code": self.status, "status": "UNAVAILABLE"}},
             )
-        tools = cast(list[dict[str, object]], body["tools"])
         match self.provider:
             case "openai":
+                tools = cast(list[dict[str, object]], body["tools"])
                 payload = {
                     "id": "resp_fixture", "object": "response", "created_at": 0,
                     "model": "gpt-4.1", "status": "completed",
@@ -75,25 +75,39 @@ class ServiceTransport(httpx2.AsyncBaseTransport):
                                 "name": tools[0]["name"], "arguments": '{"claim":"fixture claim"}'}],
                 }
             case "anthropic" if body.get("stream") is True:
+                tools = cast(list[dict[str, object]], body["tools"])
                 return httpx2.Response(
                     200, request=request, headers={"content-type": "text/event-stream"},
                     content=_anthropic_tool_use_events(str(tools[0]["name"])),
                 )
             case "anthropic":
+                tools = cast(list[dict[str, object]], body["tools"])
                 payload = {
-                    "id": "msg_fixture", "type": "message", "role": "assistant", "model": "claude-sonnet-4-5",
+                    "id": "msg_fixture", "type": "message", "role": "assistant", "model": "claude-sonnet-4-6",
                     "stop_reason": "tool_use", "stop_sequence": None,
                     "usage": {"input_tokens": 1, "output_tokens": 1},
                     "content": [{"type": "tool_use", "id": "tool_fixture", "name": tools[0]["name"],
                                  "input": {"claim": "fixture claim"}}],
                 }
             case "google":
-                declarations = cast(list[dict[str, object]], tools[0]["functionDeclarations"])
+                assert request.url.path.endswith("/v1/interactions")
+                assert body.get("store") is False
+                response_format = cast(dict[str, object], body["response_format"])
+                assert response_format["mime_type"] == "application/json"
                 payload = {
-                    "candidates": [{"content": {"role": "model", "parts": [
-                        {"functionCall": {"name": declarations[0]["name"], "args": {"claim": "fixture claim"}}}
-                    ]}, "finishReason": "STOP"}],
-                    "usageMetadata": {"promptTokenCount": 1, "candidatesTokenCount": 1, "totalTokenCount": 2},
+                    "id": "int_fixture",
+                    "status": "completed",
+                    "steps": [
+                        {
+                            "type": "model_output",
+                            "content": [{"type": "text", "text": '{"claim":"fixture claim"}'}],
+                        }
+                    ],
+                    "usage": {
+                        "total_input_tokens": 10,
+                        "total_output_tokens": 4,
+                        "total_cached_tokens": 6,
+                    },
                 }
             case _:
                 raise AssertionError(f"unexpected provider {self.provider}")
@@ -149,7 +163,7 @@ def _analyst(
     provider: str, *, source_validator: Callable[[Finding, str], object] | None = None,
     deadline: float = 5.0, transport_retries: int = 0,
 ) -> StructuredAnalyst[Finding]:
-    names = {"openai": "gpt-4.1", "anthropic": "claude-sonnet-4-5", "google": "gemini-2.5-pro"}
+    names = {"openai": "gpt-4.1", "anthropic": "claude-sonnet-4-6", "google": "gemini-2.5-pro"}
     return StructuredAnalyst(
         output_type=Finding, instructions="Return a supported claim.", model=f"{provider}:{names[provider]}",
         source_validator=source_validator, output_retries=2, transport_retries=transport_retries,

@@ -66,8 +66,8 @@ MUTANTS = (
     Mutant(
         name="completion-order-leaks-into-outcomes",
         source=Path("rdam/machine.py"),
-        original="        outcomes.extend(requested_outcomes[technique] for technique in request.techniques)",
-        replacement="        outcomes.extend(requested_outcomes.values())",
+        original="        outcomes = tuple(requested_outcomes[technique] for technique in request.techniques)",
+        replacement="        outcomes = tuple(requested_outcomes.values())",
         tests=(
             "tests/machine/test_shared_runtime.py::TestExecutionPolicy::"
             "test_outcomes_remain_in_request_order_when_completion_order_is_reversed",

@@ -151,22 +151,12 @@ for source in control["sources"]:
             text = " ".join(json.loads(path.read_text(encoding="utf-8"))["edus"])
         elif form == "text":
             text = path.read_text(encoding="utf-8")
-        elif form == "markdown":
-            from rdam.rst.markdown.harvester import harvest_markdown_text
-            from rdam.rst.markdown.loader import load_markdown
-            text = harvest_markdown_text(load_markdown(path.read_text(encoding="utf-8"), gfm=True).tokens).full_text
-        elif form == "docling_json":
-            from docling_core.types.doc import DoclingDocument
-            from rdam.rst.docling.harvester import harvest_docling_text
-            text = harvest_docling_text(DoclingDocument.load_from_json(path)).full_text
-        elif form == "doclang_xml":
-            from doclang import validate
-            from rdam.rst.doclang.harvester import harvest_doclang_text
-            from rdam.rst.doclang.loader import parse_doclang_xml
-            validate(path, allow_empty_namespace=True)
-            text = harvest_doclang_text(parse_doclang_xml(path)).full_text
+        elif form in {"doclang_xml", "doclang_archive"}:
+            from rdam.ingest import ProductionIngestor, SourceArtifact, SourceForm
+            artifact = SourceArtifact.from_path(path, source_form=SourceForm(form))
+            text = ProductionIngestor().prepare(artifact).semantic.prepared_document.text
         else:
-            results[source["source_id"]] = "unsupported:doclang_archive"
+            results[source["source_id"]] = f"unsupported:{form}"
             continue
         results[source["source_id"]] = "prepared_sha256:" + hashlib.sha256(text.encode("utf-8")).hexdigest()
     except Exception as exc:

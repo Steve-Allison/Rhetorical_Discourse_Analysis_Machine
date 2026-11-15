@@ -16,22 +16,24 @@ fundamental role in nonmonotonic reasoning, logic programming and n-person games
 - *Stable* extensions are conflict-free sets attacking every argument outside them;
   every stable extension is complete (and preferred).
 
-Argument content is deliberately abstracted away (FR-016): this module evaluates a
-supplied framework and never derives one from text.
-
-Algorithm: exhaustive subset enumeration under a declared capacity. For the frameworks a
-single analyst supplies by hand this is exact, deterministic, and fast; larger inputs are
-refused with a typed failure rather than approximated.
+Algorithm: bitmask grounded-kernel fixed point followed by exact Caminada 3-valued
+complete-labelling CNF enumeration over CaDiCaL 1.9.5 (`pysat.solvers.Solver("cadical195")`).
 """
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Annotated, Final, Self, TypeGuard, cast
+
 from pydantic import Field, model_validator
+from pysat.solvers import Solver
+
 from rdam._strict import StrictModel
 
-DEFAULT_CAPACITY: Final = 14
-"""Maximum number of arguments the exhaustive enumeration accepts (2^14 candidate sets)."""
+DEFAULT_CAPACITY: Final = 128
+"""Maximum number of arguments accepted by exact SAT enumeration."""
+
+MAX_ENUMERATED_EXTENSIONS: Final = 4096
+"""Hard cap on enumerated complete extensions before refusing combinatorial blowup."""
 
 
 class FrameworkError(ValueError):
@@ -63,8 +65,6 @@ class ArgumentationFramework:
     attacks: frozenset[tuple[str, str]]
 
     def __post_init__(self) -> None:
-        """Keep the public constructor as strict as :meth:`from_payload`."""
-
         if not self.arguments:
             raise FrameworkError("arguments must be a non-empty tuple")
         known: set[str] = set()
@@ -130,6 +130,48 @@ class ArgumentationFramework:
         }
 
 
+def _bitmask_graph(framework: ArgumentationFramework) -> tuple[tuple[int, ...], tuple[int, ...]]:
+    index_of = {arg: idx for idx, arg in enumerate(framework.arguments)}
+    n = len(framework.arguments)
+    attackers = [0] * n
+    attacked = [0] * n
+    for src, dst in framework.attacks:
+        u = index_of[src]
+        v = index_of[dst]
+        attackers[v] |= 1 << u
+        attacked[u] |= 1 << v
+    return tuple(attackers), tuple(attacked)
+
+
+def _grounded_masks(attackers: tuple[int, ...], attacked: tuple[int, ...]) -> tuple[int, int]:
+    n = len(attackers)
+    in_mask = 0
+    while True:
+        out_mask = 0
+        cursor = in_mask
+        while cursor:
+            lsb = cursor & -cursor
+            out_mask |= attacked[lsb.bit_length() - 1]
+            cursor ^= lsb
+        next_in = 0
+        for i in range(n):
+            if (attackers[i] & ~out_mask) == 0:
+                next_in |= 1 << i
+        if next_in == in_mask:
+            return in_mask, out_mask
+        in_mask = next_in
+
+
+def _mask_to_frozenset(arguments: tuple[str, ...], mask: int) -> frozenset[str]:
+    members: list[str] = []
+    cursor = mask
+    while cursor:
+        lsb = cursor & -cursor
+        members.append(arguments[lsb.bit_length() - 1])
+        cursor ^= lsb
+    return frozenset(members)
+
+
 def is_conflict_free(framework: ArgumentationFramework, candidate: frozenset[str]) -> bool:
     return not any(source in candidate and target in candidate for source, target in framework.attacks)
 
@@ -141,7 +183,6 @@ def defends(framework: ArgumentationFramework, defenders: frozenset[str], argume
 
 def acceptable_arguments(framework: ArgumentationFramework, defenders: frozenset[str]) -> frozenset[str]:
     """The characteristic function ``F(S)``."""
-
     return frozenset(argument for argument in framework.arguments if defends(framework, defenders, argument))
 
 
@@ -160,14 +201,10 @@ def is_stable(framework: ArgumentationFramework, candidate: frozenset[str]) -> b
 
 
 def grounded_extension(framework: ArgumentationFramework) -> frozenset[str]:
-    """Least fixed point of ``F`` by iteration from the empty set; ``F`` is monotone, so this terminates."""
-
-    current: frozenset[str] = frozenset()
-    while True:
-        following = acceptable_arguments(framework, current)
-        if following == current:
-            return current
-        current = following
+    """Least fixed point of ``F`` computed via integer bitmask propagation."""
+    attackers, attacked = _bitmask_graph(framework)
+    in_mask, _ = _grounded_masks(attackers, attacked)
+    return _mask_to_frozenset(framework.arguments, in_mask)
 
 
 @dataclass(frozen=True, slots=True)
@@ -211,45 +248,143 @@ def _ordered(framework: ArgumentationFramework, extensions: Iterable[frozenset[s
 
 
 def validate_capacity(capacity: object) -> int:
-    """Return a valid exhaustive-enumeration capacity or reject invalid configuration."""
-
+    """Return a valid enumeration capacity or reject invalid configuration."""
     if isinstance(capacity, bool) or not isinstance(capacity, int) or capacity <= 0:
         raise ValueError("exhaustive capacity must be a positive integer")
     return capacity
 
 
+def _enumerate_complete_masks_sat(
+    attackers: tuple[int, ...],
+    attacked: tuple[int, ...],
+) -> list[int]:
+    """Exact Caminada 3-valued complete labelling CNF enumeration via CaDiCaL 1.9.5."""
+    n = len(attackers)
+    in_mask, out_mask = _grounded_masks(attackers, attacked)
+    undecided_mask = ((1 << n) - 1) & ~(in_mask | out_mask)
+    if undecided_mask == 0:
+        return [in_mask]
+
+    def x_var(i: int) -> int:
+        return 2 * i + 1
+
+    def y_var(i: int) -> int:
+        return 2 * i + 2
+
+    clauses: list[list[int]] = []
+    for i in range(n):
+        xi = x_var(i)
+        yi = y_var(i)
+        # Unit propagation from grounded kernel:
+        if (in_mask >> i) & 1:
+            clauses.append([xi])
+            clauses.append([-yi])
+            continue
+        if (out_mask >> i) & 1:
+            clauses.append([-xi])
+            clauses.append([yi])
+            continue
+        if (attackers[i] >> i) & 1:
+            # Self-attacking argument can never be IN.
+            clauses.append([-xi])
+
+        # 1. Conflict-freeness: x_i -> ~y_i
+        clauses.append([-xi, -yi])
+
+        preds: list[int] = []
+        cursor = attackers[i]
+        while cursor:
+            lsb = cursor & -cursor
+            preds.append(lsb.bit_length() - 1)
+            cursor ^= lsb
+
+        if not preds:
+            clauses.append([xi])
+            clauses.append([-yi])
+        else:
+            # 2. y_i <-> OR_{b in preds} x_b
+            clauses.extend([-x_var(b), yi] for b in preds)
+            clauses.append([-yi, *(x_var(b) for b in preds)])
+            # 3. x_i <-> AND_{b in preds} y_b
+            clauses.extend([-xi, y_var(b)] for b in preds)
+            clauses.append([xi, *(-y_var(b) for b in preds)])
+
+    masks: list[int] = []
+    with Solver(name="cadical195", bootstrap_with=clauses) as solver:
+        while solver.solve():
+            if len(masks) >= MAX_ENUMERATED_EXTENSIONS:
+                raise FrameworkCapacityError(
+                    f"framework exceeds {MAX_ENUMERATED_EXTENSIONS} complete extensions; refusing combinatorial blowup"
+                )
+            model = solver.get_model()
+            assert model is not None
+            pos_vars = {lit for lit in model if lit > 0}
+            ext_mask = 0
+            blocking: list[int] = []
+            for i in range(n):
+                xi = x_var(i)
+                if xi in pos_vars:
+                    ext_mask |= 1 << i
+                    blocking.append(-xi)
+                else:
+                    blocking.append(xi)
+            masks.append(ext_mask)
+            solver.add_clause(blocking)
+    return masks
+
+
 def complete_extensions(
     framework: ArgumentationFramework, *, capacity: int = DEFAULT_CAPACITY
 ) -> tuple[frozenset[str], ...]:
-    """Every complete extension, by exhaustive enumeration of the ``2^|Ar|`` candidate sets."""
-
+    """Every complete extension, solved exactly via CaDiCaL 1.9.5 CNF enumeration."""
     capacity = validate_capacity(capacity)
     count = len(framework.arguments)
     if count > capacity:
-        raise FrameworkCapacityError(f"framework has {count} arguments; exhaustive capacity is {capacity}")
-    found: list[frozenset[str]] = []
-    for mask in range(1 << count):
-        candidate = frozenset(argument for index, argument in enumerate(framework.arguments) if mask >> index & 1)
-        if is_complete(framework, candidate):
-            found.append(candidate)
-    return _ordered(framework, found)
+        raise FrameworkCapacityError(f"framework has {count} arguments; capacity is {capacity}")
+    attackers, attacked = _bitmask_graph(framework)
+    masks = _enumerate_complete_masks_sat(attackers, attacked)
+    return _ordered(framework, (_mask_to_frozenset(framework.arguments, mask) for mask in masks))
 
 
 def evaluate(framework: ArgumentationFramework, *, capacity: int = DEFAULT_CAPACITY) -> Semantics:
     """Grounded, complete, preferred, and stable extensions of one framework."""
+    capacity = validate_capacity(capacity)
+    count = len(framework.arguments)
+    if count > capacity:
+        raise FrameworkCapacityError(f"framework has {count} arguments; capacity is {capacity}")
+    attackers, attacked = _bitmask_graph(framework)
+    grounded_mask, _ = _grounded_masks(attackers, attacked)
+    complete_masks = _enumerate_complete_masks_sat(attackers, attacked)
+    all_mask = (1 << count) - 1
 
-    complete = complete_extensions(framework, capacity=capacity)
-    preferred = _ordered(
-        framework,
-        (item for item in complete if not any(item < other for other in complete)),
+    preferred_masks = [
+        m for m in complete_masks if not any(m != other and (m & other) == m for other in complete_masks)
+    ]
+    stable_masks: list[int] = []
+    for m in preferred_masks:
+        out_m = 0
+        cursor = m
+        while cursor:
+            lsb = cursor & -cursor
+            out_m |= attacked[lsb.bit_length() - 1]
+            cursor ^= lsb
+        if (m | out_m) == all_mask:
+            stable_masks.append(m)
+
+    args = framework.arguments
+    return Semantics(
+        grounded=_mask_to_frozenset(args, grounded_mask),
+        complete=_ordered(args_fw := framework, (_mask_to_frozenset(args, m) for m in complete_masks)),
+        preferred=_ordered(args_fw, (_mask_to_frozenset(args, m) for m in preferred_masks)),
+        stable=_ordered(args_fw, (_mask_to_frozenset(args, m) for m in stable_masks)),
     )
-    stable = _ordered(framework, (item for item in complete if is_stable(framework, item)))
-    return Semantics(grounded=grounded_extension(framework), complete=complete, preferred=preferred, stable=stable)
 
 
 __all__ = [
     "DEFAULT_CAPACITY",
+    "MAX_ENUMERATED_EXTENSIONS",
     "ArgumentationFramework",
+    "DungInput",
     "FrameworkCapacityError",
     "FrameworkError",
     "Semantics",

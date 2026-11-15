@@ -5,13 +5,14 @@ metadata:
   type: reference
 ---
 
-> **Historical note — current status reconciled 2026-09-06.** The observations,
-> proposed APIs and open questions below describe the dated work recorded here.
-> They are not current installation or implementation instructions. The current
-> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
-> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
-> and [documentation guide](../../docs/README.md). Original decisions and measurements
-> remain below for traceability; eRST work is suspended.
+> **Historical note — current status reconciled 2026-11-15.** The observations
+> below record the 2026-06-10 Phase 1 inspection over the then-40 valid v0.5
+> fixtures. As of `rdam` `6.1.0`, `tests/fixtures/doclang/` mirrors commit
+> `ae8ad5490b9b03b344e3e49dcb0f6f2209795de6` (`v0.9.0`: 62 valid `.dclg` specimens
+> and 78 invalid specimens; see [`tests/fixtures/doclang/README.md`](../../tests/fixtures/doclang/README.md)),
+> and `rdam.ingest` pairs `local_path` with `dclq` XPath indexing (`to_dclq_xpath`
+> at `rdam/ingest/doclang/loader.py:126-134`). See the
+> [current ingest guide](../../docs/production-source-ingest.md).
 
 Phase 1 of the DocLang-native RST plan ([`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md)).
 All 40 valid fixtures from

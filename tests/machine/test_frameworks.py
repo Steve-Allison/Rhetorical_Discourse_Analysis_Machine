@@ -10,7 +10,15 @@ from typing import cast
 import pytest
 import yaml
 
-from rdam import BOUNDARY_TECHNIQUES, FRAMEWORK_SCHEME, STRUCTURED_INPUT_TECHNIQUES, Technique, framework_identities, technique_curie
+from rdam import (
+    ACCEPTS_STRUCTURED_INPUT_TECHNIQUES,
+    BOUNDARY_TECHNIQUES,
+    FRAMEWORK_SCHEME,
+    STRUCTURED_INPUT_TECHNIQUES,
+    Technique,
+    framework_identities,
+    technique_curie,
+)
 from tools.ontology.project_framework_identities import PROJECTION, VENDORED_TAXONOMY, project, render
 from rdam.frameworks import FrameworkIdentity, FrameworkResolutionError
 
@@ -36,18 +44,25 @@ def test_all_eight_identities_resolve_to_the_scheme() -> None:
         assert identity.broader.startswith("coe:concept/analytical_frameworks_taxonomy/")
 
 
-def test_boundaries_are_the_seven_of_fr_002_and_erst_is_a_formalism() -> None:
+def test_boundaries_are_the_thirteen_production_techniques_and_erst_is_a_formalism() -> None:
     assert BOUNDARY_TECHNIQUES == (
         Technique.RST,
+        Technique.CENTERING,
         Technique.PDTB,
         Technique.SDRT,
+        Technique.SPEECH_ACTS,
+        Technique.CLASSICAL_RHETORIC,
+        Technique.ARGUMENT_MINING,
         Technique.TOULMIN,
         Technique.WALTON,
-        Technique.DUNG,
+        Technique.PRAGMA_DIALECTICS,
         Technique.IBIS,
+        Technique.ASPIC,
+        Technique.DUNG,
     )
     assert Technique.ERST not in BOUNDARY_TECHNIQUES
-    assert STRUCTURED_INPUT_TECHNIQUES == {Technique.DUNG, Technique.IBIS}
+    assert STRUCTURED_INPUT_TECHNIQUES == {Technique.DUNG}
+    assert ACCEPTS_STRUCTURED_INPUT_TECHNIQUES == {Technique.DUNG, Technique.IBIS, Technique.ASPIC}
 
 
 def test_packaged_projection_equals_a_fresh_projection_of_the_vendored_taxonomy() -> None:

@@ -5,7 +5,7 @@ from datetime import datetime
 from enum import StrEnum
 import json
 from pathlib import Path
-from typing import Self, cast
+from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -21,8 +21,6 @@ INGEST_PIPELINE_VERSION = "1.0.0"
 class SourceForm(StrEnum):
     TEXT = "text"
     EDUS = "edus"
-    MARKDOWN = "markdown"
-    DOCLING_JSON = "docling_json"
     DOCLANG_XML = "doclang_xml"
     DOCLANG_ARCHIVE = "doclang_archive"
 
@@ -287,7 +285,7 @@ class SourceArtifact(_StrictModel):
     ) -> Self:
         if source_form is SourceForm.EDUS:
             raise ValueError("use from_edus for presegmented EDU input")
-        if source_form in {SourceForm.TEXT, SourceForm.MARKDOWN, SourceForm.DOCLANG_XML, SourceForm.DOCLING_JSON}:
+        if source_form in {SourceForm.TEXT, SourceForm.DOCLANG_XML}:
             data.decode("utf-8", errors="strict")
         raw_contract = _raw_contract(data, source_form)
         return cls(
@@ -691,19 +689,6 @@ def _analysis_semantic_payload(analysis: RstAnalysis | None) -> dict[str, object
 
 
 def _raw_contract(data: bytes, source_form: SourceForm) -> RawContractDeclaration | None:
-    if source_form is SourceForm.DOCLING_JSON:
-        try:
-            payload = json.loads(data)
-        except json.JSONDecodeError:
-            return None
-        if isinstance(payload, dict):
-            document = cast(dict[object, object], payload)
-            schema_name = document.get("schema_name")
-            version = document.get("version")
-            return RawContractDeclaration(
-                schema_name=schema_name if isinstance(schema_name, str) else None,
-                version=version if isinstance(version, str) else None,
-            )
     if source_form is SourceForm.DOCLANG_XML:
         prefix = data[:4096].decode("utf-8", errors="strict")
         namespace = None
@@ -713,23 +698,14 @@ def _raw_contract(data: bytes, source_form: SourceForm) -> RawContractDeclaratio
     return None
 
 
-def _identify_path(path: Path, data: bytes) -> SourceForm:
+def _identify_path(path: Path, _data: bytes) -> SourceForm:
     name = path.name.lower()
-    if name.endswith((".md", ".markdown")):
-        return SourceForm.MARKDOWN
+    if name.endswith((".txt", ".text")):
+        return SourceForm.TEXT
     if name.endswith((".dclg", ".dclg.xml")):
         return SourceForm.DOCLANG_XML
     if name.endswith(".dclx"):
         return SourceForm.DOCLANG_ARCHIVE
-    if name.endswith(".docling.json"):
-        return SourceForm.DOCLING_JSON
-    if name.endswith(".json"):
-        try:
-            payload = json.loads(data)
-        except json.JSONDecodeError as exc:
-            raise ValueError("JSON source is invalid and source_form cannot be inferred") from exc
-        if isinstance(payload, dict) and cast(dict[object, object], payload).get("schema_name") == "DoclingDocument":
-            return SourceForm.DOCLING_JSON
     raise ValueError(f"source_form is required for ambiguous path {path.name!r}")
 
 
@@ -737,8 +713,6 @@ def _media_type(source_form: SourceForm) -> str:
     return {
         SourceForm.TEXT: "text/plain; charset=utf-8",
         SourceForm.EDUS: "application/vnd.isanlp-rst.edus+json",
-        SourceForm.MARKDOWN: "text/markdown; charset=utf-8",
-        SourceForm.DOCLING_JSON: "application/vnd.docling.document+json",
         SourceForm.DOCLANG_XML: "application/vnd.doclang+xml",
         SourceForm.DOCLANG_ARCHIVE: "application/vnd.doclang.archive+zip",
     }[source_form]

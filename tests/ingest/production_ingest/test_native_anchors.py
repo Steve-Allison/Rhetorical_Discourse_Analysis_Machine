@@ -3,7 +3,6 @@ from pathlib import Path
 from rdam.ingest import (
     CoordinateBoxAnchor,
     PageAnchor,
-    PageBoxAnchor,
     SourceArtifact,
     SourceForm,
     SourcePathAnchor,
@@ -13,26 +12,22 @@ from rdam.ingest import (
 from rdam.ingest.prepare import inventory_source
 
 
-def test_docling_inventory_retains_page_bbox_and_table_coordinates() -> None:
-    artifact = SourceArtifact.from_path(
-        Path("tests/fixtures/docling/pdf.docling.json"),
-        source_form=SourceForm.DOCLING_JSON,
-    )
-    inventory, _ = inventory_source(artifact)
-    anchor_types = {type(anchor) for item in inventory for anchor in item.anchors}
-    assert {SourcePathAnchor, PageAnchor, PageBoxAnchor, TableCoordinateAnchor} <= anchor_types
-
-
-def test_doclang_and_markdown_use_stable_native_addresses() -> None:
+def test_doclang_inventory_retains_page_coordinate_box_table_and_dclq_xpath() -> None:
     doclang, _ = inventory_source(
         SourceArtifact.from_path(
             Path("tests/fixtures/doclang/ok_namespaced_and_versioned.dclg"),
             source_form=SourceForm.DOCLANG_XML,
         )
     )
-    markdown, _ = inventory_source(SourceArtifact.from_path(Path("tests/fixtures/markdown/gfm-rich.md")))
     assert all(
         isinstance(item.anchors[0], SourcePathAnchor) and item.anchors[0].path_kind == "xml_path" for item in doclang
+    )
+    assert all(dict(item.provider_attributes).get("dclq_xpath", "").startswith("/d:doclang") for item in doclang)
+    page_inventory, _ = inventory_source(
+        SourceArtifact.from_path(
+            Path("tests/fixtures/doclang/ok_page_break_top_level.dclg"),
+            source_form=SourceForm.DOCLANG_XML,
+        )
     )
     location_inventory, _ = inventory_source(
         SourceArtifact.from_path(
@@ -47,12 +42,13 @@ def test_doclang_and_markdown_use_stable_native_addresses() -> None:
         )
     )
     doclang_anchor_types = {
-        type(anchor) for item in (*doclang, *location_inventory, *table_inventory) for anchor in item.anchors
-    }
-    assert {CoordinateBoxAnchor, TableCoordinateAnchor} <= doclang_anchor_types
-    assert all(
-        isinstance(anchor, SourcePathAnchor | TextSpanAnchor | TableCoordinateAnchor)
-        for item in markdown
+        type(anchor)
+        for item in (*doclang, *page_inventory, *location_inventory, *table_inventory)
         for anchor in item.anchors
-    )
-    assert any(isinstance(anchor, TableCoordinateAnchor) for item in markdown for anchor in item.anchors)
+    }
+    assert {SourcePathAnchor, PageAnchor, CoordinateBoxAnchor, TableCoordinateAnchor} <= doclang_anchor_types
+
+    plain_text, _ = inventory_source(SourceArtifact.from_text("Plain sentence.", source_name="plain.txt"))
+    assert len(plain_text) == 1
+    assert any(isinstance(anchor, TextSpanAnchor) for anchor in plain_text[0].anchors)
+    assert dict(plain_text[0].provider_attributes).get("dclq_xpath") == "/d:doclang/d:text[1]"

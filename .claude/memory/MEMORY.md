@@ -9,15 +9,15 @@ and [production ingest](../../docs/production-source-ingest.md). The package is
 
 - [Licensing constraints](licensing.md) — MIT source / CC BY-NC 4.0 weights; commercial use requires weight replacement.
 
-## Dated observations (Docling work)
+## Dated observations (historical Docling work — retired from `rdam.ingest` in `6.1.0`)
 
-- [Docling-core API contract](verified_docling_core_api.md) — `iterate_items`, `load_from_json`, default content-layer filter; with file:line citations.
-- [Docling JSON schema uniformity](verified_docling_schema.md) — `DoclingDocument` v1.10.0 uniform across pptx / pdf / vtt / markdown; populated-vs-empty field differences only.
+- [Docling-core API contract](verified_docling_core_api.md) — historical `iterate_items`, `load_from_json`, default content-layer filter (`_inventory_docling` retired in `6.1.0` in favour of unified `dclq` + DocLang ingestion).
+- [Docling JSON schema uniformity](verified_docling_schema.md) — historical `DoclingDocument` v1.10.0 sample notes across pptx / pdf / vtt / markdown.
 
-## Dated observations (DocLang work)
+## Dated observations (`dclq` and DocLang work)
 
-- [DocLang 0.7 spec](verified_doclang_spec.md) — XML-based; as of 2026-08-16 locked `doclang[schematron-saxon]>=0.7,<0.8` (PyPI 0.7.3). Since 2026-10-09 `doclang` is pinned to upstream `main` by git commit — see `pyproject.toml` and `tests/fixtures/doclang/README.md`; no stable element IDs; `<layer>` ∈ {body, background, furniture}; no slide concept. Plan: [`docs/plans/2026-05-15-doclang-native-rst.md`](../../docs/plans/2026-05-15-doclang-native-rst.md). Historical notes in that file still mention 0.5; fixtures remirrored 2026-08-16 (42 files).
-- [DocLang fixture verifications (Phase 1)](verified_doclang_fixtures.md) — Q1–Q6 verified against the then-40 valid fixtures. Remirror 2026-08-16 added `ok_description_element_head` and `ok_namespaced_and_versioned`.
+- [DocLang spec](verified_doclang_spec.md) — XML-based; as of 2026-11-15 `pyproject.toml:44-45` ships `dclq>=2.107.0,<3` and `doclang[schematron-saxon]` at upstream `main` commit `ae8ad5490b9b03b344e3e49dcb0f6f2209795de6` (`v0.9.0`, 62 valid and 78 invalid fixtures in `tests/fixtures/doclang/`) as core dependencies. Historical body notes below the status banner record the initial 2026-05-15 v0.5 investigation.
+- [DocLang fixture verifications (Phase 1)](verified_doclang_fixtures.md) — historical Q1–Q6 verified against the initial 40 valid fixtures; current 62-valid / 78-invalid conformance corpus is tracked in [`tests/fixtures/doclang/README.md`](../../tests/fixtures/doclang/README.md).
 
 ## Resolved questions (kept as historical record)
 

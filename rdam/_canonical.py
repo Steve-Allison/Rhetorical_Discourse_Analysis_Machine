@@ -18,7 +18,7 @@ def json_projection(value: Any) -> Any:
     """Project supported Python values onto the JSON data model without loss."""
 
     if isinstance(value, BaseModel):
-        return json_projection(value.model_dump(mode="json", exclude_none=False))
+        return value.model_dump(mode="json", exclude_none=False)
     if is_dataclass(value) and not isinstance(value, type):
         return json_projection(asdict(value))
     if isinstance(value, Enum):
@@ -46,8 +46,10 @@ def validate_ijson_value(value: Any) -> None:
     """Reject values outside the interoperable JSON subset used by contracts."""
 
     if isinstance(value, str):
-        if any(0xD800 <= ord(character) <= 0xDFFF for character in value):
-            raise ValueError("unpaired Unicode surrogate is forbidden by I-JSON")
+        try:
+            value.encode("utf-8")
+        except UnicodeEncodeError as error:
+            raise ValueError("unpaired Unicode surrogate is forbidden by I-JSON") from error
         return
     if isinstance(value, bool) or value is None:
         return
@@ -96,11 +98,8 @@ def sha256_bytes(payload: bytes) -> str:
 def sha256_file(path: Path) -> str:
     """Stream a local regular file into a SHA-256 digest."""
 
-    digest = hashlib.sha256()
     with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 __all__ = [

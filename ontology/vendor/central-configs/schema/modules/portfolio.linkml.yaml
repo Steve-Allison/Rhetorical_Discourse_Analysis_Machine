@@ -142,19 +142,6 @@ slots:
     slot_uri: coe:stageOrder
     description: One-based position of the stage when its framework orders its stages; absent when the stages are
       unordered.
-  market_status:
-    range: MarketStatusEnum
-    slot_uri: coe:marketStatus
-    description: Where the resource stands in its market lifecycle, when a source states it; distinct from status, which is
-      the record's curation state.
-  released_on:
-    range: PartialDate
-    slot_uri: coe:releasedOn
-    description: Date the resource became generally available, when a source states it.
-  retired_on:
-    range: PartialDate
-    slot_uri: coe:retiredOn
-    description: Date the resource stopped being sold or supported; present only on a retired resource.
   succeeded_by:
     range: Offering
     multivalued: true
@@ -202,24 +189,12 @@ classes:
       editions, surfaces, add-ons, services, managed services, AI models and agents.
     slots:
     - families
-    - market_status
-    - released_on
-    - retired_on
     - succeeded_by
     - implements_category
     - supports_practice
     - conforms_to
     - serves_stage
     - powered_by
-    rules:
-    - preconditions:
-        slot_conditions:
-          retired_on:
-            value_presence: PRESENT
-      postconditions:
-        slot_conditions:
-          market_status:
-            equals_string: retired
   Application:
     is_a: Offering
     class_uri: coe:Application
@@ -323,7 +298,6 @@ classes:
     slots:
     - capability_of
     - families
-    - market_status
     - powered_by
     - conforms_to
     - supports_practice
@@ -360,17 +334,6 @@ classes:
     description: One vendor-neutral method or discipline, defined independently of any product that supports it, such as
       A/B testing.
 enums:
-  MarketStatusEnum:
-    description: Market lifecycle stages of an offering or capability.
-    permissible_values:
-      preview:
-        description: Announced, in beta or in limited availability; not generally available.
-      generally_available:
-        description: Sold or offered to all eligible customers.
-      end_of_sale:
-        description: No longer sold to new customers but still supported for existing ones.
-      retired:
-        description: No longer sold or supported.
   SurfaceFormEnum:
     description: Form factors on which an application is delivered.
     permissible_values:

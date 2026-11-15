@@ -20,21 +20,21 @@ def test_non_empty_analysis_without_parser_is_typed_unavailable() -> None:
     assert raised.value.failure.code == "parser_not_configured"
 
 
-def test_missing_optional_format_distribution_is_typed_unavailable(
+def test_missing_doclang_adapter_distribution_is_typed_unavailable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     source = SourceArtifact.from_bytes(
-        b"# Heading\n\nText.",
-        source_form=SourceForm.MARKDOWN,
-        source_name="source.md",
-        media_type="text/markdown; charset=utf-8",
+        b"<doclang><text>Text.</text></doclang>",
+        source_form=SourceForm.DOCLANG_XML,
+        source_name="source.dclg",
+        media_type="application/vnd.doclang+xml",
     )
 
     def unavailable(_source: object) -> object:
         # A real missing-adapter import always carries the module name; a
         # nameless ModuleNotFoundError proves nothing about any distribution
         # and now classifies as an internal failure instead.
-        raise ModuleNotFoundError("PRIVATE module import detail", name="markdown_it")
+        raise ModuleNotFoundError("PRIVATE module import detail", name="dclq")
 
     monkeypatch.setattr("rdam.ingest.prepare.inventory_source", unavailable)
     with pytest.raises(ProductionIngestError) as raised:

@@ -27,7 +27,13 @@ MUTANTS = (
     Mutant(
         name="doclang-validator-bypass",
         source=Path("rdam/ingest/doclang/document.py"),
-        original="                validate(stream.name, allow_empty_namespace=True)",
+        original=(
+            "                validate(\n"
+            '                    stream.name,\n'
+            '                    spec_version="0.9" if declared_version is None else None,\n'
+            "                    allow_empty_namespace=True,\n"
+            "                )"
+        ),
         replacement="                None  # mutation: validator bypassed",
         tests=(
             "tests/ingest/production_ingest/test_upstream_conformance.py::"
@@ -43,30 +49,6 @@ MUTANTS = (
             "tests/ingest/production_ingest/test_doclang_complex.py::"
             "test_doclang_archive_enforces_compression_ratio_limit",
         ),
-    ),
-    Mutant(
-        name="markdown-character-anchor-off-by-one",
-        source=Path("rdam/ingest/_harvest.py"),
-        original="    start = block_start + relative",
-        replacement="    start = block_start + relative + 1",
-        tests=(
-            "tests/ingest/production_ingest/test_markdown_conformance.py::"
-            "test_every_markdown_character_anchor_round_trips_to_the_exact_source_slice",
-        ),
-    ),
-    Mutant(
-        name="docling-body-layer-only",
-        source=Path("rdam/ingest/_harvest.py"),
-        original="        included_content_layers=set(ContentLayer),",
-        replacement="        included_content_layers={ContentLayer.BODY},",
-        tests=("tests/ingest/production_ingest/test_docling_complex.py",),
-    ),
-    Mutant(
-        name="markdown-front-matter-not-recognised",
-        source=Path("rdam/ingest/markdown.py"),
-        original='        if tok.type == "front_matter":',
-        replacement='        if tok.type == "front_matter_mutant":',
-        tests=("tests/ingest/test_markdown_loader.py",),
     ),
     Mutant(
         name="doclang-tail-duplication",

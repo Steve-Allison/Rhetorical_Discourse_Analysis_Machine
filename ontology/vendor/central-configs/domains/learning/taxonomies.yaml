@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/learning/taxonomies
   title: Learning — Taxonomies
-  last_updated: '2026-10-02'
+  last_updated: '2026-10-12'
   authority: Central_Configs
   scope: domain
   ontology_domain: learning
@@ -21,6 +21,8 @@ taxonomies:
     id: coe:concept/activity_types_taxonomy/bloom_level
     label: Bloom Level
     description: 'The Bloom''s Revised Taxonomy (Anderson & Krathwohl 2001) cognitive level an activity targets, from Remember through Create; an activity may span several adjacent levels'
+    scope_note: In this scheme, Bloom Level means Anderson and Krathwohl's cognitive process dimension for classifying activity
+      demand — not everyday "level of difficulty", course level (101/201), or the separate knowledge dimension.
     home_domain: learning
     status: canonical
   - in_scheme: coe:artifact/learning/activity_types_taxonomy
@@ -45,6 +47,8 @@ taxonomies:
     id: coe:concept/activity_types_taxonomy/bloom_level/apply
     label: Apply
     description: Use of knowledge in new situations
+    scope_note: Apply here is Bloom's cognitive process (execute or implement a procedure) — not "apply a discount", "apply
+      for a role", or generic tool usage without a learning objective.
     home_domain: learning
     status: canonical
   - in_scheme: coe:artifact/learning/activity_types_taxonomy
@@ -260,6 +264,8 @@ taxonomies:
     id: coe:concept/assessment_taxonomy/evaluation_purpose/formative
     label: Formative
     description: 'During-learning assessment that monitors progress and adjusts instruction while learning is underway (Kirkpatrick Level 2)'
+    scope_note: Formative assessment means evidence used to improve ongoing learning — not informal "formatting" checks, HR
+      performance reviews, or any low-stakes quiz labelled formative without instructional use.
     home_domain: learning
     status: canonical
   - in_scheme: coe:artifact/learning/assessment_taxonomy
@@ -268,6 +274,8 @@ taxonomies:
     id: coe:concept/assessment_taxonomy/evaluation_purpose/summative
     label: Summative
     description: 'End-of-learning assessment evaluating overall achievement against objectives after instruction (Kirkpatrick Level 2)'
+    scope_note: Summative here is evaluation-of-learning for achievement or certification — distinct from formative checks,
+      Kirkpatrick Level 3–4 transfer/impact measures, or generic "summary" activities.
     home_domain: learning
     status: canonical
   - in_scheme: coe:artifact/learning/assessment_taxonomy
@@ -320,7 +328,7 @@ taxonomies:
       statement_id: coe:edge/0328be4ba2c39f4d69704283
       home_domain: learning
     - subject_id: coe:concept/assessment_taxonomy/kirkpatrick_level
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/alignment_marker
       relationship_weight: expected
       description: Kirkpatrick evaluation levels support alignment — the research recommends noting level 1-4 evaluations
@@ -355,7 +363,7 @@ taxonomies:
       statement_id: coe:edge/f034e9954dc38a6e11b6f4bc
       home_domain: learning
     - subject_id: coe:concept/assessment_taxonomy/kirkpatrick_level
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/learning_objective
       relationship_weight: required
       description: Kirkpatrick Levels 1-3 validate whether learning objectives were achieved — Level 2 measures knowledge
@@ -411,7 +419,7 @@ taxonomies:
       statement_id: coe:edge/6e8225830ff04107f63d250f
       home_domain: learning
     - subject_id: coe:concept/assessment_taxonomy/kirkpatrick_level
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/summative_assessment
       relationship_weight: required
       description: Summative assessment maps to Kirkpatrick Level 2 for knowledge tests, Level 3 for behavioural observation,
@@ -1360,6 +1368,98 @@ taxonomies:
     description: 'Content that measures learner knowledge or performance against objectives rather than teaching new material'
     home_domain: learning
     status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/assessment
+  - in_scheme: coe:artifact/learning/content_format_taxonomy
+    broader:
+    - coe:concept/content_format_taxonomy/format_type
+    id: coe:concept/content_format_taxonomy/format_type/activity_plan
+    label: Activity Plan
+    description: Planned learning activity outline used for design and delivery coordination rather than as the learner-facing content itself
+    home_domain: learning
+    status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/activityPlan
+  - in_scheme: coe:artifact/learning/content_format_taxonomy
+    broader:
+    - coe:concept/content_format_taxonomy/format_type
+    id: coe:concept/content_format_taxonomy/format_type/lesson_plan
+    label: Lesson Plan
+    description: Structured plan for a single instructional session with objectives, activities, and assessment checkpoints
+    home_domain: learning
+    status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/lessonPlan
+  - in_scheme: coe:artifact/learning/content_format_taxonomy
+    broader:
+    - coe:concept/content_format_taxonomy/format_type
+    id: coe:concept/content_format_taxonomy/format_type/unit_plan
+    label: Unit Plan
+    description: Multi-lesson instructional plan covering a coherent unit of study with sequenced objectives and assessments
+    home_domain: learning
+    status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/unitPlan
+  - in_scheme: coe:artifact/learning/content_format_taxonomy
+    broader:
+    - coe:concept/content_format_taxonomy/format_type
+    id: coe:concept/content_format_taxonomy/format_type/textbook
+    label: Textbook
+    description: Book-form instructional resource organised for sequential study of a subject domain
+    home_domain: learning
+    status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/textbook
+  - in_scheme: coe:artifact/learning/content_format_taxonomy
+    broader:
+    - coe:concept/content_format_taxonomy/format_type
+    id: coe:concept/content_format_taxonomy/format_type/assessment_item
+    label: Assessment Item
+    description: Single question or task used to measure learner knowledge or performance
+    home_domain: learning
+    status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/assessmentItem
+  - in_scheme: coe:artifact/learning/content_format_taxonomy
+    broader:
+    - coe:concept/content_format_taxonomy/format_type
+    id: coe:concept/content_format_taxonomy/format_type/recorded_lesson
+    label: Recorded Lesson
+    description: Captured instructional session available for asynchronous playback
+    home_domain: learning
+    status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/recordedLesson
+  - in_scheme: coe:artifact/learning/content_format_taxonomy
+    broader:
+    - coe:concept/content_format_taxonomy/format_type
+    id: coe:concept/content_format_taxonomy/format_type/supporting_document
+    label: Supporting Document
+    description: Ancillary document that supports instruction without being the primary learning resource
+    home_domain: learning
+    status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/supportingDocument
+  - in_scheme: coe:artifact/learning/content_format_taxonomy
+    broader:
+    - coe:concept/content_format_taxonomy/format_type
+    id: coe:concept/content_format_taxonomy/format_type/educator_curriculum_guide
+    label: Educator Curriculum Guide
+    description: Guidance document for educators on delivering a curriculum or course of study
+    home_domain: learning
+    status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/educatorCurriculumGuide
+  - in_scheme: coe:artifact/learning/content_format_taxonomy
+    broader:
+    - coe:concept/content_format_taxonomy/format_type
+    id: coe:concept/content_format_taxonomy/format_type/physical_learning_resource
+    label: Physical Learning Resource
+    description: Tangible learning material used in instruction, distinct from digital content formats
+    home_domain: learning
+    status: canonical
+    exact_match:
+    - http://purl.org/dcx/lrmi-vocabs/learningResourceType/physicalLearningResource
   - in_scheme: coe:artifact/learning/content_format_taxonomy
     id: coe:concept/content_format_taxonomy/duration_band
     label: duration_band
@@ -2453,3 +2553,43 @@ taxonomies:
   - coe:concept/knowledge_kind_taxonomy/procedure
   - coe:concept/knowledge_kind_taxonomy/process
   - coe:concept/knowledge_kind_taxonomy/principle
+- last_updated: '2026-10-12'
+  id: coe:artifact/learning/bloom_knowledge_dimension_taxonomy
+  label: Bloom Knowledge Dimension Taxonomy
+  description: Anderson and Krathwohl's four-way classification of what a learner knows, as the knowledge dimension of the revised Bloom taxonomy. The members are unordered kinds of knowledge, not stages, and they are not the Knowledge Kind Taxonomy's fact, concept, procedure, process and principle.
+  home_domain: learning
+  status: canonical
+  concepts:
+  - in_scheme: coe:artifact/learning/bloom_knowledge_dimension_taxonomy
+    id: coe:concept/bloom_knowledge_dimension_taxonomy/factual
+    label: Factual
+    description: The knowledge of the basic elements a learner must know to be acquainted with a discipline or to solve problems in it, including its terminology and its specific details and elements.
+    scope_note: Anderson and Krathwohl knowledge dimension. Not a member of the Knowledge Kind Taxonomy, whose fact kind is one verifiable datum, and not an activity outcome type.
+    home_domain: learning
+    status: canonical
+  - in_scheme: coe:artifact/learning/bloom_knowledge_dimension_taxonomy
+    id: coe:concept/bloom_knowledge_dimension_taxonomy/conceptual
+    label: Conceptual
+    description: The knowledge of interrelationships among basic elements that let them function together inside a larger structure, including classifications, categories, principles, theories and models.
+    scope_note: Anderson and Krathwohl knowledge dimension. Not the Knowledge Kind Taxonomy's concept kind, which is one category defined by shared attributes, and not the activity outcome type conceptual, which is a can-do result of explaining ideas.
+    home_domain: learning
+    status: canonical
+  - in_scheme: coe:artifact/learning/bloom_knowledge_dimension_taxonomy
+    id: coe:concept/bloom_knowledge_dimension_taxonomy/procedural
+    label: Procedural
+    description: The knowledge of how to do something, covering methods of inquiry and the criteria for using skills, algorithms, techniques and methods.
+    scope_note: Anderson and Krathwohl knowledge dimension. Not the Knowledge Kind Taxonomy's procedure kind, which is an ordered set of steps a person carries out, and not the activity outcome type procedural, which is a can-do result of performing a process.
+    home_domain: learning
+    status: canonical
+  - in_scheme: coe:artifact/learning/bloom_knowledge_dimension_taxonomy
+    id: coe:concept/bloom_knowledge_dimension_taxonomy/metacognitive
+    label: Metacognitive
+    description: The knowledge of cognition in general and of one's own cognition, including strategic knowledge, knowledge about cognitive tasks, and self-knowledge.
+    scope_note: Anderson and Krathwohl knowledge dimension. Not an activity outcome type. The outcome type metacognitive is a can-do result of assessing and regulating one's own learning, not this kind of knowledge.
+    home_domain: learning
+    status: canonical
+  top_concepts:
+  - coe:concept/bloom_knowledge_dimension_taxonomy/factual
+  - coe:concept/bloom_knowledge_dimension_taxonomy/conceptual
+  - coe:concept/bloom_knowledge_dimension_taxonomy/procedural
+  - coe:concept/bloom_knowledge_dimension_taxonomy/metacognitive

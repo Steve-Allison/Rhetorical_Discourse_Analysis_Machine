@@ -18,7 +18,6 @@ from rdam.ingest import (
     ProductionAnalysisOutcome,
     ProductionIngestor,
     SourceArtifact,
-    SourceForm,
 )
 from rdam.rst.parser import Parser
 
@@ -49,7 +48,7 @@ def _discover(paths: list[Path]) -> list[Path]:
     out: list[Path] = []
     for path in paths:
         if path.is_dir():
-            for pattern in ("*.md", "*.markdown", "*.docling.json", "*.dclg", "*.dclg.xml", "*.dclx"):
+            for pattern in ("*.dclg", "*.dclg.xml", "*.dclx", "*.txt"):
                 out.extend(sorted(path.rglob(pattern)))
         else:
             out.append(path)
@@ -57,8 +56,6 @@ def _discover(paths: list[Path]) -> list[Path]:
 
 
 def _artifact(path: Path) -> SourceArtifact:
-    if path.name.endswith(".docling.json"):
-        return SourceArtifact.from_path(path, source_form=SourceForm.DOCLING_JSON)
     return SourceArtifact.from_path(path)
 
 

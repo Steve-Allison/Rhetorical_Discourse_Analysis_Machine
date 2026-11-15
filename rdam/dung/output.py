@@ -15,8 +15,8 @@ class ExtensionOutput(StrictModel):
 
 
 class AlgorithmOutput(StrictModel):
-    name: Literal["exhaustive-subset"]
-    version: Literal["1"]
+    name: Literal["cadical-sat"]
+    version: Literal["2"]
     capacity: int = Field(gt=0)
 
 

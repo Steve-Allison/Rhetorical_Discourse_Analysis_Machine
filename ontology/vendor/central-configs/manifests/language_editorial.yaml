@@ -13,3 +13,4 @@ modules:
 - coe:module/language_editorial/style_rules
 - coe:module/language_editorial/terminology
 - coe:module/language_editorial/tone_archetypes
+- coe:module/language_editorial/media_accessibility

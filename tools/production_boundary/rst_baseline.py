@@ -67,8 +67,6 @@ TEXT = "Because it rained, the match stopped. The crowd left. Nobody complained,
 EDUS = ("Because it rained, the match stopped.", "The crowd left.", "Nobody complained,", "though some had travelled far.")
 DOCLANG_ARCHIVE_DOCUMENT = b"<doclang><text>Baseline archive acceptance.</text></doclang>"
 FIXTURES = {
-    SourceForm.MARKDOWN: Path("tests/fixtures/markdown/minimal.md"),
-    SourceForm.DOCLING_JSON: Path("tests/fixtures/docling/markdown.docling.json"),
     SourceForm.DOCLANG_XML: Path("tests/fixtures/production_api/retained_content/mixed.dclg"),
 }
 # Fields whose value is the package's own version wherever they occur in a record.

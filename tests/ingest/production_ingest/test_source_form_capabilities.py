@@ -13,17 +13,14 @@ def test_every_source_form_has_complete_availability_and_media_type_evidence() -
     capabilities = describe_capabilities()
     by_form = {item.source_form: item for item in capabilities.semantic.source_forms}
     assert set(by_form) == set(SourceForm)
-    for source_form, capability in by_form.items():
+    for _source_form, capability in by_form.items():
         assert capability.accepted_media_types
         assert capability.preparation_supported is (
             capability.availability is Availability.AVAILABLE
         )
-        if source_form in {SourceForm.TEXT, SourceForm.EDUS}:
-            assert capability.availability is Availability.AVAILABLE
-            assert capability.required_extra is None
-            assert capability.missing_distributions == ()
-        else:
-            assert capability.required_extra == "formats"
+        assert capability.availability is Availability.AVAILABLE
+        assert capability.required_extra is None
+        assert capability.missing_distributions == ()
 
 
 def test_capability_operations_name_every_discriminated_success_and_failure() -> None:
@@ -36,12 +33,12 @@ def test_capability_operations_name_every_discriminated_success_and_failure() ->
     assert {item.failure_kind for item in operations.values()} == {"safe_production_failure"}
 
 
-def test_markdown_capability_requires_parser_and_plugin_distributions(
+def test_doclang_capability_requires_dclq_and_doclang_distributions(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def installed_version(distribution: str) -> str:
-        if distribution in {"rdam", "markdown-it-py"}:
-            return "6.0.0"
+        if distribution in {"rdam", "doclang"}:
+            return "6.1.0"
         raise PackageNotFoundError(distribution)
 
     monkeypatch.setattr(capability_contracts, "version", installed_version)
@@ -49,6 +46,6 @@ def test_markdown_capability_requires_parser_and_plugin_distributions(
         item.source_form: item
         for item in describe_capabilities().semantic.source_forms
     }
-    markdown = by_form[SourceForm.MARKDOWN]
-    assert markdown.availability is Availability.UNAVAILABLE
-    assert markdown.missing_distributions == ("mdit-py-plugins",)
+    doclang_cap = by_form[SourceForm.DOCLANG_XML]
+    assert doclang_cap.availability is Availability.UNAVAILABLE
+    assert doclang_cap.missing_distributions == ("dclq",)

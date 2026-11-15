@@ -15,7 +15,7 @@ from rdam._contract_types import (
     FailedOutcome,
     TechniqueCapability,
 )
-from rdam.frameworks import BOUNDARY_TECHNIQUES, Technique
+from rdam.frameworks import Technique
 from rdam.ingest.contracts.preparation import PreparationReceipt, PreparedRange
 from rdam.ingest.contracts.source import SourceAnchor
 
@@ -24,6 +24,15 @@ CAPABILITIES_CONTRACT = "rdam.capabilities"
 NATIVE_RESULT_CONTRACT = "rdam.native_result"
 CONTRACT_VERSION = "1.0.0"
 _SNAKE = r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+_V1_BOUNDARY_TECHNIQUES: tuple[Technique, ...] = (
+    Technique.RST,
+    Technique.PDTB,
+    Technique.SDRT,
+    Technique.TOULMIN,
+    Technique.WALTON,
+    Technique.DUNG,
+    Technique.IBIS,
+)
 
 
 class HistoricalResultSourceAlignment(StrictModel):
@@ -199,7 +208,7 @@ class HistoricalMachineCapabilities(StrictModel):
     @model_validator(mode="after")
     def every_boundary_exactly_once(self) -> Self:
         declared = tuple(item.technique for item in self.techniques)
-        if declared != BOUNDARY_TECHNIQUES:
+        if declared != _V1_BOUNDARY_TECHNIQUES:
             raise ValueError("capabilities must list every technique boundary exactly once, in spec order")
         expected = Sha256Identity(hex_digest=semantic_sha256(self.model_dump(exclude={"semantic_digest"})))
         if self.semantic_digest is not None and self.semantic_digest != expected:

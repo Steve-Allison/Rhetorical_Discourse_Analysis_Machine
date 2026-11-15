@@ -1,5 +1,6 @@
 """Immutable runtime projection of Central's authored semantic resources."""
 
+from functools import cache
 from importlib.resources import files
 from pathlib import Path
 from typing import Literal, Self
@@ -99,6 +100,15 @@ class IndexProjection(StrictContractModel):
         return self
 
 
+@cache
+def _packaged_projection() -> IndexProjection:
+    payload = files("rdam").joinpath("resources/concept-index.json").read_bytes()
+    decoded = decode_object(payload)
+    if not decoded.get("content_digest"):
+        raise ValueError("ontology projection lacks its recorded content digest")
+    return IndexProjection.model_validate_json(payload)
+
+
 class ConceptIndex(StrictContractModel):
     """Load a generated projection without LinkML, YAML, models or network access."""
 
@@ -118,14 +128,14 @@ class ConceptIndex(StrictContractModel):
     def load(cls, path: Path | None = None, *, domains: tuple[str, ...] | None = None) -> Self:
         """Read a packaged or explicit JSON projection of an identified distribution."""
         if path is None:
-            payload = files("rdam").joinpath("resources/concept-index.json").read_bytes()
+            projection = _packaged_projection()
         else:
             location = path / "concept-index.json" if path.is_dir() else path
             payload = location.read_bytes()
-        decoded = decode_object(payload)
-        if not decoded.get("content_digest"):
-            raise ValueError("ontology projection lacks its recorded content digest")
-        projection = IndexProjection.model_validate_json(payload)
+            decoded = decode_object(payload)
+            if not decoded.get("content_digest"):
+                raise ValueError("ontology projection lacks its recorded content digest")
+            projection = IndexProjection.model_validate_json(payload)
         return cls(projection=projection, domains=tuple(sorted(domains)) if domains is not None else projection.domains)
 
     @property

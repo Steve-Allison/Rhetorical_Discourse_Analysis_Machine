@@ -30,7 +30,9 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Final, Self, TypeGuard, cast
 from pydantic import Field, model_validator
+from rdam._grounding import GroundingCollector, QuoteRef
 from rdam._strict import StrictModel
+from rdam.ingest.contracts.evidence import SourceEvidenceSpan
 
 
 def _non_empty_string(value: object) -> TypeGuard[str]:
@@ -267,13 +269,13 @@ def _ids(nodes: Iterable[Node]) -> list[str]:
 
 class IbisInputNode(StrictModel):
     id: str = Field(min_length=1)
-    kind: NodeKind
+    kind: NodeKind = Field(strict=False)
     text: str = Field(min_length=1)
 
 
 class IbisInputLink(StrictModel):
     source: str = Field(alias="from", min_length=1)
-    relation: Relation
+    relation: Relation = Field(strict=False)
     target: str = Field(alias="to", min_length=1)
 
 
@@ -287,6 +289,63 @@ class IbisInput(StrictModel):
     def valid_structure(self) -> Self:
         IbisStructure.from_payload(self.model_dump(mode="json", by_alias=True))
         return self
+
+
+class ExtractedIbisNode(StrictModel):
+    """LLM-extracted deliberation node anchored by a verbatim `QuoteRef`."""
+
+    id: str = Field(min_length=1, description="Unique node id such as 'i1', 'p1', or 'a1'.")
+    kind: NodeKind = Field(strict=False, description="Deliberation node kind: 'issue', 'position', or 'argument'.")
+    text: str = Field(min_length=1, description="Clear statement of the issue, position, or argument.")
+    evidence: QuoteRef = Field(description="Exact verbatim substring from <source_document> evidencing this node.")
+
+
+class ExtractedIbisProposal(StrictModel):
+    """LLM proposal validated deterministically against both source text and the gIBIS grammar."""
+
+    nodes: list[ExtractedIbisNode] = Field(
+        default_factory=list[ExtractedIbisNode],
+        description="Extracted deliberation nodes; empty list when the passage contains no deliberation.",
+    )
+    links: list[IbisInputLink] = Field(
+        default_factory=list[IbisInputLink],
+        description="Typed gIBIS links connecting extracted nodes.",
+    )
+
+    def to_structure_payload(self) -> dict[str, list[dict[str, str]]]:
+        return {
+            "nodes": [{"id": n.id, "kind": n.kind.value, "text": n.text} for n in self.nodes],
+            "links": [{"from": l.source, "relation": l.relation.value, "to": l.target} for l in self.links],
+        }
+
+    def validate_source(self, text: str) -> dict[str, SourceEvidenceSpan]:
+        collector = GroundingCollector(text)
+        resolved: dict[str, SourceEvidenceSpan] = {}
+        seen_ids: set[str] = set()
+        for idx, node in enumerate(self.nodes):
+            if not node.text.strip():
+                collector.error(f"nodes[{idx}] ({node.id!r}): text must be non-blank.")
+            if node.id in seen_ids:
+                collector.error(f"nodes[{idx}]: duplicate node id {node.id!r}.")
+            seen_ids.add(node.id)
+            span = collector.resolve(node.evidence, field_name=f"nodes[{idx}].evidence")
+            if span is not None:
+                resolved[node.id] = span
+
+        if not self.nodes and self.links:
+            collector.error("links must be empty when nodes is empty.")
+        elif self.nodes:
+            try:
+                IbisStructure.from_payload(self.to_structure_payload())
+            except StructureError as error:
+                collector.error(f"gIBIS grammar violation: {error}")
+
+        if collector.has_errors:
+            try:
+                collector.raise_if_errors()
+            except ValueError as error:
+                raise StructureError(str(error)) from error
+        return resolved
 
 
 def deliberation_map(structure: IbisStructure) -> DeliberationMap:
@@ -345,6 +404,11 @@ __all__ = [
     "ATTACHMENT",
     "GRAMMAR",
     "DeliberationMap",
+    "ExtractedIbisNode",
+    "ExtractedIbisProposal",
+    "IbisInput",
+    "IbisInputLink",
+    "IbisInputNode",
     "IbisStructure",
     "IssueEntry",
     "Link",

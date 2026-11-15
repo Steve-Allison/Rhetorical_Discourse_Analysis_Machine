@@ -278,14 +278,14 @@ def test_matching_missing_adapter_reports_the_true_distribution(
     from rdam.ingest.contracts.failure import MissingDistributionContext
 
     def missing_adapter(*_args: object) -> None:
-        raise ModuleNotFoundError("No module named 'markdown_it'", name="markdown_it")
+        raise ModuleNotFoundError("No module named 'dclq'", name="dclq")
 
-    monkeypatch.setattr("rdam.ingest._harvest.inventory_source", missing_adapter)
+    monkeypatch.setattr("rdam.ingest._doclang.inventory_doclang", missing_adapter)
     source = SourceArtifact.from_bytes(
-        b"# heading",
-        source_form=SourceForm.MARKDOWN,
-        source_name="doc.md",
-        media_type="text/markdown; charset=utf-8",
+        b"<doclang><text>heading</text></doclang>",
+        source_form=SourceForm.DOCLANG_XML,
+        source_name="doc.dclg",
+        media_type="application/vnd.doclang+xml",
     )
     with pytest.raises(ProductionIngestError) as raised:
         ProductionIngestor().prepare(source)
@@ -293,8 +293,8 @@ def test_matching_missing_adapter_reports_the_true_distribution(
     assert raised.value.failure.retryability is Retryability.NOT_RETRYABLE
     context = raised.value.failure.diagnostic_context[0]
     assert isinstance(context, MissingDistributionContext)
-    assert context.distributions == ("markdown-it-py",)
-    assert context.required_extra == "formats"
+    assert context.distributions == ("dclq",)
+    assert context.required_extra is None
 
 
 def test_enrichment_failure_claims_only_inference_completed(

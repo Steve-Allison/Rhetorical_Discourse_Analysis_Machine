@@ -1,0 +1,81 @@
+_meta:
+  file_id: coe:file/domain/business/audience_practices
+  title: Business — Audience and Persona Practices
+  last_updated: '2026-10-11'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: business
+  governing_class: coe:DomainModule
+module_id: coe:module/business/audience_practices
+domain: business
+entity_collections:
+- id: coe:artifact/business/audience_practices
+  label: Commercial Audience Practices
+  description: Buying-group, tiered persona and business storytelling constructs from the knowledge wiki.
+  last_updated: '2026-10-11'
+  home_domain: business
+  status: canonical
+  entities:
+  - id: coe:entity/buying_group_decision_making
+    label: Buying Group Decision Making
+    description: How executive and B2B buying committees actually decide — hidden profiles, status dynamics, pre-wiring, and why framing attenuates in expert rooms.
+    home_domain: business
+    status: canonical
+    terms:
+    - literal: Hidden-profile effect
+      term_type: full_form
+      term_status: admitted
+    - literal: Buying centre
+      term_type: full_form
+      term_status: admitted
+    - literal: Nemawashi
+      term_type: full_form
+      term_status: admitted
+    - literal: Ringi
+      term_type: full_form
+      term_status: admitted
+    - literal: Process loss
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/buying_group_decision_making
+      predicate: coe:supports
+      object_id: coe:entity/persona_method
+      relationship_weight: expected
+      description: Buying-group decision-making extends persona work to multi-stakeholder commercial committees.
+      statement_id: coe:edge/buying_group_decision_making-supports-persona_method
+      home_domain: business
+    examples:
+    - buying group decision making
+  - id: coe:entity/four_tier_persona_framework
+    label: Four Tier Persona Framework
+    description: The Executive / Senior Management / Practitioner / Technical Specialist tiers a corporate source uses to calibrate depth, duration, practice, modality and assessment, and its architectures for serving several tiers from one course.
+    home_domain: business
+    status: canonical
+    terms:
+    - literal: Four-tier persona framework
+      term_type: full_form
+      term_status: admitted
+    - literal: Content depth ladder
+      term_type: full_form
+      term_status: admitted
+    - literal: Persona depth target
+      term_type: full_form
+      term_status: admitted
+    - literal: Core + Options model
+      term_type: full_form
+      term_status: admitted
+    - literal: Role-based entry points
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - four tier persona framework
+  - id: coe:entity/business_persona_storytelling
+    label: Business Persona Storytelling
+    description: Tailoring B2B narratives to buyer role, using Adobe's four-persona framework and an L1–L4 multi-stakeholder narrative architecture.
+    home_domain: business
+    status: canonical
+    edges: []
+    examples:
+    - business persona storytelling

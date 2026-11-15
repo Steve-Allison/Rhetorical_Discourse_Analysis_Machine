@@ -101,9 +101,21 @@ class TestValidation:
             ArgumentationFramework.from_payload({"arguments": [], "attacks": []})
 
     def test_capacity_is_enforced_not_approximated(self) -> None:
-        big = ArgumentationFramework.from_payload({"arguments": [f"a{i}" for i in range(15)], "attacks": []})
-        with pytest.raises(FrameworkCapacityError, match="capacity is 14"):
+        big = ArgumentationFramework.from_payload({"arguments": [f"a{i}" for i in range(129)], "attacks": []})
+        with pytest.raises(FrameworkCapacityError, match="capacity is 128"):
             evaluate(big)
+
+    def test_large_framework_solves_exactly_with_cadical_sat(self) -> None:
+        # 50-argument reinstatement chain: a0 -> a1 -> a2 -> ... -> a49
+        args = [f"a{i}" for i in range(50)]
+        attacks = [[f"a{i}", f"a{i + 1}"] for i in range(49)]
+        fw = ArgumentationFramework.from_payload({"arguments": args, "attacks": attacks})
+        res = evaluate(fw)
+        expected_even = {f"a{i}" for i in range(0, 50, 2)}
+        assert res.grounded == expected_even
+        assert res.complete == (expected_even,)
+        assert res.preferred == (expected_even,)
+        assert res.stable == (expected_even,)
 
     @pytest.mark.parametrize("capacity", (True, 0, -1))
     def test_capacity_must_be_a_positive_non_boolean_integer(self, capacity: int) -> None:

@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/language_editorial/style_rules
   title: Language Editorial — Style Rules
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-11'
   authority: Central_Configs
   scope: domain
   ontology_domain: language_editorial
@@ -671,7 +671,7 @@ entity_collections:
       statement_id: coe:edge/959155f04f19e7c3141b4008
       home_domain: language_editorial
     - subject_id: coe:entity/power_verb
-      predicate: coe:supports
+      predicate: coe:enables
       object_id: coe:entity/ethos_appeal
       relationship_weight: expected
       description: Ethos appeal is supported by power verbs (spearheaded, ignited, transformed) that project authority and
@@ -738,6 +738,22 @@ entity_collections:
       little outcome variance, requiring hypothesis-not-stereotype handling.
     home_domain: language_editorial
     status: canonical
+    terms:
+    - literal: Ecological fallacy
+      term_type: full_form
+      term_status: admitted
+    - literal: Individualism–collectivism
+      term_type: full_form
+      term_status: admitted
+    - literal: Cultural essentialism
+      term_type: full_form
+      term_status: admitted
+    - literal: High-/low-context culture
+      term_type: full_form
+      term_status: admitted
+    - literal: Intercultural competence
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/culture_as_audience_variable
       predicate: coe:bridges
@@ -760,6 +776,19 @@ entity_collections:
       severity and disciplined batching — that gets expert-to-expert findings actioned.
     home_domain: language_editorial
     status: canonical
+    terms:
+    - literal: 5 Cs (audit finding schema)
+      term_type: full_form
+      term_status: admitted
+    - literal: Effective false positive
+      term_type: full_form
+      term_status: admitted
+    - literal: Cry-wolf effect
+      term_type: full_form
+      term_status: admitted
+    - literal: Change trigger
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/critical_finding_craft
       predicate: coe:bridges
@@ -774,3 +803,88 @@ entity_collections:
     - review finding
     - severity rating
     - finding locus
+  - id: coe:entity/linguistic_optimization
+    label: 'Linguistic Optimization Theory'
+    description: 'Cognitive engineering of language itself — idea density, surprisal, lexical bundles, verb dynamism, discourse architecture and social signalling in words.'
+    home_domain: language_editorial
+    status: canonical
+    terms:
+    - literal: Linguistic Style Matching
+      term_type: full_form
+      term_status: admitted
+    - literal: MTLD
+      term_type: initialism
+      term_status: admitted
+    edges: []
+    examples:
+      - 'linguistic optimization theory'
+      - 'linguistic optimization'
+  - id: coe:entity/linguistic_instrument_validity
+    label: 'Linguistic Instrument Validity'
+    description: 'An audit of which text-analysis instruments exist for twelve rhetorical constructs, what population each was validated on, and whether they transfer to business text.'
+    home_domain: language_editorial
+    status: canonical
+    terms:
+    - literal: LIWC
+      term_type: initialism
+      term_status: admitted
+    - literal: NRC Emotion Lexicon
+      term_type: full_form
+      term_status: admitted
+    - literal: Warriner VAD norms
+      term_type: full_form
+      term_status: admitted
+    - literal: Brysbaert concreteness norms
+      term_type: full_form
+      term_status: admitted
+    - literal: Coh-Metrix
+      term_type: full_form
+      term_status: admitted
+    - literal: CPIDR
+      term_type: initialism
+      term_status: admitted
+    edges: []
+    examples:
+      - 'linguistic instrument validity'
+  - id: coe:entity/writing_for_learning
+    label: 'Writing for Learning: Tone and Style Guide'
+    description: 'Tone, style and structure for corporate learning prose — Orwell and Economist rules, WIIFM, the inverted pyramid, advance organisers and readability targets.'
+    home_domain: language_editorial
+    status: canonical
+    terms:
+    - literal: Advance organiser
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+      - 'writing for learning: tone and style guide'
+      - 'writing for learning'
+  - id: coe:entity/writing_for_eye_vs_ear
+    label: 'Writing for the Eye versus the Ear'
+    description: 'The written-versus-spoken modality distinction and the protocol for translating between them — syntax, lexicon and redundancy settings for page versus voice.'
+    home_domain: language_editorial
+    status: canonical
+    edges: []
+    examples:
+      - 'writing for the eye versus the ear'
+      - 'writing for eye vs ear'
+  - id: coe:entity/topic_sentence_and_paragraph_unity
+    label: 'Topic Sentences and Paragraph Unity'
+    description: 'The topic-sentence rule from Bain''s 1866 paragraph doctrine to the corpus studies that tested it — Braddock''s 13%, the textbook and academic replications — and the verdict that unity and explicit statement are separable.'
+    home_domain: language_editorial
+    status: canonical
+    terms:
+    - literal: Topic sentence
+      term_type: full_form
+      term_status: admitted
+    - literal: Paragraph unity
+      term_type: full_form
+      term_status: admitted
+    - literal: Topic
+      term_type: full_form
+      term_status: admitted
+      usage_note: Topic as the governing idea of a paragraph under Bain/Braddock unity doctrine; not the GUM/ERST topic group concept.
+    edges: []
+    examples:
+      - 'topic sentences and paragraph unity'
+      - 'topic sentence and paragraph unity'

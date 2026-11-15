@@ -15,3 +15,4 @@ modules:
 - coe:module/learning/learning_sciences
 - coe:module/learning/taxonomies
 - coe:module/learning/terminology
+- coe:module/learning/audience_practices

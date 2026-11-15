@@ -6,8 +6,7 @@ from typing import Final
 from threading import Lock
 
 from rdam.ingest.contracts.preparation import ContentRequirement
-from rdam.ingest.contracts.source import ContentClass
-from rdam.ingest.requirements import llm_requirement
+from rdam.ingest.requirements import SUBSTANTIVE_CLASSES, llm_requirement
 from rdam.ingest.alignment import SourceSelection, align_payload
 
 from rdam import (
@@ -29,8 +28,18 @@ from rdam import (
 )
 from rdam.pdtb.interpretation import describe
 from rdam.pdtb.output import PdtbOutput
-from rdam._llm import DEFAULT_OUTPUT_RETRIES, DEFAULT_TRANSPORT_RETRIES, DEFAULT_TRANSPORT_DEADLINE_SECONDS
-from rdam._llm import LlmError, StructuredAnalyst, resolved_model_identity, source_locations, unavailable_reason
+from rdam._grounding import prompt_payload_for_request
+from rdam._llm import (
+    DEFAULT_OUTPUT_RETRIES,
+    DEFAULT_TRANSPORT_DEADLINE_SECONDS,
+    DEFAULT_TRANSPORT_RETRIES,
+    LlmError,
+    StructuredAnalyst,
+    load_shared_system_prompt,
+    resolved_model_identity,
+    source_locations,
+    unavailable_reason,
+)
 from rdam._provider_provenance import (
     llm_provider_failure,
     llm_configuration,
@@ -141,6 +150,10 @@ class PdtbProvider:
         return f"{PROVIDER_ID_PREFIX}/{self._model}"
 
     @property
+    def effective_instructions(self) -> str:
+        return f"{load_shared_system_prompt()}\n\n{INSTRUCTIONS}"
+
+    @property
     def declaration(self) -> ProviderDeclaration:
         """Describe capability without constructing a model client."""
 
@@ -150,6 +163,7 @@ class PdtbProvider:
             if reason is None
             else UnavailableCapability(reason=reason)
         )
+        effective = self.effective_instructions
         return ProviderDeclaration(
             provider_id=self.provider_id,
             technique=Technique.PDTB,
@@ -167,7 +181,7 @@ class PdtbProvider:
                 package="rdam.pdtb",
                 model_identity=self._model,
                 licence=LICENCE,
-                instructions=INSTRUCTIONS,
+                instructions=effective,
             ),
             capability=capability,
             requires_structured_input=False,
@@ -178,14 +192,14 @@ class PdtbProvider:
             interpretations=(describe(FORMALISM_ID, str(CONTRACT_VERSION)),),
             content_requirement=self.content_requirement,
             parallel_safety="concurrent",
-            instructions_identity=Sha256Identity(hex_digest=semantic_sha256(INSTRUCTIONS)),
+            instructions_identity=Sha256Identity(hex_digest=semantic_sha256(effective)),
         )
 
     @property
     def content_requirement(self) -> ContentRequirement:
         return llm_requirement(
-            "pdtb/surface-prose-v1",
-            (ContentClass.TITLE, ContentClass.HEADING, ContentClass.PARAGRAPH, ContentClass.LIST_ITEM, ContentClass.TURN, ContentClass.CAPTION),
+            "rdam/substantive-stream-v2",
+            SUBSTANTIVE_CLASSES,
             requires_speaker_identity=False,
         )
 
@@ -200,6 +214,7 @@ class PdtbProvider:
                     transport_retries=self._transport_retries,
                     transport_deadline_seconds=self._transport_deadline_seconds,
                     source_validator=PdtbAnalysis.validate_source,
+                    use_shared_constitution=True,
                 )
                 self._analyst.agent.tool(source_locations)
         return self._analyst
@@ -228,8 +243,14 @@ class PdtbProvider:
             request.projection.prepared_document.text if request.projection is not None else request.text,
             technique=Technique.PDTB, provider_id=self.provider_id,
         )
+        prompt_payload = prompt_payload_for_request(request)
         try:
-            extraction = self._built().extract(text)
+            analyst = self._built()
+            extraction = (
+                analyst.extract_prompt(prompt_payload)
+                if prompt_payload is not None
+                else analyst.extract(text)
+            )
             extraction.structure.validate_source(text)
         except RelationError as error:
             raise ProviderError(
@@ -250,7 +271,7 @@ class PdtbProvider:
                 "model": extraction.model,
                 "output_attempts": extraction.output_attempts,
                 "transport_attempts": extraction.transport_attempts,
-                "instructions_digest": semantic_sha256(INSTRUCTIONS),
+                "instructions_digest": semantic_sha256(self.effective_instructions),
             },
         }
         PdtbOutput.model_validate_json(canonical_json_bytes(payload))

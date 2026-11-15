@@ -188,16 +188,17 @@ def test_concurrent_ingest_service_execution() -> None:
     """Verify ProductionIngestor concurrently processes requests with zero collisions."""
     service = ProductionIngestor(parser=None)
     texts = [
-        f"# Title {i}\n\nSection {i} introduces the primary hypothesis.\n\nParagraph with evidence {i}."
+        f'<doclang xmlns="https://www.doclang.ai/ns/v0" version="0.9"><heading>Title {i}</heading>'
+        f"<text>Section {i} introduces the primary hypothesis.</text><text>Paragraph with evidence {i}.</text></doclang>"
         for i in range(30)
     ]
 
     def _ingest_worker(index: int) -> tuple[int, str, int]:
         raw_text = texts[index]
         artifact = SourceArtifact(
-            source_name=f"doc_{index}.md",
-            source_form=SourceForm.MARKDOWN,
-            media_type="text/markdown",
+            source_name=f"doc_{index}.dclg",
+            source_form=SourceForm.DOCLANG_XML,
+            media_type="application/vnd.doclang+xml",
             raw_bytes=raw_text.encode("utf-8"),
         )
         prepared = service.prepare(artifact)

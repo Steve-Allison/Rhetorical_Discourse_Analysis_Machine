@@ -1,0 +1,82 @@
+_meta:
+  file_id: coe:file/domain/language_editorial/media_accessibility
+  title: Language Editorial — Produced Media Accessibility
+  last_updated: '2026-10-11'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: language_editorial
+  governing_class: coe:DomainModule
+module_id: coe:module/language_editorial/media_accessibility
+domain: language_editorial
+entity_collections:
+- id: coe:artifact/language_editorial/media_accessibility
+  label: Produced Media Accessibility and Document Design
+  description: Document design, performance support, and assistive-technology meaning for inclusive media.
+  last_updated: '2026-10-11'
+  home_domain: language_editorial
+  status: canonical
+  entities:
+  - id: coe:entity/performance_support_documents
+    label: Performance Support Documents
+    description: The craft of job aids, checklists and decision aids — Rossett's framework, Gawande's checklist mechanics, the EPSS lineage, and the honest split in their evidence.
+    home_domain: language_editorial
+    status: canonical
+    terms:
+    - literal: DO-CONFIRM checklist
+      term_type: full_form
+      term_status: admitted
+    - literal: Electronic Performance Support System
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - performance support documents
+  - id: coe:entity/document_design
+    label: Document Design
+    description: The cognitive science of document usability — F-pattern scanning, the four-layer architecture, BLUF and Minto structure, Information Mapping and data-ink efficiency.
+    home_domain: language_editorial
+    status: canonical
+    terms:
+    - literal: BLUF
+      term_type: initialism
+      term_status: admitted
+      usage_note: Bottom Line Up Front as a document-design scanning principle; also used on accessible_data_visualisation narration.
+    - literal: F-Pattern
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - document design
+  - id: coe:entity/accessible_media_production
+    label: Accessible Media Production
+    description: The cross-medium accessibility production layer — WCAG media success criteria, the legal frame, captions, audio description, tagged documents and VPAT procurement.
+    home_domain: language_editorial
+    status: canonical
+    terms:
+    - literal: Audio description
+      term_type: full_form
+      term_status: admitted
+    - literal: VPAT
+      term_type: initialism
+      term_status: admitted
+    - literal: PDF/UA
+      term_type: initialism
+      term_status: admitted
+    edges: []
+    examples:
+    - accessible media production
+  - id: coe:entity/assistive_technology
+    label: Assistive Technology
+    description: The assistive technologies learners use and what each asks of digital learning design — screen readers, OCR, captioning, adaptive keyboards, switches, AAC, text-to-speech, note-taking and voice recognition.
+    home_domain: language_editorial
+    status: canonical
+    terms:
+    - literal: Augmentative and alternative communication
+      term_type: full_form
+      term_status: admitted
+    - literal: Specific learning difficulty
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - assistive technology

@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/add_ons
   title: Adobe — Add-ons
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-18'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -11,13 +11,26 @@ domain: adobe
 add_ons:
 - id: coe:entity/adobe/acrobat_ai_assistant
   label: Adobe Acrobat AI Assistant
-  description: Acrobat's document-AI add-on — attributed, conversational answers over a single document or a PDF Space,
-    with selectable personas and natural-language PDF actions.
+  description: Acrobat AI Assistant is Acrobat's generative AI add-on that provides source-linked, conversational answers
+    and summaries over a single PDF or a PDF Space, and lets you edit and create content (for example rewriting, outlining,
+    presentations and audio overviews) across multiple documents via natural-language chat.
   home_domain: adobe
   status: canonical
   add_on_to: coe:entity/adobe/acrobat
-  market_status: generally_available
   terms:
   - literal: Acrobat AI Assistant
     term_type: short_form
+    term_status: admitted
+- id: coe:entity/adobe/sales_qualifier
+  label: Sales Qualifier
+  description: Sales Qualifier is an AI-driven add-on application to Adobe Journey Optimizer B2B Edition that implements
+    the Account Qualification Agent to help sales and BDR teams identify, qualify, and act on high-intent accounts and buying
+    groups. It automates prospect qualification, outreach, and buyer-engagement workflows across channels to reduce manual
+    BDR load and accelerate pipeline velocity.
+  home_domain: adobe
+  status: canonical
+  add_on_to: coe:entity/adobe/journey_optimizer
+  terms:
+  - literal: Adobe Sales Qualifier
+    term_type: full_form
     term_status: admitted

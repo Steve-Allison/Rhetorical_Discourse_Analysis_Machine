@@ -12,3 +12,5 @@ modules:
 - coe:module/ai/ai_systems_taxonomy
 - coe:module/ai/knowledge_systems
 - coe:module/ai/prompt_techniques
+- coe:module/ai/media_ai
+- coe:module/ai/prompt_and_systems

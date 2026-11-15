@@ -12,16 +12,68 @@ entity_collections:
 - id: coe:artifact/visual_communication/visual_design_disciplines
   label: Visual Design Disciplines
   description: Visual design theory, frameworks, and visualisation disciplines recovered from the knowledge wiki.
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-11'
   home_domain: visual_communication
   status: canonical
   entities:
+  - id: coe:entity/typography
+    label: Typography
+    description: The discipline of arranging type for readability and hierarchy — classification systems, vertical metrics
+      such as x-height, and modular type scales used in learning and presentation design.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Vox-ATypI
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: Vox-ATypI classification
+      term_type: full_form
+      term_status: admitted
+      language: en
+    - literal: x-height
+      term_type: short_form
+      term_status: admitted
+      usage_note: Names the typographic measure of lowercase letter height within the type anatomy discipline.
+      language: en
+    - literal: modular scale
+      term_type: full_form
+      term_status: admitted
+      language: en
+    edges:
+    - subject_id: coe:entity/typography
+      predicate: coe:contains
+      object_id: coe:entity/typography_element
+      relationship_weight: expected
+      description: Typography as a discipline contains the on-artefact typography elements scored in visual quality models.
+      statement_id: coe:edge/typography-contains-typography-element
+      home_domain: visual_communication
+    examples:
+    - type hierarchy
+    - font metrics
   - id: coe:entity/accessible_data_visualisation
     label: Accessible Data Visualisation
     description: The architectural discipline of building non-visual access into data visualisations — dual visual and
       semantic structure, focus-driven audio description, live regions and sonification, designed in from the start.
     home_domain: visual_communication
     status: canonical
+    terms:
+    - literal: Dual Structure pattern
+      term_type: full_form
+      term_status: admitted
+    - literal: BLUF
+      term_type: initialism
+      term_status: admitted
+      usage_note: Bottom Line Up Front as applied to accessible data-viz narration; also a document-design principle on document_design.
+    - literal: Data sonification
+      term_type: full_form
+      term_status: admitted
+    - literal: WAI-ARIA live region
+      term_type: full_form
+      term_status: admitted
+    - literal: WCAG
+      term_type: initialism
+      term_status: admitted
     edges:
     - subject_id: coe:entity/accessible_data_visualisation
       predicate: coe:enables
@@ -43,6 +95,13 @@ entity_collections:
       systems, photography art direction, and distinctive-brand-asset theory.
     home_domain: visual_communication
     status: canonical
+    terms:
+    - literal: ISOTYPE
+      term_type: initialism
+      term_status: admitted
+    - literal: Distinctive Brand Assets
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - art direction
@@ -93,6 +152,10 @@ entity_collections:
       Credible, Valuable — used as a learning-experience quality check.
     home_domain: visual_communication
     status: canonical
+    terms:
+    - literal: UX
+      term_type: initialism
+      term_status: admitted
     edges: []
     examples:
     - UX honeycomb
@@ -104,6 +167,19 @@ entity_collections:
       colour management, motion rendering, and export optimisation.
     home_domain: visual_communication
     status: canonical
+    terms:
+    - literal: AVIF
+      term_type: initialism
+      term_status: admitted
+    - literal: Lottie
+      term_type: full_form
+      term_status: admitted
+    - literal: Chroma subsampling
+      term_type: full_form
+      term_status: admitted
+    - literal: Structural Similarity Index Metric (SSIM)
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/image_production
       predicate: coe:enables
@@ -137,6 +213,34 @@ entity_collections:
       metaphors, knowledge maps — to create, transfer and elicit knowledge between people.
     home_domain: visual_communication
     status: canonical
+    terms:
+    - literal: Concept map
+      term_type: full_form
+      term_status: admitted
+    - literal: Focus question
+      term_type: full_form
+      term_status: admitted
+    - literal: Mind map
+      term_type: full_form
+      term_status: admitted
+    - literal: Knowledge map
+      term_type: full_form
+      term_status: admitted
+    - literal: Rich picture
+      term_type: full_form
+      term_status: admitted
+    - literal: SODA cognitive mapping
+      term_type: full_form
+      term_status: admitted
+    - literal: Gigamapping
+      term_type: full_form
+      term_status: admitted
+    - literal: Boundary object
+      term_type: full_form
+      term_status: admitted
+    - literal: Representational effect
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - concept map
@@ -162,6 +266,25 @@ entity_collections:
       and dimensionality-reduction projections — with interaction patterns and interpretation caveats.
     home_domain: visual_communication
     status: canonical
+    terms:
+    - literal: Parallel Coordinate Plot
+      term_type: full_form
+      term_status: admitted
+    - literal: Scatterplot Matrix
+      term_type: full_form
+      term_status: admitted
+    - literal: t-SNE
+      term_type: full_form
+      term_status: admitted
+    - literal: UMAP
+      term_type: initialism
+      term_status: admitted
+    - literal: Brushing (in PCP)
+      term_type: full_form
+      term_status: admitted
+    - literal: PCP
+      term_type: initialism
+      term_status: admitted
     edges: []
     examples:
     - parallel coordinates
@@ -175,6 +298,22 @@ entity_collections:
       system archetypes, and interactive simulation patterns.
     home_domain: visual_communication
     status: canonical
+    terms:
+    - literal: Causal Loop Diagram
+      term_type: full_form
+      term_status: admitted
+    - literal: Stock and Flow Diagram
+      term_type: full_form
+      term_status: admitted
+    - literal: Reinforcing loop / Balancing loop
+      term_type: full_form
+      term_status: admitted
+    - literal: System archetype
+      term_type: full_form
+      term_status: admitted
+    - literal: Phase plane plot
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - causal loop diagram
@@ -211,6 +350,16 @@ entity_collections:
       methodologies, scribing mechanics, sketchnote grammar and sketching as a generative thinking medium.
     home_domain: visual_communication
     status: canonical
+    terms:
+    - literal: Lateral transformation / vertical transformation
+      term_type: full_form
+      term_status: admitted
+    - literal: Interactive imagery
+      term_type: full_form
+      term_status: admitted
+    - literal: Reflection-in-action
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/whiteboarding
       predicate: coe:bridges
@@ -226,6 +375,350 @@ entity_collections:
     - sketchnoting
     - graphic recording
     - live scribing
+  - id: coe:entity/visual_communication_and_storytelling
+    label: Visual Communication and Storytelling
+    description: The grammar of visual composition and the neurochemistry of narrative — Gestalt, hierarchy, semiotics,
+      synchronised story arcs, and visual rhetoric.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Uniform connectedness
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - visual communication and storytelling
+  - id: coe:entity/infographics
+    label: Infographics
+    description: Evidence-based design of learning infographics — perceptual encoding, structural typology, an
+      eight-phase workflow, a type selector, and accessibility.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Four Cs (Shaffer)
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/infographics
+      predicate: coe:bridges
+      object_id: coe:entity/infographic_design
+      relationship_weight: expected
+      description: The wiki topic names the infographic discipline; infographic_design is the canonical design-framework
+        entity.
+      statement_id: coe:edge/infographics-bridges-infographic-design
+      home_domain: visual_communication
+    examples:
+    - infographics
+  - id: coe:entity/graphical_integrity
+    label: Graphical Integrity and Excellence
+    description: Tufte's truthfulness axioms for quantitative graphics — the Lie Factor, the six principles of graphical
+      integrity, chartjunk, and the excellence exemplars.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Sparkline
+      term_type: full_form
+      term_status: admitted
+    - literal: Lie Factor
+      term_type: full_form
+      term_status: admitted
+    - literal: The Duck
+      term_type: full_form
+      term_status: admitted
+    - literal: Small multiples
+      term_type: full_form
+      term_status: admitted
+    - literal: Useful Junk
+      term_type: full_form
+      term_status: admitted
+    - literal: Visualization memorability
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - graphical integrity
+    - chartjunk
+  - id: coe:entity/graphic_encoding_and_notation_design
+    label: Graphic Encoding and Notation Design
+    description: The formal theory of graphic encoding and visual-notation design — Bertin's visual variables,
+      Cleveland and McGill's perceptual accuracy ranking, Moody's Physics of Notations, Green's Cognitive Dimensions,
+      and the executable procedures each theory produces.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Bertin's visual variables
+      term_type: full_form
+      term_status: admitted
+    - literal: Cleveland & McGill ranking
+      term_type: full_form
+      term_status: admitted
+    - literal: Physics of Notations
+      term_type: full_form
+      term_status: admitted
+    - literal: Cognitive Dimensions of Notations
+      term_type: full_form
+      term_status: admitted
+    - literal: Symbol overload
+      term_type: full_form
+      term_status: admitted
+    - literal: Free ride (diagrammatic)
+      term_type: full_form
+      term_status: admitted
+    - literal: Specificity thesis
+      term_type: full_form
+      term_status: admitted
+    - literal: Proximity compatibility principle
+      term_type: full_form
+      term_status: admitted
+    - literal: Nested model (visualisation)
+      term_type: full_form
+      term_status: admitted
+    - literal: Cognitive Fit Theory
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/graphic_encoding_and_notation_design
+      predicate: coe:bridges
+      object_id: coe:entity/graphic_encoding_theory
+      relationship_weight: expected
+      description: Wiki encoding-and-notation design aligns with the graphic encoding theory entity.
+      statement_id: coe:edge/graphic-encoding-and-notation-design-bridges-graphic-encoding-theory
+      home_domain: visual_communication
+    examples:
+    - graphic encoding and notation design
+  - id: coe:entity/temporal_narrative_structures
+    label: Temporal Narrative Structures
+    description: Narrating time beyond the linear timeline — multi-scalar temporal zoom, branching counterfactuals, and
+      Sankey and alluvial flow diagrams.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Narrative Temporal Zoom
+      term_type: full_form
+      term_status: admitted
+    - literal: Branching counterfactual
+      term_type: full_form
+      term_status: admitted
+    - literal: Sankey diagram
+      term_type: full_form
+      term_status: admitted
+    - literal: Alluvial diagram
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - temporal narrative structures
+  - id: coe:entity/micro_typographic_spacing
+    label: Micro-Typographic Spacing
+    description: The sub-word spacing layer — the kerning-pair model, metric versus optical correction, tracking,
+      optical margin alignment, and the thin evidence beneath them.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Kerning
+      term_type: full_form
+      term_status: admitted
+    - literal: Tracking (typography)
+      term_type: full_form
+      term_status: admitted
+    - literal: Metric kerning
+      term_type: full_form
+      term_status: admitted
+    - literal: Optical kerning
+      term_type: full_form
+      term_status: admitted
+    - literal: Optical margin alignment
+      term_type: full_form
+      term_status: admitted
+    - literal: microtype
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - micro-typographic spacing
+    - kerning and tracking
+  - id: coe:entity/opentype_feature_layer
+    label: The OpenType Feature Layer
+    description: The OpenType feature layer — the GSUB/GPOS two-table model, ligatures, small caps, figure styles and
+      contextual alternates, and how CSS, InDesign and TeX invoke them.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: OpenType Layout
+      term_type: full_form
+      term_status: admitted
+    - literal: Typographic ligature
+      term_type: full_form
+      term_status: admitted
+    - literal: Small capitals
+      term_type: full_form
+      term_status: admitted
+    - literal: Old-style figures
+      term_type: full_form
+      term_status: admitted
+    - literal: Contextual alternates
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - OpenType features
+    - GSUB and GPOS
+  - id: coe:entity/font_hinting_and_rasterisation
+    label: Font Hinting and Rasterisation
+    description: Fitting glyph outlines to the pixel grid — grid-fitting, stem darkening, the ClearType
+      preference-not-performance result, and autohinting versus manual VTT.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Font hinting
+      term_type: full_form
+      term_status: admitted
+    - literal: Stem darkening
+      term_type: full_form
+      term_status: admitted
+    - literal: Sub-pixel rendering
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - font hinting
+    - rasterisation
+  - id: coe:entity/colour_and_palette_design
+    label: Colour and Palette Design
+    description: Colour theory and palette construction — colour models, perceptually uniform spaces, harmony,
+      colour-blind-safe palettes, and the WCAG-versus-APCA dispute.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: OKLCH
+      term_type: initialism
+      term_status: admitted
+    - literal: HCT
+      term_type: initialism
+      term_status: admitted
+    - literal: APCA
+      term_type: initialism
+      term_status: admitted
+    - literal: Okabe-Ito palette
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - colour palette design
+    - colour harmony
+  - id: coe:entity/grid_and_layout_systems
+    label: Grid and Layout Systems
+    description: The spatial layout system — the Swiss grid tradition, grid anatomy, the baseline lattice and 8-point
+      spacing, page canons, and responsive column grids.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: 8-point grid
+      term_type: full_form
+      term_status: admitted
+    - literal: Baseline grid
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - grid system
+    - layout grid
+  - id: coe:entity/lottie_json_authoring
+    label: Lottie JSON Authoring
+    description: The Lottie JSON schema as a programmatic authoring target — object hierarchy, abbreviated key mappings,
+      property containers, and Bézier path interpolation.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Lottie JSON schema
+      term_type: full_form
+      term_status: admitted
+    - literal: Circle constant (κ)
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/lottie_json_authoring
+      predicate: coe:bridges
+      object_id: coe:entity/lottie_authoring
+      relationship_weight: required
+      description: The wiki slug names the same Lottie JSON authoring discipline as lottie_authoring.
+      statement_id: coe:edge/lottie-json-authoring-bridges-lottie-authoring
+      home_domain: visual_communication
+    examples:
+    - Lottie JSON authoring
+  - id: coe:entity/cartographic_projection_and_maup
+    label: Cartographic Projection and the Modifiable Areal Unit Problem
+    description: The mathematics and statistical hazards of converting the Earth's surface into a flat map — geodetic
+      datums and transformations, Tissot's Indicatrix distortion measure, the Modifiable Areal Unit Problem, and Web GIS
+      practice.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Tissot's Indicatrix
+      term_type: full_form
+      term_status: admitted
+    - literal: Geodetic datum
+      term_type: full_form
+      term_status: admitted
+    - literal: Dasymetric mapping
+      term_type: full_form
+      term_status: admitted
+    - literal: MAUP
+      term_type: acronym
+      term_status: admitted
+    edges: []
+    examples:
+    - cartographic projection
+    - modifiable areal unit problem
+  - id: coe:entity/volumetric_and_isosurface_visualization
+    label: Volumetric and Isosurface Visualization
+    description: Rendering and reconstructing 3D scalar fields — raymarching and the volume rendering equation, transfer
+      functions, and the isosurface-extraction lineage from Marching Cubes through Dual Contouring to FlexiCubes.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Volume rendering equation
+      term_type: full_form
+      term_status: admitted
+    - literal: Marching Cubes
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - volumetric visualization
+    - isosurface extraction
+  - id: coe:entity/sequential_art_visual_grammar
+    label: Sequential Art Visual Grammar (McCloud)
+    description: Scott McCloud's theory of sequential art — time-mapped-to-space, the cognitive mechanism of closure,
+      the six panel-to-panel transition types, and the Western-versus-Japanese-Manga divergence in how they are used.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Closure (McCloud)
+      term_type: full_form
+      term_status: admitted
+    - literal: Panel-to-panel transitions
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - sequential art
+    - McCloud closure
+  - id: coe:entity/cross_cultural_and_accessible_visual_encoding
+    label: Cross-Cultural and Accessible Visual Encoding
+    description: How diagram conventions travel — and don't — across cultures and disabilities, which spatial mappings
+      are learned from writing direction versus near-universal, which icon studies show culture-dependent comprehension,
+      and the unified cross-cultural-plus-accessibility review checklist for a finished visual artefact.
+    home_domain: visual_communication
+    status: canonical
+    terms:
+    - literal: Cross-cultural spatial encoding
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - cross-cultural visual encoding
+    - accessible visual encoding
 - id: coe:artifact/visual_communication/media_preproduction
   label: Media Pre-Production Artefacts and Constraints
   description: Video and motion pre-production artefact types and motion-safety constraints recovered from the knowledge
@@ -302,6 +795,17 @@ entity_collections:
       the WCAG motion criteria with reduced-motion honouring.
     home_domain: visual_communication
     status: canonical
+    terms:
+    - literal: prefers-reduced-motion
+      term_type: full_form
+      term_status: admitted
+    - literal: Vection
+      term_type: full_form
+      term_status: admitted
+      usage_note: Illusion of self-motion as an accessibility risk under motion/flash constraints; also named on motion_graphics craft.
+    - literal: Photosensitive epilepsy (PSE)
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/motion_flash_accessibility
       predicate: coe:limits

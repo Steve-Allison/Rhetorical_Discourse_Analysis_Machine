@@ -19,6 +19,8 @@ from rdam._contract_types import (
     AvailableCapability as AvailableCapability,
     UnavailableCapability as UnavailableCapability,
     CapabilityState as CapabilityState,
+    DerivationCompiler as DerivationCompiler,
+    DerivationSpec as DerivationSpec,
     FormalismDeclaration as FormalismDeclaration,
     ProviderProvenance as ProviderProvenance,
     SourceIdentity as SourceIdentity,
@@ -32,13 +34,21 @@ from rdam._contract_types import (
     StructuredInput as StructuredInput,
     FormalismChoice as FormalismChoice,
     SourceArtifactRef as SourceArtifactRef,
+    XPathAlignmentEntry as XPathAlignmentEntry,
+    XPathTechniqueOccurrence as XPathTechniqueOccurrence,
 )
 from rdam._immutable_json import freeze_json_object, thaw_json
 from rdam._interpretation_types import AnalysisReadingGuide, NativeInterpretationDescriptor
 from rdam._json_pointer import escape_pointer_token, resolve_pointer
 from rdam.historical import HistoricalNativeTechniqueResult
 from rdam._strict import JsonValue, SemanticVersion, Sha256Identity, StrictModel, canonical_json_bytes, semantic_sha256, sha256_bytes
-from rdam.frameworks import BOUNDARY_TECHNIQUES, STRUCTURED_INPUT_TECHNIQUES, Technique, technique_curie
+from rdam.frameworks import (
+    ACCEPTS_STRUCTURED_INPUT_TECHNIQUES,
+    BOUNDARY_TECHNIQUES,
+    STRUCTURED_INPUT_TECHNIQUES,
+    Technique,
+    technique_curie,
+)
 from rdam.ingest.contracts.preparation import (
     AnalysisPlan, ContentInventory, ContentRequirement, PreparationReceipt, PreparationSemanticEvidence,
     PreparationWarning, SourceProjection, PreparedRange, SpeakerCoverage,
@@ -96,6 +106,7 @@ class ProviderDeclaration(StrictModel):
     provenance: ProviderProvenance
     capability: CapabilityState
     requires_structured_input: bool
+    accepts_structured_input: bool = False
     content_requirement: ContentRequirement | None = None
     parallel_safety: Literal["concurrent", "serialized"] = "concurrent"
     instructions_identity: Sha256Identity | None = None
@@ -134,6 +145,8 @@ class ProviderDeclaration(StrictModel):
                 raise ValueError("available capability must name this provider")
             if self.capability.contract_version != self.contract_version:
                 raise ValueError("available capability must carry this provider's contract version")
+        if self.requires_structured_input and not self.accepts_structured_input:
+            object.__setattr__(self, "accepts_structured_input", True)
         if not self.requires_structured_input and self.content_requirement is None:
             raise ValueError("text providers must declare a content requirement")
         return self
@@ -423,7 +436,7 @@ class _PreparationRecord(StrictModel):
                 used.add(binding.projection_identity.hex_digest)
                 if binding.technique in STRUCTURED_INPUT_TECHNIQUES:
                     raise ValueError("structured boundary cannot receive a projection")
-            elif isinstance(binding, StructuredPreparationBinding) and binding.technique not in STRUCTURED_INPUT_TECHNIQUES:
+            elif isinstance(binding, StructuredPreparationBinding) and binding.technique not in ACCEPTS_STRUCTURED_INPUT_TECHNIQUES:
                 raise ValueError("only structured boundaries have structured preparation bindings")
         if used != set(projections):
             raise ValueError("every persisted projection must be bound")
@@ -477,6 +490,10 @@ def _matching_preparation_pointer(payload: object, expected: Mapping[str, object
     return None
 
 
+def _no_xpath_alignment(value: tuple[XPathAlignmentEntry, ...]) -> bool:
+    return not value
+
+
 class AggregateAnalysis(StrictModel):
     """N explicit outcomes over one source — never a merged node-and-edge view (FR-013, FR-014)."""
 
@@ -488,6 +505,7 @@ class AggregateAnalysis(StrictModel):
     upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...] = ()
     configurations: tuple[BoundaryConfiguration, ...]
     lineage: tuple[ProviderDependencyReference, ...] = ()
+    xpath_alignment: tuple[XPathAlignmentEntry, ...] = Field(default=(), exclude_if=_no_xpath_alignment)
     preparation: MachinePreparation | HistoricalMachinePreparation | None = None
     status: Literal["complete", "partial", "unsuccessful"]
     reading_guide: AnalysisReadingGuide
@@ -617,10 +635,11 @@ class AggregateAnalysis(StrictModel):
         actual_entries = tuple((e.scope, e.technique, e.record_pointer, e.state) for e in self.reading_guide.entries)
         if actual_entries != expected_entries:
             raise ValueError("reading guide must match actual ordered outcomes and retained records")
+        dumped_aggregate = self.model_dump()
         for entry in self.reading_guide.entries:
             if entry.scope == "requested" and entry.state == "result" and entry.descriptor_status != "available":
                 raise ValueError("requested successful results require native descriptions")
-            target = resolve_pointer(self.model_dump(), entry.record_pointer)
+            target = resolve_pointer(dumped_aggregate, entry.record_pointer)
             if entry.descriptor is not None:
                 record = cast(Mapping[str, object], target)
                 descriptor = entry.descriptor
@@ -703,6 +722,7 @@ class AggregateRequest(StrictModel):
     source_artifact: SourceArtifactRef | None = None
     techniques: tuple[Technique, ...] = Field(min_length=1)
     structured_inputs: tuple[StructuredInput, ...] = ()
+    derivations: tuple[DerivationSpec, ...] = ()
     formalisms: tuple[FormalismChoice, ...] = ()
     upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...] = ()
 
@@ -716,7 +736,7 @@ class AggregateRequest(StrictModel):
             raise ValueError("source identity does not match the supplied text")
         supplied = int(self.text is not None) + int(self.source_artifact is not None)
         if supplied > 1 or (
-            supplied == 0 and any(technique not in STRUCTURED_INPUT_TECHNIQUES for technique in self.techniques)
+            supplied == 0 and any(technique not in ACCEPTS_STRUCTURED_INPUT_TECHNIQUES for technique in self.techniques)
         ):
             raise ValueError("exactly one text or source_artifact is required for text analysis")
         if self.source_artifact is not None:
@@ -740,6 +760,17 @@ class AggregateRequest(StrictModel):
             raise ValueError("an upstream result's technique cannot also be requested in the same aggregate")
         if any(item.source != self.source for item in self.upstream_results):
             raise ValueError("every upstream result must be about this request's source")
+        consumers = [item.consumer for item in self.derivations]
+        if len(consumers) != len(set(consumers)):
+            raise ValueError("at most one derivation per consumer technique")
+        if any(consumer not in self.techniques for consumer in consumers):
+            raise ValueError("derivation consumer must be a requested technique")
+        if set(consumers).intersection(structured):
+            raise ValueError("cannot supply both structured_inputs and derivations for the same technique")
+        available_upstreams = set(self.techniques) | set(upstream_techniques)
+        for spec in self.derivations:
+            if any(upstream not in available_upstreams for upstream in spec.upstreams):
+                raise ValueError("derivation upstream must be requested or carried in upstream_results")
         for item in self.structured_inputs:
             if item.derived_from is not None and self.upstream_result(item.derived_from) is None:
                 raise ValueError(
@@ -756,6 +787,7 @@ class AggregateRequest(StrictModel):
         *,
         source_name: str | None = None,
         structured_inputs: tuple[StructuredInput, ...] = (),
+        derivations: tuple[DerivationSpec, ...] = (),
         formalisms: tuple[FormalismChoice, ...] = (),
         upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...] = (),
     ) -> Self:
@@ -764,6 +796,7 @@ class AggregateRequest(StrictModel):
             text=text,
             techniques=techniques,
             structured_inputs=structured_inputs,
+            derivations=derivations,
             formalisms=formalisms,
             upstream_results=upstream_results,
         )
@@ -776,11 +809,12 @@ class AggregateRequest(StrictModel):
         *,
         source_form: SourceForm | None = None,
         structured_inputs: tuple[StructuredInput, ...] = (),
+        derivations: tuple[DerivationSpec, ...] = (),
         formalisms: tuple[FormalismChoice, ...] = (),
         upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...] = (),
     ) -> Self:
         artifact = SourceArtifact.from_path(Path(path), source_form=source_form)
-        return cls._for_artifact(artifact, techniques, structured_inputs, formalisms, upstream_results)
+        return cls._for_artifact(artifact, techniques, structured_inputs, derivations, formalisms, upstream_results)
 
     @classmethod
     def for_bytes(
@@ -791,6 +825,7 @@ class AggregateRequest(StrictModel):
         techniques: tuple[Technique, ...],
         *,
         structured_inputs: tuple[StructuredInput, ...] = (),
+        derivations: tuple[DerivationSpec, ...] = (),
         formalisms: tuple[FormalismChoice, ...] = (),
         upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...] = (),
     ) -> Self:
@@ -799,7 +834,7 @@ class AggregateRequest(StrictModel):
             source_form=source_form,
             source_name=source_name,
         )
-        return cls._for_artifact(artifact, techniques, structured_inputs, formalisms, upstream_results)
+        return cls._for_artifact(artifact, techniques, structured_inputs, derivations, formalisms, upstream_results)
 
     @classmethod
     def _for_artifact(
@@ -807,6 +842,7 @@ class AggregateRequest(StrictModel):
         artifact: SourceArtifact,
         techniques: tuple[Technique, ...],
         structured_inputs: tuple[StructuredInput, ...],
+        derivations: tuple[DerivationSpec, ...],
         formalisms: tuple[FormalismChoice, ...],
         upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...],
     ) -> Self:
@@ -822,6 +858,7 @@ class AggregateRequest(StrictModel):
             source_artifact=SourceArtifactRef(artifact=artifact),
             techniques=techniques,
             structured_inputs=structured_inputs,
+            derivations=derivations,
             formalisms=formalisms,
             upstream_results=upstream_results,
         )
@@ -829,17 +866,19 @@ class AggregateRequest(StrictModel):
     @classmethod
     def for_edus(
         cls, edus: tuple[str, ...], techniques: tuple[Technique, ...], *, source_name: str = "rdam-source",
-        structured_inputs: tuple[StructuredInput, ...] = (), formalisms: tuple[FormalismChoice, ...] = (),
+        structured_inputs: tuple[StructuredInput, ...] = (), derivations: tuple[DerivationSpec, ...] = (),
+        formalisms: tuple[FormalismChoice, ...] = (),
         upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...] = (),
     ) -> Self:
         return cls._for_artifact(SourceArtifact.from_edus(edus, source_name=source_name),
-                                 techniques, structured_inputs, formalisms, upstream_results)
+                                 techniques, structured_inputs, derivations, formalisms, upstream_results)
 
     @classmethod
     def for_structured(
         cls, structured_inputs: tuple[StructuredInput, ...], *,
         techniques: tuple[Technique, ...] | None = None, source: SourceIdentity | None = None,
         source_name: str | None = None,
+        derivations: tuple[DerivationSpec, ...] = (),
         upstream_results: tuple[NativeTechniqueResult | HistoricalNativeTechniqueResult, ...] = (),
         formalisms: tuple[FormalismChoice, ...] = (),
     ) -> Self:
@@ -859,13 +898,16 @@ class AggregateRequest(StrictModel):
             })), source_name=source_name, media_type="application/json")
         return cls(source=source, techniques=tuple(item.technique for item in structured_inputs)
                    if techniques is None else techniques, structured_inputs=structured_inputs,
-                   upstream_results=upstream_results, formalisms=formalisms)
+                   derivations=derivations, upstream_results=upstream_results, formalisms=formalisms)
 
     def structured_input_for(self, technique: Technique) -> Mapping[str, JsonValue] | None:
         return next((item.payload for item in self.structured_inputs if item.technique is technique), None)
 
     def derivation_for(self, technique: Technique) -> UpstreamResultReference | None:
         return next((item.derived_from for item in self.structured_inputs if item.technique is technique), None)
+
+    def derivation_spec_for(self, technique: Technique) -> DerivationSpec | None:
+        return next((item for item in self.derivations if item.consumer is technique), None)
 
     def formalism_for(self, technique: Technique) -> str | None:
         return next((item.formalism_id for item in self.formalisms if item.technique is technique), None)
@@ -1016,6 +1058,8 @@ __all__ = [
     "AggregateRequest",
     "AvailableCapability",
     "CapabilityState",
+    "DerivationCompiler",
+    "DerivationSpec",
     "FailedOutcome",
     "FormalismChoice",
     "FormalismDeclaration",
@@ -1039,5 +1083,7 @@ __all__ = [
     "UnavailableOutcome",
     "UnavailableReason",
     "UpstreamResultReference",
+    "XPathAlignmentEntry",
+    "XPathTechniqueOccurrence",
     "outcome_technique",
 ]

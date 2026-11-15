@@ -8,7 +8,14 @@ from pydantic import Field, field_serializer, field_validator, model_validator
 
 from rdam._immutable_json import freeze_json_object, thaw_json
 from rdam._strict import JsonValue, SemanticVersion, Sha256Identity, StrictModel, sha256_bytes
-from rdam.frameworks import STRUCTURED_INPUT_TECHNIQUES, FrameworkAuthority, Technique, technique_curie
+from rdam.frameworks import (
+    ACCEPTS_STRUCTURED_INPUT_TECHNIQUES,
+    DUAL_MODE_TECHNIQUES,
+    STRUCTURED_INPUT_TECHNIQUES,
+    FrameworkAuthority,
+    Technique,
+    technique_curie,
+)
 from rdam.ingest.contracts.source import SourceArtifact
 
 _SNAKE = r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
@@ -156,9 +163,10 @@ class TechniqueCapability(StrictModel):
     def canonical_identity_and_input_mode(self) -> Self:
         if self.technique_curie != technique_curie(self.technique):
             raise ValueError("technique capability must carry its canonical identity")
-        expected_structured = self.technique in STRUCTURED_INPUT_TECHNIQUES
-        if self.requires_structured_input != expected_structured:
-            raise ValueError("technique capability has the wrong structured-input mode")
+        if self.technique not in DUAL_MODE_TECHNIQUES:
+            expected_structured = self.technique in STRUCTURED_INPUT_TECHNIQUES
+            if self.requires_structured_input != expected_structured:
+                raise ValueError("technique capability has the wrong structured-input mode")
         return self
 
 
@@ -202,9 +210,61 @@ class StructuredInput(StrictModel):
 
     @model_validator(mode="after")
     def only_for_structured_input_techniques(self) -> Self:
-        if self.technique not in STRUCTURED_INPUT_TECHNIQUES:
+        if self.technique not in ACCEPTS_STRUCTURED_INPUT_TECHNIQUES:
             raise ValueError(f"{self.technique.value} does not accept structured input")
         return self
+
+
+type DerivationCompiler = Literal[
+    "from_aspic",
+    "from_argument_mining",
+    "from_ibis",
+    "from_toulmin_walton",
+]
+
+_COMPILER_UPSTREAMS: dict[str, frozenset[Technique]] = {
+    "from_aspic": frozenset({Technique.ASPIC}),
+    "from_argument_mining": frozenset({Technique.ARGUMENT_MINING}),
+    "from_ibis": frozenset({Technique.IBIS}),
+    "from_toulmin_walton": frozenset({Technique.TOULMIN, Technique.WALTON}),
+}
+
+
+class DerivationSpec(StrictModel):
+    """Explicit caller opt-in to derive a Wave-2 formal structure from Wave-1 native results."""
+
+    consumer: Literal[Technique.DUNG] = Technique.DUNG
+    compiler: DerivationCompiler
+    upstreams: tuple[Technique, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def coherent_derivation(self) -> Self:
+        if len(set(self.upstreams)) != len(self.upstreams):
+            raise ValueError("derivation upstreams must be unique")
+        allowed = _COMPILER_UPSTREAMS[self.compiler]
+        if self.compiler != "from_toulmin_walton":
+            if frozenset(self.upstreams) != allowed:
+                raise ValueError(f"compiler {self.compiler!r} requires upstream {sorted(t.value for t in allowed)}")
+        elif not frozenset(self.upstreams).issubset(allowed):
+            raise ValueError("compiler 'from_toulmin_walton' accepts only toulmin and walton upstreams")
+        return self
+
+
+class XPathTechniqueOccurrence(StrictModel):
+    """One native technique's evidence pointer anchored to a shared DocLang XPath."""
+
+    technique: Technique
+    payload_path: str = Field(min_length=1)
+    relationship: Literal["exact_quote", "supporting_passage", "literal_occurrence"]
+    quote: str = Field(min_length=1)
+
+
+class XPathAlignmentEntry(StrictModel):
+    """Side-by-side cross-technique alignment at one canonical DocLang XPath (never a merged graph)."""
+
+    xpath: str = Field(min_length=1)
+    item_ids: tuple[str, ...] = Field(min_length=1)
+    occurrences: tuple[XPathTechniqueOccurrence, ...] = Field(min_length=1)
 
 
 class FormalismChoice(StrictModel):
@@ -223,6 +283,8 @@ class SourceArtifactRef(StrictModel):
 __all__ = [
     "AvailableCapability",
     "CapabilityState",
+    "DerivationCompiler",
+    "DerivationSpec",
     "FailedOutcome",
     "FormalismChoice",
     "FormalismDeclaration",
@@ -239,4 +301,6 @@ __all__ = [
     "UnavailableOutcome",
     "UnavailableReason",
     "UpstreamResultReference",
+    "XPathAlignmentEntry",
+    "XPathTechniqueOccurrence",
 ]

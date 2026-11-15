@@ -156,6 +156,12 @@ class PdtbRelation(_ClosedModel):
                 raise RelationError("Explicit requires explicit connective source evidence")
             if self.inferred_connectives or self.alternative_lexicalization_spans:
                 raise RelationError("Explicit may carry only explicit connective evidence")
+            if any(
+                conn.overlaps(arg_span)
+                for conn in self.connective_spans
+                for arg_span in (*self.arg1.spans, *self.arg2.spans)
+            ):
+                raise RelationError("Explicit connective spans must be disjoint from Arg1 and Arg2 spans")
         elif self.relation_type is RelationType.IMPLICIT:
             if not self.inferred_connectives:
                 raise RelationError("Implicit requires at least one inferred connective")

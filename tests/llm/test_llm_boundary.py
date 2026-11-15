@@ -296,7 +296,11 @@ class TestFailureAlgebra:
 
 
 class TestNoHiddenNetwork:
-    def test_openai_uses_responses_for_reasoning_with_function_tools(self) -> None:
+    def test_openai_uses_responses_for_reasoning_with_function_tools(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-used")
+
         async def scenario() -> None:
             async with _model_without_implicit_retries("openai:test", timeout_seconds=1.0) as model:
                 assert isinstance(model, OpenAIResponsesModel)

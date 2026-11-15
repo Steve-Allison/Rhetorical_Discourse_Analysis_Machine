@@ -22,7 +22,7 @@ from rdam.rst.provider import RstProvider
 from tests.machine.conftest import FakeProvider, echo_result, rst_declaration, formalism, fixture_descriptor
 
 
-@pytest.mark.parametrize("count", range(1, 8))
+@pytest.mark.parametrize("count", range(1, len(BOUNDARY_TECHNIQUES) + 1))
 def test_inventory_and_disposition_once(count: int) -> None:
     calls: Counter[str] = Counter()
 
@@ -83,7 +83,8 @@ def test_structured_providers_declare_no_requirement_and_receive_no_projection()
     )
     aggregate = Machine(providers).analyse(request)
     assert aggregate.preparation is not None and aggregate.preparation.projections == ()
+    assert providers[0].declaration.content_requirement is None
+    assert providers[1].declaration.accepts_structured_input is True
     for provider in providers:
-        assert provider.declaration.content_requirement is None
         assert provider.calls[0].projection is None
         assert provider.calls[0].preparation is None

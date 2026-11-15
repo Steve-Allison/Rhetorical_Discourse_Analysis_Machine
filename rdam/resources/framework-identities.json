@@ -1,5 +1,29 @@
 {
   "concepts": {
+    "argument_mining": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/argument_mining",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Argument Mining"
+    },
+    "aspic": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/aspic",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "ASPIC+ Structured Argumentation"
+    },
+    "centering": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/centering",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Centering and Entity-Grid Coherence"
+    },
+    "classical_rhetoric": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/rhetorical_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/rhetorical_framework/classical_rhetoric",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Classical Rhetorical Analysis"
+    },
     "dung": {
       "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
       "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/dung",
@@ -24,6 +48,12 @@
       "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
       "label": "Penn Discourse Treebank"
     },
+    "pragma_dialectics": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/pragma_dialectics",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Pragma-Dialectics"
+    },
     "rst": {
       "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
       "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/rst",
@@ -35,6 +65,12 @@
       "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/sdrt",
       "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
       "label": "Segmented Discourse Representation Theory"
+    },
+    "speech_acts": {
+      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
+      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/speech_acts",
+      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "label": "Speech Act and Dialogue Commitment Theory"
     },
     "toulmin": {
       "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
@@ -49,8 +85,8 @@
       "label": "Walton Argumentation Schemes"
     }
   },
-  "last_updated": "2026-08-31",
+  "last_updated": "2026-11-14",
   "scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
   "source": "ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml",
-  "source_sha256": "d35867c07688d3ae3e4e77375acb64a00dd65ab732868f5c8b8e04bf3c3dd44e"
+  "source_sha256": "8ac5e94e601259753b6eaad1f50ae6f5043b1ab1f916623115ec1b3a65eb2987"
 }

@@ -1,0 +1,84 @@
+_meta:
+  file_id: coe:file/domain/ai/media_ai
+  title: AI — Synthetic and Localised Media
+  last_updated: '2026-10-11'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: ai
+  governing_class: coe:DomainModule
+module_id: coe:module/ai/media_ai
+domain: ai
+entity_collections:
+- id: coe:artifact/ai/media_ai
+  label: AI Media Production
+  description: AI avatar video, audio production, translation governance and synthetic-media disclosure.
+  last_updated: '2026-10-11'
+  home_domain: ai
+  status: canonical
+  entities:
+  - id: coe:entity/ai_avatar_video
+    label: Ai Avatar Video
+    description: Synthetic presenters and AI-generated video for learning — the independent evidence for parity-not-benefit, uncanny-valley risk, and consent and disclosure governance.
+    home_domain: ai
+    status: canonical
+    terms:
+    - literal: Uncanny valley
+      term_type: full_form
+      term_status: admitted
+    - literal: C2PA
+      term_type: initialism
+      term_status: admitted
+    edges: []
+    examples:
+    - ai avatar video
+  - id: coe:entity/ai_audio_production
+    label: Ai Audio Production
+    description: AI in the educational audio pipeline — neural TTS deployment, conversational-overview limits, AI-editing failure modes, series operations and the legal-governance stack.
+    home_domain: ai
+    status: canonical
+    terms:
+    - literal: Neural Text-to-Speech (TTS)
+      term_type: full_form
+      term_status: admitted
+    - literal: Online Course Planning Grid (OCPG)
+      term_type: full_form
+      term_status: admitted
+    - literal: ELVIS Act
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - ai audio production
+  - id: coe:entity/ai_translation_and_localisation
+    label: Ai Translation And Localisation
+    description: Translating and localising learning content with AI — MT quality evidence, cultural adaptation, layout expansion, privacy law and a four-tier risk-governance model.
+    home_domain: ai
+    status: canonical
+    terms:
+    - literal: Machine Translation Post-Editing (MTPE)
+      term_type: full_form
+      term_status: admitted
+    - literal: Neural Machine Translation (NMT)
+      term_type: full_form
+      term_status: admitted
+    - literal: Multidimensional Quality Metrics (MQM)
+      term_type: full_form
+      term_status: admitted
+    - literal: Transcreation
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - ai translation and localisation
+  - id: coe:entity/synthetic_media_marking_and_disclosure
+    label: Synthetic Media Marking And Disclosure
+    description: How AI-generated and AI-modified content is marked and disclosed — layered marking, how robust each layer is, voice and avatar provenance and consent, and the binding duties by jurisdiction at 30 September 2026.
+    home_domain: ai
+    status: canonical
+    terms:
+    - literal: Layered marking
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - synthetic media marking and disclosure

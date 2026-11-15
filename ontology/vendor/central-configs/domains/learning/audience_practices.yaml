@@ -1,0 +1,66 @@
+_meta:
+  file_id: coe:file/domain/learning/audience_practices
+  title: Learning — Audience Design Practices
+  last_updated: '2026-10-11'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: learning
+  governing_class: coe:DomainModule
+module_id: coe:module/learning/audience_practices
+domain: learning
+entity_collections:
+- id: coe:artifact/learning/audience_practices
+  label: Learner Audience Practices
+  description: Learner persona methodology and school-age learning design from the knowledge wiki.
+  last_updated: '2026-10-11'
+  home_domain: learning
+  status: canonical
+  entities:
+  - id: coe:entity/learner_personas
+    label: Learner Personas
+    description: Source-derived generational and functional learner archetypes, held as discovery hypotheses to test rather than validated audience segments.
+    home_domain: learning
+    status: canonical
+    edges:
+    - subject_id: coe:entity/learner_personas
+      predicate: coe:specialises
+      object_id: coe:entity/persona_method
+      relationship_weight: expected
+      description: Learner personas apply the persona method to learning audiences as discovery hypotheses.
+      statement_id: coe:edge/learner_personas-specialises-persona_method
+      home_domain: learning
+    examples:
+    - learner personas
+  - id: coe:entity/school_age_learning_design
+    label: School Age Learning Design
+    description: Evidence foundations for UK school-age learners (KS1–KS5) — developmental load ceilings by key stage, which format evidence transfers, and the myth firewall.
+    home_domain: learning
+    status: canonical
+    terms:
+    - literal: Key Stage
+      term_type: full_form
+      term_status: admitted
+    - literal: Education Endowment Foundation
+      term_type: full_form
+      term_status: admitted
+    - literal: Ofqual
+      term_type: full_form
+      term_status: admitted
+    - literal: National Curriculum (England)
+      term_type: full_form
+      term_status: admitted
+    - literal: Lexile Framework
+      term_type: full_form
+      term_status: admitted
+    - literal: Book-banding
+      term_type: full_form
+      term_status: admitted
+    - literal: Ofsted Education Inspection Framework
+      term_type: full_form
+      term_status: admitted
+    - literal: SACRE
+      term_type: initialism
+      term_status: admitted
+    edges: []
+    examples:
+    - school age learning design

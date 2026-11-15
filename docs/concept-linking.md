@@ -33,13 +33,20 @@ Development projection generation follows Central's distribution/domain manifest
 pixi run python tools/compile_concept_index.py --help
 ```
 
-The packaged distribution is Central 4.0.0 as compiled from Central_Configs `9971b77`
-on 2026-10-09: eight domains, 2,222 semantic resources and 2,423 lexical entries
-(2,064 labels, 359 terms). A lexical entry is a resource's label or one of its Central
-terms, the names Central carries inline on the resource with a LexInfo term type and
-status. Duplicate IDs, absent declared modules, unknown fields and invalid term types or
-statuses fail compilation. Domain selection restricts matching without editing Central.
-Retired identifiers remain available diagnostically and cannot produce active candidates.
+The packaged distribution (`rdam/resources/concept-index.json`, verified 2026-11-15 via
+`ConceptIndex.load().projection` at `rdam/concepts/index.py:103-140`) is Central
+`coe:distribution/4.0.0` (`4.0.0`): eight domains, 2,482 semantic resources, and 3,516
+lexical entries (2,315 labels, 1,201 terms), including the fourteen analytical framework
+concepts under `coe:artifact/narrative/analytical_frameworks_taxonomy`. Matching is
+executed via compiled Rust `ahocorasick_rs` automata cached per `(content_digest, domains,
+acronym_case_sensitive)` (`rdam/concepts/linker.py:73-146`), and `scan_text_mentions()`
+(`rdam/concepts/linker.py:210-239`) also supplies deterministic `concept_mention` signals
+to `LinguisticSubstrate` during source preparation (`rdam/ingest/substrate.py:314-324`).
+A lexical entry is a resource's label or one of its Central terms, the names Central
+carries inline on the resource with a LexInfo term type and status. Duplicate IDs, absent
+declared modules, unknown fields, and invalid term types or statuses fail compilation.
+Domain selection restricts matching without editing Central. Retired identifiers remain
+available diagnostically and cannot produce active candidates.
 
 ## Wire interfaces
 
@@ -91,7 +98,9 @@ are in `workbench/experiments/concept_linking/REPORT.md`.
 
 ## Verification scope
 
-See `specs/021-shared-concept-links/verification.md` for actual check outcomes and limitations.
-RDAM tracks the latest Docling Core release (2.101.1 as of 2026-10-09; see
-[production ingest](production-source-ingest.md)). Locked versions must not be described
-as the latest spec.
+See `specs/021-shared-concept-links/verification.md` for original Feature 021 check
+outcomes and limitations, and `tests/concepts/` (`pixi run pytest tests/concepts -q`) for
+live compilation and matching verification against `../Central_Configs`. RDAM tracks
+`dclq` `>=2.107.0,<3` and DocLang `main` (`ae8ad5490b9b03b344e3e49dcb0f6f2209795de6` as
+of 2026-11-15; see [production ingest](production-source-ingest.md)). Locked versions
+must not be described as the latest spec.

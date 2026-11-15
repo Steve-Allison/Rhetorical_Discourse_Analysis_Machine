@@ -24,7 +24,6 @@ def validate_declared_dependencies(root: Path, authority: OwnershipAuthority | N
     payload = tomllib.loads((repository / "pyproject.toml").read_text(encoding="utf-8"))
     project = payload["project"]
     requirements = list(project.get("dependencies", ()))
-    requirements.extend(project.get("optional-dependencies", {}).get("formats", ()))
     violations: list[BoundaryViolation] = []
     for requirement in requirements:
         name = requirement_name(requirement)

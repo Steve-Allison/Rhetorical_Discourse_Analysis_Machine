@@ -1,4 +1,4 @@
-"""Create clean core/formats wheel installs and execute installed acceptance."""
+"""Create clean core and core+http wheel installs and execute installed acceptance."""
 
 import argparse
 import json
@@ -46,7 +46,7 @@ def _install_and_run(
     source_root: Path,
     acceptance: Path,
     model_store: Path,
-    fixtures: tuple[Path, Path, Path],
+    doclang_fixture: Path,
     full: bool,
     device: str,
     parity_baseline: Path | None,
@@ -58,7 +58,7 @@ def _install_and_run(
         root = Path(directory)
         subprocess.run([str(base_python), "-m", "venv", str(root)], check=True)
         python = _venv_python(root)
-        extras = tuple(extra for extra in ("formats", "http") if extra in name)
+        extras = ("http",) if "http" in name else ()
         requirement = f"{wheel}[{','.join(extras)}]" if extras else str(wheel)
         install = [str(python), "-m", "pip", "install", requirement]
         _run(install, cwd=root)
@@ -74,23 +74,13 @@ def _install_and_run(
             str(model_store),
             "--device",
             device,
+            "--doclang",
+            str(doclang_fixture),
         ]
         if release_id is not None:
             command.extend(("--release-id", release_id))
         if "http" in extras:
             command.append("--http")
-        if "formats" in extras:
-            command.extend(
-                [
-                    "--formats",
-                    "--markdown",
-                    str(fixtures[0]),
-                    "--doclang",
-                    str(fixtures[1]),
-                    "--docling",
-                    str(fixtures[2]),
-                ]
-            )
         if full:
             command.append("--full")
         acceptance_environment = dict(os.environ)
@@ -114,7 +104,7 @@ def _install_and_run(
             "pip_check": "passed",
             "pip_inspect": inspection,
         }
-        if parity_baseline is not None and name == "formats":
+        if parity_baseline is not None and name == "core":
             parity_command = [
                 str(python),
                 "-I",
@@ -152,11 +142,7 @@ def main() -> int:
         identity = read_release_identity(root)
         wheel = identity.release_dir(root) / identity.wheel_name
     _, wheel_version, _, _ = parse_wheel_filename(wheel.name)
-    fixtures = (
-        root / "tests/fixtures/markdown/minimal.md",
-        root / "tests/fixtures/production_api/retained_content/mixed.dclg",
-        root / "tests/fixtures/docling/markdown.docling.json",
-    )
+    doclang_fixture = root / "tests/fixtures/production_api/retained_content/mixed.dclg"
     acceptance = root / "tools/production_boundary/installed_acceptance.py"
     receipts = tuple(
         _install_and_run(
@@ -165,7 +151,7 @@ def main() -> int:
             source_root=root,
             acceptance=acceptance,
             model_store=args.model_store.resolve(),
-            fixtures=fixtures,
+            doclang_fixture=doclang_fixture,
             full=args.full,
             device=args.device,
             parity_baseline=args.parity_baseline.resolve() if args.parity_baseline is not None else None,
@@ -173,7 +159,7 @@ def main() -> int:
             release_id=args.release_id,
             expected_version=str(wheel_version),
         )
-        for name in ("core", "core+http", "formats", "formats+http")
+        for name in ("core", "core+http")
     )
     print(json.dumps({"install_receipts": receipts, "valid": True}, indent=2, sort_keys=True))
     return 0

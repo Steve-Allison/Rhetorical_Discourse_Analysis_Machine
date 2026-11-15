@@ -21,6 +21,13 @@ from rdam.contracts import (
 )
 
 
+@cache
+def _output_schema_identity(output_type: type[BaseModel]) -> str:
+    """Digest an immutable Pydantic output schema once per model class."""
+
+    return semantic_sha256(output_type.model_json_schema())
+
+
 def llm_configuration(
     model: str, output_type: type[BaseModel], *, output_retries: int,
     transport_retries: int, transport_deadline_seconds: float, evidence_policy: str,
@@ -29,7 +36,7 @@ def llm_configuration(
     settings: Mapping[str, JsonValue] = {
         "model": model, "output_retries": output_retries, "transport_retries": transport_retries,
         "transport_deadline_seconds": transport_deadline_seconds,
-        "output_schema_identity": semantic_sha256(output_type.model_json_schema()),
+        "output_schema_identity": _output_schema_identity(output_type),
         "evidence_policy": evidence_policy,
     }
     return ProviderConfiguration(settings=settings, cache_eligible=True,

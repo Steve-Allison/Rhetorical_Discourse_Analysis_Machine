@@ -15,3 +15,4 @@ modules:
 - coe:module/business/industry_categories
 - coe:module/business/practices
 - coe:module/business/terminology
+- coe:module/business/audience_practices

@@ -23,8 +23,21 @@ def test_resolution_and_accounting_are_strict() -> None:
         SpeakerCoverage(turn_count=3, resolved_count=1, unresolved_count=1, distinct_participants=1)
 
 
-def test_transcript_has_zero_invented_speakers() -> None:
-    source = SourceArtifact.from_path(Path("tests/fixtures/pipeline/transcript.md"))
+def test_transcript_has_zero_invented_speakers(tmp_path: Path) -> None:
+    transcript = tmp_path / "transcript.dclg"
+    transcript.write_bytes(
+        b'<doclang xmlns="https://www.doclang.ai/ns/v0" version="0.9">'
+        b'<heading level="1">Decision meeting transcript</heading>'
+        b"<text>Alex Morgan (participant alex): The replacement would reduce the operating cost.</text>"
+        b"<text>Blair Chen (participant blair): Does that include maintenance?</text>"
+        b"<text>Casey Patel (participant casey): The table includes maintenance for both systems.</text>"
+        b"<text>A. Morgan (participant alex): Then the comparison supports proceeding.</text>"
+        b"<text>UNATTRIBUTED: The recording does not identify this speaker.</text>"
+        b"<text>Blair Chen (participant blair): We should preserve the assumptions with the decision.</text>"
+        b"<text>UNATTRIBUTED: This overlapping turn has no recoverable speaker attribution.</text>"
+        b"</doclang>"
+    )
+    source = SourceArtifact.from_path(transcript)
     inventory = ContentInventory.from_preparation(ProductionIngestor().prepare(source))
     turns = tuple(item for item in inventory.items if item.classification is ContentClass.TURN)
     assert len(turns) == 7
@@ -34,7 +47,7 @@ def test_transcript_has_zero_invented_speakers() -> None:
     projection = project(inventory, SdrtProvider().content_requirement)
     assert len(projection.unmet_requirements) == 1
     assert projection.unmet_requirements[0].affected_item_ids == (turns[4].item_id, turns[6].item_id)
-    result = Machine().analyse(AggregateRequest.for_source(Path("tests/fixtures/pipeline/transcript.md"), (Technique.SDRT,)))
+    result = Machine().analyse(AggregateRequest.for_source(transcript, (Technique.SDRT,)))
     assert result.preparation is not None
     assert result.preparation.receipt().speaker_coverage == coverage
 

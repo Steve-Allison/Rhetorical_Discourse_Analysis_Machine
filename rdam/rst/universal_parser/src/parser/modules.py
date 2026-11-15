@@ -354,32 +354,69 @@ class EncoderRNN(nn.Module):
 
         slide_steps = int(np.ceil(sequence_length / self.window_size))
         window_embed_list: list[Tensor] = []
-        for tmp_step in range(slide_steps):
-            if tmp_step == 0:
-                end = self.window_size + 2 * self.window_padding
-                one_win_res = encode_window(0, end, 0, self.window_size)
-
-            elif tmp_step == slide_steps - 1:
-                start = sequence_length - ((sequence_length - (self.window_size * tmp_step)) + 2 * self.window_padding)
-                one_win_res = encode_window(start, sequence_length, 2 * self.window_padding, None)
-            else:
+        if not use_entities and slide_steps > 2:
+            full_window_length = self.window_size + 2 * self.window_padding
+            full_windows = [token_ids[:, :full_window_length]]
+            for tmp_step in range(1, slide_steps - 1):
                 start = self.window_size * tmp_step - self.window_padding
-                end = self.window_size * (tmp_step + 1) + self.window_padding
-                one_win_res = encode_window(
-                    start,
-                    end,
-                    self.window_padding,
-                    self.window_size + self.window_padding,
-                )
-
+                full_windows.append(token_ids[:, start : start + full_window_length])
+            batched_encoded = self.transformer(torch.cat(full_windows, dim=0))[0]
+            for tmp_step in range(slide_steps - 1):
+                if tmp_step == 0:
+                    one_win_res = batched_encoded[0:1, : self.window_size, :]
+                else:
+                    one_win_res = batched_encoded[
+                        tmp_step : tmp_step + 1,
+                        self.window_padding : self.window_size + self.window_padding,
+                        :,
+                    ]
+                if use_bilstm:
+                    if self._token_bilstm_hidden <= 0:
+                        raise ValueError("token BiLSTM encoding requires token_bilstm_hidden > 0")
+                    one_win_res, _ = self._embedding_bilstm(
+                        one_win_res.to(next(self._embedding_bilstm.parameters()).dtype)
+                    )
+                window_embed_list.append(one_win_res)
+            tail_start = sequence_length - (
+                (sequence_length - (self.window_size * (slide_steps - 1))) + 2 * self.window_padding
+            )
+            tail_res = encode_window(tail_start, sequence_length, 2 * self.window_padding, None)
             if use_bilstm:
                 if self._token_bilstm_hidden <= 0:
                     raise ValueError("token BiLSTM encoding requires token_bilstm_hidden > 0")
-                one_win_res, _ = self._embedding_bilstm(
-                    one_win_res.to(next(self._embedding_bilstm.parameters()).dtype)
+                tail_res, _ = self._embedding_bilstm(
+                    tail_res.to(next(self._embedding_bilstm.parameters()).dtype)
                 )
+            window_embed_list.append(tail_res)
+        else:
+            for tmp_step in range(slide_steps):
+                if tmp_step == 0:
+                    end = self.window_size + 2 * self.window_padding
+                    one_win_res = encode_window(0, end, 0, self.window_size)
 
-            window_embed_list.append(one_win_res)
+                elif tmp_step == slide_steps - 1:
+                    start = sequence_length - (
+                        (sequence_length - (self.window_size * tmp_step)) + 2 * self.window_padding
+                    )
+                    one_win_res = encode_window(start, sequence_length, 2 * self.window_padding, None)
+                else:
+                    start = self.window_size * tmp_step - self.window_padding
+                    end = self.window_size * (tmp_step + 1) + self.window_padding
+                    one_win_res = encode_window(
+                        start,
+                        end,
+                        self.window_padding,
+                        self.window_size + self.window_padding,
+                    )
+
+                if use_bilstm:
+                    if self._token_bilstm_hidden <= 0:
+                        raise ValueError("token BiLSTM encoding requires token_bilstm_hidden > 0")
+                    one_win_res, _ = self._embedding_bilstm(
+                        one_win_res.to(next(self._embedding_bilstm.parameters()).dtype)
+                    )
+
+                window_embed_list.append(one_win_res)
 
         embeddings = torch.cat(window_embed_list, dim=1)
         if embeddings.size(1) != sequence_length:

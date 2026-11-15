@@ -26,6 +26,18 @@ def _compile_rule_pattern(cue: str) -> re.Pattern[str]:
     return re.compile(boundary + word_boundary + "(?P<cue>" + re.escape(cue) + ")" + word_boundary, re.IGNORECASE)
 
 
+@cache
+def _ruleset_digest(rules: tuple[MarkerRule, ...]) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            [asdict(rule) for rule in rules],
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+
+
 class DiscourseMarkerPrimer:
     """Detect unscored lexical candidates with explicit, provisional attachments."""
 
@@ -71,14 +83,7 @@ class DiscourseMarkerPrimer:
         """Add candidates; nearest-constituent attachment is a heuristic, not proof."""
         language = (document.language or self.language).strip().lower()
         rules = self.rules if language == self.language else self._language_rules(language)
-        digest = hashlib.sha256(
-            json.dumps(
-                [asdict(rule) for rule in rules],
-                sort_keys=True,
-                ensure_ascii=False,
-                separators=(",", ":"),
-            ).encode("utf-8")
-        ).hexdigest()
+        digest = _ruleset_digest(tuple(rules))
         detector = SignalDetectorProvenance(
             detector_id="isanlp_rst.marker_primer",
             detector_version="2.0.0",

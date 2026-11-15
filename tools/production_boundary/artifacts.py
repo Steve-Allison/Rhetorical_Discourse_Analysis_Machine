@@ -77,7 +77,7 @@ def _declared_dependencies(path: Path, kind: str) -> tuple[str, ...]:
     for requirement in message.get_all("Requires-Dist", ()):
         marker = requirement.partition(";")[2]
         extras = set(_EXTRA_MARKER.findall(marker))
-        if extras and "formats" not in extras:
+        if extras:
             continue
         match = _REQUIREMENT_NAME.match(requirement.encode("utf-8"))
         if match is None:

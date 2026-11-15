@@ -29,6 +29,7 @@ entity_collections:
     - literal: Buyer
       term_type: short_form
       term_status: admitted
+      usage_note: Use when the people addressed participate in a commercial buying decision; buyer alone is not the Buyer Audience resource when it names one individual.
   - id: coe:entity/business/buyer_persona/economic_buyer
     label: Economic Buyer
     description: Executive with budget authority and final purchase approval
@@ -235,6 +236,10 @@ entity_collections:
       plus Pains and Gains to build shared audience understanding.
     home_domain: business
     status: canonical
+    terms:
+    - literal: Empathy Map Canvas
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/empathy_mapping
       predicate: coe:supports
@@ -254,6 +259,19 @@ entity_collections:
       than demographics, spanning the Christensen, Ulwick and Klement schools.
     home_domain: business
     status: canonical
+    terms:
+    - literal: Jobs-To-Be-Done
+      term_type: full_form
+      term_status: admitted
+    - literal: Job Story
+      term_type: full_form
+      term_status: admitted
+    - literal: Universal Job Map
+      term_type: full_form
+      term_status: admitted
+    - literal: Forces of Progress
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/jobs_to_be_done
       predicate: coe:contrasts_with
@@ -275,6 +293,22 @@ entity_collections:
       archetypes, separating organisational-alignment value from unproven representativeness claims.
     home_domain: business
     status: canonical
+    terms:
+    - literal: Proto-persona
+      term_type: full_form
+      term_status: admitted
+    - literal: Persona prevalence
+      term_type: full_form
+      term_status: admitted
+    - literal: Automatic Persona Generation
+      term_type: full_form
+      term_status: admitted
+    - literal: Persona Perception Scale
+      term_type: full_form
+      term_status: admitted
+    - literal: Synthetic respondent
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/persona_method
       predicate: coe:supports
@@ -295,6 +329,34 @@ entity_collections:
       information architecture, quantified value deltas, planned interaction moments and glitch recovery.
     home_domain: business
     status: canonical
+    terms:
+    - literal: Demo crime
+      term_type: full_form
+      term_status: admitted
+    - literal: Limbic Opening
+      term_type: full_form
+      term_status: admitted
+    - literal: 50/50 talk ratio
+      term_type: full_form
+      term_status: admitted
+    - literal: Diagnosis-before-prescription
+      term_type: full_form
+      term_status: admitted
+    - literal: Delta (in value articulation)
+      term_type: full_form
+      term_status: admitted
+    - literal: Value Realisation Event
+      term_type: full_form
+      term_status: admitted
+    - literal: Never Try Again rule
+      term_type: full_form
+      term_status: admitted
+    - literal: The Parking Lot
+      term_type: full_form
+      term_status: admitted
+    - literal: Peak-End Rule
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/product_demo_delivery
       predicate: coe:supports

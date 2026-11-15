@@ -140,8 +140,8 @@ classes:
     abstract: true
     is_a: IdentifiedThing
     class_uri: coe:SemanticResource
-    description: One first-class meaning owned by exactly one canonical domain. Its provenance is the Git history of the
-      file that defines it, never a field of its own.
+    description: One first-class meaning owned by exactly one canonical domain. Git history of the file that defines it
+      is the history authority; an optional source pointer may cite a wiki page or stable URI without replacing Git.
     slots:
     - home_domain
     - status
@@ -151,16 +151,21 @@ classes:
       home_domain:
         required: true
     attributes:
+      source:
+        slot_uri: dcterms:source
+        description: Optional citable pointer to the wiki slug, raw path, or external URI this resource was authored from;
+          does not replace Git history and is not a bibliographic evidence object.
       exact_match:
         multivalued: true
         slot_uri: skos:exactMatch
         description: External identifiers whose meaning is interchangeable with this resource
-          (skos:exactMatch).
+          (skos:exactMatch). Prefer projecting these from library ExternalMappingRecord entries that carry SSSOM-style
+          provenance.
       close_match:
         multivalued: true
         slot_uri: skos:closeMatch
         description: External identifiers whose meaning closely approximates this resource
-          without being interchangeable (skos:closeMatch).
+          without being interchangeable (skos:closeMatch). Prefer projecting these from ExternalMappingRecord entries.
   Statement:
     abstract: true
     class_uri: rdf:Statement
@@ -203,7 +208,7 @@ classes:
   SemanticEdge:
     is_a: Statement
     class_uri: coe:SemanticEdge
-    description: One first-class canonical relationship between semantic resources.
+    description: One first-class canonical relationship between semantic resources. A subject must not equal its object.
     unique_keys:
       semantic_triple:
         unique_key_slots:

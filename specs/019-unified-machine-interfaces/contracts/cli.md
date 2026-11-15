@@ -1,6 +1,6 @@
 # Contract: Unified rdam CLI
 
-**Status**: Implemented contract for the active seven-technique scope.
+**Status**: Implemented contract for the active thirteen-technique scope.
 See [implementation results](../tasks.md). eRST is workbench-only.
 
 ## Commands
@@ -11,10 +11,10 @@ rdam prepare SOURCE [SOURCE_OPTIONS] [--techniques LIST] [CONFIG] [OUTPUT]
 rdam prepare --text TEXT [--source-name NAME] [--techniques LIST] [CONFIG] [OUTPUT]
 rdam prepare --edus JSON [--source-name NAME] [--techniques LIST] [CONFIG] [OUTPUT]
 rdam prepare --request FILE [CONFIG] [OUTPUT]
-rdam analyse SOURCE --techniques LIST [SOURCE_OPTIONS] [STRUCTURES] [FORMALISMS] [CONFIG] [OUTPUT]
-rdam analyse --text TEXT --techniques LIST [--source-name NAME] [STRUCTURES] [FORMALISMS] [CONFIG] [OUTPUT]
-rdam analyse --edus JSON --techniques LIST [--source-name NAME] [STRUCTURES] [FORMALISMS] [CONFIG] [OUTPUT]
-rdam analyse --techniques LIST --structured TECHNIQUE=FILE [STRUCTURES] [FORMALISMS] [CONFIG] [OUTPUT]
+rdam analyse SOURCE --techniques LIST [SOURCE_OPTIONS] [STRUCTURES] [DERIVATIONS] [FORMALISMS] [CONFIG] [OUTPUT]
+rdam analyse --text TEXT --techniques LIST [--source-name NAME] [STRUCTURES] [DERIVATIONS] [FORMALISMS] [CONFIG] [OUTPUT]
+rdam analyse --edus JSON --techniques LIST [--source-name NAME] [STRUCTURES] [DERIVATIONS] [FORMALISMS] [CONFIG] [OUTPUT]
+rdam analyse --techniques LIST --structured TECHNIQUE=FILE [STRUCTURES] [DERIVATIONS] [FORMALISMS] [CONFIG] [OUTPUT]
 rdam analyse --request FILE [CONFIG] [OUTPUT]
 rdam summary RESULT [OUTPUT]
 rdam view RESULT --techniques LIST [OUTPUT]
@@ -37,12 +37,13 @@ main function; no separate grammar. No `parse`, `analyze`, `summarise` aliases o
 |---|---|---|
 | OUTPUT | `-o/--output PATH`, `--force`, `--diagnostics json\|text` | Output absent/`-` means stdout. Force requires a file destination. Diagnostics default JSON. |
 | SOURCE_OPTIONS | `--source-form FORM`, `--source-name NAME` | FORM is an exact SourceForm value; a name override preserves declared origin and recomputes metadata-bearing identity. |
-| STRUCTURES | repeated `--structured dung=FILE` / `--structured ibis=FILE` | At most one each, and only for requested techniques. Values are strict native JSON objects, not strings containing JSON. |
+| STRUCTURES | repeated `--structured dung=FILE` / `--structured ibis=FILE` / `--structured aspic=FILE` | At most one each, and only for requested techniques. Values are strict native JSON objects, not strings containing JSON. |
+| DERIVATIONS | `--derive from_aspic\|from_argument_mining\|from_ibis\|from_toulmin_walton` | Explicit caller opt-in to derive Wave-2 `dung` from requested Wave-1 native output(s); mutually exclusive with `--structured dung=FILE`. |
 | FORMALISMS | repeated `--formalism TECHNIQUE=FORMALISM` | At most one per selected boundary. `rst=rst_tree` selects production RST. |
 | CONFIG | `-c/--config FILE` plus narrow overrides below | Only capabilities/prepare/analyse/serve accept these options. |
 
 Config overrides: `--model MODEL`; repeated `--technique-model TECHNIQUE=MODEL`
-for the four LLM techniques; `--rst-model VERSION` or the pair `--model-store PATH
+for the ten LLM techniques; `--rst-model VERSION` or the pair `--model-store PATH
 --release-id ID`; `--rst-relinventory NAME`; `--device DEVICE`;
 `--rst-evidence-detail DETAIL`;
 `--rst-marker-refinement evidence_preserving|disabled`; `--dung-capacity N`;

@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/ai_models
   title: Adobe — AI Models
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-18'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -11,22 +11,22 @@ domain: adobe
 ai_models:
 - id: coe:entity/adobe/firefly_video_model
   label: Firefly Video Model
-  description: The video-generation model in the Firefly family for commercially safe text-to-video and image-to-video
-    generation trained on licensed content.
+  description: The Firefly generative video model that provides commercially safe text-to-video and image-to-video creation
+    in the Firefly web app, trained only on content Adobe has permission to use—such as Adobe Stock and public-domain content
+    where copyright has expired—and never on customer content.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
-  market_status: generally_available
 - id: coe:entity/adobe/firefly_custom_models
   label: Adobe Firefly Custom Models
-  description: Firefly models fine-tuned on an organisation's own brand assets — styles, products, characters — that
-    generate on-brand imagery usable in Firefly, Express and GenStudio.
+  description: Enterprise Firefly models trained on an organisation's own approved images—capturing brand styles, products,
+    and characters—to generate on-brand text-to-image content in Adobe Firefly, Adobe Express, and Adobe GenStudio, with each
+    custom model kept private to the organisation and not used to train Adobe's foundational Firefly models.
   home_domain: adobe
   status: canonical
   vendor: coe:entity/adobe/adobe
   families:
   - coe:entity/adobe/creative_cloud
-  market_status: generally_available
   terms:
   - literal: Firefly Custom Models
     term_type: short_form

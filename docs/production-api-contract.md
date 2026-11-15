@@ -15,13 +15,17 @@ reconciled against that file by the production-contract tests.
 ## Operations
 
 At the aggregate boundary, `AggregateRequest.for_text`, `.for_source`, and
-`.for_bytes` construct immutable requests. `Machine.analyse` inventories once,
-projects once per distinct provider requirement, and returns separate native
-outcomes plus full `MachinePreparation` evidence. `.for_edus` preserves exact EDUs;
-`.for_structured` identifies a supplied Dung/IBIS bundle without invented text.
-`Machine.prepare(PreparationRequest)` performs no inference. `PreparedDocument` and `AnalysisCapacity`
-are the canonical Python names; the plan field is `capacity`. The previous
-ingest import path and contract-field aliases are not accepted.
+`.for_bytes` construct immutable requests (`rdam/contracts.py:783-838`). `Machine.analyse`
+inventories once, builds the shared `LinguisticSubstrate` (`rdam/ingest/substrate.py:330-346`),
+projects once per distinct provider requirement, executes Wave-1 providers and optional
+Wave-2 `derivations` (`DerivationSpec`), and returns separate native outcomes, cross-technique
+`xpath_alignment` (`rdam/contracts.py:508`), and full `MachinePreparation` evidence.
+`.for_edus` preserves exact EDUs; `.for_structured` identifies a supplied Dung, IBIS, or
+ASPIC+ structure without invented text (`rdam/frameworks.py:72-79`).
+`Machine.prepare(PreparationRequest)` performs no inference. `PreparedDocument` and
+`AnalysisCapacity` are the authoritative Python names (`rdam/ingest/contracts/preparation.py`);
+the plan field is `capacity`. The previous ingest import path and contract-field aliases
+are not accepted.
 
 | Operation | Exact return | Success states | Failure |
 |---|---|---|---|
@@ -47,7 +51,8 @@ means the complete documented default is selected and embedded in the result.
 
 | Contract | Values |
 |---|---|
-| `SourceForm` | `text`, `edus`, `markdown`, `docling_json`, `doclang_xml`, `doclang_archive` |
+| `SourceForm` | `text`, `edus`, `doclang_xml`, `doclang_archive` (`rdam/ingest/contracts/source.py:17-21`) |
+| `DerivationCompiler` | `from_aspic`, `from_argument_mining`, `from_ibis`, `from_toulmin_walton` (`rdam/_contract_types.py`) |
 | `AnalysisStatus` | `analysed`, `empty_primary_discourse` |
 | `OutputFormalism` | production: `rst_tree`; `erst_graph` retained for saved records and workbench evaluation |
 | `EvidenceDetailPolicy` | `decision_complete`, `normalized_distributions` |
@@ -81,8 +86,11 @@ committed package resources.
 Machine records additionally publish validation and serialization schemas as
 `machine-{name}.{mode}.schema.json`. Discover names through `rdam schema` help
 and contract metadata; retrieve one with `rdam schema request`. Native output
-schemas include the seven production techniques, corrected Toulmin/Walton v2 and historical v1;
-`dung-input` and `ibis-input` describe supplied structures. Machine aggregate,
+schemas cover all thirteen production techniques (`rst`, `centering`, `pdtb`,
+`sdrt`, `speech_acts`, `classical_rhetoric`, `argument_mining`, `toulmin`,
+`walton`, `pragma_dialectics`, `ibis`, `aspic`, `dung`), plus historical v1
+compatibility readers where applicable; `dung-input`, `ibis-input`, and
+`aspic-input` describe caller-supplied structures (`rdam/serialization.py`). Machine aggregate,
 native envelope and capabilities write v2 and read v1 without upgrading its
 meaning. Machine preparation writes v2 and reads historical v1. Request, configuration,
 view and operation-error contracts are independently versioned at v1. Raw source bytes use canonical padded base64.
@@ -176,8 +184,9 @@ diagnostic persistence requires an explicit
 ## Capability truth
 
 `describe_capabilities()` is offline and model-free. It probes distribution
-metadata without importing optional adapters and reports all six source forms,
-including unavailable ones and their `formats` requirement. Without a parser,
+metadata without loading models and reports all four supported source forms
+(`text`, `edus`, `doclang_xml`, `doclang_archive`; `rdam/ingest/contracts/source.py:17-21`),
+backed by `dclq` and `doclang` in core dependencies (`pyproject.toml:44-45`). Without a parser,
 RST is explicitly unavailable and durable caching is ineligible. eRST is not
 advertised by production discovery.
 
@@ -189,11 +198,11 @@ identity or durable semantic-cache eligibility.
 
 ## Installed projections
 
-`rdam analyse source.md --techniques rst,toulmin,walton` invokes the same
-`Machine.analyse` contract as Python. `rdam prepare` inventories without
-inference. `rdam summary analysis.json` and `rdam view analysis.json --techniques
+`rdam analyse document.dclg --techniques rst,centering,toulmin,walton,ibis,dung --derive from_ibis`
+invokes the same `Machine.analyse` contract as Python (`rdam/cli.py:124-143`). `rdam prepare`
+inventories without inference. `rdam summary analysis.json` and `rdam view analysis.json --techniques
 walton` read saved results without rerunning models or resolving configuration.
-`rdam capabilities`, `rdam schema request` and `rdam version` support discovery.
+`rdam capabilities`, `rdam schema request`, `rdam concepts link`, and `rdam version` support discovery and lexical linking.
 
 Files or stdin (`-`) are accepted. Canonical JSON goes to stdout, safe diagnostics
 to stderr. Analysis exits: 0 complete, 3 partial, 4 unsuccessful; operational
@@ -209,6 +218,7 @@ The optional `rdam[http]` service binds only to `127.0.0.1` or `::1`:
 | `POST /v1/analyse` | `AggregateRequest` → `AggregateAnalysis` |
 | `POST /v1/view` | `ViewRequest` → `AnalysisView` |
 | `POST /v1/summary` | saved supported record → readable text |
+| `POST /v1/concepts/link` | `ConceptLinkRequest` → `ConceptLinkResult` |
 | `GET /v1/capabilities` | `MachineCapabilities` |
 | `GET /v1/version` | installed package and contract versions |
 | `GET /v1/schemas/{record}?mode=validation` | generated JSON Schema; serialization mode also supported |

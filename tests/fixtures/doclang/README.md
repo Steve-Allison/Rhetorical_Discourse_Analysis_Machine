@@ -2,9 +2,9 @@
 
 This directory mirrors both the valid and invalid DocLang examples from
 [`doclang-project/doclang`](https://github.com/doclang-project/doclang/tree/main/tests/data)
-at commit `7f53133d47e1424fb18c3a53faed4df43f21a86b` (`main`, 2026-10-09). The 60 valid
-specimens are in this directory and the 79 invalid specimens are in `invalid/`. The
-`formats` extra installs the DocLang validator from the same commit. Upstream files
+at commit `ae8ad5490b9b03b344e3e49dcb0f6f2209795de6` (`main`, v0.9.0). The 62 valid
+specimens are in this directory and the 78 invalid specimens are in `invalid/`. Core
+dependencies install `doclang[schematron-saxon]` from the same commit. Upstream files
 and local files both use the recommended `.dclg` extension.
 
 The upstream repository is Apache-2.0 licensed. The fixtures are mirrored

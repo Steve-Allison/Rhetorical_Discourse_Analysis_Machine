@@ -17,23 +17,22 @@ def test_zero_memory_leakage_across_consecutive_ingest_cycles() -> None:
 
     service = ProductionIngestor(parser=None)
     template = (
-        "# Dynamic Document Section {iter}\n\n"
-        "This section tests object lifetime management and memory reclamation.\n\n"
-        "Paragraph {iter} introduces specific lexical evidence and rhetorical assertions.\n\n"
-        "- Point A: Discourse tree validation\n"
-        "- Point B: Memory safety verification\n\n"
+        "<heading>Dynamic Document Section {iter}</heading>"
+        "<text>This section tests object lifetime management and memory reclamation.</text>"
+        "<text>Paragraph {iter} introduces specific lexical evidence and rhetorical assertions.</text>"
+        "<list><ldiv>Point A: Discourse tree validation</ldiv><ldiv>Point B: Memory safety verification</ldiv></list>"
     )
 
     baseline_memory_kb: float | None = None
     final_memory_kb: float | None = None
 
     for iteration in range(50):
-        text = template.format(iter=iteration) * 10
-        raw_bytes = text.encode("utf-8")
+        body = template.format(iter=iteration) * 10
+        raw_bytes = f'<doclang xmlns="https://www.doclang.ai/ns/v0" version="0.9">{body}</doclang>'.encode("utf-8")
         artifact = SourceArtifact(
-            source_name=f"leak_doc_{iteration}.md",
-            source_form=SourceForm.MARKDOWN,
-            media_type="text/markdown",
+            source_name=f"leak_doc_{iteration}.dclg",
+            source_form=SourceForm.DOCLANG_XML,
+            media_type="application/vnd.doclang+xml",
             raw_bytes=raw_bytes,
         )
         prepared = service.prepare(artifact)

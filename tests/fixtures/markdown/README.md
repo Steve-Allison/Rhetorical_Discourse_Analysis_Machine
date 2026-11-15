@@ -1,8 +1,12 @@
-# Markdown fixtures
+# Markdown fixtures (historical)
 
-These files exercise the private Markdown loader and the shared `rdam.ingest`
-source boundary. Current tests live under `tests/ingest/`, including
-`test_markdown_loader.py` and `production_ingest/test_markdown_*.py`.
+> **Status reconciled 2026-11-15:** Dedicated Markdown harvesting (`rdam.rst.markdown`
+> and `SourceForm.MARKDOWN`) was retired in `rdam` `6.1.0` in favour of unified
+> `dclq` and DocLang ingestion (`rdam/ingest/contracts/source.py:17-21`). These specimen
+> files remain unchanged in the repository as historical fixture data; active document
+> fixtures live in [`../doclang/`](../doclang/README.md).
+
+Historical specimen contents:
 
 - `minimal.md`: a heading and short prose paragraphs.
 - `multi-level.md`: pre-heading prose and headings at several levels.

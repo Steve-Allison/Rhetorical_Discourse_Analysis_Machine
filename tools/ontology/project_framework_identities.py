@@ -4,7 +4,7 @@ Central's consumer contract: reference ``coe:`` identifiers, never redefine them
 generate any runtime projection inside the consumer. This tool reads the vendored
 ``ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml`` and
 writes ``rdam/resources/framework-identities.json`` — id, label, broader, and
-scheme for each of the eight framework concepts the machine binds to. A test asserts the
+scheme for each of the fourteen framework concepts the machine binds to. A test asserts the
 committed projection equals a fresh projection of the vendored file, so drift fails.
 
 Run: ``pixi run project-framework-identities``
@@ -19,7 +19,22 @@ from typing import Any
 import yaml
 
 SCHEME = "coe:artifact/narrative/analytical_frameworks_taxonomy"
-TECHNIQUES = ("rst", "erst", "pdtb", "sdrt", "toulmin", "walton", "dung", "ibis")
+TECHNIQUES = (
+    "rst",
+    "erst",
+    "centering",
+    "pdtb",
+    "sdrt",
+    "speech_acts",
+    "classical_rhetoric",
+    "argument_mining",
+    "toulmin",
+    "walton",
+    "pragma_dialectics",
+    "ibis",
+    "aspic",
+    "dung",
+)
 VENDORED_TAXONOMY = Path("ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml")
 PROJECTION = Path("rdam/resources/framework-identities.json")
 

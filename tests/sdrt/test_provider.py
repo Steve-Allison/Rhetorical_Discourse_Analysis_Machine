@@ -167,10 +167,19 @@ def test_withholding_sdrt_does_not_change_toulmin_capability(with_credentials: N
     assert with_sdrt.model_dump_json() == without_sdrt.model_dump_json()
 
 
-def test_speaker_requirement_reports_unattributed_source_turns() -> None:
+def test_speaker_requirement_reports_unattributed_source_turns(tmp_path: Path) -> None:
     provider = SdrtProvider(model=MODEL)
+    transcript = tmp_path / "transcript.dclg"
+    transcript.write_bytes(
+        b'<doclang xmlns="https://www.doclang.ai/ns/v0" version="0.9">'
+        b"<text>Alex Morgan (participant alex): The replacement would reduce the operating cost.</text>"
+        b"<text>UNATTRIBUTED: The recording does not identify this speaker.</text>"
+        b"<text>Blair Chen (participant blair): We should preserve the assumptions with the decision.</text>"
+        b"<text>UNATTRIBUTED: This overlapping turn has no recoverable speaker attribution.</text>"
+        b"</doclang>"
+    )
     inventory = ContentInventory.from_preparation(ProductionIngestor().prepare(
-        SourceArtifact.from_path(Path("tests/fixtures/pipeline/transcript.md")),
+        SourceArtifact.from_path(transcript),
     ))
     projection = project(inventory, provider.content_requirement)
     assert provider.content_requirement.requires_speaker_identity

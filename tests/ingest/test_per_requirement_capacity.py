@@ -27,7 +27,11 @@ def test_plans_use_their_own_capacity_and_preserve_every_character() -> None:
 
 
 def test_boundary_preferences_change_where_units_cut() -> None:
-    source = SourceArtifact.from_bytes(b"First.\n\n# Heading\n\nSecond.\n\nThird.", source_form=SourceForm.MARKDOWN, source_name="boundaries.md")
+    source = SourceArtifact.from_bytes(
+        b"<doclang><text>First.</text><heading>Heading</heading><text>Second.</text><text>Third.</text></doclang>",
+        source_form=SourceForm.DOCLANG_XML,
+        source_name="boundaries.dclg",
+    )
     inventory = ContentInventory.from_preparation(ProductionIngestor().prepare(source))
     base = prose_requirement()
     capacity = AnalysisCapacity.model_validate({**base.capacity.model_dump(), "maximum": 3})

@@ -10,6 +10,7 @@ default_prefix: coe
 default_range: string
 prefixes:
   coe: https://steve-allison.github.io/Central_Configs/ontology/
+  dcterms: http://purl.org/dc/terms/
   linkml: https://w3id.org/linkml/
   skos: http://www.w3.org/2004/02/skos/core#
   skosxl: http://www.w3.org/2008/05/skos-xl#
@@ -57,6 +58,12 @@ classes:
         slot_uri: skos:scopeNote
         description: How to tell this resource apart from another resource that the same literal also names; required when
           the literal is shared.
+      language:
+        range: string
+        pattern: ^[a-z]{2}(-[A-Za-z0-9]+)*$
+        ifabsent: string(en)
+        slot_uri: dcterms:language
+        description: BCP 47 language tag for this name form; default en until further languages are authored.
 enums:
   TermTypeEnum:
     description: Forms a name can take relative to the resource's label, following the LexInfo term types.

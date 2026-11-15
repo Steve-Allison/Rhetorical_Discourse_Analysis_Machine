@@ -284,6 +284,9 @@ def version_info() -> VersionInfo:
 def native_output_model(technique: Technique) -> type[BaseModel]:
     """Resolve one technique-owned output type without importing other providers."""
     match technique:
+        case Technique.CENTERING:
+            from rdam.centering.output import CenteringOutput
+            return CenteringOutput
         case Technique.DUNG:
             from rdam.dung.output import DungOutput
             return DungOutput
@@ -296,12 +299,27 @@ def native_output_model(technique: Technique) -> type[BaseModel]:
         case Technique.SDRT:
             from rdam.sdrt.output import SdrtOutput
             return SdrtOutput
+        case Technique.SPEECH_ACTS:
+            from rdam.speech_acts.output import SpeechActsOutput
+            return SpeechActsOutput
+        case Technique.CLASSICAL_RHETORIC:
+            from rdam.classical_rhetoric.output import ClassicalRhetoricOutput
+            return ClassicalRhetoricOutput
+        case Technique.ARGUMENT_MINING:
+            from rdam.argument_mining.output import ArgumentMiningOutput
+            return ArgumentMiningOutput
         case Technique.TOULMIN:
             from rdam.toulmin.output import ToulminOutput
             return ToulminOutput
         case Technique.WALTON:
             from rdam.walton.output import WaltonOutput
             return WaltonOutput
+        case Technique.PRAGMA_DIALECTICS:
+            from rdam.pragma_dialectics.output import PragmaDialecticsOutput
+            return PragmaDialecticsOutput
+        case Technique.ASPIC:
+            from rdam.aspic.output import AspicOutput
+            return AspicOutput
         case Technique.RST:
             from rdam.rst.output import RstOutput
             return RstOutput
@@ -312,13 +330,14 @@ def native_output_model(technique: Technique) -> type[BaseModel]:
 
 
 def schema_models() -> dict[str, type[BaseModel]]:
+    from rdam.aspic.theory import AspicTheoryInput
     from rdam.dung.semantics import DungInput
     from rdam.ibis.grammar import IbisInput
     from rdam.toulmin.output import HistoricalToulminOutput
     from rdam.walton.output import HistoricalWaltonOutput
     return {
         **{f"{technique.value}-result": native_output_model(technique) for technique in BOUNDARY_TECHNIQUES},
-        "dung-input": DungInput, "ibis-input": IbisInput,
+        "dung-input": DungInput, "ibis-input": IbisInput, "aspic-input": AspicTheoryInput,
         "toulmin-result-v1": HistoricalToulminOutput, "walton-result-v1": HistoricalWaltonOutput,
         "request": AggregateRequest, "preparation-request": PreparationRequest,
         "configuration": MachineConfig, "preparation": MachinePreparation,

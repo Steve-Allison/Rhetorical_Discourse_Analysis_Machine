@@ -131,7 +131,7 @@ def test_boolean_singletons_are_not_repeatable(tmp_path: Path) -> None:
     ("analyse", "--request", "missing", "--structured", "dung=missing"),
     ("capabilities", "--model-store", "missing"), ("capabilities", "--release-id", "release"),
     ("capabilities", "--rst-model", "gumrrg", "--model-store", "missing", "--release-id", "release"),
-    ("capabilities", "--max-workers", "0"), ("capabilities", "--max-workers", "8"),
+    ("capabilities", "--max-workers", "0"), ("capabilities", "--max-workers", "14"),
     ("capabilities", "--dung-capacity", "0"), ("capabilities", "--device", "private-value"),
     ("capabilities", "--model", "openai:"), ("capabilities", "--set", "private-value"),
     ("summary", "missing", "--model", "openai:test"), ("view", "missing", "--config", "missing"),

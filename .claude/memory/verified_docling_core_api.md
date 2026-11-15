@@ -5,15 +5,13 @@ metadata:
   type: reference
 ---
 
-> **Historical note — current status reconciled 2026-09-06.** The observations,
-> proposed APIs and open questions below describe the dated work recorded here.
-> They are not current installation or implementation instructions. The current
-> source boundary is `rdam.ingest`; format-specific `parse_docling`/`parse_doclang`
-> APIs and envelopes have been removed. See the [current ingest guide](../../docs/production-source-ingest.md)
-> and [documentation guide](../../docs/README.md). Original decisions and measurements
-> remain below for traceability; eRST work is suspended.
-> Current inventory includes all layers, groups and picture descendants;
-> the default BODY-only traversal described below is not the complete ingest.
+> **Historical note — current status reconciled 2026-11-15.** Raw `DoclingDocument`
+> JSON ingestion (`_inventory_docling`) and the `docling-core` dependency were
+> retired in `rdam` `6.1.0` in favour of unified `dclq` + DocLang ingestion
+> (`SourceForm` at `rdam/ingest/contracts/source.py:17-21`). See the
+> [current ingest guide](../../docs/production-source-ingest.md) and
+> [documentation guide](../../docs/README.md). Original 2026-05-15 observations
+> remain below for historical traceability.
 
 Investigated 2026-05-15 against `docling-project/docling-core` `main`. Findings used by the Docling-native RST plan.
 

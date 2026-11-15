@@ -14,13 +14,12 @@ same retryability, onto the machine's ``ProviderFailure``; the machine never ret
 from collections.abc import Mapping
 import json
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
 from uuid import uuid4
 from threading import RLock
 from time import perf_counter
 import sys
 
-from rdam.rst import Parser
 from rdam.contracts import ProviderConfiguration
 from rdam.rst.interpretation import describe
 from rdam.ingest.contracts.analysis import MarkerRefinementMode
@@ -45,7 +44,16 @@ from rdam.ingest.contracts.preparation import (
 from rdam.ingest.policy import DEFAULT_PLANNING_POLICY, DEFAULT_PREPARATION_POLICY
 from rdam.ingest.projection import project, bind_preparation
 from rdam.rst.model_loading import ModelReleaseError, ValidatedModelRelease, load_model_release
-from rdam.rst.model_authority import PUBLISHED_RST_REVISIONS
+from rdam.rst.model_authority import (
+    AVAILABLE_VERSIONS,
+    DEFAULT_HF_MODEL_VERSION,
+    PUBLISHED_RST_REVISIONS,
+    declared_analysis_capacity,
+    family_for_runtime_contract,
+)
+
+if TYPE_CHECKING:
+    from rdam.rst.parser import Parser
 from rdam import (
     AvailableCapability,
     FormalismDeclaration,
@@ -110,7 +118,7 @@ class RstProvider:
         if store is not None and hf_model_version is not None:
             raise ProviderConfigurationError("configure either a published version or a local release, not both")
         if store is None and hf_model_version is None:
-            hf_model_version = Parser.DEFAULT_HF_MODEL_VERSION
+            hf_model_version = DEFAULT_HF_MODEL_VERSION
         self._hf_model_version = hf_model_version
         self._store = Path(store) if store is not None else None
         self._release_id = release_id
@@ -138,7 +146,7 @@ class RstProvider:
         """Can this configuration produce a parser? Checked without loading one."""
 
         if self._hf_model_version is not None:
-            if self._hf_model_version not in Parser.AVAILABLE_VERSIONS:
+            if self._hf_model_version not in AVAILABLE_VERSIONS:
                 return UnavailableReason.MODEL_UNAVAILABLE
             return None
         return None if self._inspect_local_release() is not None else UnavailableReason.MODEL_UNAVAILABLE
@@ -158,7 +166,7 @@ class RstProvider:
             return None
         try:
             release = load_model_release(self._store, self._release_id)
-            family = Parser.family_for_runtime_contract(release.manifest.runtime_contract)
+            family = family_for_runtime_contract(release.manifest.runtime_contract)
         except ModelReleaseError, ValueError:
             return None
         self._validated_local_release = release
@@ -170,7 +178,7 @@ class RstProvider:
         return ContentRequirement(
             requirement_id="rst/authored-prose-v1",
             admitted_classes=DEFAULT_PREPARATION_POLICY.primary_classes,
-            capacity=declared_capacity(Parser.declared_analysis_capacity()),
+            capacity=declared_capacity(declared_analysis_capacity()),
             boundary_preference=DEFAULT_PLANNING_POLICY.boundary_preference,
             normalization=DEFAULT_PREPARATION_POLICY.normalization,
             requires_speaker_identity=False,
@@ -359,6 +367,8 @@ class RstProvider:
     def _load_parser_locked(self) -> Parser:
         if self._parser is not None:
             return self._parser
+        from rdam.rst.parser import Parser
+
         if self._store is not None and self._release_id is not None:
             release = self._inspect_local_release()
             if release is None or self._validated_local_family is None:

@@ -3,23 +3,26 @@
 ## Ownership rule
 
 `rdam` — the one production package — contains only code and resources required while
-a consumer performs analysis: the machine (`rdam`), the RST provider (`rdam.rst`),
-and the PDTB, SDRT, Toulmin, Walton, Dung and IBIS providers. `workbench` owns corpus
-construction, training, calibration, evaluation, benchmarking, research, and model releases.
-Provenance does not change that boundary: inherited inference code is production code
-and must meet the same Python 3.14 standard.
+a consumer performs analysis: the machine (`rdam`), shared ingest and linguistic
+substrate (`rdam.ingest`), lexical concept linking (`rdam.concepts`), the RST provider
+(`rdam.rst`), and the twelve additional discourse, rhetorical, and argumentation
+providers (`rdam.centering`, `rdam.pdtb`, `rdam.sdrt`, `rdam.speech_acts`,
+`rdam.classical_rhetoric`, `rdam.argument_mining`, `rdam.toulmin`, `rdam.walton`,
+`rdam.pragma_dialectics`, `rdam.ibis`, `rdam.aspic`, `rdam.dung`;
+`rdam/composition.py:14-73`). `workbench` owns corpus construction, training,
+calibration, evaluation, benchmarking, research, eRST, and model releases. Provenance
+does not change that boundary: inherited inference code is production code and must meet
+the same Python 3.14 standard.
 
-`rdam.ingest` is core production code. Docling, DocLang, and Markdown
-distributions are optional under the `formats` extra; their adapter modules are
-private implementation details. DocLang validation, decoding and archive handling belong to
-`rdam.ingest.doclang`; every technique consumes the shared inventory and its projections.
-The core wheel can import, load schemas,
-serialize contracts, prepare text/EDUs, and discover all capability states
-without those distributions installed.
+`rdam.ingest` is core production code. `dclq` and `doclang[schematron-saxon]` ship in
+core `[project.dependencies]` (`pyproject.toml:44-45`), and DocLang validation, decoding,
+`dclq` XPath indexing, and archive handling belong to `rdam.ingest.doclang` and
+`rdam.ingest._doclang`; every technique consumes the shared inventory,
+`LinguisticSubstrate`, and projections.
 
-Starlette, Uvicorn and h11 belong to the independent `http` extra. Core Python,
-CLI, schemas and saved-result operations do not require it. Install `[formats,http]`
-when both document adapters and HTTP are wanted.
+Starlette, Uvicorn, and h11 belong to the independent `http` extra (`pyproject.toml:58-63`).
+Core Python, CLI, schemas, DocLang ingestion, and saved-result operations do not require
+`http`. Install `[http]` when loopback HTTP service is wanted.
 
 ## Install boundaries
 
@@ -27,8 +30,8 @@ when both document adapters and HTTP are wanted.
 # Core runtime (after `pixi run build-production`; dist/<version>/ is ignored build output)
 pip install dist/6.1.0/rdam-6.1.0-py3-none-any.whl
 
-# Core plus Markdown, Docling, DocLang XML, and DocLang archive ingest
-pip install "dist/6.1.0/rdam-6.1.0-py3-none-any.whl[formats]"
+# Core plus loopback HTTP service
+pip install "dist/6.1.0/rdam-6.1.0-py3-none-any.whl[http]"
 
 # Repository development environments
 pixi install -e production
@@ -36,8 +39,9 @@ pixi install
 ```
 
 The `production` environment is the isolated consumer environment. The `default`
-environment includes formats, test, lint, type-check, corpus, training, evaluation,
-research, and model-release dependencies; everyday tasks need no environment flag.
+environment includes HTTP, test, lint, type-check, corpus, training, evaluation,
+research, and model-release dependencies (`pyproject.toml:136-140`); everyday tasks need
+no environment flag.
 
 ## Capability and identity boundary
 
@@ -78,11 +82,15 @@ loader honours it only for the exact manifest it names.
 | Machine-facing RST adapter | `rdam.rst.provider` | yes |
 | Strict source, preparation, analysis, inference, failure, and capability contracts | `rdam.ingest` | yes |
 | Canonical schemas, public-surface inventory, and build provenance | package resources | yes |
-| Private Docling/DocLang/Markdown loaders | `rdam.ingest.doclang`, `rdam.rst.markdown`, ingest harvest | yes, dependencies via `formats` |
+| Private DocLang + `dclq` loaders and linguistic substrate | `rdam.ingest.doclang`, `rdam.ingest._doclang`, `rdam.ingest.substrate` | yes |
+| Rust Aho–Corasick lexical concept linker | `rdam.concepts` | yes |
 | eRST signal detection, scoring, decoding, checkpoint loading and experimental contracts | `workbench.erst` | no |
 | Released-model manifest validation, loading, compatibility re-declaration | `rdam.rst.model_loading` | yes |
-| Dung semantics and provider, with its packaged decision | `rdam.dung` | yes |
-| gIBIS grammar and provider, with its packaged decision | `rdam.ibis` | yes |
+| Deterministic Centering Theory & Entity Grid provider | `rdam.centering` | yes |
+| CaDiCaL SAT Dung semantics, Wave-2 compilers, and provider | `rdam.dung` | yes |
+| Dual-mode gIBIS grammar and provider | `rdam.ibis` | yes |
+| Dual-mode ASPIC+ structured argumentation theory and provider | `rdam.aspic` | yes |
+| LLM-backed discourse, pragmatic, rhetorical, and argumentation providers | `rdam.pdtb`, `rdam.sdrt`, `rdam.speech_acts`, `rdam.classical_rhetoric`, `rdam.argument_mining`, `rdam.toulmin`, `rdam.walton`, `rdam.pragma_dialectics` | yes |
 | Vendored Central distribution and LinkML profile | `ontology/` (repository) | no — generated framework/discourse/technique projections, Walton crosswalk and digest-identified snapshots in `rdam/resources/` |
 | Corpora and corpus conversion | `workbench.corpus` | no |
 | Training and calibration | `workbench.training` | no |
@@ -116,12 +124,13 @@ temporary directory, rejects imports from the checkout, checks the installed and
 versions against the version in the wheel's filename, disables external network access
 for acceptance, runs `pip check`, and retains `pip inspect`.
 
-The four installs are core, core+http, formats and formats+http. Core acceptance
-proves unavailable optional forms yield typed provider failures. HTTP installs
-exercise a real loopback server; all installs exercise the real unified CLI,
-schema resources and native Dung semantics. Formats covers all six source forms. Full acceptance also
-requires the exact stored model release and checks canonical parser
-results, loaded-component receipts, validation, and CLI semantic parity.
+The two clean-install environments are `core` and `core+http` (`tools/production_boundary/clean_install.py:147-163`).
+Both installs exercise all four canonical `SourceForm` values (`text`, `edus`,
+`doclang_xml`, `doclang_archive`), the unified CLI, schema resources, deterministic
+`CenteringProvider`, and CaDiCaL-backed `DungProvider`; `core+http` also exercises a real
+loopback server. Full acceptance additionally requires the exact stored model release and
+checks canonical parser results, loaded-component receipts, validation, and CLI semantic
+parity.
 
 ```bash
 pixi run build-production
@@ -141,8 +150,10 @@ artifact certification — `production-clean-install` is.
 
 The owner moved eRST to the workbench on 2026-09-06. Production contains no
 eRST engine, checkpoint loader, configuration option or completion method. Shared
-passive contracts retain saved graph evidence without importing the workbench. Clean installation and native inference were
-verified for the active seven-technique scope; see [Feature 019](../specs/019-unified-machine-interfaces/tasks.md).
+passive contracts retain saved graph evidence without importing the workbench. Boundary
+ownership, production imports, and test suites are verified across all thirteen active
+technique boundaries (`rdam/frameworks.py:55-69`); dated seven-technique clean-install
+records remain preserved in [Feature 019](../specs/019-unified-machine-interfaces/tasks.md).
 Historical release evidence must not be reused to certify a changed checkout.
 
 The documentation refresh builds the current package inputs from an isolated

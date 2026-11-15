@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/adobe/editions
   title: Adobe — Editions
-  last_updated: '2026-10-02'
+  last_updated: '2026-10-18'
   authority: Central_Configs
   scope: domain
   ontology_domain: adobe
@@ -11,17 +11,17 @@ domain: adobe
 editions:
 - id: coe:entity/adobe/journey_optimizer_b2b_edition
   label: Adobe Journey Optimizer B2B Edition
-  description: The buying-group edition of Journey Optimizer — orchestrating account and buying-group journeys for B2B in
-    coordination with Marketo Engage.
+  description: Adobe Journey Optimizer B2B Edition is the buying-group-aware edition of Journey Optimizer that uses Adobe
+    Experience Platform and Real-Time CDP B2B data to orchestrate account and person journeys for B2B, managing buying groups
+    and activating coordinated engagement—including actions that integrate with Marketo Engage.
   home_domain: adobe
   status: canonical
   edition_of: coe:entity/adobe/journey_optimizer
-  market_status: generally_available
   supports_practice:
   - coe:entity/business/journey_orchestration
   terms:
-  - literal: AJO B2B Edition
-    term_type: short_form
+  - literal: AJO B2B
+    term_type: initialism
     term_status: admitted
 - id: coe:entity/adobe/real_time_cdp_b2b_edition
   label: Adobe Real-Time CDP B2B Edition
@@ -30,7 +30,6 @@ editions:
   home_domain: adobe
   status: canonical
   edition_of: coe:entity/adobe/real_time_cdp
-  market_status: generally_available
   terms:
   - literal: RTCDP B2B
     term_type: initialism
@@ -45,7 +44,6 @@ editions:
   home_domain: adobe
   status: canonical
   edition_of: coe:entity/adobe/customer_journey_analytics
-  market_status: generally_available
   terms:
   - literal: CJA B2B
     term_type: initialism
@@ -55,51 +53,21 @@ editions:
     term_status: admitted
 - id: coe:entity/adobe/commerce_as_a_cloud_service
   label: Adobe Commerce as a Cloud Service
-  description: The fully managed software-as-a-service edition of Adobe Commerce, in which Adobe owns hosting and
-    continuous updates and the storefront is built on Edge Delivery Services.
+  description: Adobe Commerce as a Cloud Service is the fully managed SaaS edition of Adobe Commerce, where Adobe operates
+    the core application and infrastructure, delivers continuous updates, and merchants extend functionality through APIs
+    and Adobe Developer App Builder; its default storefront is powered by Edge Delivery Services, with optional headless deployments
+    using third-party storefronts.
   home_domain: adobe
   status: canonical
   edition_of: coe:entity/adobe/commerce
-  market_status: generally_available
-  terms:
-  - literal: Commerce as a Cloud Service
-    term_type: short_form
-    term_status: admitted
-- id: coe:entity/adobe/firefly_studio
-  label: Adobe Firefly Studio
-  description: The enterprise edition of Firefly, delivered on the web without desktop applications, in which business
-    teams generate on-brand images, video, audio and designs with Adobe and partner models under governance and shared
-    credits.
-  home_domain: adobe
-  status: canonical
-  edition_of: coe:entity/adobe/firefly
-  market_status: preview
-  terms:
-  - literal: Firefly Studio
-    term_type: short_form
-    term_status: admitted
-  - literal: Firefly Studio for enterprise
-    term_type: full_form
-    term_status: admitted
-- id: coe:entity/adobe/brand_concierge_b2b_edition
-  label: Adobe Brand Concierge B2B Edition
-  description: The B2B edition of Brand Concierge — an agentic application for engaging buying groups, generating and
-    qualifying leads and handing off to sales, integrated with Journey Optimizer B2B Edition and Real-Time CDP B2B Edition.
-  home_domain: adobe
-  status: canonical
-  edition_of: coe:entity/adobe/brand_concierge
-  families:
-  - coe:entity/adobe/ai_first_applications
-  market_status: generally_available
 - id: coe:entity/adobe/acrobat_express
   label: Adobe Acrobat Express
-  description: The Acrobat edition for business professionals and consumers that combines Adobe Express Premium, Acrobat AI
-    Assistant and PDF Spaces with additional PDF tools — create, convert, export, protect and compress — in one AI-first
-    entry point.
+  description: Adobe Acrobat Express is a subscription offering for business professionals that brings together Acrobat AI
+    Assistant, PDF Spaces, core PDF tools (create, convert, export, protect, compress), and Adobe Express Premium in an English-only,
+    AI-powered workspace (Acrobat Express home) available across desktop, web, and mobile.
   home_domain: adobe
   status: canonical
   edition_of: coe:entity/adobe/acrobat
-  market_status: generally_available
   terms:
   - literal: Acrobat Express
     term_type: short_form
@@ -111,19 +79,17 @@ editions:
   home_domain: adobe
   status: canonical
   edition_of: coe:entity/adobe/acrobat
-  market_status: generally_available
   terms:
   - literal: Acrobat Reader
     term_type: short_form
     term_status: admitted
 - id: coe:entity/adobe/acrobat_standard
   label: Adobe Acrobat Standard
-  description: The essentials edition of Acrobat for creating, editing, converting and signing PDFs without the Pro-only
-    features.
+  description: Adobe Acrobat Standard is the Windows-only essentials edition of Acrobat that lets users create, edit, convert,
+    and sign PDFs, offering a subset of Acrobat Pro capabilities for organizations that don't need the full advanced toolset.
   home_domain: adobe
   status: canonical
   edition_of: coe:entity/adobe/acrobat
-  market_status: generally_available
   terms:
   - literal: Acrobat Standard
     term_type: short_form
@@ -136,15 +102,14 @@ editions:
   edition_of: coe:entity/adobe/acrobat
   families:
   - coe:entity/adobe/creative_cloud
-  market_status: generally_available
 - id: coe:entity/adobe/acrobat_studio
   label: Adobe Acrobat Studio
-  description: The Acrobat edition that unites PDF productivity, AI Assistant insight and Adobe Express creation, in which
-    users build PDF Spaces from their documents and turn document insight into shareable content.
+  description: Adobe Acrobat Studio is Adobe's all-in-one content and document platform that combines Acrobat Pro (for advanced
+    PDF editing and e-signatures), Acrobat AI Assistant and PDF Spaces (for document insight and collaboration), and Adobe
+    Express Premium (for branded content creation), so teams can manage, understand, and create content in one place.
   home_domain: adobe
   status: canonical
   edition_of: coe:entity/adobe/acrobat
-  market_status: generally_available
   terms:
   - literal: Acrobat Studio
     term_type: short_form

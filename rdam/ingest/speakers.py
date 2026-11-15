@@ -6,12 +6,18 @@ from rdam.ingest.contracts.source import SpeakerIdentity
 from rdam.ingest.identity import sha256_bytes
 
 _LABEL = re.compile(r"^\s*(?:\*\*)?([^:\n]+?)(?: \(participant ([\w.-]+)\))?:(?:\*\*)?\s+")
+_SPEAKER_CUE = re.compile(r"^\s*(?:SPEAKER[_ -]?\d+|[A-Z][A-Z0-9 _-]{1,40}):\s+")
 _UNATTRIBUTED = frozenset({"unattributed", "unknown", "unidentified", "?"})
 
 
 def explicitly_marked_turn(text: str) -> bool:
-    """Markdown marks a speaker label explicitly; ordinary prose colons are not turns."""
-    return text.lstrip().startswith("**") and _LABEL.match(text) is not None
+    """Explicitly bolded or participant-tagged speaker prefix; ordinary prose colons are not turns."""
+    stripped = text.lstrip()
+    return (
+        (stripped.startswith("**") and _LABEL.match(text) is not None)
+        or ("(participant " in stripped[:80] and _LABEL.match(text) is not None)
+        or _SPEAKER_CUE.match(text) is not None
+    )
 
 
 def resolve_speaker(text: str, attributes: tuple[tuple[str, str], ...] = ()) -> SpeakerIdentity:

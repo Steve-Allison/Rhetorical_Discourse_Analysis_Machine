@@ -7,6 +7,16 @@ import torch
 
 from .annotation_rst import DiscourseUnit
 from .dmrst_parser.predictor import PredictorDMRST
+from .model_authority import (
+    AVAILABLE_FAMILIES as _AVAILABLE_FAMILIES,
+    AVAILABLE_VERSIONS as _AVAILABLE_VERSIONS,
+    DEFAULT_HF_MODEL_NAME as _AUTHORITY_DEFAULT_HF_MODEL_NAME,
+    DEFAULT_HF_MODEL_VERSION as _AUTHORITY_DEFAULT_HF_MODEL_VERSION,
+    DMRST_PARSERS as _DMRST_PARSERS,
+    UNIVERSAL_PARSERS as _UNIVERSAL_PARSERS,
+    declared_analysis_capacity as _declared_analysis_capacity,
+    family_for_runtime_contract as _family_for_runtime_contract,
+)
 from .universal_parser.predictor import PredictorUniRST
 from .utils.parse_result import ParseFailedError, extract_root_tree
 
@@ -29,12 +39,12 @@ class Parser:
         >>> Parser.from_model_release('/models', 'gumrrg-v3', family='dmrst')
     """
 
-    DMRST_PARSERS = ("gumrrg", "rstdt", "rstreebank")
-    UNIVERSAL_PARSERS = ("rrtrrg", "unirst")
-    AVAILABLE_VERSIONS = DMRST_PARSERS + UNIVERSAL_PARSERS
-    AVAILABLE_FAMILIES = ("dmrst", "unirst")
-    _DEFAULT_HF_MODEL_NAME = "tchewik/isanlp_rst_v3"
-    DEFAULT_HF_MODEL_VERSION = "gumrrg"
+    DMRST_PARSERS = _DMRST_PARSERS
+    UNIVERSAL_PARSERS = _UNIVERSAL_PARSERS
+    AVAILABLE_VERSIONS = _AVAILABLE_VERSIONS
+    AVAILABLE_FAMILIES = _AVAILABLE_FAMILIES
+    _DEFAULT_HF_MODEL_NAME = _AUTHORITY_DEFAULT_HF_MODEL_NAME
+    DEFAULT_HF_MODEL_VERSION = _AUTHORITY_DEFAULT_HF_MODEL_VERSION
     _DEFAULT_HF_MODEL_VERSION = DEFAULT_HF_MODEL_VERSION
     predictor: Any
 
@@ -132,9 +142,7 @@ class Parser:
     def declared_analysis_capacity() -> ParserCapacity:
         """No checkpoint- or runtime-derived EDU maximum has been established."""
 
-        from rdam.rst.model_loading import ParserCapacity
-
-        return ParserCapacity(unit="edu_count", maximum=None, source="isanlp_rst.parser/edu_capacity_not_established-v1")
+        return _declared_analysis_capacity()
 
     @property
     def model_release_identity(self) -> ModelReleaseIdentity | None:
@@ -148,16 +156,8 @@ class Parser:
     @classmethod
     def family_for_runtime_contract(cls, runtime_contract: str) -> str:
         """Resolve canonical parser family from runtime contract string."""
-        prefix = "isanlp_rst.parser/"
-        if not runtime_contract.startswith(prefix):
-            raise ValueError(f"Invalid parser runtime contract prefix: {runtime_contract!r}")
-        suffix = runtime_contract[len(prefix) :]
-        family = suffix.split("-v", 1)[0]
-        if family not in cls.AVAILABLE_FAMILIES:
-            raise ValueError(
-                f"Unknown parser family {family!r} for contract {runtime_contract!r}. Available: {cls.AVAILABLE_FAMILIES}"
-            )
-        return family
+
+        return _family_for_runtime_contract(runtime_contract)
 
     @classmethod
     def from_model_release(

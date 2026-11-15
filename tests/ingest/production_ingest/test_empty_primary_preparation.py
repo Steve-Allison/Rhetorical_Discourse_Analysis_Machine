@@ -20,10 +20,10 @@ def test_empty_or_whitespace_source_prepares_successfully(text: str) -> None:
 
 def test_valid_retained_only_source_is_not_misclassified_as_invalid() -> None:
     source = SourceArtifact.from_bytes(
-        b"![Diagram](diagram.png)",
-        source_form=SourceForm.MARKDOWN,
-        source_name="retained.md",
-        media_type="text/markdown; charset=utf-8",
+        b'<doclang><picture><src uri="https://example.com/diagram.png"/></picture></doclang>',
+        source_form=SourceForm.DOCLANG_XML,
+        source_name="retained.dclg",
+        media_type="application/vnd.doclang+xml",
     )
     outcome = ProductionIngestor().prepare(source)
     assert outcome.semantic.prepared_document.text == ""

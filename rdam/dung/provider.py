@@ -6,8 +6,9 @@ supplies, or the one the caller explicitly declares it derived from another tech
 result. Reporting capability computes a digest of two source files and nothing else.
 """
 
-from typing import Final
-from rdam.contracts import ProviderConfiguration
+from collections.abc import Mapping
+from typing import Any, Final
+from rdam.contracts import DerivationCompiler, ProviderConfiguration
 from rdam.dung.interpretation import describe
 
 from rdam import (
@@ -38,11 +39,11 @@ from rdam.dung.semantics import (
     validate_capacity,
 )
 
-PROVIDER_ID: Final = "rdam.dung/exhaustive-subset-v1"
+PROVIDER_ID: Final = "rdam.dung/cadical-sat-v2"
 FORMALISM_ID: Final = "dung_extensions"
-CONTRACT_VERSION: Final = SemanticVersion(root="1.0.0")
+CONTRACT_VERSION: Final = SemanticVersion(root="2.0.0")
 LICENCE: Final = "MIT (LICENSE)"
-_SOURCE_FILES: Final = ("semantics.py", "provider.py")
+_SOURCE_FILES: Final = ("semantics.py", "compilers.py", "provider.py")
 
 
 def source_identity() -> Sha256Identity:
@@ -64,6 +65,21 @@ class DungProvider:
     @property
     def capacity(self) -> int:
         return self._capacity
+
+    def compile_derivation(
+        self,
+        compiler: DerivationCompiler,
+        upstream_payloads: Mapping[Technique, Mapping[str, Any]],
+    ) -> dict[str, JsonValue]:
+        """Compile upstream Wave-1 payloads into a Dung framework or raise `ProviderError`."""
+        from rdam.dung.compilers import compile_by_spec
+
+        try:
+            return compile_by_spec(compiler, upstream_payloads)
+        except FrameworkError as error:
+            raise ProviderError(
+                self._failure("invalid_derived_framework", "FrameworkError", str(error))
+            ) from error
 
     @property
     def declaration(self) -> ProviderDeclaration:
@@ -110,7 +126,7 @@ class DungProvider:
             raise ProviderError(
                 self._failure("framework_exceeds_declared_capacity", "FrameworkCapacityError", str(error))
             ) from error
-        algorithm: dict[str, JsonValue] = {"name": "exhaustive-subset", "version": "1", "capacity": self._capacity}
+        algorithm: dict[str, JsonValue] = {"name": "cadical-sat", "version": "2", "capacity": self._capacity}
         payload: dict[str, JsonValue] = {
             "framework": framework.to_payload(),
             "input_origin": input_origin(request),

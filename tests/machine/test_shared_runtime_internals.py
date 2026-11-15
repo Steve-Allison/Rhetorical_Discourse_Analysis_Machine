@@ -25,6 +25,7 @@ from rdam._immutable_json import freeze_json
 from rdam._provider_provenance import package_version, provider_failure, require_llm_text, source_identity
 from rdam._result_cache import ResultCache, revision_is_cacheable
 from rdam.contracts import Retryability
+from rdam.historical import HistoricalNativeTechniqueResult
 
 
 class Choice(StrEnum):
@@ -261,6 +262,26 @@ def test_cache_rejects_a_valid_non_result_record(tmp_path: Path) -> None:
     (tmp_path / "key.json").write_bytes(serialize(Machine().capabilities()))
     with pytest.warns(RuntimeWarning, match="not a native technique result"):
         assert cache.load("key", validate=lambda _result: None) is None
+
+
+def test_cache_treats_historical_native_result_as_clean_miss(tmp_path: Path) -> None:
+    cache = ResultCache(tmp_path)
+    historical = HistoricalNativeTechniqueResult(
+        technique=Technique.RST,
+        formalism_id="rst_tree",
+        provider_id="fixture/rst",
+        provider_contract_version=SemanticVersion(root="1.0.0"),
+        source=SourceIdentity.from_text("cached"),
+        payload={},
+        provenance=ProviderProvenance(
+            package="fixture.rst",
+            version="1",
+            source_revision="clean",
+            licence="test",
+        ),
+    )
+    (tmp_path / "historical.json").write_bytes(serialize(historical))
+    assert cache.load("historical", validate=lambda _result: None) is None
 
 
 def test_failed_atomic_replace_removes_temporary_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

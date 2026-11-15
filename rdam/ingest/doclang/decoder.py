@@ -13,7 +13,20 @@ from .text_walker import body_text, iter_body_slots, iter_sibling_slots
 CELL_TOKENS = frozenset({"ched", "rhed", "corn", "srow", "fcel", "ecel", "lcel", "ucel", "xcel"})
 CONTINUATIONS = frozenset({"lcel", "ucel", "xcel"})
 TEXT_ELEMENTS = frozenset(
-    {"text", "heading", "footnote", "code", "formula", "caption", "description", "key", "value", "chapter"}
+    {
+        "caption",
+        "chapter",
+        "code",
+        "description",
+        "field_heading",
+        "footnote",
+        "formula",
+        "heading",
+        "key",
+        "summary",
+        "text",
+        "value",
+    }
 )
 # A track timestamp is a run of these in order; only <seconds> is required (DocLang spec, Tracks).
 TIME_ELEMENTS = ("hours", "minutes", "seconds", "msecs")
@@ -384,6 +397,7 @@ def decode_document(document: DoclangDocument) -> tuple[DecodedDoclangItem, ...]
             positions.update(track_positions)
     result: list[DecodedDoclangItem] = []
     ancestry: dict[str, frozenset[str]] = {}
+    layers: dict[str, str] = {}
     for element in document.root.iter():
         if not isinstance(element.tag, str):
             continue
@@ -391,17 +405,29 @@ def decode_document(document: DoclangDocument) -> tuple[DecodedDoclangItem, ...]
         parent = element.getparent()
         parent_path = document.paths[parent] if parent is not None else None
         ancestors: frozenset[str] = ancestry[parent_path] if parent_path is not None else frozenset()
+        parent_layer = layers[parent_path] if parent_path is not None else "body"
         tag = local_name(element)
         ancestry[path] = ancestors | {tag}
         children = tuple(child for child in element if isinstance(child.tag, str))
-        layer = next(
-            (child.get("value") for child in children if local_name(child) == "layer" and child.get("value")), "body"
+        declared_layer = next(
+            (child.get("value") for child in children if local_name(child) == "layer" and child.get("value")),
+            None,
         )
+        layer = declared_layer or parent_layer or "body"
+        layers[path] = layer
         locations = tuple(
             (child.get("value", ""), child.get("resolution") or "default")
             for child in children
             if local_name(child) == "location"
         )
+        attributes = sorted(element.attrib.items())
+        if tag == "ldiv":
+            marker_child = next((child for child in children if local_name(child) == "marker"), None)
+            if marker_child is not None:
+                marker_value = body_text(marker_child)
+                if marker_value and "marker" not in element.attrib:
+                    attributes.append(("marker", marker_value))
+                    attributes.sort()
         surface = surfaces.get(path)
         if tag in TEXT_ELEMENTS and surface is None:
             surface = _surface(
@@ -410,7 +436,9 @@ def decode_document(document: DoclangDocument) -> tuple[DecodedDoclangItem, ...]
         # A text component may itself contain semantic components. Its surface
         # owns that text in source order; retain nested primary wrappers without
         # emitting a second copy during shared preparation.
-        if tag in {"text", "heading", "footnote", "ldiv"} and ancestors & TEXT_ELEMENTS:
+        if (tag in {"text", "heading", "footnote", "ldiv"} and ancestors & TEXT_ELEMENTS) or (
+            {"ldiv", "marker"} <= ancestors
+        ):
             surface = None
         cell = cells.get(path)
         if cell is not None and tag not in CONTINUATIONS | {"ecel"}:
@@ -421,9 +449,9 @@ def decode_document(document: DoclangDocument) -> tuple[DecodedDoclangItem, ...]
                 parent_path,
                 tuple(document.paths[child] for child in children),
                 tag,
-                tuple(sorted(element.attrib.items())),
+                tuple(attributes),
                 ancestors,
-                layer or "body",
+                layer,
                 locations,
                 surface,
                 cell,

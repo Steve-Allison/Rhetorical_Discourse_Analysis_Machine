@@ -9,7 +9,7 @@ import pytest
 from rdam import ExecutionPolicy
 
 
-@pytest.mark.parametrize("value", (0, 8, True, 1.5))
+@pytest.mark.parametrize("value", (0, 14, True, 1.5))
 def test_execution_workers_are_bounded_integers(value: int | float) -> None:
     with pytest.raises(ValueError):
         ExecutionPolicy(max_workers=cast(int, value))

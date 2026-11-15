@@ -1,10 +1,9 @@
-"""Private source-format harvesters retained behind the v2 inventory adapter."""
+"""Private plain-text and presegmented-EDU harvesters backed by native dclq/DocLang."""
 
 from importlib.metadata import version
 from pathlib import Path
-import re
-import tempfile
-from typing import Any, cast
+
+from lxml import etree
 
 from rdam._version import PACKAGE_NAME
 from rdam.ingest.contracts.legacy import (
@@ -14,13 +13,32 @@ from rdam.ingest.contracts.legacy import (
     ContentInventoryItem,
     NativeAnchor,
     PreparedRange,
-    RawContractDeclaration,
     SourceArtifact,
     SourceContractIdentity,
     SourceForm,
 )
 from rdam.ingest.identity import semantic_sha256, sha256_file
-from rdam.ingest.speakers import explicitly_marked_turn
+
+_DOCLANG_NS = "https://www.doclang.ai/ns/v0"
+_XML_STRIP_TABLE = dict.fromkeys(
+    [*(code for code in range(0x20) if code not in (0x09, 0x0A, 0x0D)), 0xFFFE, 0xFFFF],
+    None,
+)
+
+
+def _xml_safe_text(text: str) -> str:
+    return text.translate(_XML_STRIP_TABLE)
+
+
+def _synthesize_doclang_text_xpath(text: str) -> str:
+    from dclq.document import LoadedDocument
+
+    root = etree.Element(f"{{{_DOCLANG_NS}}}doclang", nsmap={None: _DOCLANG_NS}, version="0.9")
+    node = etree.SubElement(root, f"{{{_DOCLANG_NS}}}text")
+    node.text = _xml_safe_text(text)
+    xml_bytes = etree.tostring(root, encoding="utf-8", xml_declaration=True)
+    loaded = LoadedDocument.load("-", stdin_bytes=xml_bytes, validate=False)
+    return loaded.units[0].xpath if loaded.units else "/d:doclang/d:text[1]"
 
 
 def inventory_source(
@@ -33,10 +51,6 @@ def inventory_source(
             return _inventory_text(artifact)
         case SourceForm.EDUS:
             return _inventory_edus(artifact)
-        case SourceForm.MARKDOWN:
-            return _inventory_markdown(artifact)
-        case SourceForm.DOCLING_JSON:
-            return _inventory_docling(artifact)
         case SourceForm.DOCLANG_XML | SourceForm.DOCLANG_ARCHIVE:
             raise ValueError("DocLang requires the current inventory adapter")
 
@@ -47,6 +61,7 @@ def _inventory_text(
     text = (artifact.raw_bytes or b"").decode("utf-8")
     items: tuple[ContentInventoryItem, ...]
     if text.strip():
+        dclq_xpath = _synthesize_doclang_text_xpath(text)
         items = (
             ContentInventoryItem(
                 item_id="text:document",
@@ -64,6 +79,7 @@ def _inventory_text(
                         quote=text,
                     ),
                 ),
+                attributes=(("dclq_xpath", dclq_xpath),),
                 inventory_adapter="isanlp_rst.ingest.text/v1",
             ),
         )
@@ -98,384 +114,6 @@ def _inventory_edus(
     return items, _builtin_contract("presegmented_edus", "isanlp_rst.ingest.edus/v1")
 
 
-def _inventory_markdown(
-    artifact: SourceArtifact,
-) -> tuple[tuple[ContentInventoryItem, ...], SourceContractIdentity]:
-    from rdam.ingest.markdown import load_markdown
-
-    source = (artifact.raw_bytes or b"").decode("utf-8")
-    loaded = load_markdown(source, gfm=True)
-    line_starts = _line_starts(source)
-    items: list[ContentInventoryItem] = []
-    parent_stack: list[str | None] = []
-    table_row = -1
-    table_column = 0
-
-    if loaded.front_matter is not None:
-        items.append(
-            _item(
-                artifact,
-                "markdown:front_matter",
-                None,
-                ContentClass.METADATA,
-                loaded.front_matter,
-                AnchorKind.LINE,
-                "front_matter",
-                adapter="isanlp_rst.markdown.inventory/v1",
-            )
-        )
-
-    for index, token in enumerate(loaded.tokens):
-        token_id = f"markdown:token:{index}"
-        if token.type == "table_open":
-            table_row = -1
-        elif token.type == "tr_open":
-            table_row += 1
-            table_column = 0
-        if token.nesting == -1:
-            if parent_stack:
-                parent_stack.pop()
-            continue
-        parent_id = next((item_id for item_id in reversed(parent_stack) if item_id is not None), None)
-        content_class, text = _markdown_content(token, loaded.tokens, index)
-        if content_class is not None:
-            cell_anchors: tuple[NativeAnchor, ...] = ()
-            attributes = _markdown_attributes(loaded.tokens, index)
-            if content_class is ContentClass.TABLE_CELL:
-                cell_anchors = (NativeAnchor(
-                    artifact_id=artifact.source_id, item_id=token_id,
-                    kind=AnchorKind.TABLE_COORDINATE,
-                    selector=f"row={table_row};column={table_column}",
-                ),)
-                attributes = (*attributes, ("column_header", str(token.type == "th_open").lower()))
-                table_column += 1
-            items.append(
-                _item(
-                    artifact,
-                    token_id,
-                    parent_id,
-                    content_class,
-                    text,
-                    AnchorKind.LINE,
-                    _markdown_selector(token, index),
-                    attributes=attributes,
-                    additional_anchors=(*cell_anchors, *_markdown_character_anchors(
-                        artifact,
-                        token_id,
-                        token,
-                        source,
-                        text,
-                        line_starts,
-                    )),
-                    adapter="isanlp_rst.markdown.inventory/v1",
-                )
-            )
-            if token.type == "html_block" and text:
-                items.extend(_inventory_html_fragment(artifact, token_id, text, index))
-        if token.nesting == 1:
-            parent_stack.append(token_id if content_class is not None else None)
-
-    return _reclassify_markdown(_with_children(tuple(items))), _distribution_contract(
-        "markdown",
-        "markdown-it-py",
-        "isanlp_rst.markdown.inventory/v1",
-    )
-
-
-def _inventory_docling(
-    artifact: SourceArtifact,
-) -> tuple[tuple[ContentInventoryItem, ...], SourceContractIdentity]:
-    from docling_core.types.doc import ContentLayer, DoclingDocument
-
-    with tempfile.NamedTemporaryFile(suffix=".docling.json") as stream:
-        stream.write(artifact.raw_bytes or b"")
-        stream.flush()
-        doc = DoclingDocument.load_from_json(stream.name)
-    items: list[ContentInventoryItem] = []
-    for node, _depth in doc.iterate_items(
-        with_groups=True,
-        traverse_pictures=True,
-        included_content_layers=set(ContentLayer),
-    ):
-        item_id = str(node.self_ref)
-        parent_ref = getattr(getattr(node, "parent", None), "cref", None)
-        label = getattr(getattr(node, "label", None), "value", "other")
-        layer = getattr(getattr(node, "content_layer", None), "value", "body")
-        content_class = _docling_class(label, layer)
-        text = getattr(node, "text", None)
-        if _is_transcript(doc) and isinstance(text, str) and _is_speaker_turn(text):
-            content_class = ContentClass.TURN
-        items.append(
-            _item(
-                artifact,
-                item_id,
-                str(parent_ref) if parent_ref else None,
-                content_class,
-                text if isinstance(text, str) else None,
-                AnchorKind.JSON_POINTER,
-                item_id,
-                layer=layer,
-                authorship=AuthorshipRole.TRANSCRIBED
-                if label == "text" and _is_transcript(doc)
-                else AuthorshipRole.AUTHORED,
-                additional_anchors=_docling_anchors(artifact, node),
-                attributes=_docling_attributes(node, label=label, layer=layer),
-                adapter="isanlp_rst.docling.inventory/v1",
-            )
-        )
-        if label == "table":
-            cells = getattr(getattr(node, "data", None), "table_cells", ())
-            for cell_index, cell in enumerate(cells):
-                cell_text = getattr(cell, "text", None)
-                cell_id = f"{item_id}/data/table_cells/{cell_index}"
-                items.append(
-                    _item(
-                        artifact,
-                        cell_id,
-                        item_id,
-                        ContentClass.TABLE_CELL,
-                        cell_text if isinstance(cell_text, str) else None,
-                        AnchorKind.JSON_POINTER,
-                        cell_id,
-                        layer=layer,
-                        attributes=(
-                            ("row_span", str(getattr(cell, "row_span", 1))),
-                            ("col_span", str(getattr(cell, "col_span", 1))),
-                            ("column_header", str(bool(getattr(cell, "column_header", False))).lower()),
-                            ("row_header", str(bool(getattr(cell, "row_header", False))).lower()),
-                        ),
-                        additional_anchors=_docling_cell_anchors(artifact, cell_id, cell),
-                        adapter="isanlp_rst.docling.inventory/v1",
-                    )
-                )
-        description = getattr(getattr(getattr(node, "meta", None), "description", None), "text", None)
-        if isinstance(description, str) and description:
-            description_id = f"{item_id}/meta/description/text"
-            items.append(
-                _item(
-                    artifact,
-                    description_id,
-                    item_id,
-                    ContentClass.PICTURE_DESCRIPTION,
-                    description,
-                    AnchorKind.JSON_POINTER,
-                    description_id,
-                    layer=layer,
-                    authorship=AuthorshipRole.MACHINE_GENERATED,
-                    adapter="isanlp_rst.docling.inventory/v1",
-                )
-            )
-    raw = artifact.raw_contract
-    accepted = RawContractDeclaration(schema_name="DoclingDocument", version=str(doc.version))
-    contract = SourceContractIdentity(
-        family="docling",
-        raw_declared_schema=raw,
-        accepted_schema=accepted,
-        validator_distribution="docling-core",
-        validator_version=version("docling-core"),
-        validator_digest=_adapter_digest(Path(__file__)),
-        validation_profile=(("all_content_layers", "true"), ("groups", "true"), ("pictures", "true")),
-    )
-    return _reclassify_back_matter(_with_children(tuple(items))), contract
-
-
-def _item(
-    artifact: SourceArtifact,
-    item_id: str,
-    parent_id: str | None,
-    content_class: ContentClass,
-    text: str | None,
-    anchor_kind: AnchorKind,
-    selector: str,
-    *,
-    layer: str | None = None,
-    authorship: AuthorshipRole = AuthorshipRole.AUTHORED,
-    attributes: tuple[tuple[str, str], ...] = (),
-    additional_anchors: tuple[NativeAnchor, ...] = (),
-    adapter: str,
-) -> ContentInventoryItem:
-    anchor = NativeAnchor(
-        artifact_id=artifact.source_id,
-        item_id=item_id,
-        kind=anchor_kind,
-        selector=selector,
-        quote=text if text else None,
-    )
-    return ContentInventoryItem(
-        item_id=item_id,
-        parent_id=parent_id,
-        content_class=content_class,
-        authorship_role=authorship,
-        content_layer=layer,
-        text=text,
-        native_anchors=(anchor, *additional_anchors),
-        attributes=attributes,
-        inventory_adapter=adapter,
-    )
-
-
-def _docling_anchors(artifact: SourceArtifact, node: Any) -> tuple[NativeAnchor, ...]:
-    anchors: list[NativeAnchor] = []
-    for index, provenance in enumerate(getattr(node, "prov", ())):
-        page_no = getattr(provenance, "page_no", None)
-        if isinstance(page_no, int):
-            anchors.append(
-                NativeAnchor(
-                    artifact_id=artifact.source_id,
-                    item_id=str(node.self_ref),
-                    kind=AnchorKind.PAGE,
-                    selector=f"page={page_no};provenance={index}",
-                )
-            )
-        bbox = getattr(provenance, "bbox", None)
-        if bbox is not None:
-            origin = getattr(getattr(bbox, "coord_origin", None), "value", "unknown")
-            anchors.append(
-                NativeAnchor(
-                    artifact_id=artifact.source_id,
-                    item_id=str(node.self_ref),
-                    kind=AnchorKind.BOUNDING_BOX,
-                    selector=(
-                        f"page={page_no};l={bbox.l:.12g};t={bbox.t:.12g};"
-                        f"r={bbox.r:.12g};b={bbox.b:.12g};origin={origin}"
-                    ),
-                )
-            )
-        charspan = getattr(provenance, "charspan", None)
-        coordinates = cast(tuple[object, ...], charspan) if isinstance(charspan, tuple) else ()
-        if (
-            len(coordinates) == 2
-            and isinstance(coordinates[0], int)
-            and isinstance(coordinates[1], int)
-            and coordinates[1] > coordinates[0]
-        ):
-            anchors.append(
-                NativeAnchor(
-                    artifact_id=artifact.source_id,
-                    item_id=str(node.self_ref),
-                    kind=AnchorKind.CHARACTER,
-                    selector=f"item_char={coordinates[0]},{coordinates[1]}",
-                    range=PreparedRange(start=coordinates[0], end=coordinates[1]),
-                )
-            )
-    return tuple(anchors)
-
-
-def _docling_attributes(node: Any, *, label: str, layer: str) -> tuple[tuple[str, str], ...]:
-    attributes: list[tuple[str, str]] = [("content_layer", layer), ("label", label)]
-    hyperlink = getattr(node, "hyperlink", None)
-    if hyperlink is not None:
-        attributes.append(("href", str(hyperlink)))
-    formatting = getattr(node, "formatting", None)
-    if formatting is not None:
-        model_dump_json = getattr(formatting, "model_dump_json", None)
-        attributes.append(
-            (
-                "text_formatting",
-                str(model_dump_json()) if callable(model_dump_json) else str(formatting),
-            )
-        )
-    for relationship_name in ("captions", "references", "footnotes"):
-        for index, reference in enumerate(getattr(node, relationship_name, ())):
-            target = getattr(reference, "cref", None)
-            if target is not None:
-                attributes.append((f"relationship:{relationship_name}:{index}", str(target)))
-    for index, comment in enumerate(getattr(node, "comments", ())):
-        model_dump_json = getattr(comment, "model_dump_json", None)
-        attributes.append(
-            (
-                f"comment:{index}",
-                str(model_dump_json()) if callable(model_dump_json) else str(comment),
-            )
-        )
-    classification = getattr(getattr(node, "meta", None), "classification", None)
-    predictions = getattr(classification, "predictions", ())
-    if predictions:
-        prediction = predictions[0]
-        class_name = getattr(prediction, "class_name", None)
-        confidence = getattr(prediction, "confidence", None)
-        created_by = getattr(prediction, "created_by", None)
-        if isinstance(class_name, str) and class_name:
-            attributes.append(("picture_class", class_name))
-        if isinstance(confidence, int | float):
-            attributes.append(("picture_class_confidence", f"{float(confidence):.12g}"))
-        if isinstance(created_by, str) and created_by:
-            attributes.append(("picture_class_created_by", created_by))
-    return tuple(sorted(attributes))
-
-
-def _docling_cell_anchors(artifact: SourceArtifact, cell_id: str, cell: Any) -> tuple[NativeAnchor, ...]:
-    row_start = getattr(cell, "start_row_offset_idx", None)
-    row_end = getattr(cell, "end_row_offset_idx", None)
-    column_start = getattr(cell, "start_col_offset_idx", None)
-    column_end = getattr(cell, "end_col_offset_idx", None)
-    anchors = [
-        NativeAnchor(
-            artifact_id=artifact.source_id,
-            item_id=cell_id,
-            kind=AnchorKind.TABLE_COORDINATE,
-            selector=f"row={row_start},{row_end};column={column_start},{column_end}",
-        )
-    ]
-    bbox = getattr(cell, "bbox", None)
-    if bbox is not None:
-        origin = getattr(getattr(bbox, "coord_origin", None), "value", "unknown")
-        anchors.append(
-            NativeAnchor(
-                artifact_id=artifact.source_id,
-                item_id=cell_id,
-                kind=AnchorKind.BOUNDING_BOX,
-                selector=(f"l={bbox.l:.12g};t={bbox.t:.12g};r={bbox.r:.12g};b={bbox.b:.12g};origin={origin}"),
-            )
-        )
-    return tuple(anchors)
-
-
-def _with_children(items: tuple[ContentInventoryItem, ...]) -> tuple[ContentInventoryItem, ...]:
-    ids = {item.item_id for item in items}
-    children: dict[str, list[str]] = {item_id: [] for item_id in ids}
-    for item in items:
-        if item.parent_id in ids:
-            children[item.parent_id].append(item.item_id)
-    return tuple(item.model_copy(update={"child_ids": tuple(children[item.item_id])}) for item in items)
-
-
-def _reclassify_markdown(items: tuple[ContentInventoryItem, ...]) -> tuple[ContentInventoryItem, ...]:
-    revised = list(items)
-    presentation_analysis_next = False
-    for index, item in enumerate(revised):
-        text = (item.text or "").strip()
-        normalized = " ".join(text.upper().split())
-        if item.content_class is ContentClass.PARAGRAPH and explicitly_marked_turn(text):
-            revised[index] = item.model_copy(update={"content_class": ContentClass.TURN, "authorship_role": AuthorshipRole.TRANSCRIBED})
-            continue
-        if item.content_class is ContentClass.HEADING and (
-            normalized.endswith(("VISUAL DESCRIPTION", "CONCEPTUAL ANALYSIS & METAPHOR"))
-        ):
-            revised[index] = item.model_copy(update={"content_class": ContentClass.NAVIGATION})
-            presentation_analysis_next = True
-            continue
-        if presentation_analysis_next and item.content_class is ContentClass.PARAGRAPH:
-            revised[index] = item.model_copy(update={"content_class": ContentClass.NAVIGATION})
-            presentation_analysis_next = False
-            continue
-        if item.content_class is ContentClass.PARAGRAPH and _is_image_only_markdown(text):
-            revised[index] = item.model_copy(update={"content_class": ContentClass.PICTURE})
-    return _reclassify_back_matter(tuple(revised))
-
-
-def _reclassify_back_matter(items: tuple[ContentInventoryItem, ...]) -> tuple[ContentInventoryItem, ...]:
-    from rdam.ingest._classification import back_matter_classes
-    from rdam.ingest.contracts.source import ContentClass as CurrentClass
-
-    classes = back_matter_classes(tuple((CurrentClass(item.content_class.value), item.text) for item in items))
-    return tuple(item.model_copy(update={"content_class": ContentClass(classification.value)}) for item, classification in zip(items, classes, strict=True))
-
-
-def _is_image_only_markdown(text: str) -> bool:
-    return re.fullmatch(r"!\[[^\]]*\]\([^\n)]+\)", text) is not None
-
-
 def _builtin_contract(family: str, adapter: str) -> SourceContractIdentity:
     return SourceContractIdentity(
         family=family,
@@ -485,211 +123,8 @@ def _builtin_contract(family: str, adapter: str) -> SourceContractIdentity:
     )
 
 
-def _distribution_contract(family: str, distribution: str, adapter: str) -> SourceContractIdentity:
-    return SourceContractIdentity(
-        family=family,
-        validator_distribution=distribution,
-        validator_version=version(distribution),
-        validator_digest=semantic_sha256(
-            {
-                "adapter": adapter,
-                "files": (
-                    sha256_file(Path(__file__)),
-                    sha256_file(Path(__file__).parents[1] / "rst/markdown/loader.py"),
-                ),
-            }
-        ),
-    )
-
-
 def _adapter_digest(*paths: Path) -> str:
     return semantic_sha256(tuple((path.name, sha256_file(path)) for path in paths))
-
-
-def _markdown_content(token: Any, tokens: tuple[Any, ...], index: int) -> tuple[ContentClass | None, str | None]:
-    kind = token.type
-    if kind == "heading_open":
-        inline = tokens[index + 1] if index + 1 < len(tokens) else None
-        return ContentClass.HEADING, getattr(inline, "content", None)
-    if kind == "paragraph_open":
-        inline = tokens[index + 1] if index + 1 < len(tokens) else None
-        return ContentClass.PARAGRAPH, getattr(inline, "content", None)
-    if kind == "list_item_open":
-        return ContentClass.LIST_ITEM, None
-    if kind in {"bullet_list_open", "ordered_list_open", "blockquote_open"}:
-        return ContentClass.GROUP, None
-    if kind == "table_open":
-        return ContentClass.TABLE, None
-    if kind in {"th_open", "td_open"}:
-        inline = tokens[index + 1] if index + 1 < len(tokens) else None
-        return ContentClass.TABLE_CELL, getattr(inline, "content", None)
-    if kind in {"fence", "code_block"}:
-        return ContentClass.CODE, token.content.rstrip("\n")
-    if kind == "html_block":
-        return ContentClass.RAW_MARKUP, token.content
-    if kind == "hr":
-        return ContentClass.METADATA, None
-    return None, None
-
-
-def _markdown_selector(token: Any, index: int) -> str:
-    if token.map is None:
-        return f"token={index}"
-    return f"line={token.map[0]},{token.map[1]}"
-
-
-def _markdown_attributes(tokens: tuple[Any, ...], index: int) -> tuple[tuple[str, str], ...]:
-    inline = tokens[index + 1] if index + 1 < len(tokens) else None
-    children = getattr(inline, "children", ()) or ()
-    attributes: list[tuple[str, str]] = []
-    for child_index, child in enumerate(children):
-        if child.type not in {"link_open", "image"}:
-            continue
-        target = child.attrGet("href") if child.type == "link_open" else child.attrGet("src")
-        if target:
-            relation = "link" if child.type == "link_open" else "image"
-            attributes.append((f"relationship:{relation}:{child_index}", target))
-    return tuple(attributes)
-
-
-def _line_starts(source: str) -> tuple[int, ...]:
-    starts = [0]
-    starts.extend(match.end() for match in re.finditer(r"\n", source))
-    return tuple(starts)
-
-
-def _markdown_character_anchors(
-    artifact: SourceArtifact,
-    item_id: str,
-    token: Any,
-    source: str,
-    text: str | None,
-    line_starts: tuple[int, ...],
-) -> tuple[NativeAnchor, ...]:
-    token_map = cast(tuple[int, int] | None, token.map)
-    if token_map is None or text is None:
-        return ()
-    start_line, end_line = token_map
-    block_start = line_starts[start_line]
-    block_end = line_starts[end_line] if end_line < len(line_starts) else len(source)
-    relative = source[block_start:block_end].find(text)
-    if relative < 0:
-        return ()
-    start = block_start + relative
-    end = start + len(text)
-    return (
-        NativeAnchor(
-            artifact_id=artifact.source_id,
-            item_id=item_id,
-            kind=AnchorKind.CHARACTER,
-            selector=f"char={start},{end}",
-            range=PreparedRange(start=start, end=end),
-            quote=text,
-        ),
-    )
-
-
-def _inventory_html_fragment(
-    artifact: SourceArtifact,
-    token_id: str,
-    source: str,
-    token_index: int,
-) -> tuple[ContentInventoryItem, ...]:
-    from lxml import etree, html
-
-    parser = html.HTMLParser(no_network=True, recover=True)
-    wrapper = html.fragment_fromstring(source, create_parent="div", parser=parser)
-    tree = wrapper.getroottree()
-    items: list[ContentInventoryItem] = []
-    element_ids: dict[Any, str] = {wrapper: token_id}
-    blocked = {"script", "style", "nav", "template", "noscript", "head", "meta", "link"}
-    authored = {
-        "p": ContentClass.PARAGRAPH,
-        "h1": ContentClass.HEADING,
-        "h2": ContentClass.HEADING,
-        "h3": ContentClass.HEADING,
-        "h4": ContentClass.HEADING,
-        "h5": ContentClass.HEADING,
-        "h6": ContentClass.HEADING,
-        "li": ContentClass.LIST_ITEM,
-        "blockquote": ContentClass.PARAGRAPH,
-        "figcaption": ContentClass.CAPTION,
-    }
-    for element in wrapper.iterdescendants():
-        if not isinstance(element.tag, str):
-            continue
-        path = tree.getpath(element)
-        element_id = f"{token_id}:html:{path}"
-        parent = element.getparent()
-        parent_id = element_ids.get(parent, token_id)
-        element_ids[element] = element_id
-        tag = etree.QName(element).localname.lower()
-        element_text = "".join(_safe_html_text(element, blocked)).strip()
-        content_class = authored.get(tag, ContentClass.NAVIGATION if tag in blocked else ContentClass.RAW_MARKUP)
-        items.append(
-            _item(
-                artifact,
-                element_id,
-                parent_id,
-                content_class,
-                element_text or None,
-                AnchorKind.XML_PATH,
-                f"token={token_index};dom={path}",
-                authorship=AuthorshipRole.AUTHORED if tag in authored else AuthorshipRole.UNKNOWN,
-                adapter="isanlp_rst.markdown.html.inventory/v1",
-            )
-        )
-    return tuple(items)
-
-
-def _safe_html_text(element: Any, blocked: set[str]) -> tuple[str, ...]:
-    from lxml import etree
-
-    pieces: list[str] = []
-    if element.text:
-        pieces.append(element.text)
-    for child in element:
-        if isinstance(child.tag, str) and etree.QName(child).localname.lower() not in blocked:
-            pieces.extend(_safe_html_text(child, blocked))
-        if child.tail:
-            pieces.append(child.tail)
-    return tuple(pieces)
-
-
-def _docling_class(label: str, layer: str) -> ContentClass:
-    if layer == "notes":
-        return ContentClass.NOTE
-    if layer == "furniture":
-        return ContentClass.FURNITURE
-    if layer == "background":
-        return ContentClass.BACKGROUND
-    if layer == "invisible":
-        return ContentClass.INVISIBLE
-    return {
-        "title": ContentClass.TITLE,
-        "chapter": ContentClass.HEADING,
-        "section_header": ContentClass.HEADING,
-        "paragraph": ContentClass.PARAGRAPH,
-        "text": ContentClass.PARAGRAPH,
-        "list": ContentClass.GROUP,
-        "list_item": ContentClass.LIST_ITEM,
-        "table": ContentClass.TABLE,
-        "picture": ContentClass.PICTURE,
-        "caption": ContentClass.CAPTION,
-        "formula": ContentClass.FORMULA,
-        "code": ContentClass.CODE,
-        "page_header": ContentClass.FURNITURE,
-        "page_footer": ContentClass.FURNITURE,
-    }.get(label, ContentClass.GROUP if label in {"unspecified", "section", "inline"} else ContentClass.OTHER)
-
-
-def _is_transcript(doc: Any) -> bool:
-    origin = getattr(doc, "origin", None)
-    return getattr(origin, "mimetype", None) in {"text/vtt", "audio/mpeg", "video/mp4"}
-
-
-def _is_speaker_turn(text: str) -> bool:
-    return re.match(r"^\s*(?:SPEAKER[_ -]?\d+|[A-Z][A-Z0-9 _-]{1,40}):\s+", text) is not None
 
 
 __all__ = ["inventory_source"]

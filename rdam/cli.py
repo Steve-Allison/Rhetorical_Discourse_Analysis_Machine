@@ -15,6 +15,8 @@ from rdam.configuration import MachineConfig
 from rdam.contracts import (
     AggregateAnalysis,
     AggregateRequest,
+    DerivationCompiler,
+    DerivationSpec,
     FormalismChoice,
     MachineCapabilities,
     MachinePreparation,
@@ -25,7 +27,7 @@ from rdam.contracts import (
     SourceIdentity,
     StructuredInput,
 )
-from rdam.frameworks import BOUNDARY_TECHNIQUES, Technique
+from rdam.frameworks import ACCEPTS_STRUCTURED_INPUT_TECHNIQUES, BOUNDARY_TECHNIQUES, Technique
 from rdam.historical import HistoricalAggregateAnalysis
 from rdam.ingest.contracts.source import SourceArtifact, SourceForm
 from rdam.interpretation import select_analysis
@@ -88,7 +90,7 @@ def create_parser() -> argparse.ArgumentParser:
     descriptions = {
         "capabilities": "Describe all techniques and configured models without inference.",
         "prepare": "Inventory a source without inference; default: no selected projections.",
-        "analyse": "Analyse explicit techniques; Dung and IBIS require supplied structures.",
+        "analyse": "Analyse explicit techniques; Dung requires a supplied or derived structure.",
         "summary": "Read a saved result and emit a readable run summary; never analyse again.",
         "view": "Select whole requested techniques from a saved v2 analysis.",
         "schema": "Emit an installed contract schema without resolving configuration.",
@@ -119,7 +121,7 @@ def create_parser() -> argparse.ArgumentParser:
         )
         if command in {"prepare", "analyse"}:
             sub.add_argument(
-                "source", nargs="?", help="literal source path or - for stdin; formats require rdam[formats]"
+                "source", nargs="?", help="literal source path (.dclg, .dclx, .txt) or - for stdin"
             )
             for name in ("text", "edus", "request", "source-name"):
                 _option(sub, "--" + name)
@@ -133,6 +135,12 @@ def create_parser() -> argparse.ArgumentParser:
         if command == "analyse":
             sub.add_argument("--structured", action="append", default=[], metavar="TECHNIQUE=FILE")
             sub.add_argument("--formalism", action="append", default=[], metavar="TECHNIQUE=FORMALISM")
+            _option(
+                sub,
+                "--derive",
+                choices=("from_aspic", "from_argument_mining", "from_ibis", "from_toulmin_walton"),
+                help="explicitly derive Dung framework from Wave-1 native output(s)",
+            )
         if command in {"summary", "view"}:
             sub.add_argument("result", help="saved result path or - for stdin")
         if command == "schema":
@@ -189,12 +197,42 @@ def _read(path: str) -> bytes:
     return sys.stdin.buffer.read() if path == "-" else Path(path).read_bytes()
 
 
+_LLM_TECHNIQUE_NAMES = {
+    "pdtb",
+    "sdrt",
+    "speech_acts",
+    "classical_rhetoric",
+    "argument_mining",
+    "toulmin",
+    "walton",
+    "pragma_dialectics",
+    "ibis",
+    "aspic",
+}
+_STRUCTURED_NAMES = {item.value for item in ACCEPTS_STRUCTURED_INPUT_TECHNIQUES}
+
+
+def _derive_spec(compiler_name: str, selected: tuple[Technique, ...]) -> DerivationSpec:
+    compiler = cast(DerivationCompiler, compiler_name)
+    if compiler == "from_aspic":
+        upstreams: tuple[Technique, ...] = (Technique.ASPIC,)
+    elif compiler == "from_argument_mining":
+        upstreams = (Technique.ARGUMENT_MINING,)
+    elif compiler == "from_ibis":
+        upstreams = (Technique.IBIS,)
+    else:
+        upstreams = tuple(t for t in (Technique.TOULMIN, Technique.WALTON) if t in selected)
+    if not upstreams or any(u not in selected for u in upstreams):
+        raise error("configuration", "invalid_request", "invalid_arguments")
+    return DerivationSpec(consumer=Technique.DUNG, compiler=compiler, upstreams=upstreams)
+
+
 def _config(args: argparse.Namespace) -> MachineConfig:
     config = load_config(args.config) if args.config else MachineConfig()
     data = config.model_dump(mode="json")
     if args.model is not None:
         data["llm"]["model"] = args.model
-    data["technique_models"].update(_mapping(args.technique_model, {"pdtb", "sdrt", "toulmin", "walton"}))
+    data["technique_models"].update(_mapping(args.technique_model, _LLM_TECHNIQUE_NAMES))
     local = args.model_store is not None or args.release_id is not None
     if local and (args.model_store is None or args.release_id is None or args.rst_model is not None):
         raise error("configuration", "invalid_request", "invalid_arguments")
@@ -222,7 +260,7 @@ def _config(args: argparse.Namespace) -> MachineConfig:
 
 def _inputs(args: argparse.Namespace) -> tuple[Path, ...]:
     paths = [getattr(args, name, None) for name in ("source", "request", "result", "config", "ontology_index")]
-    paths.extend(_mapping(getattr(args, "structured", []), {"dung", "ibis"}).values())
+    paths.extend(_mapping(getattr(args, "structured", []), _STRUCTURED_NAMES).values())
     if getattr(args, "config", None) == "-" or paths.count("-") > 1:
         raise error("configuration", "invalid_request", "invalid_arguments")
     if args.command in {"prepare", "analyse"}:
@@ -236,6 +274,7 @@ def _inputs(args: argparse.Namespace) -> tuple[Path, ...]:
                 args.source_name is not None,
                 bool(getattr(args, "structured", [])),
                 bool(getattr(args, "formalism", [])),
+                getattr(args, "derive", None) is not None,
             )
         ):
             raise error("configuration", "invalid_request", "invalid_arguments")
@@ -243,13 +282,18 @@ def _inputs(args: argparse.Namespace) -> tuple[Path, ...]:
             raise error("configuration", "invalid_request", "invalid_arguments")
         if args.request is None:
             selected = _techniques(args.techniques, required=args.command == "analyse")
-            structures = _mapping(getattr(args, "structured", []), {"dung", "ibis"})
+            structures = _mapping(getattr(args, "structured", []), _STRUCTURED_NAMES)
             formalisms = _mapping(getattr(args, "formalism", []), {item.value for item in selected})
             if any(Technique(key) not in selected for key in structures):
                 raise error("configuration", "invalid_request", "invalid_arguments")
             for key, value in formalisms.items():
                 FormalismChoice(technique=Technique(key), formalism_id=value)
-            if modes == 0 and any(item not in {Technique.DUNG, Technique.IBIS} for item in selected):
+            derive_flag = getattr(args, "derive", None)
+            if derive_flag is not None:
+                if Technique.DUNG not in selected or "dung" in structures:
+                    raise error("configuration", "invalid_request", "invalid_arguments")
+                _derive_spec(derive_flag, selected)
+            if modes == 0 and any(item not in ACCEPTS_STRUCTURED_INPUT_TECHNIQUES for item in selected):
                 raise error("configuration", "invalid_request", "invalid_arguments")
             if modes == 0 and args.source_form is not None:
                 raise error("configuration", "invalid_request", "invalid_arguments")
@@ -266,12 +310,14 @@ def _request(args: argparse.Namespace) -> PreparationRequest | AggregateRequest:
     techniques = _techniques(args.techniques, required=args.command == "analyse")
     structures = tuple(
         StructuredInput(technique=Technique(key), payload=decode_object(_read(path)))
-        for key, path in _mapping(getattr(args, "structured", []), {"dung", "ibis"}).items()
+        for key, path in _mapping(getattr(args, "structured", []), _STRUCTURED_NAMES).items()
     )
     formalisms = tuple(
         FormalismChoice(technique=Technique(key), formalism_id=value)
         for key, value in _mapping(getattr(args, "formalism", []), {item.value for item in BOUNDARY_TECHNIQUES}).items()
     )
+    derive_flag = getattr(args, "derive", None)
+    derivations = (_derive_spec(derive_flag, techniques),) if derive_flag is not None else ()
     if args.text is not None:
         prepared = PreparationRequest.for_text(args.text, techniques, source_name=args.source_name or "cli-text")
     elif args.edus is not None:
@@ -312,7 +358,11 @@ def _request(args: argparse.Namespace) -> PreparationRequest | AggregateRequest:
         )
     else:
         return AggregateRequest.for_structured(
-            structures, techniques=techniques, source_name=args.source_name or "structured-input", formalisms=formalisms
+            structures,
+            techniques=techniques,
+            source_name=args.source_name or "structured-input",
+            derivations=derivations,
+            formalisms=formalisms,
         )
     if args.command == "prepare":
         return prepared
@@ -322,6 +372,7 @@ def _request(args: argparse.Namespace) -> PreparationRequest | AggregateRequest:
         source_artifact=prepared.source_artifact,
         techniques=techniques,
         structured_inputs=structures,
+        derivations=derivations,
         formalisms=formalisms,
     )
 

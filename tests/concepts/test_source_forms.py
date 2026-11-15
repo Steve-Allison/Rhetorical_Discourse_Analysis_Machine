@@ -3,7 +3,6 @@ from io import BytesIO
 from pathlib import Path
 from zipfile import ZipFile
 
-from docling_core.types.doc import DoclingDocument, DocItemLabel
 import pytest
 
 from rdam.concepts import link_inventory, link_source, validate_result
@@ -18,13 +17,6 @@ def _source(form: SourceForm) -> SourceArtifact:
         return SourceArtifact.from_text("Known. Known.", source_name="text")
     if form is SourceForm.EDUS:
         return SourceArtifact.from_edus(("Known.", "Known."), source_name="edus")
-    if form is SourceForm.MARKDOWN:
-        return SourceArtifact.from_bytes(b"# Known\n\n- Known\n\n| Known | Missing |\n|---|---|\n| Known | Missing |\n", source_form=form, source_name="plate.md")
-    if form is SourceForm.DOCLING_JSON:
-        doc = DoclingDocument(name="test")
-        doc.add_text(label=DocItemLabel.TEXT, text="Known.")
-        doc.add_text(label=DocItemLabel.TEXT, text="Known.")
-        return SourceArtifact.from_bytes(doc.model_dump_json().encode(), source_form=form, source_name="plate.docling.json")
     payload = Path("tests/fixtures/production_api/retained_content/archive-document.dclg").read_bytes()
     if form is SourceForm.DOCLANG_XML:
         return SourceArtifact.from_bytes(payload, source_form=form, source_name="plate.dclg")
@@ -51,6 +43,6 @@ def test_all_forms_exact_evidence_and_prepare_reuse(form: SourceForm) -> None:
         surface = next(s for s in result.surfaces if (s.item_id, s.field_pointer) == (mention.item_id, mention.field_pointer))
         assert surface.text[mention.start:mention.end] == mention.quote
     assert {surface.item_id for surface in result.surfaces} | {surface.item_id for surface in result.exclusions} == {item.item_id for item in inventory.items}
-    if form in {SourceForm.TEXT, SourceForm.EDUS, SourceForm.DOCLING_JSON}:
+    if form in {SourceForm.TEXT, SourceForm.EDUS}:
         assert len(result.mentions) == 2
         assert len({mention.occurrence_id for mention in result.mentions}) == 2

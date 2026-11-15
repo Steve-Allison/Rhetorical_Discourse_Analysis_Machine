@@ -6,6 +6,7 @@ preferred, and stable semantics (Dung 1995). Never raw-text inference (FR-016).
 
 from importlib.metadata import PackageNotFoundError, version
 
+from rdam.dung.compilers import compile_derived_framework
 from rdam.dung.provider import CONTRACT_VERSION, FORMALISM_ID, PROVIDER_ID, DungProvider, source_identity
 from rdam.dung.semantics import (
     DEFAULT_CAPACITY,
@@ -33,6 +34,7 @@ __all__ = [
     "FrameworkError",
     "Semantics",
     "__version__",
+    "compile_derived_framework",
     "evaluate",
     "grounded_extension",
     "source_identity",

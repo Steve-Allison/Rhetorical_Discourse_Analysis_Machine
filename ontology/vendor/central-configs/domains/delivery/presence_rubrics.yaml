@@ -1,7 +1,7 @@
 _meta:
   file_id: coe:file/domain/delivery/presence_rubrics
   title: Delivery — Presence Rubrics
-  last_updated: '2026-09-23'
+  last_updated: '2026-10-11'
   authority: Central_Configs
   scope: domain
   ontology_domain: delivery
@@ -1654,6 +1654,19 @@ entity_collections:
       sightlines, intelligibility, show calling and stage safety.
     home_domain: delivery
     status: canonical
+    terms:
+    - literal: Scenography
+      term_type: full_form
+      term_status: admitted
+    - literal: C-value
+      term_type: full_form
+      term_status: admitted
+    - literal: Speech Transmission Index
+      term_type: full_form
+      term_status: admitted
+    - literal: Show calling
+      term_type: full_form
+      term_status: admitted
     edges: []
     examples:
     - scenography
@@ -1707,6 +1720,10 @@ entity_collections:
       adaptive delivery response.
     home_domain: delivery
     status: canonical
+    terms:
+    - literal: Lighthouse Technique
+      term_type: full_form
+      term_status: admitted
     edges:
     - subject_id: coe:entity/reading_the_room
       predicate: coe:supports
@@ -1741,3 +1758,129 @@ entity_collections:
     - technical rehearsal
     - red-team rehearsal
     - run-through
+  - id: coe:entity/executive_presence
+    label: 'Executive Presence'
+    description: 'The physical and behavioural signals of authority in professional communication — thin-slicing, dress, kinesics, proxemics, eye contact and gravitas.'
+    home_domain: delivery
+    status: canonical
+    edges:
+      - subject_id: coe:entity/executive_presence
+        predicate: coe:contains
+        object_id: coe:entity/thin_slicing
+        relationship_weight: expected
+        description: 'Executive presence teaching embeds thin-slicing as a first-impression mechanism.'
+        statement_id: coe:edge/executive-presence-contains-thin-slicing
+        home_domain: delivery
+    examples:
+      - 'executive presence'
+  - id: coe:entity/thin_slicing
+    label: 'Thin-Slicing'
+    description: 'Inference from very brief behavioural samples — the Ambady-Rosenthal finding, what makes it accurate or biased, and its uses in learning design.'
+    home_domain: delivery
+    status: canonical
+    edges: []
+    examples:
+      - 'thin-slicing'
+      - 'thin slicing'
+  - id: coe:entity/sales_objection_handling
+    label: 'Sales Objection Handling'
+    description: 'The sales objection-handling framework family — LAER, LAARC, LACE and kin — with provenance pinned, evidence graded and context-selection logic set out.'
+    home_domain: delivery
+    status: canonical
+    edges: []
+    examples:
+      - 'sales objection handling'
+  - id: coe:entity/stage_craft_platform_skills
+    label: 'Stage-Craft and Platform Skills'
+    description: 'What the body does on stage — stage geography and blocking, the lectern decision, microphone and lighting technique, audience scanning and gesture.'
+    home_domain: delivery
+    status: canonical
+    terms:
+    - literal: Bright Face
+      term_type: full_form
+      term_status: admitted
+    - literal: Three Circles of Energy
+      term_type: full_form
+      term_status: admitted
+    - literal: Magic If
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+      - 'stage-craft and platform skills'
+      - 'stage craft platform skills'
+  - id: coe:entity/virtual_presentation_delivery
+    label: 'Virtual Presentation Delivery'
+    description: 'The screen-mediated stage — social-presence and Zoom-fatigue theory, camera, lighting and audio craft, platform mechanics and engagement architecture.'
+    home_domain: delivery
+    status: canonical
+    edges: []
+    examples:
+      - 'virtual presentation delivery'
+  - id: coe:entity/mehrabian_channel_weighting
+    label: 'Mehrabian Channel-Weighting Paradigm'
+    description: 'The 55/38/7 rule''s actual experimental scope, its misapplication history, and the outcome-specific channel weightings that replace the universal-law claim.'
+    home_domain: delivery
+    status: canonical
+    terms:
+    - literal: Mehrabian 55/38/7 Rule
+      term_type: full_form
+      term_status: admitted
+    - literal: 7-38-55
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+      - 'mehrabian channel-weighting paradigm'
+      - 'mehrabian channel weighting'
+  - id: coe:entity/public_speaking_replication_record
+    label: 'Public Speaking Replication Record'
+    description: 'The register of superseded public-speaking claims — power posing, the seven-second rule, gesture-density and smile-frequency — and what survives each.'
+    home_domain: delivery
+    status: canonical
+    terms:
+    - literal: Power Posing
+      term_type: full_form
+      term_status: admitted
+    - literal: 7-Seconds First Impressions
+      term_type: full_form
+      term_status: admitted
+    - literal: AI-Hallucinated Citation
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+      - 'public speaking replication record'
+  - id: coe:entity/whole_brain_presentation_model
+    label: 'Whole-Brain Performance Model (Public-Speaking Framework)'
+    description: 'A public-speaking coaching framework whose emotional-gatekeeper and left/right-brain neuroscience is superseded, with its salvageable prescriptions routed on.'
+    home_domain: delivery
+    status: canonical
+    terms:
+      - literal: 'WBP'
+        term_type: initialism
+        term_status: admitted
+    edges: []
+    examples:
+      - 'whole-brain performance model (public-speaking framework)'
+      - 'whole brain presentation model'
+      - 'whole-brain performance model'
+  - id: coe:entity/presentation_anxiety
+    label: Presentation Anxiety
+    description: The physiology and psychology of presentation nerves, and the before, during and after strategy stack —
+      including why reframing beats trying to calm down.
+    home_domain: delivery
+    status: canonical
+    edges:
+    - subject_id: coe:entity/presentation_anxiety
+      predicate: coe:bridges
+      object_id: coe:entity/presentation_anxiety_marker
+      relationship_weight: expected
+      description: The wiki discipline names the construct; presentation_anxiety_marker is the surface-detection entity
+        used in delivery rubrics.
+      statement_id: coe:edge/presentation-anxiety-bridges-presentation-anxiety-marker
+      home_domain: delivery
+    examples:
+    - presentation anxiety
+    - public speaking anxiety
+    - stage fright

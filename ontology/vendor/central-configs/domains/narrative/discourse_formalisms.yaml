@@ -1,0 +1,214 @@
+_meta:
+  file_id: coe:file/domain/narrative/discourse_formalisms
+  title: Narrative — Discourse Formalisms
+  last_updated: '2026-10-11'
+  authority: Central_Configs
+  scope: domain
+  ontology_domain: narrative
+  governing_class: coe:DomainModule
+module_id: coe:module/narrative/discourse_formalisms
+domain: narrative
+entity_collections:
+- id: coe:artifact/narrative/discourse_formalisms
+  label: Discourse Formalisms
+  description: RST, PDTB, SDRT, abstract argumentation and related discourse-engineering formalisms.
+  last_updated: '2026-10-11'
+  home_domain: narrative
+  status: canonical
+  entities:
+  - id: coe:entity/mcneill_argumentation_taxonomy
+    label: Mcneill Argumentation Taxonomy
+    description: McNeill and Krajcik's Claim-Evidence-Reasoning framework for scientific argumentation, its AQE extension, and the five-level quality rubric.
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Argument Quadruplet Extraction
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - mcneill argumentation taxonomy
+  - id: coe:entity/rhetorical_structure_theory
+    label: Rhetorical Structure Theory
+    description: Mann and Thompson's discourse-tree framework — nucleus/satellite relations, discourse signals, eRST, text simplification, RST as a coherence diagnostic, and the formal EDU/relation-set/evaluation apparatus.
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Discourse-Aware Text Simplification
+      term_type: full_form
+      term_status: admitted
+    - literal: QLoRA
+      term_type: full_form
+      term_status: admitted
+    - literal: DISRPT
+      term_type: initialism
+      term_status: admitted
+    - literal: DAGN
+      term_type: initialism
+      term_status: admitted
+    - literal: Layered Discourse Model
+      term_type: full_form
+      term_status: admitted
+    edges:
+    - subject_id: coe:entity/rhetorical_structure_theory
+      predicate: coe:bridges
+      object_id: coe:entity/penn_discourse_treebank
+      relationship_weight: optional
+      description: RST and PDTB both formalise discourse relations at different granularities and annotation traditions.
+      statement_id: coe:edge/rhetorical_structure_theory-bridges-penn_discourse_treebank
+      home_domain: narrative
+    examples:
+    - rhetorical structure theory
+  - id: coe:entity/standardised_visual_notations
+    label: Standardised Visual Notations
+    description: Five standards-body-governed visual notations (UML, BPMN, ArchiMate, Topic Maps, IDEF0) plus IDEF5 (a never-standardised KBSI method), and the formal knowledge-representation lineage (semantic networks, existential graphs, conceptual graphs, Formal Concept Analysis, frames) behind them — construction procedures, governance, and the boundary between what standards govern and what they don't.
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: UML (Unified Modeling Language)
+      term_type: full_form
+      term_status: admitted
+    - literal: BPMN conformance sub-classes
+      term_type: full_form
+      term_status: admitted
+    - literal: ArchiMate
+      term_type: full_form
+      term_status: admitted
+    - literal: ISO/IEC 13250 Topic Maps
+      term_type: full_form
+      term_status: admitted
+    - literal: IDEF0
+      term_type: initialism
+      term_status: admitted
+    - literal: IDEF5
+      term_type: initialism
+      term_status: admitted
+    - literal: Quillian semantic networks
+      term_type: full_form
+      term_status: admitted
+    - literal: Peirce existential graphs
+      term_type: full_form
+      term_status: admitted
+    - literal: Sowa conceptual graphs
+      term_type: full_form
+      term_status: admitted
+    - literal: Formal Concept Analysis
+      term_type: full_form
+      term_status: admitted
+    - literal: KL-ONE / description logics
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - standardised visual notations
+  - id: coe:entity/structured_grammar_notations
+    label: Structured Grammar Notations
+    description: Visual notations with a published construction grammar but no standards body and no machine-interpretable semantics — Toulmin's argument model, argument mapping, influence diagrams, Ishikawa diagrams, Goldratt's Current Reality Trees, Pask's entailment meshes, Isotype and Horn's Visual Language — where validity is established by human review, not a conformance checker.
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Toulmin's argument model
+      term_type: full_form
+      term_status: admitted
+    - literal: Argument mapping
+      term_type: full_form
+      term_status: admitted
+    - literal: Walton's argumentation schemes
+      term_type: full_form
+      term_status: admitted
+    - literal: Wigmore chart
+      term_type: full_form
+      term_status: admitted
+    - literal: Influence diagram
+      term_type: full_form
+      term_status: admitted
+    - literal: Ishikawa diagram
+      term_type: full_form
+      term_status: admitted
+    - literal: Current Reality Tree
+      term_type: full_form
+      term_status: admitted
+    - literal: Categories of Legitimate Reservation
+      term_type: full_form
+      term_status: admitted
+    - literal: Teachback
+      term_type: full_form
+      term_status: admitted
+    - literal: Isotype chart construction
+      term_type: full_form
+      term_status: admitted
+    - literal: Horn's Visual Language
+      term_type: full_form
+      term_status: admitted
+    - literal: Immutable mobiles
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - structured grammar notations
+  - id: coe:entity/penn_discourse_treebank
+    label: Penn Discourse Treebank
+    description: The Penn Discourse Treebank's lexically-grounded, theory-neutral local relation scheme — connective-as-predicate, the Minimality Principle, the four-class sense hierarchy, and the Implicit Discourse Relation Recognition task.
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Implicit Discourse Relation Recognition (IDRR)
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - penn discourse treebank
+  - id: coe:entity/segmented_discourse_representation_theory
+    label: Segmented Discourse Representation Theory
+    description: Asher and Lascarides's formal-semantic discourse theory — SDRS graph structure, the Right Frontier Constraint, coordinating vs subordinating relations, and its dialogue corpora (STAC, Molweni, MSDC).
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Maximise Discourse Coherence (MDC)
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - segmented discourse representation theory
+  - id: coe:entity/dungs_abstract_argumentation
+    label: Dungs Abstract Argumentation
+    description: Phan Minh Dung's abstract argumentation framework — attack graphs, admissibility, the semantics family (grounded/preferred/stable/etc.), labelling-based semantics, and its ASPIC+/ABA structured-argumentation extensions.
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Assumption-Based Argumentation (ABA)
+      term_type: full_form
+      term_status: admitted
+    - literal: ASPIC+
+      term_type: initialism
+      term_status: admitted
+    edges: []
+    examples:
+    - dungs abstract argumentation
+  - id: coe:entity/argument_mining_pipeline
+    label: Argument Mining Pipeline
+    description: The five-stage computational pipeline for extracting argumentative structure from text — ADU segmentation, component classification, relation identification, structure construction, and scheme classification — with its standard corpora and modelling eras.
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Argument Annotated Essays Corpus (AAEC)
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - argument mining pipeline
+  - id: coe:entity/intentional_discourse_structure
+    label: Intentional Discourse Structure
+    description: Grosz and Sidner's theory that discourse is structured by a hierarchy of purposes — discourse segment purposes linked by dominance and satisfaction-precedence — which a cross-domain synthesis treats as its most general candidate for a unit's governing element.
+    home_domain: narrative
+    status: canonical
+    terms:
+    - literal: Discourse segment purpose
+      term_type: full_form
+      term_status: admitted
+    - literal: Intentional structure
+      term_type: full_form
+      term_status: admitted
+    edges: []
+    examples:
+    - intentional discourse structure
