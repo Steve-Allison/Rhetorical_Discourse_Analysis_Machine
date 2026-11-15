@@ -16,7 +16,7 @@ from rdam.rst.contracts.enums import (
     RelationSchemeEnum,
 )
 from rdam.rst.ontology.loader import OntologyLockData, load_ontology_lock
-from rdam.ontology import ObservedVocabularyAlignment, observed_vocabulary_alignment
+from rdam.ontology import ObservedVocabularyAlignment, ObservedVocabularyId, observed_vocabulary_alignment
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,15 +48,16 @@ class OntologyAdapter:
     @staticmethod
     def central_alignment(raw_labels: tuple[str, ...], scheme: RelationSchemeEnum) -> ObservedVocabularyAlignment:
         """Resolve corpus labels separately from the trained local class encoding."""
+        vocabulary: ObservedVocabularyId
         match scheme:
             case RelationSchemeEnum.RST_DT_FINE:
-                vocabulary = "coe:artifact/narrative/rst_dt_relations"
+                vocabulary = "rst_dt_relations"
             case RelationSchemeEnum.RST_DT_COARSE_18:
-                vocabulary = "coe:artifact/narrative/descriptive_rst_taxonomy"
+                vocabulary = "rst_dt_coarse"
             case RelationSchemeEnum.GUM_ERST_FINE:
-                vocabulary = "coe:artifact/narrative/gum_erst_relations"
+                vocabulary = "gum_erst_relations"
             case RelationSchemeEnum.GUM_ERST_COARSE:
-                vocabulary = "coe:artifact/narrative/gum_erst_groups"
+                vocabulary = "gum_erst_groups"
             case _:
                 raise ValueError(f"No Central label crosswalk registered for {scheme.value}")
         return observed_vocabulary_alignment(vocabulary, raw_labels)

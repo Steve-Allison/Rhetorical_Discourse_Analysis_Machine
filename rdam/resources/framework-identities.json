@@ -1,92 +1,223 @@
 {
+  "central_version": "5.0.0",
   "concepts": {
     "argument_mining": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/argument_mining",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Argument Mining"
+      "authority": "rdam",
+      "broader": "rdmachine:framework",
+      "central_concepts": [],
+      "id": "rdmachine:framework/argument_mining",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Inference Anchoring Theory (IAT) Argument Mining"
     },
     "aspic": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/aspic",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
+      "authority": "rdam",
+      "broader": "rdmachine:framework",
+      "central_concepts": [],
+      "id": "rdmachine:framework/aspic",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
       "label": "ASPIC+ Structured Argumentation"
     },
     "centering": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/centering",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Centering and Entity-Grid Coherence"
+      "authority": "rdam",
+      "broader": "rdmachine:framework",
+      "central_concepts": [],
+      "id": "rdmachine:framework/centering",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Centering Theory & Entity Grid"
     },
     "classical_rhetoric": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/rhetorical_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/rhetorical_framework/classical_rhetoric",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Classical Rhetorical Analysis"
+      "authority": "central_configs",
+      "broader": "https://steve-allison.github.io/Central_Configs/v5/schema/coe#story_frameworks",
+      "central_concepts": [
+        "coe:C06007",
+        "coe:C06141",
+        "coe:C06142",
+        "coe:C06143",
+        "coe:C06144",
+        "coe:C06145",
+        "coe:C06146"
+      ],
+      "id": "coe:C06007",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Aristotelian Rhetorical Proofs"
     },
     "dung": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/dung",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Dung Abstract Argumentation"
+      "authority": "central_configs",
+      "broader": "https://steve-allison.github.io/Central_Configs/v5/schema/coe#argument_schemes",
+      "central_concepts": [
+        "coe:C06106"
+      ],
+      "id": "coe:C06106",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Toulmin Rebuttal & Boundary Exception"
     },
     "erst": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/erst",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Enhanced Rhetorical Structure Theory"
+      "authority": "rdam",
+      "broader": "rdmachine:framework",
+      "central_concepts": [],
+      "id": "rdmachine:framework/erst",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Enhanced Rhetorical Structure Theory (eRST)"
     },
     "ibis": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/ibis",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Issue-Based Information System"
+      "authority": "central_configs",
+      "broader": "https://steve-allison.github.io/Central_Configs/v5/schema/coe#argument_schemes",
+      "central_concepts": [
+        "coe:C06111"
+      ],
+      "id": "coe:C06111",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "IBIS Issue-Position-Argument Deliberation"
     },
     "pdtb": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/pdtb",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Penn Discourse Treebank"
+      "authority": "central_configs",
+      "broader": "https://steve-allison.github.io/Central_Configs/v5/schema/coe#technical_standards",
+      "central_concepts": [
+        "coe:C00108",
+        "coe:C06121",
+        "coe:C06122",
+        "coe:C06125",
+        "coe:C06128"
+      ],
+      "id": "coe:C00108",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "ISO 24617-8 Core Discourse Relations"
     },
     "pragma_dialectics": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/pragma_dialectics",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Pragma-Dialectics"
+      "authority": "rdam",
+      "broader": "rdmachine:framework",
+      "central_concepts": [],
+      "id": "rdmachine:framework/pragma_dialectics",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Pragma-Dialectical Theory of Argumentation"
     },
     "rst": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/rst",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Rhetorical Structure Theory"
+      "authority": "central_configs",
+      "broader": "https://steve-allison.github.io/Central_Configs/v5/schema/coe#discourse_relations",
+      "central_concepts": [
+        "coe:C06123",
+        "coe:C06124",
+        "coe:C06126",
+        "coe:C06127",
+        "coe:C06130"
+      ],
+      "id": "coe:C06123",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Causal Result & Consequence"
     },
     "sdrt": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/sdrt",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Segmented Discourse Representation Theory"
+      "authority": "central_configs",
+      "broader": "https://steve-allison.github.io/Central_Configs/v5/schema/coe#discourse_relations",
+      "central_concepts": [
+        "coe:C06129"
+      ],
+      "id": "coe:C06129",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Hierarchical Elaboration"
     },
     "speech_acts": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/speech_acts",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Speech Act and Dialogue Commitment Theory"
+      "authority": "rdam",
+      "broader": "rdmachine:framework",
+      "central_concepts": [],
+      "id": "rdmachine:framework/speech_acts",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Searle & Vanderveken Speech Act Theory"
     },
     "toulmin": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/toulmin",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Toulmin Model"
+      "authority": "central_configs",
+      "broader": "https://steve-allison.github.io/Central_Configs/v5/schema/coe#argument_schemes",
+      "central_concepts": [
+        "coe:C06101",
+        "coe:C06102",
+        "coe:C06103",
+        "coe:C06104",
+        "coe:C06105",
+        "coe:C06106"
+      ],
+      "id": "coe:C06101",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Toulmin Governing Claim"
     },
     "walton": {
-      "broader": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework",
-      "id": "coe:concept/analytical_frameworks_taxonomy/argumentation_framework/walton",
-      "in_scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-      "label": "Walton Argumentation Schemes"
+      "authority": "central_configs",
+      "broader": "https://steve-allison.github.io/Central_Configs/v5/schema/coe#argument_schemes",
+      "central_concepts": [
+        "coe:C06107",
+        "coe:C06108",
+        "coe:C06109",
+        "coe:C06110",
+        "coe:C06112",
+        "coe:C06113",
+        "coe:C06114",
+        "coe:C06115",
+        "coe:C06116"
+      ],
+      "id": "coe:C06107",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Argument from Pragmatic Consequences"
     }
   },
-  "last_updated": "2026-11-14",
-  "scheme": "coe:artifact/narrative/analytical_frameworks_taxonomy",
-  "source": "ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml",
-  "source_sha256": "8ac5e94e601259753b6eaad1f50ae6f5043b1ab1f916623115ec1b3a65eb2987"
+  "curie_to_techniques": {
+    "coe:C00108": [
+      "pdtb"
+    ],
+    "coe:C06007": [
+      "classical_rhetoric"
+    ],
+    "coe:C06101": [
+      "toulmin"
+    ],
+    "coe:C06106": [
+      "dung"
+    ],
+    "coe:C06107": [
+      "walton"
+    ],
+    "coe:C06111": [
+      "ibis"
+    ],
+    "coe:C06123": [
+      "rst"
+    ],
+    "coe:C06129": [
+      "sdrt"
+    ],
+    "rdmachine:framework/argument_mining": [
+      "argument_mining"
+    ],
+    "rdmachine:framework/aspic": [
+      "aspic"
+    ],
+    "rdmachine:framework/centering": [
+      "centering"
+    ],
+    "rdmachine:framework/erst": [
+      "erst"
+    ],
+    "rdmachine:framework/pragma_dialectics": [
+      "pragma_dialectics"
+    ],
+    "rdmachine:framework/speech_acts": [
+      "speech_acts"
+    ]
+  },
+  "native_to_curie": {
+    "argument_mining": "rdmachine:framework/argument_mining",
+    "aspic": "rdmachine:framework/aspic",
+    "centering": "rdmachine:framework/centering",
+    "classical_rhetoric": "coe:C06007",
+    "dung": "coe:C06106",
+    "erst": "rdmachine:framework/erst",
+    "ibis": "coe:C06111",
+    "pdtb": "coe:C00108",
+    "pragma_dialectics": "rdmachine:framework/pragma_dialectics",
+    "rst": "coe:C06123",
+    "sdrt": "coe:C06129",
+    "speech_acts": "rdmachine:framework/speech_acts",
+    "toulmin": "coe:C06101",
+    "walton": "coe:C06107"
+  },
+  "scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+  "source": "ontology/data/rdam-providers.yaml",
+  "source_sha256": "e30d536b521b4b509afca918aef45b30bf633ec237f80048ea299beb66324d32"
 }

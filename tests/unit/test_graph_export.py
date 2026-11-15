@@ -138,7 +138,7 @@ def test_to_rdf_triples_and_turtle(sample_analysis: tuple[RstDocument, RstAnalys
     assert len(triples) > 10
     predicates = {p for _, p, _ in triples}
     assert "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in predicates
-    assert "http://example.org/central/ontology/relationConcept" in predicates
+    assert "https://steve-allison.github.io/Central_Configs/v5/relationConcept" in predicates
 
     turtle_text = to_turtle(analysis, doc)
     assert "@prefix coe:" in turtle_text

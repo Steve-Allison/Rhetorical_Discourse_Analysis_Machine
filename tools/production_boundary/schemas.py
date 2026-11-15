@@ -54,7 +54,7 @@ def generated_schemas() -> dict[str, bytes]:
             generated[f"machine-{name}.{mode}.schema.json"] = rfc8785.dumps(
                 machine_schema(name, mode=mode)
             ) + b"\n"
-    for name in ("concept-link-request", "concept-links", "concept-mention"):
+    for name in ("concept-index", "concept-link-request", "concept-links", "concept-mention"):
         for mode in ("validation", "serialization"):
             generated[f"{name}.{mode}.schema.json"] = rfc8785.dumps(concept_schema(name, mode=mode)) + b"\n"
     return generated

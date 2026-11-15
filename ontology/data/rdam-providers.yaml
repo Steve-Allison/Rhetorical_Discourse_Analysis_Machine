@@ -1,53 +1,112 @@
-# The machine's technique-boundary bindings to Central's canonical framework concepts.
-# Identity only (006 capability-declaration §Identity binding). Validated by
-# `pixi run ontology-validate` against ontology/schema/rdam.linkml.yaml; the same fourteen
-# concepts are projected into rdam/resources/framework-identities.json.
-scheme: coe:artifact/narrative/analytical_frameworks_taxonomy
+# The machine's technique-boundary bindings to Central_Configs v5.0.0 resources
+# (../Central_Configs/dist/build/central.sqlite, verified 2026-11-15) and rdam-owned
+# formalism identities where Central_Configs v5.0.0 scopes formalism-internal mechanics to
+# consumers. Validated by `pixi run ontology-validate` against ontology/schema/rdam.linkml.yaml;
+# projected into rdam/resources/framework-identities.json.
+scheme: https://steve-allison.github.io/Central_Configs/v5/schema/coe
 bindings:
 - boundary: rst
-  framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/rst
+  authority: central_configs
+  framework: coe:C06123  # Causal Result & Consequence
+  central_concepts:
+  - coe:C06123  # Causal Result & Consequence
+  - coe:C06124  # Pragmatic Evidence & Justification
+  - coe:C06126  # Antithesis & Direct Contrast
+  - coe:C06127  # Concessive Counter-Expectation
+  - coe:C06130  # Summary & Synthesis Restatement
   requires_structured_input: false
   formalisms:
   - formalism_id: rst_tree
-    framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/rst
+    authority: central_configs
+    framework: coe:C06123  # Causal Result & Consequence
   - formalism_id: erst_graph
-    framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/erst
+    authority: rdam
+    framework: rdmachine:framework/erst
 - boundary: centering
-  framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/centering
+  authority: rdam
+  framework: rdmachine:framework/centering
   requires_structured_input: false
 - boundary: pdtb
-  framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/pdtb
+  authority: central_configs
+  framework: coe:C00108  # ISO 24617-8 Core Discourse Relations
+  central_concepts:
+  - coe:C00108  # ISO 24617-8 Core Discourse Relations
+  - coe:C06121  # Temporal Asynchronous Precedence
+  - coe:C06122  # Temporal Synchronous Co-Occurrence
+  - coe:C06125  # Conditional Contingency
+  - coe:C06128  # Concrete Instantiation
   requires_structured_input: false
 - boundary: sdrt
-  framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/sdrt
+  authority: central_configs
+  framework: coe:C06129  # Hierarchical Elaboration
+  central_concepts:
+  - coe:C06129  # Hierarchical Elaboration
   requires_structured_input: false
 - boundary: speech_acts
-  framework: coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/speech_acts
+  authority: rdam
+  framework: rdmachine:framework/speech_acts
   requires_structured_input: false
 - boundary: classical_rhetoric
-  framework: coe:concept/analytical_frameworks_taxonomy/rhetorical_framework/classical_rhetoric
+  authority: central_configs
+  framework: coe:C06007  # Aristotelian Rhetorical Proofs
+  central_concepts:
+  - coe:C06007  # Aristotelian Rhetorical Proofs
+  - coe:C06141  # Unit-Sized Governing Assertion
+  - coe:C06142  # MECE Structural Partitioning
+  - coe:C06143  # Contrastive Reframing Pivot
+  - coe:C06144  # Inoculative Concession & Watchout Disclosure
+  - coe:C06145  # Structural Metadiscourse Signposting
+  - coe:C06146  # Stakes-First Commercial Tension Hook
   requires_structured_input: false
 - boundary: argument_mining
-  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/argument_mining
+  authority: rdam
+  framework: rdmachine:framework/argument_mining
   requires_structured_input: false
 - boundary: toulmin
-  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/toulmin
+  authority: central_configs
+  framework: coe:C06101  # Toulmin Governing Claim
+  central_concepts:
+  - coe:C06101  # Toulmin Governing Claim
+  - coe:C06102  # Toulmin Empirical Grounds (Data)
+  - coe:C06103  # Toulmin Warrant
+  - coe:C06104  # Toulmin Backing
+  - coe:C06105  # Toulmin Epistemic Qualifier
+  - coe:C06106  # Toulmin Rebuttal & Boundary Exception
   requires_structured_input: false
 - boundary: walton
-  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/walton
+  authority: central_configs
+  framework: coe:C06107  # Walton Argument from Pragmatic Consequences
+  central_concepts:
+  - coe:C06107  # Walton Argument from Pragmatic Consequences
+  - coe:C06108  # Walton Argument from Cause to Effect
+  - coe:C06109  # Walton Argument from Structural Analogy
+  - coe:C06110  # Walton Argument from Verifiable Evidence & Sign
+  - coe:C06112  # Walton Argument from Expert Opinion
+  - coe:C06113  # Walton Argument from Popular Practice
+  - coe:C06114  # Walton Argument from Verbal Classification
+  - coe:C06115  # Walton Circumstantial Ethos & Bias Challenge
+  - coe:C06116  # Walton Correlation-to-Cause Diagnostic Scheme
   requires_structured_input: false
 - boundary: pragma_dialectics
-  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/pragma_dialectics
+  authority: rdam
+  framework: rdmachine:framework/pragma_dialectics
   requires_structured_input: false
 - boundary: ibis
-  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/ibis
+  authority: central_configs
+  framework: coe:C06111  # IBIS Issue-Position-Argument Deliberation
+  central_concepts:
+  - coe:C06111  # IBIS Issue-Position-Argument Deliberation
   requires_structured_input: false
   accepts_structured_input: true
 - boundary: aspic
-  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/aspic
+  authority: rdam
+  framework: rdmachine:framework/aspic
   requires_structured_input: false
   accepts_structured_input: true
 - boundary: dung
-  framework: coe:concept/analytical_frameworks_taxonomy/argumentation_framework/dung
+  authority: central_configs
+  framework: coe:C06106  # Toulmin Rebuttal & Boundary Exception
+  central_concepts:
+  - coe:C06106  # Toulmin Rebuttal & Boundary Exception
   requires_structured_input: true
   accepts_structured_input: true

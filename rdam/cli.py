@@ -391,7 +391,7 @@ def _execute(args: argparse.Namespace) -> tuple[bytes, int, object]:
     elif args.command == "schema":
         from rdam.serialization import schema
 
-        if args.record in {"concept-link-request", "concept-links", "concept-mention"}:
+        if args.record in {"concept-index", "concept-link-request", "concept-links", "concept-mention"}:
             from rdam.concepts.serialization import schema as concept_schema
 
             return canonical_json_bytes(concept_schema(args.record, mode=args.mode)), 0, None

@@ -28,7 +28,7 @@ def test_authority_classifies_each_surface() -> None:
     assert authority.classify("rdam/rst/provider.py") == OwnershipClass.PRODUCTION
     assert authority.classify("rdam/dung/provider.py") == OwnershipClass.PRODUCTION
     assert authority.classify("rdam/ibis/provider.py") == OwnershipClass.PRODUCTION
-    assert authority.classify("ontology/vendor/central-configs/distribution.yaml") == OwnershipClass.REPOSITORY
+    assert authority.classify("ontology/data/rdam-providers.yaml") == OwnershipClass.REPOSITORY
     assert authority.classify("ontology/schema/rdam.linkml.yaml") == OwnershipClass.REPOSITORY
     assert authority.classify("workbench/evaluation/rst/parseval.py") == OwnershipClass.OFFLINE
     assert authority.classify("workbench/training/run.py") == OwnershipClass.OFFLINE

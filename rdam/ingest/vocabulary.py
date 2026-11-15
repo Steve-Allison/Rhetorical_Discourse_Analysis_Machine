@@ -7,7 +7,13 @@ from pydantic import Field, model_validator
 
 from rdam.ingest.contracts.base import Sha256Identity, StrictContractModel
 from rdam.ingest.identity import semantic_sha256
-from rdam.ontology import ObservedVocabularyAlignment, observed_vocabulary_alignment, technique_projection_identity
+from rdam.ontology import (
+    ObservedVocabularyAlignment,
+    ObservedVocabularyId,
+    declared_vocabulary_contains_all,
+    observed_vocabulary_alignment,
+    technique_projection_identity,
+)
 from rdam._strict import Sha256Identity as ProjectionIdentity
 
 
@@ -19,18 +25,20 @@ def _alignment(
         return None, "shared_classifier_crosswalk_unavailable"
     if corpus is None:
         return None, "corpus_not_declared"
+    schemes: tuple[ObservedVocabularyId, ...]
     match corpus.casefold().strip():
         case "gum":
-            schemes = ("coe:artifact/narrative/gum_erst_groups", "coe:artifact/narrative/gum_erst_relations")
+            schemes = ("gum_erst_groups", "gum_erst_relations")
         case "rst-dt" | "rstdt":
-            schemes = ("coe:artifact/narrative/descriptive_rst_taxonomy", "coe:artifact/narrative/rst_dt_relations")
+            schemes = ("rst_dt_coarse", "rst_dt_relations")
         case _:
             return None, "no_registered_corpus_crosswalk"
-    candidates = tuple(observed_vocabulary_alignment(scheme, labels, projection_identity=identity) for scheme in schemes)
-    complete = tuple(candidate for candidate in candidates if not candidate.unmapped)
-    if len(complete) != 1:
-        return None, "inventory_scope_ambiguous" if complete else "inventory_has_unmapped_labels"
-    return complete[0], None
+    matching_schemes: tuple[ObservedVocabularyId, ...] = tuple(
+        scheme for scheme in schemes if declared_vocabulary_contains_all(scheme, labels, projection_identity=identity)
+    )
+    if len(matching_schemes) != 1:
+        return None, "inventory_scope_ambiguous" if matching_schemes else "inventory_has_unmapped_labels"
+    return observed_vocabulary_alignment(matching_schemes[0], labels, projection_identity=identity), None
 
 
 class RuntimeRelationVocabulary(StrictContractModel):

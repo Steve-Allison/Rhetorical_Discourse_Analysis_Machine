@@ -167,9 +167,13 @@ include = [
   "tools/compile_concept_index.py",
   "examples/concept_passages.py",
   "tests/interfaces",
-  "tests/machine/test_ontology_snapshots.py",
+  "tests/machine/test_frameworks.py",
+  "tests/machine/test_discourse_projection.py",
+  "tests/machine/test_observed_vocabulary.py",
   "tests/unit/test_runtime_vocabulary.py",
+  "tools/ontology/project_framework_identities.py",
   "tools/ontology/project_discourse_concepts.py",
+  "tools/production_boundary/clean_install.py",
   "tests/llm/test_client_lifecycle.py",
   "tests/llm/test_instruction_provenance.py",
   "tests/production_boundary/test_runtime_tokenizer_dependency.py",
@@ -226,8 +230,15 @@ shared-runtime-mutation-test = { cmd = "python tools/shared_runtime_mutation_tes
 smoke = { cmd = "pytest tests/integration/test_production_smoke.py -q", description = "Load every parser release in the configured model releases store on every available device through the public façade" }
 lint = { cmd = "ruff check rdam workbench tests scripts tools", description = "Ruff" }
 lint-production-modern = { cmd = "ruff check rdam --preview --select E,F,B,W,BLE,UP,PERF,C4,PIE,SIM,RUF005,RUF007,RUF022,RUF023,RUF031,RUF039,RUF052,RUF055,RUF059,RUF069 --ignore E501,E741", description = "Python 3.14 modernization gate for production code" }
-project-framework-identities = { cmd = "python tools/ontology/project_framework_identities.py", description = "Regenerate rdam/resources/framework-identities.json from the vendored Central taxonomy" }
-ontology-validate = { cmd = "linkml lint --ignore-warnings ontology/schema/rdam.linkml.yaml && linkml validate ontology/schema/rdam.linkml.yaml && linkml validate -s ontology/schema/rdam.linkml.yaml -C ProviderBindings ontology/data/rdam-providers.yaml && python tools/ontology/project_framework_identities.py --check", description = "Validate the rdam LinkML application profile and its provider bindings against the vendored Central distribution, and check the framework projection is current" }
+compile-concept-index = { cmd = "python tools/compile_concept_index.py ../Central_Configs rdam/resources/concept-index.json", description = "Compile rdam/resources/concept-index.json from Central_Configs v5.0.0 central.sqlite match_lexicon" }
+check-concept-index = { cmd = "python tools/compile_concept_index.py ../Central_Configs rdam/resources/concept-index.json --check", description = "Verify rdam/resources/concept-index.json matches Central_Configs v5.0.0 central.sqlite" }
+project-framework-identities = { cmd = "python tools/ontology/project_framework_identities.py", description = "Regenerate rdam/resources/framework-identities.json from ontology/data/rdam-providers.yaml and Central_Configs v5.0.0 central.sqlite" }
+check-framework-identities = { cmd = "python tools/ontology/project_framework_identities.py --check", description = "Verify rdam/resources/framework-identities.json matches ontology/data/rdam-providers.yaml and Central_Configs v5.0.0" }
+project-discourse-concepts = { cmd = "python -m tools.ontology.project_discourse_concepts", description = "Regenerate rdam/resources/{discourse-concepts,technique-concepts}.json from Central_Configs v5.0.0 central.sqlite" }
+check-discourse-concepts = { cmd = "python -m tools.ontology.project_discourse_concepts --check", description = "Verify rdam/resources/{discourse-concepts,technique-concepts}.json match Central_Configs v5.0.0" }
+ontology-lint = { cmd = "linkml lint ontology/schema/rdam.linkml.yaml && linkml lint --ignore-warnings rdam/rst/ontology/discourse.linkml.yaml", description = "LinkML lint over ontology/schema/rdam.linkml.yaml (strict) and rdam/rst/ontology/discourse.linkml.yaml" }
+ontology-validate = { cmd = "linkml lint ontology/schema/rdam.linkml.yaml && linkml validate -s ontology/schema/rdam.linkml.yaml -C ProviderBindings ontology/data/rdam-providers.yaml && python tools/ontology/project_framework_identities.py --check && python -m tools.ontology.project_discourse_concepts --check && python tools/compile_concept_index.py ../Central_Configs rdam/resources/concept-index.json --check", description = "Validate the rdam LinkML application profile, provider bindings, and all Central_Configs v5.0.0 projections" }
+clean-install-proof = { cmd = "python tools/production_boundary/clean_install.py --root . --self-contained-proof", description = "Build the rdam wheel in an isolated temp workspace outside AI_Projects+Code and run offline core and core+http installed acceptance with zero sibling-repo access" }
 typecheck = { cmd = "pyright", description = "Pyright, strict" }
 mdlint = { cmd = "python scripts/lint_markdown.py --lint", description = "markdownlint-cli2 over the tracked Markdown manifest" }
 cleanup = { cmd = "python scripts/cleanup.py", description = "Remove bytecode, tool caches, and dist/ (never .pixi)" }

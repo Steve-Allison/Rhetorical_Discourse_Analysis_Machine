@@ -1,12 +1,17 @@
-"""Public lexical operations and causal evidence failures."""
+"""Public Stage 1 lexical operations and causal evidence failures."""
 
 from pathlib import Path
 
 import pytest
 
 from rdam.concepts import (
-    CandidateSpan, ConceptIndex, ConceptLinkResult, link_inventory, link_source,
-    resolve_candidates, validate_result,
+    CandidateSpan,
+    ConceptIndex,
+    ConceptLinkResult,
+    link_inventory,
+    link_source,
+    resolve_candidates,
+    validate_result,
 )
 from rdam.concepts.index import IndexProjection, LexicalEntry, SemanticResource
 from rdam.ingest.contracts.preparation import ContentInventory
@@ -16,14 +21,34 @@ from tools.compile_concept_index import compile_distribution
 
 
 def make_index(*labels: str) -> ConceptIndex:
-    resources = tuple(SemanticResource(identifier=f"test:{i}", label=label, description=label,
-                                     domain="test", status="canonical", resource_type="Concept", source_path="test.json")
-                      for i, label in enumerate(labels))
-    projection = IndexProjection(distribution_id="test:distribution", version="1.0.0", domains=("test",),
-                                 source_files=(), resources=resources,
-                                 entries=tuple(LexicalEntry(literal=r.label, target=r.identifier, method="label") for r in resources),
-                                 authorable_predicates=())
-    return ConceptIndex(projection=projection, domains=("test",))
+    resources = tuple(
+        SemanticResource(
+            curie=f"coe:C{90001 + i:05d}",
+            pref_label=f"{label} ({i})",
+            definition=label,
+            collection_name="offerings",
+            status="active",
+        )
+        for i, label in enumerate(labels)
+    )
+    entries = tuple(
+        LexicalEntry(
+            curie=resource.curie,
+            pref_label=resource.pref_label,
+            collection_name="offerings",
+            surface=labels[i],
+            match_policy="unambiguous",
+        )
+        for i, resource in enumerate(resources)
+    )
+    projection = IndexProjection(
+        distribution_id="https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+        version="5.0.0",
+        domains=("offerings",),
+        resources=resources,
+        entries=entries,
+    )
+    return ConceptIndex(projection=projection, domains=("offerings",))
 
 
 def _inventory(text: str) -> ContentInventory:
@@ -32,36 +57,69 @@ def _inventory(text: str) -> ContentInventory:
 
 def test_real_packaged_central_and_repeated_evidence() -> None:
     index = ConceptIndex.load()
-    assert len(index.domains) == 8
-    text = "Adobe Analytics. Adobe Analytics. AEM uses S3D and Photoshop, not s3d."
+    assert len(index.domains) == 10
+    text = "Adobe Analytics. Adobe Analytics. In Adobe architectures, AEM uses RTCDP and Photoshop, not rtcdp."
     result = link_source(SourceArtifact.from_text(text, source_name="test"), index)
     mentions = [m for m in result.mentions if m.quote == "Adobe Analytics"]
     assert [(m.start, m.end) for m in mentions] == [(0, 15), (17, 32)]
     assert len({m.occurrence_id for m in mentions}) == 2
-    assert [c.resource.identifier for c in mentions[0].candidates] == ["coe:entity/adobe/analytics"]
-    assert {reason.method for reason in mentions[0].candidates[0].reasons} == {"label"}
+    assert mentions[0].curie == "coe:C01007"
+    assert mentions[0].candidate_curies == ("coe:C01007",)
+    assert mentions[0].ambiguous is False
     by_quote = {m.quote: m for m in result.mentions}
-    aem = by_quote["AEM"].candidates[0]
-    assert aem.resource.identifier == "coe:entity/adobe/experience_manager"
-    assert [(r.method, r.term_type, r.term_status) for r in aem.reasons] == [("term", "initialism", "admitted")]
-    substance = by_quote["S3D"].candidates[0]
-    assert substance.resource.identifier == "coe:entity/adobe/substance_3d"
-    assert substance.reasons[0].term_type == "product_code"
-    assert "s3d" not in by_quote, "product codes match case-sensitively by default"
-    photoshop = by_quote["Photoshop"].candidates[0]
-    assert photoshop.resource.identifier == "coe:entity/adobe/photoshop"
-    assert photoshop.reasons[0].term_type == "short_form" and photoshop.reasons[0].usage_note
+    assert by_quote["AEM"].curie == "coe:C01014"
+    assert by_quote["AEM"].candidates[0].reasons[0].match_policy == "context_anchored"
+    assert by_quote["RTCDP"].curie == "coe:C01004"
+    assert by_quote["RTCDP"].candidates[0].reasons[0].match_policy == "case_exact"
+    assert "rtcdp" not in by_quote, "case_exact acronyms match case-sensitively by default"
+    assert by_quote["Photoshop"].curie == "coe:C01111"
     assert ConceptLinkResult.model_validate_json(result.model_dump_json()) == result
 
 
-def test_unicode_offsets_overlaps_whitespace_boundaries_and_ambiguity() -> None:
-    index = make_index("Straße", "café", "new york", "york", "york", "s", "C++")
-    result = link_inventory(_inventory("STRASSE cafe\u0301 NEW\n  YORK yorkshire ß C++"), index)
-    assert [(m.quote, m.resolution) for m in result.mentions] == [
-        ("STRASSE", "unique"), ("cafe\u0301", "unique"), ("NEW\n  YORK", "unique"),
-        ("YORK", "ambiguous"), ("C++", "unique"),
+def test_boundaries_overlaps_ambiguity_and_llm_disambiguation() -> None:
+    resources = (
+        SemanticResource(curie="coe:C90001", pref_label="New York", definition="d", collection_name="offerings"),
+        SemanticResource(curie="coe:C90002", pref_label="York A", definition="d", collection_name="offerings"),
+        SemanticResource(curie="coe:C90003", pref_label="York B", definition="d", collection_name="offerings"),
+        SemanticResource(curie="coe:C90004", pref_label="Express", definition="d", collection_name="offerings"),
+        SemanticResource(curie="coe:C90005", pref_label="Commerce", definition="d", collection_name="offerings"),
+    )
+    entries = (
+        LexicalEntry(curie="coe:C90001", pref_label="New York", collection_name="offerings", surface="New York"),
+        LexicalEntry(curie="coe:C90002", pref_label="York A", collection_name="offerings", surface="York"),
+        LexicalEntry(curie="coe:C90003", pref_label="York B", collection_name="offerings", surface="York"),
+        LexicalEntry(curie="coe:C90004", pref_label="Express", collection_name="offerings", surface="Express"),
+        LexicalEntry(
+            curie="coe:C90005",
+            pref_label="Commerce",
+            collection_name="offerings",
+            surface="Commerce",
+            requires_llm_disambiguation=True,
+        ),
+    )
+    projection = IndexProjection(
+        distribution_id="https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+        version="5.0.0",
+        domains=("offerings",),
+        resources=resources,
+        entries=entries,
+    )
+    index = ConceptIndex(projection=projection, domains=("offerings",))
+    result = link_inventory(
+        _inventory("NEW YORK YORK yorkshire Express.js e-commerce Commerce"),
+        index,
+    )
+    assert [(m.quote, m.resolution, m.curie, m.candidate_curies, m.ambiguous) for m in result.mentions] == [
+        ("NEW YORK", "unique", "coe:C90001", ("coe:C90001",), False),
+        ("YORK", "ambiguous", None, ("coe:C90002", "coe:C90003"), True),
+        ("Commerce", "ambiguous", None, ("coe:C90005",), True),
     ]
-    assert all(s.text[m.start:m.end] == m.quote for m in result.mentions for s in result.surfaces if s.item_id == m.item_id)
+    assert all(
+        s.text[m.start:m.end] == m.quote
+        for m in result.mentions
+        for s in result.surfaces
+        if s.item_id == m.item_id
+    )
 
 
 def test_unknown_supplied_candidates_and_reuse_fail_closed() -> None:

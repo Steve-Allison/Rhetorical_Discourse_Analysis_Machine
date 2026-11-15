@@ -8,14 +8,14 @@ from pydantic import model_validator
 from rdam._canonical import canonical_json_bytes
 from rdam.serialization import decode_object
 from rdam.concepts.contracts import ConceptLinkRequest, ConceptLinkResult, MatchingOptions, Mention, Surface, occurrence_identity
-from rdam.concepts.index import OntologyIdentity
+from rdam.concepts.index import IndexProjection, OntologyIdentity
 from rdam.ingest.contracts.base import Sha256Identity, StrictContractModel
 from rdam.ingest.contracts.source import SourceContractIdentity, SourceSummary
 
 
 class MentionExport(StrictContractModel):
     contract: Literal["rdam.concept_mention"] = "rdam.concept_mention"
-    contract_version: Literal["2.0.0"] = "2.0.0"
+    contract_version: Literal["3.0.0"] = "3.0.0"
     source: SourceSummary
     inventory_identity: Sha256Identity
     source_adapter: SourceContractIdentity
@@ -72,7 +72,12 @@ def serialize(record: ConceptLinkRequest | ConceptLinkResult | MentionExport) ->
 
 
 def schema(name: str, *, mode: Literal["validation", "serialization"] = "validation") -> dict[str, Any]:
-    models = {"concept-link-request": ConceptLinkRequest, "concept-links": ConceptLinkResult, "concept-mention": MentionExport}
+    models = {
+        "concept-index": IndexProjection,
+        "concept-link-request": ConceptLinkRequest,
+        "concept-links": ConceptLinkResult,
+        "concept-mention": MentionExport,
+    }
     if name not in models:
         raise ValueError(f"unknown concept schema: {name}")
     document = models[name].model_json_schema(mode=mode)

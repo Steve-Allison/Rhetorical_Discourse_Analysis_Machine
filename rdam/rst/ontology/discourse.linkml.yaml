@@ -1,15 +1,19 @@
 # Formal LinkML schema specification for RST and eRST discourse graphs
-id: http://example.org/central/ontology/discourse
+id: https://steve-allison.github.io/Rhetorical_Discourse_Analysis_Machine/ontology/schema/discourse
 name: discourse_ontology
-title: Central Discourse & Rhetorical Structure Ontology
-version: 1.0.0
+title: RDAM Discourse & Rhetorical Structure Ontology
+version: 2.0.0
 license: https://creativecommons.org/licenses/by/4.0/
 
 prefixes:
-  coe: http://example.org/central/ontology/
+  coe: https://steve-allison.github.io/Central_Configs/v5/
+  rdmachine: https://steve-allison.github.io/Rhetorical_Discourse_Analysis_Machine/ontology/
   rst: http://example.org/discourse/rst/
   linkml: https://w3id.org/linkml/
   xsd: http://www.w3.org/2001/XMLSchema#
+
+imports:
+  - linkml:types
 
 default_prefix: coe
 default_range: string

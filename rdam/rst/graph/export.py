@@ -122,10 +122,10 @@ def to_rdf_triples(
         (
             doc_uri,
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-            "http://example.org/central/ontology/DiscourseDocument",
+            "https://steve-allison.github.io/Central_Configs/v5/DiscourseDocument",
         )
     )
-    triples.append((doc_uri, "http://example.org/central/ontology/formalism", analysis.formalism.value))
+    triples.append((doc_uri, "https://steve-allison.github.io/Central_Configs/v5/formalism", analysis.formalism.value))
 
     for node in analysis.nodes:
         node_uri = f"{doc_uri}#node_{node.node_id}"
@@ -134,15 +134,15 @@ def to_rdf_triples(
             (
                 node_uri,
                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                f"http://example.org/central/ontology/{kind_class}",
+                f"https://steve-allison.github.io/Central_Configs/v5/{kind_class}",
             )
         )
-        triples.append((node_uri, "http://example.org/central/ontology/partOfDocument", doc_uri))
-        triples.append((node_uri, "http://example.org/central/ontology/text", f'"{node.text}"'))
-        triples.append((node_uri, "http://example.org/central/ontology/charStart", str(node.char_span[0])))
-        triples.append((node_uri, "http://example.org/central/ontology/charEnd", str(node.char_span[1])))
-        triples.append((node_uri, "http://example.org/central/ontology/eduStart", str(node.edu_span[0])))
-        triples.append((node_uri, "http://example.org/central/ontology/eduEnd", str(node.edu_span[1])))
+        triples.append((node_uri, "https://steve-allison.github.io/Central_Configs/v5/partOfDocument", doc_uri))
+        triples.append((node_uri, "https://steve-allison.github.io/Central_Configs/v5/text", f'"{node.text}"'))
+        triples.append((node_uri, "https://steve-allison.github.io/Central_Configs/v5/charStart", str(node.char_span[0])))
+        triples.append((node_uri, "https://steve-allison.github.io/Central_Configs/v5/charEnd", str(node.char_span[1])))
+        triples.append((node_uri, "https://steve-allison.github.io/Central_Configs/v5/eduStart", str(node.edu_span[0])))
+        triples.append((node_uri, "https://steve-allison.github.io/Central_Configs/v5/eduEnd", str(node.edu_span[1])))
 
     for edge in analysis.primary_edges:
         edge_uri = f"{doc_uri}#edge_{edge.edge_id}"
@@ -152,29 +152,29 @@ def to_rdf_triples(
             (
                 edge_uri,
                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                "http://example.org/central/ontology/PrimaryDiscourseRelation",
+                "https://steve-allison.github.io/Central_Configs/v5/PrimaryDiscourseRelation",
             )
         )
-        triples.append((edge_uri, "http://example.org/central/ontology/hasParent", parent_uri))
-        triples.append((edge_uri, "http://example.org/central/ontology/hasChild", child_uri))
+        triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/hasParent", parent_uri))
+        triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/hasChild", child_uri))
         triples.append(
             (
                 edge_uri,
-                "http://example.org/central/ontology/relationConcept",
-                f"http://example.org/central/ontology/DiscourseRelation#{edge.relation_concept}",
+                "https://steve-allison.github.io/Central_Configs/v5/relationConcept",
+                f"https://steve-allison.github.io/Central_Configs/v5/DiscourseRelation#{edge.relation_concept}",
             )
         )
-        triples.append((edge_uri, "http://example.org/central/ontology/relationRaw", f'"{edge.relation_raw}"'))
+        triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/relationRaw", f'"{edge.relation_raw}"'))
         triples.append(
             (
                 edge_uri,
-                "http://example.org/central/ontology/nuclearity",
-                f"http://example.org/central/ontology/Nuclearity#{edge.nuclearity.name}",
+                "https://steve-allison.github.io/Central_Configs/v5/nuclearity",
+                f"https://steve-allison.github.io/Central_Configs/v5/Nuclearity#{edge.nuclearity.name}",
             )
         )
         if edge.confidence is not None:
-            triples.append((edge_uri, "http://example.org/central/ontology/confidence", str(edge.confidence)))
-        triples.append((edge_uri, "http://example.org/central/ontology/calibrated", str(edge.calibrated).lower()))
+            triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/confidence", str(edge.confidence)))
+        triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/calibrated", str(edge.calibrated).lower()))
 
     for edge in analysis.secondary_edges:
         edge_uri = f"{doc_uri}#edge_{edge.edge_id}"
@@ -184,22 +184,22 @@ def to_rdf_triples(
             (
                 edge_uri,
                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                "http://example.org/central/ontology/SecondaryDiscourseRelation",
+                "https://steve-allison.github.io/Central_Configs/v5/SecondaryDiscourseRelation",
             )
         )
-        triples.append((edge_uri, "http://example.org/central/ontology/hasSource", source_uri))
-        triples.append((edge_uri, "http://example.org/central/ontology/hasTarget", target_uri))
+        triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/hasSource", source_uri))
+        triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/hasTarget", target_uri))
         triples.append(
             (
                 edge_uri,
-                "http://example.org/central/ontology/relationConcept",
-                f"http://example.org/central/ontology/DiscourseRelation#{edge.relation_concept}",
+                "https://steve-allison.github.io/Central_Configs/v5/relationConcept",
+                f"https://steve-allison.github.io/Central_Configs/v5/DiscourseRelation#{edge.relation_concept}",
             )
         )
-        triples.append((edge_uri, "http://example.org/central/ontology/relationRaw", f'"{edge.relation_raw}"'))
+        triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/relationRaw", f'"{edge.relation_raw}"'))
         if edge.confidence is not None:
-            triples.append((edge_uri, "http://example.org/central/ontology/confidence", str(edge.confidence)))
-        triples.append((edge_uri, "http://example.org/central/ontology/calibrated", str(edge.calibrated).lower()))
+            triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/confidence", str(edge.confidence)))
+        triples.append((edge_uri, "https://steve-allison.github.io/Central_Configs/v5/calibrated", str(edge.calibrated).lower()))
 
     return triples
 
@@ -212,10 +212,10 @@ def to_turtle(
     """Serialize discourse analysis to W3C Turtle RDF format."""
     doc_id = quote(analysis.document_id, safe="")
     doc_namespace = f"{base_uri}{doc_id}#"
-    concept_namespace = "http://example.org/central/ontology/DiscourseRelation#"
+    concept_namespace = "https://steve-allison.github.io/Central_Configs/v5/DiscourseRelation#"
     lines = [
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .",
-        "@prefix coe: <http://example.org/central/ontology/> .",
+        "@prefix coe: <https://steve-allison.github.io/Central_Configs/v5/> .",
         f"@prefix rel: <{concept_namespace}> .",
         f"@prefix doc: <{doc_namespace}> .",
         "",
@@ -284,8 +284,8 @@ def to_jsonld(
     doc_uri = f"{base_uri}{doc_id}"
 
     context = {
-        "@vocab": "http://example.org/central/ontology/",
-        "coe": "http://example.org/central/ontology/",
+        "@vocab": "https://steve-allison.github.io/Central_Configs/v5/",
+        "coe": "https://steve-allison.github.io/Central_Configs/v5/",
         "doc": f"{doc_uri}#",
         "node_id": "@id",
         "kind": "@type",

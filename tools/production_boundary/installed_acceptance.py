@@ -235,6 +235,49 @@ def _analyse_with_release(
     }
 
 
+def _ontology_interfaces() -> dict[str, object]:
+    """Verify packaged Central_Configs v5.0.0 lookup projections without sibling-repo access."""
+    from rdam import FRAMEWORK_SCHEME, Technique, framework_identities, technique_curie
+    from rdam.ontology import (
+        native_vocabulary_alignment,
+        pdtb_sense_alignment,
+        toulmin_role_alignment,
+        walton_profile_alignment,
+    )
+    from rdam.rst.contracts.enums import RelationSchemeEnum
+    from rdam.rst.ontology import OntologyAdapter
+
+    identities = framework_identities()
+    if set(identities) != set(Technique):
+        raise AssertionError("installed framework identities do not cover every Technique")
+    if FRAMEWORK_SCHEME != "https://steve-allison.github.io/Central_Configs/v5/schema/coe":
+        raise AssertionError(f"unexpected installed FRAMEWORK_SCHEME: {FRAMEWORK_SCHEME}")
+    if technique_curie(Technique.TOULMIN) != "coe:C06101":
+        raise AssertionError("installed Toulmin CURIE did not resolve to coe:C06101")
+    if technique_curie(Technique.CLASSICAL_RHETORIC) != "coe:C06007":
+        raise AssertionError("installed Classical Rhetoric CURIE did not resolve to coe:C06007")
+    toulmin = toulmin_role_alignment()
+    pdtb = pdtb_sense_alignment()
+    walton = walton_profile_alignment(("expert_opinion", "cause_to_effect"))
+    rhetoric = native_vocabulary_alignment("classical_rhetoric")
+    rst = OntologyAdapter.central_alignment(("cause", "concession"), RelationSchemeEnum.RST_DT_FINE)
+    if (
+        len(toulmin.mappings) != 6
+        or not pdtb.mappings
+        or not walton.mappings
+        or len(rhetoric.mappings) != 3
+        or len(rst.mappings) != 2
+    ):
+        raise AssertionError("installed ontology lookup projections failed self-containment checks")
+    return {
+        "techniques": len(identities),
+        "toulmin_roles": len(toulmin.mappings),
+        "pdtb_senses": len(pdtb.mappings),
+        "walton_slots": len(walton.mappings) + len(walton.unmapped),
+        "rst_dt_sample": len(rst.mappings),
+    }
+
+
 def _concept_interfaces() -> dict[str, object]:
     """Exercise packaged lexical resources and canonical Python/CLI exports."""
     from rdam.concepts import ConceptIndex, ConceptLinkRequest, link_source
@@ -245,7 +288,8 @@ def _concept_interfaces() -> dict[str, object]:
     result = link_source(source, ConceptIndex.load())
     if not any(
         mention.quote == "Adobe Analytics"
-        and any(candidate.resource.identifier == "coe:entity/adobe/analytics" for candidate in mention.candidates)
+        and mention.curie == "coe:C01007"
+        and any(candidate.resource.curie == "coe:C01007" for candidate in mention.candidates)
         for mention in result.mentions
     ):
         raise AssertionError("installed concept index did not resolve the documented lexical candidate")
@@ -392,6 +436,7 @@ def main() -> int:
         "offline_distributions_absent": True,
         "public_surface_entries": len(entries),
         "machine_interfaces": _machine_interfaces(http=args.http),
+        "ontology_interfaces": _ontology_interfaces(),
         "concept_interfaces": _concept_interfaces(),
         "source_contract": _prepare_sources(doclang=args.doclang),
     }

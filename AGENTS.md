@@ -195,21 +195,21 @@ ship in core `[project.dependencies]` (`pyproject.toml:44-45`), leaving `http`, 
 
 ## Shared subject-matter linking and Central_Configs
 
-`rdam.concepts` consumes shared inventories and Central-generated terminology projections
-and emits exact lexical mention evidence; see `docs/concept-linking.md`. Central_Configs
-(sibling repo) is the authority. After it changes: sync `ontology/vendor/central-configs/`
-(its `ontology/data/{distribution.yaml,domains,manifests}` and
-`ontology/schema/{coe.linkml.yaml,modules}`), then `pixi run project-framework-identities`,
-`pixi run python -m tools.ontology.project_discourse_concepts`,
-`pixi run python tools/compile_concept_index.py ../Central_Configs rdam/resources/concept-index.json`,
-and `pixi run ontology-validate`. `tests/concepts/test_ontology.py` recompiles from the
-live sibling repo.
+`rdam.concepts` consumes `Central_Configs` v5.0.0 proper-noun surface rules (`LinkableProperNoun`
+only, `../Central_Configs/AGENTS.md` Rule 6) and emits deterministic Stage 1 lexical mention
+evidence; see `docs/concept-linking.md`. `Central_Configs` (`../Central_Configs`) is the
+sole shared authority, with zero vendored YAML snapshots in this repository. After it
+changes: rebuild `../Central_Configs` (`pixi run build`), then run
+`pixi run project-framework-identities`, `pixi run project-discourse-concepts`,
+`pixi run compile-concept-index`, and `pixi run ontology-validate`.
+`tests/concepts/test_ontology.py` and `tests/concepts/test_golden_grounding.py` verify parity
+and Stage 1 grounding against `../Central_Configs`.
 
 ## Where things are
 
 The annotated source tree is the first section of `.claude/rules/architecture.md`. Outside
-`rdam/`: `ontology/` (vendored Central distribution, read-only, and the `rdam` LinkML
-profile), `tools/production_boundary/` (boundary inspection, build, artifact validation,
+`rdam/`: `ontology/` (the `rdam` LinkML application profile and `rdam-providers.yaml`),
+`tools/production_boundary/` (boundary inspection, build, artifact validation,
 clean install, `rst-baseline`), `workbench/` (offline corpus, training, evaluation,
 model-store release tooling; `workbench/erst/` is the suspended eRST work), and
 `.claude/memory/` (hand-maintained `verified_*` and `open_*` notes indexed by its

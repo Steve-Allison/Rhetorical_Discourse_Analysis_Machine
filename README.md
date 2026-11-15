@@ -488,7 +488,7 @@ rdam/                        the distribution and import package — the machine
 ├── argument_mining/, toulmin/, walton/, pragma_dialectics/   argumentation providers
 ├── ibis/, aspic/            dual-mode supplied-structure + grounded-extraction providers
 └── dung/                    CaDiCaL SAT semantics.py, Wave-2 compilers.py, provider.py
-ontology/                    vendored Central distribution + the rdam LinkML profile (not shipped)
+ontology/                    the rdam LinkML profile and provider bindings (not shipped)
 workbench/                   the one experimentation root: corpora, training, evaluation, research,
                              eRST, and the model-store release tooling
 models/model-releases/       immutable local releases, each with its manifest and compatibility sidecar
@@ -501,9 +501,9 @@ Production code never imports `workbench`. The wheel has one Python import root,
 plus distribution metadata; the sdist also includes the README, licenses, and build
 configuration. `pixi run production-boundary` checks source ownership;
 `pixi run validate-production-artifacts` checks built archives. Each technique declares
-exactly one framework identity from Central's
-`coe:artifact/narrative/analytical_frameworks_taxonomy` (`rdam/frameworks.py:1-19`),
-verified by `pixi run ontology-validate`.
+explicit framework identity bindings projected from `Central_Configs` v5.0.0 (`coe:Cxxxxx`)
+and `ontology/data/rdam-providers.yaml` (`rdam/frameworks.py:1-12`), verified by
+`pixi run ontology-validate`.
 
 ## Development, gates, and release
 

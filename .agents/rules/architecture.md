@@ -45,7 +45,7 @@ rdam/                        the distribution `rdam` and the import package `rda
 ├── ibis/                    dual-mode IBIS provider: gIBIS grammar.py + DocLang extraction
 ├── aspic/                   dual-mode ASPIC+ provider: structured theory.py + DocLang extraction
 └── dung/                    Dung provider: CaDiCaL SAT semantics.py, Wave-2 compilers.py, provider.py
-ontology/                    vendored Central distribution + rdam LinkML profile (repository, not shipped)
+ontology/                    the rdam LinkML profile and provider bindings (repository, not shipped)
 workbench/                   the one experimentation root; never imported by rdam
 tools/production_boundary/   boundary inspection, reproducible build, validation, clean install
 ```
@@ -127,15 +127,16 @@ graph/evidence data; it cannot select or load eRST.
 
 ### Identity binding
 
-Each technique declares exactly one framework identity from
-`coe:artifact/narrative/analytical_frameworks_taxonomy` in Central_Configs
-(`rdam/frameworks.py:1-19`, verified at
-`ontology/vendor/central-configs/domains/narrative/analytical_frameworks.yaml:21-176`).
-`coe:` identifiers are **referenced, never redefined locally**; the projection the package
-ships (`rdam/resources/framework-identities.json`) is generated from the vendored taxonomy
-and checked current by `pixi run ontology-validate`. The RST provider binds to `…/rst` and
-declares only `rst_tree → …/rst`. The `erst` identity remains in `rdam/frameworks.py` for
-historical records and workbench evaluation.
+Eight production technique boundaries bind directly to active `coe:Cxxxxx` resources in
+`Central_Configs` v5.0.0 (`../Central_Configs/dist/build/central.sqlite`, verified 2026-11-15),
+while six formalism-internal identities (`erst`, `centering`, `speech_acts`,
+`argument_mining`, `pragma_dialectics`, `aspic`) bind under `rdmachine:framework/<name>`
+(`ontology/data/rdam-providers.yaml:1-51`, `rdam/frameworks.py:1-12`). `coe:Cxxxxx`
+identifiers are **referenced, never redefined locally**, with zero vendored YAML snapshots;
+packaged projections (`rdam/resources/{framework-identities,discourse-concepts,technique-concepts,concept-index}.json`)
+are generated at build time from `../Central_Configs/dist/build/central.sqlite` and checked
+current by `pixi run ontology-validate`. The `erst` identity remains in `rdam/frameworks.py`
+for historical records and workbench evaluation.
 
 ### Persisted identifiers
 

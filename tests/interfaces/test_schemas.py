@@ -175,8 +175,8 @@ def test_llm_provider_outputs_and_current_records_match_schemas(
             forged_alignment = walton_profile_alignment(("sign",) if minimal else ())
         else:
             vocabulary, label = (
-                ("coe:artifact/narrative/pdtb3_relation_types", "Explicit") if technique is Technique.PDTB
-                else ("coe:artifact/narrative/sdrt_vocabulary", "Narration")
+                ("pdtb3_senses", "Contingency.Cause.Result") if technique is Technique.PDTB
+                else ("sdrt_relations", "Narration")
             )
             forged_alignment = observed_vocabulary_alignment(vocabulary, (label,) if minimal else ())
         for record in (aggregate, view):

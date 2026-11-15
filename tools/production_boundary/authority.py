@@ -49,7 +49,7 @@ class OwnershipAuthority:
                 rule_id="ontology",
                 prefix=PurePosixPath("ontology"),
                 ownership=OwnershipClass.REPOSITORY,
-                reason="vendored Central distribution (read-only) and the rdam application profile",
+                reason="the rdam LinkML application profile and provider bindings",
             ),
             OwnershipRule(
                 rule_id="models",

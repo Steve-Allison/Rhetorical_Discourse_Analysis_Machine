@@ -65,7 +65,8 @@ def test_configured_gum_inventory_resolves_without_using_model_name() -> None:
     assert vocabulary.corpus_name == "GUM"
     assert vocabulary.scope_basis == "configured_corpus"
     assert vocabulary.alignment is not None
-    assert vocabulary.alignment.scheme.endswith("/gum_erst_groups")
+    assert vocabulary.alignment.scheme == "https://steve-allison.github.io/Central_Configs/v5/schema/coe"
+    assert vocabulary.alignment.vocabulary == "gum_erst_groups"
     assert RuntimeRelationVocabulary.model_validate_json(vocabulary.model_dump_json()) == vocabulary
 
 

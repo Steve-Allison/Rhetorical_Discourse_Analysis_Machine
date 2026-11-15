@@ -19,15 +19,13 @@ def test_consumer_reads_json_and_jsonl_and_selects_identifier(tmp_path: Path) ->
         path = tmp_path / name
         path.write_bytes(payload)
         assert tuple(records(path))
-        run = subprocess.run([sys.executable, "examples/concept_passages.py", str(path), "coe:entity/adobe/experience_manager"],
+        run = subprocess.run([sys.executable, "examples/concept_passages.py", str(path), "coe:C01014"],
                              capture_output=True, text=True, check=False)
         assert run.returncode == 0, run.stderr
         assert '"quote": "Adobe Experience Manager"' in run.stdout
         assert '"status": "pending"' in run.stdout
-        # The label and, overlapping it, Central's short-form term "Experience Manager".
         assert [json.loads(line)["quote"] for line in run.stdout.splitlines()] == [
             "Adobe Experience Manager",
-            "Experience Manager",
         ]
     old = tmp_path / "old.jsonl"
     old.write_text('{"schema_version":"5.2","slug":"old-card"}\n')

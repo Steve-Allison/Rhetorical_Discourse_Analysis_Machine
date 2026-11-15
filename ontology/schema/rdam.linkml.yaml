@@ -3,25 +3,38 @@ name: rdam_application
 title: Rhetorical Discourse Analysis Machine Application Profile
 description: >-
   Consumer-owned application profile binding each technique boundary of the machine to
-  its framework concept in Central's analytical_frameworks_taxonomy. Identity only:
-  native relation inventories, role sets, and result payloads are provider-owned
+  either a verified Central_Configs v5.0.0 semantic resource CURIE (^coe:C[0-9]{5}$,
+  verified against ../Central_Configs/schema/coe.linkml.yaml:1-16 and
+  ../Central_Configs/dist/build/central.sqlite) or an rdam-owned formalism CURIE
+  (rdmachine:framework/<name>) where Central_Configs v5.0.0 intentionally leaves
+  formalism-internal mechanics to consuming repositories. Identity only: native
+  relation inventories, role sets, and result payloads remain provider-owned
   (006 capability-declaration contract, Identity binding). coe identifiers are
   referenced here, never redefined.
-version: 1.0.0
+version: 2.0.0
 default_prefix: rdmachine
 default_range: string
 prefixes:
   rdmachine: https://steve-allison.github.io/Rhetorical_Discourse_Analysis_Machine/ontology/
-  coe: https://steve-allison.github.io/Central_Configs/ontology/
+  coe: https://steve-allison.github.io/Central_Configs/v5/
   linkml: https://w3id.org/linkml/
 imports:
 - linkml:types
-- ../vendor/central-configs/schema/coe.linkml
+- ../../../Central_Configs/schema/coe.linkml
+
+enums:
+  BindingAuthorityEnum:
+    description: Authority owning the bound framework identifier.
+    permissible_values:
+      central_configs:
+        description: Immutable coe:Cxxxxx resource in Central_Configs v5.0.0.
+      rdam:
+        description: Provider-owned rdmachine:framework/<name> identifier in rdam.
 
 classes:
   FormalismBinding:
     class_uri: rdmachine:FormalismBinding
-    description: One result-kind a provider emits, bound to its own framework concept.
+    description: One result-kind a provider emits, bound to its own framework identity.
     attributes:
       formalism_id:
         identifier: true
@@ -29,14 +42,19 @@ classes:
         range: string
         pattern: "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
         description: Provider-owned name of the result-kind, for example rst_tree or erst_graph.
+      authority:
+        required: true
+        range: BindingAuthorityEnum
+        description: Whether framework resolves in Central_Configs v5.0.0 or rdam.
       framework:
         required: true
         range: uriorcurie
-        description: "The coe concept in analytical_frameworks_taxonomy this formalism carries."
+        pattern: "^(coe:C[0-9]{5}|rdmachine:framework/[a-z][a-z0-9_]*)$"
+        description: The Central_Configs v5 coe:Cxxxxx resource or rdmachine:framework/<name> identity this formalism carries.
 
   ProviderBinding:
     class_uri: rdmachine:ProviderBinding
-    description: One technique boundary bound to exactly one framework concept.
+    description: One technique boundary bound to its primary framework identity and Central_Configs v5 concept set.
     attributes:
       boundary:
         identifier: true
@@ -44,10 +62,20 @@ classes:
         range: string
         pattern: "^(rst|centering|pdtb|sdrt|speech_acts|classical_rhetoric|argument_mining|toulmin|walton|pragma_dialectics|ibis|aspic|dung)$"
         description: The boundary directory name; never an importable package name.
+      authority:
+        required: true
+        range: BindingAuthorityEnum
+        description: Whether framework resolves in Central_Configs v5.0.0 or rdam.
       framework:
         required: true
         range: uriorcurie
-        description: "The coe concept in analytical_frameworks_taxonomy this boundary binds to."
+        pattern: "^(coe:C[0-9]{5}|rdmachine:framework/[a-z][a-z0-9_]*)$"
+        description: Primary framework identity (coe:Cxxxxx or rdmachine:framework/<name>) declared by this boundary.
+      central_concepts:
+        multivalued: true
+        range: uriorcurie
+        pattern: "^coe:C[0-9]{5}$"
+        description: Verified Central_Configs v5.0.0 coe:Cxxxxx concepts aligned to this boundary.
       requires_structured_input:
         required: true
         range: boolean
@@ -65,12 +93,11 @@ classes:
   ProviderBindings:
     class_uri: rdmachine:ProviderBindings
     description: The machine's complete binding set, every technique boundary exactly once.
-    tree_root: true
     attributes:
       scheme:
         required: true
         range: uriorcurie
-        description: The Central taxonomy every framework identifier below belongs to.
+        description: The Central_Configs v5.0.0 schema URI governing coe:Cxxxxx bindings.
       bindings:
         multivalued: true
         required: true

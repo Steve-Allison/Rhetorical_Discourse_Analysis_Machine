@@ -2,6 +2,7 @@
 
 from rdam._interpretation_types import NativeInterpretationDescriptor, NativeSectionDescription
 from rdam.contracts import NATIVE_RESULT_VERSION
+from rdam.ontology import native_vocabulary_alignment
 
 
 def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpretationDescriptor:
@@ -18,6 +19,7 @@ def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpr
         sections=(
             NativeSectionDescription(
                 pointer="/payload/appeals",
+                ontology_alignment=native_vocabulary_alignment("classical_rhetoric"),
                 meaning="Aristotelian pisteis classified by mode (ethos/pathos/logos), sub-mode, rationale, and grounded span.",
             ),
             NativeSectionDescription(

@@ -35,7 +35,7 @@ def records(path: Path) -> Iterator[tuple[MentionExport, str, str | None]]:
                 status, target = reviewed["match"], reviewed.get("canonical_identifier")
                 if status not in {"exact", "close", "unmapped"}:
                     raise ValueError("invalid CSM review status")
-                identifiers = {item.resource.identifier for item in record.mention.candidates}
+                identifiers = {item.resource.curie for item in record.mention.candidates}
                 if (status == "unmapped" and target is not None) or (status != "unmapped" and target not in identifiers):
                     raise ValueError("CSM review target differs from exported candidates")
                 yield record, status, target
@@ -79,7 +79,7 @@ def main() -> None:
     if analysis is not None and not isinstance(analysis, AggregateAnalysis):
         raise ValueError("--analysis requires a current aggregate")
     for record, status, target in records(args.input):
-        candidates = {item.resource.identifier for item in record.mention.candidates}
+        candidates = {item.resource.curie for item in record.mention.candidates}
         if (status == "pending" and args.identifier not in candidates) or (status != "pending" and target != args.identifier):
             continue
         print(json.dumps({"identifier": args.identifier, "quote": record.mention.quote, "status": status,
@@ -88,7 +88,7 @@ def main() -> None:
             "range": [record.mention.start, record.mention.end],
             "anchors": [anchor.model_dump(mode="json") for anchor in record.surface.anchors],
             "matching_reasons": [reason.model_dump(mode="json") for candidate in record.mention.candidates
-                                 if candidate.resource.identifier == args.identifier for reason in candidate.reasons],
+                                 if candidate.resource.curie == args.identifier for reason in candidate.reasons],
             "native_locations": native_locations(record, analysis) if analysis else []}, ensure_ascii=False))
 
 

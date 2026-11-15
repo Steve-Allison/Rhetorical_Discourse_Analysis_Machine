@@ -68,7 +68,7 @@ def _perform(machine: Machine, operation: Operation, payload: bytes, schema_name
             from rdam.serialization import schema
 
             try:
-                if schema_name in {"concept-link-request", "concept-links", "concept-mention"}:
+                if schema_name in {"concept-index", "concept-link-request", "concept-links", "concept-mention"}:
                     from rdam.concepts.serialization import schema as concept_schema
 
                     document = concept_schema(schema_name, mode=cast(Literal["validation", "serialization"], mode))

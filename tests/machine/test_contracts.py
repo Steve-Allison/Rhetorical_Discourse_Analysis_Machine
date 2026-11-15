@@ -69,7 +69,7 @@ class TestProviderDeclaration:
             ProviderDeclaration(
                 provider_id="p",
                 technique=Technique.RST,
-                technique_curie="coe:concept/analytical_frameworks_taxonomy/discourse_structure_framework/pdtb",
+                technique_curie=technique_curie(Technique.PDTB),
                 formalisms=(formalism("rst_tree", Technique.RST, available("p")),),
                 configuration=ProviderConfiguration(settings={}, cache_eligible=False, cache_reason="validation_fixture"),
                 interpretations=(fixture_descriptor("rst_tree", Technique.RST),),

@@ -62,26 +62,56 @@ class Candidate(StrictContractModel):
 
     @model_validator(mode="after")
     def consistent_target(self) -> Self:
-        if any(reason.target != self.resource.identifier for reason in self.reasons):
+        if any(reason.curie != self.resource.curie for reason in self.reasons):
             raise ValueError("candidate reason target mismatch")
-        if self.resource.status == "retired":
-            raise ValueError("retired resources cannot be active candidates")
+        if self.resource.status == "historical_only":
+            raise ValueError("historical_only resources cannot be active candidates")
         return self
 
 
 class Mention(CandidateSpan):
     occurrence_id: str = Field(pattern=r"^[0-9a-f]{64}$")
+    curie: str | None = Field(default=None, pattern=r"^coe:C[0-9]{5}$")
+    candidate_curies: tuple[str, ...] = ()
+    ambiguous: bool = False
+    requires_llm_disambiguation: bool = False
     candidates: tuple[Candidate, ...]
     resolution: Literal["unique", "ambiguous", "unmapped"]
 
     @model_validator(mode="after")
     def consistent_resolution(self) -> Self:
-        expected = "unmapped" if not self.candidates else "unique" if len(self.candidates) == 1 else "ambiguous"
-        if self.resolution != expected:
-            raise ValueError("resolution differs from candidate count")
-        identifiers = tuple(item.resource.identifier for item in self.candidates)
+        identifiers = tuple(item.resource.curie for item in self.candidates)
         if identifiers != tuple(sorted(set(identifiers))):
             raise ValueError("candidates must have unique, sorted identifiers")
+        if self.candidate_curies != identifiers:
+            raise ValueError("candidate_curies must equal the sorted candidate resource curies")
+        llm_required = any(
+            reason.requires_llm_disambiguation
+            for item in self.candidates
+            for reason in item.reasons
+        )
+        if self.requires_llm_disambiguation != llm_required:
+            raise ValueError("requires_llm_disambiguation disagrees with matching surface rules")
+        if not identifiers:
+            expected_resolution = "unmapped"
+            expected_curie = None
+            expected_ambiguous = False
+        else:
+            first_curie, *rest = identifiers
+            if rest or llm_required:
+                expected_resolution = "ambiguous"
+                expected_curie = None
+                expected_ambiguous = True
+            else:
+                expected_resolution = "unique"
+                expected_curie = first_curie
+                expected_ambiguous = False
+        if self.resolution != expected_resolution:
+            raise ValueError("resolution differs from deterministic/ambiguous candidate state")
+        if self.curie != expected_curie:
+            raise ValueError("curie differs from deterministic resolution state")
+        if self.ambiguous != expected_ambiguous:
+            raise ValueError("ambiguous flag differs from resolution state")
         return self
 
 
@@ -109,12 +139,12 @@ class ConceptLinkRequest(StrictContractModel):
 
 class ConceptLinkResult(StrictContractModel):
     contract: Literal["rdam.concept_links"] = "rdam.concept_links"
-    contract_version: Literal["2.0.0"] = "2.0.0"
+    contract_version: Literal["3.0.0"] = "3.0.0"
     source: SourceSummary
     inventory_identity: Sha256Identity
     source_adapter: SourceContractIdentity
     ontology: OntologyIdentity
-    algorithm: Literal["unicode-lexical-surfaces"] = "unicode-lexical-surfaces"
+    algorithm: Literal["central-v5-stage1-surfaces"] = "central-v5-stage1-surfaces"
     algorithm_version: Literal["1.0.0"] = "1.0.0"
     implementation_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
     options: MatchingOptions

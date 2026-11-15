@@ -48,7 +48,7 @@ def _observed_section(
 
         output = SdrtOutput.model_validate_json(json.dumps(payload))
         return observed_vocabulary_alignment(
-            "coe:artifact/narrative/sdrt_vocabulary", tuple(relation.label for relation in output.relations),
+            "sdrt_relations", tuple(relation.label for relation in output.relations),
             projection_identity=snapshot,
         )
     if record["technique"] == Technique.WALTON and pointer == "/payload/instances":
@@ -64,7 +64,8 @@ def _observed_section(
 
         output = PdtbOutput.model_validate_json(json.dumps(payload))
         return observed_vocabulary_alignment(
-            "coe:artifact/narrative/pdtb3_relation_types", tuple(relation.relation_type.value for relation in output.relations),
+            "pdtb3_senses",
+            tuple(sense.value for relation in output.relations for sense in relation.senses),
             projection_identity=snapshot,
         )
     return None

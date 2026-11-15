@@ -1,363 +1,2595 @@
 {
   "authority": "Central_Configs",
+  "central_version": "5.0.0",
+  "collections": [
+    "argument_schemes",
+    "diagnostic_detectors",
+    "discourse_relations",
+    "framework_stages",
+    "rhetorical_moves",
+    "rubrics",
+    "story_frameworks",
+    "technical_standards"
+  ],
   "concepts": {
-    "coe:concept/discourse_argumentation_taxonomy/argument_component_state": {
-      "description": "Whether an argument component is asserted by the source itself or absent from it, so that unstated components are recorded as fact rather than authored",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_component_state",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Argument Component State",
-      "status": "canonical"
-    },
-    "coe:concept/discourse_argumentation_taxonomy/argument_component_state/stated": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_component_state"
+    "coe:C00108": {
+      "collection_name": "technical_standards",
+      "definition": "International semantic annotation standard (DR-Core) defining interoperable coherence relations across Rhetorical Structure Theory and the Penn Discourse Treebank.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The source asserts the component in its own words",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_component_state/stated",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Stated",
-      "status": "canonical"
+      "id": "coe:C00108",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "ISO 24617-8 Core Discourse Relations",
+      "payload": {
+        "definition": "International semantic annotation standard (DR-Core) defining interoperable coherence relations across Rhetorical Structure Theory and the Penn Discourse Treebank.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C00108",
+        "pref_label": "ISO 24617-8 Core Discourse Relations",
+        "source_uri": "https://www.iso.org/standard/60780.html",
+        "steward_organisation": "coe:C00006",
+        "surface_rules": [
+          {
+            "match_policy": "unambiguous",
+            "surface": "ISO 24617-8"
+          }
+        ],
+        "terms": [
+          {
+            "term_kind": "short_form",
+            "written_form": "ISO 24617-8"
+          },
+          {
+            "term_kind": "short_form",
+            "written_form": "DR-Core"
+          }
+        ],
+        "wiki_slug": "penn-discourse-treebank"
+      },
+      "wiki_slug": "penn-discourse-treebank"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_component_state/unstated": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_component_state"
+    "coe:C06001": {
+      "collection_name": "story_frameworks",
+      "definition": "Four-stage commercial storytelling structure—Situation, Opportunity, Action, Result—connecting a customer's operational context and urgent gap to concrete capability execution and verified business outcomes.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
       ],
-      "description": "The source does not assert the component; its absence is the recorded fact",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_component_state/unstated",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Unstated",
-      "status": "canonical"
+      "id": "coe:C06001",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SOAR Customer Value Framework",
+      "payload": {
+        "communicative_purpose": "Frame customer proof stories, executive value cases, and solution briefs around measurable customer transformation rather than product feature lists.",
+        "definition": "Four-stage commercial storytelling structure—Situation, Opportunity, Action, Result—connecting a customer's operational context and urgent gap to concrete capability execution and verified business outcomes.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06001",
+        "pref_label": "SOAR Customer Value Framework",
+        "terms": [
+          {
+            "term_kind": "acronym",
+            "written_form": "SOAR"
+          }
+        ],
+        "wiki_slug": "soar-sales-stage-mapping"
+      },
+      "wiki_slug": "soar-sales-stage-mapping"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type": {
-      "description": "How one position attacks another, using the ASPIC+ attack-type trio verbatim; typing a conflict never adjudicates it",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Argument Conflict Type",
-      "status": "canonical"
-    },
-    "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/rebuts": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type"
+    "coe:C06002": {
+      "collection_name": "story_frameworks",
+      "definition": "Answer-first executive communication structure opening with Situation, Complication, Question, and Governing Answer, supported vertically by deductive or inductive MECE evidence groups.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "Denies the other position's conclusion",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/rebuts",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Rebuts",
-      "status": "canonical"
+      "id": "coe:C06002",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Minto Pyramid & SCQA Architecture",
+      "payload": {
+        "communicative_purpose": "Respect time-poor executive decision makers by stating the governing recommendation upfront and allowing readers or listeners to drill into supporting pillars on demand.",
+        "definition": "Answer-first executive communication structure opening with Situation, Complication, Question, and Governing Answer, supported vertically by deductive or inductive MECE evidence groups.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06002",
+        "pref_label": "Minto Pyramid & SCQA Architecture",
+        "terms": [
+          {
+            "term_kind": "acronym",
+            "written_form": "SCQA"
+          },
+          {
+            "term_kind": "full_form",
+            "written_form": "Minto Pyramid Principle"
+          }
+        ],
+        "wiki_slug": "pyramid-principle"
+      },
+      "wiki_slug": "pyramid-principle"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/undercuts": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type"
+    "coe:C06003": {
+      "collection_name": "story_frameworks",
+      "definition": "Keynote narrative architecture alternating deliberately between current painful reality ('What Is') and achievable transformed state ('What Could Be') to build momentum toward an actionable 'New Bliss'.",
+      "facets": [
+        "rhetoric",
+        "delivery"
       ],
-      "description": "Denies the inference connecting the other position's evidence to its conclusion",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/undercuts",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Undercuts",
-      "status": "canonical"
+      "id": "coe:C06003",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Duarte Sparkline Contrast Arc",
+      "payload": {
+        "communicative_purpose": "Overcome organisational status-quo inertia in evangelism keynotes and vision talks through sustained emotional and analytical contrast.",
+        "definition": "Keynote narrative architecture alternating deliberately between current painful reality ('What Is') and achievable transformed state ('What Could Be') to build momentum toward an actionable 'New Bliss'.",
+        "facets": [
+          "rhetoric",
+          "delivery"
+        ],
+        "id": "coe:C06003",
+        "pref_label": "Duarte Sparkline Contrast Arc",
+        "terms": [
+          {
+            "term_kind": "short_form",
+            "written_form": "Duarte Sparkline"
+          }
+        ],
+        "wiki_slug": "duarte-methodology"
+      },
+      "wiki_slug": "duarte-methodology"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/undermines": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type"
+    "coe:C06004": {
+      "collection_name": "story_frameworks",
+      "definition": "Five-step persuasive speech architecture—Attention, Need, Satisfaction, Visualization, Action—moving an audience from initial problem recognition to concrete commitment.",
+      "facets": [
+        "rhetoric",
+        "delivery"
       ],
-      "description": "Denies the evidence or premises the other position rests on",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_conflict_type/undermines",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Undermines",
-      "status": "canonical"
+      "id": "coe:C06004",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Monroe's Motivated Sequence",
+      "payload": {
+        "communicative_purpose": "Drive decisive stakeholder commitment to a specific pilot, architectural migration, or behaviour change.",
+        "definition": "Five-step persuasive speech architecture—Attention, Need, Satisfaction, Visualization, Action—moving an audience from initial problem recognition to concrete commitment.",
+        "facets": [
+          "rhetoric",
+          "delivery"
+        ],
+        "id": "coe:C06004",
+        "pref_label": "Monroe's Motivated Sequence",
+        "wiki_slug": "monroes-motivated-sequence"
+      },
+      "wiki_slug": "monroes-motivated-sequence"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_link_type": {
-      "description": "The typed connection between two claims in a macro-argument, profiled from argument mining's support and attack relations",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_link_type",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Argument Link Type",
-      "status": "canonical"
-    },
-    "coe:concept/discourse_argumentation_taxonomy/argument_link_type/addressed_by": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_link_type"
+    "coe:C06005": {
+      "collection_name": "story_frameworks",
+      "definition": "Compact three-clause causal narrative kernel establishing shared context ('And'), introducing the central tension or bottleneck ('But'), and delivering the consequential resolution ('Therefore').",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The objection or caveat this claim carries is answered by the target",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_link_type/addressed_by",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Addressed By",
-      "status": "canonical"
+      "id": "coe:C06005",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "And-But-Therefore (ABT) Narrative Spine",
+      "payload": {
+        "communicative_purpose": "Compress executive summaries, 60-second elevator hooks, and module openers into a tight causal spine free of 'And-And-And' list drift.",
+        "definition": "Compact three-clause causal narrative kernel establishing shared context ('And'), introducing the central tension or bottleneck ('But'), and delivering the consequential resolution ('Therefore').",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06005",
+        "pref_label": "And-But-Therefore (ABT) Narrative Spine",
+        "terms": [
+          {
+            "term_kind": "acronym",
+            "written_form": "ABT Spine"
+          }
+        ],
+        "wiki_slug": "business-storytelling-frameworks"
+      },
+      "wiki_slug": "business-storytelling-frameworks"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_link_type/rebutted_by": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_link_type"
+    "coe:C06006": {
+      "collection_name": "story_frameworks",
+      "definition": "Heath brothers message-design checklist grounding memorable communication in Simple core focus, Unexpected expectation breaks, Concrete sensory specifics, Credible proof, Emotional stakes, and Stories.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The target claim attacks this claim",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_link_type/rebutted_by",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Rebutted By",
-      "status": "canonical"
+      "id": "coe:C06006",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SUCCESs Sticky Message Framework",
+      "payload": {
+        "communicative_purpose": "Ensure key distinctions survive intact when a champion retells the pitch internally to an unbriefed buying committee.",
+        "definition": "Heath brothers message-design checklist grounding memorable communication in Simple core focus, Unexpected expectation breaks, Concrete sensory specifics, Credible proof, Emotional stakes, and Stories.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06006",
+        "pref_label": "SUCCESs Sticky Message Framework",
+        "wiki_slug": "succes-framework"
+      },
+      "wiki_slug": "succes-framework"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_link_type/supports": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_link_type"
+    "coe:C06007": {
+      "collection_name": "story_frameworks",
+      "definition": "Classical triad balancing speaker credibility and candour (Ethos), defensible logical and empirical proof (Logos), and audience-centred human stakes (Pathos).",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "This claim gives support to the target claim",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_link_type/supports",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Supports",
-      "status": "canonical"
+      "id": "coe:C06007",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Aristotelian Rhetorical Proofs",
+      "payload": {
+        "communicative_purpose": "Audit persuasive talks so technical Logos is reinforced by honest Ethos (including watchouts) and concrete stakeholder Pathos.",
+        "definition": "Classical triad balancing speaker credibility and candour (Ethos), defensible logical and empirical proof (Logos), and audience-centred human stakes (Pathos).",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06007",
+        "pref_label": "Aristotelian Rhetorical Proofs",
+        "wiki_slug": "aristotelian-rhetoric"
+      },
+      "wiki_slug": "aristotelian-rhetoric"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_role": {
-      "close_match": [
-        "https://www.wikidata.org/wiki/Q1323298"
+    "coe:C06008": {
+      "collection_name": "story_frameworks",
+      "definition": "Five-phase enterprise operating narrative—Workflow & Planning, Creation & Production, Asset Management & Governance, Delivery & Activation, and Reporting & Content Insights—tracing how creative supply meets personalisation demand.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
       ],
-      "description": "The functional role a component plays in one argument, using Toulmin's (1958) complete six-element layout verbatim — claim, grounds, warrant, backing, qualifier, rebuttal. The set is closed; membership grows only by registered amendment",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Argument Role",
-      "status": "canonical"
+      "id": "coe:C06008",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Content Supply Chain Operating Arc",
+      "payload": {
+        "communicative_purpose": "Connect Workfront, Firefly, Creative Cloud, Express, AEM Assets, GenStudio, AJO, and Content Analytics into one end-to-end commercial storyline rather than disconnected point tools.",
+        "definition": "Five-phase enterprise operating narrative—Workflow & Planning, Creation & Production, Asset Management & Governance, Delivery & Activation, and Reporting & Content Insights—tracing how creative supply meets personalisation demand.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06008",
+        "pref_label": "Content Supply Chain Operating Arc",
+        "wiki_slug": "business-storytelling-frameworks"
+      },
+      "wiki_slug": "business-storytelling-frameworks"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_role/backing": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+    "coe:C06021": {
+      "collection_name": "framework_stages",
+      "definition": "Opening SOAR beat establishing the customer's industry operating context, strategic mandate, and structural constraint slowing progress.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
       ],
-      "description": "The field-specific support for the warrant itself — the body of fact, statute, experience, or theory on which the warrant rests",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/backing",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Backing",
-      "status": "canonical"
+      "id": "coe:C06021",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SOAR Stage 1: Situation",
+      "payload": {
+        "audience_shift_goal": "Audience recognises their own operating reality and cost of inaction in two crisp sentences without vendor chest-beating.",
+        "definition": "Opening SOAR beat establishing the customer's industry operating context, strategic mandate, and structural constraint slowing progress.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06021",
+        "pref_label": "SOAR Stage 1: Situation",
+        "stage_of_framework": "coe:C06001",
+        "stage_order": 1,
+        "wiki_slug": "soar-sales-stage-mapping"
+      },
+      "wiki_slug": "soar-sales-stage-mapping"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_role/claim": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+    "coe:C06022": {
+      "collection_name": "framework_stages",
+      "definition": "Second SOAR beat reframing the operational bottleneck into a specific, achievable commercial or architectural opening.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
       ],
-      "description": "The assertion or conclusion the argument establishes",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/claim",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Claim",
-      "status": "canonical"
+      "id": "coe:C06022",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SOAR Stage 2: Opportunity",
+      "payload": {
+        "audience_shift_goal": "Buyer shifts from viewing the constraint as fixed overhead to seeing a concrete lever they can pull this quarter.",
+        "definition": "Second SOAR beat reframing the operational bottleneck into a specific, achievable commercial or architectural opening.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06022",
+        "pref_label": "SOAR Stage 2: Opportunity",
+        "stage_of_framework": "coe:C06001",
+        "stage_order": 2,
+        "wiki_slug": "soar-sales-stage-mapping"
+      },
+      "wiki_slug": "soar-sales-stage-mapping"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_role/grounds": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+    "coe:C06023": {
+      "collection_name": "framework_stages",
+      "definition": "Third SOAR beat specifying the exact architectural workflow, governance mechanism, and cross-team operating change implemented—never vague 'used AI' hand-waving.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
       ],
-      "description": "The facts, evidence, or reasons offered in support of the claim",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/grounds",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Grounds",
-      "status": "canonical"
+      "id": "coe:C06023",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SOAR Stage 3: Action",
+      "payload": {
+        "audience_shift_goal": "Technical and operational evaluators believe the causal mechanism is credible, governed, and repeatable in their stack.",
+        "definition": "Third SOAR beat specifying the exact architectural workflow, governance mechanism, and cross-team operating change implemented—never vague 'used AI' hand-waving.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06023",
+        "pref_label": "SOAR Stage 3: Action",
+        "stage_of_framework": "coe:C06001",
+        "stage_order": 3,
+        "wiki_slug": "soar-sales-stage-mapping"
+      },
+      "wiki_slug": "soar-sales-stage-mapping"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_role/qualifier": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+    "coe:C06024": {
+      "collection_name": "framework_stages",
+      "definition": "Closing SOAR beat landing verifiable, baseline-anchored operational and financial outcomes alongside honest scope conditions.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
       ],
-      "description": "The modal force with which the claim is advanced",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/qualifier",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Qualifier",
-      "status": "canonical"
+      "id": "coe:C06024",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SOAR Stage 4: Result",
+      "payload": {
+        "audience_shift_goal": "Economic buyer internalises a defensible benchmark metric to anchor the business case.",
+        "definition": "Closing SOAR beat landing verifiable, baseline-anchored operational and financial outcomes alongside honest scope conditions.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06024",
+        "pref_label": "SOAR Stage 4: Result",
+        "stage_of_framework": "coe:C06001",
+        "stage_order": 4,
+        "wiki_slug": "soar-sales-stage-mapping"
+      },
+      "wiki_slug": "soar-sales-stage-mapping"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_role/rebuttal": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+    "coe:C06025": {
+      "collection_name": "framework_stages",
+      "definition": "Uncontroversial baseline fact about the audience's current domain state that anchors shared context immediately.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The condition of exception under which the claim does not hold",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/rebuttal",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Rebuttal",
-      "status": "canonical"
+      "id": "coe:C06025",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SCQA Stage 1: Situation",
+      "payload": {
+        "audience_shift_goal": "Establish immediate common ground without lengthy historical throat-clearing.",
+        "definition": "Uncontroversial baseline fact about the audience's current domain state that anchors shared context immediately.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06025",
+        "pref_label": "SCQA Stage 1: Situation",
+        "stage_of_framework": "coe:C06002",
+        "stage_order": 1,
+        "wiki_slug": "pyramid-principle"
+      },
+      "wiki_slug": "pyramid-principle"
     },
-    "coe:concept/discourse_argumentation_taxonomy/argument_role/warrant": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/argument_role"
+    "coe:C06026": {
+      "collection_name": "framework_stages",
+      "definition": "Disruptive trigger, architectural limit, regulatory shift, or cost spike that invalidates the status-quo Situation.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The general licence connecting the grounds to the claim",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/argument_role/warrant",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Warrant",
-      "status": "canonical"
+      "id": "coe:C06026",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SCQA Stage 2: Complication",
+      "payload": {
+        "audience_shift_goal": "Create focused analytical tension demanding a decision now.",
+        "definition": "Disruptive trigger, architectural limit, regulatory shift, or cost spike that invalidates the status-quo Situation.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06026",
+        "pref_label": "SCQA Stage 2: Complication",
+        "stage_of_framework": "coe:C06002",
+        "stage_order": 2,
+        "wiki_slug": "pyramid-principle"
+      },
+      "wiki_slug": "pyramid-principle"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness": {
-      "description": "Whether a typed discourse relation is overtly signalled in the source or inferred by the reader, following the PDTB explicit and implicit method in which an implied relation records the connective that would make it explicit",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Discourse Relation Explicitness",
-      "status": "canonical"
-    },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness/explicit": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness"
+    "coe:C06027": {
+      "collection_name": "framework_stages",
+      "definition": "Explicit or implied decision question forced on leadership by the Complication.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The relation is overtly signalled by connective or construction text quotable from the source",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness/explicit",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Explicit",
-      "status": "canonical"
+      "id": "coe:C06027",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SCQA Stage 3: Question",
+      "payload": {
+        "audience_shift_goal": "Align every stakeholder in the room on the exact question being answered.",
+        "definition": "Explicit or implied decision question forced on leadership by the Complication.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06027",
+        "pref_label": "SCQA Stage 3: Question",
+        "stage_of_framework": "coe:C06002",
+        "stage_order": 3,
+        "wiki_slug": "pyramid-principle"
+      },
+      "wiki_slug": "pyramid-principle"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness/implied": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness"
+    "coe:C06028": {
+      "collection_name": "framework_stages",
+      "definition": "Apex declarative recommendation answering the Question directly before unpacking supporting MECE pillars.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The relation is unsignalled and inferred; the single inserted connective sentence that would make it explicit is recorded as its basis",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_explicitness/implied",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Implied",
-      "status": "canonical"
+      "id": "coe:C06028",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "SCQA Stage 4: Governing Answer",
+      "payload": {
+        "audience_shift_goal": "Deliver the core conclusion within the first 90 seconds so executives evaluate proof with full structural orientation.",
+        "definition": "Apex declarative recommendation answering the Question directly before unpacking supporting MECE pillars.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06028",
+        "pref_label": "SCQA Stage 4: Governing Answer",
+        "stage_of_framework": "coe:C06002",
+        "stage_order": 4,
+        "wiki_slug": "pyramid-principle"
+      },
+      "wiki_slug": "pyramid-principle"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense": {
-      "description": "The typed sense of a discourse relation between two stated spans of source content, profiled from the PDTB 3.0 sense hierarchy at Level-2 granularity",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Discourse Relation Sense",
-      "status": "canonical"
-    },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/cause": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+    "coe:C06029": {
+      "collection_name": "framework_stages",
+      "definition": "Candid baseline diagnosis of current workflow friction, fragmentation, or missed customer moments.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "One span gives the reason for, or the result of, the other",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/cause",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Cause",
-      "status": "canonical"
+      "id": "coe:C06029",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Sparkline Stage 1: What Is",
+      "payload": {
+        "audience_shift_goal": "Audience feels understood rather than lectured, grounding the talk in recognised operational reality.",
+        "definition": "Candid baseline diagnosis of current workflow friction, fragmentation, or missed customer moments.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06029",
+        "pref_label": "Sparkline Stage 1: What Is",
+        "stage_of_framework": "coe:C06003",
+        "stage_order": 1,
+        "wiki_slug": "duarte-methodology"
+      },
+      "wiki_slug": "duarte-methodology"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/concession": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+    "coe:C06030": {
+      "collection_name": "framework_stages",
+      "definition": "First vivid contrast revealing how work and customer outcomes look once the structural constraint is removed.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "One span creates an expectation the other denies while both stand",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/concession",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Concession",
-      "status": "canonical"
+      "id": "coe:C06030",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Sparkline Stage 2: What Could Be",
+      "payload": {
+        "audience_shift_goal": "Open a constructive gap between current friction and achievable craft.",
+        "definition": "First vivid contrast revealing how work and customer outcomes look once the structural constraint is removed.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06030",
+        "pref_label": "Sparkline Stage 2: What Could Be",
+        "stage_of_framework": "coe:C06003",
+        "stage_order": 2,
+        "wiki_slug": "duarte-methodology"
+      },
+      "wiki_slug": "duarte-methodology"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/condition": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+    "coe:C06031": {
+      "collection_name": "framework_stages",
+      "definition": "Middle movement oscillating systematically between concrete obstacles and architectural/operational proofs that overcome each obstacle.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "One span holds only under the circumstance the other states",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/condition",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Condition",
-      "status": "canonical"
+      "id": "coe:C06031",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Sparkline Stage 3: Contrast Alternation",
+      "payload": {
+        "audience_shift_goal": "Sustain attentional arousal and dismantle scepticism point-by-point.",
+        "definition": "Middle movement oscillating systematically between concrete obstacles and architectural/operational proofs that overcome each obstacle.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06031",
+        "pref_label": "Sparkline Stage 3: Contrast Alternation",
+        "stage_of_framework": "coe:C06003",
+        "stage_order": 3,
+        "wiki_slug": "duarte-methodology"
+      },
+      "wiki_slug": "duarte-methodology"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/contrast": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+    "coe:C06032": {
+      "collection_name": "framework_stages",
+      "definition": "Resolved closing vision anchoring the human, commercial, and operational future unlocked when the audience adopts the proposed path.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The spans are set against each other on a shared dimension of difference",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/contrast",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Contrast",
-      "status": "canonical"
+      "id": "coe:C06032",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Sparkline Stage 4: New Bliss",
+      "payload": {
+        "audience_shift_goal": "Leave the room with an energising, concrete north star and immediate first step.",
+        "definition": "Resolved closing vision anchoring the human, commercial, and operational future unlocked when the audience adopts the proposed path.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06032",
+        "pref_label": "Sparkline Stage 4: New Bliss",
+        "stage_of_framework": "coe:C06003",
+        "stage_order": 4,
+        "wiki_slug": "duarte-methodology"
+      },
+      "wiki_slug": "duarte-methodology"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/instantiation": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense"
+    "coe:C06033": {
+      "collection_name": "framework_stages",
+      "definition": "Startling empirical finding, live failure demo, or sharp question that earns voluntary focus in the opening 20 seconds.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "One span gives a specific instance of the generalisation the other states",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_relation_sense/instantiation",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Instantiation",
-      "status": "canonical"
+      "id": "coe:C06033",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Monroe Stage 1: Attention",
+      "payload": {
+        "audience_shift_goal": "Interrupt passive meeting autopilot and focus attention on a concrete anomaly.",
+        "definition": "Startling empirical finding, live failure demo, or sharp question that earns voluntary focus in the opening 20 seconds.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06033",
+        "pref_label": "Monroe Stage 1: Attention",
+        "stage_of_framework": "coe:C06004",
+        "stage_order": 1,
+        "wiki_slug": "monroes-motivated-sequence"
+      },
+      "wiki_slug": "monroes-motivated-sequence"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_role": {
-      "description": "The structural standing of one content unit relative to a stated purpose, decided by the deletion test from rhetorical structure theory's nuclearity",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_role",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Discourse Role",
-      "status": "canonical"
-    },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_role/background": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_role"
+    "coe:C06034": {
+      "collection_name": "framework_stages",
+      "definition": "Evidence-backed demonstration that an unresolved structural problem is actively costing revenue, speed, or compliance safety.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "Context that orients without carrying the purpose's substance",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_role/background",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Background",
-      "status": "canonical"
+      "id": "coe:C06034",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Monroe Stage 2: Need",
+      "payload": {
+        "audience_shift_goal": "Establish urgent ownership of the problem among decision makers.",
+        "definition": "Evidence-backed demonstration that an unresolved structural problem is actively costing revenue, speed, or compliance safety.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06034",
+        "pref_label": "Monroe Stage 2: Need",
+        "stage_of_framework": "coe:C06004",
+        "stage_order": 2,
+        "wiki_slug": "monroes-motivated-sequence"
+      },
+      "wiki_slug": "monroes-motivated-sequence"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_role/nucleus": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_role"
+    "coe:C06035": {
+      "collection_name": "framework_stages",
+      "definition": "Clear explanation and proof of the specific architecture, workflow, or policy that resolves the Need cleanly.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "Central to the purpose; what is kept when one unit must be deleted",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_role/nucleus",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Nucleus",
-      "status": "canonical"
+      "id": "coe:C06035",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Monroe Stage 3: Satisfaction",
+      "payload": {
+        "audience_shift_goal": "Convince evaluators that the proposed approach solves the root cause without unacceptable side effects.",
+        "definition": "Clear explanation and proof of the specific architecture, workflow, or policy that resolves the Need cleanly.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06035",
+        "pref_label": "Monroe Stage 3: Satisfaction",
+        "stage_of_framework": "coe:C06004",
+        "stage_order": 3,
+        "wiki_slug": "monroes-motivated-sequence"
+      },
+      "wiki_slug": "monroes-motivated-sequence"
     },
-    "coe:concept/discourse_argumentation_taxonomy/discourse_role/supportive": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/discourse_role"
+    "coe:C06036": {
+      "collection_name": "framework_stages",
+      "definition": "Concrete projection contrasting day-in-the-life operations 90 days after adoption versus 90 days of continued inaction.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "Ancillary material serving a nucleus with evidence, elaboration, or explanation",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/discourse_role/supportive",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Supportive",
-      "status": "canonical"
+      "id": "coe:C06036",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Monroe Stage 4: Visualization",
+      "payload": {
+        "audience_shift_goal": "Make future operational relief and upside vivid and testable.",
+        "definition": "Concrete projection contrasting day-in-the-life operations 90 days after adoption versus 90 days of continued inaction.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06036",
+        "pref_label": "Monroe Stage 4: Visualization",
+        "stage_of_framework": "coe:C06004",
+        "stage_order": 4,
+        "wiki_slug": "monroes-motivated-sequence"
+      },
+      "wiki_slug": "monroes-motivated-sequence"
     },
-    "coe:concept/discourse_argumentation_taxonomy/governing_statement_basis": {
-      "description": "The grounds on which the one proposition that governs a unit of content is held, either a span the source asserts in its own words or a sentence constructed over claims the source makes. The set is closed; membership grows only by registered amendment",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/governing_statement_basis",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Governing Statement Basis",
-      "status": "canonical"
-    },
-    "coe:concept/discourse_argumentation_taxonomy/governing_statement_basis/inferred": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/governing_statement_basis"
+    "coe:C06037": {
+      "collection_name": "framework_stages",
+      "definition": "Specific, low-friction next commitment—such as a scoped 2-week architecture workshop or single-journey pilot—with named owners and dates.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The governing proposition is a sentence constructed over claims the source makes, adding no claim the source does not carry, with the spans it rests on kept as its basis",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/governing_statement_basis/inferred",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Inferred Basis",
-      "status": "canonical"
+      "id": "coe:C06037",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Monroe Stage 5: Action",
+      "payload": {
+        "audience_shift_goal": "Convert agreement in principle into a scheduled calendar commitment.",
+        "definition": "Specific, low-friction next commitment—such as a scoped 2-week architecture workshop or single-journey pilot—with named owners and dates.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06037",
+        "pref_label": "Monroe Stage 5: Action",
+        "stage_of_framework": "coe:C06004",
+        "stage_order": 5,
+        "wiki_slug": "monroes-motivated-sequence"
+      },
+      "wiki_slug": "monroes-motivated-sequence"
     },
-    "coe:concept/discourse_argumentation_taxonomy/governing_statement_basis/stated": {
-      "broader": [
-        "coe:concept/discourse_argumentation_taxonomy/governing_statement_basis"
+    "coe:C06038": {
+      "collection_name": "framework_stages",
+      "definition": "Opening clause establishing two undeniable facts the audience already accepts as true.",
+      "facets": [
+        "rhetoric"
       ],
-      "description": "The governing proposition is a span the source itself asserts, reproduced verbatim and locatable in the source",
-      "home_domain": "narrative",
-      "id": "coe:concept/discourse_argumentation_taxonomy/governing_statement_basis/stated",
-      "in_scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-      "label": "Stated Basis",
-      "status": "canonical"
+      "id": "coe:C06038",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "ABT Stage 1: Agreement (And)",
+      "payload": {
+        "audience_shift_goal": "Ground the listener in shared reality within a single breath.",
+        "definition": "Opening clause establishing two undeniable facts the audience already accepts as true.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06038",
+        "pref_label": "ABT Stage 1: Agreement (And)",
+        "stage_of_framework": "coe:C06005",
+        "stage_order": 1,
+        "wiki_slug": "business-storytelling-frameworks"
+      },
+      "wiki_slug": "business-storytelling-frameworks"
+    },
+    "coe:C06039": {
+      "collection_name": "framework_stages",
+      "definition": "Pivot clause naming the friction, trade-off, or architectural gap blocking the goal.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06039",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "ABT Stage 2: Contradiction (But)",
+      "payload": {
+        "audience_shift_goal": "Activate causal curiosity by surfacing the exact obstacle that matters.",
+        "definition": "Pivot clause naming the friction, trade-off, or architectural gap blocking the goal.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06039",
+        "pref_label": "ABT Stage 2: Contradiction (But)",
+        "stage_of_framework": "coe:C06005",
+        "stage_order": 2,
+        "wiki_slug": "business-storytelling-frameworks"
+      },
+      "wiki_slug": "business-storytelling-frameworks"
+    },
+    "coe:C06040": {
+      "collection_name": "framework_stages",
+      "definition": "Resolution clause stating the decisive action or architectural shift required because of the contradiction.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06040",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "ABT Stage 3: Consequence (Therefore)",
+      "payload": {
+        "audience_shift_goal": "Land an unmistakable causal takeaway.",
+        "definition": "Resolution clause stating the decisive action or architectural shift required because of the contradiction.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06040",
+        "pref_label": "ABT Stage 3: Consequence (Therefore)",
+        "stage_of_framework": "coe:C06005",
+        "stage_order": 3,
+        "wiki_slug": "business-storytelling-frameworks"
+      },
+      "wiki_slug": "business-storytelling-frameworks"
+    },
+    "coe:C06041": {
+      "collection_name": "framework_stages",
+      "definition": "Content Supply Chain stage aligning campaign calendars, budgets, creative briefs, and SLA routing in Workfront and Workfront Planning.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06041",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "CSC Stage 1: Workflow & Planning",
+      "payload": {
+        "audience_shift_goal": "Show how structured intake eliminates spreadsheet chaos before creative hours are spent.",
+        "definition": "Content Supply Chain stage aligning campaign calendars, budgets, creative briefs, and SLA routing in Workfront and Workfront Planning.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06041",
+        "pref_label": "CSC Stage 1: Workflow & Planning",
+        "stage_of_framework": "coe:C06008",
+        "stage_order": 1
+      },
+      "wiki_slug": null
+    },
+    "coe:C06042": {
+      "collection_name": "framework_stages",
+      "definition": "Content Supply Chain stage pairing Creative Cloud hero craft and Frame.io review with commercially safe Firefly, Express, and GenStudio variant scaling.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06042",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "CSC Stage 2: Creation & Production",
+      "payload": {
+        "audience_shift_goal": "Demonstrate how senior creatives stay in control of brand craft while self-service automation absorbs localization volume.",
+        "definition": "Content Supply Chain stage pairing Creative Cloud hero craft and Frame.io review with commercially safe Firefly, Express, and GenStudio variant scaling.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06042",
+        "pref_label": "CSC Stage 2: Creation & Production",
+        "stage_of_framework": "coe:C06008",
+        "stage_order": 2
+      },
+      "wiki_slug": null
+    },
+    "coe:C06043": {
+      "collection_name": "framework_stages",
+      "definition": "Content Supply Chain stage centralising approved masters, metadata, talent expiration rights, Brand Intelligence, and C2PA provenance in AEM Assets.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06043",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "CSC Stage 3: Asset Management & Governance",
+      "payload": {
+        "audience_shift_goal": "Reassure Legal and Brand Studio that only rights-cleared, compliant assets reach downstream channels.",
+        "definition": "Content Supply Chain stage centralising approved masters, metadata, talent expiration rights, Brand Intelligence, and C2PA provenance in AEM Assets.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06043",
+        "pref_label": "CSC Stage 3: Asset Management & Governance",
+        "stage_of_framework": "coe:C06008",
+        "stage_order": 3
+      },
+      "wiki_slug": null
+    },
+    "coe:C06044": {
+      "collection_name": "framework_stages",
+      "definition": "Content Supply Chain stage assembling and delivering dynamic renditions across AEM Sites Edge Delivery, Journey Optimizer, and paid ad networks.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06044",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "CSC Stage 4: Delivery & Activation",
+      "payload": {
+        "audience_shift_goal": "Connect governed creative supply directly to real-time segment activation.",
+        "definition": "Content Supply Chain stage assembling and delivering dynamic renditions across AEM Sites Edge Delivery, Journey Optimizer, and paid ad networks.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06044",
+        "pref_label": "CSC Stage 4: Delivery & Activation",
+        "stage_of_framework": "coe:C06008",
+        "stage_order": 4
+      },
+      "wiki_slug": null
+    },
+    "coe:C06045": {
+      "collection_name": "framework_stages",
+      "definition": "Content Supply Chain stage measuring attribute-level creative conversion drivers in Content Analytics and feeding insights back into brief planning.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06045",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "CSC Stage 5: Reporting & Content Insights",
+      "payload": {
+        "audience_shift_goal": "Close the loop from creative attributes to revenue lift so every next campaign starts smarter.",
+        "definition": "Content Supply Chain stage measuring attribute-level creative conversion drivers in Content Analytics and feeding insights back into brief planning.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06045",
+        "pref_label": "CSC Stage 5: Reporting & Content Insights",
+        "stage_of_framework": "coe:C06008",
+        "stage_order": 5
+      },
+      "wiki_slug": null
+    },
+    "coe:C06101": {
+      "collection_name": "argument_schemes",
+      "definition": "Explicit, falsifiable proposition or decision conclusion an author asks the audience to accept—never a vague topic noun phrase.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06101",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Toulmin Governing Claim",
+      "payload": {
+        "aif_role": "information_component_i",
+        "critical_questions": [
+          "Is the claim stated as a complete, testable assertion rather than a neutral topic label?",
+          "Is the scope of the claim bounded to the personas and use cases actually supported by evidence?"
+        ],
+        "definition": "Explicit, falsifiable proposition or decision conclusion an author asks the audience to accept—never a vague topic noun phrase.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06101",
+        "pref_label": "Toulmin Governing Claim"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06102": {
+      "collection_name": "argument_schemes",
+      "definition": "Verifiable observations, architectural facts, latency measurements, or attributed customer metrics offered in direct support of a Governing Claim.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06102",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Toulmin Empirical Grounds (Data)",
+      "payload": {
+        "aif_role": "information_component_i",
+        "critical_questions": [
+          "Are the grounds drawn from an auditable source, benchmark, or documented product capability?",
+          "Are baseline, sample window, and measurement conditions stated alongside any percentage figure?"
+        ],
+        "definition": "Verifiable observations, architectural facts, latency measurements, or attributed customer metrics offered in direct support of a Governing Claim.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06102",
+        "pref_label": "Toulmin Empirical Grounds (Data)"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06103": {
+      "collection_name": "argument_schemes",
+      "definition": "Causal, architectural, or economic inference licence explaining *why* the Empirical Grounds justify the Governing Claim.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06103",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Toulmin Warrant",
+      "payload": {
+        "aif_role": "inference_scheme_ra",
+        "critical_questions": [
+          "Does the mechanism genuinely connect the cited product architecture to the claimed business outcome?",
+          "Would a sceptical CIO or CFO accept this link without unstated assumptions?"
+        ],
+        "definition": "Causal, architectural, or economic inference licence explaining *why* the Empirical Grounds justify the Governing Claim.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06103",
+        "pref_label": "Toulmin Warrant"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06104": {
+      "collection_name": "argument_schemes",
+      "definition": "Institutional standard, published specification, contractual term, or peer-reviewed body of evidence authenticating the Warrant itself.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06104",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Toulmin Backing",
+      "payload": {
+        "aif_role": "information_component_i",
+        "critical_questions": [
+          "Does authoritative documentation, open standard specification, or meta-analytic evidence back the warrant?"
+        ],
+        "definition": "Institutional standard, published specification, contractual term, or peer-reviewed body of evidence authenticating the Warrant itself.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06104",
+        "pref_label": "Toulmin Backing"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06105": {
+      "collection_name": "argument_schemes",
+      "definition": "Explicit scope, edition, or probability calibration marker ('on eligible Firefly workflows', 'for sub-second edge lookups') preventing absolutist overclaiming.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06105",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Toulmin Epistemic Qualifier",
+      "payload": {
+        "aif_role": "information_component_i",
+        "critical_questions": [
+          "Have universal absolutes ('always', 'zero effort', '100% immune') been calibrated to honest scope conditions?"
+        ],
+        "definition": "Explicit scope, edition, or probability calibration marker ('on eligible Firefly workflows', 'for sub-second edge lookups') preventing absolutist overclaiming.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06105",
+        "pref_label": "Toulmin Epistemic Qualifier"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06106": {
+      "collection_name": "argument_schemes",
+      "definition": "Explicitly acknowledged counter-condition or trade-off under which the Governing Claim ceases to hold or requires an alternative pattern.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06106",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Toulmin Rebuttal & Boundary Exception",
+      "payload": {
+        "aif_role": "conflict_scheme_ca",
+        "critical_questions": [
+          "Under what latency, licensing, or data-gravity boundary would an alternative architecture be superior?",
+          "Has the speaker addressed the strongest counter-argument candidly rather than attacking a strawman?"
+        ],
+        "definition": "Explicitly acknowledged counter-condition or trade-off under which the Governing Claim ceases to hold or requires an alternative pattern.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06106",
+        "pref_label": "Toulmin Rebuttal & Boundary Exception",
+        "wiki_slug": "dungs-abstract-argumentation"
+      },
+      "wiki_slug": "dungs-abstract-argumentation"
+    },
+    "coe:C06107": {
+      "collection_name": "argument_schemes",
+      "definition": "Defeasible practical-reasoning scheme arguing for or against a course of action from its foreseeable operational, financial, and risk consequences.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06107",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Argument from Pragmatic Consequences",
+      "payload": {
+        "aif_role": "inference_scheme_ra",
+        "critical_questions": [
+          "How strong is the causal likelihood that the proposed action produces the stated positive consequence?",
+          "What implementation costs, migration risks, or side effects accompany the action?",
+          "Are there simpler non-software process changes that achieve the same outcome?"
+        ],
+        "definition": "Defeasible practical-reasoning scheme arguing for or against a course of action from its foreseeable operational, financial, and risk consequences.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06107",
+        "pref_label": "Walton Argument from Pragmatic Consequences"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06108": {
+      "collection_name": "argument_schemes",
+      "definition": "Inference scheme reasoning from an observable architectural mechanism (such as edge profile caching or zero-copy SQL pushdown) to a measurable system behaviour.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06108",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Argument from Cause to Effect",
+      "payload": {
+        "aif_role": "inference_scheme_ra",
+        "critical_questions": [
+          "Is the mechanism sufficient to produce the effect, or are prerequisite configurations required?",
+          "Could confounding factors (network egress, identity fragmentation) block the causal chain?"
+        ],
+        "definition": "Inference scheme reasoning from an observable architectural mechanism (such as edge profile caching or zero-copy SQL pushdown) to a measurable system behaviour.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06108",
+        "pref_label": "Walton Argument from Cause to Effect"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06109": {
+      "collection_name": "argument_schemes",
+      "definition": "Inference scheme illuminating an unfamiliar technical architecture by mapping its relational structure onto a familiar everyday or engineering system.",
+      "facets": [
+        "rhetoric",
+        "pedagogy"
+      ],
+      "id": "coe:C06109",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Argument from Structural Analogy",
+      "payload": {
+        "aif_role": "inference_scheme_ra",
+        "critical_questions": [
+          "Do the source analogy and target system share deep causal relations rather than superficial labels?",
+          "Where does the analogy break down so novices do not form false mental models?"
+        ],
+        "definition": "Inference scheme illuminating an unfamiliar technical architecture by mapping its relational structure onto a familiar everyday or engineering system.",
+        "facets": [
+          "rhetoric",
+          "pedagogy"
+        ],
+        "id": "coe:C06109",
+        "pref_label": "Walton Argument from Structural Analogy"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06110": {
+      "collection_name": "argument_schemes",
+      "definition": "Inference scheme grounding diagnosis in observable telemetry, audit logs, or live sandbox inspection rather than vendor assertion.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06110",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Argument from Verifiable Evidence & Sign",
+      "payload": {
+        "aif_role": "inference_scheme_ra",
+        "critical_questions": [
+          "Is the observed indicator a reliable diagnostic sign of the underlying state?",
+          "Can the evaluator reproduce or inspect the sign directly in a live environment?"
+        ],
+        "definition": "Inference scheme grounding diagnosis in observable telemetry, audit logs, or live sandbox inspection rather than vendor assertion.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06110",
+        "pref_label": "Walton Argument from Verifiable Evidence & Sign"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06111": {
+      "collection_name": "argument_schemes",
+      "definition": "Kunz and Rittel dialogue-mapping scheme decomposing wicked architectural or governance trade-offs into explicit Issues, competing Positions, and supporting or objecting Arguments.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06111",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "IBIS Issue-Position-Argument Deliberation",
+      "payload": {
+        "aif_role": "conflict_scheme_ca",
+        "critical_questions": [
+          "Is the governing Issue framed as a genuine open design question rather than a disguised conclusion?",
+          "Are every viable competing Position and its strongest supporting and objecting Arguments represented symmetrically?"
+        ],
+        "definition": "Kunz and Rittel dialogue-mapping scheme decomposing wicked architectural or governance trade-offs into explicit Issues, competing Positions, and supporting or objecting Arguments.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06111",
+        "pref_label": "IBIS Issue-Position-Argument Deliberation",
+        "terms": [
+          {
+            "term_kind": "acronym",
+            "written_form": "IBIS"
+          }
+        ],
+        "wiki_slug": "business-evidence-arguments"
+      },
+      "wiki_slug": "business-evidence-arguments"
+    },
+    "coe:C06112": {
+      "collection_name": "argument_schemes",
+      "definition": "Defeasible appeal-to-authority scheme grounding an assertion in the documented judgement of a credentialled domain specialist or standards committee.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06112",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Argument from Expert Opinion",
+      "payload": {
+        "aif_role": "inference_scheme_ra",
+        "critical_questions": [
+          "Is the cited authority genuinely credentialled inside the specific technical subfield at issue?",
+          "Is the expert assertion backed by reproducible primary evidence and aligned with broader peer consensus?"
+        ],
+        "definition": "Defeasible appeal-to-authority scheme grounding an assertion in the documented judgement of a credentialled domain specialist or standards committee.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06112",
+        "pref_label": "Walton Argument from Expert Opinion",
+        "wiki_slug": "business-evidence-arguments"
+      },
+      "wiki_slug": "business-evidence-arguments"
+    },
+    "coe:C06113": {
+      "collection_name": "argument_schemes",
+      "definition": "Defeasible scheme inferring prima facie viability of an architectural or operating pattern from widespread adoption across comparable peer organisations.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06113",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Argument from Popular Practice",
+      "payload": {
+        "aif_role": "inference_scheme_ra",
+        "critical_questions": [
+          "Do the peer organisations share the same regulatory, latency, and data-gravity constraints as the target account?",
+          "Could widespread adoption reflect legacy lock-in rather than technical fitness?"
+        ],
+        "definition": "Defeasible scheme inferring prima facie viability of an architectural or operating pattern from widespread adoption across comparable peer organisations.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06113",
+        "pref_label": "Walton Argument from Popular Practice"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06114": {
+      "collection_name": "argument_schemes",
+      "definition": "Inference scheme assigning a system, workload, or claim to a defined regulatory or architectural category (such as zero-copy federation or high-risk AI system) and deriving the properties of that category.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06114",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Argument from Verbal Classification",
+      "payload": {
+        "aif_role": "inference_scheme_ra",
+        "critical_questions": [
+          "Are the defining criteria of the category explicit, non-arbitrary, and satisfied without equivocation?",
+          "Are borderline exceptions or hybrid architectures misclassified by an overly rigid label?"
+        ],
+        "definition": "Inference scheme assigning a system, workload, or claim to a defined regulatory or architectural category (such as zero-copy federation or high-risk AI system) and deriving the properties of that category.",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06114",
+        "pref_label": "Walton Argument from Verbal Classification"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06115": {
+      "collection_name": "argument_schemes",
+      "definition": "Conflict scheme questioning an assertion's credibility when pragmatic self-interest, commercial incentive, or behavioural inconsistency conflicts with the speaker's stated premise.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06115",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Circumstantial Ethos & Bias Challenge",
+      "payload": {
+        "aif_role": "conflict_scheme_ca",
+        "critical_questions": [
+          "Does the commercial or institutional conflict actually distort the cited evidence, or do the underlying data hold independently?",
+          "Is the challenge directed at verifiable incentive bias rather than personal attack?"
+        ],
+        "definition": "Conflict scheme questioning an assertion's credibility when pragmatic self-interest, commercial incentive, or behavioural inconsistency conflicts with the speaker's stated premise.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06115",
+        "pref_label": "Walton Circumstantial Ethos & Bias Challenge"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06116": {
+      "collection_name": "argument_schemes",
+      "definition": "Defeasible causal inference testing whether an observed co-movement between two metrics reflects genuine causal direction rather than a shared confounder or selection bias.",
+      "facets": [
+        "rhetoric",
+        "pedagogy"
+      ],
+      "id": "coe:C06116",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Walton Correlation-to-Cause Diagnostic Scheme",
+      "payload": {
+        "aif_role": "inference_scheme_ra",
+        "critical_questions": [
+          "Has a controlled holdout, randomized split, or mechanistic intervention ruled out confounding variables?",
+          "Could reverse causality or seasonal selection bias explain the observed correlation?"
+        ],
+        "definition": "Defeasible causal inference testing whether an observed co-movement between two metrics reflects genuine causal direction rather than a shared confounder or selection bias.",
+        "facets": [
+          "rhetoric",
+          "pedagogy"
+        ],
+        "id": "coe:C06116",
+        "pref_label": "Walton Correlation-to-Cause Diagnostic Scheme",
+        "wiki_slug": "inductive-argument-evaluation"
+      },
+      "wiki_slug": "inductive-argument-evaluation"
+    },
+    "coe:C06121": {
+      "collection_name": "discourse_relations",
+      "definition": "Coherence relation ordering two events or workflow stages sequentially in time where one completes before the next begins.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06121",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Temporal Asynchronous Precedence",
+      "payload": {
+        "canonical_connectives": [
+          "first",
+          "then",
+          "once",
+          "before",
+          "subsequently"
+        ],
+        "definition": "Coherence relation ordering two events or workflow stages sequentially in time where one completes before the next begins.",
+        "discourse_sense_class": "temporal",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06121",
+        "nuclearity": "multinuclear",
+        "pref_label": "Temporal Asynchronous Precedence",
+        "wiki_slug": "penn-discourse-treebank"
+      },
+      "wiki_slug": "penn-discourse-treebank"
+    },
+    "coe:C06122": {
+      "collection_name": "discourse_relations",
+      "definition": "Coherence relation linking two processes or multimodal events occurring simultaneously within the same execution window.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06122",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Temporal Synchronous Co-Occurrence",
+      "payload": {
+        "canonical_connectives": [
+          "simultaneously",
+          "while",
+          "as",
+          "in real time"
+        ],
+        "definition": "Coherence relation linking two processes or multimodal events occurring simultaneously within the same execution window.",
+        "discourse_sense_class": "temporal",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06122",
+        "nuclearity": "multinuclear",
+        "pref_label": "Temporal Synchronous Co-Occurrence",
+        "wiki_slug": "penn-discourse-treebank"
+      },
+      "wiki_slug": "penn-discourse-treebank"
+    },
+    "coe:C06123": {
+      "collection_name": "discourse_relations",
+      "definition": "Contingency relation in which the satellite or antecedent states an architectural/operational cause and the nucleus states its resulting effect.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06123",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Causal Result & Consequence",
+      "payload": {
+        "canonical_connectives": [
+          "therefore",
+          "consequently",
+          "as a result",
+          "so that"
+        ],
+        "definition": "Contingency relation in which the satellite or antecedent states an architectural/operational cause and the nucleus states its resulting effect.",
+        "discourse_sense_class": "contingency",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06123",
+        "nuclearity": "nucleus_satellite",
+        "pref_label": "Causal Result & Consequence",
+        "wiki_slug": "rhetorical-structure-theory"
+      },
+      "wiki_slug": "rhetorical-structure-theory"
+    },
+    "coe:C06124": {
+      "collection_name": "discourse_relations",
+      "definition": "Contingency relation in which a satellite span supplies empirical proof increasing the hearer's belief in the nuclear assertion.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06124",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Pragmatic Evidence & Justification",
+      "payload": {
+        "canonical_connectives": [
+          "because",
+          "as evidenced by",
+          "specifically"
+        ],
+        "definition": "Contingency relation in which a satellite span supplies empirical proof increasing the hearer's belief in the nuclear assertion.",
+        "discourse_sense_class": "contingency",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06124",
+        "nuclearity": "nucleus_satellite",
+        "pref_label": "Pragmatic Evidence & Justification",
+        "wiki_slug": "rhetorical-structure-theory"
+      },
+      "wiki_slug": "rhetorical-structure-theory"
+    },
+    "coe:C06125": {
+      "collection_name": "discourse_relations",
+      "definition": "Contingency relation bounding a nuclear claim to explicit prerequisite, entitlement, or workload conditions.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06125",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Conditional Contingency",
+      "payload": {
+        "canonical_connectives": [
+          "when",
+          "if",
+          "provided that",
+          "under conditions where"
+        ],
+        "definition": "Contingency relation bounding a nuclear claim to explicit prerequisite, entitlement, or workload conditions.",
+        "discourse_sense_class": "contingency",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06125",
+        "nuclearity": "nucleus_satellite",
+        "pref_label": "Conditional Contingency",
+        "wiki_slug": "penn-discourse-treebank"
+      },
+      "wiki_slug": "penn-discourse-treebank"
+    },
+    "coe:C06126": {
+      "collection_name": "discourse_relations",
+      "definition": "Comparison relation juxtaposing two alternatives along shared evaluation dimensions to sharpen structural differentiation.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06126",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Antithesis & Direct Contrast",
+      "payload": {
+        "canonical_connectives": [
+          "whereas",
+          "by contrast",
+          "unlike",
+          "instead"
+        ],
+        "definition": "Comparison relation juxtaposing two alternatives along shared evaluation dimensions to sharpen structural differentiation.",
+        "discourse_sense_class": "comparison",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06126",
+        "nuclearity": "multinuclear",
+        "pref_label": "Antithesis & Direct Contrast",
+        "wiki_slug": "rhetorical-structure-theory"
+      },
+      "wiki_slug": "rhetorical-structure-theory"
+    },
+    "coe:C06127": {
+      "collection_name": "discourse_relations",
+      "definition": "Comparison relation acknowledging the genuine merit of an opposing concern in the satellite before establishing why the nuclear conclusion still prevails.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06127",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Concessive Counter-Expectation",
+      "payload": {
+        "canonical_connectives": [
+          "although",
+          "while it is true that",
+          "even though",
+          "yet"
+        ],
+        "definition": "Comparison relation acknowledging the genuine merit of an opposing concern in the satellite before establishing why the nuclear conclusion still prevails.",
+        "discourse_sense_class": "comparison",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06127",
+        "nuclearity": "nucleus_satellite",
+        "pref_label": "Concessive Counter-Expectation",
+        "wiki_slug": "rhetorical-structure-theory"
+      },
+      "wiki_slug": "rhetorical-structure-theory"
+    },
+    "coe:C06128": {
+      "collection_name": "discourse_relations",
+      "definition": "Expansion relation grounding a general principle or capability claim in a specific, named customer workflow, payload, or scenario instance.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06128",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Concrete Instantiation",
+      "payload": {
+        "canonical_connectives": [
+          "for example",
+          "for instance",
+          "in practice"
+        ],
+        "definition": "Expansion relation grounding a general principle or capability claim in a specific, named customer workflow, payload, or scenario instance.",
+        "discourse_sense_class": "expansion",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06128",
+        "nuclearity": "nucleus_satellite",
+        "pref_label": "Concrete Instantiation",
+        "wiki_slug": "penn-discourse-treebank"
+      },
+      "wiki_slug": "penn-discourse-treebank"
+    },
+    "coe:C06129": {
+      "collection_name": "discourse_relations",
+      "definition": "Expansion relation unpacking the internal mechanism, architecture layers, or component parts of a nuclear governing concept.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06129",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Hierarchical Elaboration",
+      "payload": {
+        "canonical_connectives": [
+          "in particular",
+          "under the hood",
+          "across three layers"
+        ],
+        "definition": "Expansion relation unpacking the internal mechanism, architecture layers, or component parts of a nuclear governing concept.",
+        "discourse_sense_class": "expansion",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06129",
+        "nuclearity": "nucleus_satellite",
+        "pref_label": "Hierarchical Elaboration",
+        "wiki_slug": "segmented-discourse-representation-theory"
+      },
+      "wiki_slug": "segmented-discourse-representation-theory"
+    },
+    "coe:C06130": {
+      "collection_name": "discourse_relations",
+      "definition": "Expansion relation distilling a multi-step proof or demonstration back into a crisp, portable decision takeaway at unit close.",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06130",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Summary & Synthesis Restatement",
+      "payload": {
+        "canonical_connectives": [
+          "in short",
+          "the takeaway is",
+          "taken together"
+        ],
+        "definition": "Expansion relation distilling a multi-step proof or demonstration back into a crisp, portable decision takeaway at unit close.",
+        "discourse_sense_class": "expansion",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06130",
+        "nuclearity": "nucleus_satellite",
+        "pref_label": "Summary & Synthesis Restatement",
+        "wiki_slug": "rhetorical-structure-theory"
+      },
+      "wiki_slug": "rhetorical-structure-theory"
+    },
+    "coe:C06141": {
+      "collection_name": "rhetorical_moves",
+      "definition": "Craft discipline ensuring every structural unit—from a whole deck or document down to a section, scene, or individual canvas—states a single governing thought calibrated to that unit's hierarchical level, supported by as many subordinate points as earn their place.",
+      "facets": [
+        "rhetoric",
+        "visual_design"
+      ],
+      "id": "coe:C06141",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Unit-Sized Governing Assertion",
+      "payload": {
+        "communicative_purpose": "Replace vague topic-label headers and arbitrary element caps with coherent declarative assertions at every level of the communication hierarchy.",
+        "definition": "Craft discipline ensuring every structural unit—from a whole deck or document down to a section, scene, or individual canvas—states a single governing thought calibrated to that unit's hierarchical level, supported by as many subordinate points as earn their place.",
+        "facets": [
+          "rhetoric",
+          "visual_design"
+        ],
+        "id": "coe:C06141",
+        "pref_label": "Unit-Sized Governing Assertion",
+        "wiki_slug": "governing-units"
+      },
+      "wiki_slug": "governing-units"
+    },
+    "coe:C06142": {
+      "collection_name": "rhetorical_moves",
+      "definition": "Organising supporting arguments, taxonomy branches, or diagnostic buckets so categories are Mutually Exclusive (zero overlap) and Collectively Exhaustive (zero blind spots).",
+      "facets": [
+        "rhetoric"
+      ],
+      "id": "coe:C06142",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "MECE Structural Partitioning",
+      "payload": {
+        "communicative_purpose": "Demonstrate rigorous analytical completeness so executive evaluators spot no redundant bullets or missing risk dimensions.",
+        "definition": "Organising supporting arguments, taxonomy branches, or diagnostic buckets so categories are Mutually Exclusive (zero overlap) and Collectively Exhaustive (zero blind spots).",
+        "facets": [
+          "rhetoric"
+        ],
+        "id": "coe:C06142",
+        "pref_label": "MECE Structural Partitioning",
+        "wiki_slug": "mece-principle"
+      },
+      "wiki_slug": "mece-principle"
+    },
+    "coe:C06143": {
+      "collection_name": "rhetorical_moves",
+      "definition": "Tactical move shifting a buyer's evaluation frame from a commodity feature checklist to the underlying architectural or economic boundary that actually governs success.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06143",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Contrastive Reframing Pivot",
+      "payload": {
+        "communicative_purpose": "Escape feature-parity traps by elevating the criterion on which options are judged.",
+        "definition": "Tactical move shifting a buyer's evaluation frame from a commodity feature checklist to the underlying architectural or economic boundary that actually governs success.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06143",
+        "pref_label": "Contrastive Reframing Pivot"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06144": {
+      "collection_name": "rhetorical_moves",
+      "definition": "Proactively naming where a competitor excels or where your own offering requires an explicit licence/architectural prerequisite before a sceptic raises it.",
+      "facets": [
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C06144",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Inoculative Concession & Watchout Disclosure",
+      "payload": {
+        "communicative_purpose": "Build immediate architect and legal Ethos while neutralising late-stage competitive ambushes.",
+        "definition": "Proactively naming where a competitor excels or where your own offering requires an explicit licence/architectural prerequisite before a sceptic raises it.",
+        "facets": [
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C06144",
+        "pref_label": "Inoculative Concession & Watchout Disclosure"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06145": {
+      "collection_name": "rhetorical_moves",
+      "definition": "Brief verbal or visual orientation markers ('First, the ingestion path; second, edge profile lookup; third, DULE enforcement') keeping listeners anchored in transient audio or live talks.",
+      "facets": [
+        "rhetoric",
+        "delivery"
+      ],
+      "id": "coe:C06145",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Structural Metadiscourse Signposting",
+      "payload": {
+        "communicative_purpose": "Prevent listener disorientation across multi-part spoken explanations, podcasts, and live demos without visual breadcrumbs.",
+        "definition": "Brief verbal or visual orientation markers ('First, the ingestion path; second, edge profile lookup; third, DULE enforcement') keeping listeners anchored in transient audio or live talks.",
+        "facets": [
+          "rhetoric",
+          "delivery"
+        ],
+        "id": "coe:C06145",
+        "pref_label": "Structural Metadiscourse Signposting"
+      },
+      "wiki_slug": null
+    },
+    "coe:C06146": {
+      "collection_name": "rhetorical_moves",
+      "definition": "Opening a presentation, video script, or demo on a quantifiable customer bottleneck or high-cost failure moment rather than agenda slides, speaker bios, or company history.",
+      "facets": [
+        "rhetoric",
+        "delivery",
+        "evangelism"
+      ],
+      "id": "coe:C06146",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Stakes-First Commercial Tension Hook",
+      "payload": {
+        "communicative_purpose": "Earn voluntary audience attention in the first 15 to 30 seconds by proving immediate relevance to their role.",
+        "definition": "Opening a presentation, video script, or demo on a quantifiable customer bottleneck or high-cost failure moment rather than agenda slides, speaker bios, or company history.",
+        "facets": [
+          "rhetoric",
+          "delivery",
+          "evangelism"
+        ],
+        "id": "coe:C06146",
+        "pref_label": "Stakes-First Commercial Tension Hook"
+      },
+      "wiki_slug": null
+    },
+    "coe:C09501": {
+      "collection_name": "rubrics",
+      "definition": "Analytic 4-level CTDL-ASN rubric auditing narrative tension, unit-sized assertion headlines, visual proof architecture, and honest claim discipline across executive briefings and technical evangelism decks.",
+      "facets": [
+        "visual_design",
+        "rhetoric",
+        "evangelism"
+      ],
+      "id": "coe:C09501",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Executive Evangelism Slide Deck Rubric",
+      "payload": {
+        "criteria": [
+          {
+            "criterion_weight": 0.3,
+            "definition": "Evaluates whether the deck opens with concrete customer tension and a clear governing answer rather than vendor history or agenda bloat, and sustains a coherent causal storyline to a specific commitment.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Opens with corporate credentials, product history, or generic agenda bullets; slides read as an unordered feature catalogue with no identifiable customer Complication or Governing Answer.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Names a customer problem eventually, but delays the core recommendation past the opening third of the deck or drifts into 'And-And-And' capability tours in the middle movement.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Establishes Situation, Complication, and Governing Answer within the opening three slides, sequences MECE proof pillars cleanly, and closes on a concrete, owner-assigned next step.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Hooks the target buyer persona's operational stakes on slide 1, sustains deliberate What-Is vs What-Could-Be contrast across every section pivot, and lands an unmistakable, defensible decision case.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C06002",
+              "coe:C06003",
+              "coe:C06146"
+            ],
+            "pref_label": "Audience-Centred Narrative Arc & SCQA Opening"
+          },
+          {
+            "criterion_weight": 0.25,
+            "definition": "Evaluates whether content slide headlines state complete, falsifiable governing claims calibrated to each unit's level rather than vague topic nouns.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Over half of content slides carry noun-phrase topic headers ('Data Architecture', 'Overview', 'Key Benefits') that state no testable conclusion.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Mixes declarative headlines with topic labels, or writes bloated three-line headlines packing multiple unrelated claims into one header.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "At least 90% of proof slides state a concise, two-line maximum declarative assertion whose sequential reading reconstructs the entire talk's argument.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Every section and proof canvas states a crisp, active-verb governing thought sized precisely to its hierarchical level, making the horizontal storyline self-sufficient on a 30-second headline scan.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C06101",
+              "coe:C06141",
+              "coe:C07009"
+            ],
+            "pref_label": "Unit-Sized Assertion Headlines"
+          },
+          {
+            "criterion_weight": 0.25,
+            "definition": "Evaluates canvas proof quality, single-spark focal signalling, graphical integrity, WCAG luminance contrast, and elimination of competing bullet walls.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Canvas bodies rely on multi-bullet text walls (>70 words), stock filler clichés, truncated chart baselines, low-contrast (<4.5:1) type, or rainbow accent clutter.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Includes diagrams or charts on some slides, but retains redundant sentence bullets alongside visuals, uses <28 px micro-labels, or relies on detached colour legends.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Proves claims visually via spatially contiguous diagrams, zero-based charts, or progressive builds; keeps on-slide word counts ≤45 words on proof slides and satisfies ≥4.5:1 AA contrast.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Every canvas pairs a clean neutral hierarchy with a single preattentive chromatic spark, ≥7:1 AAA body legibility, direct data/layer labelling, and speaker notes that carry the spoken elaboration without redundancy.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C07101",
+              "coe:C07005",
+              "coe:C07008",
+              "coe:C07010"
+            ],
+            "pref_label": "Dual-Coded Visual Evidence & Perceptual Restraint"
+          },
+          {
+            "criterion_weight": 0.2,
+            "definition": "Evaluates adherence to IP-indemnity, zero-copy latency, and edition- entitlement guardrails plus proactive inoculation of genuine trade-offs.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Asserts prohibited legal, IP, latency, or edition overclaims, uses unbacked superlatives, or disparages competitors without verifiable architectural grounding.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Avoids hard legal violations, but glosses over edition boundaries (such as B2C vs B2B entitlements) or cites unanchored percentage lifts without baseline context.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "States capabilities, edition scopes, and benchmark baselines accurately and complies with all applicable ClaimGuardrails.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Combines exact technical precision with proactive Inoculative Concession—candidly stating where warehouse federation vs edge profiles or partner integrations fit best to earn instant architect trust.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C06105",
+              "coe:C06144",
+              "coe:C04250",
+              "coe:C04252"
+            ],
+            "pref_label": "Architectural Accuracy & Claim-Guardrail Candour"
+          }
+        ],
+        "definition": "Analytic 4-level CTDL-ASN rubric auditing narrative tension, unit-sized assertion headlines, visual proof architecture, and honest claim discipline across executive briefings and technical evangelism decks.",
+        "evaluated_artifact_kind": "Executive & Technical Evangelism Slide Deck",
+        "facets": [
+          "visual_design",
+          "rhetoric",
+          "evangelism"
+        ],
+        "id": "coe:C09501",
+        "pref_label": "Executive Evangelism Slide Deck Rubric",
+        "wiki_slug": "rubric-design"
+      },
+      "wiki_slug": "rubric-design"
+    },
+    "coe:C09502": {
+      "collection_name": "rubrics",
+      "definition": "Analytic 4-level CTDL-ASN rubric auditing ear-first syntax, global-L2 pacing, multimodal visual synchronisation, and phonetic/prosodic readiness in video and podcast narration scripts.",
+      "facets": [
+        "editorial_voice",
+        "delivery",
+        "pedagogy"
+      ],
+      "id": "coe:C09502",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Spoken Enablement Narration Script Rubric",
+      "payload": {
+        "criteria": [
+          {
+            "criterion_weight": 0.3,
+            "definition": "Evaluates whether sentences are written for single-pass listening with early finite verbs, natural oral rhythm, and zero nested parenthetical breath traps.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Reads like pasted whitepaper prose: frequent >28-word sentences, centre-embedded clauses, parenthetical abbreviations, and zombie nominalisations that trip speakers on breath.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Mostly conversational, but leaves periodic multi-clause run-ons, passive agent deletions, or awkward written transitions ('moreover', 'aforementioned').",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Maintains 10–19 word mean sentence length (hard cap ≤25 words), lands concrete subjects and active verbs early, and varies short pivot beats with medium explanatory sentences.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Reads effortlessly aloud on cold sight-read with unmistakable spoken cadence, crisp contrastive parallelism, and zero wasted syllables.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C08602",
+              "coe:C08603",
+              "coe:C08606"
+            ],
+            "pref_label": "Ear-First Syntax & Clause Economy"
+          },
+          {
+            "criterion_weight": 0.25,
+            "definition": "Evaluates intentional boundary pauses, contrastive focus cues, and TTS/ presenter pronunciation guidance on acronyms and product names.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Provides zero pronunciation guidance on ambiguous acronyms/terms (such as XDM, CJA, C2PA, LUFS) and packs paragraphs with no rhetorical pause markers before key reveals.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Expands some acronyms, but omits phonetic overrides for TTS/avatar pipelines or places pauses inconsistently.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Supplies explicit `spoken_form` / IPA guidance for every technical initialism and proper noun, and marks pre-reveal pauses and contrastive stress on key turns.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Integrates natural beat pauses, contrastive stress cues, and tested phonetic overrides seamlessly so both human presenters and neural TTS renders sound authoritative on the first take.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C08072",
+              "coe:C08075",
+              "coe:C08077",
+              "coe:C08608"
+            ],
+            "pref_label": "Prosodic Cueing, Pause Architecture & Phonetic Overrides"
+          },
+          {
+            "criterion_weight": 0.25,
+            "definition": "Evaluates how tightly spoken beats synchronise with visual state changes without reading on-screen text verbatim.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Narration reads slide bullets word-for-word or runs >60 seconds over a static frozen visual with no state-change alignment.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Paraphrases slides partially, but visual build cues lag or precede their corresponding spoken nouns, causing split-attention search.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Complements concise visual labels with non-redundant causal voiceover and refreshes visual state every 15–38 seconds on clean beat boundaries.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Achieves tight temporal contiguity where every visual highlight or progressive diagram build fires on the exact spoken anchor phrase within a crisp ≤6-minute module budget.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C05108",
+              "coe:C05111",
+              "coe:C08003"
+            ],
+            "pref_label": "Multimodal Temporal Alignment & Redundancy Discipline"
+          },
+          {
+            "criterion_weight": 0.2,
+            "definition": "Evaluates idiom restraint, calibrated 122–145 WPM budget, psychological safety (zero patronising minimisers), and accurate product claims.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Packs regional sports/slang idioms, patronising minimisers ('just', 'simply', 'obviously'), anthropomorphic AI hype, or >165 WPM word budgets into fixed runtime slots.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Eliminates blatant slang, but retains occasional LLM filler clichés or slightly over-packed word counts for global L2 listeners.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Uses clear international English calibrated to ~130–140 WPM, zero patronising minimisers, operational AI verbs, and verified product terminology.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Combines warm, peer-to-peer respect for global L2 practitioners with surgical technical precision and concrete customer workflow grounding.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C08021",
+              "coe:C08604",
+              "coe:C08605",
+              "coe:C08609"
+            ],
+            "pref_label": "Global-L2 Inclusivity & Factual Guardrail Fidelity"
+          }
+        ],
+        "definition": "Analytic 4-level CTDL-ASN rubric auditing ear-first syntax, global-L2 pacing, multimodal visual synchronisation, and phonetic/prosodic readiness in video and podcast narration scripts.",
+        "evaluated_artifact_kind": "Video & Podcast Spoken Narration Script",
+        "facets": [
+          "editorial_voice",
+          "delivery",
+          "pedagogy"
+        ],
+        "id": "coe:C09502",
+        "pref_label": "Spoken Enablement Narration Script Rubric",
+        "wiki_slug": "rubric-design"
+      },
+      "wiki_slug": "rubric-design"
+    },
+    "coe:C09503": {
+      "collection_name": "rubrics",
+      "definition": "Analytic 4-level CTDL-ASN rubric auditing persona-anchored narrative framing, Value-Before-Click cursor discipline, cognitive-load pacing, and composure under live architectural Q&A.",
+      "facets": [
+        "delivery",
+        "evangelism",
+        "pedagogy"
+      ],
+      "id": "coe:C09503",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Live Technical Product Demonstration Rubric",
+      "payload": {
+        "criteria": [
+          {
+            "criterion_weight": 0.3,
+            "definition": "Evaluates whether the demo follows one coherent customer campaign or data scenario rather than an exhaustive menu-by-menu UI tour.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Opens on generic admin homepages and tours navigation tabs left-to- right ('Here is Settings, here is Help') with no customer persona or business goal.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Mentions a customer scenario at the start, but detours into unrelated secondary features that dilute the core value path.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Follows a single named persona and end-to-end use case from trigger problem through key capability execution to verified business outcome.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Opens by showing the completed high-value outcome in 60 seconds ('Do the Last Thing First'), then unpacks only the 3–4 decisive architectural moments that made it possible.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C05207",
+              "coe:C06001",
+              "coe:C08002"
+            ],
+            "pref_label": "Story-Anchored Customer Workflow Framing"
+          },
+          {
+            "criterion_weight": 0.3,
+            "definition": "Evaluates whether the presenter orients viewer gaze and states *why* an action matters before moving the cursor or switching screens.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Circles the mouse cursor compulsively while talking, clicks through dense unzoomed tables at 100% browser scale, and narrates raw mechanical clicks ('Now I click Save').",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Zooms UI adequately, but clicks into new views simultaneously while explaining the previous screen, forcing viewers to chase screen refreshes.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Zooms browser UI to 125–150%, parks the cursor still when speaking, states the business intent first, executes the click cleanly, and pauses 1 second as the new view renders.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Directs attention effortlessly across every transition—naming the exact screen region, parking the pointer cleanly on the focal proof metric, and translating every UI result back to persona impact.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C05103",
+              "coe:C05107",
+              "coe:C08023"
+            ],
+            "pref_label": "Value-Before-Click Signalling & Split-Attention Control"
+          },
+          {
+            "criterion_weight": 0.4,
+            "definition": "Evaluates technical accuracy on data flow, governance, and edition boundaries during live evaluator questioning.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Guesses or bluffs when challenged on latency, schema setup, or licensing; makes prohibited guardrail claims or dismisses valid architect concerns.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Answers basic product questions accurately, but gives long defensive answers on edge cases or blurs pre-staged demo shortcuts vs production configuration.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Distinguishes pre-configured demo state from real implementation effort transparently, answers architecture questions answer-first, and respects all edition/IP guardrails.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Welcomes tough CIO/architect pushback with calm terminal-fall composure, validates the underlying engineering concern, shows the live governance/lineage proof directly in UI, and logs any deep follow-up item precisely.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C06102",
+              "coe:C06144",
+              "coe:C04252",
+              "coe:C04256"
+            ],
+            "pref_label": "Architectural Honesty, Watchouts & Q&A Composure"
+          }
+        ],
+        "definition": "Analytic 4-level CTDL-ASN rubric auditing persona-anchored narrative framing, Value-Before-Click cursor discipline, cognitive-load pacing, and composure under live architectural Q&A.",
+        "evaluated_artifact_kind": "Live or Recorded Technical Product Demonstration",
+        "facets": [
+          "delivery",
+          "evangelism",
+          "pedagogy"
+        ],
+        "id": "coe:C09503",
+        "pref_label": "Live Technical Product Demonstration Rubric",
+        "wiki_slug": "rubric-design"
+      },
+      "wiki_slug": "rubric-design"
+    },
+    "coe:C09504": {
+      "collection_name": "rubrics",
+      "definition": "Analytic 4-level CTDL-ASN rubric scoring diagnostic questioning depth, multi-persona buying-group uncovering, commercial reframing, and evidence-backed objection resolution.",
+      "facets": [
+        "evangelism",
+        "pedagogy",
+        "delivery"
+      ],
+      "id": "coe:C09504",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Buyer Discovery & Objection Handling Roleplay Rubric",
+      "payload": {
+        "criteria": [
+          {
+            "criterion_weight": 0.35,
+            "definition": "Evaluates whether the candidate uncovers operational bottlenecks and quantifiable business impact before pitching product capabilities.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Launches into a monologic product pitch within two turns without asking open discovery questions or confirming the buyer's priority problem.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Asks surface situational questions, but fails to probe downstream cost, cycle-time drag, or risk impact when the buyer drops a clue.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Uses layered open questions to surface current workflow breakdown, affected teams, and measurable business cost before proposing an approach.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Guides the buyer to quantify their own cost of inaction across speed, conversion, or risk, and summarises the agreed problem in the buyer's exact language before pivoting.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C04040",
+              "coe:C04042"
+            ],
+            "pref_label": "Diagnostic Questioning & Root-Problem Quantification"
+          },
+          {
+            "criterion_weight": 0.25,
+            "definition": "Evaluates whether the candidate identifies technical evaluators, legal/ privacy stakeholders, and concrete evaluation yardsticks beyond a single champion.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Treats a single conversational contact as sole decision maker and never asks about architecture, security, legal, or economic sign-off.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Asks generically 'Who else is involved?' without connecting adjacent stakeholders (CIO, CDO, Legal, Brand Studio) to their specific technical or governance concerns.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Identifies missing buying-committee roles, surfaces their distinct veto/decision criteria, and proposes concrete enablement artifacts for the champion to share.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Reframes evaluation criteria constructively so the champion sees why aligning IT/data and legal/governance early accelerates time-to- value rather than slowing the deal.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C04040",
+              "coe:C04041"
+            ],
+            "pref_label": "Multi-Persona Buying-Group & Decision-Criteria Mapping"
+          },
+          {
+            "criterion_weight": 0.4,
+            "definition": "Evaluates composure, empathetic validation of the root concern, and architectural precision when handling sceptical pushback.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Argues defensively, interrupts the buyer, disparages the buyer's existing cloud warehouse/CRM investment, or makes an inaccurate overclaim to close the objection.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Stays polite, but responds with generic marketing talking points that miss the root architectural or legal anxiety beneath the objection.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Validates the underlying concern ('Zero-copy governance is the right standard'), explains the exact architectural division of labour accurately, and checks whether the response resolves the concern.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Turns the objection into a trust-building moment: acknowledges where the buyer's current stack excels, draws a crisp, guardrailed architectural boundary, and proposes a low-risk verification test.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C06127",
+              "coe:C06144",
+              "coe:C04250",
+              "coe:C04252"
+            ],
+            "pref_label": "Non-Defensive, Guardrail-Compliant Objection Resolution"
+          }
+        ],
+        "definition": "Analytic 4-level CTDL-ASN rubric scoring diagnostic questioning depth, multi-persona buying-group uncovering, commercial reframing, and evidence-backed objection resolution.",
+        "evaluated_artifact_kind": "Buyer Discovery & Objection Handling Simulation",
+        "facets": [
+          "evangelism",
+          "pedagogy",
+          "delivery"
+        ],
+        "id": "coe:C09504",
+        "pref_label": "Buyer Discovery & Objection Handling Roleplay Rubric",
+        "wiki_slug": "rubric-design"
+      },
+      "wiki_slug": "rubric-design"
+    },
+    "coe:C09505": {
+      "collection_name": "rubrics",
+      "definition": "Analytic 4-level CTDL-ASN rubric auditing ISO 24495-1 answer-first structure, active-verb syntax, anti-AI-slop discipline, and accessibility/ claim compliance across written guides, briefs, and wiki syntheses.",
+      "facets": [
+        "editorial_voice",
+        "rhetoric"
+      ],
+      "id": "coe:C09505",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Plain-Language & Claim-Compliant Editorial Rubric",
+      "payload": {
+        "criteria": [
+          {
+            "criterion_weight": 0.3,
+            "definition": "Evaluates whether readers locate the governing answer within five seconds and navigate via specific, unit-sized headings.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Buries the main conclusion beneath paragraphs of chronological backstory and uses opaque one-word headings ('Background', 'Notes', 'Misc').",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "States a purpose near the top, but mixes overlapping sections or leaves key operational actions hidden mid-paragraph.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Leads every document and major section with its governing answer or action and partitions sub-sections cleanly without overlap.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Enables both 15-second executive scanning via informative headings and deep practitioner execution without a single redundant bridging paragraph.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C08601",
+              "coe:C06141",
+              "coe:C06142"
+            ],
+            "pref_label": "ISO 24495-1 Answer-First Structure & Informative Headings"
+          },
+          {
+            "criterion_weight": 0.35,
+            "definition": "Evaluates concrete actor-verb clarity, removal of Latinate noun bloat, and complete absence of stock LLM filler or patronising minimisers.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Riddled with stock LLM clichés ('delve', 'tapestry', 'testament to', 'in today's landscape'), >15% agentless passives, or patronising 'simply/just' minimisers.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Free of obvious AI clichés, but leans on heavy `-tion/-ment` nominalisations ('perform an implementation of') or unquantified adjectives ('seamless', 'cutting-edge').",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Keeps passive voice ≤8%, names concrete human or system actors, drives sentences with crisp finite verbs, and backs claims with specific mechanisms or figures.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Exhibits unmistakable human craft voice: economical, rhythmically varied, candid about boundary conditions, and completely free of corporate or synthetic puffery.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C08602",
+              "coe:C08604",
+              "coe:C08606",
+              "coe:C08609"
+            ],
+            "pref_label": "Active Agent Syntax, De-Nominalisation & Zero AI Slop"
+          },
+          {
+            "criterion_weight": 0.35,
+            "definition": "Evaluates exact official proper-noun naming, locale orthographic consistency, acronym expansion, and functional alt-text/link labels.",
+            "levels": [
+              {
+                "level_score": 1,
+                "observable_descriptor": "Uses retired product names, mixes UK/US spelling randomly within the same paragraph, drops unexpanded internal acronyms, or leaves bare 'click here' links and missing alt-text.",
+                "pref_label": "Deficient"
+              },
+              {
+                "level_score": 2,
+                "observable_descriptor": "Uses current product names mostly accurately, but occasionally alters trademarked US product spelling in UK prose or writes vague 'Chart of results' alt-text.",
+                "pref_label": "Developing"
+              },
+              {
+                "level_score": 3,
+                "observable_descriptor": "Honours canonical `pref_label` product names, maintains consistent target-locale prose spelling, expands acronyms on first mention for mixed cohorts, and supplies descriptive links and functional alt-text.",
+                "pref_label": "Proficient"
+              },
+              {
+                "level_score": 4,
+                "observable_descriptor": "Every proper noun, edition qualifier, non-anthropomorphic AI verb, and accessible visual text-equivalent meets publication-grade audit with zero ambiguity.",
+                "pref_label": "Exemplary"
+              }
+            ],
+            "linked_concepts": [
+              "coe:C08605",
+              "coe:C08607",
+              "coe:C08608",
+              "coe:C08610"
+            ],
+            "pref_label": "Terminological, Locale & Accessibility Compliance"
+          }
+        ],
+        "definition": "Analytic 4-level CTDL-ASN rubric auditing ISO 24495-1 answer-first structure, active-verb syntax, anti-AI-slop discipline, and accessibility/ claim compliance across written guides, briefs, and wiki syntheses.",
+        "evaluated_artifact_kind": "Written Brief, Enablement Guide, or Technical Document",
+        "facets": [
+          "editorial_voice",
+          "rhetoric"
+        ],
+        "id": "coe:C09505",
+        "pref_label": "Plain-Language & Claim-Compliant Editorial Rubric",
+        "wiki_slug": "rubric-design"
+      },
+      "wiki_slug": "rubric-design"
+    },
+    "coe:C09601": {
+      "collection_name": "diagnostic_detectors",
+      "definition": "Detects slide headlines, section titles, or opening paragraphs that announce a neutral subject category ('Architecture Overview', 'Journey Orchestration') or delay the governing conclusion behind chronological throat-clearing.",
+      "facets": [
+        "rhetoric",
+        "visual_design",
+        "editorial_voice"
+      ],
+      "id": "coe:C09601",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Topic-Label Headline & Buried Lead Detector",
+      "payload": {
+        "definition": "Detects slide headlines, section titles, or opening paragraphs that announce a neutral subject category ('Architecture Overview', 'Journey Orchestration') or delay the governing conclusion behind chronological throat-clearing.",
+        "detection_signal_description": "Proof-slide or section title lacks a finite verb or comparative predicate (pure noun phrase ≤4 words on a non-divider unit), or the opening paragraph of a brief spends >2 sentences on process history before stating a recommendation or decision takeaway.",
+        "facets": [
+          "rhetoric",
+          "visual_design",
+          "editorial_voice"
+        ],
+        "id": "coe:C09601",
+        "linked_concepts": [
+          "coe:C06101",
+          "coe:C06141",
+          "coe:C07009",
+          "coe:C08601"
+        ],
+        "pref_label": "Topic-Label Headline & Buried Lead Detector",
+        "remediation_instruction": "Rewrite the headline as a complete, falsifiable declarative sentence (≤2 lines) stating *what* happens and *why it matters* at this unit's level, and hoist the bottom-line recommendation into sentence 1 of the section.",
+        "terms": [
+          {
+            "term_kind": "short_form",
+            "written_form": "Buried Lead Detector"
+          }
+        ],
+        "wiki_slug": "heading-design"
+      },
+      "wiki_slug": "heading-design"
+    },
+    "coe:C09602": {
+      "collection_name": "diagnostic_detectors",
+      "definition": "Detects stock LLM filler lexicon, formulaic contrastive boilerplate, and unquantified marketing superlatives that erode executive and technical credibility.",
+      "facets": [
+        "editorial_voice",
+        "evangelism"
+      ],
+      "id": "coe:C09602",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "AI Cliché & Empty Superlative Detector",
+      "payload": {
+        "definition": "Detects stock LLM filler lexicon, formulaic contrastive boilerplate, and unquantified marketing superlatives that erode executive and technical credibility.",
+        "detection_signal_description": "Presence of high-salience synthetic clichés ('delve', 'rich tapestry', 'testament to', 'in today's rapidly evolving landscape', 'unlock the full potential', 'seamless synergy', repetitive 'It's not just X—it's Y' frames) or unbacked intensifiers ('blazingly fast', 'infinite scale', 'turnkey magic', 'revolutionary') without adjacent mechanism or metric grounds.",
+        "facets": [
+          "editorial_voice",
+          "evangelism"
+        ],
+        "id": "coe:C09602",
+        "linked_concepts": [
+          "coe:C08609",
+          "coe:C06102",
+          "coe:C06105"
+        ],
+        "pref_label": "AI Cliché & Empty Superlative Detector",
+        "remediation_instruction": "Delete synthetic throat-clearing outright and replace every superlative adjective with the concrete architectural mechanism, contractual scope, or baseline-anchored figure that earns the claim.",
+        "terms": [
+          {
+            "term_kind": "short_form",
+            "written_form": "AI Slop Detector"
+          }
+        ],
+        "wiki_slug": "ai-content-detection"
+      },
+      "wiki_slug": "ai-content-detection"
+    },
+    "coe:C09603": {
+      "collection_name": "diagnostic_detectors",
+      "definition": "Detects concentrations of short/agentless passive clauses ('data is ingested, segments are built, and offers are delivered') that obscure whether a customer team, an Adobe service, or an automated agent executes the work.",
+      "facets": [
+        "editorial_voice"
+      ],
+      "id": "coe:C09603",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Agentless Passive Voice Cluster Detector",
+      "payload": {
+        "definition": "Detects concentrations of short/agentless passive clauses ('data is ingested, segments are built, and offers are delivered') that obscure whether a customer team, an Adobe service, or an automated agent executes the work.",
+        "detection_signal_description": "Finite-clause passive share exceeds 14% across a document/script or two or more consecutive clauses omit `by <actor>` in procedural, architectural, or governance explanations.",
+        "facets": [
+          "editorial_voice"
+        ],
+        "id": "coe:C09603",
+        "linked_concepts": [
+          "coe:C08602"
+        ],
+        "pref_label": "Agentless Passive Voice Cluster Detector",
+        "remediation_instruction": "Name the exact responsible actor ('Data engineers map...', 'Identity Service stitches...', 'Legal stewards approve...') in grammatical subject position and convert the passive participle into an active finite verb.",
+        "wiki_slug": "writing-for-learning"
+      },
+      "wiki_slug": "writing-for-learning"
+    },
+    "coe:C09604": {
+      "collection_name": "diagnostic_detectors",
+      "definition": "Detects abstract `-tion`, `-ment`, `-ance`, and `-isation` noun clusters paired with semantically empty light verbs ('conduct an evaluation of', 'enable the facilitation of', 'achieve the optimisation of').",
+      "facets": [
+        "editorial_voice"
+      ],
+      "id": "coe:C09604",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Zombie Nominalisation Drag Detector",
+      "payload": {
+        "definition": "Detects abstract `-tion`, `-ment`, `-ance`, and `-isation` noun clusters paired with semantically empty light verbs ('conduct an evaluation of', 'enable the facilitation of', 'achieve the optimisation of').",
+        "detection_signal_description": "Light-verb + determiner + deverbal-noun + `of` constructions (`make/do/ perform/conduct/provide/enable + a/the + <nominalisation> + of`) where the noun is not a canonical proper-noun `ProductCapability` or `TechnicalStandard`.",
+        "facets": [
+          "editorial_voice"
+        ],
+        "id": "coe:C09604",
+        "linked_concepts": [
+          "coe:C08606"
+        ],
+        "pref_label": "Zombie Nominalisation Drag Detector",
+        "remediation_instruction": "Collapse the light-verb construction directly into its root active verb ('evaluate', 'facilitate', 'optimise', 'query') and tighten surrounding prepositional chains.",
+        "wiki_slug": "writing-for-learning"
+      },
+      "wiki_slug": "writing-for-learning"
+    },
+    "coe:C09605": {
+      "collection_name": "diagnostic_detectors",
+      "definition": "Detects difficulty-minimising adverbs ('simply', 'just', 'obviously', 'trivial') and opaque local idioms ('hit it out of the park', 'boil the ocean', 'move the goalposts') that alienate learners and global L2 audiences.",
+      "facets": [
+        "editorial_voice",
+        "pedagogy",
+        "delivery"
+      ],
+      "id": "coe:C09605",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Patronising Minimiser & Idiom Barrier Detector",
+      "payload": {
+        "definition": "Detects difficulty-minimising adverbs ('simply', 'just', 'obviously', 'trivial') and opaque local idioms ('hit it out of the park', 'boil the ocean', 'move the goalposts') that alienate learners and global L2 audiences.",
+        "detection_signal_description": "Occurrence of difficulty minimisers (`simply`, `just`, `merely`, `obviously`, `clearly`, `easily`, `self-evident`) inside procedural or conceptual explanations, or culture-bound sports/military idioms in `global_l2_inclusive` materials.",
+        "facets": [
+          "editorial_voice",
+          "pedagogy",
+          "delivery"
+        ],
+        "id": "coe:C09605",
+        "linked_concepts": [
+          "coe:C08604",
+          "coe:C05124"
+        ],
+        "pref_label": "Patronising Minimiser & Idiom Barrier Detector",
+        "remediation_instruction": "Delete difficulty minimisers cleanly and replace culture-specific idioms with literal, internationally transparent operational verbs.",
+        "wiki_slug": "accent-and-intelligibility"
+      },
+      "wiki_slug": "accent-and-intelligibility"
+    },
+    "coe:C09606": {
+      "collection_name": "diagnostic_detectors",
+      "definition": "Detects talk tracks, video scripts, and decks that squander the opening 30–60 seconds on housekeeping, generic housekeeping agendas, self-indulgent bios, or truisms ('Data is everywhere today') before establishing stakes.",
+      "facets": [
+        "rhetoric",
+        "delivery"
+      ],
+      "id": "coe:C09606",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Throat-Clearing Opening & Agenda Bloat Detector",
+      "payload": {
+        "definition": "Detects talk tracks, video scripts, and decks that squander the opening 30–60 seconds on housekeeping, generic housekeeping agendas, self-indulgent bios, or truisms ('Data is everywhere today') before establishing stakes.",
+        "detection_signal_description": "Opening 100 spoken words or first two content slides contain meta-agenda recitation ('Today we're going to cover five topics...'), housekeeping apologies ('Can everyone see my screen?'), or category truisms with zero persona-specific Complication or tension metric.",
+        "facets": [
+          "rhetoric",
+          "delivery"
+        ],
+        "id": "coe:C09606",
+        "linked_concepts": [
+          "coe:C06146",
+          "coe:C06002"
+        ],
+        "pref_label": "Throat-Clearing Opening & Agenda Bloat Detector",
+        "remediation_instruction": "Cut housekeeping and generic truisms; open cold on the concrete customer failure moment, surprising empirical contrast, or decision question that justifies the audience's time, then signpost structure in one crisp sentence.",
+        "wiki_slug": "presentation-openings"
+      },
+      "wiki_slug": "presentation-openings"
+    },
+    "coe:C09607": {
+      "collection_name": "diagnostic_detectors",
+      "definition": "Detects spoken script sentences containing >25 words, centre-embedded relative clauses separating subject from verb by >7 words, or parenthetical asides/acronyms unreadable aloud.",
+      "facets": [
+        "editorial_voice",
+        "delivery"
+      ],
+      "id": "coe:C09607",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Spoken Breath-Trap & Nested Clause Detector",
+      "payload": {
+        "definition": "Detects spoken script sentences containing >25 words, centre-embedded relative clauses separating subject from verb by >7 words, or parenthetical asides/acronyms unreadable aloud.",
+        "detection_signal_description": "Spoken narration sentence exceeds 25 words, inserts a comma-bounded or parenthetical clause between grammatical subject and finite verb, or leaves symbolic shorthand (`e.g.`, `i.e.`, `/`, `&`, raw all-caps acronyms without `spoken_form`) in spoken transcript fields.",
+        "facets": [
+          "editorial_voice",
+          "delivery"
+        ],
+        "id": "coe:C09607",
+        "linked_concepts": [
+          "coe:C08603",
+          "coe:C08608",
+          "coe:C08023"
+        ],
+        "pref_label": "Spoken Breath-Trap & Nested Clause Detector",
+        "remediation_instruction": "Break into two linear active sentences of 10–18 words each, keep subject and verb adjacent, replace Latin/slash shorthand with spoken words ('for example', 'that is', 'and'), and attach phonetic overrides where needed.",
+        "wiki_slug": "writing-for-eye-vs-ear"
+      },
+      "wiki_slug": "writing-for-eye-vs-ear"
+    },
+    "coe:C09608": {
+      "collection_name": "diagnostic_detectors",
+      "definition": "Detects projected or narrated slides where multi-bullet sentence lists, >70 on-canvas words, or competing chromatic callouts violate Dual Coding and induce Mayer Redundancy interference.",
+      "facets": [
+        "visual_design",
+        "pedagogy"
+      ],
+      "id": "coe:C09608",
+      "in_scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+      "label": "Wall-of-Bullets Slide Overload Detector",
+      "payload": {
+        "definition": "Detects projected or narrated slides where multi-bullet sentence lists, >70 on-canvas words, or competing chromatic callouts violate Dual Coding and induce Mayer Redundancy interference.",
+        "detection_signal_description": "Live presentation or video slide contains ≥4 full-sentence bullets, >70 visible canvas words, <22% open canvas whitespace, or >2 competing high- saturation highlight colours on non-categorical elements.",
+        "facets": [
+          "visual_design",
+          "pedagogy"
+        ],
+        "id": "coe:C09608",
+        "linked_concepts": [
+          "coe:C05108",
+          "coe:C07004",
+          "coe:C07005",
+          "coe:C07101"
+        ],
+        "pref_label": "Wall-of-Bullets Slide Overload Detector",
+        "remediation_instruction": "Move full-sentence explanation into presenter notes/voiceover, distil the slide header into one declarative assertion, and convert the canvas body into a spatial diagram, contrasting topology pair, or progressive stepwise build with a single focal accent colour.",
+        "wiki_slug": "assertion-evidence-structure"
+      },
+      "wiki_slug": "assertion-evidence-structure"
     }
   },
-  "description": "Classification of discourse and argumentation constructs by relation sense (PDTB Level-2 profile), relation explicitness, Toulmin argument role, component state, ASPIC+ conflict type, rhetorical discourse role, argument link type, and governing statement basis",
-  "last_updated": "2026-10-05",
-  "scheme": "coe:artifact/narrative/discourse_argumentation_taxonomy",
-  "source": "ontology/vendor/central-configs/domains/narrative/discourse_argumentation.yaml",
-  "source_sha256": "bdf040a3577c3db46b487533366c80e58acb0d34c9537bd823b1c64cbf907d4f"
+  "description": "Projected Central_Configs v5.0.0 story frameworks, framework stages, argument schemes, discourse relations, rhetorical moves, rubrics, and diagnostic detectors.",
+  "scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
+  "source": "../Central_Configs/dist/build/central.sqlite",
+  "source_sha256": "886f08957bf6dca2317f6c105ac9dcf29da67e9d143edb01403caf261a8f6b28"
 }

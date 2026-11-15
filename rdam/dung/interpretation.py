@@ -16,11 +16,11 @@ def describe(formalism_id: str, provider_contract_version: str) -> NativeInterpr
         sections=(
             NativeSectionDescription(
                 pointer="/payload/framework",
+                ontology_alignment=native_vocabulary_alignment("dung"),
                 meaning="Caller-supplied arguments and directed attacks; no extraction from prose.",
             ),
             NativeSectionDescription(
                 pointer="/payload/extensions",
-                ontology_alignment=native_vocabulary_alignment("dung"),
                 meaning="Grounded, complete, preferred and stable extensions under the named native semantics. No stable extensions is different from one empty extension.",
             ),
             NativeSectionDescription(
