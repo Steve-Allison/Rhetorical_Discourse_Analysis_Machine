@@ -1555,7 +1555,7 @@
     },
     "coe:C06142": {
       "collection_name": "rhetorical_moves",
-      "definition": "Organising supporting arguments, taxonomy branches, or diagnostic buckets so categories are Mutually Exclusive (zero overlap) and Collectively Exhaustive (zero blind spots).",
+      "definition": "Analytical partitioning move organising supporting arguments, taxonomy branches, or diagnostic buckets so categories are Mutually Exclusive (zero overlap) and Collectively Exhaustive (zero blind spots).",
       "facets": [
         "rhetoric"
       ],
@@ -1564,7 +1564,7 @@
       "label": "MECE Structural Partitioning",
       "payload": {
         "communicative_purpose": "Demonstrate rigorous analytical completeness so executive evaluators spot no redundant bullets or missing risk dimensions.",
-        "definition": "Organising supporting arguments, taxonomy branches, or diagnostic buckets so categories are Mutually Exclusive (zero overlap) and Collectively Exhaustive (zero blind spots).",
+        "definition": "Analytical partitioning move organising supporting arguments, taxonomy branches, or diagnostic buckets so categories are Mutually Exclusive (zero overlap) and Collectively Exhaustive (zero blind spots).",
         "facets": [
           "rhetoric"
         ],
@@ -1598,7 +1598,7 @@
     },
     "coe:C06144": {
       "collection_name": "rhetorical_moves",
-      "definition": "Proactively naming where a competitor excels or where your own offering requires an explicit licence/architectural prerequisite before a sceptic raises it.",
+      "definition": "Ethos-building rhetorical move proactively naming where a competitor excels or where an offering requires an explicit licence or architectural prerequisite before a sceptic raises it.",
       "facets": [
         "rhetoric",
         "evangelism"
@@ -1608,7 +1608,7 @@
       "label": "Inoculative Concession & Watchout Disclosure",
       "payload": {
         "communicative_purpose": "Build immediate architect and legal Ethos while neutralising late-stage competitive ambushes.",
-        "definition": "Proactively naming where a competitor excels or where your own offering requires an explicit licence/architectural prerequisite before a sceptic raises it.",
+        "definition": "Ethos-building rhetorical move proactively naming where a competitor excels or where an offering requires an explicit licence or architectural prerequisite before a sceptic raises it.",
         "facets": [
           "rhetoric",
           "evangelism"
@@ -1642,7 +1642,7 @@
     },
     "coe:C06146": {
       "collection_name": "rhetorical_moves",
-      "definition": "Opening a presentation, video script, or demo on a quantifiable customer bottleneck or high-cost failure moment rather than agenda slides, speaker bios, or company history.",
+      "definition": "Opening rhetorical move anchoring a presentation, video script, or demo on a quantifiable customer bottleneck or high-cost failure moment rather than agenda slides, speaker bios, or company history.",
       "facets": [
         "rhetoric",
         "delivery",
@@ -1653,7 +1653,7 @@
       "label": "Stakes-First Commercial Tension Hook",
       "payload": {
         "communicative_purpose": "Earn voluntary audience attention in the first 15 to 30 seconds by proving immediate relevance to their role.",
-        "definition": "Opening a presentation, video script, or demo on a quantifiable customer bottleneck or high-cost failure moment rather than agenda slides, speaker bios, or company history.",
+        "definition": "Opening rhetorical move anchoring a presentation, video script, or demo on a quantifiable customer bottleneck or high-cost failure moment rather than agenda slides, speaker bios, or company history.",
         "facets": [
           "rhetoric",
           "delivery",
@@ -2591,5 +2591,5 @@
   "description": "Projected Central_Configs v5.0.0 story frameworks, framework stages, argument schemes, discourse relations, rhetorical moves, rubrics, and diagnostic detectors.",
   "scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
   "source": "../Central_Configs/dist/build/central.sqlite",
-  "source_sha256": "886f08957bf6dca2317f6c105ac9dcf29da67e9d143edb01403caf261a8f6b28"
+  "source_sha256": "f3db32a9045fa017f0c58c9799fd70235ff4b2c2e901b012dc5478a65cb98850"
 }

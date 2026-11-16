@@ -229,7 +229,7 @@
     {
       "curie": "coe:C01002",
       "pref_label": "Adobe CX Enterprise",
-      "definition": "Commercial portfolio framing uniting Customer Engagement, Brand Visibility, and Content Supply Chain atop the Adobe AI Platform and Agent Orchestrator.",
+      "definition": "Commercial portfolio framing uniting Customer Engagement, Brand Visibility, and Content Supply Chain atop the Adobe AI Platform, Adobe Experience Platform, and Agent Orchestrator.",
       "collection_name": "offerings",
       "status": "active"
     },
@@ -446,7 +446,7 @@
     {
       "curie": "coe:C01033",
       "pref_label": "Adobe Brand Visibility",
-      "definition": "AI-first brand discoverability and citation optimisation application (formerly Adobe LLM Optimizer) measuring and improving how generative AI answer engines represent brand facts and offerings.",
+      "definition": "AI-first brand discoverability and citation optimisation application combining Adobe LLM Optimizer capabilities with Semrush AI Optimization to measure and improve how generative answer engines represent brand facts.",
       "collection_name": "offerings",
       "status": "active"
     },
@@ -514,6 +514,20 @@
       "status": "deprecated"
     },
     {
+      "curie": "coe:C01043",
+      "pref_label": "Adobe AI Platform",
+      "definition": "Foundational enterprise AI and multi-agent execution platform service underpinning Adobe CX Enterprise, uniting Firefly and Sensei GenAI models, Agent Orchestrator reasoning, and enterprise governance guardrails.",
+      "collection_name": "offerings",
+      "status": "active"
+    },
+    {
+      "curie": "coe:C01044",
+      "pref_label": "Adobe Marketo Optimizer",
+      "definition": "B2B marketing optimisation application in Adobe Experience Cloud advancing Marketo-installed demand and campaign teams without requiring full Adobe Journey Optimizer B2B Edition replacement.",
+      "collection_name": "offerings",
+      "status": "active"
+    },
+    {
       "curie": "coe:C01050",
       "pref_label": "Adobe Real-Time CDP B2C Edition",
       "definition": "Consumer-profile edition of Adobe Real-Time CDP unifying individual and household profiles across web, mobile, store, and pseudonymous channels.",
@@ -565,7 +579,7 @@
     {
       "curie": "coe:C01060",
       "pref_label": "Sales Qualifier",
-      "definition": "AI-driven BDR pipeline-qualification add-on to Adobe Journey Optimizer B2B Edition hosting the Account Qualification Agent for autonomous buying-group outreach and CRM handoff.",
+      "definition": "AI-driven BDR pipeline-qualification add-on for Adobe Journey Optimizer B2B Edition and eligible Adobe Marketo Engage deployments hosting autonomous buying-group outreach and CRM handoff.",
       "collection_name": "add_ons",
       "status": "active"
     },
@@ -573,6 +587,13 @@
       "curie": "coe:C01061",
       "pref_label": "Adobe Healthcare Shield",
       "definition": "HIPAA-ready security, encryption, and PHI data-governance add-on for Adobe Experience Platform, Real-Time CDP, and Journey Optimizer.",
+      "collection_name": "add_ons",
+      "status": "active"
+    },
+    {
+      "curie": "coe:C01062",
+      "pref_label": "Adobe Marketo Qualifier",
+      "definition": "AI-assisted lead and account qualification add-on extending Adobe Marketo Engage for automated B2B outreach and sales handoff.",
       "collection_name": "add_ons",
       "status": "active"
     },
@@ -719,7 +740,7 @@
     {
       "curie": "coe:C01109",
       "pref_label": "Adobe Firefly Foundry",
-      "definition": "Managed enterprise AI service in which Adobe scientists build, train, and operate bespoke multimodal generative models on a customer's proprietary IP under tenant isolation.",
+      "definition": "Managed enterprise AI service in which Adobe scientists build and train bespoke multimodal generative models on a customer's proprietary IP under strict tenant isolation.",
       "collection_name": "offerings",
       "status": "active"
     },
@@ -1181,14 +1202,14 @@
     {
       "curie": "coe:C01231",
       "pref_label": "Content Advisor Agent",
-      "definition": "Asset-discovery and semantic curation agent inside Adobe Experience Manager surfacing approved, rights-valid assets for campaign reuse.",
+      "definition": "Asset-discovery and semantic curation domain agent inside Adobe Experience Manager surfacing approved, rights-valid assets and content optimizations for campaign reuse.",
       "collection_name": "ai_agents",
       "status": "active"
     },
     {
       "curie": "coe:C01232",
       "pref_label": "Brand Governance Agent",
-      "definition": "Compliance agent inside AEM Sites and Assets auditing published pages and media against enterprise brand, legal, and accessibility policies.",
+      "definition": "Compliance domain agent inside AEM Sites and Assets auditing published pages and media against enterprise brand, legal, and accessibility policies.",
       "collection_name": "ai_agents",
       "status": "active"
     },
@@ -1230,7 +1251,21 @@
     {
       "curie": "coe:C01238",
       "pref_label": "Adobe Productivity Agent",
-      "definition": "Cross-document and creation agent bridging Adobe Acrobat and Adobe Express for knowledge synthesis and instant visual asset production.",
+      "definition": "Unshipped exploratory concept name for cross-document and Express agent assistance retained solely for archival note resolution.",
+      "collection_name": "ai_agents",
+      "status": "historical_only"
+    },
+    {
+      "curie": "coe:C01239",
+      "pref_label": "Adobe Creative Agent",
+      "definition": "Multi-step creative agent capability powering Firefly AI Assistant and cross-application ideation, asset editing, and production handoffs across Adobe Firefly and Creative Cloud.",
+      "collection_name": "ai_agents",
+      "status": "active"
+    },
+    {
+      "curie": "coe:C01240",
+      "pref_label": "Brand Experience Agent",
+      "definition": "Domain agent in Adobe Experience Manager Sites and Edge Delivery Services grouping Experience Production, Development, and Experience Modernization capabilities for cloud-native web delivery.",
       "collection_name": "ai_agents",
       "status": "active"
     },
@@ -2131,7 +2166,8 @@
       "context_anchors": [
         "Adobe",
         "Agent Orchestrator",
-        "Experience Platform"
+        "Experience Platform",
+        "AI Platform"
       ],
       "negative_phrases": [],
       "requires_llm_disambiguation": false
@@ -2478,7 +2514,9 @@
         "CRM"
       ],
       "negative_phrases": [
-        "Marketo Measure"
+        "Marketo Measure",
+        "Marketo Optimizer",
+        "Marketo Qualifier"
       ],
       "requires_llm_disambiguation": false
     },
@@ -3234,6 +3272,42 @@
       "requires_llm_disambiguation": false
     },
     {
+      "curie": "coe:C01043",
+      "pref_label": "Adobe AI Platform",
+      "collection_name": "offerings",
+      "surface": "Adobe AI Platform",
+      "match_policy": "unambiguous",
+      "case_sensitive": false,
+      "anchor_window_tokens": 25,
+      "context_anchors": [],
+      "negative_phrases": [],
+      "requires_llm_disambiguation": false
+    },
+    {
+      "curie": "coe:C01044",
+      "pref_label": "Adobe Marketo Optimizer",
+      "collection_name": "offerings",
+      "surface": "Adobe Marketo Optimizer",
+      "match_policy": "unambiguous",
+      "case_sensitive": false,
+      "anchor_window_tokens": 25,
+      "context_anchors": [],
+      "negative_phrases": [],
+      "requires_llm_disambiguation": false
+    },
+    {
+      "curie": "coe:C01044",
+      "pref_label": "Adobe Marketo Optimizer",
+      "collection_name": "offerings",
+      "surface": "Marketo Optimizer",
+      "match_policy": "unambiguous",
+      "case_sensitive": false,
+      "anchor_window_tokens": 25,
+      "context_anchors": [],
+      "negative_phrases": [],
+      "requires_llm_disambiguation": false
+    },
+    {
       "curie": "coe:C01050",
       "pref_label": "Adobe Real-Time CDP B2C Edition",
       "collection_name": "editions",
@@ -3425,6 +3499,7 @@
         "Adobe",
         "AJO",
         "Journey Optimizer",
+        "Marketo",
         "Account Qualification Agent"
       ],
       "negative_phrases": [],
@@ -3456,6 +3531,30 @@
         "RTCDP",
         "HIPAA"
       ],
+      "negative_phrases": [],
+      "requires_llm_disambiguation": false
+    },
+    {
+      "curie": "coe:C01062",
+      "pref_label": "Adobe Marketo Qualifier",
+      "collection_name": "add_ons",
+      "surface": "Adobe Marketo Qualifier",
+      "match_policy": "unambiguous",
+      "case_sensitive": false,
+      "anchor_window_tokens": 25,
+      "context_anchors": [],
+      "negative_phrases": [],
+      "requires_llm_disambiguation": false
+    },
+    {
+      "curie": "coe:C01062",
+      "pref_label": "Adobe Marketo Qualifier",
+      "collection_name": "add_ons",
+      "surface": "Marketo Qualifier",
+      "match_policy": "unambiguous",
+      "case_sensitive": false,
+      "anchor_window_tokens": 25,
+      "context_anchors": [],
       "negative_phrases": [],
       "requires_llm_disambiguation": false
     },
@@ -5356,14 +5455,48 @@
       "requires_llm_disambiguation": false
     },
     {
-      "curie": "coe:C01238",
-      "pref_label": "Adobe Productivity Agent",
+      "curie": "coe:C01239",
+      "pref_label": "Adobe Creative Agent",
       "collection_name": "ai_agents",
-      "surface": "Adobe Productivity Agent",
+      "surface": "Adobe Creative Agent",
       "match_policy": "unambiguous",
       "case_sensitive": false,
       "anchor_window_tokens": 25,
       "context_anchors": [],
+      "negative_phrases": [],
+      "requires_llm_disambiguation": false
+    },
+    {
+      "curie": "coe:C01239",
+      "pref_label": "Adobe Creative Agent",
+      "collection_name": "ai_agents",
+      "surface": "Creative Agent",
+      "match_policy": "context_anchored",
+      "case_sensitive": false,
+      "anchor_window_tokens": 25,
+      "context_anchors": [
+        "Adobe",
+        "Firefly",
+        "Firefly AI Assistant",
+        "Creative Cloud"
+      ],
+      "negative_phrases": [],
+      "requires_llm_disambiguation": false
+    },
+    {
+      "curie": "coe:C01240",
+      "pref_label": "Brand Experience Agent",
+      "collection_name": "ai_agents",
+      "surface": "Brand Experience Agent",
+      "match_policy": "context_anchored",
+      "case_sensitive": false,
+      "anchor_window_tokens": 25,
+      "context_anchors": [
+        "Adobe",
+        "AEM",
+        "Edge Delivery",
+        "Sites"
+      ],
       "negative_phrases": [],
       "requires_llm_disambiguation": false
     },
@@ -5836,5 +5969,5 @@
       "requires_llm_disambiguation": false
     }
   ],
-  "content_digest": "e048ffad431c1a0819383a7c4200b5f9b161e8c8c3a8a99899188c6621a677bb"
+  "content_digest": "c64f62c979a1a9a6ca4ca78f7444351f7d282915d362f170ae1ee4420792c730"
 }

@@ -1,386 +1,326 @@
-# Graph Report - Rhetorical_Discourse_Analysis_Machine  (2026-11-15)
+# Graph Report - Rhetorical_Discourse_Analysis_Machine  (2026-11-16)
 
 ## Corpus Check
-- 1246 files · ~1,268,035 words
+- 1153 files · ~899,137 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 200 file(s) not represented in the graph (top: .dclg 143, .log 12, .rs4 10)
 
 ## Summary
-- 24016 nodes · 44806 edges · 1583 communities (942 shown, 641 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 2672 edges (avg confidence: 0.92)
+- 39344 nodes · 60245 edges · 1981 communities (1694 shown, 287 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 2418 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d8847507`
+- Built from commit: `011bb7d2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- StandardParsevalScorer
+- test_llm_rst_protocol.py
 - interfaces/test_cli.py
-- corpus.py
+- SecondaryEdgeCandidate
 - test_erst_checkpoint.py
 - legacy.py
-- Technique
+- Machine
 - RstAnalysis
-- systems/common.py
+- BoundaryConfiguration
+- test_comparison_foundations.py
 - .for_text
-- Sha256Identity
-- assessor.py
-- service.py
+- parser_result.py
+- properties
+- grammar.py
 - NetworkStructureDecision
 - StructuredAnalyst
 - rdam/ingest/__init__.py
 - pydantic
-- NativeInterpretationDescriptor
-- test_ontology.py
+- properties
+- linker.py
 - OutputDestination
-- substrate.py
-- argument_mining/test_provider.py
-- run_comparison.py
-- evaluate
-- text_walker.py
-- rst/contracts/__init__.py
+- grid.py
+- StrictModel
+- run_screening.py
+- .from_payload
+- properties
+- OntologyAdapter
 - SdrtAnalysis
 - DiscourseUnit
-- load_contract
-- release.py
+- $defs
+- ParserCapacity
 - theory.py
 - main.py
-- taxonomies
+- test_segmentation_evaluation.py
 - properties
 - thaw_json
-- applications
-- entities
+- doclang/decoder.py
+- clean_install.py
 - rstweb_sql.py
-- production_boundary/contracts.py
+- GraphAttentionAdapter
+- StrictModel
 - properties
-- Cognitive Level
+- AnchorKind
+- argument_mining/test_provider.py
 - load_doclang_archive
 - unirst/utils_rs3.py
 - TrainingManager
 - test_production_smoke.py
-- concepts
-- entities
-- product_families
+- ingest/identity.py
+- export.py
+- SdrtProvider
 - Universal Parser SpanNode
 - ingest/public_surface.py
 - dmrst/utils_rs3.py
-- entities
+- test_failure_stages.py
 - test_gum_gold.py
-- entities
-- entities
-- production_boundary/contracts.py
-- AnalysisSemanticEvidence
+- test_baseline_corrections.py
+- test_runtime_vocabulary.py
+- build.py
+- GenerativeDecoderAdapter
 - unirst/common.py
-- ConceptIndex
+- $defs
 - PredictorUniRST
-- SecondaryEdgeCandidate
-- semantics.py
-- entities
+- candidates.py
+- rdam/dung/__init__.py
+- test_frameworks.py
 - BiMPM
-- entities
+- schemes.py
 - PredictorDMRST
-- entities
+- signal_detection.py
 - Path
-- test_upstream_conformance.py
-- entities
-- entities
-- entities
-- entities
-- entities
-- entities
-- edges
+- test_version_compat.py
+- type
+- type
+- type
+- type
+- test_erst_decoder.py
+- rst_diag.py
+- classify
 - dmrst/common.py
 - dmrst/data.py
 - dmrst_parser/src/parser/metrics.py
-- attributes
+- assessor.py
 - $ref
 - $ref
-- edges
+- rst_baseline.py
+- Tensor
+- universal_parser/src/parser/modules.py
+- TestDetectFamilyFromModelDir
+- StrictModel
 - Tensor
 - EncoderRNN
-- entities
-- ibis/provider.py
-- Tensor
-- EncoderRNN
-- test_http.py
+- http.py
 - TemperatureScaler
 - dmrst/utils_dis_thiago.py
-- Vocal Quality Markers
+- _compatible_parser_release
 - Parser
-- ReleaseIdentity
+- artifacts.py
 - kind
 - properties
-- entities
+- doclang/loader.py
 - technology.py
 - OwnershipAuthority
 - StandardParsevalScorer
 - properties
-- entities
+- Contract: Unified rdam CLI
 - build_analysis_validation_receipt
 - Tree Node Manipulation
-- edges
-- slots
+- properties
+- properties
 - test_blake3_hashing.py
-- framework_stages
-- entities
-- entities
-- test_discourse_projection.py
-- test_shared_runtime_internals.py
-- rst/_version.py
+- properties
+- properties
+- .prime_analysis
+- ontology.py
+- canonical_json_bytes
+- MarkdownIt
+- BaseModel
 - ParsingNet
-- attributes
-- ingest/contracts/analysis.py
-- ProductFamily
+- context_anchors
+- AnalysedDocument
+- properties
 - properties
 - .__init__
-- test_relations.py
-- capabilities
-- taxonomies
+- properties
+- context_anchors
+- properties
+- $defs
 - type
-- classes
-- RstProvider
-- test_llm_rst_protocol.py
+- load_repository_environment
+- SemanticResource
+- $defs
 - compilers.py
-- ontology.py
+- $defs
 - DataManager
-- Storyboard Element
-- agents
-- services
+- SemanticResource
+- SourcePathAnchor
+- SourcePathAnchor
 - DataManager
 - required
-- test_model_backed.py
-- Claim
-- erst/data.py
+- .from_model_release
+- MpsMemorySampler
+- research/erst/contracts.py
 - calibration_metrics
-- ObservedVocabularyAlignment
-- _analyst
-- editions
-- managed_services
+- test_alignment.py
+- Retryability
+- entries
+- entries
 - local_name
-- portfolio.linkml.yaml
-- slots
-- ai_models
+- RstProvider
+- concept-index.serialization.schema.json
+- concept-index.validation.schema.json
 - properties
-- surfaces
-- permissible_values
-- broader
-- linker.py
-- add_ons
+- Code standards
+- production_boundary/conftest.py
+- anchor_window_tokens
+- properties
+- LexicalEntry
 - test_viewer_classes.py
-- _meta
-- permissible_values
-- GenerativeDecoderAdapter
-- top_concepts
+- anchor_window_tokens
+- LexicalEntry
+- TestWarrantIsNotRestatement
+- EvidenceDetailPolicy
 - properties
 - properties
 - read_rst
 - required
 - DoclangDocument
-- protocol.py
-- structure
-- modules
-- core.linkml.yaml
-- attributes
-- permissible_values
-- WaltonAnalysis
-- classes
-- ModelReleaseError
-- The RST parser (`rdam.rst`)
-- concepts/contracts.py
-- test_runner.py
-- permissible_values
-- permissible_values
-- distribution.yaml
-- description
-- SemanticResource
-- WaltonAnalysis
+- erst/data.py
+- properties
+- contract_version
+- contract_version
+- Quickstart: ModernBERT Pure Transformer Discourse Parser
+- collection_name
+- properties
+- collection_name
+- release.py
+- properties
+- properties
+- final_data.py
+- _set_failure_identity
+- .validate_char_spans
+- CandidateSpan
+- ConceptLinkRequest
+- ConceptLinkResult
+- test_schemes.py
 - benchmark_modernbert.py
-- knowledge.linkml.yaml
-- classes
+- MatchingOptions
+- ObservedVocabularyAlignment
 - rdam.linkml.yaml
-- SemanticEdge
-- Concept
-- Application
-- terminology.linkml.yaml
-- attributes
-- occurrence_identity
-- buildTree
-- _perform
-- _meta
-- _meta
-- AggregateRequest
+- Operation
+- DerivationSpec
+- StrEnum
+- FailedOutcome
+- Sha256Identity
 - properties
-- _meta
-- _meta
-- _meta
-- _meta
 - properties
-- _meta
-- vocabulary.py
-- close_match
-- entities
-- model_validator
-- permissible_values
-- Date
-- prefixes
-- criteria
-- dimensions
-- json
+- properties
+- Surface
+- FunctionModel
+- JsonValue
+- properties
+- slow
+- SourceIdentity
+- Path
+- Path
+- properties
+- BoundaryViolation
+- $defs
+- ValueError
+- .compile_derivation
+- $defs
+- SpeechActOutputItem
+- smoke_iterate
+- SemanticVersion
+- .attachment_evidence_agrees
+- properties
+- Path
+- Technique
 - StrictModel
 - bindings
 - properties
-- entity_collections
-- last_updated
-- Surface
-- test_contract_base.py
-- README.md
+- PurePosixPath
+- kind
+- docs/README.md
 - properties
-- test_viewer_hardening.py
+- rs3tohtml
 - framework
 - ProviderBindings
 - ParserInput
-- permissible_values
-- OntologyDistribution
-- BusinessUnit
-- ibis/test_output.py
 - Production API Contract Specification
-- _compatible_parser_release
 - required
 - Research and Decisions: Unified Machine Interfaces
-- buildNodes
+- kind
 - Parser Attention Tests
 - read_release_identity
 - attributes
-- edges
-- research/erst/contracts.py
-- entities
+- research/erst/__init__.py
 - properties
-- _meta
 - CrossEncoderAdapter
-- taxonomies
-- distribution.linkml.yaml
-- AddOn
-- concepts/serialization.py
-- rst_baseline.py
-- Agent
-- Capability
-- Edition
+- properties
+- diff_records
 - ComponentFileIdentity
+- BaseModel
 - Production Codeline Split Specification
-- FrameworkStage
 - DMRST Experiment Runner
-- production_boundary/conftest.py
 - StrictModel
-- TestCriticalQuestions
+- contract_version
+- parametrize
 - required
 - Adversarial Discriminator Model
 - BasePredictor
 - PromotionReceipt
-- concepts
 - 020-doclang-decoder/plan.md
 - Feature Specification: Rhetorical Discourse Analysis Machine Architecture
 - properties
 - Repository Cleanup Script
 - ArchiveMemberAnchor
-- domain_bundle_paths
 - UniRST Experiment Runner
-- implements_category
-- PartialDate
 - Implementation notes — 2026-09-04
 - $defs
-- prefixes
 - DocLang Fixture Parity Tests
 - Cleanup Script Tests
 - Offline Command Smoke Tests
-- .complete_identity
-- Central Configs Canonical Ontology Schema
-- Prompt Engineering Techniques
-- RAG Pipeline Stages
+- contract_version
+- RST and eRST Discourse Schema
 - User Scenarios & Testing *(mandatory)*
-- test_native_output_counts.py
-- GoldSetManifest
+- $defs
+- properties
+- test_candidate_runner.py
 - Feature Specification: Universal Source Pipeline
 - Contract: Analytical Quality Testing
-- test_clean_install_v2.py
+- byte_length
 - bindings
 - boundary
 - formalism_id
 - Feature 017 implementation verification
-- terms
-- file_id
-- Hero
-- LLM Evaluation Metrics
-- Rhetorical and Structural Devices
-- id
-- distribution_id
-- namespace
-- add_ons
-- agents
 - properties
-- ai_models
-- causal_failure
+- shared_runtime_mutation_test.py
 - CentralExperimentLedger
 - properties
-- AI and LLM Methods
-- Toulmin Argumentation Model
 - ArchiveMemberAnchor
-- applications
 - Toulmin Provider Specifications
 - Walton Provider Specifications
 - SDRT Provider Specifications
 - PDTB Provider Specifications
 - Implementation Plan: Consolidate DocLang decoding
 - properties
-- docling_rst_quality_check.py
+- byte_length
 - EDU Document Parsing
 - parseXML
-- business_units
 - DMRST Configuration Reader
 - UniRST Configuration Reader
-- Discourse Relation Senses
 - test_production_boundary.py
-- capabilities
 - ExactCoverage
 - Markdown Linting Script
-- editions
 - Discourse Parser Components
 - IBIS Provider Specifications
 - test_public_api.py
-- entity_collections
-- pdtb/relations.py
-- framework_stages
+- test_relations.py
 - Nucleus and Relation Tests
-- frameworks
-- industry_categories
-- Information Retrieval Strategies
-- Aristotelian Rhetorical Appeals
-- Power Level Classifications
-- DiscourseSignal
-- managed_services
-- module_id
+- RstDocument
 - CLAUDE.md
-- platforms
 - Pytest Session Fixtures
 - LSTM Dropout Validation Tests
-- RDAM Schema and Configs
-- Customer Story
-- Shift-Reduce Parsing Actions
-- Argument Conflict Types
-- Argument Link Types
-- Discourse Roles
-- resolve_inventory_index
-- practices
-- product_families
-- scoring_models
-- standards
-- surfaces
-- taxonomies
-- available_in
-- capability_of
-- conforms_to
-- edition_of
+- RDAM Providers Ontology Bindings
 - Production Ingestion Pipeline
 - PureTransformerParsingNet
 - Markdown Parsing Fixtures
@@ -388,401 +328,369 @@
 - LLM Test Mocking
 - Parser Isolation Tests
 - FrozenEvaluationAdapter
-- validate_model_release
 - properties
 - RST Visualization and Platform
-- part_of
-- Color Only Indicator
-- Graphic Encoding Theory
 - source.py
 - verify_model_licensing.py
-- doclang/decoder.py
-- User Experience Research
-- Resolution
-- Instructional Design Models
-- Team Dynamics and Development
-- Rhetorical Appeals
-- Argument Component States
-- Discourse Relation Explicitness
-- Structural Communication Frameworks
-- Creative Direction Assets
-- powered_by
-- tasks.md
-- serves_stage
+- XmlElement
+- 019-unified-machine-interfaces/tasks.md
 - 002 Production Source Ingest Plan
-- stage_of
 - Feature 004 Convergence
-- Production Source Ingest
-- succeeded_by
+- DocLang-native RST Output Plan
 - release-manifest.schema.json
-- supports_practice
 - Data Model: Unified Machine Interfaces
 - Feature Specification: Shared Runtime Hardening
-- surface_of
 - Custom Tokenizer Class
-- test_predictor_token_capture.py
-- Code standards
+- $defs
 - No Assumptions Script
+- offline/erst/__init__.py
 - Cleanup Script
-- unit_of
 - Build and Ingest Handoff
-- vendor
-- language
 - test_doclang_decoder.py
-- Slide Speech Alignment
-- ._resolve_dtype
-- Theory-of-Mind Prompting Architectures
-- Knowledge Visualisation
-- Argument Graph Analysis
-- Hedging and Certainty Markers
-- Industry Benchmarks
-- Domain Nomenclature
-- Expert Citations
+- properties
 - ProductionIngestor
-- subprocess
-- Agentic Instructional Pipeline
-- Human-AI Curation
-- Q&A Presentation Skills
-- Summative Assessment Capstone
-- Synchronous Delivery Block
-- Narrative Slide
-- Semiotic Coherence Dimension
-- Cognitive Apprenticeship Scaffolding
-- Oral Assessment Design
-- Ontology Engineering
-- Academic and Visionary Bundles
-- Rhetorical Devices
-- Presentation Openers
-- Boost and Hedge Markers
-- Figurative Language
-- Narrative Structure Markers
-- Audience Analysis
-- Narrative Quality Rubric
-- Data Visualization
-- Multimedia Design Principles
-- Image and Animation Production
-- Accessibility Indicators
+- $defs
+- contracts/capabilities.py
 - Feature 020 implementation results
-- test_predictor_args.py
+- schemas/__init__.py
+- kind
 - Evaluation Manifests
 - Ingest Contract Preparation
 - Gold Set Evidence
-- Contract: Unified rdam CLI
 - Feature 017 baseline — 2026-09-03
 - Aggregate Analysis Gate
 - RST Provider Gate
 - Tasks: Dung Abstract Argumentation Provider
 - Implementation Plan: Unified Machine Interfaces
-- ArtifactReceipt
+- production_boundary/contracts.py
+- Ingest Acceptance Tests
+- LLM Technique Tests
+- PDTB Provider Tests
+- SDRT Provider Tests
+- Toulmin Technique Tests
+- Walton Technique Tests
+- Repository Tooling
+- Ingest Promotion Tooling
+- Corpus Preparation
+- Model Evaluation
+- Experiment Orchestration
+- Offline Workbench
+- System Adapters
+- Research Harnesses
+- Model Training
 - Runtime Workbench Boundary
 - Validation guide: DocLang decoder refactor
 - Viewer Layout Decision
 - Python 3.14 Performance
 - Python 3.14 Audit
-- test_unexpected_metadata_failure_is_not_hidden
+- kind
 - Specification Quality Checklist: Unified Machine Interfaces
-- Presentation Speaker Notes
 - Forensic Code Review
 - RST Performance Baseline
 - Feature 020 implementation tasks
 - formalisms
-- _Predictor
-- Spatial Contiguity Principle
-- Scaffolding
-- domain_module_paths
-- attributes
+- properties
 - CompatibilityRedeclaration
-- add_on_to
 - production_ingest/contracts.py
 - test_doclang_track.py
-- Organisation
-- stage_order
-- term_status
+- properties
 - Rhetorical Discourse Analysis Machine — Shared Analytical Constitution
+- StructuredAnalyst
 - TestResolveFamily
-- .handle_async_request
-- rst_diag.py
-- TestDetectFamilyFromModelDir
-- FinalEvaluationCacheManifest
-- SchemeError
-- RDAM documentation guide
+- test_client_lifecycle.py
+- properties
+- properties
+- properties
+- $defs
 - requires_structured_input
-- prefixes
-- literal
-- valid_from
-- smoke_iterate
+- $defs
+- $defs
 - .__post_init__
-- Semantics
-- _OffsetToken
-- canonical_json_bytes
-- TestInstructions
-- Delivery Metrics
-- Support Models
-- Speaker Bundle
-- Activity Types Taxonomy
-- Assessment Taxonomy
-- Cognitive Load Taxonomy
-- Content Architecture Taxonomy
-- Content Format Taxonomy
-- Learning Objectives Taxonomy
-- Pedagogical Frameworks Taxonomy
-- Realisation Forms Taxonomy
-- Scoring Taxonomy
-- Terminology Term Referents
-- Analytical Frameworks Taxonomy
-- Action Title Formatting
-- Audience Centric Storytelling
-- Code Glossing Techniques
-- Comparison Markers
-- Compliance Markers
-- Data Storytelling Arcs
-- Deictic Markers
-- Emotional Story Arcs
-- Curiosity Emotional Arcs
-- Skeptic Emotional Arcs
-- Emphasis Markers
-- Epistrophe Rhetorical Device
-- Evaluation Markers
-- Everyman Character Archetype
-- Feature Descriptors
-- Figure References
-- Frame Markers
-- Integration Markers
-- Internal Champion Role
-- Lexical Bundles
-- List Markers
-- MECE Grouping
-- MECE Structuring
-- Minto Pyramid Principle
-- Multiplier Metrics
-- Narrative DNA
-- Pyramid Apex Structure
-- Quote Hooks
-- Reformulation Markers
-- Academic SME Persona
-- Absent SME Persona
-- Busy Bee SME Persona
-- Clueless SME Persona
-- Dominant SME Persona
-- Overinclusive SME Persona
-- Luddite SME Persona
-- Social Proof Techniques
-- Sparkline Narratives
-- Novice Speaker Persona
-- Performer Speaker Persona
-- Technocrat Speaker Persona
-- Visionary Speaker Persona
-- Star Moment Techniques
-- Summary Markers
-- Surprisal Oscillation
-- Document Page Layout
-- Hero Banner Layout
-- Interactive Scenario Layout
-- Knowledge Organiser Layout
-- Lottie Animation Layout
-- Presentation Slide Layout
-- Quiz Layout Specifications
-- Retrieval Grid Layout
-- SVG Canvas Layout
-- Chartjunk and Visual Noise
-- Color Scheme Types
-- Duarte Slidedoc Format
-- Visual Focal Points
-- Functional Slide Design
-- Gestalt Visualization Principles
-- Preattentive Visual Attributes
-- Product Slide Design
-- Signage Design Principles
-- Slopegraph Visualizations
-- Cinematic Speaker Slides
-- Adobe Domain Manifest
-- AI Domain Manifest
-- Business Domain Manifest
-- Delivery Domain Manifest
-- Language Editorial Manifest
-- Learning Domain Manifest
-- Narrative Domain Manifest
-- Visual Communication Manifest
-- AI Competency Frameworks
-- Knowledge Graph Construction
-- LLM Evaluation
-- Topic Modeling
-- Content Extraction Pipelines
-- Context Engineering
-- LLM Generation Parameters
-- LLM Model References
-- PDL Constructs
-- Presentation Generation Pipelines
-- Prompt Engineering Components
-- Prompt Engineering Techniques
-- RAG Components
-- RAG Strategies
-- Slide QA Pipelines
-- Visualization Generation Pipelines
-- Buyer Audiences
-- Sales Champions
-- Competitive Claims
-- Competitor Mentions
-- Economic Buyers
-- Enterprise Buyers
-- Sales Influencers
-- Sales Objections
-- Pre-Wire Strategies
-- Product Demo Delivery
-- SMB Buyers
-- Technical Buyers
-- User Buyers
-- Elevator Pitch Rubrics
-- Sales Cadence
-- Acoustic Leadership
-- Audio Jitter Metrics
-- Presentation Scenography
-- Gesture Taxonomy
-- Modality Conflict Markers
-- Personal Branding
-- Presentation Rehearsals
-- Audio Shimmer Metrics
-- Stereotype Content Model
-- Speech Uptalk Indicators
-- Speech Cadence
-- Presentation Hooks
-- Speech Pacing
-- Vocal Tone
-- Strategic Pauses
-- Speech Pacing
-- Readability and Accessibility Rubrics
-- Terminology Management
-- Glossary and Vocabulary
-- Tone and Voice Registers
-- Writing Taxonomies
-- Assessment Frameworks
-- Cognitive Load Evaluation
-- Instructional Design Evaluation
-- Blended Learning Design
-- Cognitive Debt Indicators
-- Multimedia Coherence Principle
-- Competency Assessment
-- Directed Acyclic Graphs
-- Documentation Frameworks
-- Dual Coding Theory
-- Embodied Cognition
-- Multimedia Embodiment Principle
-- Faceted Classification
-- Formative Assessment
-- Generative Learning Principles
-- Multimedia Image Principle
-- Immersive Learning Principles
-- Information Ecology
-- Multimedia Modality Principle
-- Classification Rules
-- Performance Support
-- Multimedia Personalization Principle
-- Hierarchical Classification
-- Multimedia Pre-Training Principle
-- Text Readability Metrics
-- Multimedia Redundancy Principle
-- Memory Retrieval Strength
-- Multimedia Segmenting Principle
-- Multimedia Signalling Principle
-- Presentation Design Pitfalls
-- Memory Storage Strength
-- Target Learner Audience
-- Learning Transfer Models
-- Social Cognitive Theory
-- BOPPPS Lesson Model
-- Case-Based Learning
-- Coaching Frameworks
-- Computer-Adaptive Testing
-- Connectivism Learning Theory
-- Demo Certification
-- Gamified Learning
-- Growth Mindset
-- Learning Styles Critique
-- Metacognitive Strategies
-- Psychometric Testing
-- Rosenshine's Instructional Principles
-- Cognitive Script Theory
-- Spaced Repetition
-- Stealth Assessment
-- Theory of Mind
-- Scenario-Based Design
-- Attribution Markers
-- Communication Openings
-- Engagement Rhetoric
-- Rhetorical Devices
-- Presentation Openers
-- Pronoun Rhetoric
-- Rhetorical Timing
-- Stance Markers
-- Rhetorical Structures
-- Rhetorical Questions
-- Rhetorical Devices
-- Argumentation Frameworks
-- Philosophical Dialogue
-- Narrative Structure
-- Communication Frameworks
-- Speechwriting Techniques
-- Storytelling Frameworks
-- Narrative Frameworks
-- Communication Principles
-- Character Archetypes
-- Epistemic Certainty
-- Trend Analysis Decreases
-- Trend Analysis Increases
-- Discourse Analysis
-- Attribution Analysis
-- Rhetorical Boosting
-- Rhetorical Discounting
-- Rhetorical Hedging
-- Discourse Markers
-- Rhetorical Boosting
-- Rhetorical Hedging
-- Stance and Position
-- Linguistic Modality
-- Deontic Modality
-- Dynamic Modality
-- Epistemic Modality
-- Evidential Modality
-- Stance Polarity
-- Argumentative Contestation
-- Neutral Stance
-- Supportive Stance
-- Argument Strength
-- Moderate Strength
-- Strong Strength
-- Weak Strength
-- Case Study Design
-- Process Documentation
-- Strategic Purpose
-- Rhetorical Structure Theory
-- Discourse Taxonomy
-- Evidence Taxonomy
-- Opening Hooks
-- Presentation Structures
-- Transition Techniques
-- Attention Hooks
-- Presentation Pacing
-- Art Direction
-- Motion Accessibility
-- Data Visualization
-- Visual Accessibility
-- Presentation Rubrics
-- Visual Design
-- Flowchart Layouts
-- Layout Specifications
-- Puzzle Layouts
-- Timeline Layouts
-- Slide Design
-- Color Coding
-- Visual Style
-- Visual Style
-- Tone of Voice
+- semantics.py
+- $defs
+- $ref
+- $ref
+- SourceArtifact
+- RuntimeError
+- properties
+- SourceContractIdentity
+- properties
+- properties
+- properties
+- AnalysisCapacity
+- $defs
+- Any
+- AuthorshipRole
+- ContentRepresentation
+- ContractSupport
+- properties
+- properties
+- DoclangDocument
+- DoclangTextFragment
+- field_serializer
+- field_validator
+- FormalismChoice
+- FormalismDeclaration
+- properties
+- FrameworkAuthority
+- ItemRelationship
+- LegacyAnchor
+- LegacyInventoryItem
+- LegacySourceArtifact
+- LegacySourceContractIdentity
+- Model
+- NativeAnchor
+- PurePosixPath
+- properties
+- PlanningPolicy
+- PreparationPolicy
+- PreparationReceipt
+- properties
+- Protocol
+- properties
+- Technique
+- TypedDict
+- properties
+- Disposition
+- properties
+- properties
+- Technique
+- properties
+- Disposition
+- SourceArtifact
+- SourceForm
+- Technique
+- properties
+- properties
+- properties
+- FailedOutcome
+- properties
+- Technique
+- TechniqueCapability
+- NodeKind
+- properties
+- properties
+- properties
+- properties
+- SourceForm
+- properties
+- XmlElement
+- ZipInfo
+- ContentClass
+- ContentInventoryItem
+- Any
+- ContentClass
+- ContentInventoryItem
+- SourceArtifact
+- SourceContractIdentity
+- ContentClass
+- ContentInventoryItem
+- properties
+- SourceArtifact
+- properties
+- SourceArtifact
+- SourceContractIdentity
+- ContentClass
+- properties
+- SourceArtifact
+- SourceForm
+- SourceSummary
+- properties
+- HistoricalNativeTechniqueResult
+- kind
+- Technique
+- AggregateAnalysis
+- properties
+- NativeTechniqueResult
+- Technique
+- ToulminProvider
+- properties
+- properties
+- ProviderConfiguration
+- properties
+- dtype
+- TextSpan
+- $defs
+- $defs
+- Parser
+- ProviderConfiguration
+- NodeMap
+- $defs
+- $defs
+- $defs
+- NativeTechniqueResult
+- Technique
+- properties
+- $defs
+- properties
+- properties
+- properties
+- Retryability
+- curie
+- SourceAnchor
+- SourceContractIdentity
+- SourceEvidenceSpan
+- SourceProjection
+- SourceSummary
+- SpeakerIdentity
+- StrictModel
+- StructuredInput
+- TableRepresentation
+- TechniqueCapability
+- properties
+- SourceArtifact
+- SourceForm
+- SourceForm
+- ContentInventoryItem
+- ContentInventoryItem
+- SourceForm
+- curie
+- properties
+- curie
+- SourceForm
+- Technique
+- properties
+- curie
+- SemanticVersion
+- properties
+- live
+- datetime
+- UnavailableOutcome
+- UnavailableReason
+- properties
+- UpstreamResultReference
+- ValidationInfo
+- properties
+- properties
+- kind
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- $defs
+- properties
+- properties
+- properties
+- properties
+- Disposition
+- Disposition
+- properties
+- properties
+- properties
+- Disposition
+- Disposition
+- Disposition
+- Disposition
+- $defs
+- properties
+- properties
+- properties
+- properties
+- contract_version
+- Disposition
+- contract_version
+- Disposition
+- Disposition
+- properties
+- properties
+- properties
+- properties
+- Disposition
+- Disposition
+- properties
+- properties
+- properties
+- ProviderProvenance
+- ProviderProvenance
+- ProviderProvenance
+- ProviderProvenance
+- CacheEligibility
+- $ref
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- $defs
+- $defs
+- FormalismDeclaration
+- kind
+- properties
+- kind
+- properties
+- kind
+- properties
+- kind
+- properties
+- properties
+- properties
+- properties
+- properties
+- kind
+- kind
+- kind
+- kind
+- kind
+- kind
+- properties
+- properties
+- $defs
+- $defs
+- properties
+- properties
+- type
+- type
+- $defs
+- $defs
+- $defs
+- machine-preparation-request.serialization.schema.json
+- machine-preparation-request.validation.schema.json
+- AnnotationRepresentation
+- AnnotationRepresentation
+- AnnotationRepresentation
+- AnnotationRepresentation
+- properties
+- properties
+- AnnotationRepresentation
+- properties
+- properties
+- properties
+- ProviderProvenance
+- DerivationSpec
+- ProviderProvenance
 - Rhetorical Discourse Analysis
 - NLP Ontology
 - RST Visualization
 - Contract: Python API and Shared Operations
 - Research Protocols
 - Evidence Mapping
+- ParsingNet
+- $ref
 - Ownership Boundary Contracts
 - Boundary Violation Rules
 - Dependency Rules
@@ -792,17 +700,22 @@
 - CLI Release Contracts
 - Runtime API Contracts
 - Production Pattern Contracts
+- AvailableCapability
 - architecture
 - compatibility_range
 - created_at
 - model_task
 - producer_version
 - schema_version
+- kind
 - source_revision
 - Contract: Native Analysis Integrity Corrections
+- properties
 - IBIS Provider Quickstart
 - Toulmin Provider Evidence
+- properties
 - Walton Provider Evidence
+- $ref
 - SDRT Provider Evidence
 - DocLang refactor compatibility contract
 - PDTB Provider Evidence
@@ -817,31 +730,279 @@
 - Markdown Test Fixtures
 - Section Test Fixtures
 - Markdown Test Fixtures
+- AvailableCapability
 - Contract Test Fixtures
 - transcript.md
+- kind
 - Contract: Optional Local HTTP
 - Quickstart and Validation Guide
+- $ref
+- kind
+- $ref
 - Feature 019 historical contract specimens
+- kind
+- $defs
+- properties
 - enum
 - enum
+- properties
+- properties
+- properties
+- $defs
+- SpeakerCommitmentOutput
+- SpeakerCommitmentOutput
+- kind
+- MetadataRepresentation
+- properties
+- MetadataRepresentation
+- MetadataRepresentation
+- kind
+- properties
+- properties
+- properties
+- type
+- type
+- contract_version
+- HistoricalResultSourceAlignment
+- PreparedRange
+- HistoricalResultSourceAlignment
+- PreparedRange
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- kind
+- properties
+- kind
+- type
+- artifact_identity
+- artifact_identity
+- properties
+- OntologyIdentity
+- properties
+- OntologyIdentity
+- properties
+- OntologyIdentity
+- anchors
+- properties
+- OntologyIdentity
+- anchors
 - verify_doclang_fixtures.py
+- type
+- properties
+- ArchiveMemberAnchor
+- ArchiveMemberAnchor
+- HistoricalResultSourceAlignment
 - properties
 - properties
 - properties
 - properties
-- ._graph_inputs
+- properties
+- properties
+- properties
+- FrameworkAuthority
+- properties
+- FrameworkAuthority
+- FrameworkAuthority
+- FrameworkAuthority
+- properties
+- properties
+- properties
+- properties
+- $defs
+- CrossReferenceRepresentation
+- $defs
+- CrossReferenceRepresentation
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- HistoricalResultSourceAlignment
+- properties
+- ExtractionRecord
+- ExtractionRecord
+- ExtractionRecord
+- ExtractionRecord
+- ExtractionRecord
+- type
+- ExtractionRecord
+- type
+- CrossReferenceRepresentation
+- CrossReferenceRepresentation
+- CrossReferenceRepresentation
+- CrossReferenceRepresentation
+- properties
+- FrameworkAuthority
+- conversion_provenance
+- properties
+- properties
+- properties
+- properties
+- properties
+- CrossReferenceRepresentation
+- properties
+- properties
+- properties
+- baseline_corrections.py
+- properties
+- properties
+- properties
+- MediaReferenceRepresentation
+- properties
+- properties
+- MediaReferenceRepresentation
+- properties
+- properties
+- properties
+- properties
 - ExactCoverage
+- semantic_digest
+- source
+- properties
+- source
+- kind
+- source
+- properties
+- properties
+- properties
+- RationalityPostulatesOutput
+- DefeasibleRuleInput
+- RationalityPostulatesOutput
+- DefeasibleRuleInput
+- ProviderConfiguration
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
+- properties
 - compute_calibration_error
+- properties
+- MediaReferenceRepresentation
+- MediaReferenceRepresentation
+- MediaReferenceRepresentation
+- MediaReferenceRepresentation
+- properties
+- properties
+- semantic_digest
+- semantic_digest
+- properties
+- properties
+- MediaReferenceRepresentation
+- semantic_digest
+- semantic_digest
 - gold.py
+- Candidate
+- Candidate
+- properties
+- mapping
+- $ref
+- mapping
+- properties
+- properties
+- properties
+- properties
 - machine-dung-input.serialization.schema.json
 - machine-dung-input.validation.schema.json
+- PreparedRange
+- PreparedRange
+- $defs
+- $defs
+- properties
+- properties
+- properties
+- properties
+- FrameworkAuthority
+- properties
+- properties
+- properties
+- properties
+- ArchiveMemberAnchor
+- properties
+- properties
+- mapping
+- properties
+- ArchiveMemberAnchor
+- FrameworkAuthority
+- mapping
+- FrameworkAuthority
+- Disposition
+- properties
+- FrameworkAuthority
+- Disposition
+- FrameworkAuthority
+- mapping
+- FrameworkAuthority
+- mapping
+- FrameworkAuthority
+- mapping
+- SourceEvidenceSpan
+- SourceEvidenceSpan
+- properties
+- SourceEvidenceSpan
+- properties
+- SourceEvidenceSpan
+- SourceEvidenceSpan
+- SourceEvidenceSpan
+- machine-configuration.serialization.schema.json
+- machine-configuration.validation.schema.json
+- type
+- type
+- $defs
+- $defs
+- $defs
+- $defs
+- SourceEvidenceSpan
+- SourceEvidenceSpan
+- mapping
+- mapping
+- mapping
+- mapping
+- version
+- version
 - properties
 - properties
 - properties
 - ValueError
 - rst/calibration.py
+- kind
+- properties
+- properties
+- kind
+- mapping
 - TextSpan
 - TextSpan
+- mapping
+- properties
+- properties
+- properties
+- kind
+- properties
+- properties
+- mapping
+- _interpretation_types.py
+- properties
+- ComponentFileIdentity
+- mapping
+- ListItemRepresentation
+- ListItemRepresentation
+- version
+- version
+- version
+- properties
+- properties
+- version
+- properties
+- ComponentFileIdentity
+- properties
+- ComponentFileIdentity
+- mapping
 - properties
 - properties
 - properties
@@ -849,12 +1010,57 @@
 - properties
 - properties
 - required
+- ProviderConfiguration
+- $defs
+- PistisBalanceOutput
+- $defs
+- PistisBalanceOutput
+- AlgorithmOutput
+- AlgorithmOutput
+- MapOutput
+- properties
+- MapOutput
+- properties
+- $defs
+- $defs
+- media_type
+- SourceIdentity
+- properties
+- ComponentFileIdentity
+- properties
+- properties
+- properties
+- ComponentFileIdentity
+- $defs
+- $defs
+- properties
+- ComponentFileIdentity
 - properties
 - properties
 - properties
 - properties
 - properties
+- ComponentFileIdentity
+- ContentInventory
+- RawContractDeclaration
+- ContentInventory
+- RawContractDeclaration
 - properties
+- ExactCoverage
+- $ref
+- ExactCoverage
+- source
+- ExactCoverage
+- ExactCoverage
+- AnalysisReadingGuide
+- ExactCoverage
+- AnalysisReadingGuide
+- properties
+- properties
+- ExactCoverage
+- properties
+- properties
+- type
 - properties
 - properties
 - properties
@@ -874,11 +1080,42 @@
 - properties
 - required
 - kind
+- FormalismDeclaration
+- ContractSupport
+- DiscourseEntityOutput
 - test_calibration_loss.py
+- $defs
+- EntityMentionOutput
+- DiscourseEntityOutput
+- $defs
+- EntityMentionOutput
+- properties
+- properties
+- SourceIdentity
+- $defs
+- SourceIdentity
+- SourceIdentity
+- SourceIdentity
 - properties
 - properties
 - properties
+- RawContractDeclaration
 - properties
+- RawContractDeclaration
+- AvailableCapability
+- ExactCoverage
+- AvailableCapability
+- ExactCoverage
+- properties
+- properties
+- AvailableCapability
+- ExactCoverage
+- AvailableCapability
+- ExactCoverage
+- properties
+- properties
+- ExactCoverage
+- ExactCoverage
 - required
 - edus
 - required
@@ -891,23 +1128,87 @@
 - properties
 - Rebuttal
 - properties
+- ExactCoverage
+- properties
+- Sha256Identity
+- Sha256Identity
+- SourceOrigin
+- Sha256Identity
+- SourceOrigin
+- Sha256Identity
+- SourceOrigin
+- Sha256Identity
+- SourceOrigin
+- properties
+- machine-aspic-input.serialization.schema.json
+- machine-aspic-input.validation.schema.json
+- Sha256Identity
+- properties
+- Sha256Identity
+- Sha256Identity
+- Sha256Identity
+- properties
+- contract_version
+- IbisInputLink
 - enum
 - enum
+- IbisInputNode
+- IbisInputLink
+- IbisInputNode
+- Sha256Identity
+- Sha256Identity
+- Sha256Identity
 - $defs
 - $defs
 - required
 - required
+- Sha256Identity
+- Sha256Identity
 - machine-walton-result.serialization.schema.json
 - properties
 - properties
 - properties
 - machine-walton-result.validation.schema.json
 - properties
+- Sha256Identity
+- ListRepresentation
+- ListRepresentation
+- ListRepresentation
+- ListRepresentation
+- Sha256Identity
+- Sha256Identity
 - properties
+- properties
+- properties
+- AnalysisReadingGuide
+- AnalysisReadingGuide
+- ListRepresentation
+- MetadataEntry
+- MetadataEntry
+- Candidate
+- Candidate
+- ContentInventory
+- CrossReferenceRepresentation
+- $defs
+- $defs
+- DefeasibleRuleInput
+- DefeasibleRuleInput
+- contract_version
+- contract_version
 - $defs
 - PdtbArgument
 - $defs
 - PdtbArgument
+- max_workers
+- PublishedRstModel
+- max_workers
+- PublishedRstModel
+- SourceEvidenceSpan
+- $ref
+- SourceEvidenceSpan
+- $ref
+- properties
+- properties
 - end
 - end
 - properties
@@ -918,11 +1219,25 @@
 - critical_questions
 - enum
 - end
+- MetadataEntry
+- errors.py
+- AnnotationRepresentation
+- kind
+- mapping
+- PageAnchor
+- kind
+- mapping
 - enum
 - enum
+- PageAnchor
+- ExcludedSurface
+- PageAnchor
+- ExcludedSurface
+- PageAnchor
+- PageAnchor
 - enum
 - enum
-- load_repository_environment
+- PageAnchor
 - ComplexDiscourseUnit
 - ElementaryDiscourseUnit
 - ComplexDiscourseUnit
@@ -931,12 +1246,29 @@
 - required
 - machine-walton-result-v1.validation.schema.json
 - required
+- AnnotationRepresentation
+- ArchiveMemberAnchor
+- AnnotationRepresentation
+- ArchiveMemberAnchor
+- ArchiveMemberAnchor
+- ArchiveMemberAnchor
+- ArchiveMemberAnchor
+- properties
+- properties
+- ContraryPairInput
+- items
+- ContraryPairInput
 - properties
 - properties
 - nodes
 - properties
 - properties
 - nodes
+- items
+- AspicEvidenceRecord
+- items
+- ContraryPairInput
+- AspicEvidenceRecord
 - machine-operation-error.serialization.schema.json
 - code
 - machine-operation-error.validation.schema.json
@@ -945,6 +1277,10 @@
 - enum
 - machine-pdtb-result.validation.schema.json
 - enum
+- items
+- ContraryPairInput
+- ContractSupport
+- type
 - SdrtRelation
 - properties
 - properties
@@ -957,25 +1293,63 @@
 - machine-toulmin-result-v1.validation.schema.json
 - required
 - machine-toulmin-result.validation.schema.json
+- EntityGridRowOutput
+- EntityGridRowOutput
+- properties
+- span
 - required
 - required
+- properties
+- properties
+- span
+- LocalRstModel
+- LocalRstModel
 - properties
 - properties
 - machine-ibis-input.serialization.schema.json
 - machine-ibis-input.validation.schema.json
+- DungInput
+- properties
 - algorithm
 - algorithm
 - PdtbRelation
 - PdtbRelation
+- DungInput
+- IbisStructurePayload
+- PositionOutput
+- IbisStructurePayload
+- PositionOutput
 - properties
 - ContractSupport
 - ContractSupport
 - properties
 - properties
+- TableCoordinateAnchor
+- PageAnchor
+- TableCoordinateAnchor
+- PageAnchor
+- TableCoordinateAnchor
+- PageAnchor
+- TableCoordinateAnchor
+- PageAnchor
+- properties
+- StandpointOutput
+- properties
+- StandpointOutput
+- DerivationSpec
+- PageAnchor
+- PreparedRange
+- PageAnchor
+- PreparedRange
 - Retryability
 - Retryability
 - ExtractionRecord
 - ExtractionRecord
+- AnnotationRepresentation
+- AnnotationRepresentation
+- properties
+- properties
+- ArchiveMemberAnchor
 - ExtractionRecord
 - ExtractionRecord
 - ExtractionRecord
@@ -988,21 +1362,44 @@
 - properties
 - machine-version.validation.schema.json
 - properties
+- ArchiveMemberAnchor
+- mapping
 - ExtractionRecord
 - SourceEvidenceSpan
 - ExtractionRecord
 - ExtractionRecord
 - ExtractionRecord
 - SourceEvidenceSpan
+- AnnotationRepresentation
+- AnnotationRepresentation
+- ArchiveMemberAnchor
+- StructuralOnlyAdapter
+- ListRepresentation
+- ListRepresentation
+- mapping
+- mapping
+- mapping
+- mapping
+- AnnotationRepresentation
+- AnnotationRepresentation
 - $defs
 - IbisInputLink
 - IbisInputNode
 - $defs
 - IbisInputLink
 - IbisInputNode
+- AnnotationRepresentation
+- AnnotationRepresentation
 - InputIssue
 - InputIssue
+- AnnotationRepresentation
+- AnnotationRepresentation
+- end
+- end
+- DefeatFrameworkOutput
 - properties
+- DefeatFrameworkOutput
+- UnavailableCapability
 - $defs
 - HistoricalLayoutOutput
 - HistoricalLayoutOutput
@@ -1012,16 +1409,42 @@
 - $defs
 - CriticalQuestionStatus
 - Tasks: Aggregate Analysis Contract
+- UnavailableCapability
 - enum
+- UnavailableCapability
+- TechniqueCapability
+- UnavailableCapability
+- properties
+- properties
+- SourcePathAnchor
+- SourcePathAnchor
+- mapping
+- SourcePathAnchor
+- mapping
+- SourcePathAnchor
+- mapping
+- mapping
+- end
+- end
+- AnnotationRepresentation
 - Sha256Identity
 - Sha256Identity
+- AnnotationRepresentation
+- AdapterExecutionIdentity
+- OperationCapability
+- AdapterExecutionIdentity
 - required
+- AdapterExecutionIdentity
 - warrant_origin
 - warrant_origin
+- AnalysisReadingGuide
+- contract
 - issues
 - issues
 - required
 - required
+- AnalysisReadingGuide
+- contract
 - elements_present
 - elements_present
 - elements_present
@@ -1034,20 +1457,57 @@
 - contracts
 - premises
 - premises
-- HierarchicalAdapter
 - required
 - .__init__
+- IatRelationOutput
+- properties
+- IatRelationOutput
+- properties
 - release_id
+- $ref
 - document.md
 - required
+- properties
+- $ref
+- properties
 - required
+- DerivedFromRecord
 - required
 - properties
+- DerivedFromRecord
+- $defs
+- $defs
+- RhetoricalFigureOutput
+- RhetoricalFigureOutput
+- DerivedFromRecord
+- DerivedFromRecord
+- DerivedFromRecord
+- IbisNodeEvidence
 - test_adversarial_calibration.py
 - mapping
-- test_argument.py
+- DerivedFromRecord
+- IbisNodeEvidence
+- contributing_item_ids
+- contributing_item_ids
+- contributing_item_ids
+- contributing_item_ids
 - properties
+- StageSegmentOutput
+- test_native_integrity.py
+- properties
+- StageSegmentOutput
+- AdapterExecutionIdentity
+- AdapterExecutionIdentity
+- AdapterExecutionIdentity
+- AdapterExecutionIdentity
+- AdapterExecutionIdentity
+- .export
+- properties
+- machine-argument_mining-result.serialization.schema.json
+- machine-argument_mining-result.validation.schema.json
 - required
+- StasisOutput
+- StasisOutput
 - properties
 - properties
 - properties
@@ -1127,6 +1587,7 @@
 - properties
 - properties
 - properties
+- $defs
 - properties
 - text
 - properties
@@ -1173,6 +1634,7 @@
 - properties
 - properties
 - properties
+- $defs
 - semantic_digest
 - semantic_digest
 - semantic_digest
@@ -1182,7 +1644,11 @@
 - text
 - $defs
 - semantic_digest
+- mapping
+- source_alignment
 - AnnotationRepresentation
+- mapping
+- source_alignment
 - properties
 - properties
 - required
@@ -1214,9 +1680,11 @@
 - required
 - required
 - ExactCoverage
+- conversion_provenance
 - OperationCapability
 - properties
 - OperationCapability
+- LexicalEntry
 - properties
 - required
 - LineEndingParameters
@@ -1234,7 +1702,7 @@
 - required
 - Sha256Identity
 - required
-- SourceEvidenceSpan
+- conversion_provenance
 - text
 - text
 - text
@@ -1242,6 +1710,7 @@
 - AdapterExecutionIdentity
 - AdapterExecutionIdentity
 - AdapterExecutionIdentity
+- CapabilityExecution
 - required
 - AdapterExecutionIdentity
 - mapping
@@ -1251,6 +1720,7 @@
 - AdapterExecutionIdentity
 - AdapterExecutionIdentity
 - AdapterExecutionIdentity
+- AvailableCapability
 - required
 - AdapterExecutionIdentity
 - mapping
@@ -1282,6 +1752,7 @@
 - enum
 - mapping
 - enum
+- formalisms
 - enum
 - enum
 - mapping
@@ -1289,89 +1760,249 @@
 - enum
 - enum
 - enum
+- AvailableCapability
 - enum
 - enum
 - enum
+- formalisms
 - enum
 - enum
 - enum
 - LineEndingParameters
 - enum
 - enum
+- BoundaryConfiguration
+- LineEndingParameters
 - 0409816ae4cd768a4fe796b89f4a6b0103043ed1/capabilities.schema.json
 - enum
 - 6a647b6cbad581199eecec70d87d81f78ddd601d/capabilities.schema.json
 - enum
+- LineEndingParameters
 - enum
+- LineEndingParameters
 - HistoricalQuestionOutput
 - enum
 - enum
 - enum
 - HistoricalQuestionOutput
+- Surface
+- LineEndingParameters
+- LineEndingParameters
+- evaluate
 - enum
 - enum
 - enum
 - enum
+- MatchingOptions
 - EvidenceDetailPolicy
 - OutputFormalism
 - EvidenceDetailPolicy
 - OutputFormalism
-- Tasks: RST Provider Adapter
+- MatchingOptions
 - properties
 - properties
-- test_base_predictor.py
 - train_tree_parser.py
+- MatchingOptions
+- MatchingOptions
+- MatchingOptions
 - enum
+- MatchingOptions
+- SourceArtifactRef
+- SourceArtifactRef
+- mapping
+- mapping
+- mapping
+- byte_length
+- byte_length
+- machine-capabilities.serialization.schema.json
+- machine-capabilities-v1.serialization.schema.json
+- machine-capabilities-v1.validation.schema.json
+- machine-capabilities.validation.schema.json
+- machine-native-result-v1.serialization.schema.json
+- machine-native-result-v1.validation.schema.json
+- machine-native-result.validation.schema.json
+- SourceArtifact
+- execution_fields
+- provider_attributes
+- provider_attributes
 - CustomTokenizer
+- schemas/capabilities.schema.json
+- machine-aspic-result.serialization.schema.json
+- machine-aspic-result.validation.schema.json
+- discriminator
+- machine-centering-result.serialization.schema.json
+- machine-centering-result.validation.schema.json
+- machine-classical_rhetoric-result.serialization.schema.json
+- machine-classical_rhetoric-result.validation.schema.json
+- machine-dung-result.serialization.schema.json
+- machine-dung-result.validation.schema.json
+- machine-ibis-result.serialization.schema.json
+- machine-ibis-result.validation.schema.json
+- machine-pragma_dialectics-result.serialization.schema.json
+- machine-pragma_dialectics-result.validation.schema.json
 - enum
 - enum
-- tree_stats
+- machine-speech_acts-result.serialization.schema.json
+- machine-speech_acts-result.validation.schema.json
+- SourceEvidenceSpan
+- SourceEvidenceSpan
+- FormalismDeclaration
+- FormalismDeclaration
+- arguments
+- rdam/rst/__init__.py
+- arguments
+- SourceIdentity
+- media_type
+- NativeTechniqueResult
+- FormalismChoice
+- SourceEvidenceSpan
+- SourceEvidenceSpan
+- upstream_results
 - findFile
+- upstream_results
+- axioms
+- contraries
+- StrictRuleInput
+- axioms
 - parseXML
 - semantic_sha256
+- contraries
+- StrictRuleInput
+- discriminator
+- model_probe
+- discriminator
+- TechniqueCapability
+- UnavailableReason
+- discriminator
+- TechniqueCapability
+- ParserBuilder
+- UnavailableReason
+- cf_ranking
+- cf_ranking
+- device
+- evidence_detail
+- device
+- evidence_detail
+- ConversionActivity
+- raw_size_bytes
+- ConversionActivity
+- raw_bytes
+- raw_size_bytes
+- SpeechActOutputItem
+- SpeechActOutputItem
+- .covered_does_not_exceed_total
+- classical_rhetoric
+- pdtb
+- pragma_dialectics
+- speech_acts
+- classical_rhetoric
+- pdtb
+- pragma_dialectics
+- speech_acts
+- declared_artifact_id
+- doclang/__init__.py
+- EvidenceDetailPolicy
+- StrictModel
+- Retryability
+- Retryability
+- StrictModel
+- StrictModel
+- StrictModel
+- Retryability
+- StrictModel
+- StrictModel
+- StrictModel
+- StrictModel
+- StrictModel
+- StrictModel
+- StrictModel
+- StrictModel
 - Shared concept linking and downstream evidence integration
+- StrictModel
+- Retryability
+- PreparationPolicy
+- PreparationPolicy
+- Retryability
+- PreparationReceipt
+- Retryability
+- parametrize
+- StrictModel
+- StrictModel
+- Retryability
+- Retryability
+- Retryability
+- Retryability
+- Path
+- StrictModel
+- StrictModel
+- fixture
+- Retryability
+- Retryability
+- Retryability
+- StructureKind
 - contract_version
 - contract_version
+- TextSpan
+- MonkeyPatch
 - 021-shared-concept-links/baseline.md
 - 021-shared-concept-links/data-model.md
 - 021-shared-concept-links/research.md
 - Implementation tasks
 - contract
 - contract
-- rdam/rst/__init__.py
+- render
 - Verification, 2026-09-12
 - Docling NLP 1.4.0 evaluation
+- extract.py
 - contracts/README.md
-- SourceForm
+- FailedOutcome
+- FormalismDeclaration
+- HistoricalNativeTechniqueResult
+- PreparationReceipt
+- SourceIdentity
+- TechniqueCapability
+- SourceSummary
+- AnalysedDocument
+- AnalysisAnchor
+- AnalysisPolicy
+- CompositeAnalysisIdentity
+- ErstCompletionEvidence
+- Tensor
+- IO
+- PathLike
+- ModuleType
+- _Element
+- _ElementTree
+- CaptureFixture
+- JsonPath
 
 ## God Nodes (most connected - your core abstractions)
 1. `ProductionIngestor` - 206 edges
-2. `Technique` - 196 edges
-3. `Machine` - 192 edges
-4. `StrictContractModel` - 177 edges
-5. `RstAnalysis` - 173 edges
-6. `Sha256Identity` - 135 edges
-7. `semantic_sha256()` - 126 edges
-8. `Parser` - 122 edges
-9. `RstDocument` - 115 edges
-10. `ProviderRequest` - 105 edges
+2. `Machine` - 190 edges
+3. `Technique` - 180 edges
+4. `RstAnalysis` - 152 edges
+5. `_StrictModel` - 142 edges
+6. `StrictContractModel` - 129 edges
+7. `Sha256Identity` - 123 edges
+8. `semantic_sha256()` - 123 edges
+9. `Parser` - 122 edges
+10. `ProviderRequest` - 101 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `One package, one wheel` --references--> `production_machine()`  [INFERRED]
-  .agents/rules/architecture.md → rdam/composition.py
-- `Preservation across the migration and the rename` --references--> `CompatibilityRedeclaration`  [INFERRED]
-  .agents/rules/architecture.md → rdam/rst/model_loading/release.py
 - `Memory management` --references--> `DiscourseUnit`  [INFERRED]
   .agents/rules/architecture.md → rdam/rst/annotation_rst.py
+- `Capability reports checked local prerequisites` --references--> `unavailable()`  [INFERRED]
+  .agents/rules/architecture.md → tests/ingest/production_ingest/test_provider_unavailability.py
+- `Help acceptance` --references--> `serve()`  [INFERRED]
+  specs/019-unified-machine-interfaces/contracts/cli.md → rdam/http.py
+- `One package, one wheel` --references--> `production_machine()`  [INFERRED]
+  .agents/rules/architecture.md → rdam/composition.py
 - `Wire interfaces` --references--> `create_app()`  [INFERRED]
   docs/concept-linking.md → rdam/http.py
-- `Capability reports checked local prerequisites` --references--> `QuoteRef`  [INFERRED]
-  .agents/rules/architecture.md → rdam/_grounding.py
 
 ## Import Cycles
 - 3-file cycle: `workbench/corpus/dmrst/__init__.py -> workbench/corpus/dmrst/data_manager.py -> workbench/corpus/dmrst/data.py -> workbench/corpus/dmrst/__init__.py`
 - 3-file cycle: `workbench/corpus/unirst/__init__.py -> workbench/corpus/unirst/data_manager.py -> workbench/corpus/unirst/data.py -> workbench/corpus/unirst/__init__.py`
-- 3-file cycle: `rdam/ingest/__init__.py -> rdam/ingest/service.py -> rdam/ingest/prepare.py -> rdam/ingest/__init__.py`
 
 ## Hyperedges (group relationships)
 - **Architecture Decisions & Modernization** — artifacts_reviews_architecture_decisions_erst_runtime_workbench_boundary, artifacts_reviews_architecture_decisions_parser_infrastructure_consolidation, artifacts_reviews_architecture_decisions_viewer_in_memory_layout, artifacts_reviews_python_3_14_performance_evidence_2026_09_03 [EXTRACTED 0.95]
@@ -1380,344 +2011,340 @@
 - **Rhetorical Discourse Analysis Machine (RDAM) Composition** — specs_007_aggregate_contract_research, specs_009_rst_provider_adapter_research, specs_011_dung_provider_research [EXTRACTED 0.95]
 - **Rhetorical Discourse Machine Evidence and Audits** — specs_006_rhetorical_discourse_machine_evidence_boundary_audit, specs_006_rhetorical_discourse_machine_evidence_identity_binding_audit, specs_006_rhetorical_discourse_machine_evidence_rst_surface_audit [EXTRACTED 0.95]
 - **Aggregate Analysis Contract Spec Kit** — specs_007_aggregate_contract_data_model, specs_007_aggregate_contract_plan, specs_007_aggregate_contract_spec, specs_007_aggregate_contract_tasks [EXTRACTED 1.00]
-- **AI Method Types** — ontology_vendor_central_configs_domains_ai_ai_systems_taxonomy_prompt_engineering, ontology_vendor_central_configs_domains_ai_ai_systems_taxonomy_rag, ontology_vendor_central_configs_domains_ai_ai_systems_taxonomy_fine_tuning, ontology_vendor_central_configs_domains_ai_ai_systems_taxonomy_cag, ontology_vendor_central_configs_domains_ai_ai_systems_taxonomy_agentic, ontology_vendor_central_configs_domains_ai_ai_systems_taxonomy_pdl_declarative [EXTRACTED 1.00]
-- **Buyer Personas** — ontology_vendor_central_configs_domains_business_buyer_personas_economic_buyer, ontology_vendor_central_configs_domains_business_buyer_personas_technical_buyer, ontology_vendor_central_configs_domains_business_buyer_personas_user_buyer, ontology_vendor_central_configs_domains_business_buyer_personas_champion, ontology_vendor_central_configs_domains_business_buyer_personas_influencer, ontology_vendor_central_configs_domains_business_buyer_personas_enterprise_buyer, ontology_vendor_central_configs_domains_business_buyer_personas_smb_buyer [EXTRACTED 1.00]
-- **Discourse Coherence Signals** — ontology_vendor_central-configs_domains_narrative_argument_structures_coreference_chain, ontology_vendor_central-configs_domains_narrative_argument_structures_meronymy_link, ontology_vendor_central-configs_domains_narrative_argument_structures_synonymy_signal, ontology_vendor_central-configs_domains_narrative_argument_structures_lexical_chain, ontology_vendor_central-configs_domains_narrative_argument_structures_general_word_signal [EXTRACTED 1.00]
-- **Evidence Types** — ontology_vendor_central-configs_domains_narrative_argument_structures_data_statistic, ontology_vendor_central-configs_domains_narrative_argument_structures_research_citation, ontology_vendor_central-configs_domains_narrative_argument_structures_customer_story, ontology_vendor_central-configs_domains_narrative_argument_structures_personal_anecdote, ontology_vendor_central-configs_domains_narrative_argument_structures_expert_testimony, ontology_vendor_central-configs_domains_narrative_argument_structures_industry_benchmark [EXTRACTED 1.00]
 - **Feature 003: Production Codeline Split** — specs_003_production_codeline_split_spec, specs_003_production_codeline_split_tasks, specs_003_production_codeline_split_evidence_completion, specs_003_production_codeline_split_evidence_implementation_handoff_2026_08_25 [EXTRACTED 1.00]
 - **Feature 004: Production API Contract** — specs_004_production_api_contract_spec, specs_004_production_api_contract_plan, specs_004_production_api_contract_data_model, specs_004_production_api_contract_quickstart, specs_004_production_api_contract_research, specs_004_production_api_contract_tasks, specs_004_production_api_contract_contracts_analysis_evidence, specs_004_production_api_contract_contracts_distribution_and_public_surface [EXTRACTED 1.00]
 - **Forensic Remediation Specifications** — specs_001_forensic_remediation_quickstart, specs_001_forensic_remediation_research, specs_001_forensic_remediation_checklists_requirements, specs_001_forensic_remediation_contracts_checkpoint_bundle, specs_001_forensic_remediation_contracts_corpus_and_experiment, specs_001_forensic_remediation_contracts_format_projection [EXTRACTED 1.00]
 - **IBIS Provider Specification and Design** — specs_012_ibis_provider_data_model, specs_012_ibis_provider_plan, specs_012_ibis_provider_research, specs_012_ibis_provider_spec, specs_012_ibis_provider_tasks, specs_012_ibis_provider_contracts_native_result [EXTRACTED 1.00]
-- **Instructional Design Structural Markers** — ontology_vendor_central_configs_domains_learning_instructional_methods_planning_artefact_marker, ontology_vendor_central_configs_domains_learning_instructional_methods_content_structure_marker, ontology_vendor_central_configs_domains_learning_instructional_methods_pedagogical_sequence_marker, ontology_vendor_central_configs_domains_learning_instructional_methods_delivery_modality_marker, ontology_vendor_central_configs_domains_learning_instructional_methods_interaction_element_marker, ontology_vendor_central_configs_domains_learning_instructional_methods_alignment_marker [EXTRACTED 1.00]
 - **ModernBERT Production Release Spec Kit** — specs_005_modernbert_production_release_research, specs_005_modernbert_production_release_spec, specs_005_modernbert_production_release_tasks, specs_005_modernbert_production_release_contracts_cli_contract, specs_005_modernbert_production_release_contracts_runtime_api_contract [EXTRACTED 1.00]
-- **Narrative and Story Frameworks** — ontology_vendor_central_configs_domains_narrative_quality_rubrics_quality_rubric, ontology_vendor_central_configs_domains_narrative_story_frameworks_character_archetypes_taxonomy, ontology_vendor_central_configs_domains_narrative_story_frameworks_descriptive_rst_taxonomy, ontology_vendor_central_configs_domains_narrative_story_frameworks_discourse_taxonomy, ontology_vendor_central_configs_domains_narrative_story_frameworks_evidence_types_taxonomy, ontology_vendor_central_configs_domains_narrative_story_frameworks_narrative_taxonomy, ontology_vendor_central_configs_domains_narrative_story_frameworks_opening_hooks_taxonomy, ontology_vendor_central_configs_domains_narrative_story_frameworks_presentation_structures_taxonomy [EXTRACTED 1.00]
 - **Native Format RST Output Plans** — docs_plans_2026_05_15_doclang_native_rst, docs_plans_2026_05_15_docling_native_rst, docs_plans_2026_06_12_markdown_native_rst [EXTRACTED 1.00]
-- **Opening Hooks Family** — ontology_vendor_central-configs_domains_narrative_argument_structures_question_hook, ontology_vendor_central-configs_domains_narrative_argument_structures_statistic_hook, ontology_vendor_central-configs_domains_narrative_argument_structures_story_hook, ontology_vendor_central-configs_domains_narrative_argument_structures_contrast_hook, ontology_vendor_central-configs_domains_narrative_argument_structures_problem_statement_hook, ontology_vendor_central-configs_domains_narrative_argument_structures_bluf_hook, ontology_vendor_central-configs_domains_narrative_argument_structures_quote_hook [EXTRACTED 1.00]
 - **Seven Analytical Techniques of RDAM** — specs_009_rst_provider_adapter_contracts_rst_adapter_rst_provider, specs_011_dung_provider_data_model_dung_provider, specs_007_aggregate_contract_contracts_aggregate_contract_aggregate_contract [EXTRACTED 1.00]
 - **Rhetorical Discourse Analysis Machine Spec Kit** — specs_006_rhetorical_discourse_machine_data_model, specs_006_rhetorical_discourse_machine_plan, specs_006_rhetorical_discourse_machine_quickstart, specs_006_rhetorical_discourse_machine_research, specs_006_rhetorical_discourse_machine_spec, specs_006_rhetorical_discourse_machine_tasks, specs_006_rhetorical_discourse_machine_contracts_rst_preservation, specs_006_rhetorical_discourse_machine_contracts_standardised_patterns [EXTRACTED 1.00]
 - **Shared Runtime Hardening Specification** — specs_018_shared_runtime_hardening_tasks, specs_018_shared_runtime_hardening_checklists_requirements, specs_018_shared_runtime_hardening_contracts_shared_runtime [EXTRACTED 1.00]
 - **Toulmin Provider Specification and Design** — specs_013_toulmin_provider_data_model, specs_013_toulmin_provider_plan, specs_013_toulmin_provider_research, specs_013_toulmin_provider_spec, specs_013_toulmin_provider_tasks, specs_013_toulmin_provider_contracts_native_result [EXTRACTED 1.00]
 - **Universal Source Pipeline Specification and Design** — specs_017_universal_source_pipeline_data_model, specs_017_universal_source_pipeline_plan, specs_017_universal_source_pipeline_research, specs_017_universal_source_pipeline_spec, specs_017_universal_source_pipeline_tasks, specs_017_universal_source_pipeline_contracts_source_pipeline, specs_017_universal_source_pipeline_contracts_execution_and_cache [EXTRACTED 1.00]
-- **Delivery Presence & Engagement** — ontology_vendor_central-configs_domains_delivery_presence_rubrics_facilitation_technique, ontology_vendor_central-configs_domains_delivery_presence_rubrics_engagement_cue, ontology_vendor_central-configs_domains_delivery_presence_rubrics_confidence_technique [INFERRED 0.80]
 - **Forensic Remediation Executable Boundaries** — specs_001_forensic_remediation_experiment_protocol_experimentprotocol, specs_001_forensic_remediation_experiment_protocol_championmanifest, specs_001_forensic_remediation_experiment_protocol_finalevaluationreceipt [INFERRED 0.85]
-- **Vocal Delivery Disfluencies & Issues** — ontology_vendor_central-configs_domains_delivery_presence_rubrics_filler_word, ontology_vendor_central-configs_domains_delivery_presence_rubrics_vocal_hedge_marker, ontology_vendor_central-configs_domains_delivery_presence_rubrics_vocal_quality_issue, ontology_vendor_central-configs_domains_delivery_presence_rubrics_delivery_rate_issue, ontology_vendor_central-configs_domains_delivery_presence_rubrics_uptalk_indicator [INFERRED 0.85]
 - **Codeline Split Boundary Rules** — specs_003_production_codeline_split_data_model_ownershiprule, specs_003_production_codeline_split_data_model_dependencyrule, specs_003_production_codeline_split_data_model_boundaryviolation [INFERRED 0.90]
 - **Ingest Pipeline Entities** — specs_002_production_source_ingest_data_model_sourceartifact, specs_002_production_source_ingest_data_model_preparedrstdocument, specs_002_production_source_ingest_data_model_productionanalysisresult [INFERRED 0.90]
-- **Layout Specifications** — ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_dimension_flowchart, ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_dimension_timeline, ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_dimension_puzzles, ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_dimension_master_sow [INFERRED 0.90]
 - **RDAM Machine Build and Handoffs** — docs_plans_2026_09_02_machine_build, docs_plans_2026_09_02_universal_ingest_handoff, ontology_data_rdam_providers [INFERRED 0.90]
 - **Test Fixtures Suite** — tests_fixtures_doclang_readme, tests_fixtures_docling_readme, tests_fixtures_gum_readme, tests_fixtures_markdown_readme, tests_fixtures_production_api_retained_content_readme [INFERRED 0.90]
-- **Toulmin Argumentation Model** — ontology_vendor_central-configs_domains_narrative_argument_structures_claim, ontology_vendor_central-configs_domains_narrative_argument_structures_evidence, ontology_vendor_central-configs_domains_narrative_argument_structures_warrant, ontology_vendor_central-configs_domains_narrative_argument_structures_qualifier, ontology_vendor_central-configs_domains_narrative_argument_structures_rebuttal [INFERRED 0.90]
-- **Visual Styles** — ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_style_style, ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_style_design, ontology_vendor_central_configs_domains_visual_communication_slide_archetypes_style_tone_of_voice [INFERRED 0.90]
 
-## Communities (1583 total, 641 thin omitted)
+## Communities (1981 total, 287 thin omitted)
 
-### Community 0 - "StandardParsevalScorer"
-Cohesion: 0.03
-Nodes (55): extract_headers_from_path(), main(), _generate_candidates(), GumGoldValidator, GumValidationReport, test_invalid_model_inventory_is_rejected(), test_projection_does_not_rewrite_unsupported_nuclearity(), test_projection_preserves_compound_inventory_members_and_groups_gold_subtypes() (+47 more)
+### Community 0 - "test_llm_rst_protocol.py"
+Cohesion: 0.12
+Nodes (21): Create an RstDocument from pre-segmented EDU strings. Note: Character offsets…, slow, test_real_parser_preserves_edus_across_obsolete_capacity_boundaries(), parametrize, LLM comparison rejects malformed trees without inventing replacement parses., test_incomplete_prefix_is_neither_rejected_nor_accepted(), test_invalid_response_never_becomes_a_repaired_tree(), test_missing_prediction_keeps_every_gold_attachment_in_denominator() (+13 more)
 
 ### Community 1 - "interfaces/test_cli.py"
-Cohesion: 0.12
-Nodes (45): test_cli_malformed_input_is_a_canonical_safe_failure(), test_cli_routes_path_source_forms_through_source_artifact(), diagnostic(), json_array(), json_object(), record(), run_cli(), test_analysis_exits_preserve_full_requested_scope() (+37 more)
+Cohesion: 0.11
+Nodes (55): CompletedProcess, serialize_config(), parametrize, Path, Real CLI acquisition and canonical Python operations preserve identical source…, test_cli_malformed_input_is_a_canonical_safe_failure(), test_cli_routes_path_source_forms_through_source_artifact(), test_cli_routes_presegmented_edus_without_flattening() (+47 more)
 
-### Community 2 - "corpus.py"
-Cohesion: 0.04
-Nodes (60): compute_edge_metrics(), epoch_improves(), require_checkpoint(), require_positive_training_steps(), train_erst_scorer(), test_compute_edge_metrics_math(), _authority(), _document() (+52 more)
+### Community 2 - "SecondaryEdgeCandidate"
+Cohesion: 0.03
+Nodes (130): main(), Derive the raw eRST relation inventory from the official GUM train partition., Persist a text-free train-derived raw relation inventory., compute_edge_metrics(), epoch_improves(), Any, Path, Training script for fine-tuning NeuralSecondaryEdgeScorer on GUM eRST treebanks. (+122 more)
 
 ### Community 3 - "test_erst_checkpoint.py"
 Cohesion: 0.03
-Nodes (71): main(), verify_checkpoint(), main(), _root_fingerprint(), verify_private_gum_corpus(), _bundle_inputs(), _BundleInputs, _canonical_hash() (+63 more)
+Nodes (130): main(), Path, Fail-closed clean-process verifier for an eRST completion bundle., Strict-reload a bundle, run its test vector, and emit a typed receipt., verify_checkpoint(), _bundle_inputs(), _BundleInputs, _canonical_hash() (+122 more)
 
 ### Community 4 - "legacy.py"
 Cohesion: 0.06
-Nodes (45): _analysis_semantic_payload(), AnalysisAnchor, AnalysisStatus, AnalysisUnit, AnchorKind, AuthorshipRole, CacheStatus, ContentClass (+37 more)
+Nodes (52): _analysis_semantic_payload(), AnalysisAnchor, AnalysisStatus, AnalysisUnit, AnchorKind, AuthorshipRole, CacheStatus, _canonical_edus() (+44 more)
 
-### Community 5 - "Technique"
+### Community 5 - "Machine"
 Cohesion: 0.02
-Nodes (201): canonical_json_bytes(), _config(), _derive_spec(), _execute(), _inputs(), _invoke(), main(), _mapping() (+193 more)
+Nodes (235): Capability reports checked local prerequisites, HistoricalMachinePreparation, HTTPResponse, PersistedRecord, _LlmArguments, production_machine(), Assemble the supported providers without coupling orchestration to techniques., Construct the supported thirteen-technique production composition. Provider… (+227 more)
 
 ### Community 6 - "RstAnalysis"
-Cohesion: 0.03
-Nodes (79): StoredRstNode, PrimaryRelationEdge, RstAnalysis, RstNode, SignalDetectorProvenance, TimingRecord, DocumentToken, Edu (+71 more)
+Cohesion: 0.02
+Nodes (194): DirectedSpanKey, K, Persist graph text as references to the owning analysed document., Node coordinates; retain distinct native text only when it differs from source., StoredRstNode, DiscourseSignal, FormatRstAnalysis, PrimaryRelationEdge (+186 more)
 
-### Community 8 - "systems/common.py"
-Cohesion: 0.04
-Nodes (25): test_temperature_fit_is_deterministic_and_does_not_increase_development_nll(), apply_temperature(), _binary_nll(), canonical_threshold_grid(), fit_temperature(), TemperatureCalibration, ScreeningCorpusPayload, compare_prediction_artifacts() (+17 more)
+### Community 8 - "test_comparison_foundations.py"
+Cohesion: 0.06
+Nodes (72): _protocol(), Regression tests for calibration, statistics, resources, and system constraints., _receipt(), _resource(), test_bootstrap_and_holm_are_reproducible_and_content_hashed(), test_screening_completeness_requires_every_system_seed_disposition(), AblationDefinition, AblationPlan (+64 more)
 
 ### Community 9 - ".for_text"
-Cohesion: 0.02
-Nodes (94): ProviderDependencyReference, UpstreamResultReference, NativeTechniqueResult, ProviderConfiguration, ExecutionPolicy, Machine, Provider, PdtbProvider (+86 more)
-
-### Community 10 - "Sha256Identity"
-Cohesion: 0.04
-Nodes (88): AnalysisPolicy, ParserAnalysisSemanticEvidence, Sha256Identity, NetworkTransitionDecision, ComponentFileIdentity, ComponentIdentityState, CompositeAnalysisIdentity, ConfidenceKind (+80 more)
-
-### Community 11 - "assessor.py"
-Cohesion: 0.19
-Nodes (12): _analysis(), test_edu_boundary_f1_detects_regression_without_using_source_text(), test_preparation_identity_requires_exact_contract_preparation_and_text(), test_structural_gate_counts_pre_feature_cross_boundary_relation_and_macro_fix(), test_structural_gate_rejects_cross_boundary_relation_mislabelled_local(), assess_candidate_preparation(), _edu_boundary_f1(), _object() (+4 more)
-
-### Community 12 - "service.py"
 Cohesion: 0.03
-Nodes (60): cache_entry_identity(), _cache_error(), ProductionIngestCache, _required_result_identity(), _validate_cache_result(), AnalysedOutcome, AnalysisRequest, EmptyPrimaryAnalysisOutcome (+52 more)
+Nodes (83): AvailableCapability, CapabilityState, ProviderDependencyReference, ProviderConfiguration, ExecutionPolicy, Bounded execution settings for one local machine composition., SemanticVersion, SourceIdentity (+75 more)
+
+### Community 10 - "parser_result.py"
+Cohesion: 0.04
+Nodes (113): ComponentIdentity, ErstCandidateDecision, ErstDecision, AnalysisPolicy, NetworkTransitionDecision, Backend-independent immutable decoder transition evidence., Actual bottom-up action logits and the state constraining their execution.…, ComponentFileIdentity (+105 more)
+
+### Community 11 - "properties"
+Cohesion: 0.04
+Nodes (51): items, title, type, additionalProperties, properties, required, title, type (+43 more)
+
+### Community 12 - "grammar.py"
+Cohesion: 0.04
+Nodes (59): DeliberationMap, NodeKind, deliberation_map(), ExtractedIbisNode, ExtractedIbisProposal, IbisInputLink, IbisInputNode, IbisStructure (+51 more)
 
 ### Community 13 - "NetworkStructureDecision"
 Cohesion: 0.05
-Nodes (19): Data, getLabelOrdered(), nucs_and_rels(), capture_structure_decision(), NetworkStructureDecision, published_rst_revision(), Data, getLabelOrdered() (+11 more)
+Nodes (43): NetworkTransitionDecision, ParsingNet, Data, getLabelOrdered(), nucs_and_rels(), ArrayLike, Get the right order of lable for stacks manner. E.g. [8,3,9,2,6,10,1,5,7,11,4]…, One batched parser example. Field order matches the historical constructor. (+35 more)
 
 ### Community 14 - "StructuredAnalyst"
 Cohesion: 0.02
-Nodes (50): _AttemptEvidence, configured_model(), Extraction, __getattr__(), _GoogleInteractionsModel, _has_model_override(), _model_without_implicit_retries(), ModelIdentity (+42 more)
+Nodes (111): Agent, AgentRunResult, asyncio, Event, live, ModelMessage, ModelRequestContext, ModelRequestParameters (+103 more)
 
 ### Community 15 - "rdam/ingest/__init__.py"
-Cohesion: 0.04
-Nodes (94): describe_capabilities(), ParserDescriptor, AnalysisExecutionEvidence, AnalysisStatus, AnalysisSubstrateTransformation, CacheStatus, CheckClassification, CheckOutcome (+86 more)
+Cohesion: 0.03
+Nodes (192): AnalysedEdu, AnalysedToken, BoundaryPreference, CompletedStageEvidence, Disposition, PreparedSegment, _RangeResolver, AnalysedEdu (+184 more)
 
 ### Community 16 - "pydantic"
 Cohesion: 0.02
-Nodes (80): AppealOutput, ClassicalRhetoricOutput, KairosCueOutput, PistisBalanceOutput, RhetoricalFigureOutput, StasisOutput, ClassicalRhetoricProvider, AppealProposal (+72 more)
+Nodes (114): dataclasses, pydantic, pydantic_ai_models_function, Classical Rhetoric (Aristotelian pisteis, kairos, Hermagorean stasis, and…, AppealOutput, ClassicalRhetoricOutput, KairosCueOutput, PistisBalanceOutput (+106 more)
 
-### Community 17 - "NativeInterpretationDescriptor"
-Cohesion: 0.08
-Nodes (21): describe(), describe(), describe(), describe(), describe(), describe(), NativeInterpretationDescriptor, NativeSectionDescription (+13 more)
+### Community 17 - "properties"
+Cohesion: 0.04
+Nodes (51): items, title, type, additionalProperties, properties, required, title, type (+43 more)
 
-### Community 18 - "test_ontology.py"
-Cohesion: 0.11
-Nodes (15): test_manifest_compiler_detects_missing_distribution(), test_real_packaged_central_and_repeated_evidence(), distribution(), test_invalid_authored_terminology_fails(), test_label_cannot_carry_term_attributes_and_term_requires_them(), test_missing_declared_file_fails(), test_real_manifest_projection_is_reproducible(), _clear_runtime_caches() (+7 more)
+### Community 18 - "linker.py"
+Cohesion: 0.03
+Nodes (167): ahocorasick_rs, argparse, bisect, Python, main(), native_locations(), AggregateAnalysis, Any (+159 more)
 
 ### Community 19 - "OutputDestination"
 Cohesion: 0.13
-Nodes (26): OutputDestination, _temporaries(), test_atomic_new_file(), test_directory_fsync_failure_reports_published_identity_without_rollback(), test_file_descriptor_is_closed_when_fdopen_fails(), test_file_fsync_failure_preserves_prior_target_and_cleans_owned_temp(), test_force_cannot_replace_input_alias(), test_force_preserves_an_existing_open_reader_and_changes_inode() (+18 more)
+Nodes (36): OutputDestination, Path, Sha256Identity, MonkeyPatch, parametrize, Path, Publication preserves inputs and existing results unless replacement is…, _temporaries() (+28 more)
 
-### Community 20 - "substrate.py"
+### Community 20 - "grid.py"
 Cohesion: 0.06
-Nodes (39): analyse_centering(), _assign_role(), CenteringGridAnalysis, CenteringTransition, DiscourseEntity, EntityMention, _find_main_verb_offset(), GrammaticalRole (+31 more)
+Nodes (41): GrammaticalRole, razdel, analyse_centering(), _assign_role(), CenteringGridAnalysis, DiscourseEntity, EntityMention, _find_main_verb_offset() (+33 more)
 
-### Community 21 - "argument_mining/test_provider.py"
-Cohesion: 0.09
-Nodes (21): AduNodeProposal, AduRole, ArgumentMiningError, EnthymemeProposal, has_cycle(), IatGraphProposal, IatRelationProposal, IatRelationType (+13 more)
-
-### Community 22 - "run_comparison.py"
+### Community 22 - "run_screening.py"
 Cohesion: 0.05
-Nodes (33): AblationDefinition, AblationPlan, AblationResult, canonical_ablation_plan(), ExperimentRunReceipt, FinalEvaluationReceipt, MandatoryExperimentSystem, StatisticalComparison (+25 more)
+Nodes (56): PrivateCorpusVerificationReceipt, Full-source and sampled-candidate verification for the private corpus., ExperimentConfigurationBundle, GenerativeDecoderConfig, GraphAttentionConfig, HierarchicalAdapterConfig, BaseModel, Frozen executable configuration for every mandatory eRST system. (+48 more)
 
-### Community 23 - "evaluate"
-Cohesion: 0.11
-Nodes (6): evaluate(), af(), sets(), TestInvariants, TestKnownFrameworks, TestValidation
+### Community 23 - ".from_payload"
+Cohesion: 0.14
+Nodes (8): model_validator, Self, model_validator, Self, Validate ``{"arguments": [...], "attacks": [[from, to], ...]}``., parametrize, TestInvariants, TestValidation
 
-### Community 24 - "text_walker.py"
-Cohesion: 0.28
-Nodes (9): body_text(), iter_body_text(), iter_sibling_body_text(), test_comment_and_excluded_subtree_contents_are_omitted_without_dropping_tails(), test_nested_formatting_text_and_tails_appear_once(), test_nested_metadata_and_its_content_are_excluded_but_tail_is_preserved(), test_sibling_walker_excludes_metadata_and_named_subtrees_but_preserves_tail(), test_sibling_walker_includes_eligible_body_and_tail_exactly_once() (+1 more)
+### Community 24 - "properties"
+Cohesion: 0.04
+Nodes (51): items, title, type, additionalProperties, properties, required, title, type (+43 more)
 
-### Community 25 - "rst/contracts/__init__.py"
-Cohesion: 0.03
-Nodes (63): FormatRstAnalysis, ProvenanceRecord, SourceReference, TextSpan, AnnotationStatusEnum, CapabilityStatusEnum, ConfidenceKindEnum, DeviceEnum (+55 more)
+### Community 25 - "OntologyAdapter"
+Cohesion: 0.07
+Nodes (39): OntologyLockData, OntologyAdapter, Resolve a raw corpus label to its canonical label and coarse concept., Resolve a predicted model class integer index into canonical label, concept,…, A model class resolved within the local inventory., Resolve model outputs and corpus labels against the bundled local mappings., Project suffix variants while preserving negative attribution. RST-DT's…, ResolvedRelation (+31 more)
 
 ### Community 26 - "SdrtAnalysis"
-Cohesion: 0.06
-Nodes (29): _ClosedModel, ComplexDiscourseUnit, _connected(), _elementary_members(), ElementaryDiscourseUnit, GraphError, _has_cycle(), NonEmpty (+21 more)
+Cohesion: 0.07
+Nodes (49): ElementaryDiscourseUnit, _ClosedModel, ComplexDiscourseUnit, _connected(), _elementary_members(), ElementaryDiscourseUnit, GraphError, _has_cycle() (+41 more)
 
 ### Community 27 - "DiscourseUnit"
-Cohesion: 0.03
-Nodes (52): Native RST tree representation (`DiscourseUnit`), DiscourseUnit, Exporter, ForestExporter, Group, register_isanlp_compat(), Root, Segment (+44 more)
-
-### Community 28 - "load_contract"
 Cohesion: 0.04
-Nodes (43): _decode(), HistoricalProductionRecord, load_historical_contract(), _projection(), _unique_object(), _verify(), analysis_outcome_semantic_identity(), analysis_outcome_semantic_projection() (+35 more)
+Nodes (77): Native RST tree representation (`DiscourseUnit`), DiscourseUnit, Exporter, ForestExporter, Group, Path, Native Rhetorical Structure Theory (RST) tree annotations and RS3…, Populate text across an arbitrarily deep tree from character spans. (+69 more)
 
-### Community 29 - "release.py"
-Cohesion: 0.09
-Nodes (9): ModelFile, ModelReleaseIdentity, ParserCapacity, _StrictModel, _validate_parser_files(), ValidatedModelRelease, _release(), test_capacity_is_strict_and_uses_the_actual_unit() (+1 more)
+### Community 28 - "$defs"
+Cohesion: 0.04
+Nodes (46): enum, title, type, enum, title, type, description, enum (+38 more)
+
+### Community 29 - "ParserCapacity"
+Cohesion: 0.18
+Nodes (11): ModelReleaseIdentity, ParserCapacity, Declared planning bound; null means no verified numerical capacity is…, Complete released-model identity used by analytical caches., Return the immutable identity consumed by production analysis., build_model_identity(), Build a complete immutable identity without requiring pytest fixture discovery., Path (+3 more)
 
 ### Community 30 - "theory.py"
-Cohesion: 0.11
-Nodes (22): AspicAttackRecord, AspicError, AspicEvaluation, AspicTheoryInput, _build_contrary_map(), ConstructedArgument, ContraryPairInput, DefeasibleRuleInput (+14 more)
+Cohesion: 0.04
+Nodes (62): itertools, OrderingPrinciple, ASPIC+ structured argumentation (Modgil & Prakken 2013) subpackage., AspicAttackOutput, AspicEvidenceRecord, AspicOutput, ConstructedArgumentOutput, DefeatFrameworkOutput (+54 more)
 
 ### Community 31 - "main.py"
 Cohesion: 0.07
-Nodes (31): to_png(), attach_navigation_guard(), attach_navigation_guard_async(), launch_chromium(), launch_chromium_async(), trim_whitespace(), cli(), _emit_png() (+23 more)
+Nodes (50): AsyncBrowser, AsyncPage, AsyncPlaywright, Browser, Page, Playwright, attach_navigation_guard(), attach_navigation_guard_async() (+42 more)
 
-### Community 32 - "taxonomies"
-Cohesion: 0.05
-Nodes (41): broader, description, home_domain, id, in_scheme, label, status, domain (+33 more)
+### Community 32 - "test_segmentation_evaluation.py"
+Cohesion: 0.46
+Nodes (7): _leaves(), Segmentation scoring uses source coordinates, not renumbered EDU identities., test_document_end_is_not_credited_as_an_internal_segmentation_decision(), test_empty_predictions_do_not_gain_boundary_credit(), test_inserted_boundary_does_not_shift_later_coordinate_matches(), Exact source-character EDU spans and internal end boundaries, without tolerance., segmentation_counts()
 
 ### Community 33 - "properties"
 Cohesion: 0.04
 Nodes (53): properties, additionalProperties, properties, title, type, additionalProperties, properties, title (+45 more)
 
 ### Community 34 - "thaw_json"
-Cohesion: 0.07
-Nodes (7): freeze_json(), freeze_json_object(), FrozenJsonArray, FrozenJsonObject, _immutable(), thaw_json(), test_frozen_json_rejects_non_json_values()
+Cohesion: 0.08
+Nodes (25): Never, field_serializer, field_validator, JsonValue, field_serializer, field_validator, JsonValue, field_serializer (+17 more)
 
-### Community 35 - "applications"
-Cohesion: 0.05
-Nodes (40): applications, built_on, description, exact_match, families, home_domain, id, implements_category (+32 more)
+### Community 35 - "doclang/decoder.py"
+Cohesion: 0.17
+Nodes (23): cue_interval(), decode_document(), DecodedDoclangCell, DecodedTrackCue, DecodedTrackTurn, FragmentRange, _interval_slots(), _intervals() (+15 more)
 
-### Community 36 - "entities"
-Cohesion: 0.05
-Nodes (40): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+32 more)
+### Community 36 - "clean_install.py"
+Cohesion: 0.12
+Nodes (25): CaptureFixture, email_parser, packaging_markers, packaging_requirements, packaging_utils, Requirement, sysconfig, MonkeyPatch (+17 more)
 
 ### Community 37 - "rstweb_sql.py"
-Cohesion: 0.12
-Nodes (42): add_node(), add_seg(), count_children(), count_multinuc_children(), count_span_children(), delete_document(), delete_node(), generic_query() (+34 more)
+Cohesion: 0.13
+Nodes (48): add_node(), add_seg(), count_children(), count_multinuc_children(), count_span_children(), delete_document(), delete_node(), generic_query() (+40 more)
 
-### Community 39 - "production_boundary/contracts.py"
-Cohesion: 0.08
-Nodes (15): test_preparation_meets_reference_threshold_on_every_measured_run(), test_source_text_has_the_requested_character_count(), CheckStatus, EvidenceRecord, EvidenceState, GateResult, PreparationPerformanceCase, PreparationPerformanceEvidence (+7 more)
+### Community 38 - "GraphAttentionAdapter"
+Cohesion: 0.14
+Nodes (11): _edge_feature(), _EdgeGraphAttentionLayer, GraphAttentionAdapter, _GraphScorer, device, Path, PreTrainedModel, PreTrainedTokenizerBase (+3 more)
+
+### Community 39 - "StrictModel"
+Cohesion: 0.07
+Nodes (34): parametrize, Reference-machine preparation performance acceptance., test_preparation_meets_reference_threshold_on_every_measured_run(), test_source_text_has_the_requested_character_count(), ArtifactReceipt, EvidenceRecord, GateResult, PreparationPerformanceCase (+26 more)
 
 ### Community 40 - "properties"
 Cohesion: 0.04
 Nodes (53): properties, additionalProperties, properties, title, type, additionalProperties, properties, title (+45 more)
 
-### Community 42 - "Cognitive Level"
-Cohesion: 0.11
-Nodes (46): Accessibility Dimension, Alignment Marker, Analyze Verb, Apply Verb, Assessment Type, Cdt Performance Levels, Chunking Presentation, Clarity Dimension (+38 more)
+### Community 42 - "argument_mining/test_provider.py"
+Cohesion: 0.07
+Nodes (34): AduNodeProposal, ArgumentMiningError, EnthymemeProposal, has_cycle(), IatGraphProposal, IatRelationProposal, model_validator, Self (+26 more)
 
 ### Community 43 - "load_doclang_archive"
-Cohesion: 0.10
-Nodes (36): DoclangIngestError, InvalidDoclangError, UnsafeDoclangArchiveError, DoclangArchive, DoclangArchiveMember, load_doclang_archive(), parse_control_xml(), _parse_page_image_number() (+28 more)
+Cohesion: 0.17
+Nodes (35): InvalidDoclangError, A DocLang archive violates bounded local ZIP safety invariants., The XML file is not a valid DocLang document., UnsafeDoclangArchiveError, load_doclang_archive(), Validate and read a bounded current-contract DocLang OPC package., _validate_archive_member(), _validate_document_references() (+27 more)
 
 ### Community 44 - "unirst/utils_rs3.py"
 Cohesion: 0.10
-Nodes (31): areAdjacent(), binarizeTreeGeneral(), buildNodes(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU(), cleanLonelyEDU(), cleanTree() (+23 more)
+Nodes (46): areAdjacent(), binarizeTreeGeneral(), buildNodes(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU(), cleanLonelyEDU(), cleanTree() (+38 more)
 
 ### Community 45 - "TrainingManager"
 Cohesion: 0.07
-Nodes (4): _metrics_as_floats(), NpEncoder, TrainingManager, TrainingManager
+Nodes (25): _metrics_as_floats(), NpEncoder, Any, Data, no_grad, Path, TrainingManager, Offline DMRST and UniRST training orchestration. (+17 more)
 
 ### Community 46 - "test_production_smoke.py"
 Cohesion: 0.11
-Nodes (6): _assert_aligned(), _leaves(), loaded(), _releases(), TestFacadeRefusals, TestReleaseSmoke
+Nodes (13): _assert_aligned(), _leaves(), loaded(), fixture, FixtureRequest, Parser, Path, slow (+5 more)
 
-### Community 47 - "concepts"
-Cohesion: 0.05
-Nodes (39): broader, description, edges, home_domain, id, in_scheme, label, scope_note (+31 more)
+### Community 47 - "ingest/identity.py"
+Cohesion: 0.15
+Nodes (22): analysis_outcome_semantic_identity(), analysis_outcome_semantic_projection(), _normalize_analysis_semantic(), parser_result_semantic_identity(), parser_result_semantic_projection(), preparation_semantic_identity(), preparation_semantic_projection(), Any (+14 more)
 
-### Community 48 - "entities"
-Cohesion: 0.05
-Nodes (39): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+31 more)
+### Community 48 - "export.py"
+Cohesion: 0.11
+Nodes (32): MultiDiGraph, networkx, rdam_rst_contracts, rdam_rst_graph, Any, RstAnalysis, RstDocument, Knowledge graph export bridges for Rhetorical Structure Theory analyses. (+24 more)
 
-### Community 49 - "product_families"
-Cohesion: 0.06
-Nodes (38): business_units, description, home_domain, id, label, status, terms, unit_of (+30 more)
+### Community 49 - "SdrtProvider"
+Cohesion: 0.03
+Nodes (102): FunctionModel, jsonschema, jsonschema_protocols, JsonValue, ProviderFactory, pydantic_ai, pydantic_ai_messages, rdam_argument_mining (+94 more)
 
 ### Community 50 - "Universal Parser SpanNode"
 Cohesion: 0.11
-Nodes (29): SpanNode, _apply_node_content(), binarizeTreeRight(), binarizeTreeRightThiago(), bTree(), buildTree(), buildTreeThiago(), checkcontent() (+21 more)
+Nodes (44): RST tree node used by the universal parser corpus readers., SpanNode, _apply_node_content(), binarizeTreeRight(), binarizeTreeRightThiago(), bTree(), buildTree(), buildTreeThiago() (+36 more)
 
 ### Community 51 - "ingest/public_surface.py"
 Cohesion: 0.06
-Nodes (26): CompatibilityGuarantee, _documentation_anchor_exists(), load_public_surface(), PublicEntryKind, PublicEntryStatus, PublicSurfaceEntry, PublicSurfaceInventory, PublicSurfaceReconciliation (+18 more)
+Nodes (44): CompatibilityGuarantee, _documentation_anchor_exists(), load_public_surface(), PublicEntryKind, PublicEntryStatus, PublicSurfaceEntry, PublicSurfaceInventory, PublicSurfaceReconciliation (+36 more)
 
 ### Community 52 - "dmrst/utils_rs3.py"
-Cohesion: 0.12
-Nodes (25): areAdjacent(), binarizeTreeGeneral(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU(), cleanLonelyEDU(), cleanTree(), findNodeTree() (+17 more)
+Cohesion: 0.10
+Nodes (47): areAdjacent(), binarizeTreeGeneral(), buildNodes(), cleanEDU(), cleanEmbedded(), cleanLonelyCDU(), cleanLonelyEDU(), cleanTree() (+39 more)
 
-### Community 53 - "entities"
-Cohesion: 0.05
-Nodes (38): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+30 more)
+### Community 53 - "test_failure_stages.py"
+Cohesion: 0.08
+Nodes (27): LifecycleStage, _erst_policy(), AnalysisPolicy, Any, MonkeyPatch, parametrize, ParserBuilder, Stable nine-stage production failure taxonomy and causality. (+19 more)
 
 ### Community 54 - "test_gum_gold.py"
-Cohesion: 0.08
-Nodes (20): GumCorpusValidationReport, _corpus_metrics(), gold_edus(), _gold_path(), parser_cpu(), parser_quality_report(), _quality_regressions(), _QualityBaseline (+12 more)
+Cohesion: 0.07
+Nodes (38): quality, GumCorpusValidationReport, Macro-averaged validation metrics across a corpus of GUM documents., _corpus_metrics(), gold_edus(), _gold_path(), parser_cpu(), parser_quality_report() (+30 more)
 
-### Community 55 - "entities"
-Cohesion: 0.05
-Nodes (38): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+30 more)
+### Community 55 - "test_baseline_corrections.py"
+Cohesion: 0.20
+Nodes (15): copy, fixture, parametrize, Path, SourceArtifact, SourceForm, Approved repairs are proven against real historical records, never allowlisted., records() (+7 more)
 
-### Community 56 - "entities"
-Cohesion: 0.05
-Nodes (38): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+30 more)
+### Community 56 - "test_runtime_vocabulary.py"
+Cohesion: 0.16
+Nodes (23): capture_runtime_vocabulary(), _native_labels(), model_validator, Self, StrictContractModel, Check captured labels against the loaded corpus or shared classifier table., RuntimeRelationVocabulary, rdam_rst_ontology (+15 more)
 
-### Community 57 - "production_boundary/contracts.py"
+### Community 57 - "build.py"
 Cohesion: 0.09
-Nodes (29): _run(), test_double_build_publishes_expected_pair(), test_rebuild_replaces_a_previous_pair_but_refuses_foreign_files(), test_source_release_record_identifies_exact_clean_commit(), test_tag_naming_another_version_is_an_error(), _archive_commit(), build_production_artifacts(), BuildRun (+21 more)
+Nodes (45): Path, Exact-commit, via-sdist, deterministic build tests., _run(), test_double_build_publishes_expected_pair(), test_rebuild_replaces_a_previous_pair_but_refuses_foreign_files(), test_source_release_record_identifies_exact_clean_commit(), test_tag_naming_another_version_is_an_error(), _archive_commit() (+37 more)
+
+### Community 58 - "GenerativeDecoderAdapter"
+Cohesion: 0.11
+Nodes (14): test_generative_outcomes_are_unique_and_include_explicit_no_edge(), GenerativeDecoderAdapter, _label_tokens(), _load_peft(), _PeftApi, device, Module, Path (+6 more)
 
 ### Community 59 - "unirst/common.py"
 Cohesion: 0.07
-Nodes (20): addLabels(), backprop(), BFTbin(), checkTree(), countLabels(), Document, __getforminfo(), getLabelMapping() (+12 more)
+Nodes (43): addLabels(), backprop(), BFTbin(), checkTree(), countLabels(), Document, __getforminfo(), getLabelMapping() (+35 more)
 
-### Community 60 - "ConceptIndex"
-Cohesion: 0.19
-Nodes (14): CandidateSpan, ConceptLinkResult, MatchingOptions, ConceptIndex, OntologyIdentity, execute_request(), implementation_identity(), _link() (+6 more)
+### Community 60 - "$defs"
+Cohesion: 0.04
+Nodes (46): enum, title, type, enum, title, type, description, enum (+38 more)
 
 ### Community 61 - "PredictorUniRST"
-Cohesion: 0.09
-Nodes (3): parse_corpora_config(), PredictorUniRST, TestUniRSTArgValidation
+Cohesion: 0.04
+Nodes (54): Parse explicit boolean spellings and reject ambiguous configuration., str2bool(), declared_analysis_capacity(), family_for_runtime_contract(), published_rst_revision(), ParserCapacity, Immutable upstream model revisions and static family authority used by the…, Resolve a supported public version name to its immutable source commit. (+46 more)
 
-### Community 62 - "SecondaryEdgeCandidate"
-Cohesion: 0.05
-Nodes (37): _analysis(), _document(), _signal(), test_batched_candidate_stream_is_complete_and_untruncated(), test_candidate_features_include_heads_context_direction_and_primary_relation(), test_candidate_identity_includes_document_but_excludes_gold_annotations(), test_candidate_identity_is_identical_in_every_pipeline_mode(), test_complete_ordered_pair_space_includes_primary_overlap_and_both_directions() (+29 more)
+### Community 62 - "candidates.py"
+Cohesion: 0.11
+Nodes (37): DiGraph, _analysis(), _document(), DiscourseSignal, Formal completeness and identity tests for the shared eRST candidate generator., _signal(), test_batched_candidate_stream_is_complete_and_untruncated(), test_candidate_features_include_heads_context_direction_and_primary_relation() (+29 more)
 
-### Community 63 - "semantics.py"
+### Community 63 - "rdam/dung/__init__.py"
 Cohesion: 0.12
-Nodes (17): acceptable_arguments(), ArgumentationFramework, _bitmask_graph(), complete_extensions(), defends(), _enumerate_complete_masks_sat(), FrameworkCapacityError, grounded_extension() (+9 more)
+Nodes (11): rdam.dung — Dung abstract argumentation provider for the Rhetorical Discourse…, Sha256Identity, source_identity(), _enumerate_complete_masks_sat(), FrameworkCapacityError, _grounded_masks(), ValueError, Every extension under each semantics, in a deterministic order. (+3 more)
 
-### Community 64 - "entities"
-Cohesion: 0.05
-Nodes (37): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+29 more)
+### Community 64 - "test_frameworks.py"
+Cohesion: 0.06
+Nodes (31): fixture, MonkeyPatch, Distribution and source-revision provenance owned by the machine runtime., rdam_rst, Compatibility re-exports for provenance now owned by the machine runtime., re, sqlite3, MonkeyPatch (+23 more)
 
-### Community 66 - "entities"
-Cohesion: 0.05
-Nodes (37): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+29 more)
+### Community 65 - "BiMPM"
+Cohesion: 0.22
+Nodes (8): LSTM, BiMPM, device, Tensor, :param v1: (batch, seq_len, hidden_size) :param v2: (batch, seq_len,…, :param v1: (batch, seq_len1, hidden_size) :param v2: (batch, seq_len2,…, :param v1: (batch, seq_len1, hidden_size) :param v2: (batch, seq_len2,…, Inputs can be of infinite length, hence BiMPM matching can cause OOM. This is a…
+
+### Community 66 - "schemes.py"
+Cohesion: 0.06
+Nodes (43): rdam.walton — Walton argumentation-scheme provider for the Rhetorical Discourse…, CriticalQuestion, CriticalQuestionStatus, BaseModel, JsonValue, model_validator, Self, StrEnum (+35 more)
 
 ### Community 67 - "PredictorDMRST"
-Cohesion: 0.09
-Nodes (7): PredictorDMRST, TestDMRSTArgValidation, test_dmrst_downloads_every_checkpoint_member_from_the_pinned_commit(), test_unirst_downloads_checkpoint_and_inventory_from_the_same_pinned_commit(), _without_model_load(), test_dmrst_read_relation_table_empty_raises(), test_dmrst_read_relation_table_strips_blanks()
-
-### Community 68 - "entities"
 Cohesion: 0.05
-Nodes (36): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+28 more)
+Nodes (39): Device handling, Memory management, Mixed precision (`dtype=`), Production families, The RST parser (`rdam.rst`), Visualisation (`rdam.rst.rstviewer`), PredictorDMRST, Any (+31 more)
+
+### Community 68 - "signal_detection.py"
+Cohesion: 0.20
+Nodes (15): DiscourseSignal, Location-only scoring preserves occurrence counts and exposes missing anchors., _signal(), test_duplicate_predictions_receive_no_repeated_gold_credit(), test_local_edge_ids_do_not_affect_explicit_location_only_metric(), test_type_and_subtype_disagreement_are_preserved(), test_unanchored_gold_is_counted_as_excluded_without_false_empty_match(), evaluate() (+7 more)
 
 ### Community 69 - "Path"
 Cohesion: 0.08
-Nodes (7): associate_tree_edus(), Corpus, DisDocument, Document, getFiles(), Rs3Document, ThiagoDocument
+Nodes (17): associate_tree_edus(), Corpus, DisDocument, Document, getFiles(), Path, Offline UniRST corpus document conversion., Write the bracketed tree into a file Remove the original extension, keep only… (+9 more)
 
-### Community 70 - "test_upstream_conformance.py"
-Cohesion: 0.06
-Nodes (14): test_doclang_empty_namespace_validates_under_current_contract(), test_doclang_table_is_retained_but_not_primary(), test_model_free_capability_and_preparation_quickstart(), test_parser_result_graph_projection_and_component_receipt_quickstart(), test_typed_failure_quickstart_is_private_by_default(), test_current_upstream_invalid_doclang_specimen_is_unmodified_and_rejected(), test_current_upstream_valid_doclang_specimen_is_unmodified_and_accepted(), test_real_world_doclang_document_is_completely_accounted_for_by_preparation() (+6 more)
+### Community 70 - "test_version_compat.py"
+Cohesion: 0.23
+Nodes (10): dclq_document, lxml, _declared_version(), parametrize, Path, Conformance guard: do we still ingest current DocLang output via dclq + doclang?, Return the XML namespace declared on a fixture's root element (or '')., _root_ns() (+2 more)
 
-### Community 71 - "entities"
-Cohesion: 0.05
-Nodes (36): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+28 more)
+### Community 71 - "type"
+Cohesion: 0.10
+Nodes (21): default, items, title, type, default, items, title, type (+13 more)
 
-### Community 72 - "entities"
-Cohesion: 0.05
-Nodes (36): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+28 more)
+### Community 72 - "type"
+Cohesion: 0.10
+Nodes (21): default, items, title, type, default, items, title, type (+13 more)
 
-### Community 73 - "entities"
-Cohesion: 0.05
-Nodes (36): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+28 more)
+### Community 73 - "type"
+Cohesion: 0.10
+Nodes (21): default, items, title, type, default, items, title, type (+13 more)
 
-### Community 74 - "entities"
-Cohesion: 0.05
-Nodes (36): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+28 more)
+### Community 74 - "type"
+Cohesion: 0.10
+Nodes (21): default, items, title, type, default, items, title, type (+13 more)
 
-### Community 75 - "entities"
-Cohesion: 0.06
-Nodes (33): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+25 more)
+### Community 75 - "test_erst_decoder.py"
+Cohesion: 0.10
+Nodes (29): _analysis(), _candidate(), _decoder(), parametrize, Synthetic formal-conformance matrix for eRST secondary-edge decoding., test_decoder_calibration_claim_comes_from_supplied_state(), test_formally_permitted_graph_shapes_are_accepted(), test_invalid_score_shapes_and_values_fail_instead_of_disappearing() (+21 more)
 
-### Community 76 - "entities"
-Cohesion: 0.06
-Nodes (33): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+25 more)
+### Community 76 - "rst_diag.py"
+Cohesion: 0.23
+Nodes (14): _artifact(), _coverage_ratio(), _discover(), DocMetrics, main(), _metrics(), _print_table(), Path (+6 more)
 
-### Community 77 - "edges"
-Cohesion: 0.06
-Nodes (32): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+24 more)
+### Community 77 - "classify"
+Cohesion: 0.24
+Nodes (13): JsonPath, _capacity_rename_paths(), classify(), _flatten(), _is_package_source_path(), _is_version(), _package_source_digests(), Any (+5 more)
 
 ### Community 78 - "dmrst/common.py"
 Cohesion: 0.08
-Nodes (19): addLabels(), backprop(), BFTbin(), checkTree(), countLabels(), __getforminfo(), getLabelMapping(), getParse() (+11 more)
+Nodes (39): addLabels(), backprop(), BFTbin(), checkTree(), countLabels(), __getforminfo(), getLabelMapping(), getParse() (+31 more)
 
 ### Community 79 - "dmrst/data.py"
 Cohesion: 0.09
-Nodes (7): associate_tree_edus(), Corpus, DisDocument, Document, getFiles(), Rs3Document, ThiagoDocument
+Nodes (16): associate_tree_edus(), Corpus, DisDocument, Document, getFiles(), Path, Offline DMRST corpus document conversion., Write the bracketed tree into a file Remove the original extension, keep only… (+8 more)
 
 ### Community 80 - "dmrst_parser/src/parser/metrics.py"
 Cohesion: 0.11
-Nodes (23): calc_metrics(), get_batch_metrics(), get_eval_data_parseval(), get_eval_data_rst_parseval(), get_macro_metrics(), get_measurement(), get_micro_metrics(), get_seg_measure() (+15 more)
+Nodes (34): MetricQuadruple, calc_metrics(), get_batch_metrics(), get_eval_data_parseval(), get_eval_data_rst_parseval(), get_macro_metrics(), get_measurement(), get_micro_metrics() (+26 more)
 
-### Community 81 - "attributes"
-Cohesion: 0.06
-Nodes (33): authority, governing_class, last_updated, ontology_domain, scope, title, description, range (+25 more)
+### Community 81 - "assessor.py"
+Cohesion: 0.19
+Nodes (16): _analysis(), Promotion assessment protects EDU quality and structural-boundary gains., test_edu_boundary_f1_detects_regression_without_using_source_text(), test_preparation_identity_requires_exact_contract_preparation_and_text(), test_structural_gate_counts_pre_feature_cross_boundary_relation_and_macro_fix(), test_structural_gate_rejects_cross_boundary_relation_mislabelled_local(), assess_candidate_preparation(), _edu_boundary_f1() (+8 more)
 
 ### Community 82 - "$ref"
 Cohesion: 0.07
@@ -1727,57 +2354,49 @@ Nodes (29): items, title, type, items, title, type, items, title (+21 more)
 Cohesion: 0.07
 Nodes (29): items, title, type, items, title, type, items, title (+21 more)
 
-### Community 84 - "edges"
-Cohesion: 0.06
-Nodes (31): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+23 more)
+### Community 84 - "rst_baseline.py"
+Cohesion: 0.26
+Nodes (12): packaging_version, _artifacts(), capture(), compare(), Difference, _digest(), main(), Path (+4 more)
 
 ### Community 85 - "Tensor"
 Cohesion: 0.10
-Nodes (4): CRF, LinearSegmenter, PointerSegmenter, ToNySegmenter
+Nodes (10): CRF, LinearSegmenter, PointerSegmenter, device, Module, Tensor, Conditional random field. modified from https://github.com/kmkurn/pytorch-…, Compute the conditional negative log likelihood of a sequence of tags given… (+2 more)
 
-### Community 86 - "EncoderRNN"
-Cohesion: 0.05
-Nodes (11): DecoderRNN, DefaultLabelClassifier, DefaultPlusBiMPMClassifier, EncoderRNN, PointerAtten, Segmenter, ParsingNet, _dmrst_net() (+3 more)
-
-### Community 87 - "entities"
-Cohesion: 0.06
-Nodes (31): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+23 more)
-
-### Community 88 - "ibis/provider.py"
-Cohesion: 0.05
-Nodes (29): deliberation_map(), DeliberationMap, ExtractedIbisNode, ExtractedIbisProposal, IbisInput, IbisInputLink, IbisInputNode, IbisStructure (+21 more)
+### Community 86 - "universal_parser/src/parser/modules.py"
+Cohesion: 0.07
+Nodes (27): math, numpy, DecoderRNN, DefaultLabelClassifier, DefaultPlusBiMPMClassifier, EncoderRNN, PointerAtten, Any (+19 more)
 
 ### Community 89 - "Tensor"
 Cohesion: 0.10
-Nodes (4): CRF, LinearSegmenter, PointerSegmenter, ToNySegmenter
+Nodes (10): CRF, LinearSegmenter, PointerSegmenter, device, Module, Tensor, Conditional random field. modified from https://github.com/kmkurn/pytorch-…, Compute the conditional negative log likelihood of a sequence of tags given… (+2 more)
 
 ### Community 90 - "EncoderRNN"
-Cohesion: 0.07
-Nodes (6): DecoderRNN, DefaultLabelClassifier, DefaultPlusBiMPMClassifier, EncoderRNN, PointerAtten, Segmenter
+Cohesion: 0.09
+Nodes (18): DecoderRNN, DefaultLabelClassifier, DefaultPlusBiMPMClassifier, EncoderRNN, PointerAtten, Any, device, Module (+10 more)
 
-### Community 91 - "test_http.py"
-Cohesion: 0.06
-Nodes (66): create_app(), serialize_request(), _fields(), _saved(), test_binary_request_round_trip_uses_standard_padded_base64(), test_changed_native_payload_cannot_keep_saved_identity(), test_duplicate_json_keys_are_rejected_even_when_values_agree(), test_edu_request_round_trip_preserves_boundaries_and_order() (+58 more)
+### Community 91 - "http.py"
+Cohesion: 0.11
+Nodes (26): Category, logging, LogRecord, Machine, error(), failure(), Operation, Sha256Identity (+18 more)
 
 ### Community 92 - "TemperatureScaler"
 Cohesion: 0.27
-Nodes (6): test_fit_provenance_and_parameter_replacement(), test_invalid_fit_data_rejected(), test_invalid_temperature_rejected(), test_metadata_cannot_replace_evidence(), test_unfitted_export_is_explicit(), TemperatureScaler
+Nodes (11): ndarray, parametrize, Path, Fitting provenance must survive export without fabricated calibration claims., test_fit_provenance_and_parameter_replacement(), test_invalid_fit_data_rejected(), test_invalid_temperature_rejected(), test_metadata_cannot_replace_evidence() (+3 more)
 
 ### Community 93 - "dmrst/utils_dis_thiago.py"
-Cohesion: 0.14
-Nodes (22): SpanNode, _apply_node_content(), binarizeTreeRight(), binarizeTreeRightThiago(), bTree(), cleanChildren(), correctThiago(), createnode() (+14 more)
+Cohesion: 0.10
+Nodes (45): Offline DMRST corpus span node., RST tree node used by the DMRST corpus readers., SpanNode, _apply_node_content(), binarizeTreeRight(), binarizeTreeRightThiago(), bTree(), buildTree() (+37 more)
 
-### Community 94 - "Vocal Quality Markers"
-Cohesion: 0.12
-Nodes (36): Confidence Technique, Delivery Rate Issue, Engagement Cue, Facilitation Technique, Filler Word, Nonverbal Cue, Pause Marker, Presentation Anxiety Marker (+28 more)
+### Community 94 - "_compatible_parser_release"
+Cohesion: 0.21
+Nodes (12): _compatible_parser_release(), DiscourseUnit, parametrize, Path, Use a real, validated local release; missing evidence is a test failure., Compare every semantic tree field, including probability and entropy., T073: share loaded model state across four simultaneous calls on CPU and MPS., test_real_parser_concurrency_matches_sequential_trees() (+4 more)
 
 ### Community 95 - "Parser"
-Cohesion: 0.03
-Nodes (42): Parser, extract_root_tree(), ParseFailedError, main(), _shape(), _time_parse(), test_normalized_contract_keeps_family_and_versions_its_new_shape(), batch_parser() (+34 more)
+Cohesion: 0.02
+Nodes (125): DoclingDocument, ModelReleaseIdentity, PictureItem, Self, Graph topology and metadata with document-owned constituent text., StoredRstGraph, _analysis_with_document_identity(), Parser (+117 more)
 
-### Community 96 - "ReleaseIdentity"
+### Community 96 - "artifacts.py"
 Cohesion: 0.11
-Nodes (16): test_built_pair_passes_complete_artifact_validation(), test_provenance_with_an_extra_field_fails_the_artifact_gate(), _archive_members(), _declared_dependencies(), _forbidden(), _logical_member(), _one_name(), _rst_console_surface() (+8 more)
+Nodes (32): ArtifactReceipt, base64, csv, DefaultT, ReleaseIdentity, rfc8785, tarfile, Path (+24 more)
 
 ### Community 97 - "kind"
 Cohesion: 0.06
@@ -1787,245 +2406,241 @@ Nodes (33): title, type, MetadataRepresentation, PageAnchor, items, title, type,
 Cohesion: 0.04
 Nodes (58): items, title, type, additionalProperties, properties, required, title, type (+50 more)
 
-### Community 99 - "entities"
-Cohesion: 0.06
-Nodes (31): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+23 more)
+### Community 99 - "doclang/loader.py"
+Cohesion: 0.27
+Nodes (9): DoclangArchive, parse_control_xml(), _parse_page_image_number(), Private DocLang addressing and bounded archive loading for ingest. The…, Validated archive container material required by production inventory., _validate_content_types(), _validate_page_images(), _validate_root_relationships() (+1 more)
 
 ### Community 100 - "technology.py"
-Cohesion: 0.10
-Nodes (19): _required_revision(), test_frozen_live_matrix_has_weight_evidence_for_every_model_row(), test_hub_evidence_must_cover_every_model_and_preserve_revision_and_license(), test_matrix_rejects_dropped_system(), test_matrix_retains_all_systems_and_explicit_constraints(), freeze_matrix(), _hub_evidence(), _hub_token() (+11 more)
+Cohesion: 0.09
+Nodes (40): HfApi, Technology-matrix tests for completeness, evidence, and non-substitution., _required_revision(), test_frozen_live_matrix_has_weight_evidence_for_every_model_row(), test_hub_evidence_must_cover_every_model_and_preserve_revision_and_license(), test_matrix_rejects_dropped_system(), test_matrix_retains_all_systems_and_explicit_constraints(), Hashed Python/Transformers/MPS compatibility receipt for mandatory tokenizers. (+32 more)
 
 ### Community 101 - "OwnershipAuthority"
-Cohesion: 0.09
-Nodes (16): test_authority_classifies_each_surface(), test_codex_controls_have_one_non_publishable_repository_owner(), test_boundary_rejects_direct_technique_import_in_orchestration(), test_shared_ingest_has_exactly_one_machine_owned_production_rule(), test_openai_runtime_requires_tokenizer_and_boundary_classifies_it_correctly(), validate_release_directory(), OwnershipAuthority, validate_ownership() (+8 more)
+Cohesion: 0.12
+Nodes (18): BoundaryViolation, DependencyRule, OwnershipClass, OwnershipRule, PurePosixPath, test_authority_classifies_each_surface(), Path, test_codex_controls_have_one_non_publishable_repository_owner() (+10 more)
 
 ### Community 102 - "StandardParsevalScorer"
-Cohesion: 0.04
-Nodes (45): SecondaryRelationEdge, du_to_analysis(), test_du_extraction_handles_a_tree_deeper_than_the_recursion_limit(), test_du_extraction_reads_each_internal_nodes_own_decision(), test_du_extraction_rejects_missing_or_invalid_labels(), test_du_extraction_rejects_non_tree_topology(), test_native_and_du_extraction_agree_and_preserve_native_labels(), test_rst_parseval_scores_incoming_roles_including_leaves_but_not_root() (+37 more)
+Cohesion: 0.02
+Nodes (161): Collection, Counter, Atomic local publication with no-clobber default and input-alias protection., extract_headers_from_path(), main(), Path, CLI tool to extract declared relation and signal inventories from RS4 files., Scan a path (file or directory) and extract unique relations and signal types. (+153 more)
 
 ### Community 103 - "properties"
 Cohesion: 0.15
 Nodes (13): Apache-2.0, CC-BY-NC-4.0, MIT, enum, type, properties, licence, runtime_contract (+5 more)
 
-### Community 104 - "entities"
-Cohesion: 0.06
-Nodes (30): domain, description, edges, examples, home_domain, id, label, status (+22 more)
+### Community 104 - "Contract: Unified rdam CLI"
+Cohesion: 0.22
+Nodes (9): Acquisition and exclusivity, Commands, Common options, Configuration precedence, Contract: Unified rdam CLI, Exit statuses and precedence, Help acceptance, Output and diagnostics (+1 more)
 
 ### Community 105 - "build_analysis_validation_receipt"
-Cohesion: 0.09
-Nodes (20): _require_exact_coverage(), _revalidate(), _validate_analysis_plan(), _validate_duplicate_chains(), validate_inventory(), validate_preparation_outcome(), _analysis_checked_count(), build_analysis_validation_receipt() (+12 more)
+Cohesion: 0.07
+Nodes (51): AnalysedDocument, AnalysisAnchor, AnalysisPolicy, CompositeAnalysisIdentity, ErstCompletionEvidence, PrimaryInferenceEvidence, ContentInventoryItem, PreparationOutcome (+43 more)
 
 ### Community 106 - "Tree Node Manipulation"
 Cohesion: 0.18
 Nodes (31): act(), add_node(), count_children(), count_multinuc_children(), count_span_children(), create_node_div(), crel(), delete_node() (+23 more)
 
-### Community 107 - "edges"
-Cohesion: 0.06
-Nodes (30): domain, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id (+22 more)
+### Community 107 - "properties"
+Cohesion: 0.12
+Nodes (16): default, title, type, properties, default, $ref, case_sensitive, match_policy (+8 more)
 
-### Community 108 - "slots"
-Cohesion: 0.06
-Nodes (31): description, inlined_as_list, multivalued, range, slot_uri, description, required, slot_uri (+23 more)
+### Community 108 - "properties"
+Cohesion: 0.12
+Nodes (16): default, title, type, const, default, title, type, title (+8 more)
 
 ### Community 109 - "test_blake3_hashing.py"
 Cohesion: 0.10
-Nodes (17): _SampleModel, test_blake3_digest_matches_reference(), test_canonical_json_bytes_ordering(), test_canonical_json_digest_model_support(), test_canonical_json_digest_rejects_unknown_algo(), test_sha256_digest_matches_stdlib(), test_streaming_file_digests(), test_concurrent_blake3_and_sha256_hashing() (+9 more)
+Nodes (32): BaseModel, Path, Unit tests for workbench.hashing (BLAKE3 & SHA-256 hybrid engine)., _SampleModel, test_blake3_digest_matches_reference(), test_canonical_json_bytes_ordering(), test_canonical_json_digest_model_support(), test_canonical_json_digest_rejects_unknown_algo() (+24 more)
 
-### Community 110 - "framework_stages"
-Cohesion: 0.07
-Nodes (29): domain, framework_stages, description, home_domain, id, label, stage_of, stage_order (+21 more)
-
-### Community 111 - "entities"
-Cohesion: 0.07
-Nodes (29): domain, description, edges, examples, home_domain, id, label, status (+21 more)
-
-### Community 112 - "entities"
-Cohesion: 0.07
-Nodes (29): domain, description, edges, examples, home_domain, id, label, status (+21 more)
-
-### Community 113 - "test_discourse_projection.py"
+### Community 110 - "properties"
 Cohesion: 0.12
-Nodes (17): walton_profile_snapshot(), PdtbSense, test_discourse_projection_rejects_invalid_references(), test_existing_unmapped_section_serialization_is_unchanged(), test_packaged_discourse_projection_matches_authority(), test_packaged_technique_vocabularies_match_authority(), test_pdtb_vocabulary_preserves_every_fine_distinction(), test_saved_alignment_rejects_unknown_canonical_reference() (+9 more)
+Nodes (16): default, title, type, properties, default, $ref, case_sensitive, match_policy (+8 more)
 
-### Community 114 - "test_shared_runtime_internals.py"
-Cohesion: 0.03
-Nodes (50): json_projection(), sha256_bytes(), sha256_file(), validate_ijson_value(), _packaged_projection(), TermStatus, TermType, _no_framework_authority() (+42 more)
-
-### Community 116 - "rst/_version.py"
+### Community 111 - "properties"
 Cohesion: 0.12
-Nodes (9): ModelReleaseManifest, sha256_file(), main(), migrate(), _role(), UpstreamRelease, copy_release_file(), main() (+1 more)
+Nodes (16): default, title, type, const, default, title, type, title (+8 more)
 
-### Community 118 - "attributes"
-Cohesion: 0.07
-Nodes (28): object_id, predicate, statement_id, subject_id, Statement, description, inlined, range (+20 more)
+### Community 112 - ".prime_analysis"
+Cohesion: 0.17
+Nodes (10): DocumentToken, MarkerRule, Pattern, _compile_rule_pattern(), RstAnalysis, RstDocument, Match original text so Unicode case conversion cannot shift offsets., Return the first lexical cue occurrence, without classifying its use. (+2 more)
 
-### Community 119 - "ingest/contracts/analysis.py"
+### Community 113 - "ontology.py"
+Cohesion: 0.08
+Nodes (56): MatchingRule, ObservedVocabularyId, ProjectionIdentity, Return a lower-case SHA-256 digest for immutable bytes., sha256_bytes(), _alignment(), Shared vocabulary evidence and capture from declared parser runtime data., _observed_section() (+48 more)
+
+### Community 114 - "canonical_json_bytes"
 Cohesion: 0.03
-Nodes (51): AnalysedDocument, AnalysedEdu, AnalysedToken, AnalysisAnchor, AnchorTargetKind, _document_text_anchor(), ParserAnalysisResult, StoredAnalysedEdu (+43 more)
+Nodes (96): Lock, canonical_json_bytes(), json_projection(), Any, Path, One canonical JSON and SHA-256 kernel for every RDAM runtime contract., Project supported Python values onto the JSON data model without loss., Reject values outside the interoperable JSON subset used by contracts. (+88 more)
 
-### Community 120 - "ProductFamily"
-Cohesion: 0.07
-Nodes (28): class_uri, description, is_a, slot_usage, slots, AIModel, ManagedService, ProductFamily (+20 more)
+### Community 117 - "ParsingNet"
+Cohesion: 0.09
+Nodes (16): Discriminator, device, Module, Tensor, (batch, colors, height, width) (5, 3, 20, 80) 16 * 19 * 1 = 304, Discriminator used in adversarial learning; Based on the code from…, ParsingNet, Any (+8 more)
+
+### Community 118 - "context_anchors"
+Cohesion: 0.13
+Nodes (15): default, items, title, type, items, title, type, type (+7 more)
+
+### Community 119 - "AnalysedDocument"
+Cohesion: 0.03
+Nodes (74): CacheDirectoryBuilder, ModelIdentityBuilder, PreparedRange, PrivateMarkerBuilder, AnalysedDocument, AnalysisAnchor, AnalysisSemanticEvidence, AnchorTargetKind (+66 more)
+
+### Community 120 - "properties"
+Cohesion: 0.13
+Nodes (15): pattern, title, type, title, type, minLength, title, type (+7 more)
 
 ### Community 121 - "properties"
 Cohesion: 0.22
 Nodes (9): properties, type, path, sha256, size_bytes, pattern, type, minimum (+1 more)
 
 ### Community 122 - ".__init__"
-Cohesion: 0.10
-Nodes (6): resolve_dtype(), _encoder(), test_empty_lexical_span_fails_instead_of_selecting_sep_or_pad(), test_padding_and_special_tokens_never_become_lexical_boundaries(), AttentionPooling, BoundaryAwareSpanEncoder
+Cohesion: 0.11
+Nodes (15): _encoder(), Exact lexical-boundary tests for padded and unpadded fast-tokenizer batches., test_empty_lexical_span_fails_instead_of_selecting_sep_or_pad(), test_padding_and_special_tokens_never_become_lexical_boundaries(), AttentionPooling, BoundaryAwareSpanEncoder, device, dtype (+7 more)
 
-### Community 123 - "test_relations.py"
-Cohesion: 0.18
-Nodes (20): PdtbAnalysis, RelationType, argument(), base_relation(), span(), test_all_seven_pdtb3_relation_types_round_trip(), test_altlex_requires_exact_alternative_evidence(), test_arg1_need_not_precede_arg2() (+12 more)
+### Community 123 - "properties"
+Cohesion: 0.05
+Nodes (47): anyOf, default, const, default, title, type, const, default (+39 more)
 
-### Community 124 - "capabilities"
-Cohesion: 0.07
-Nodes (26): capabilities, capability_of, conforms_to, description, families, home_domain, id, label (+18 more)
+### Community 124 - "context_anchors"
+Cohesion: 0.13
+Nodes (15): default, items, title, type, items, title, type, type (+7 more)
 
-### Community 125 - "taxonomies"
-Cohesion: 0.07
-Nodes (26): broader, description, home_domain, id, in_scheme, label, status, domain (+18 more)
+### Community 125 - "properties"
+Cohesion: 0.13
+Nodes (15): pattern, title, type, title, type, minLength, title, type (+7 more)
+
+### Community 126 - "$defs"
+Cohesion: 0.04
+Nodes (46): enum, title, type, enum, title, type, description, enum (+38 more)
 
 ### Community 127 - "type"
 Cohesion: 0.07
 Nodes (30): default, items, title, type, default, items, title, type (+22 more)
 
-### Community 128 - "classes"
-Cohesion: 0.07
-Nodes (27): classes, Framework, IndustryCategory, Offering, Platform, Practice, Standard, class_uri (+19 more)
-
-### Community 129 - "RstProvider"
-Cohesion: 0.06
-Nodes (10): family_for_runtime_contract(), ProviderConfigurationError, RstProvider, _local_release(), ObservableRstProvider, TestAnalyseGuards, capture(), TestConfiguration (+2 more)
-
-### Community 130 - "test_llm_rst_protocol.py"
+### Community 128 - "load_repository_environment"
 Cohesion: 0.11
-Nodes (13): test_real_parser_preserves_edus_across_obsolete_capacity_boundaries(), test_incomplete_prefix_is_neither_rejected_nor_accepted(), test_invalid_response_never_becomes_a_repaired_tree(), test_missing_prediction_keeps_every_gold_attachment_in_denominator(), test_protocol_reconstructs_exact_source_and_binary_nuclearity(), test_single_edu_requires_no_invented_attachment(), test_streaming_check_preserves_valid_output_at_every_chunk_boundary(), test_streaming_check_rejects_irrecoverable_prefixes() (+5 more)
+Nodes (31): _encoding_payload(), main(), _payload_hash(), probe_mandatory_tokenizers(), _probe_target(), Any, Path, Probe every mandatory eRST tokenizer at an immutable revision. (+23 more)
+
+### Community 129 - "SemanticResource"
+Cohesion: 0.15
+Nodes (13): $defs, MatchPolicy, ResourceStatus, SemanticResource, enum, type, enum, type (+5 more)
+
+### Community 130 - "$defs"
+Cohesion: 0.04
+Nodes (46): enum, title, type, enum, title, type, description, enum (+38 more)
 
 ### Community 131 - "compilers.py"
 Cohesion: 0.20
-Nodes (13): _as_list(), _as_map(), compile_by_spec(), compile_derived_framework(), derive_from_argument_mining(), derive_from_aspic(), derive_from_ibis(), derive_from_toulmin() (+5 more)
+Nodes (25): _as_list(), _as_map(), compile_by_spec(), compile_derived_framework(), derive_from_argument_mining(), derive_from_aspic(), derive_from_ibis(), derive_from_toulmin() (+17 more)
 
-### Community 132 - "ontology.py"
-Cohesion: 0.21
-Nodes (15): _authority(), _consumer_profile_identity(), _label_key(), _matching_rule(), _native_mapping_values(), _native_values(), NativeConceptMapping, _observed_mappings() (+7 more)
+### Community 132 - "$defs"
+Cohesion: 0.04
+Nodes (46): enum, title, type, enum, title, type, description, enum (+38 more)
 
 ### Community 133 - "DataManager"
-Cohesion: 0.06
-Nodes (4): BinaryTree, Node, collect(), DataManager
+Cohesion: 0.07
+Nodes (20): BinaryTree, Node, Path, Offline UniRST binary-tree corpus conversion., :return: convert a dmrg file into a string., :return: find a index which separate the left and right child., :return: a binary tree., :param text_file_path: text contains sentence and paragraph information. :param… (+12 more)
 
-### Community 134 - "Storyboard Element"
-Cohesion: 0.22
-Nodes (21): Accessibility Feature, Animation Type, Audio Element, Baked Text In Image, Brand Element, Chart Type, Color Reference, Complex Slide (+13 more)
+### Community 134 - "SemanticResource"
+Cohesion: 0.15
+Nodes (13): $defs, MatchPolicy, ResourceStatus, SemanticResource, enum, type, enum, type (+5 more)
 
-### Community 135 - "agents"
-Cohesion: 0.08
-Nodes (24): agents, available_in, description, families, home_domain, id, label, orchestrated_by (+16 more)
+### Community 135 - "SourcePathAnchor"
+Cohesion: 0.15
+Nodes (13): SourcePathAnchor, enum, title, type, title, type, path, path_kind (+5 more)
 
-### Community 136 - "services"
-Cohesion: 0.08
-Nodes (24): domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain, scope (+16 more)
+### Community 136 - "SourcePathAnchor"
+Cohesion: 0.15
+Nodes (13): SourcePathAnchor, enum, title, type, title, type, path, path_kind (+5 more)
 
 ### Community 137 - "DataManager"
-Cohesion: 0.07
-Nodes (4): BinaryTree, Node, collect(), DataManager
+Cohesion: 0.08
+Nodes (19): BinaryTree, Node, Path, Offline DMRST binary-tree corpus conversion., :return: convert a dmrg file into a string., :return: find a index which separate the left and right child., :return: a binary tree., :param text_file_path: text contains sentence and paragraph information. :param… (+11 more)
 
 ### Community 138 - "required"
 Cohesion: 0.06
 Nodes (46): required, additionalProperties, required, title, type, additionalProperties, required, title (+38 more)
 
-### Community 139 - "test_model_backed.py"
-Cohesion: 0.17
-Nodes (23): load_dotenv(), _nearest_dotenv(), _analyse(), _assert_explicit_licence(), _expert_questions(), _objects(), _spans(), test_explicit_licence_assertion_accepts_optional_terminal_period() (+15 more)
+### Community 139 - ".from_model_release"
+Cohesion: 0.22
+Nodes (6): dtype, Any, device, Resolve canonical parser family from runtime contract string., Validate and load one immutable child of the production model store., Parse a document using predefined EDUs.
 
-### Community 140 - "Claim"
-Cohesion: 0.13
-Nodes (23): Anaphora, Before After Comparison, Bluf Hook, Call To Action, Claim, Contrast Hook, Deductive Reasoning, Evidence (+15 more)
+### Community 140 - "MpsMemorySampler"
+Cohesion: 0.22
+Nodes (4): test_disabled_mps_sampler_has_no_measurement_side_effect(), MpsMemorySampler, Measured MPS allocation sampling for independent experiment runs., Sample driver allocations during a run because PyTorch exposes no MPS peak API.
 
-### Community 141 - "erst/data.py"
+### Community 141 - "research/erst/contracts.py"
 Cohesion: 0.05
-Nodes (32): _candidate(), test_candidate_cache_round_trips_gold_fields_and_overlapping_signal_spans(), test_signal_aware_serialization_preserves_each_exact_overlapping_anchor(), test_text_only_serialization_contains_no_signal_or_structure_tokens(), GenerativeDecoderConfig, GraphAttentionConfig, HierarchicalAdapterConfig, AblationName (+24 more)
+Nodes (70): test_temperature_fit_is_deterministic_and_does_not_increase_development_nll(), IncompatibleAdapter, Synthetic measured incompatibility proving durable unsuccessful evidence., Explicit, non-logging repository environment loading for eRST operations., AblationAdapter, Frozen, model-neutral ablation definitions and evidence boundaries., Apply one frozen feature intervention before invoking the unchanged system…, apply_temperature() (+62 more)
 
 ### Community 142 - "calibration_metrics"
 Cohesion: 0.47
-Nodes (3): test_metrics_match_hand_computed_scores_and_keep_coverage_denominators(), test_metrics_reject_invalid_target_class(), calibration_metrics()
+Nodes (5): Hand-computed likelihood, Brier and selective-error checks., test_metrics_match_hand_computed_scores_and_keep_coverage_denominators(), test_metrics_reject_invalid_target_class(), calibration_metrics(), Any
 
-### Community 143 - "ObservedVocabularyAlignment"
-Cohesion: 0.16
-Nodes (15): observed_vocabulary_alignment(), ObservedVocabularyAlignment, technique_projection_identity(), walton_profile_alignment(), test_coarse_crosswalks_cover_each_trained_corpus_inventory(), test_observed_resolution_rejects_forgery(), test_pdtb_relation_types_cover_the_native_inventory(), test_rst_directional_labels_and_negative_attribution_remain_distinct() (+7 more)
+### Community 143 - "test_alignment.py"
+Cohesion: 0.13
+Nodes (34): align_payload(), model_validator, Self, StrictModel, A provider-owned payload field and its declared evidence relationship., Validate selected fields and preserve every eligible literal occurrence., SourceSelection, model_validator (+26 more)
 
-### Community 144 - "_analyst"
-Cohesion: 0.12
-Nodes (6): _analyst(), Finding, _raising(), _returning(), behaviour(), TestFailureAlgebra
+### Community 145 - "entries"
+Cohesion: 0.22
+Nodes (9): items, title, type, $ref, entries, resources, items, title (+1 more)
 
-### Community 145 - "editions"
-Cohesion: 0.08
-Nodes (23): domain, editions, description, edition_of, families, home_domain, id, label (+15 more)
-
-### Community 146 - "managed_services"
-Cohesion: 0.08
-Nodes (23): domain, managed_services, description, families, home_domain, id, label, serves_stage (+15 more)
+### Community 146 - "entries"
+Cohesion: 0.22
+Nodes (9): items, title, type, $ref, entries, resources, items, title (+1 more)
 
 ### Community 147 - "local_name"
-Cohesion: 0.13
-Nodes (12): local_path(), _parse_fixture(), _resolve_local_path(), test_first_sibling_is_index_1_not_omitted(), test_local_name_no_namespace_unchanged(), test_local_name_strips_default_namespace(), test_local_path_is_unique_within_document(), test_local_path_round_trips_via_index() (+4 more)
+Cohesion: 0.14
+Nodes (25): _Element, _ElementTree, local_name(), local_path(), Return a local-name canonical XPath for ``element``. Each step is…, Return the element's tag with any XML namespace stripped., _parse_fixture(), parametrize (+17 more)
 
-### Community 148 - "portfolio.linkml.yaml"
-Cohesion: 0.08
-Nodes (23): default_prefix, default_range, description, description, enums, SurfaceFormEnum, id, imports (+15 more)
+### Community 148 - "RstProvider"
+Cohesion: 0.05
+Nodes (32): ProductionIngestor, AnalysisPolicy, UnavailableReason, Can this configuration produce a parser? Checked without loading one., Validate the configured immutable release once without constructing a parser., The terms the loaded weights carry, read from the release manifest when there…, One configured ``rdam.rst`` parser, declared to the machine (006 data-model…, RstProvider (+24 more)
 
-### Community 149 - "slots"
-Cohesion: 0.08
-Nodes (24): close_mappings, description, inlined, multivalued, range, slot_uri, close_mappings, description (+16 more)
+### Community 149 - "concept-index.serialization.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
 
-### Community 150 - "ai_models"
-Cohesion: 0.09
-Nodes (22): ai_models, description, families, home_domain, id, label, status, terms (+14 more)
+### Community 150 - "concept-index.validation.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
 
 ### Community 151 - "properties"
 Cohesion: 0.08
 Nodes (24): additionalProperties, properties, required, title, type, AnalysisPolicy, $ref, default (+16 more)
 
-### Community 152 - "surfaces"
-Cohesion: 0.09
-Nodes (22): domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain, scope (+14 more)
+### Community 152 - "Code standards"
+Cohesion: 0.25
+Nodes (7): Code standards, Gotchas, Lint and type scope, Mode A — Modern Python (3.14 idioms, every file you touch), Mode B — retired, Test honesty, Tests
 
-### Community 153 - "permissible_values"
-Cohesion: 0.09
-Nodes (23): permissible_values, meaning, meaning, meaning, meaning, meaning, meaning, meaning (+15 more)
+### Community 153 - "production_boundary/conftest.py"
+Cohesion: 0.36
+Nodes (7): TempPathFactory, built_release_pair(), fixture_identity(), fixture, Path, Deterministic release-tool fixtures. The fixture project mirrors the real…, _run()
 
-### Community 154 - "broader"
-Cohesion: 0.09
-Nodes (23): description, domain, inlined, inverse, multivalued, range, slot_uri, description (+15 more)
+### Community 154 - "anchor_window_tokens"
+Cohesion: 0.33
+Nodes (6): default, maximum, minimum, title, type, anchor_window_tokens
 
-### Community 155 - "linker.py"
-Cohesion: 0.17
-Nodes (12): Candidate, LexicalEntry, SemanticResource, _coerce(), _compile_matcher(), _compiled_index(), _CompiledMatcher, _matches() (+4 more)
+### Community 155 - "properties"
+Cohesion: 0.05
+Nodes (46): items, title, type, additionalProperties, properties, required, title, type (+38 more)
 
-### Community 156 - "add_ons"
-Cohesion: 0.09
-Nodes (21): add_ons, add_on_to, description, home_domain, id, label, status, terms (+13 more)
+### Community 156 - "LexicalEntry"
+Cohesion: 0.33
+Nodes (6): LexicalEntry, additionalProperties, description, required, title, type
 
 ### Community 157 - "test_viewer_classes.py"
 Cohesion: 0.14
-Nodes (10): get_depth(), get_left_right(), Node, NodeMap, SEGMENT, _assign_html_relkinds(), test_minimal_multinuc_left_right_from_read(), test_rst_satellite_does_not_increment_graphical_depth() (+2 more)
+Nodes (17): NodeMap, get_depth(), get_left_right(), Node, RST tree node types and parent-chain attribute walks., EDU used by the segmenter, not by the structurer., Set graphical nesting depth of ``orig_node`` from the parent chain. RST…, Walk toward the root, expanding each ancestor's left/right EDU span. For EDUs… (+9 more)
 
-### Community 158 - "_meta"
-Cohesion: 0.10
-Nodes (20): domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain, scope (+12 more)
+### Community 158 - "anchor_window_tokens"
+Cohesion: 0.33
+Nodes (6): default, maximum, minimum, title, type, anchor_window_tokens
 
-### Community 159 - "permissible_values"
-Cohesion: 0.10
-Nodes (21): description, meaning, description, meaning, description, description, meaning, description (+13 more)
+### Community 159 - "LexicalEntry"
+Cohesion: 0.33
+Nodes (6): LexicalEntry, additionalProperties, description, required, title, type
 
-### Community 160 - "GenerativeDecoderAdapter"
-Cohesion: 0.12
-Nodes (5): test_generative_outcomes_are_unique_and_include_explicit_no_edge(), GenerativeDecoderAdapter, _label_tokens(), _load_peft(), _PeftApi
-
-### Community 161 - "top_concepts"
-Cohesion: 0.10
-Nodes (20): concepts, top_concepts, Taxonomy, description, inlined_as_list, multivalued, range, required (+12 more)
+### Community 161 - "EvidenceDetailPolicy"
+Cohesion: 0.29
+Nodes (6): MarkerRefinementMode, EvidenceDetailPolicy, enum, title, type, Path
 
 ### Community 162 - "properties"
 Cohesion: 0.05
@@ -2037,211 +2652,135 @@ Nodes (32): additionalProperties, pattern, type, pattern, type, type, type, type
 
 ### Community 164 - "read_rst"
 Cohesion: 0.16
-Nodes (13): _parse_rs3_dom(), read_relfile(), read_rst(), read_text(), _sanitize_relname(), test_read_relfile_parses_tab_rows(), test_read_rst_empty_body_returns_warning_html(), test_read_rst_happy_path_suffixes() (+5 more)
+Nodes (21): Document, _parse_rs3_dom(), NodeMap, Path, Utilities for parsing ``.rs3`` and text files into in-memory objects., Parse RS3 XML with a hardened lxml parser, then expose a minidom tree. Entity…, Parse an RS3 file into a representation that can be stored in SQLite.…, read_relfile() (+13 more)
 
 ### Community 165 - "required"
 Cohesion: 0.06
 Nodes (46): required, additionalProperties, required, title, type, additionalProperties, required, title (+38 more)
 
 ### Community 166 - "DoclangDocument"
-Cohesion: 0.21
-Nodes (9): DoclangDocument, ElementTextSlot, FragmentSelector, NonElementTailSlot, test_empty_and_whitespace_surfaces_have_no_fabricated_ranges(), test_archive_retains_original_document_bytes_and_tree_paths(), test_failed_validation_never_returns_partial_document(), test_fragment_resolution_preserves_unicode_whitespace_and_non_element_tails() (+1 more)
-
-### Community 167 - "protocol.py"
-Cohesion: 0.08
-Nodes (16): PrivateCorpusVerificationReceipt, ExperimentConfigurationBundle, build_experiment_protocol(), _environment_lock_sha256(), freeze_protocol_artifacts(), _sha256_json(), _source_tree_sha256(), _system_config_sha256() (+8 more)
-
-### Community 168 - "structure"
-Cohesion: 0.14
-Nodes (4): structure(), TestAttachment, TestDeliberationMap, TestLinkTyping
-
-### Community 169 - "modules"
-Cohesion: 0.11
-Nodes (19): bundle_id, modules, description, identifier, range, required, slot_uri, DomainBundle (+11 more)
-
-### Community 170 - "core.linkml.yaml"
-Cohesion: 0.11
-Nodes (17): description, description, default_prefix, default_range, enums, AuthoredPredicateEnum, FileAuthorityEnum, OntologyDomainEnum (+9 more)
-
-### Community 171 - "attributes"
-Cohesion: 0.11
-Nodes (18): domain, organisations, services, description, range, required, slot_uri, attributes (+10 more)
-
-### Community 172 - "permissible_values"
-Cohesion: 0.12
-Nodes (17): description, description, description, description, description, description, description, permissible_values (+9 more)
-
-### Community 173 - "WaltonAnalysis"
-Cohesion: 0.14
-Nodes (4): SchemeInstance, WaltonAnalysis, test_walton_empty_analysis_remains_valid(), TestPayload
-
-### Community 174 - "classes"
-Cohesion: 0.12
-Nodes (16): classes, IdentifiedThing, OntologyEntity, Versioned, abstract, class_uri, description, slots (+8 more)
-
-### Community 175 - "ModelReleaseError"
-Cohesion: 0.18
-Nodes (6): compatibility_redeclaration_path(), load_compatibility_redeclaration(), ModelReleaseError, peek_runtime_contract(), main(), redeclare_compatibility()
-
-### Community 176 - "The RST parser (`rdam.rst`)"
-Cohesion: 0.14
-Nodes (9): Device handling, Memory management, Mixed precision (`dtype=`), Output shape (`DiscourseUnit`), Production families, Shared base (`BasePredictor`), The RST parser (`rdam.rst`), Visualisation (`rdam.rst.rstviewer`) (+1 more)
-
-### Community 177 - "concepts/contracts.py"
-Cohesion: 0.19
-Nodes (5): ExcludedSurface, Mention, Surface, _fields(), inventory_surfaces()
-
-### Community 178 - "test_runner.py"
-Cohesion: 0.07
-Nodes (20): _data(), IncompatibleAdapter, _protocol(), _request(), SuccessfulAdapter, test_index_verification_detects_receipt_tampering(), test_runner_persists_success_and_failure_in_one_verified_index(), test_runner_rejects_data_from_a_different_split() (+12 more)
-
-### Community 179 - "permissible_values"
-Cohesion: 0.13
-Nodes (15): description, description, FileScopeEnum, description, permissible_values, description, description, distribution (+7 more)
-
-### Community 180 - "permissible_values"
-Cohesion: 0.13
-Nodes (15): description, meaning, description, meaning, enums, TermStatusEnum, TermTypeEnum, admitted (+7 more)
-
-### Community 181 - "distribution.yaml"
-Cohesion: 0.14
-Nodes (13): distribution_id, domain_bundle_paths, domain_module_paths, _meta, authority, file_id, governing_class, last_updated (+5 more)
-
-### Community 182 - "description"
 Cohesion: 0.15
-Nodes (14): description, multivalued, slot_uri, anti_examples, description, examples, description, required (+6 more)
+Nodes (17): FragmentSelector, DoclangDocument, ElementTextSlot, NonElementTailSlot, Request-local validated DocLang documents and exact private fragment selectors., Private decode context; its tree never enters public immutable results., DoclangArchiveMember, local_path_index() (+9 more)
 
-### Community 183 - "SemanticResource"
-Cohesion: 0.16
-Nodes (14): home_domain, SemanticResource, description, range, required, slot_uri, abstract, class_uri (+6 more)
+### Community 167 - "erst/data.py"
+Cohesion: 0.06
+Nodes (49): _candidate(), Focused system serialization and private candidate-cache contract tests., test_candidate_cache_round_trips_gold_fields_and_overlapping_signal_spans(), test_signal_aware_serialization_preserves_each_exact_overlapping_anchor(), test_text_only_serialization_contains_no_signal_or_structure_tokens(), CorpusLicenseClass, HardNegativeSamplingConfig, HardNegativeStrategy (+41 more)
 
-### Community 184 - "WaltonAnalysis"
-Cohesion: 0.20
-Nodes (6): _filled(), _premises(), _question_source(), _questions(), TestPremiseRoles, TestTheSchemeTable
+### Community 168 - "properties"
+Cohesion: 0.05
+Nodes (46): items, title, type, additionalProperties, properties, required, title, type (+38 more)
+
+### Community 169 - "contract_version"
+Cohesion: 0.40
+Nodes (5): const, default, title, type, contract_version
+
+### Community 170 - "contract_version"
+Cohesion: 0.40
+Nodes (5): const, default, title, type, contract_version
+
+### Community 171 - "Quickstart: ModernBERT Pure Transformer Discourse Parser"
+Cohesion: 0.40
+Nodes (5): Specification Quality Checklist: ModernBERT Pure Transformer Discourse Parser Release, Quickstart: ModernBERT Pure Transformer Discourse Parser, Research & Technical Background: ModernBERT Pure Transformer Discourse Parser Release, Feature Specification: ModernBERT Pure Transformer Discourse Parser Release & Operational Certification, Tasks: ModernBERT Pure Transformer Discourse Parser Release & Operational Certification
+
+### Community 172 - "collection_name"
+Cohesion: 0.50
+Nodes (4): minLength, title, type, collection_name
+
+### Community 173 - "properties"
+Cohesion: 0.05
+Nodes (44): title, type, $ref, additionalProperties, properties, required, title, type (+36 more)
+
+### Community 174 - "collection_name"
+Cohesion: 0.50
+Nodes (4): minLength, title, type, collection_name
+
+### Community 175 - "release.py"
+Cohesion: 0.07
+Nodes (62): Production-safe released-model contracts and loaders., canonical_json_bytes(), compatibility_redeclaration_path(), load_compatibility_redeclaration(), load_model_release(), ModelFile, ModelReleaseError, ModelReleaseManifest (+54 more)
+
+### Community 176 - "properties"
+Cohesion: 0.05
+Nodes (44): items, minItems, title, type, items, minItems, title, type (+36 more)
+
+### Community 177 - "properties"
+Cohesion: 0.05
+Nodes (44): items, minItems, title, type, items, minItems, title, type (+36 more)
+
+### Community 178 - "final_data.py"
+Cohesion: 0.05
+Nodes (62): PayloadT, _data(), _protocol(), Path, Execution-path tests for the isolated eRST technology-comparison harness., Synthetic system proving the shared runner without private corpus access., _request(), SuccessfulAdapter (+54 more)
+
+### Community 179 - "_set_failure_identity"
+Cohesion: 0.43
+Nodes (4): model_validator, Self, T, _set_failure_identity()
+
+### Community 180 - ".validate_char_spans"
+Cohesion: 0.29
+Nodes (4): field_validator, Require unique non-negative token identifiers without reordering., Require valid half-open anchors while retaining overlap and order., Require non-empty, unique raw relation labels.
+
+### Community 184 - "test_schemes.py"
+Cohesion: 0.11
+Nodes (14): _filled(), _premises(), parametrize, SchemeId, _question_source(), _questions(), The Walton scheme table and its validator, checked exhaustively over every…, Every premise role the scheme names, filled once. (+6 more)
 
 ### Community 185 - "benchmark_modernbert.py"
 Cohesion: 0.10
-Nodes (12): main(), run_benchmark(), align_edus_with_tokenizer(), build_target_matrices(), extract_edus_from_tree(), GUMDisNode, load_gum_splits(), map_nuclearity() (+4 more)
-
-### Community 186 - "knowledge.linkml.yaml"
-Cohesion: 0.14
-Nodes (13): default_prefix, default_range, id, imports, name, prefixes, coe, dcterms (+5 more)
-
-### Community 187 - "classes"
-Cohesion: 0.14
-Nodes (14): classes, Criterion, DomainModule, class_uri, description, is_a, slot_usage, class_uri (+6 more)
+Nodes (29): main(), Path, Genuine held-out benchmark runner for Pure Transformer ModernBERT on GUM 12.1.0., Run genuine benchmark on held-out GUM split using a promoted model release., run_benchmark(), align_edus_with_tokenizer(), build_target_matrices(), extract_edus_from_tree() (+21 more)
 
 ### Community 188 - "rdam.linkml.yaml"
 Cohesion: 0.15
 Nodes (12): default_prefix, default_range, description, id, imports, name, prefixes, coe (+4 more)
 
-### Community 189 - "SemanticEdge"
-Cohesion: 0.15
-Nodes (13): relationship_weight, SemanticEdge, description, range, required, slot_uri, unique_key_slots, attributes (+5 more)
+### Community 194 - "properties"
+Cohesion: 0.05
+Nodes (44): items, minItems, title, type, items, minItems, title, type (+36 more)
 
-### Community 190 - "Concept"
-Cohesion: 0.15
-Nodes (13): scope_note, Concept, attributes, class_uri, description, exact_mappings, is_a, slot_usage (+5 more)
+### Community 195 - "properties"
+Cohesion: 0.05
+Nodes (44): items, minItems, title, type, items, minItems, title, type (+36 more)
 
-### Community 191 - "Application"
-Cohesion: 0.15
-Nodes (13): class_uri, description, exact_mappings, is_a, rules, slots, Application, slot_conditions (+5 more)
-
-### Community 192 - "terminology.linkml.yaml"
-Cohesion: 0.15
-Nodes (12): classes, Term, default_prefix, default_range, description, id, imports, name (+4 more)
-
-### Community 193 - "attributes"
-Cohesion: 0.15
-Nodes (13): term_type, usage_note, valid_to, attributes, description, range, required, slot_uri (+5 more)
-
-### Community 195 - "buildTree"
-Cohesion: 0.21
-Nodes (7): buildTree(), buildTreeThiago(), checkcontent(), convert_parens_in_rst_tree_str(), createtext(), processtext(), _stack_int()
-
-### Community 196 - "_perform"
-Cohesion: 0.27
-Nodes (9): ConceptLinkRequest, load_request(), schema(), _perform(), _reject(), _response(), _safe_perform(), test_request_schema_and_duplicate_json_rejection() (+1 more)
-
-### Community 197 - "_meta"
-Cohesion: 0.17
-Nodes (11): bundle_id, domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain (+3 more)
-
-### Community 198 - "_meta"
-Cohesion: 0.17
-Nodes (11): bundle_id, domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain (+3 more)
-
-### Community 199 - "AggregateRequest"
-Cohesion: 0.03
-Nodes (46): Capability reports checked local prerequisites, AspicProvider, ExtractedAspicProposal, DerivationCompiler, DerivationSpec, FormalismChoice, SourceArtifactRef, StructuredInput (+38 more)
+### Community 196 - "properties"
+Cohesion: 0.05
+Nodes (44): title, type, $ref, additionalProperties, properties, required, title, type (+36 more)
 
 ### Community 200 - "properties"
 Cohesion: 0.07
 Nodes (30): items, title, type, title, type, $ref, properties, $ref (+22 more)
 
-### Community 201 - "_meta"
-Cohesion: 0.17
-Nodes (11): bundle_id, domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain (+3 more)
-
-### Community 202 - "_meta"
-Cohesion: 0.17
-Nodes (11): bundle_id, domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain (+3 more)
-
-### Community 203 - "_meta"
-Cohesion: 0.17
-Nodes (11): bundle_id, domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain (+3 more)
-
-### Community 204 - "_meta"
-Cohesion: 0.17
-Nodes (11): bundle_id, domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain (+3 more)
-
 ### Community 205 - "properties"
 Cohesion: 0.05
 Nodes (46): title, type, $ref, properties, items, title, type, $ref (+38 more)
 
-### Community 206 - "_meta"
-Cohesion: 0.17
-Nodes (11): bundle_id, domain, _meta, authority, file_id, governing_class, last_updated, ontology_domain (+3 more)
+### Community 207 - "$defs"
+Cohesion: 0.05
+Nodes (42): additionalProperties, description, required, title, type, enum, type, enum (+34 more)
 
-### Community 207 - "vocabulary.py"
-Cohesion: 0.17
-Nodes (16): _alignment(), capture_runtime_vocabulary(), _native_labels(), RuntimeRelationVocabulary, ConfiguredInventory, SelectedInventory, SharedClassifier, test_changed_runtime_table_rejects_captured_labels() (+8 more)
+### Community 209 - ".compile_derivation"
+Cohesion: 0.33
+Nodes (5): Any, DerivationCompiler, JsonValue, Technique, Compile upstream Wave-1 payloads into a Dung framework or raise `ProviderError`.
 
-### Community 208 - "close_match"
-Cohesion: 0.17
-Nodes (12): close_match, exact_match, source, description, multivalued, slot_uri, description, multivalued (+4 more)
+### Community 210 - "$defs"
+Cohesion: 0.05
+Nodes (42): additionalProperties, description, required, title, type, enum, type, enum (+34 more)
 
-### Community 209 - "entities"
-Cohesion: 0.17
-Nodes (12): entities, EntityCollection, description, inlined_as_list, multivalued, range, required, slot_uri (+4 more)
+### Community 211 - "SpeechActOutputItem"
+Cohesion: 0.50
+Nodes (3): model_validator, Self, SpeechActOutputItem
 
-### Community 211 - "permissible_values"
-Cohesion: 0.18
-Nodes (11): description, description, description, LifecycleStatusEnum, description, permissible_values, candidate, canonical (+3 more)
+### Community 212 - "smoke_iterate"
+Cohesion: 0.50
+Nodes (4): main(), Path, Smoke-iterate Docling JSON fixtures via docling-core's canonical walker. Phase…, smoke_iterate()
 
-### Community 212 - "Date"
-Cohesion: 0.18
-Nodes (11): base, description, typeof, uri, base, description, typeof, uri (+3 more)
+### Community 213 - "SemanticVersion"
+Cohesion: 0.50
+Nodes (4): SemanticVersion, description, title, type
 
-### Community 213 - "prefixes"
-Cohesion: 0.18
-Nodes (11): prefixes, coe, dcterms, linkml, owl, rdf, rdfs, sh (+3 more)
+### Community 215 - "properties"
+Cohesion: 0.06
+Nodes (42): $ref, anyOf, default, const, default, title, type, const (+34 more)
 
-### Community 214 - "criteria"
-Cohesion: 0.18
-Nodes (11): criteria, ScoringDimension, description, inlined_as_list, multivalued, range, slot_uri, attributes (+3 more)
-
-### Community 216 - "dimensions"
-Cohesion: 0.18
-Nodes (11): dimensions, ScoringModel, description, inlined_as_list, multivalued, range, slot_uri, attributes (+3 more)
-
-### Community 217 - "json"
-Cohesion: 0.03
-Nodes (56): create_parser(), _Once, _option(), _Parser, DungOutput, framework_identities(), FrameworkIdentity, FrameworkResolutionError (+48 more)
-
-### Community 218 - "StrictModel"
-Cohesion: 0.24
-Nodes (7): AspicAttackOutput, AspicEvidenceRecord, ConstructedArgumentOutput, DefeatFrameworkOutput, RationalityPostulatesOutput, AttackKind, NonEmpty
+### Community 217 - "Technique"
+Cohesion: 0.02
+Nodes (281): AggregateRequest, AnalysisReadingGuide, ArgumentParser, collections_abc, contextlib, contextvars, DerivationSpec, enum (+273 more)
 
 ### Community 219 - "bindings"
 Cohesion: 0.20
@@ -2251,33 +2790,21 @@ Nodes (9): bindings, accepts_structured_input, boundary, formalisms, framework, 
 Cohesion: 0.06
 Nodes (33): title, type, $ref, minimum, title, type, ErstCandidateDecision, $ref (+25 more)
 
-### Community 221 - "entity_collections"
-Cohesion: 0.20
-Nodes (9): domain, entity_collections, description, home_domain, id, label, last_updated, status (+1 more)
+### Community 224 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
 
-### Community 222 - "last_updated"
-Cohesion: 0.20
-Nodes (10): last_updated, KnowledgeArtifact, abstract, attributes, description, is_a, description, range (+2 more)
-
-### Community 223 - "Surface"
-Cohesion: 0.20
-Nodes (10): Surface, surface_form, surface_of, class_uri, description, required, is_a, required (+2 more)
-
-### Community 224 - "test_contract_base.py"
-Cohesion: 0.31
-Nodes (7): _Container, _Nested, test_contract_models_are_recursive_strict_frozen_and_closed(), test_contract_models_reject_non_finite_numbers(), test_exact_coverage_preserves_empty_and_complete_domains(), test_semantic_version_requires_normalized_release_triplet(), test_sha256_identity_has_one_unambiguous_object_form()
-
-### Community 225 - "README.md"
-Cohesion: 0.25
-Nodes (6): Production API Contract, isanlp_rst.production, Docling JSON Fixtures README, Entry points, Experimental eRST, Offline Workbench README
+### Community 225 - "docs/README.md"
+Cohesion: 0.08
+Nodes (25): Downstream example, Shared concept linking, Verification scope, Wire interfaces, Production API Contract, Production Package and Offline Workbench Boundary, Production Source Ingest, Raw-Material Ingest and Preparation: Forensic Analysis (+17 more)
 
 ### Community 226 - "properties"
 Cohesion: 0.08
 Nodes (24): $ref, additionalProperties, properties, required, title, type, CompositeAnalysisIdentity, $ref (+16 more)
 
-### Community 227 - "test_viewer_hardening.py"
-Cohesion: 0.47
-Nodes (6): test_rs3tohtml_escapes_basename_in_header(), test_rs3tohtml_escapes_edu_text(), test_rs3tohtml_relation_options_use_json_entries(), test_temporary_db_unlinks_and_requires_context(), test_xxe_external_entity_does_not_expand(), _write_rs3()
+### Community 227 - "rs3tohtml"
+Cohesion: 0.25
+Nodes (15): rs3tohtml(), Path, Create a private SQLite file for one render; unlink in ``finally``., _resolve_dbpath(), setup_db(), temporary_db(), test_viewer_raises_the_rs3_import_failure(), Path (+7 more)
 
 ### Community 228 - "framework"
 Cohesion: 0.22
@@ -2289,31 +2816,11 @@ Nodes (9): scheme, ProviderBindings, attributes, class_uri, description, tree_ro
 
 ### Community 230 - "ParserInput"
 Cohesion: 0.06
-Nodes (23): _extras(), ParserInput, dump_relation_inventory(), _ensure_parent_module(), ensure_unirst_module_aliases(), import_relation_table_from_legacy_pickle(), load_relation_inventory_json(), relation_table_from_json_obj() (+15 more)
-
-### Community 231 - "permissible_values"
-Cohesion: 0.22
-Nodes (9): RelationshipWeightEnum, description, description, expected, optional, required, description, permissible_values (+1 more)
-
-### Community 232 - "OntologyDistribution"
-Cohesion: 0.22
-Nodes (9): classes, OntologyDistribution, required, class_uri, description, mixins, slot_usage, slots (+1 more)
-
-### Community 233 - "BusinessUnit"
-Cohesion: 0.22
-Nodes (9): class_uri, description, exact_mappings, is_a, slot_usage, slots, BusinessUnit, unit_of (+1 more)
-
-### Community 234 - "ibis/test_output.py"
-Cohesion: 0.36
-Nodes (6): isolated_issue(), test_derivation_requires_reference(), test_invented_position_rejected(), test_native_round_trip(), test_omitted_issue_evidence_rejected(), test_supplied_input_cannot_claim_derivation()
+Nodes (40): _extras(), ParserInput, Any, Path, Minimal legacy parser-input leaf record required for safe model inventory…, Mutable historical parser record with no corpus or training behavior., Return the parser's exact limiting-unit count for this materialized input., Unpickler that only reconstructs inventory leaf types + containers.… (+32 more)
 
 ### Community 235 - "Production API Contract Specification"
 Cohesion: 0.16
 Nodes (14): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: World-Class Production API Contract, Decision-Complete Analysis Evidence Contract, Public Surface and Durable Distribution Contract, Serialization and Compatibility Contract (+6 more)
-
-### Community 236 - "_compatible_parser_release"
-Cohesion: 0.25
-Nodes (4): _compatible_parser_release(), test_real_parser_concurrency_matches_sequential_trees(), analyse(), _tree_bytes()
 
 ### Community 237 - "required"
 Cohesion: 0.14
@@ -2323,73 +2830,41 @@ Nodes (14): architecture, compatibility_range, created_at, files, model_task, pr
 Cohesion: 0.11
 Nodes (18): Clarification coverage, Currency and remaining implementation checks, D10 — Prove equivalent requests, not erased differences, D11 — AI-ready by default, without a second analytical formalism, D12 — Fix native integrity rather than preserve known weaknesses, D13 — Tests and cold critique, without evaluation machinery, D1 — One machine, not a new service layer, D2 — Configuration outside analysis requests (+10 more)
 
-### Community 239 - "buildNodes"
-Cohesion: 0.28
-Nodes (6): buildNodes(), findNode(), getEduCoveredChildren(), renameDus(), _require_int_id(), updateParentNodes()
+### Community 239 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
 
 ### Community 240 - "Parser Attention Tests"
 Cohesion: 0.16
-Nodes (4): _DistinctBiMpmEncoder, _RecordingDefaultEncoder, test_combined_classifier_uses_distinct_right_representation(), test_pointer_attention_preserves_matmul_scores()
+Nodes (12): _DistinctBiMpmEncoder, Any, Module, parametrize, Tensor, Regression tests for shared DMRST and UniRST attention/classifier mathematics., The MPS-safe elementwise reduction remains mathematically equivalent to GEMV., Capture the representations passed by the combined classifier. (+4 more)
 
 ### Community 241 - "read_release_identity"
-Cohesion: 0.21
-Nodes (7): test_invalid_project_version_is_rejected(), test_project_import_identity_must_exactly_match_the_wheel_package(), test_repository_release_identity_is_exactly_the_declared_rdam_root(), test_safe_src_layout_derives_the_import_package_from_the_final_component(), test_unsafe_or_empty_wheel_package_path_is_rejected(), _write_project(), read_release_identity()
+Cohesion: 0.19
+Nodes (15): parametrize, Path, The release identity is derived once and rejects contradictory project metadata., test_invalid_project_version_is_rejected(), test_project_import_identity_must_exactly_match_the_wheel_package(), test_repository_release_identity_is_exactly_the_declared_rdam_root(), test_safe_src_layout_derives_the_import_package_from_the_final_component(), test_unsafe_or_empty_wheel_package_path_is_rejected() (+7 more)
 
 ### Community 242 - "attributes"
 Cohesion: 0.25
 Nodes (8): description, range, required, accepts_structured_input, ProviderBinding, attributes, class_uri, description
 
-### Community 243 - "edges"
-Cohesion: 0.25
-Nodes (8): edges, description, home_domain, object_id, predicate, relationship_weight, statement_id, subject_id
-
-### Community 244 - "research/erst/contracts.py"
+### Community 244 - "research/erst/__init__.py"
 Cohesion: 0.05
-Nodes (48): _protocol(), _receipt(), _resource(), test_bootstrap_and_holm_are_reproducible_and_content_hashed(), test_disabled_mps_sampler_has_no_measurement_side_effect(), test_screening_completeness_requires_every_system_seed_disposition(), _protocol(), _resource_evidence() (+40 more)
-
-### Community 245 - "entities"
-Cohesion: 0.25
-Nodes (8): description, edges, examples, home_domain, id, label, status, entities
+Nodes (50): _protocol(), Contract tests for executable eRST comparison evidence., _resource_evidence(), _successful_run(), test_champion_manifest_rejects_test_access(), test_failed_run_retains_typed_evidence_without_blocking_other_systems(), test_protocol_is_complete_hashed_and_test_isolated(), test_protocol_rejects_silently_dropped_system() (+42 more)
 
 ### Community 246 - "properties"
 Cohesion: 0.07
 Nodes (29): title, type, $ref, additionalProperties, properties, required, title, type (+21 more)
 
-### Community 247 - "_meta"
-Cohesion: 0.25
-Nodes (8): _meta, authority, file_id, governing_class, last_updated, ontology_domain, scope, title
+### Community 248 - "CrossEncoderAdapter"
+Cohesion: 0.18
+Nodes (8): _CrossEncoder, CrossEncoderAdapter, device, Path, PreTrainedModel, PreTrainedTokenizerBase, Tensor, Fine-tune and evaluate one pinned cross-encoder through the shared runner.
 
-### Community 249 - "taxonomies"
-Cohesion: 0.25
-Nodes (8): taxonomies, description, home_domain, id, label, last_updated, status, top_concepts
-
-### Community 250 - "distribution.linkml.yaml"
-Cohesion: 0.25
-Nodes (7): default_prefix, default_range, id, imports, name, title, version
-
-### Community 251 - "AddOn"
-Cohesion: 0.25
-Nodes (8): required, class_uri, description, is_a, slot_usage, slots, AddOn, add_on_to
-
-### Community 252 - "concepts/serialization.py"
-Cohesion: 0.13
-Nodes (15): main(), native_locations(), records(), export_jsonl(), load_result(), mention_records(), MentionExport, serialize() (+7 more)
-
-### Community 253 - "rst_baseline.py"
+### Community 252 - "properties"
 Cohesion: 0.05
-Nodes (47): records(), test_corrected_to_corrected_comparison_does_not_reapply_repairs(), test_corrections_reject_deliberate_corruption(), test_corrections_require_the_materialized_source(), test_json_absence_and_types_cannot_hide_differences(), test_real_comparison_cli_checks_contents_and_preserves_baseline(), test_real_corrections_are_explained_but_not_called_equivalent(), _difference_class() (+39 more)
+Nodes (41): items, title, type, additionalProperties, properties, required, title, type (+33 more)
 
-### Community 254 - "Agent"
-Cohesion: 0.25
-Nodes (8): class_uri, description, is_a, slot_usage, slots, required, Agent, available_in
-
-### Community 255 - "Capability"
-Cohesion: 0.25
-Nodes (8): class_uri, description, is_a, required, slot_usage, slots, Capability, capability_of
-
-### Community 256 - "Edition"
-Cohesion: 0.25
-Nodes (8): Edition, class_uri, description, is_a, required, slot_usage, slots, edition_of
+### Community 253 - "diff_records"
+Cohesion: 0.18
+Nodes (21): _difference_class(), Path, Migration preservation evidence remains explicit and analytically strict., test_baseline_requires_an_explicit_model_instead_of_a_retired_default(), test_capacity_rename_does_not_allow_both_names(), test_capacity_rename_does_not_apply_to_other_fields(), test_capacity_rename_never_hides_changed_limits(), test_comparator_classifies_declared_derived_digest_changes() (+13 more)
 
 ### Community 257 - "ComponentFileIdentity"
 Cohesion: 0.11
@@ -2399,29 +2874,33 @@ Nodes (18): additionalProperties, properties, required, title, type, ComponentFi
 Cohesion: 0.13
 Nodes (15): Specification Quality Checklist: isanlp-rst 4.0.0 Forensic Remediation, eRST Completion Bundle Contract, Corpus and Experiment Contract, Format Projection Contract, 001 Forensic Remediation Implementation Plan, Verification Quickstart, Research and Authority Ledger, 001 Forensic Remediation Specification (+7 more)
 
-### Community 260 - "FrameworkStage"
-Cohesion: 0.25
-Nodes (8): FrameworkStage, class_uri, description, is_a, slot_usage, slots, stage_of, required
-
-### Community 262 - "production_boundary/conftest.py"
-Cohesion: 0.36
-Nodes (3): built_release_pair(), fixture_identity(), _run()
+### Community 261 - "DMRST Experiment Runner"
+Cohesion: 0.23
+Nodes (5): range, MultipleRunnerGeneral, Offline DMRST multiple-run experiment orchestration. For monolingual…, Running training with second language injection of ``mixed`` %, :param corpus: (str) - 'GUM' or 'RST-DT' :param lang: (str) - 'en' or 'ru'…
 
 ### Community 263 - "StrictModel"
-Cohesion: 0.04
-Nodes (33): AspicOutput, AlgorithmOutput, ExtensionOutput, DungInput, DerivedFromRecord, ExtractionRecord, PdtbOutput, SdrtOutput (+25 more)
+Cohesion: 0.08
+Nodes (33): DerivedFromRecord, ExtractionRecord, StrictModel, PdtbOutput, model_validator, Self, StrictModel, Persisted PDTB output includes the actual derived relation/type counts. (+25 more)
+
+### Community 264 - "contract_version"
+Cohesion: 0.05
+Nodes (41): additionalProperties, properties, required, title, type, additionalProperties, properties, required (+33 more)
 
 ### Community 266 - "required"
 Cohesion: 0.15
 Nodes (13): sha256, items, minItems, type, required, type, path, role (+5 more)
 
-### Community 268 - "BasePredictor"
-Cohesion: 0.09
-Nodes (22): BasePredictor, test_char_spans_to_token_breaks_aligned(), test_char_spans_to_token_breaks_empty_offsets_raises(), test_char_spans_to_token_breaks_incomplete_coverage_raises(), test_char_spans_to_token_breaks_misaligned_raises(), test_compute_edu_char_spans_basic(), test_compute_edu_char_spans_single(), test_divide_chunks_basic() (+14 more)
+### Community 267 - "Adversarial Discriminator Model"
+Cohesion: 0.20
+Nodes (6): Discriminator, device, Module, Tensor, (batch, colors, height, width) (5, 3, 20, 80) 16 * 19 * 1 = 304, Discriminator used in adversarial learning; Based on the code from…
 
-### Community 270 - "concepts"
-Cohesion: 0.29
-Nodes (7): description, home_domain, id, in_scheme, label, status, concepts
+### Community 268 - "BasePredictor"
+Cohesion: 0.03
+Nodes (125): AbstractContextManager, Output shape (`DiscourseUnit`), Shared base (`BasePredictor`), BasePredictor, _OffsetToken, Any, device, dtype (+117 more)
+
+### Community 269 - "PromotionReceipt"
+Cohesion: 0.25
+Nodes (6): PromotionReceipt, BaseModel, model_validator, Self, Offline-only contracts for local model-promotion workflows., Immutable evidence for one successful local promotion.
 
 ### Community 271 - "020-doclang-decoder/plan.md"
 Cohesion: 0.21
@@ -2437,23 +2916,15 @@ Nodes (46): title, type, $ref, properties, items, title, type, $ref (+38 more)
 
 ### Community 274 - "Repository Cleanup Script"
 Cohesion: 0.31
-Nodes (6): collect_junk(), _display(), is_junk_dir(), is_junk_file(), main(), remove_junk()
+Nodes (10): collect_junk(), _display(), is_junk_dir(), is_junk_file(), main(), Path, Remove regenerable junk from the repo: bytecode, tool caches, temp files. Does…, Delete ``paths``. Returns the number of paths acted on. (+2 more)
 
 ### Community 275 - "ArchiveMemberAnchor"
 Cohesion: 0.10
 Nodes (20): additionalProperties, properties, required, title, type, ArchiveMemberAnchor, ItemAnchor, additionalProperties (+12 more)
 
-### Community 276 - "domain_bundle_paths"
-Cohesion: 0.29
-Nodes (7): domain_bundle_paths, description, maximum_cardinality, minimum_cardinality, multivalued, required, slot_uri
-
-### Community 278 - "implements_category"
-Cohesion: 0.29
-Nodes (7): close_mappings, description, inlined, multivalued, range, slot_uri, implements_category
-
-### Community 279 - "PartialDate"
-Cohesion: 0.29
-Nodes (7): base, description, pattern, typeof, uri, types, PartialDate
+### Community 277 - "UniRST Experiment Runner"
+Cohesion: 0.25
+Nodes (4): MultipleRunnerGeneral, Offline UniRST multiple-run experiment orchestration. For monolingual…, Running training with second language injection of ``mixed`` %, :param corpora: corpus names, e.g. ['GUM'] or ['RST-DT'] :param lang: 'en' or…
 
 ### Community 280 - "Implementation notes — 2026-09-04"
 Cohesion: 0.07
@@ -2463,41 +2934,37 @@ Nodes (27): Dependencies and execution order, Documentation and distributable co
 Cohesion: 0.05
 Nodes (42): description, enum, title, type, enum, title, type, enum (+34 more)
 
-### Community 282 - "prefixes"
-Cohesion: 0.29
-Nodes (7): prefixes, coe, dcterms, lexinfo, linkml, skos, skosxl
+### Community 283 - "DocLang Fixture Parity Tests"
+Cohesion: 0.20
+Nodes (6): BaseModel, parametrize, Path, Pinned upstream parity and locked-validator tests for DocLang fixtures., test_locked_doclang_validator_accepts_every_upstream_fixture(), _UpstreamManifest
 
 ### Community 284 - "Cleanup Script Tests"
 Cohesion: 0.29
-Nodes (5): test_collects_bytecode_caches_and_temp_not_source(), test_dry_run_does_not_delete(), test_remove_deletes_junk_keeps_source_and_protected(), test_skips_git_and_pixi_trees(), tree()
+Nodes (8): fixture, Path, Unit tests for ``scripts/cleanup.py`` (stdlib-only project cleaner)., test_collects_bytecode_caches_and_temp_not_source(), test_dry_run_does_not_delete(), test_remove_deletes_junk_keeps_source_and_protected(), test_skips_git_and_pixi_trees(), tree()
 
 ### Community 285 - "Offline Command Smoke Tests"
 Cohesion: 0.29
-Nodes (4): CommandCategory, CommandReceipt, _execute(), main()
+Nodes (9): CommandCategory, CommandReceipt, _execute(), main(), BaseModel, Path, Execute every retained offline command to a bounded, evidence-bearing start., One canonical retained command and its bounded-start contract. (+1 more)
 
-### Community 287 - "Central Configs Canonical Ontology Schema"
-Cohesion: 0.43
-Nodes (8): Central Configs Canonical Ontology Schema, Core Semantic Model Schema, Distribution Manifest Model Schema, Knowledge Model Schema, Canonical Relation Hierarchy Schema, Terminology and Sense Model Schema, RST and eRST Discourse Schema, Forensic Remediation Data Model Specification
-
-### Community 288 - "Prompt Engineering Techniques"
-Cohesion: 0.22
-Nodes (9): Chain Of Thought, Decomposition, Few Shot, Prompt Pattern, ReAct, Role Prompting, Self Consistency, Tree Of Thought (+1 more)
-
-### Community 289 - "RAG Pipeline Stages"
-Cohesion: 0.22
-Nodes (9): Chunking, Embedding, Evaluation, Generation, Indexing, Ingestion, Pipeline Stage, Reranking (+1 more)
+### Community 286 - "contract_version"
+Cohesion: 0.05
+Nodes (41): additionalProperties, properties, required, title, type, additionalProperties, properties, required (+33 more)
 
 ### Community 290 - "User Scenarios & Testing *(mandatory)*"
 Cohesion: 0.12
 Nodes (16): Assumptions, Clarifications, Edge Cases, Feature Specification: Unified Machine Interfaces, Functional Requirements, Key Entities, Measurable Outcomes, Requirements *(mandatory)* (+8 more)
 
-### Community 292 - "test_native_output_counts.py"
-Cohesion: 0.43
-Nodes (3): extraction(), test_pdtb_rejects_false_counts_even_for_empty_analysis(), test_toulmin_rejects_contradictory_saved_layouts()
+### Community 291 - "$defs"
+Cohesion: 0.05
+Nodes (40): enum, title, type, enum, title, type, enum, title (+32 more)
 
-### Community 293 - "GoldSetManifest"
-Cohesion: 0.10
-Nodes (16): test_baseline_runner_requires_full_immutable_commit(), test_candidate_runner_rejects_invalid_determinism_run_counts(), test_candidate_runner_rejects_nonexistent_wheel(), test_candidate_runner_requires_model_store_and_release_as_one_identity(), verify_gold_set(), inspect_candidate_outputs(), inspection_status_by_id(), _segments_reconstruct() (+8 more)
+### Community 292 - "properties"
+Cohesion: 0.05
+Nodes (41): items, title, type, additionalProperties, properties, required, title, type (+33 more)
+
+### Community 293 - "test_candidate_runner.py"
+Cohesion: 0.16
+Nodes (14): MonkeyPatch, parametrize, Isolated wheel runner fails closed before executing ambiguous candidates., test_baseline_runner_requires_full_immutable_commit(), test_candidate_runner_rejects_invalid_determinism_run_counts(), test_candidate_runner_rejects_nonexistent_wheel(), test_candidate_runner_requires_model_store_and_release_as_one_identity(), _git() (+6 more)
 
 ### Community 294 - "Feature Specification: Universal Source Pipeline"
 Cohesion: 0.27
@@ -2507,9 +2974,9 @@ Nodes (12): Specification Quality Checklist: Universal Source Pipeline, Contract
 Cohesion: 0.40
 Nodes (5): Cold-critic review, Completion, Contract: Analytical Quality Testing, Required checks, Scope
 
-### Community 296 - "test_clean_install_v2.py"
-Cohesion: 0.27
-Nodes (5): _run(), test_fixture_wheel_installs_without_checkout_or_system_site_packages(), test_full_clean_install_requires_explicit_release_id(), test_full_clean_install_runs_inference_in_core_and_formats(), test_installed_acceptance_builds_a_valid_doclang_opc_archive()
+### Community 296 - "byte_length"
+Cohesion: 0.22
+Nodes (9): $ref, minimum, title, type, SourceSummary, byte_identity, byte_length, additionalProperties (+1 more)
 
 ### Community 297 - "bindings"
 Cohesion: 0.33
@@ -2527,81 +2994,25 @@ Nodes (6): formalism_id, description, identifier, pattern, range, required
 Cohesion: 0.18
 Nodes (10): Documentation and graph maintenance, Feature 017 implementation verification, Full-file review scope, Historical baseline conflict: T029 / SC-010, Live end-to-end proof, Owner-approved comparison repair, Quickstart scenario results, Status (+2 more)
 
-### Community 301 - "terms"
-Cohesion: 0.47
-Nodes (6): terms, terms, literal, term_status, term_type, usage_note
-
-### Community 302 - "file_id"
-Cohesion: 0.33
-Nodes (6): file_id, description, identifier, range, required, slot_uri
-
-### Community 303 - "Hero"
-Cohesion: 0.73
-Nodes (6): Ally, Herald, Hero, Mentor, Shapeshifter, Villain
-
-### Community 304 - "LLM Evaluation Metrics"
-Cohesion: 0.25
-Nodes (8): Coherence, Completeness, Evaluation Dimension, Factual Accuracy, Hallucination Rate, Latency, Relevance, Style Alignment
-
-### Community 305 - "Rhetorical and Structural Devices"
-Cohesion: 0.25
-Nodes (8): device_family, Amplification, Aristotelian Appeals, Balance, Comparison, Engagement, Repetition, Structural
-
-### Community 306 - "id"
-Cohesion: 0.33
-Nodes (6): description, identifier, range, required, slot_uri, id
-
-### Community 307 - "distribution_id"
-Cohesion: 0.33
-Nodes (6): distribution_id, description, identifier, range, required, slot_uri
-
-### Community 308 - "namespace"
-Cohesion: 0.33
-Nodes (6): description, range, required, slot_uri, slots, namespace
-
-### Community 309 - "add_ons"
-Cohesion: 0.33
-Nodes (6): description, inlined_as_list, multivalued, range, slot_uri, add_ons
-
-### Community 310 - "agents"
-Cohesion: 0.33
-Nodes (6): description, inlined_as_list, multivalued, range, slot_uri, agents
-
 ### Community 311 - "properties"
 Cohesion: 0.06
 Nodes (37): properties, items, title, type, type, items, minItems, title (+29 more)
 
-### Community 312 - "ai_models"
-Cohesion: 0.33
-Nodes (6): description, inlined_as_list, multivalued, range, slot_uri, ai_models
-
-### Community 313 - "causal_failure"
-Cohesion: 0.11
-Nodes (16): test_missing_report_cannot_establish_a_kill(), test_only_real_test_call_failure_kills_mutant(), test_timeout_is_runner_failure_not_a_mutation_kill(), test_missing_report_is_not_a_killed_mutant(), test_only_causal_failures_count_as_killed(), _apply_mutant(), _copy_test_workspace(), main() (+8 more)
+### Community 313 - "shared_runtime_mutation_test.py"
+Cohesion: 0.10
+Nodes (30): os, shutil, parametrize, Path, Real pytest subprocesses distinguish causal failures from broken test…, test_missing_report_cannot_establish_a_kill(), test_only_real_test_call_failure_kills_mutant(), test_timeout_is_runner_failure_not_a_mutation_kill() (+22 more)
 
 ### Community 314 - "CentralExperimentLedger"
 Cohesion: 0.16
-Nodes (4): test_central_ledger_create_and_record(), test_central_ledger_multiple_runs(), CentralExperimentLedger, ExperimentRecord
+Nodes (13): Path, test_central_ledger_create_and_record(), test_central_ledger_multiple_runs(), CentralExperimentLedger, ExperimentRecord, Any, Path, Centralized, append-only experiment registry and audit ledger for discourse… (+5 more)
 
 ### Community 315 - "properties"
 Cohesion: 0.06
 Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
 
-### Community 316 - "AI and LLM Methods"
-Cohesion: 0.29
-Nodes (7): Agentic, CAG, Fine Tuning, AI Method Type, PDL Declarative, Prompt Engineering, RAG
-
-### Community 317 - "Toulmin Argumentation Model"
-Cohesion: 0.29
-Nodes (7): Argument Role, Backing, Claim, Grounds, Qualifier, Rebuttal, Warrant
-
 ### Community 318 - "ArchiveMemberAnchor"
 Cohesion: 0.11
 Nodes (19): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+11 more)
-
-### Community 319 - "applications"
-Cohesion: 0.33
-Nodes (6): description, inlined_as_list, multivalued, range, slot_uri, applications
 
 ### Community 320 - "Toulmin Provider Specifications"
 Cohesion: 0.43
@@ -2627,33 +3038,29 @@ Nodes (9): Constitution check, Implementation Plan: Consolidate DocLang decoding
 Cohesion: 0.08
 Nodes (27): anyOf, anyOf, properties, properties, anyOf, $ref, anyOf, anyOf (+19 more)
 
-### Community 326 - "docling_rst_quality_check.py"
-Cohesion: 0.15
-Nodes (9): main(), tree_signature(), collect_leaves(), collect_relations(), extract_picture_description(), harvest_body_text(), main(), quality_check() (+1 more)
+### Community 326 - "byte_length"
+Cohesion: 0.22
+Nodes (9): $ref, minimum, title, type, SourceSummary, byte_identity, byte_length, additionalProperties (+1 more)
 
 ### Community 327 - "EDU Document Parsing"
 Cohesion: 0.29
-Nodes (3): findFile(), getDisFiles(), readEduDoc()
+Nodes (7): findFile(), getDisFiles(), Any, Path, Retrieve the edu file corresponding to the basename_dis, Read information from the edu file, and fill the fields tokendict and edudict…, readEduDoc()
 
 ### Community 328 - "parseXML"
 Cohesion: 0.22
-Nodes (4): getRelationsType(), parseXML(), readRS3Annotation(), writeEdus()
+Nodes (9): getRelationsType(), parseXML(), _Element, _ElementTree, Path, a group's ``type`` attribute tells us whether the group node represents a span…, Write files similar to the .edus files in the RST DT for the other RST…, readRS3Annotation() (+1 more)
 
-### Community 329 - "business_units"
-Cohesion: 0.33
-Nodes (6): business_units, description, inlined_as_list, multivalued, range, slot_uri
+### Community 330 - "DMRST Configuration Reader"
+Cohesion: 0.29
+Nodes (4): ConfigReader, Any, Path, Offline DMRST training configuration reader.
 
-### Community 332 - "Discourse Relation Senses"
-Cohesion: 0.33
-Nodes (6): Discourse Relation Sense, Cause, Concession, Condition, Contrast, Instantiation
+### Community 331 - "UniRST Configuration Reader"
+Cohesion: 0.29
+Nodes (4): ConfigReader, Any, Path, Offline UniRST training configuration reader.
 
 ### Community 333 - "test_production_boundary.py"
-Cohesion: 0.12
-Nodes (24): test_ambiguous_relevant_path_fails_closed(), test_artifact_dependencies_are_read_from_metadata(), test_commit_export_build_cannot_package_stale_build_tree(), test_direct_production_to_offline_import_reports_complete_path(), test_forbidden_sdist_member_is_named(), test_forbidden_wheel_member_is_named(), test_foreign_import_root_in_a_wheel_is_outside_the_boundary(), test_gate_does_not_parse_unrelated_workbench_sources() (+16 more)
-
-### Community 334 - "capabilities"
-Cohesion: 0.33
-Nodes (6): capabilities, description, inlined_as_list, multivalued, range, slot_uri
+Cohesion: 0.14
+Nodes (28): parametrize, Path, Causal tests for the production/offline boundary authority., Only production syntax belongs to the production import-closure gate., D5 check (b): production wheels may carry the machine's import root and nothing…, Only ``rdam/`` may be shipped; a second top-level import name is a boundary…, D5 check (a) for the machine package itself: the walk from ``rdam`` never…, test_ambiguous_relevant_path_fails_closed() (+20 more)
 
 ### Community 335 - "ExactCoverage"
 Cohesion: 0.05
@@ -2661,11 +3068,7 @@ Nodes (44): additionalProperties, properties, required, title, type, minimum, ti
 
 ### Community 336 - "Markdown Linting Script"
 Cohesion: 0.53
-Nodes (4): _is_approved_exclusion(), linted_markdown(), main(), _repository_markdown()
-
-### Community 337 - "editions"
-Cohesion: 0.33
-Nodes (6): editions, description, inlined_as_list, multivalued, range, slot_uri
+Nodes (5): _is_approved_exclusion(), linted_markdown(), main(), Lint every repository Markdown file outside the declared exclusion classes. The…, _repository_markdown()
 
 ### Community 338 - "Discourse Parser Components"
 Cohesion: 0.40
@@ -2676,128 +3079,32 @@ Cohesion: 0.40
 Nodes (6): Contract: IBIS Native Result, Data Model: IBIS Provider, Implementation Plan: IBIS Provider, Research: IBIS Provider, Feature Specification: IBIS Provider, Tasks: IBIS Provider
 
 ### Community 340 - "test_public_api.py"
-Cohesion: 0.28
-Nodes (3): _module_exists(), test_obsolete_envelopes_and_entry_modules_are_absent(), test_obsolete_public_entry_points_are_absent()
+Cohesion: 0.38
+Nodes (5): importlib_util, _module_exists(), The canonical ingest package is the only production source-ingest surface., test_obsolete_envelopes_and_entry_modules_are_absent(), test_obsolete_public_entry_points_are_absent()
 
-### Community 341 - "entity_collections"
+### Community 342 - "test_relations.py"
+Cohesion: 0.07
+Nodes (50): PdtbArgument, PdtbRelation, Native Penn Discourse Treebank 3.0 analysis., _ClosedModel, PdtbAnalysis, PdtbArgument, PdtbRelation, PdtbSense (+42 more)
+
+### Community 344 - "Nucleus and Relation Tests"
 Cohesion: 0.33
-Nodes (6): entity_collections, description, inlined_as_list, multivalued, range, slot_uri
+Nodes (3): parametrize, DMRST ``nucs_and_rels`` must match UniRST ``rpartition`` semantics., test_dmrst_nucs_and_rels_matches_unirst()
 
-### Community 342 - "pdtb/relations.py"
-Cohesion: 0.08
-Nodes (10): _ClosedModel, ExactText, NonEmpty, PdtbArgument, PdtbRelation, RelationError, RelationId, TextSpan (+2 more)
-
-### Community 343 - "framework_stages"
-Cohesion: 0.33
-Nodes (6): framework_stages, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 345 - "frameworks"
-Cohesion: 0.33
-Nodes (6): frameworks, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 346 - "industry_categories"
-Cohesion: 0.33
-Nodes (6): industry_categories, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 347 - "Information Retrieval Strategies"
-Cohesion: 0.40
-Nodes (5): Dense Retrieval, Hybrid Retrieval, Multi Hop, Retrieval Strategy, Sparse Retrieval
-
-### Community 348 - "Aristotelian Rhetorical Appeals"
-Cohesion: 0.40
-Nodes (5): aristotelian_appeal, Ethos, Kairos, Logos, Pathos
-
-### Community 349 - "Power Level Classifications"
-Cohesion: 0.40
-Nodes (5): power_level, High, Low, Medium, Very High
-
-### Community 350 - "DiscourseSignal"
-Cohesion: 0.06
-Nodes (20): DiscourseSignal, SignalDetectionMethod, _detector(), test_casefold_expansion_preserves_original_source_offsets(), test_detector_preserves_overlapping_pattern_matches(), test_detector_rejects_false_or_ambiguous_token_anchors(), test_invalid_signal_evidence_fails_closed(), test_overlapping_signal_spans_and_token_anchors_are_preserved() (+12 more)
-
-### Community 351 - "managed_services"
-Cohesion: 0.33
-Nodes (6): managed_services, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 352 - "module_id"
-Cohesion: 0.33
-Nodes (6): module_id, description, identifier, range, required, slot_uri
+### Community 350 - "RstDocument"
+Cohesion: 0.04
+Nodes (82): DocumentToken, Edu, Document input models and coordinate representation., A single token aligned with character coordinates., Create an RstDocument with full token and EDU coordinates., An elementary discourse unit (EDU) with character and token spans., Character offset span in the original text., Lossless document representation for discourse parsing. (+74 more)
 
 ### Community 353 - "CLAUDE.md"
 Cohesion: 0.12
-Nodes (20): Agent Instructions, Analysis-only scope, and scale, Architecture, Identity binding, One package, one wheel, Persisted identifiers, Preservation across the migration and the rename, The machine (features 006–019 and 2026-11-15 13-technique `dclq`/DocLang runtime) (+12 more)
+Nodes (19): Agent Instructions, Analysis-only scope, and scale, Architecture, Identity binding, One package, one wheel, Persisted identifiers, The machine (features 006–019 and 2026-11-15 13-technique `dclq`/DocLang runtime), Decision: shared parser infrastructure (+11 more)
 
-### Community 354 - "platforms"
-Cohesion: 0.33
-Nodes (6): platforms, description, inlined_as_list, multivalued, range, slot_uri
+### Community 355 - "Pytest Session Fixtures"
+Cohesion: 0.40
+Nodes (4): live_model_requests(), fixture, Pytest session fixtures / env bootstrap for the isanlp_rst suite. Registers…, Require deliberate authorization before a test calls a paid external model.
 
-### Community 357 - "RDAM Schema and Configs"
+### Community 356 - "LSTM Dropout Validation Tests"
 Cohesion: 0.50
-Nodes (4): RDAM Providers Ontology Bindings, RDAM LinkML Schema, Central Configs Distribution Manifest, Central Configs Adobe Agents Domain
-
-### Community 358 - "Customer Story"
-Cohesion: 0.67
-Nodes (3): Customer Hero, Customer Story, Personal Anecdote
-
-### Community 359 - "Shift-Reduce Parsing Actions"
-Cohesion: 0.67
-Nodes (4): Nucleus Indicator, Reduce Action, Satellite Indicator, Shift Action
-
-### Community 360 - "Argument Conflict Types"
-Cohesion: 0.50
-Nodes (4): Argument Conflict Type, Rebuts, Undercuts, Undermines
-
-### Community 361 - "Argument Link Types"
-Cohesion: 0.50
-Nodes (4): Argument Link Type, Addressed By, Rebutted By, Supports
-
-### Community 362 - "Discourse Roles"
-Cohesion: 0.50
-Nodes (4): Discourse Role, Background, Nucleus, Supportive
-
-### Community 363 - "resolve_inventory_index"
-Cohesion: 0.36
-Nodes (4): resolve_inventory_index(), test_ambiguous_inventory_does_not_choose_a_classifier_silently(), test_mixed_case_inventory_retains_ordinal(), test_unknown_inventory_is_not_aliased_to_a_different_scheme()
-
-### Community 364 - "practices"
-Cohesion: 0.33
-Nodes (6): practices, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 365 - "product_families"
-Cohesion: 0.33
-Nodes (6): product_families, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 366 - "scoring_models"
-Cohesion: 0.33
-Nodes (6): scoring_models, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 367 - "standards"
-Cohesion: 0.33
-Nodes (6): standards, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 368 - "surfaces"
-Cohesion: 0.33
-Nodes (6): surfaces, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 369 - "taxonomies"
-Cohesion: 0.33
-Nodes (6): taxonomies, description, inlined_as_list, multivalued, range, slot_uri
-
-### Community 370 - "available_in"
-Cohesion: 0.33
-Nodes (6): description, inlined, multivalued, range, slot_uri, available_in
-
-### Community 371 - "capability_of"
-Cohesion: 0.33
-Nodes (6): description, inlined, multivalued, range, slot_uri, capability_of
-
-### Community 372 - "conforms_to"
-Cohesion: 0.33
-Nodes (6): description, inlined, multivalued, range, slot_uri, conforms_to
-
-### Community 373 - "edition_of"
-Cohesion: 0.33
-Nodes (6): close_mappings, description, inlined, range, slot_uri, edition_of
+Nodes (4): parametrize, PyTorch RNN dropout is inter-layer only. A 1-layer LSTM with non-zero dropout…, test_tony_one_layer_lstm_does_not_warn(), test_tony_stacked_lstm_keeps_dropout()
 
 ### Community 374 - "Production Ingestion Pipeline"
 Cohesion: 0.50
@@ -2805,7 +3112,7 @@ Nodes (4): ProductionIngestor, PreparedRstDocument, ProductionAnalysisResult, So
 
 ### Community 375 - "PureTransformerParsingNet"
 Cohesion: 0.11
-Nodes (5): cky_discourse_tree_decode(), DeepBiaffineScorer, ParsedRstTreeEvidence, ParsedRstTreeSpan, PureTransformerParsingNet
+Nodes (20): cky_discourse_tree_decode(), DeepBiaffineScorer, ParsedRstTreeEvidence, ParsedRstTreeSpan, Tensor, Vectorized deep biaffine attention and dynamic CKY discourse tree decoding., A constituent span in the decoded RST discourse tree., Bounded provider scores for one selected constituent decision. (+12 more)
 
 ### Community 376 - "Markdown Parsing Fixtures"
 Cohesion: 0.50
@@ -2815,13 +3122,17 @@ Nodes (3): GFM-rich fixture, parse_markdown, process
 Cohesion: 0.25
 Nodes (8): Planning validation and read scope, R1 — Native document ownership rather than a new dependency, R2 — One RDAM parse, official validation retained, R3 — Source-native traversal and current typed mapping, R4 — Private fragment addressing, R5 — Upstream currency and the supported boundary, R6 — Verification repairs are required, Research and decisions: DocLang decoder
 
-### Community 380 - "FrozenEvaluationAdapter"
-Cohesion: 0.16
-Nodes (9): FinalEvaluationCorpusPayload, FrozenEvaluationAdapter, _PeftModelType, _sha256_file(), _strict_load_complete(), _strict_load_partial(), main(), run_final_evaluation() (+1 more)
+### Community 378 - "LLM Test Mocking"
+Cohesion: 0.50
+Nodes (3): no_real_model_requests(), fixture, No test in this directory may reach a real model. Pydantic AI's global switch…
 
-### Community 381 - "validate_model_release"
-Cohesion: 0.27
-Nodes (12): load_model_release(), validate_model_release(), _candidate(), test_compatibility_redeclaration_for_another_manifest_is_refused(), test_compatibility_redeclaration_widens_the_range_for_this_exact_manifest(), test_incompatible_contract_version_and_symlink_are_rejected(), test_loose_and_unpromoted_inputs_are_rejected(), test_manifest_is_strict_and_requires_honest_evaluation_evidence() (+4 more)
+### Community 379 - "Parser Isolation Tests"
+Cohesion: 0.50
+Nodes (3): The core parser remains isolated from optional source-format dependencies., Core ``rdam.rst.parser`` must not require the formats extra., test_parser_imports_without_docling_core()
+
+### Community 380 - "FrozenEvaluationAdapter"
+Cohesion: 0.21
+Nodes (14): FinalEvaluationCorpusPayload, Test-only payload created after champion freeze, with no train/dev source paths., FrozenEvaluationAdapter, _PeftModelType, CandidateScoringFunction, device, Module, Path (+6 more)
 
 ### Community 382 - "properties"
 Cohesion: 0.08
@@ -2831,93 +3142,37 @@ Nodes (27): anyOf, anyOf, properties, properties, anyOf, $ref, anyOf, anyOf (+19
 Cohesion: 0.67
 Nodes (3): English RST Capability Platform Plan, English RST Tree Visualization, RST Render Output Screenshot
 
-### Community 384 - "part_of"
-Cohesion: 0.33
-Nodes (6): close_mappings, description, inlined, range, slot_uri, part_of
-
 ### Community 387 - "source.py"
-Cohesion: 0.03
-Nodes (132): IndexProjection, back_matter_classes(), CoverageUnit, SemanticVersion, AnalysisCapacity, AnalysisPlan, AnalysisPlanStatus, BoundaryPreference (+124 more)
+Cohesion: 0.02
+Nodes (238): AhoCorasick, ast, binascii, collections, datetime, hashlib, importlib_metadata, IO (+230 more)
 
 ### Community 388 - "verify_model_licensing.py"
 Cohesion: 0.36
-Nodes (4): audit_technology_matrix(), LicenseAuditReceipt, main(), ModelLicenseRecord
+Nodes (8): audit_technology_matrix(), LicenseAuditReceipt, main(), ModelLicenseRecord, BaseModel, Path, Verify commercial license compliance for candidate and released model weights.…, Audit the research technology matrix for license compliance.
 
-### Community 389 - "doclang/decoder.py"
-Cohesion: 0.10
-Nodes (22): decode_document(), DecodedDoclangCell, DecodedDoclangItem, DecodedTrackCue, DecodedTrackTurn, FragmentRange, _interval_slots(), _intervals() (+14 more)
+### Community 389 - "XmlElement"
+Cohesion: 0.13
+Nodes (18): Protocol, Public structural type for the private lxml element implementation., XmlElement, body_text(), iter_body_slots(), iter_body_text(), iter_sibling_body_text(), iter_sibling_slots() (+10 more)
 
-### Community 390 - "User Experience Research"
-Cohesion: 0.67
-Nodes (3): Empathy Mapping, Jobs to Be Done, Persona Method
-
-### Community 392 - "Instructional Design Models"
-Cohesion: 0.67
-Nodes (3): Dick and Carey Systems Model, Elaboration Theory, Morrison-Ross-Kemp Model
-
-### Community 393 - "Team Dynamics and Development"
-Cohesion: 0.67
-Nodes (3): Icebreakers and Group Formation, Psychological Safety, Tuckman Group Development
-
-### Community 394 - "Rhetorical Appeals"
-Cohesion: 1.00
-Nodes (3): Ethos Appeal, Logos Appeal, Pathos Appeal
-
-### Community 395 - "Argument Component States"
-Cohesion: 0.67
-Nodes (3): Argument Component State, Stated, Unstated
-
-### Community 396 - "Discourse Relation Explicitness"
-Cohesion: 0.67
-Nodes (3): Discourse Relation Explicitness, Explicit, Implied
-
-### Community 397 - "Structural Communication Frameworks"
-Cohesion: 0.67
-Nodes (3): structural_framework, Monroe Sequence, SCQA
-
-### Community 398 - "Creative Direction Assets"
-Cohesion: 0.67
-Nodes (3): Director's Treatment, Moodboard, Style Frame
-
-### Community 399 - "powered_by"
-Cohesion: 0.33
-Nodes (6): description, inlined, multivalued, range, slot_uri, powered_by
-
-### Community 400 - "tasks.md"
-Cohesion: 0.18
-Nodes (9): Production Package and Offline Workbench Boundary, Raw-Material Ingest and Preparation: Forensic Analysis, Quickstart: Validate the Toulmin Provider, Quickstart: Validate the Walton Provider, Quickstart: SDRT Provider, Quickstart: PDTB Provider, Acceptance Matrix, Evidence rules (+1 more)
-
-### Community 401 - "serves_stage"
-Cohesion: 0.33
-Nodes (6): description, inlined, multivalued, range, slot_uri, serves_stage
+### Community 400 - "019-unified-machine-interfaces/tasks.md"
+Cohesion: 0.23
+Nodes (6): Quickstart: Validate the Toulmin Provider, Quickstart: Validate the Walton Provider, Quickstart: SDRT Provider, Quickstart: PDTB Provider, Acceptance Matrix, Evidence rules
 
 ### Community 402 - "002 Production Source Ingest Plan"
 Cohesion: 0.50
 Nodes (4): Specification Quality Checklist: World-Class Production Source Ingest, 002 Production Source Ingest Plan, 002 Production Source Ingest Specification, 002 Production Source Ingest Tasks
 
-### Community 403 - "stage_of"
-Cohesion: 0.33
-Nodes (6): stage_of, close_mappings, description, inlined, range, slot_uri
-
 ### Community 404 - "Feature 004 Convergence"
 Cohesion: 0.67
 Nodes (3): Feature 004 convergence handoff — 2026-08-31, Feature 004 Source Scope and SOTA Audit, Source Specification Currency Evidence
 
-### Community 405 - "Production Source Ingest"
-Cohesion: 0.10
-Nodes (22): Downstream example, Python, Shared concept linking, Verification scope, Wire interfaces, DocLang-native RST Output Plan, Docling-native RST Output Proposal, Docling-native RST Output Build Plan (+14 more)
-
-### Community 406 - "succeeded_by"
-Cohesion: 0.33
-Nodes (6): succeeded_by, description, inlined, multivalued, range, slot_uri
+### Community 405 - "DocLang-native RST Output Plan"
+Cohesion: 0.90
+Nodes (5): DocLang-native RST Output Plan, Docling-native RST Output Proposal, Docling-native RST Output Build Plan, Boundary-Partitioned Long-Input Parsing Plan, Markdown-native RST Output Plan
 
 ### Community 407 - "release-manifest.schema.json"
 Cohesion: 0.40
 Nodes (4): description, $schema, title, type
-
-### Community 408 - "supports_practice"
-Cohesion: 0.33
-Nodes (6): supports_practice, description, inlined, multivalued, range, slot_uri
 
 ### Community 409 - "Data Model: Unified Machine Interfaces"
 Cohesion: 0.17
@@ -2927,53 +3182,37 @@ Nodes (12): 10. AI-consumption records, 11. Testing, 1. Public record registry, 
 Cohesion: 0.25
 Nodes (8): Specification Quality Checklist: Shared Runtime Hardening, Contract: Shared Runtime, Feature 018 Evidence, Implementation Plan: Shared Runtime Hardening, Quickstart: Shared Runtime Hardening, Research: Shared Runtime Hardening, Feature Specification: Shared Runtime Hardening, Tasks: Shared Runtime Hardening
 
-### Community 411 - "surface_of"
-Cohesion: 0.33
-Nodes (6): surface_of, close_mappings, description, inlined, range, slot_uri
-
-### Community 413 - "test_predictor_token_capture.py"
-Cohesion: 0.19
-Nodes (7): test_capture_preserves_custom_word_boundaries_and_unicode_offsets(), test_capture_rejects_false_source_coordinates(), test_edu_membership_preserves_native_word_crossing_a_subword_boundary(), test_predicted_boundaries_reject_missing_or_invalid_subwords(), test_predicted_boundaries_use_source_offsets_after_unknown_unicode(), test_source_groups_allow_whitespace_between_exact_boundaries(), test_source_groups_reject_uncovered_tokens_and_false_boundaries()
-
-### Community 414 - "Code standards"
-Cohesion: 0.25
-Nodes (7): Code standards, Gotchas, Lint and type scope, Mode A — Modern Python (3.14 idioms, every file you touch), Mode B — retired, Test honesty, Tests
-
-### Community 418 - "unit_of"
-Cohesion: 0.33
-Nodes (6): unit_of, close_mappings, description, inlined, range, slot_uri
-
-### Community 420 - "vendor"
-Cohesion: 0.33
-Nodes (6): vendor, close_mappings, description, inlined, range, slot_uri
-
-### Community 421 - "language"
-Cohesion: 0.33
-Nodes (6): language, description, ifabsent, pattern, range, slot_uri
+### Community 413 - "$defs"
+Cohesion: 0.05
+Nodes (38): enum, title, type, enum, title, type, description, enum (+30 more)
 
 ### Community 422 - "test_doclang_decoder.py"
-Cohesion: 0.13
-Nodes (17): artifact(), test_archive_uses_one_rdam_document_parse_and_no_legacy_conversion(), test_cdata_and_normalization_keep_decoded_character_positions(), test_invalid_merge_geometry_fails_at_public_classification(), test_metadata_tails_inline_content_and_comments_are_emitted_once(), test_mixed_raw_wrapped_list_keeps_tail_after_its_wrapper(), test_nested_list_tail_follows_the_last_nested_component(), test_nested_primary_components_are_not_repeated_in_prepared_text() (+9 more)
+Cohesion: 0.09
+Nodes (34): ModuleType, _archive(), _doclang(), _edus(), parametrize, ParserBuilder, SourceArtifact, Four-source-form analysed/empty and canonical round-trip matrix. (+26 more)
 
-### Community 424 - "._resolve_dtype"
-Cohesion: 0.11
-Nodes (10): str2bool(), test_load_torch_weights_pure_tensors(), test_resolve_dtype_auto_uses_native_mps_half_precision(), test_resolve_dtype_default_is_float32(), test_resolve_dtype_passthrough(), test_resolve_dtype_string_parsing(), test_resolve_dtype_unknown_string_raises(), test_resolve_dtype_unsupported_torch_dtype_raises() (+2 more)
+### Community 424 - "properties"
+Cohesion: 0.05
+Nodes (39): $ref, anyOf, default, const, default, title, type, const (+31 more)
 
 ### Community 432 - "ProductionIngestor"
 Cohesion: 0.02
-Nodes (80): SourceArtifact, ProductionIngestor, _source_requirement(), build_deterministic_parser(), build_model_identity(), cache_directory_builder(), DeterministicParser, model_identity_builder() (+72 more)
+Nodes (197): ParserAnalysisResult, ParserBuilder, PersistedContract, ProductionIngestError, cache_entry_identity(), _cache_error(), ProductionIngestCache, Exception (+189 more)
 
-### Community 434 - "subprocess"
-Cohesion: 0.17
-Nodes (11): test_linking_does_not_import_models_or_open_network(), test_closed_stdout_pipe_has_exit_141_without_a_traceback(), test_dung_native_validation_does_not_load_unrelated_techniques(), test_constructing_source_request_imports_no_harvest_or_model(), _install_and_run(), _run(), _venv_python(), FreezeAuthority (+3 more)
+### Community 433 - "$defs"
+Cohesion: 0.05
+Nodes (38): enum, title, type, enum, title, type, description, enum (+30 more)
+
+### Community 440 - "contracts/capabilities.py"
+Cohesion: 0.07
+Nodes (41): describe_capabilities(), ParserDescriptor, Protocol, Model-free and parser-aware production capability discovery., Return installed capabilities without importing a model or optional adapter., Availability, CacheEligibility, CacheEligibilityState (+33 more)
 
 ### Community 458 - "Feature 020 implementation results"
 Cohesion: 0.29
 Nodes (7): Exact comparison and corrections, Feature 020 implementation results, Matched performance, Ownership and outcome, Read scope and local evidence, Supported upstream boundary, Verification
 
-### Community 464 - "Contract: Unified rdam CLI"
-Cohesion: 0.22
-Nodes (9): Acquisition and exclusivity, Commands, Common options, Configuration precedence, Contract: Unified rdam CLI, Exit statuses and precedence, Help acceptance, Output and diagnostics (+1 more)
+### Community 460 - "kind"
+Cohesion: 0.05
+Nodes (41): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+33 more)
 
 ### Community 465 - "Feature 017 baseline — 2026-09-03"
 Cohesion: 0.12
@@ -2987,9 +3226,17 @@ Nodes (6): Contract: Dung Native Result, Implementation Plan: Dung Abstract Argu
 Cohesion: 0.22
 Nodes (9): Complexity Tracking, Constitution Check, Design artifacts and authority, Implementation Plan: Unified Machine Interfaces, Implementation sequence, Planned source layout, Summary, Technical Context (+1 more)
 
+### Community 470 - "production_boundary/contracts.py"
+Cohesion: 0.11
+Nodes (29): Codex controls are repository tooling, never distributable production code., The OpenAI runtime's required tokenizer is not an offline-only dependency., Verify the published wheel and sdist pair., validate_release_directory(), Single ownership authority for repository paths and dependencies., BoundaryReport, BoundaryViolation, CheckStatus (+21 more)
+
 ### Community 487 - "Validation guide: DocLang decoder refactor"
 Cohesion: 0.29
 Nodes (7): Baseline already observed during planning, Final review, Mutation and final regression checks, Performance comparison, Phase-specific execution, Prerequisites, Validation guide: DocLang decoder refactor
+
+### Community 491 - "kind"
+Cohesion: 0.05
+Nodes (41): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+33 more)
 
 ### Community 492 - "Specification Quality Checklist: Unified Machine Interfaces"
 Cohesion: 0.33
@@ -3003,77 +3250,821 @@ Nodes (6): Feature 020 implementation tasks, Phase A — Comparison and verifica
 Cohesion: 0.40
 Nodes (5): formalisms, description, inlined_as_list, multivalued, range
 
-### Community 498 - "_Predictor"
-Cohesion: 0.25
-Nodes (7): _FakeNode, _Predictor, test_remap_tree_offsets_binary(), test_remap_tree_offsets_leaf(), test_remap_tree_offsets_unary_raises(), test_remap_tree_to_predefined_edu_spans_rejects_leaf_count_mismatch(), test_remap_tree_to_predefined_edu_spans_uses_exact_unicode_coordinates()
+### Community 498 - "properties"
+Cohesion: 0.06
+Nodes (38): minItems, title, type, HistoricalResultSourceAlignment, ResultSourceAlignment, additionalProperties, description, properties (+30 more)
 
-### Community 501 - "domain_module_paths"
-Cohesion: 0.40
-Nodes (5): domain_module_paths, description, multivalued, required, slot_uri
-
-### Community 502 - "attributes"
-Cohesion: 0.40
-Nodes (5): schema_path, attributes, description, required, slot_uri
-
-### Community 504 - "add_on_to"
-Cohesion: 0.40
-Nodes (5): description, inlined, range, slot_uri, add_on_to
+### Community 503 - "CompatibilityRedeclaration"
+Cohesion: 0.22
+Nodes (6): Preservation across the migration and the rename, CompatibilityRedeclaration, field_validator, PurePosixPath, An explicit, evidence-backed re-declaration of a release's package…, The range in force: a re-declaration for this exact manifest, else the…
 
 ### Community 505 - "production_ingest/contracts.py"
-Cohesion: 0.20
-Nodes (10): _candidate(), _source_result(), test_candidate_identity_rejects_changed_or_partial_digests(), test_promotion_decision_cannot_contradict_a_failed_gate_or_inspection(), CandidateIdentity, _EvidenceModel, PromotionDecision, SourceGateResult (+2 more)
+Cohesion: 0.11
+Nodes (27): _source(), test_gold_manifest_enforces_depth_forms_risks_and_rst_gold(), test_gold_manifest_rejects_shallow_set(), _candidate(), parametrize, Promotion authority rejects mutable, contradictory, or waiver-bearing evidence., _source_result(), test_candidate_identity_rejects_changed_or_partial_digests() (+19 more)
 
 ### Community 506 - "test_doclang_track.py"
-Cohesion: 0.21
-Nodes (15): cue_interval(), _attributes(), _by_class(), _prepare(), _reference(), test_chapters_are_headings_placed_before_their_cue_text(), test_cue_intervals_are_inclusive_milliseconds(), test_frames_covers_and_audio_are_retained_media_with_their_cue() (+7 more)
+Cohesion: 0.25
+Nodes (18): _attributes(), _by_class(), _prepare(), ContentClass, ContentInventoryItem, XmlElement, DocLang <track> transcripts decode into timed, speaker-attributed turns in…, _reference() (+10 more)
 
-### Community 507 - "Organisation"
-Cohesion: 0.40
-Nodes (5): Organisation, class_uri, description, exact_mappings, is_a
-
-### Community 508 - "stage_order"
-Cohesion: 0.40
-Nodes (5): stage_order, description, minimum_value, range, slot_uri
-
-### Community 509 - "term_status"
-Cohesion: 0.40
-Nodes (5): term_status, description, range, required, slot_uri
+### Community 510 - "properties"
+Cohesion: 0.08
+Nodes (24): default, maximum, minimum, title, type, default, title, type (+16 more)
 
 ### Community 511 - "Rhetorical Discourse Analysis Machine — Shared Analytical Constitution"
 Cohesion: 0.40
 Nodes (4): 1. Input Envelope Structure, 2. Verbatim Quote Grounding Contract (`quote` + `occurrence`), 3. Analytical Rigor & Non-Invention, Rhetorical Discourse Analysis Machine — Shared Analytical Constitution
 
-### Community 515 - "rst_diag.py"
-Cohesion: 0.20
-Nodes (8): _artifact(), _coverage_ratio(), _discover(), DocMetrics, main(), _metrics(), _print_table(), _tree_depth()
+### Community 513 - "TestResolveFamily"
+Cohesion: 0.12
+Nodes (3): When both family and version are set, version must belong to family., Explicit family must match detectable signatures when present., TestResolveFamily
 
-### Community 520 - "RDAM documentation guide"
-Cohesion: 0.50
-Nodes (4): Implementation authority, Local deliverables, RDAM documentation guide, Reading historical material
+### Community 514 - "test_client_lifecycle.py"
+Cohesion: 0.12
+Nodes (25): anthropic, AsyncClient, httpx2, Request, Response, _analyst(), _anthropic_tool_use_events(), Finding (+17 more)
+
+### Community 516 - "properties"
+Cohesion: 0.08
+Nodes (24): default, maximum, minimum, title, type, default, title, type (+16 more)
+
+### Community 518 - "properties"
+Cohesion: 0.07
+Nodes (28): default, maximum, minimum, title, type, default, title, type (+20 more)
+
+### Community 519 - "properties"
+Cohesion: 0.07
+Nodes (28): default, maximum, minimum, title, type, default, title, type (+20 more)
+
+### Community 520 - "$defs"
+Cohesion: 0.05
+Nodes (36): enum, type, enum, title, type, enum, title, type (+28 more)
 
 ### Community 521 - "requires_structured_input"
 Cohesion: 0.50
 Nodes (4): requires_structured_input, description, range, required
 
-### Community 522 - "prefixes"
-Cohesion: 0.50
-Nodes (4): prefixes, coe, dcterms, linkml
+### Community 525 - "$defs"
+Cohesion: 0.05
+Nodes (36): enum, type, enum, title, type, enum, title, type (+28 more)
 
-### Community 523 - "literal"
-Cohesion: 0.50
-Nodes (4): literal, description, required, slot_uri
+### Community 526 - "$defs"
+Cohesion: 0.05
+Nodes (36): enum, type, enum, title, type, enum, title, type (+28 more)
 
-### Community 524 - "valid_from"
-Cohesion: 0.50
-Nodes (4): valid_from, description, range, slot_uri
+### Community 527 - ".__post_init__"
+Cohesion: 0.67
+Nodes (3): _attack_pair(), _non_empty_string(), TypeGuard
+
+### Community 528 - "semantics.py"
+Cohesion: 0.19
+Nodes (21): pysat_solvers, random, acceptable_arguments(), ArgumentationFramework, _bitmask_graph(), complete_extensions(), defends(), grounded_extension() (+13 more)
+
+### Community 530 - "$defs"
+Cohesion: 0.05
+Nodes (36): enum, type, enum, title, type, enum, title, type (+28 more)
+
+### Community 531 - "$ref"
+Cohesion: 0.06
+Nodes (37): items, minItems, title, type, $ref, properties, items, title (+29 more)
+
+### Community 532 - "$ref"
+Cohesion: 0.06
+Nodes (37): items, minItems, title, type, $ref, properties, items, title (+29 more)
+
+### Community 535 - "properties"
+Cohesion: 0.06
+Nodes (37): properties, items, title, type, const, default, title, type (+29 more)
+
+### Community 538 - "properties"
+Cohesion: 0.05
+Nodes (46): default, title, type, title, type, additionalProperties, properties, required (+38 more)
+
+### Community 539 - "properties"
+Cohesion: 0.05
+Nodes (46): default, title, type, title, type, additionalProperties, properties, required (+38 more)
+
+### Community 540 - "properties"
+Cohesion: 0.06
+Nodes (36): anyOf, default, const, default, title, type, const, default (+28 more)
+
+### Community 542 - "$defs"
+Cohesion: 0.06
+Nodes (35): enum, title, type, enum, title, type, enum, title (+27 more)
+
+### Community 548 - "properties"
+Cohesion: 0.06
+Nodes (36): $ref, anyOf, default, const, default, title, type, const (+28 more)
+
+### Community 549 - "properties"
+Cohesion: 0.06
+Nodes (36): $ref, anyOf, default, const, default, title, type, const (+28 more)
+
+### Community 560 - "properties"
+Cohesion: 0.06
+Nodes (36): properties, items, title, type, const, default, title, type (+28 more)
+
+### Community 574 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 578 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 580 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 585 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 586 - "Disposition"
+Cohesion: 0.06
+Nodes (35): default, items, title, type, $ref, Disposition, additionalProperties, properties (+27 more)
+
+### Community 587 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 588 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 590 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 591 - "Disposition"
+Cohesion: 0.06
+Nodes (35): default, items, title, type, $ref, Disposition, additionalProperties, properties (+27 more)
+
+### Community 595 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 596 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 597 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 599 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 603 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 604 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 605 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 606 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 692 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 704 - "properties"
+Cohesion: 0.06
+Nodes (35): items, minItems, title, type, $ref, additionalProperties, properties, required (+27 more)
+
+### Community 705 - "SourceArtifact"
+Cohesion: 0.03
+Nodes (94): AnalysisRequest, CacheStatus, EmptyPrimaryAnalysisOutcome, FailureCategory, gc, InferenceCompletedEvidence, LineEndingParameters, PreparationSemanticEvidence (+86 more)
+
+### Community 706 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 710 - "properties"
+Cohesion: 0.06
+Nodes (35): items, minItems, title, type, $ref, additionalProperties, properties, required (+27 more)
+
+### Community 715 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 718 - "kind"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+27 more)
+
+### Community 721 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 724 - "ToulminProvider"
+Cohesion: 0.04
+Nodes (77): PdtbProvider, ContentRequirement, Sha256Identity, Produce validated native PDTB-3 relations from raw text., source_identity(), ContentRequirement, Toulmin layout analysis over raw text, backed by a language model., ToulminProvider (+69 more)
+
+### Community 725 - "properties"
+Cohesion: 0.06
+Nodes (35): additionalProperties, properties, required, title, type, $ref, AnalysisUnit, minimum (+27 more)
+
+### Community 726 - "properties"
+Cohesion: 0.05
+Nodes (39): $ref, minimum, title, type, anyOf, default, title, SourceSummary (+31 more)
+
+### Community 728 - "properties"
+Cohesion: 0.05
+Nodes (39): $ref, minimum, title, type, anyOf, default, title, SourceSummary (+31 more)
+
+### Community 731 - "$defs"
+Cohesion: 0.06
+Nodes (33): enum, title, type, enum, title, type, enum, title (+25 more)
+
+### Community 732 - "$defs"
+Cohesion: 0.06
+Nodes (33): enum, title, type, enum, title, type, enum, title (+25 more)
+
+### Community 736 - "$defs"
+Cohesion: 0.06
+Nodes (33): enum, title, type, enum, title, type, enum, title (+25 more)
+
+### Community 737 - "$defs"
+Cohesion: 0.06
+Nodes (33): enum, title, type, enum, title, type, enum, title (+25 more)
+
+### Community 738 - "$defs"
+Cohesion: 0.06
+Nodes (33): enum, title, type, enum, title, type, enum, title (+25 more)
+
+### Community 741 - "properties"
+Cohesion: 0.07
+Nodes (34): items, minItems, title, type, HistoricalResultSourceAlignment, items, additionalProperties, description (+26 more)
+
+### Community 742 - "$defs"
+Cohesion: 0.06
+Nodes (33): $defs, DerivationCompiler, HistoricalNativeTechniqueResult, JsonScalar, JsonValue, NativeTechniqueResult, OriginClassification, SemanticVersion (+25 more)
+
+### Community 743 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 744 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 745 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 747 - "curie"
+Cohesion: 0.07
+Nodes (27): minLength, title, type, anyOf, default, pattern, title, type (+19 more)
+
+### Community 813 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 820 - "curie"
+Cohesion: 0.07
+Nodes (27): minLength, title, type, anyOf, default, pattern, title, type (+19 more)
+
+### Community 821 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 822 - "curie"
+Cohesion: 0.07
+Nodes (27): minLength, title, type, anyOf, default, pattern, title, type (+19 more)
+
+### Community 825 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 826 - "curie"
+Cohesion: 0.07
+Nodes (27): minLength, title, type, anyOf, default, pattern, title, type (+19 more)
+
+### Community 828 - "properties"
+Cohesion: 0.06
+Nodes (33): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+25 more)
+
+### Community 835 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 839 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 840 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 841 - "kind"
+Cohesion: 0.06
+Nodes (33): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, FailedOutcome, HistoricalResultOutcome (+25 more)
+
+### Community 842 - "properties"
+Cohesion: 0.06
+Nodes (33): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+25 more)
+
+### Community 843 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 844 - "properties"
+Cohesion: 0.06
+Nodes (33): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+25 more)
+
+### Community 845 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 846 - "properties"
+Cohesion: 0.06
+Nodes (33): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+25 more)
+
+### Community 847 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 848 - "properties"
+Cohesion: 0.06
+Nodes (33): anyOf, default, const, default, title, type, const, default (+25 more)
+
+### Community 849 - "properties"
+Cohesion: 0.06
+Nodes (33): anyOf, default, const, default, title, type, const, default (+25 more)
+
+### Community 850 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 851 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 852 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 853 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 854 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 855 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 856 - "properties"
+Cohesion: 0.06
+Nodes (33): items, minItems, title, type, items, minItems, title, type (+25 more)
+
+### Community 857 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 858 - "properties"
+Cohesion: 0.06
+Nodes (33): items, minItems, title, type, items, minItems, title, type (+25 more)
+
+### Community 859 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 860 - "properties"
+Cohesion: 0.06
+Nodes (33): title, type, additionalProperties, properties, required, title, type, CoordinateBoxAnchor (+25 more)
+
+### Community 861 - "$defs"
+Cohesion: 0.07
+Nodes (29): enum, title, type, enum, title, type, const, type (+21 more)
+
+### Community 862 - "properties"
+Cohesion: 0.06
+Nodes (32): properties, default, items, title, type, default, items, title (+24 more)
+
+### Community 863 - "properties"
+Cohesion: 0.06
+Nodes (32): properties, default, items, title, type, default, items, title (+24 more)
+
+### Community 864 - "properties"
+Cohesion: 0.06
+Nodes (31): additionalProperties, properties, required, title, type, anyOf, default, $ref (+23 more)
+
+### Community 865 - "properties"
+Cohesion: 0.06
+Nodes (31): anyOf, title, $ref, title, type, const, title, type (+23 more)
+
+### Community 866 - "Disposition"
+Cohesion: 0.07
+Nodes (31): default, items, title, type, items, $ref, Disposition, additionalProperties (+23 more)
+
+### Community 867 - "Disposition"
+Cohesion: 0.07
+Nodes (31): default, items, title, type, items, $ref, Disposition, additionalProperties (+23 more)
+
+### Community 868 - "properties"
+Cohesion: 0.06
+Nodes (31): additionalProperties, properties, required, title, type, anyOf, default, $ref (+23 more)
+
+### Community 869 - "properties"
+Cohesion: 0.06
+Nodes (31): minimum, title, type, minimum, title, type, $ref, anyOf (+23 more)
+
+### Community 870 - "properties"
+Cohesion: 0.06
+Nodes (31): minimum, title, type, minimum, title, type, $ref, anyOf (+23 more)
+
+### Community 871 - "Disposition"
+Cohesion: 0.07
+Nodes (31): default, items, title, type, items, $ref, Disposition, additionalProperties (+23 more)
+
+### Community 872 - "Disposition"
+Cohesion: 0.07
+Nodes (31): default, items, title, type, items, $ref, Disposition, additionalProperties (+23 more)
+
+### Community 873 - "Disposition"
+Cohesion: 0.07
+Nodes (31): default, items, title, type, items, $ref, Disposition, additionalProperties (+23 more)
+
+### Community 874 - "Disposition"
+Cohesion: 0.07
+Nodes (31): default, items, title, type, items, $ref, Disposition, additionalProperties (+23 more)
+
+### Community 875 - "$defs"
+Cohesion: 0.06
+Nodes (30): $defs, DerivationCompiler, FormalismChoice, HistoricalNativeTechniqueResult, OriginClassification, ResultSourceAlignment, SemanticVersion, enum (+22 more)
+
+### Community 876 - "properties"
+Cohesion: 0.08
+Nodes (31): title, type, $ref, additionalProperties, properties, required, title, type (+23 more)
+
+### Community 877 - "properties"
+Cohesion: 0.06
+Nodes (31): additionalProperties, properties, required, title, type, anyOf, default, $ref (+23 more)
+
+### Community 878 - "properties"
+Cohesion: 0.08
+Nodes (31): title, type, $ref, additionalProperties, properties, required, title, type (+23 more)
+
+### Community 879 - "properties"
+Cohesion: 0.06
+Nodes (31): additionalProperties, properties, required, title, type, anyOf, default, $ref (+23 more)
+
+### Community 880 - "contract_version"
+Cohesion: 0.06
+Nodes (31): additionalProperties, properties, required, title, type, additionalProperties, properties, required (+23 more)
+
+### Community 881 - "Disposition"
+Cohesion: 0.07
+Nodes (31): default, items, title, type, $ref, Disposition, additionalProperties, properties (+23 more)
+
+### Community 882 - "contract_version"
+Cohesion: 0.06
+Nodes (31): additionalProperties, properties, required, title, type, additionalProperties, properties, required (+23 more)
+
+### Community 883 - "Disposition"
+Cohesion: 0.07
+Nodes (31): default, items, title, type, $ref, Disposition, additionalProperties, properties (+23 more)
+
+### Community 884 - "Disposition"
+Cohesion: 0.07
+Nodes (31): default, items, title, type, items, $ref, Disposition, additionalProperties (+23 more)
+
+### Community 885 - "properties"
+Cohesion: 0.08
+Nodes (31): title, type, $ref, additionalProperties, properties, required, title, type (+23 more)
+
+### Community 886 - "properties"
+Cohesion: 0.06
+Nodes (31): additionalProperties, properties, required, title, type, anyOf, default, $ref (+23 more)
+
+### Community 887 - "properties"
+Cohesion: 0.07
+Nodes (30): items, minItems, title, type, $ref, additionalProperties, properties, required (+22 more)
+
+### Community 888 - "properties"
+Cohesion: 0.07
+Nodes (30): items, minItems, title, type, $ref, additionalProperties, properties, required (+22 more)
+
+### Community 889 - "Disposition"
+Cohesion: 0.07
+Nodes (30): default, items, title, type, $ref, Disposition, additionalProperties, properties (+22 more)
+
+### Community 890 - "Disposition"
+Cohesion: 0.07
+Nodes (30): default, items, title, type, $ref, Disposition, additionalProperties, properties (+22 more)
+
+### Community 891 - "properties"
+Cohesion: 0.07
+Nodes (30): items, title, type, items, title, type, items, title (+22 more)
+
+### Community 892 - "properties"
+Cohesion: 0.07
+Nodes (30): items, title, type, minimum, title, type, items, title (+22 more)
+
+### Community 893 - "properties"
+Cohesion: 0.07
+Nodes (30): items, title, type, minimum, title, type, items, title (+22 more)
+
+### Community 894 - "ProviderProvenance"
+Cohesion: 0.07
+Nodes (30): ProviderProvenance, anyOf, default, minLength, title, type, anyOf, default (+22 more)
+
+### Community 895 - "ProviderProvenance"
+Cohesion: 0.07
+Nodes (30): ProviderProvenance, anyOf, default, minLength, title, type, anyOf, default (+22 more)
+
+### Community 896 - "ProviderProvenance"
+Cohesion: 0.07
+Nodes (30): ProviderProvenance, anyOf, default, minLength, title, type, anyOf, default (+22 more)
+
+### Community 897 - "ProviderProvenance"
+Cohesion: 0.07
+Nodes (30): ProviderProvenance, anyOf, default, minLength, title, type, anyOf, default (+22 more)
+
+### Community 898 - "CacheEligibility"
+Cohesion: 0.07
+Nodes (29): $ref, additionalProperties, properties, required, title, type, CacheEligibility, EvidenceCapability (+21 more)
+
+### Community 899 - "$ref"
+Cohesion: 0.07
+Nodes (29): items, title, type, items, title, type, items, title (+21 more)
+
+### Community 900 - "properties"
+Cohesion: 0.07
+Nodes (29): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+21 more)
+
+### Community 901 - "properties"
+Cohesion: 0.07
+Nodes (29): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+21 more)
+
+### Community 902 - "properties"
+Cohesion: 0.06
+Nodes (33): default, title, type, Mention, exclusiveMinimum, title, type, title (+25 more)
+
+### Community 903 - "properties"
+Cohesion: 0.06
+Nodes (33): default, title, type, Mention, exclusiveMinimum, title, type, title (+25 more)
+
+### Community 904 - "properties"
+Cohesion: 0.07
+Nodes (29): additionalProperties, properties, required, title, type, additionalProperties, properties, required (+21 more)
+
+### Community 905 - "properties"
+Cohesion: 0.08
+Nodes (29): items, title, type, items, title, type, default, items (+21 more)
+
+### Community 906 - "properties"
+Cohesion: 0.07
+Nodes (29): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+21 more)
+
+### Community 907 - "properties"
+Cohesion: 0.07
+Nodes (29): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+21 more)
+
+### Community 908 - "properties"
+Cohesion: 0.07
+Nodes (29): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+21 more)
+
+### Community 909 - "properties"
+Cohesion: 0.07
+Nodes (29): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+21 more)
+
+### Community 910 - "properties"
+Cohesion: 0.07
+Nodes (29): items, minItems, title, type, default, items, title, type (+21 more)
+
+### Community 911 - "properties"
+Cohesion: 0.07
+Nodes (29): items, minItems, title, type, default, items, title, type (+21 more)
+
+### Community 912 - "properties"
+Cohesion: 0.07
+Nodes (29): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+21 more)
+
+### Community 913 - "properties"
+Cohesion: 0.07
+Nodes (29): items, minItems, title, type, default, items, title, type (+21 more)
+
+### Community 914 - "properties"
+Cohesion: 0.07
+Nodes (29): additionalProperties, properties, required, title, type, additionalProperties, properties, required (+21 more)
+
+### Community 915 - "$defs"
+Cohesion: 0.07
+Nodes (27): enum, title, type, enum, title, type, $defs, AuthorshipRole (+19 more)
+
+### Community 916 - "$defs"
+Cohesion: 0.07
+Nodes (27): enum, title, type, enum, title, type, $defs, AuthorshipRole (+19 more)
+
+### Community 917 - "FormalismDeclaration"
+Cohesion: 0.08
+Nodes (28): $ref, FormalismDeclaration, TechniqueCapability, pattern, title, type, additionalProperties, description (+20 more)
+
+### Community 918 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 919 - "properties"
+Cohesion: 0.07
+Nodes (28): title, type, properties, coordinate_system, x0, x0_resolution, x1, x1_resolution (+20 more)
+
+### Community 920 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 921 - "properties"
+Cohesion: 0.07
+Nodes (28): title, type, properties, coordinate_system, x0, x0_resolution, x1, x1_resolution (+20 more)
+
+### Community 922 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 923 - "properties"
+Cohesion: 0.07
+Nodes (28): title, type, properties, coordinate_system, x0, x0_resolution, x1, x1_resolution (+20 more)
+
+### Community 924 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 925 - "properties"
+Cohesion: 0.07
+Nodes (28): title, type, properties, coordinate_system, x0, x0_resolution, x1, x1_resolution (+20 more)
+
+### Community 926 - "properties"
+Cohesion: 0.08
+Nodes (28): minimum, title, type, items, title, type, $ref, $ref (+20 more)
+
+### Community 927 - "properties"
+Cohesion: 0.08
+Nodes (28): minimum, title, type, items, title, type, $ref, $ref (+20 more)
+
+### Community 928 - "properties"
+Cohesion: 0.07
+Nodes (28): anyOf, default, title, anyOf, default, title, anyOf, default (+20 more)
+
+### Community 929 - "properties"
+Cohesion: 0.07
+Nodes (28): anyOf, default, title, anyOf, default, title, anyOf, default (+20 more)
+
+### Community 930 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 931 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 932 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 933 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 934 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 935 - "kind"
+Cohesion: 0.07
+Nodes (28): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+20 more)
+
+### Community 937 - "properties"
+Cohesion: 0.07
+Nodes (27): title, type, $ref, additionalProperties, properties, required, title, type (+19 more)
+
+### Community 938 - "properties"
+Cohesion: 0.08
+Nodes (27): items, title, type, SourceFormCapability, type, items, title, type (+19 more)
+
+### Community 939 - "$defs"
+Cohesion: 0.07
+Nodes (27): enum, title, type, enum, title, type, $defs, AuthorshipRole (+19 more)
+
+### Community 940 - "$defs"
+Cohesion: 0.07
+Nodes (27): enum, title, type, enum, title, type, $defs, AuthorshipRole (+19 more)
+
+### Community 941 - "properties"
+Cohesion: 0.07
+Nodes (27): additionalProperties, properties, required, title, type, anyOf, default, $ref (+19 more)
+
+### Community 942 - "properties"
+Cohesion: 0.07
+Nodes (27): title, type, $ref, additionalProperties, properties, required, title, type (+19 more)
+
+### Community 943 - "type"
+Cohesion: 0.08
+Nodes (27): default, items, title, type, default, items, title, type (+19 more)
+
+### Community 944 - "type"
+Cohesion: 0.08
+Nodes (27): default, items, title, type, default, items, title, type (+19 more)
+
+### Community 945 - "$defs"
+Cohesion: 0.07
+Nodes (27): additionalProperties, title, type, enum, type, additionalProperties, required, title (+19 more)
+
+### Community 946 - "$defs"
+Cohesion: 0.07
+Nodes (27): additionalProperties, title, type, enum, type, additionalProperties, required, title (+19 more)
+
+### Community 947 - "$defs"
+Cohesion: 0.07
+Nodes (27): enum, title, type, $defs, Availability, JsonScalar, JsonValue, SemanticVersion (+19 more)
+
+### Community 948 - "machine-preparation-request.serialization.schema.json"
+Cohesion: 0.07
+Nodes (26): additionalProperties, const, default, title, type, const, default, title (+18 more)
+
+### Community 949 - "machine-preparation-request.validation.schema.json"
+Cohesion: 0.07
+Nodes (26): additionalProperties, const, default, title, type, const, default, title (+18 more)
+
+### Community 950 - "AnnotationRepresentation"
+Cohesion: 0.07
+Nodes (27): additionalProperties, properties, required, title, type, default, title, type (+19 more)
+
+### Community 951 - "AnnotationRepresentation"
+Cohesion: 0.07
+Nodes (27): additionalProperties, properties, required, title, type, default, title, type (+19 more)
+
+### Community 952 - "AnnotationRepresentation"
+Cohesion: 0.07
+Nodes (27): additionalProperties, properties, required, title, type, default, title, type (+19 more)
+
+### Community 953 - "AnnotationRepresentation"
+Cohesion: 0.07
+Nodes (27): additionalProperties, properties, required, title, type, default, title, type (+19 more)
+
+### Community 954 - "properties"
+Cohesion: 0.07
+Nodes (27): additionalProperties, properties, required, title, type, anyOf, description, $ref (+19 more)
+
+### Community 955 - "properties"
+Cohesion: 0.07
+Nodes (27): additionalProperties, properties, required, title, type, anyOf, description, $ref (+19 more)
+
+### Community 956 - "AnnotationRepresentation"
+Cohesion: 0.07
+Nodes (27): additionalProperties, properties, required, title, type, default, title, type (+19 more)
+
+### Community 957 - "properties"
+Cohesion: 0.07
+Nodes (27): additionalProperties, properties, required, title, type, anyOf, default, $ref (+19 more)
+
+### Community 958 - "properties"
+Cohesion: 0.08
+Nodes (26): minLength, title, type, additionalProperties, properties, required, title, type (+18 more)
+
+### Community 959 - "properties"
+Cohesion: 0.08
+Nodes (26): minLength, title, type, additionalProperties, properties, required, title, type (+18 more)
+
+### Community 960 - "ProviderProvenance"
+Cohesion: 0.08
+Nodes (26): ProviderProvenance, anyOf, default, minLength, title, type, anyOf, default (+18 more)
+
+### Community 961 - "DerivationSpec"
+Cohesion: 0.08
+Nodes (26): $ref, const, default, title, type, DerivationSpec, additionalProperties, description (+18 more)
+
+### Community 962 - "ProviderProvenance"
+Cohesion: 0.08
+Nodes (26): ProviderProvenance, anyOf, default, minLength, title, type, anyOf, default (+18 more)
 
 ### Community 1097 - "Contract: Python API and Shared Operations"
 Cohesion: 0.25
 Nodes (8): Contract: Python API and Shared Operations, Direct AI use, Exact parity boundary, One execution path, Outcomes and errors, Public surface, Requests and configuration, Summary and schema contracts
 
+### Community 1100 - "ParsingNet"
+Cohesion: 0.11
+Nodes (16): DmrstParsingNet, ParsingNet, Any, device, Module, NetworkStructureDecision, Tensor, Input: input_sentence: [batch_size, length] input_EDU_breaks: e.g.… (+8 more)
+
+### Community 1101 - "$ref"
+Cohesion: 0.08
+Nodes (25): items, minItems, title, type, items, minItems, title, type (+17 more)
+
 ### Community 1107 - "required"
 Cohesion: 0.07
 Nodes (34): required, required, required, required, required, boundary_reason, capacity, character_coverage (+26 more)
+
+### Community 1111 - "AvailableCapability"
+Cohesion: 0.08
+Nodes (25): additionalProperties, properties, required, title, type, additionalProperties, properties, required (+17 more)
 
 ### Community 1112 - "architecture"
 Cohesion: 0.67
@@ -3099,6 +4090,10 @@ Nodes (3): pattern, type, producer_version
 Cohesion: 0.67
 Nodes (3): schema_version, const, type
 
+### Community 1118 - "kind"
+Cohesion: 0.08
+Nodes (25): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, FailedOutcome, additionalProperties (+17 more)
+
 ### Community 1119 - "source_revision"
 Cohesion: 0.67
 Nodes (3): source_revision, pattern, type
@@ -3106,6 +4101,18 @@ Nodes (3): source_revision, pattern, type
 ### Community 1120 - "Contract: Native Analysis Integrity Corrections"
 Cohesion: 0.29
 Nodes (7): Contract: Native Analysis Integrity Corrections, Historical evidence baseline — 2026-09-04, NI-01 — Complete Walton assessments, NI-02 — Toulmin warrant origin and honest count names, NI-03 — Typed, provider-selected source alignment, NI-04 — Version, persistence, caches and historical truth, Required regression cases
+
+### Community 1121 - "properties"
+Cohesion: 0.08
+Nodes (25): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+17 more)
+
+### Community 1124 - "properties"
+Cohesion: 0.08
+Nodes (25): $ref, additionalProperties, properties, required, title, type, ContentInventoryItem, $ref (+17 more)
+
+### Community 1126 - "$ref"
+Cohesion: 0.08
+Nodes (25): items, minItems, title, type, items, minItems, title, type (+17 more)
 
 ### Community 1128 - "DocLang refactor compatibility contract"
 Cohesion: 0.33
@@ -3123,6 +4130,14 @@ Nodes (6): Implementation sequence, Phase A — Lock the comparison boundary and
 Cohesion: 0.33
 Nodes (6): Acceptance, Canonical analysis is the primary AI artifact, Contract: Direct AI Consumption, Exact guide shape and ownership, Explicit whole-technique view, Required native meanings
 
+### Community 1142 - "AvailableCapability"
+Cohesion: 0.08
+Nodes (25): additionalProperties, properties, required, title, type, additionalProperties, properties, required (+17 more)
+
+### Community 1155 - "kind"
+Cohesion: 0.08
+Nodes (25): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, FailedOutcome, additionalProperties (+17 more)
+
 ### Community 1156 - "Contract: Optional Local HTTP"
 Cohesion: 0.33
 Nodes (6): Contract: Optional Local HTTP, Execution and lifecycle, Local safety and resource limits, Parity, Representation and errors, Surface
@@ -3131,9 +4146,33 @@ Nodes (6): Contract: Optional Local HTTP, Execution and lifecycle, Local safety 
 Cohesion: 0.33
 Nodes (6): Analytical-quality validation, Implementation checks, Prerequisites, Primary workflows, Python and HTTP parity, Quickstart and Validation Guide
 
+### Community 1158 - "$ref"
+Cohesion: 0.08
+Nodes (25): items, minItems, title, type, items, title, type, items (+17 more)
+
+### Community 1159 - "kind"
+Cohesion: 0.08
+Nodes (25): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, FailedOutcome, additionalProperties (+17 more)
+
+### Community 1160 - "$ref"
+Cohesion: 0.08
+Nodes (25): items, minItems, title, type, items, title, type, items (+17 more)
+
 ### Community 1161 - "Feature 019 historical contract specimens"
 Cohesion: 0.50
 Nodes (3): Feature 019 historical contract specimens, Preservation and verification, What these records prove
+
+### Community 1162 - "kind"
+Cohesion: 0.08
+Nodes (25): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, FailedOutcome, additionalProperties (+17 more)
+
+### Community 1163 - "$defs"
+Cohesion: 0.08
+Nodes (25): enum, title, type, oneOf, $defs, Availability, CapabilityState, SemanticVersion (+17 more)
+
+### Community 1164 - "properties"
+Cohesion: 0.08
+Nodes (25): minimum, title, type, minimum, title, type, continue_count, establishment (+17 more)
 
 ### Community 1165 - "enum"
 Cohesion: 0.05
@@ -3143,9 +4182,213 @@ Nodes (37): Comparison.Concession.Arg1-as-denier, Comparison.Concession.Arg2-as-
 Cohesion: 0.05
 Nodes (37): Comparison.Concession.Arg1-as-denier, Comparison.Concession.Arg2-as-denier, Comparison.Concession+SpeechAct.Arg2-as-denier+SpeechAct, Comparison.Contrast, Comparison.Similarity, Contingency.Cause+Belief.Reason+Belief, Contingency.Cause+Belief.Result+Belief, Contingency.Cause.NegResult (+29 more)
 
+### Community 1167 - "properties"
+Cohesion: 0.08
+Nodes (25): minimum, title, type, minimum, title, type, continue_count, establishment (+17 more)
+
+### Community 1168 - "properties"
+Cohesion: 0.08
+Nodes (25): anyOf, default, title, anyOf, default, title, anyOf, default (+17 more)
+
+### Community 1169 - "properties"
+Cohesion: 0.08
+Nodes (25): anyOf, default, title, anyOf, default, title, anyOf, default (+17 more)
+
+### Community 1170 - "$defs"
+Cohesion: 0.08
+Nodes (24): additionalProperties, additionalProperties, required, title, type, $defs, CoordinateBoxAnchor, SemanticVersion (+16 more)
+
+### Community 1171 - "SpeakerCommitmentOutput"
+Cohesion: 0.09
+Nodes (25): items, title, type, items, title, type, items, title (+17 more)
+
+### Community 1172 - "SpeakerCommitmentOutput"
+Cohesion: 0.09
+Nodes (25): items, title, type, items, title, type, items, title (+17 more)
+
+### Community 1173 - "kind"
+Cohesion: 0.08
+Nodes (25): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, FailedOutcome, additionalProperties (+17 more)
+
+### Community 1174 - "MetadataRepresentation"
+Cohesion: 0.08
+Nodes (25): items, minItems, title, type, MetadataRepresentation, items, title, type (+17 more)
+
+### Community 1175 - "properties"
+Cohesion: 0.08
+Nodes (24): $ref, additionalProperties, properties, required, title, type, CompositeAnalysisIdentity, $ref (+16 more)
+
+### Community 1176 - "MetadataRepresentation"
+Cohesion: 0.08
+Nodes (24): items, minItems, title, type, MetadataRepresentation, items, title, type (+16 more)
+
+### Community 1177 - "MetadataRepresentation"
+Cohesion: 0.08
+Nodes (24): items, minItems, title, type, MetadataRepresentation, items, title, type (+16 more)
+
+### Community 1178 - "kind"
+Cohesion: 0.08
+Nodes (24): additionalProperties, properties, required, title, type, $ref, additionalProperties, properties (+16 more)
+
+### Community 1179 - "properties"
+Cohesion: 0.08
+Nodes (24): $ref, additionalProperties, properties, required, title, type, CompositeAnalysisIdentity, $ref (+16 more)
+
+### Community 1180 - "properties"
+Cohesion: 0.09
+Nodes (24): items, title, type, items, title, type, $ref, $ref (+16 more)
+
+### Community 1181 - "properties"
+Cohesion: 0.09
+Nodes (24): items, title, type, items, title, type, $ref, $ref (+16 more)
+
+### Community 1182 - "type"
+Cohesion: 0.11
+Nodes (24): items, title, type, ExtensionOutput, additionalProperties, properties, required, title (+16 more)
+
+### Community 1183 - "type"
+Cohesion: 0.11
+Nodes (24): items, title, type, ExtensionOutput, additionalProperties, properties, required, title (+16 more)
+
+### Community 1184 - "contract_version"
+Cohesion: 0.08
+Nodes (24): additionalProperties, properties, required, title, type, additionalProperties, properties, required (+16 more)
+
+### Community 1185 - "HistoricalResultSourceAlignment"
+Cohesion: 0.08
+Nodes (24): HistoricalResultSourceAlignment, additionalProperties, description, properties, required, title, type, $ref (+16 more)
+
+### Community 1186 - "PreparedRange"
+Cohesion: 0.09
+Nodes (24): PreparedRange, TextSpanAnchor, exclusiveMinimum, title, type, additionalProperties, properties, required (+16 more)
+
+### Community 1187 - "HistoricalResultSourceAlignment"
+Cohesion: 0.08
+Nodes (24): HistoricalResultSourceAlignment, additionalProperties, description, properties, required, title, type, $ref (+16 more)
+
+### Community 1188 - "PreparedRange"
+Cohesion: 0.09
+Nodes (24): PreparedRange, TextSpanAnchor, exclusiveMinimum, title, type, additionalProperties, properties, required (+16 more)
+
+### Community 1189 - "properties"
+Cohesion: 0.08
+Nodes (24): additionalProperties, properties, required, title, type, anyOf, description, $ref (+16 more)
+
+### Community 1190 - "properties"
+Cohesion: 0.08
+Nodes (24): additionalProperties, properties, required, title, type, anyOf, description, $ref (+16 more)
+
+### Community 1191 - "properties"
+Cohesion: 0.08
+Nodes (24): additionalProperties, properties, required, title, type, anyOf, description, $ref (+16 more)
+
+### Community 1192 - "properties"
+Cohesion: 0.08
+Nodes (24): additionalProperties, properties, required, title, type, anyOf, description, $ref (+16 more)
+
+### Community 1193 - "properties"
+Cohesion: 0.08
+Nodes (24): $ref, additionalProperties, properties, required, title, type, CompositeAnalysisIdentity, $ref (+16 more)
+
+### Community 1194 - "properties"
+Cohesion: 0.08
+Nodes (24): $ref, additionalProperties, properties, required, title, type, CompositeAnalysisIdentity, $ref (+16 more)
+
+### Community 1195 - "kind"
+Cohesion: 0.08
+Nodes (24): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, FailedOutcome, additionalProperties (+16 more)
+
+### Community 1196 - "properties"
+Cohesion: 0.08
+Nodes (24): $ref, additionalProperties, properties, required, title, type, CompositeAnalysisIdentity, $ref (+16 more)
+
+### Community 1197 - "kind"
+Cohesion: 0.08
+Nodes (24): additionalProperties, properties, required, title, type, $ref, additionalProperties, properties (+16 more)
+
+### Community 1199 - "type"
+Cohesion: 0.10
+Nodes (23): default, items, title, type, maxItems, minItems, prefixItems, type (+15 more)
+
+### Community 1200 - "artifact_identity"
+Cohesion: 0.09
+Nodes (23): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+15 more)
+
+### Community 1201 - "artifact_identity"
+Cohesion: 0.09
+Nodes (23): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+15 more)
+
+### Community 1202 - "properties"
+Cohesion: 0.09
+Nodes (23): $ref, minLength, title, type, SourceContractIdentity, adapter, adapter_contract_version, schema_identity (+15 more)
+
+### Community 1203 - "OntologyIdentity"
+Cohesion: 0.12
+Nodes (17): pattern, title, type, OntologyIdentity, title, type, items, title (+9 more)
+
+### Community 1204 - "properties"
+Cohesion: 0.09
+Nodes (23): $ref, minLength, title, type, SourceContractIdentity, adapter, adapter_contract_version, schema_identity (+15 more)
+
+### Community 1205 - "OntologyIdentity"
+Cohesion: 0.12
+Nodes (17): pattern, title, type, OntologyIdentity, title, type, items, title (+9 more)
+
+### Community 1206 - "properties"
+Cohesion: 0.09
+Nodes (23): $ref, minLength, title, type, SourceContractIdentity, adapter, adapter_contract_version, schema_identity (+15 more)
+
+### Community 1207 - "OntologyIdentity"
+Cohesion: 0.12
+Nodes (17): pattern, title, type, OntologyIdentity, title, type, items, title (+9 more)
+
+### Community 1208 - "anchors"
+Cohesion: 0.11
+Nodes (19): items, minItems, title, type, items, title, type, $ref (+11 more)
+
+### Community 1209 - "properties"
+Cohesion: 0.09
+Nodes (23): $ref, minLength, title, type, SourceContractIdentity, adapter, adapter_contract_version, schema_identity (+15 more)
+
+### Community 1210 - "OntologyIdentity"
+Cohesion: 0.12
+Nodes (17): pattern, title, type, OntologyIdentity, title, type, items, title (+9 more)
+
+### Community 1211 - "anchors"
+Cohesion: 0.11
+Nodes (19): items, minItems, title, type, items, title, type, $ref (+11 more)
+
 ### Community 1212 - "verify_doclang_fixtures.py"
-Cohesion: 0.17
-Nodes (7): FixtureParityError, FixtureParityReceipt, _GithubEntry, _Manifest, _read_url(), _verify_corpus(), verify_doclang_fixtures()
+Cohesion: 0.11
+Nodes (22): BaseModel, concurrent_futures, RuntimeError, FixtureParityError, FixtureParityReceipt, _GithubEntry, _Manifest, Path (+14 more)
+
+### Community 1213 - "type"
+Cohesion: 0.10
+Nodes (23): default, items, title, type, maxItems, minItems, prefixItems, type (+15 more)
+
+### Community 1214 - "properties"
+Cohesion: 0.09
+Nodes (23): items, minItems, title, type, additionalProperties, description, properties, required (+15 more)
+
+### Community 1215 - "ArchiveMemberAnchor"
+Cohesion: 0.09
+Nodes (23): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+15 more)
+
+### Community 1216 - "ArchiveMemberAnchor"
+Cohesion: 0.09
+Nodes (23): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+15 more)
+
+### Community 1217 - "HistoricalResultSourceAlignment"
+Cohesion: 0.09
+Nodes (23): items, minItems, title, type, HistoricalResultSourceAlignment, additionalProperties, description, properties (+15 more)
+
+### Community 1218 - "properties"
+Cohesion: 0.09
+Nodes (23): items, minItems, title, type, additionalProperties, description, properties, required (+15 more)
+
+### Community 1219 - "properties"
+Cohesion: 0.09
+Nodes (23): items, minItems, title, type, additionalProperties, description, properties, required (+15 more)
 
 ### Community 1220 - "properties"
 Cohesion: 0.07
@@ -3155,6 +4398,82 @@ Nodes (31): items, title, type, $ref, items, minItems, title, type (+23 more)
 Cohesion: 0.07
 Nodes (31): items, title, type, $ref, items, minItems, title, type (+23 more)
 
+### Community 1222 - "properties"
+Cohesion: 0.09
+Nodes (23): items, minItems, title, type, additionalProperties, description, properties, required (+15 more)
+
+### Community 1223 - "properties"
+Cohesion: 0.09
+Nodes (23): const, default, title, type, const, default, title, type (+15 more)
+
+### Community 1224 - "properties"
+Cohesion: 0.09
+Nodes (23): const, default, title, type, const, default, title, type (+15 more)
+
+### Community 1225 - "FrameworkAuthority"
+Cohesion: 0.09
+Nodes (23): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+15 more)
+
+### Community 1226 - "properties"
+Cohesion: 0.09
+Nodes (23): ResultSourceAlignment, minLength, title, type, $ref, payload_path, prepared_range, quote (+15 more)
+
+### Community 1227 - "FrameworkAuthority"
+Cohesion: 0.09
+Nodes (23): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+15 more)
+
+### Community 1228 - "FrameworkAuthority"
+Cohesion: 0.09
+Nodes (23): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+15 more)
+
+### Community 1229 - "FrameworkAuthority"
+Cohesion: 0.09
+Nodes (23): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+15 more)
+
+### Community 1230 - "properties"
+Cohesion: 0.09
+Nodes (23): ResultSourceAlignment, minLength, title, type, $ref, payload_path, prepared_range, quote (+15 more)
+
+### Community 1231 - "properties"
+Cohesion: 0.09
+Nodes (22): $ref, $ref, additionalProperties, properties, required, title, type, $ref (+14 more)
+
+### Community 1232 - "properties"
+Cohesion: 0.09
+Nodes (22): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+14 more)
+
+### Community 1233 - "properties"
+Cohesion: 0.09
+Nodes (22): additionalProperties, properties, required, title, type, AnalysisPolicy, $ref, default (+14 more)
+
+### Community 1234 - "$defs"
+Cohesion: 0.09
+Nodes (21): enum, title, type, enum, title, type, $defs, AuthorshipRole (+13 more)
+
+### Community 1235 - "CrossReferenceRepresentation"
+Cohesion: 0.10
+Nodes (22): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, ItemRelationship, additionalProperties (+14 more)
+
+### Community 1236 - "$defs"
+Cohesion: 0.09
+Nodes (21): enum, title, type, enum, title, type, $defs, AuthorshipRole (+13 more)
+
+### Community 1237 - "CrossReferenceRepresentation"
+Cohesion: 0.10
+Nodes (22): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, ItemRelationship, additionalProperties (+14 more)
+
+### Community 1238 - "properties"
+Cohesion: 0.09
+Nodes (22): $ref, $ref, additionalProperties, properties, required, title, type, $ref (+14 more)
+
+### Community 1239 - "properties"
+Cohesion: 0.09
+Nodes (22): $ref, $ref, additionalProperties, properties, required, title, type, $ref (+14 more)
+
+### Community 1240 - "properties"
+Cohesion: 0.09
+Nodes (22): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+14 more)
+
 ### Community 1241 - "properties"
 Cohesion: 0.07
 Nodes (30): default, items, title, type, $ref, $ref, default, items (+22 more)
@@ -3163,21 +4482,357 @@ Nodes (30): default, items, title, type, $ref, $ref, default, items (+22 more)
 Cohesion: 0.07
 Nodes (30): default, items, title, type, $ref, $ref, default, items (+22 more)
 
-### Community 1282 - "._graph_inputs"
-Cohesion: 0.14
-Nodes (5): _edge_feature(), _EdgeGraphAttentionLayer, GraphAttentionAdapter, _GraphScorer, _validate_complete_primary_tree()
+### Community 1243 - "properties"
+Cohesion: 0.09
+Nodes (22): additionalProperties, properties, required, title, type, AnalysisPolicy, $ref, default (+14 more)
+
+### Community 1244 - "properties"
+Cohesion: 0.09
+Nodes (22): const, default, $ref, title, type, HistoricalMachinePreparation, additionalProperties, description (+14 more)
+
+### Community 1245 - "HistoricalResultSourceAlignment"
+Cohesion: 0.09
+Nodes (22): items, minItems, title, type, HistoricalResultSourceAlignment, additionalProperties, description, properties (+14 more)
+
+### Community 1246 - "properties"
+Cohesion: 0.09
+Nodes (22): const, default, $ref, title, type, HistoricalMachinePreparation, additionalProperties, description (+14 more)
+
+### Community 1247 - "ExtractionRecord"
+Cohesion: 0.09
+Nodes (22): ExtractionRecord, additionalProperties, properties, required, title, type, pattern, title (+14 more)
+
+### Community 1248 - "ExtractionRecord"
+Cohesion: 0.09
+Nodes (22): ExtractionRecord, additionalProperties, properties, required, title, type, pattern, title (+14 more)
+
+### Community 1249 - "ExtractionRecord"
+Cohesion: 0.09
+Nodes (22): ExtractionRecord, additionalProperties, properties, required, title, type, pattern, title (+14 more)
+
+### Community 1250 - "ExtractionRecord"
+Cohesion: 0.09
+Nodes (22): ExtractionRecord, additionalProperties, properties, required, title, type, pattern, title (+14 more)
+
+### Community 1251 - "ExtractionRecord"
+Cohesion: 0.09
+Nodes (22): ExtractionRecord, additionalProperties, properties, required, title, type, pattern, title (+14 more)
+
+### Community 1252 - "type"
+Cohesion: 0.11
+Nodes (22): items, title, type, properties, type, generalizes, questions, raised_by (+14 more)
+
+### Community 1253 - "ExtractionRecord"
+Cohesion: 0.09
+Nodes (22): ExtractionRecord, additionalProperties, properties, required, title, type, pattern, title (+14 more)
+
+### Community 1254 - "type"
+Cohesion: 0.11
+Nodes (22): items, title, type, properties, type, generalizes, questions, raised_by (+14 more)
+
+### Community 1255 - "CrossReferenceRepresentation"
+Cohesion: 0.10
+Nodes (22): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, ItemRelationship, additionalProperties (+14 more)
+
+### Community 1256 - "CrossReferenceRepresentation"
+Cohesion: 0.10
+Nodes (22): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, ItemRelationship, additionalProperties (+14 more)
+
+### Community 1257 - "CrossReferenceRepresentation"
+Cohesion: 0.10
+Nodes (22): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, ItemRelationship, additionalProperties (+14 more)
+
+### Community 1258 - "CrossReferenceRepresentation"
+Cohesion: 0.10
+Nodes (22): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, ItemRelationship, additionalProperties (+14 more)
+
+### Community 1259 - "properties"
+Cohesion: 0.09
+Nodes (22): minLength, title, type, additionalProperties, properties, required, title, type (+14 more)
+
+### Community 1260 - "FrameworkAuthority"
+Cohesion: 0.09
+Nodes (22): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+14 more)
+
+### Community 1261 - "conversion_provenance"
+Cohesion: 0.09
+Nodes (22): default, items, title, type, anyOf, default, title, SourceArtifact (+14 more)
+
+### Community 1262 - "properties"
+Cohesion: 0.09
+Nodes (22): minLength, title, type, additionalProperties, properties, required, title, type (+14 more)
+
+### Community 1263 - "properties"
+Cohesion: 0.09
+Nodes (22): $ref, $ref, additionalProperties, properties, required, title, type, $ref (+14 more)
+
+### Community 1264 - "properties"
+Cohesion: 0.09
+Nodes (22): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+14 more)
+
+### Community 1265 - "properties"
+Cohesion: 0.09
+Nodes (22): $ref, $ref, additionalProperties, properties, required, title, type, $ref (+14 more)
+
+### Community 1266 - "properties"
+Cohesion: 0.09
+Nodes (22): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+14 more)
+
+### Community 1267 - "CrossReferenceRepresentation"
+Cohesion: 0.10
+Nodes (22): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, ItemRelationship, additionalProperties (+14 more)
+
+### Community 1268 - "properties"
+Cohesion: 0.09
+Nodes (22): $ref, $ref, additionalProperties, properties, required, title, type, $ref (+14 more)
+
+### Community 1269 - "properties"
+Cohesion: 0.09
+Nodes (22): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+14 more)
+
+### Community 1270 - "properties"
+Cohesion: 0.09
+Nodes (22): $ref, $ref, additionalProperties, properties, required, title, type, $ref (+14 more)
+
+### Community 1271 - "baseline_corrections.py"
+Cohesion: 0.19
+Nodes (21): BaselineVerificationError, doclang_table_correction_prefixes(), _objects(), Any, JsonPath, SourceArtifact, ValueError, Narrow proofs for the two owner-approved Feature 017 correctness repairs. These… (+13 more)
+
+### Community 1272 - "properties"
+Cohesion: 0.10
+Nodes (21): const, default, title, type, default, $ref, $ref, const (+13 more)
+
+### Community 1273 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1274 - "properties"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, CandidateSpan, exclusiveMinimum, title (+13 more)
+
+### Community 1275 - "MediaReferenceRepresentation"
+Cohesion: 0.10
+Nodes (21): anyOf, default, title, MediaReferenceRepresentation, anyOf, default, title, title (+13 more)
+
+### Community 1276 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1277 - "properties"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, CandidateSpan, exclusiveMinimum, title (+13 more)
+
+### Community 1278 - "MediaReferenceRepresentation"
+Cohesion: 0.10
+Nodes (21): anyOf, default, title, MediaReferenceRepresentation, anyOf, default, title, title (+13 more)
+
+### Community 1279 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1280 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1281 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1283 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
 
 ### Community 1284 - "ExactCoverage"
 Cohesion: 0.12
 Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
 
+### Community 1285 - "semantic_digest"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, const, default, title (+13 more)
+
+### Community 1286 - "source"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+13 more)
+
+### Community 1287 - "properties"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, anyOf, description, $ref (+13 more)
+
+### Community 1288 - "source"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+13 more)
+
+### Community 1289 - "kind"
+Cohesion: 0.10
+Nodes (21): FailedOutcome, HistoricalResultOutcome, additionalProperties, properties, required, title, type, $ref (+13 more)
+
+### Community 1290 - "source"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+13 more)
+
+### Community 1291 - "properties"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, anyOf, description, $ref (+13 more)
+
+### Community 1292 - "properties"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, anyOf, description, $ref (+13 more)
+
+### Community 1293 - "properties"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, anyOf, description, $ref (+13 more)
+
+### Community 1294 - "RationalityPostulatesOutput"
+Cohesion: 0.10
+Nodes (21): title, type, RationalityPostulatesOutput, title, type, title, type, all_satisfied (+13 more)
+
+### Community 1295 - "DefeasibleRuleInput"
+Cohesion: 0.10
+Nodes (21): items, minItems, title, type, $ref, additionalProperties, properties, required (+13 more)
+
+### Community 1296 - "RationalityPostulatesOutput"
+Cohesion: 0.10
+Nodes (21): title, type, RationalityPostulatesOutput, title, type, title, type, all_satisfied (+13 more)
+
+### Community 1297 - "DefeasibleRuleInput"
+Cohesion: 0.10
+Nodes (21): items, minItems, title, type, $ref, additionalProperties, properties, required (+13 more)
+
+### Community 1298 - "ProviderConfiguration"
+Cohesion: 0.10
+Nodes (21): $ref, title, type, minLength, title, type, ProviderConfiguration, anyOf (+13 more)
+
+### Community 1299 - "properties"
+Cohesion: 0.10
+Nodes (21): const, default, title, type, kind, version, default, enum (+13 more)
+
+### Community 1300 - "properties"
+Cohesion: 0.10
+Nodes (21): const, default, title, type, kind, version, default, enum (+13 more)
+
+### Community 1301 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1302 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1303 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1304 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1305 - "properties"
+Cohesion: 0.10
+Nodes (21): minLength, title, type, properties, anyOf, default, title, activity_id (+13 more)
+
 ### Community 1306 - "compute_calibration_error"
 Cohesion: 0.26
-Nodes (8): test_boolean_bin_count_rejected(), test_empty_bins_do_not_invent_observations(), test_invalid_probability_rejected(), test_no_observations_means_unavailable_error(), test_nonbinary_correctness_rejected(), test_calibration_ece_hand_computed(), test_calibration_error_mismatched_and_empty(), compute_calibration_error()
+Nodes (11): parametrize, Invalid observations cannot improve a reported calibration error., test_boolean_bin_count_rejected(), test_empty_bins_do_not_invent_observations(), test_invalid_probability_rejected(), test_no_observations_means_unavailable_error(), test_nonbinary_correctness_rejected(), test_calibration_ece_hand_computed() (+3 more)
+
+### Community 1307 - "properties"
+Cohesion: 0.10
+Nodes (21): minLength, title, type, properties, anyOf, default, title, activity_id (+13 more)
+
+### Community 1308 - "MediaReferenceRepresentation"
+Cohesion: 0.10
+Nodes (21): anyOf, default, title, MediaReferenceRepresentation, anyOf, default, title, title (+13 more)
+
+### Community 1309 - "MediaReferenceRepresentation"
+Cohesion: 0.10
+Nodes (21): anyOf, default, title, MediaReferenceRepresentation, anyOf, default, title, title (+13 more)
+
+### Community 1310 - "MediaReferenceRepresentation"
+Cohesion: 0.10
+Nodes (21): anyOf, default, title, MediaReferenceRepresentation, anyOf, default, title, title (+13 more)
+
+### Community 1311 - "MediaReferenceRepresentation"
+Cohesion: 0.10
+Nodes (21): anyOf, default, title, MediaReferenceRepresentation, anyOf, default, title, title (+13 more)
+
+### Community 1312 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1313 - "properties"
+Cohesion: 0.10
+Nodes (21): title, type, title, type, PageBoxAnchor, title, type, additionalProperties (+13 more)
+
+### Community 1314 - "semantic_digest"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, const, default, title (+13 more)
+
+### Community 1315 - "semantic_digest"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, const, default, title (+13 more)
+
+### Community 1316 - "properties"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+13 more)
+
+### Community 1317 - "properties"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+13 more)
+
+### Community 1318 - "MediaReferenceRepresentation"
+Cohesion: 0.10
+Nodes (21): anyOf, default, title, MediaReferenceRepresentation, anyOf, default, title, title (+13 more)
+
+### Community 1319 - "semantic_digest"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, const, default, title (+13 more)
+
+### Community 1320 - "semantic_digest"
+Cohesion: 0.10
+Nodes (21): additionalProperties, properties, required, title, type, const, default, title (+13 more)
 
 ### Community 1321 - "gold.py"
-Cohesion: 0.12
-Nodes (14): _source(), test_gold_manifest_enforces_depth_forms_risks_and_rst_gold(), test_gold_manifest_rejects_shallow_set(), GoldSetManifest, GoldSource, ProvenanceClass, assemble_gold_set(), _copy() (+6 more)
+Cohesion: 0.10
+Nodes (38): FreezeAuthority, freeze_baseline(), _git(), GoldSetManifest, Path, Build the immutable baseline wheel and record isolated legacy prepared inputs., _run_isolated_baseline(), adjudicate_gold_set() (+30 more)
+
+### Community 1322 - "Candidate"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, Candidate, reasons, resource (+4 more)
+
+### Community 1323 - "Candidate"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, Candidate, reasons, resource (+4 more)
+
+### Community 1324 - "properties"
+Cohesion: 0.10
+Nodes (20): additionalProperties, properties, required, title, type, anyOf, description, title (+12 more)
+
+### Community 1325 - "mapping"
+Cohesion: 0.11
+Nodes (20): discriminator, oneOf, ContentRepresentation, HistoricalOutcome, mapping, propertyName, discriminator, oneOf (+12 more)
+
+### Community 1326 - "$ref"
+Cohesion: 0.10
+Nodes (20): items, minItems, title, type, $ref, anchors, relationships, source_alignment (+12 more)
+
+### Community 1327 - "mapping"
+Cohesion: 0.11
+Nodes (20): discriminator, oneOf, ContentRepresentation, HistoricalOutcome, mapping, propertyName, discriminator, oneOf (+12 more)
+
+### Community 1328 - "properties"
+Cohesion: 0.10
+Nodes (20): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+12 more)
+
+### Community 1329 - "properties"
+Cohesion: 0.10
+Nodes (20): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+12 more)
+
+### Community 1330 - "properties"
+Cohesion: 0.11
+Nodes (20): items, title, type, $ref, items, title, type, $ref (+12 more)
+
+### Community 1331 - "properties"
+Cohesion: 0.11
+Nodes (20): items, title, type, $ref, items, title, type, $ref (+12 more)
 
 ### Community 1332 - "machine-dung-input.serialization.schema.json"
 Cohesion: 0.08
@@ -3187,6 +4842,50 @@ Nodes (24): additionalProperties, items, minItems, title, type, items, title, ty
 Cohesion: 0.08
 Nodes (24): additionalProperties, items, minItems, title, type, items, title, type (+16 more)
 
+### Community 1334 - "PreparedRange"
+Cohesion: 0.11
+Nodes (20): PreparedRange, TextSpanAnchor, exclusiveMinimum, title, type, additionalProperties, properties, required (+12 more)
+
+### Community 1335 - "PreparedRange"
+Cohesion: 0.11
+Nodes (20): PreparedRange, TextSpanAnchor, exclusiveMinimum, title, type, additionalProperties, properties, required (+12 more)
+
+### Community 1336 - "$defs"
+Cohesion: 0.10
+Nodes (20): $defs, OriginClassification, SourceArtifact, SourceForm, Technique, enum, title, type (+12 more)
+
+### Community 1337 - "$defs"
+Cohesion: 0.10
+Nodes (20): $defs, OriginClassification, SourceArtifact, SourceForm, Technique, enum, title, type (+12 more)
+
+### Community 1338 - "properties"
+Cohesion: 0.10
+Nodes (20): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+12 more)
+
+### Community 1339 - "properties"
+Cohesion: 0.10
+Nodes (20): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+12 more)
+
+### Community 1340 - "properties"
+Cohesion: 0.10
+Nodes (20): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+12 more)
+
+### Community 1341 - "properties"
+Cohesion: 0.10
+Nodes (20): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+12 more)
+
+### Community 1342 - "FrameworkAuthority"
+Cohesion: 0.10
+Nodes (20): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+12 more)
+
+### Community 1343 - "properties"
+Cohesion: 0.10
+Nodes (20): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+12 more)
+
+### Community 1345 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, anyOf, AnalysisSemanticEvidence, anyOf (+11 more)
+
 ### Community 1346 - "properties"
 Cohesion: 0.09
 Nodes (24): items, title, type, $ref, items, minItems, title, type (+16 more)
@@ -3195,13 +4894,217 @@ Nodes (24): items, title, type, $ref, items, minItems, title, type (+16 more)
 Cohesion: 0.09
 Nodes (24): items, title, type, $ref, items, minItems, title, type (+16 more)
 
+### Community 1348 - "ArchiveMemberAnchor"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+11 more)
+
+### Community 1349 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, AnalysisPolicy, $ref, default (+11 more)
+
+### Community 1350 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, anyOf, AnalysisSemanticEvidence, anyOf (+11 more)
+
+### Community 1351 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CompletedStageEvidence, ComponentIdentity, mapping, propertyName (+11 more)
+
+### Community 1352 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, anyOf, AnalysisSemanticEvidence, anyOf (+11 more)
+
+### Community 1353 - "ArchiveMemberAnchor"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+11 more)
+
+### Community 1354 - "FrameworkAuthority"
+Cohesion: 0.11
+Nodes (19): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+11 more)
+
+### Community 1355 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
+
+### Community 1356 - "FrameworkAuthority"
+Cohesion: 0.11
+Nodes (19): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+11 more)
+
+### Community 1357 - "Disposition"
+Cohesion: 0.11
+Nodes (19): $ref, Disposition, additionalProperties, properties, required, title, type, anyOf (+11 more)
+
+### Community 1358 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, anyOf, description, title (+11 more)
+
+### Community 1359 - "FrameworkAuthority"
+Cohesion: 0.11
+Nodes (19): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+11 more)
+
+### Community 1360 - "Disposition"
+Cohesion: 0.11
+Nodes (19): $ref, Disposition, additionalProperties, properties, required, title, type, anyOf (+11 more)
+
+### Community 1361 - "FrameworkAuthority"
+Cohesion: 0.11
+Nodes (19): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+11 more)
+
+### Community 1362 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
+
+### Community 1363 - "FrameworkAuthority"
+Cohesion: 0.11
+Nodes (19): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+11 more)
+
+### Community 1364 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
+
+### Community 1365 - "FrameworkAuthority"
+Cohesion: 0.11
+Nodes (19): const, default, title, type, FrameworkAuthority, additionalProperties, description, properties (+11 more)
+
+### Community 1366 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
+
+### Community 1367 - "SourceEvidenceSpan"
+Cohesion: 0.11
+Nodes (19): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, text, additionalProperties (+11 more)
+
+### Community 1368 - "SourceEvidenceSpan"
+Cohesion: 0.11
+Nodes (19): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, text, additionalProperties (+11 more)
+
+### Community 1369 - "properties"
+Cohesion: 0.11
+Nodes (19): anyOf, default, title, anyOf, default, title, cb, cp (+11 more)
+
+### Community 1370 - "SourceEvidenceSpan"
+Cohesion: 0.11
+Nodes (19): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, text, additionalProperties (+11 more)
+
+### Community 1371 - "properties"
+Cohesion: 0.11
+Nodes (19): anyOf, default, title, anyOf, default, title, cb, cp (+11 more)
+
+### Community 1372 - "SourceEvidenceSpan"
+Cohesion: 0.11
+Nodes (19): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, text, additionalProperties (+11 more)
+
+### Community 1373 - "SourceEvidenceSpan"
+Cohesion: 0.11
+Nodes (19): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, text, additionalProperties (+11 more)
+
+### Community 1374 - "SourceEvidenceSpan"
+Cohesion: 0.11
+Nodes (19): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, text, additionalProperties (+11 more)
+
+### Community 1375 - "machine-configuration.serialization.schema.json"
+Cohesion: 0.11
+Nodes (18): additionalProperties, $defs, LlmSettings, RstSettings, TechniqueModels, $id, additionalProperties, title (+10 more)
+
+### Community 1376 - "machine-configuration.validation.schema.json"
+Cohesion: 0.11
+Nodes (18): additionalProperties, $defs, LlmSettings, RstSettings, TechniqueModels, $id, additionalProperties, title (+10 more)
+
+### Community 1377 - "type"
+Cohesion: 0.14
+Nodes (19): items, title, type, properties, items, title, type, items (+11 more)
+
+### Community 1378 - "type"
+Cohesion: 0.14
+Nodes (19): items, title, type, properties, items, title, type, items (+11 more)
+
+### Community 1379 - "$defs"
+Cohesion: 0.11
+Nodes (19): $defs, IssueOutput, NodeKind, Relation, Technique, additionalProperties, required, title (+11 more)
+
+### Community 1380 - "$defs"
+Cohesion: 0.11
+Nodes (19): $defs, IssueOutput, NodeKind, Relation, Technique, additionalProperties, required, title (+11 more)
+
+### Community 1381 - "$defs"
+Cohesion: 0.11
+Nodes (19): additionalProperties, required, title, type, $defs, CoordinateBoxAnchor, JsonScalar, JsonValue (+11 more)
+
+### Community 1382 - "$defs"
+Cohesion: 0.11
+Nodes (19): additionalProperties, required, title, type, $defs, CoordinateBoxAnchor, JsonScalar, JsonValue (+11 more)
+
+### Community 1383 - "SourceEvidenceSpan"
+Cohesion: 0.11
+Nodes (19): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, text, additionalProperties (+11 more)
+
+### Community 1384 - "SourceEvidenceSpan"
+Cohesion: 0.11
+Nodes (19): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, text, additionalProperties (+11 more)
+
+### Community 1385 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
+
+### Community 1386 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
+
+### Community 1387 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
+
+### Community 1388 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
+
+### Community 1389 - "version"
+Cohesion: 0.11
+Nodes (19): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+11 more)
+
+### Community 1390 - "version"
+Cohesion: 0.11
+Nodes (19): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+11 more)
+
 ### Community 1391 - "properties"
 Cohesion: 0.09
 Nodes (22): $ref, items, title, type, $ref, ErstCompletionEvidence, additionalProperties, properties (+14 more)
 
+### Community 1392 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, AnalysisPolicy, $ref, default (+11 more)
+
+### Community 1393 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, anyOf, AnalysisSemanticEvidence, anyOf (+11 more)
+
+### Community 1394 - "ValueError"
+Cohesion: 0.24
+Nodes (7): setter, _fit_temperature(), ndarray, ValueError, Solve the monotone NLL derivative in normalized inverse temperature. NLL is…, Fit optimal temperature on validation logits and labels minimizing NLL., Return calibrated class probabilities.
+
 ### Community 1395 - "rst/calibration.py"
 Cohesion: 0.22
-Nodes (4): test_compute_calibration_error_perfect(), test_temperature_scaler_fit_and_predict(), CalibrationBin, CalibrationSummary
+Nodes (9): Path, Unit tests for offline probability calibration and temperature scaling., test_compute_calibration_error_perfect(), test_temperature_scaler_fit_and_predict(), CalibrationBin, CalibrationSummary, Offline confidence calibration metrics and error estimators., A single bin in an expected calibration error histogram. (+1 more)
+
+### Community 1396 - "kind"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+11 more)
+
+### Community 1397 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, AnalysisPolicy, $ref, default (+11 more)
+
+### Community 1398 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, anyOf, AnalysisSemanticEvidence, anyOf (+11 more)
+
+### Community 1399 - "kind"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+11 more)
+
+### Community 1400 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
 
 ### Community 1401 - "TextSpan"
 Cohesion: 0.10
@@ -3211,6 +5114,74 @@ Nodes (20): TextSpan, exclusiveMinimum, title, type, end, start, text, end (+12 
 Cohesion: 0.10
 Nodes (20): TextSpan, exclusiveMinimum, title, type, end, start, text, end (+12 more)
 
+### Community 1403 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CapabilityState, ContentRepresentation, mapping, propertyName (+11 more)
+
+### Community 1404 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, anyOf, description, title (+11 more)
+
+### Community 1405 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, AnalysisPolicy, $ref, default (+11 more)
+
+### Community 1406 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, anyOf, AnalysisSemanticEvidence, anyOf (+11 more)
+
+### Community 1407 - "kind"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+11 more)
+
+### Community 1408 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, AnalysisPolicy, $ref, default (+11 more)
+
+### Community 1409 - "properties"
+Cohesion: 0.11
+Nodes (19): additionalProperties, properties, required, title, type, anyOf, AnalysisSemanticEvidence, anyOf (+11 more)
+
+### Community 1410 - "mapping"
+Cohesion: 0.11
+Nodes (19): discriminator, oneOf, discriminator, oneOf, CompletedStageEvidence, ComponentIdentity, mapping, propertyName (+11 more)
+
+### Community 1411 - "_interpretation_types.py"
+Cohesion: 0.05
+Nodes (66): describe(), NativeInterpretationDescriptor, CLASSICAL_RHETORIC-owned reading guide; no inference or payload rewriting., describe(), NativeInterpretationDescriptor, DUNG-owned reading guide; no inference or payload rewriting., describe(), NativeInterpretationDescriptor (+58 more)
+
+### Community 1412 - "properties"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, anyOf, description, title (+10 more)
+
+### Community 1413 - "ComponentFileIdentity"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, ComponentFileIdentity, $ref, title (+10 more)
+
+### Community 1414 - "mapping"
+Cohesion: 0.11
+Nodes (18): discriminator, oneOf, discriminator, ComponentIdentity, ContentRepresentation, mapping, propertyName, annotation (+10 more)
+
+### Community 1415 - "ListItemRepresentation"
+Cohesion: 0.11
+Nodes (18): default, title, type, ListItemRepresentation, minLength, title, type, additionalProperties (+10 more)
+
+### Community 1416 - "ListItemRepresentation"
+Cohesion: 0.11
+Nodes (18): default, title, type, ListItemRepresentation, minLength, title, type, additionalProperties (+10 more)
+
+### Community 1417 - "version"
+Cohesion: 0.11
+Nodes (18): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+10 more)
+
+### Community 1418 - "version"
+Cohesion: 0.11
+Nodes (18): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+10 more)
+
+### Community 1419 - "version"
+Cohesion: 0.11
+Nodes (18): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+10 more)
+
 ### Community 1420 - "properties"
 Cohesion: 0.15
 Nodes (13): anyOf, default, title, type, properties, completed_result_identity, message, publication_state (+5 more)
@@ -3219,6 +5190,30 @@ Nodes (13): anyOf, default, title, type, properties, completed_result_identity, 
 Cohesion: 0.15
 Nodes (13): anyOf, default, title, type, properties, completed_result_identity, message, publication_state (+5 more)
 
+### Community 1422 - "version"
+Cohesion: 0.11
+Nodes (18): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+10 more)
+
+### Community 1423 - "properties"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, anyOf, description, title (+10 more)
+
+### Community 1424 - "ComponentFileIdentity"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, ComponentFileIdentity, $ref, title (+10 more)
+
+### Community 1425 - "properties"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, anyOf, description, title (+10 more)
+
+### Community 1426 - "ComponentFileIdentity"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, ComponentFileIdentity, $ref, title (+10 more)
+
+### Community 1427 - "mapping"
+Cohesion: 0.11
+Nodes (18): discriminator, oneOf, discriminator, ComponentIdentity, ContentRepresentation, mapping, propertyName, annotation (+10 more)
+
 ### Community 1428 - "properties"
 Cohesion: 0.11
 Nodes (19): minimum, title, type, minimum, title, type, $ref, properties (+11 more)
@@ -3226,6 +5221,14 @@ Nodes (19): minimum, title, type, minimum, title, type, $ref, properties (+11 mo
 ### Community 1429 - "properties"
 Cohesion: 0.11
 Nodes (19): minimum, title, type, minimum, title, type, $ref, properties (+11 more)
+
+### Community 1430 - "properties"
+Cohesion: 0.11
+Nodes (18): const, default, title, type, HistoricalMachinePreparation, additionalProperties, description, properties (+10 more)
+
+### Community 1431 - "properties"
+Cohesion: 0.11
+Nodes (18): const, default, title, type, HistoricalMachinePreparation, additionalProperties, description, properties (+10 more)
 
 ### Community 1432 - "properties"
 Cohesion: 0.11
@@ -3239,6 +5242,74 @@ Nodes (19): minimum, title, type, $ref, properties, minimum, title, type (+11 mo
 Cohesion: 0.07
 Nodes (34): required, required, required, required, required, boundary_reason, capacity, character_coverage (+26 more)
 
+### Community 1435 - "ProviderConfiguration"
+Cohesion: 0.11
+Nodes (18): title, type, minLength, title, type, ProviderConfiguration, anyOf, default (+10 more)
+
+### Community 1436 - "$defs"
+Cohesion: 0.11
+Nodes (18): $defs, ExtractionRecord, NonEmpty, PistisMode, RhetoricalScheme, StasisKind, additionalProperties, required (+10 more)
+
+### Community 1437 - "PistisBalanceOutput"
+Cohesion: 0.11
+Nodes (18): PistisBalanceOutput, minimum, title, type, minimum, title, type, minimum (+10 more)
+
+### Community 1438 - "$defs"
+Cohesion: 0.11
+Nodes (18): $defs, ExtractionRecord, NonEmpty, PistisMode, RhetoricalScheme, StasisKind, additionalProperties, required (+10 more)
+
+### Community 1439 - "PistisBalanceOutput"
+Cohesion: 0.11
+Nodes (18): PistisBalanceOutput, minimum, title, type, minimum, title, type, minimum (+10 more)
+
+### Community 1440 - "AlgorithmOutput"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, exclusiveMinimum, title, type (+10 more)
+
+### Community 1441 - "AlgorithmOutput"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, exclusiveMinimum, title, type (+10 more)
+
+### Community 1442 - "MapOutput"
+Cohesion: 0.11
+Nodes (18): MapOutput, items, title, type, items, title, type, additionalProperties (+10 more)
+
+### Community 1443 - "properties"
+Cohesion: 0.11
+Nodes (18): anyOf, default, anyOf, const, title, type, enum, title (+10 more)
+
+### Community 1444 - "MapOutput"
+Cohesion: 0.11
+Nodes (18): MapOutput, items, title, type, items, title, type, additionalProperties (+10 more)
+
+### Community 1445 - "properties"
+Cohesion: 0.11
+Nodes (18): anyOf, default, anyOf, const, title, type, enum, title (+10 more)
+
+### Community 1446 - "$defs"
+Cohesion: 0.11
+Nodes (18): enum, type, $defs, CriticalDiscussionRuleId, DiscussionStage, ExtractionRecord, NonEmpty, StandpointPolarity (+10 more)
+
+### Community 1447 - "$defs"
+Cohesion: 0.11
+Nodes (18): enum, type, $defs, CriticalDiscussionRuleId, DiscussionStage, ExtractionRecord, NonEmpty, StandpointPolarity (+10 more)
+
+### Community 1448 - "media_type"
+Cohesion: 0.11
+Nodes (18): anyOf, default, minLength, title, type, media_type, source_id, source_name (+10 more)
+
+### Community 1449 - "SourceIdentity"
+Cohesion: 0.11
+Nodes (18): SourceIdentity, source_id, source_name, default, $ref, title, type, anyOf (+10 more)
+
+### Community 1450 - "properties"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, anyOf, description, title (+10 more)
+
+### Community 1451 - "ComponentFileIdentity"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, ComponentFileIdentity, $ref, title (+10 more)
+
 ### Community 1452 - "properties"
 Cohesion: 0.11
 Nodes (18): type, $ref, properties, extraction, relation_count, relation_type_counts, relations, $ref (+10 more)
@@ -3246,6 +5317,30 @@ Nodes (18): type, $ref, properties, extraction, relation_count, relation_type_co
 ### Community 1453 - "properties"
 Cohesion: 0.11
 Nodes (18): type, $ref, properties, extraction, relation_count, relation_type_counts, relations, $ref (+10 more)
+
+### Community 1454 - "properties"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, anyOf, description, title (+10 more)
+
+### Community 1455 - "ComponentFileIdentity"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, ComponentFileIdentity, $ref, title (+10 more)
+
+### Community 1456 - "$defs"
+Cohesion: 0.11
+Nodes (18): enum, type, $defs, CommitmentOperation, ExtractionRecord, IsoCommunicativeFunction, NonEmpty, SearleClass (+10 more)
+
+### Community 1457 - "$defs"
+Cohesion: 0.11
+Nodes (18): enum, type, $defs, CommitmentOperation, ExtractionRecord, IsoCommunicativeFunction, NonEmpty, SearleClass (+10 more)
+
+### Community 1458 - "properties"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, anyOf, description, title (+10 more)
+
+### Community 1459 - "ComponentFileIdentity"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, ComponentFileIdentity, $ref, title (+10 more)
 
 ### Community 1460 - "properties"
 Cohesion: 0.11
@@ -3263,6 +5358,70 @@ Nodes (15): properties, minimum, title, type, addressed, open, anyOf, index (+7 
 Cohesion: 0.11
 Nodes (18): $ref, minimum, title, type, properties, extraction, instance_count, question_count (+10 more)
 
+### Community 1464 - "properties"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, anyOf, description, title (+10 more)
+
+### Community 1465 - "ComponentFileIdentity"
+Cohesion: 0.11
+Nodes (18): additionalProperties, properties, required, title, type, ComponentFileIdentity, $ref, title (+10 more)
+
+### Community 1466 - "ContentInventory"
+Cohesion: 0.12
+Nodes (17): additionalProperties, description, properties, required, title, type, ContentInventory, title (+9 more)
+
+### Community 1467 - "RawContractDeclaration"
+Cohesion: 0.12
+Nodes (17): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+9 more)
+
+### Community 1468 - "ContentInventory"
+Cohesion: 0.12
+Nodes (17): additionalProperties, description, properties, required, title, type, ContentInventory, title (+9 more)
+
+### Community 1469 - "RawContractDeclaration"
+Cohesion: 0.12
+Nodes (17): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+9 more)
+
+### Community 1470 - "properties"
+Cohesion: 0.12
+Nodes (17): $ref, additionalProperties, properties, CompositeAnalysisIdentity, $ref, $ref, $ref, $ref (+9 more)
+
+### Community 1471 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1472 - "$ref"
+Cohesion: 0.12
+Nodes (17): items, minItems, title, type, $ref, anchors, relationships, source_alignment (+9 more)
+
+### Community 1473 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1474 - "source"
+Cohesion: 0.12
+Nodes (17): additionalProperties, description, properties, required, title, type, ContentInventory, title (+9 more)
+
+### Community 1475 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1476 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1477 - "AnalysisReadingGuide"
+Cohesion: 0.12
+Nodes (17): additionalProperties, properties, required, title, type, AnalysisReadingGuide, items, title (+9 more)
+
+### Community 1478 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1479 - "AnalysisReadingGuide"
+Cohesion: 0.12
+Nodes (17): additionalProperties, properties, required, title, type, AnalysisReadingGuide, items, title (+9 more)
+
 ### Community 1480 - "properties"
 Cohesion: 0.12
 Nodes (17): properties, pattern, title, type, minLength, title, type, minimum (+9 more)
@@ -3270,6 +5429,30 @@ Nodes (17): properties, pattern, title, type, minLength, title, type, minimum (+
 ### Community 1481 - "properties"
 Cohesion: 0.12
 Nodes (17): properties, pattern, title, type, minLength, title, type, minimum (+9 more)
+
+### Community 1482 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1483 - "properties"
+Cohesion: 0.12
+Nodes (17): additionalProperties, properties, required, title, type, $ref, AspicAttackOutput, $ref (+9 more)
+
+### Community 1484 - "properties"
+Cohesion: 0.12
+Nodes (17): additionalProperties, properties, required, title, type, $ref, AspicAttackOutput, $ref (+9 more)
+
+### Community 1485 - "type"
+Cohesion: 0.12
+Nodes (17): items, title, type, type, items, title, type, accepted_media_types (+9 more)
+
+### Community 1486 - "properties"
+Cohesion: 0.13
+Nodes (17): $ref, pattern, title, type, properties, capability, formalism_id, requires_structured_input (+9 more)
+
+### Community 1487 - "properties"
+Cohesion: 0.13
+Nodes (17): $ref, pattern, title, type, properties, capability, formalism_id, requires_structured_input (+9 more)
 
 ### Community 1488 - "properties"
 Cohesion: 0.12
@@ -3339,17 +5522,109 @@ Nodes (17): required, addressed_count, conclusion, critical_questions, extractio
 Cohesion: 0.05
 Nodes (43): properties, title, type, title, type, title, type, PageAnchor (+35 more)
 
+### Community 1505 - "FormalismDeclaration"
+Cohesion: 0.12
+Nodes (17): $ref, FormalismDeclaration, pattern, title, type, additionalProperties, description, properties (+9 more)
+
+### Community 1506 - "ContractSupport"
+Cohesion: 0.12
+Nodes (17): const, default, title, type, additionalProperties, properties, required, title (+9 more)
+
+### Community 1507 - "DiscourseEntityOutput"
+Cohesion: 0.12
+Nodes (17): minLength, title, type, DiscourseEntityOutput, additionalProperties, properties, required, title (+9 more)
+
 ### Community 1508 - "test_calibration_loss.py"
 Cohesion: 0.24
-Nodes (6): test_analytic_optimum_is_not_limited_by_temperature_bounds(), test_common_large_logit_offset_does_not_overflow_scaling(), test_extreme_error_is_not_clipped_out_of_fitting_objective(), test_invalid_prediction_logits_rejected(), test_separable_data_has_no_finite_optimum(), CalibrationFitError
+Nodes (10): ndarray, parametrize, Temperature fitting must not hide confidently wrong predictions by clipping., test_analytic_optimum_is_not_limited_by_temperature_bounds(), test_common_large_logit_offset_does_not_overflow_scaling(), test_extreme_error_is_not_clipped_out_of_fitting_objective(), test_invalid_prediction_logits_rejected(), test_separable_data_has_no_finite_optimum() (+2 more)
+
+### Community 1509 - "$defs"
+Cohesion: 0.12
+Nodes (17): enum, type, $defs, CenteringTransition, GrammaticalRole, TransitionCountsOutput, UtteranceCenteringOutput, enum (+9 more)
+
+### Community 1510 - "EntityMentionOutput"
+Cohesion: 0.12
+Nodes (17): EntityMentionOutput, additionalProperties, properties, required, title, type, title, type (+9 more)
+
+### Community 1511 - "DiscourseEntityOutput"
+Cohesion: 0.12
+Nodes (17): minLength, title, type, DiscourseEntityOutput, additionalProperties, properties, required, title (+9 more)
+
+### Community 1512 - "$defs"
+Cohesion: 0.12
+Nodes (17): enum, type, $defs, CenteringTransition, GrammaticalRole, TransitionCountsOutput, UtteranceCenteringOutput, enum (+9 more)
+
+### Community 1513 - "EntityMentionOutput"
+Cohesion: 0.12
+Nodes (17): EntityMentionOutput, additionalProperties, properties, required, title, type, title, type (+9 more)
+
+### Community 1514 - "properties"
+Cohesion: 0.12
+Nodes (17): properties, pattern, title, type, minLength, title, type, minimum (+9 more)
+
+### Community 1515 - "properties"
+Cohesion: 0.12
+Nodes (17): properties, pattern, title, type, minLength, title, type, minimum (+9 more)
+
+### Community 1516 - "SourceIdentity"
+Cohesion: 0.12
+Nodes (17): SourceIdentity, anyOf, default, title, media_type, source_id, source_name, $ref (+9 more)
+
+### Community 1517 - "$defs"
+Cohesion: 0.12
+Nodes (17): additionalProperties, required, title, type, $defs, CoordinateBoxAnchor, SemanticVersion, SourceAnchor (+9 more)
+
+### Community 1518 - "SourceIdentity"
+Cohesion: 0.12
+Nodes (17): SourceIdentity, anyOf, default, title, media_type, source_id, source_name, $ref (+9 more)
+
+### Community 1519 - "SourceIdentity"
+Cohesion: 0.12
+Nodes (17): SourceIdentity, anyOf, default, title, media_type, source_id, source_name, $ref (+9 more)
+
+### Community 1520 - "SourceIdentity"
+Cohesion: 0.12
+Nodes (17): SourceIdentity, anyOf, default, title, media_type, source_id, source_name, $ref (+9 more)
+
+### Community 1521 - "properties"
+Cohesion: 0.12
+Nodes (17): properties, pattern, title, type, minLength, title, type, minimum (+9 more)
+
+### Community 1522 - "properties"
+Cohesion: 0.12
+Nodes (17): properties, pattern, title, type, minLength, title, type, minimum (+9 more)
 
 ### Community 1523 - "properties"
 Cohesion: 0.06
 Nodes (37): properties, items, title, type, $ref, $ref, items, title (+29 more)
 
+### Community 1524 - "RawContractDeclaration"
+Cohesion: 0.12
+Nodes (17): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+9 more)
+
 ### Community 1525 - "properties"
 Cohesion: 0.06
 Nodes (37): items, title, type, properties, $ref, $ref, items, title (+29 more)
+
+### Community 1526 - "RawContractDeclaration"
+Cohesion: 0.12
+Nodes (17): RawContractDeclaration, anyOf, default, title, namespace, schema_name, version, additionalProperties (+9 more)
+
+### Community 1527 - "AvailableCapability"
+Cohesion: 0.12
+Nodes (17): additionalProperties, properties, required, title, type, $ref, AvailableCapability, contract_version (+9 more)
+
+### Community 1528 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1529 - "AvailableCapability"
+Cohesion: 0.12
+Nodes (17): additionalProperties, properties, required, title, type, $ref, AvailableCapability, contract_version (+9 more)
+
+### Community 1530 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
 
 ### Community 1531 - "properties"
 Cohesion: 0.12
@@ -3358,6 +5633,38 @@ Nodes (16): $ref, $ref, properties, minimum, title, type, additionalProperties, 
 ### Community 1532 - "properties"
 Cohesion: 0.12
 Nodes (16): $ref, $ref, properties, minimum, title, type, additionalProperties, title (+8 more)
+
+### Community 1533 - "AvailableCapability"
+Cohesion: 0.12
+Nodes (17): additionalProperties, properties, required, title, type, $ref, AvailableCapability, contract_version (+9 more)
+
+### Community 1534 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1535 - "AvailableCapability"
+Cohesion: 0.12
+Nodes (17): additionalProperties, properties, required, title, type, $ref, AvailableCapability, contract_version (+9 more)
+
+### Community 1536 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1537 - "properties"
+Cohesion: 0.12
+Nodes (17): properties, pattern, title, type, minLength, title, type, minimum (+9 more)
+
+### Community 1538 - "properties"
+Cohesion: 0.12
+Nodes (17): properties, pattern, title, type, minLength, title, type, minimum (+9 more)
+
+### Community 1539 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1540 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
 
 ### Community 1541 - "required"
 Cohesion: 0.13
@@ -3407,6 +5714,94 @@ Nodes (15): description, $ref, Rebuttal, condition, condition, source_text, addi
 Cohesion: 0.13
 Nodes (15): $ref, minimum, title, type, items, title, type, properties (+7 more)
 
+### Community 1553 - "ExactCoverage"
+Cohesion: 0.12
+Nodes (17): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+9 more)
+
+### Community 1554 - "properties"
+Cohesion: 0.12
+Nodes (17): $ref, additionalProperties, properties, CompositeAnalysisIdentity, $ref, $ref, $ref, $ref (+9 more)
+
+### Community 1555 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1556 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1557 - "SourceOrigin"
+Cohesion: 0.12
+Nodes (16): $ref, SourceOrigin, anyOf, default, title, authorship, producer, source_layer (+8 more)
+
+### Community 1558 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1559 - "SourceOrigin"
+Cohesion: 0.12
+Nodes (16): $ref, SourceOrigin, anyOf, default, title, authorship, producer, source_layer (+8 more)
+
+### Community 1560 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1561 - "SourceOrigin"
+Cohesion: 0.12
+Nodes (16): $ref, SourceOrigin, anyOf, default, title, authorship, producer, source_layer (+8 more)
+
+### Community 1562 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1563 - "SourceOrigin"
+Cohesion: 0.12
+Nodes (16): $ref, SourceOrigin, anyOf, default, title, authorship, producer, source_layer (+8 more)
+
+### Community 1564 - "properties"
+Cohesion: 0.12
+Nodes (16): additionalProperties, properties, required, title, type, AnalysisCapacity, minLength, title (+8 more)
+
+### Community 1565 - "machine-aspic-input.serialization.schema.json"
+Cohesion: 0.12
+Nodes (15): additionalProperties, $defs, NonEmpty, OrderingPrinciple, SetComparison, $id, minLength, type (+7 more)
+
+### Community 1566 - "machine-aspic-input.validation.schema.json"
+Cohesion: 0.12
+Nodes (15): additionalProperties, $defs, NonEmpty, OrderingPrinciple, SetComparison, $id, minLength, type (+7 more)
+
+### Community 1567 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1568 - "properties"
+Cohesion: 0.12
+Nodes (16): $ref, SourceFormCapability, title, type, availability, preparation_supported, required_extra, source_form (+8 more)
+
+### Community 1569 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1570 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1571 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1572 - "properties"
+Cohesion: 0.12
+Nodes (16): $ref, SourceFormCapability, title, type, availability, preparation_supported, required_extra, source_form (+8 more)
+
+### Community 1573 - "contract_version"
+Cohesion: 0.12
+Nodes (16): additionalProperties, properties, required, title, type, const, default, $ref (+8 more)
+
+### Community 1574 - "IbisInputLink"
+Cohesion: 0.12
+Nodes (16): IbisInputLink, minLength, title, type, additionalProperties, properties, required, title (+8 more)
+
 ### Community 1575 - "enum"
 Cohesion: 0.13
 Nodes (15): analyse, capabilities, concepts, configuration, prepare, publish, schema, serve (+7 more)
@@ -3414,6 +5809,30 @@ Nodes (15): analyse, capabilities, concepts, configuration, prepare, publish, sc
 ### Community 1576 - "enum"
 Cohesion: 0.13
 Nodes (15): analyse, capabilities, concepts, configuration, prepare, publish, schema, serve (+7 more)
+
+### Community 1577 - "IbisInputNode"
+Cohesion: 0.12
+Nodes (16): IbisInputNode, additionalProperties, properties, required, title, type, minLength, title (+8 more)
+
+### Community 1578 - "IbisInputLink"
+Cohesion: 0.12
+Nodes (16): IbisInputLink, minLength, title, type, additionalProperties, properties, required, title (+8 more)
+
+### Community 1579 - "IbisInputNode"
+Cohesion: 0.12
+Nodes (16): IbisInputNode, additionalProperties, properties, required, title, type, minLength, title (+8 more)
+
+### Community 1580 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1581 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1582 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
 
 ### Community 1583 - "$defs"
 Cohesion: 0.14
@@ -3430,6 +5849,14 @@ Nodes (14): enum, backing, claim, elements_present, grounds, is_qualified, quali
 ### Community 1586 - "required"
 Cohesion: 0.19
 Nodes (14): enum, backing, claim, elements_present, grounds, is_qualified, qualifier, rebuttal (+6 more)
+
+### Community 1587 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1588 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
 
 ### Community 1589 - "machine-walton-result.serialization.schema.json"
 Cohesion: 0.14
@@ -3455,9 +5882,105 @@ Nodes (13): additionalProperties, $defs, InstanceOutput, NonEmpty, $id, addition
 Cohesion: 0.14
 Nodes (14): minimum, title, type, anyOf, index, note, question, reason (+6 more)
 
+### Community 1595 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1596 - "ListRepresentation"
+Cohesion: 0.12
+Nodes (16): ListRepresentation, items, title, additionalProperties, properties, required, title, type (+8 more)
+
+### Community 1597 - "ListRepresentation"
+Cohesion: 0.12
+Nodes (16): ListRepresentation, items, title, additionalProperties, properties, required, title, type (+8 more)
+
+### Community 1598 - "ListRepresentation"
+Cohesion: 0.12
+Nodes (16): ListRepresentation, items, title, additionalProperties, properties, required, title, type (+8 more)
+
+### Community 1599 - "ListRepresentation"
+Cohesion: 0.12
+Nodes (16): ListRepresentation, items, title, additionalProperties, properties, required, title, type (+8 more)
+
+### Community 1600 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1601 - "Sha256Identity"
+Cohesion: 0.12
+Nodes (16): const, default, title, type, Sha256Identity, pattern, title, type (+8 more)
+
+### Community 1602 - "properties"
+Cohesion: 0.12
+Nodes (16): $ref, $ref, $ref, act_id, commitment_operation, iso_communicative_function, propositional_content, searle_class (+8 more)
+
+### Community 1603 - "properties"
+Cohesion: 0.12
+Nodes (16): $ref, $ref, $ref, act_id, commitment_operation, iso_communicative_function, propositional_content, searle_class (+8 more)
+
 ### Community 1604 - "properties"
 Cohesion: 0.05
 Nodes (41): anyOf, anyOf, additionalProperties, properties, title, type, properties, items (+33 more)
+
+### Community 1605 - "AnalysisReadingGuide"
+Cohesion: 0.12
+Nodes (16): additionalProperties, properties, required, title, type, AnalysisReadingGuide, items, title (+8 more)
+
+### Community 1606 - "AnalysisReadingGuide"
+Cohesion: 0.12
+Nodes (16): additionalProperties, properties, required, title, type, AnalysisReadingGuide, items, title (+8 more)
+
+### Community 1607 - "ListRepresentation"
+Cohesion: 0.12
+Nodes (16): ListRepresentation, items, title, additionalProperties, properties, required, title, type (+8 more)
+
+### Community 1608 - "MetadataEntry"
+Cohesion: 0.13
+Nodes (15): MetadataEntry, title, type, additionalProperties, properties, required, title, type (+7 more)
+
+### Community 1609 - "MetadataEntry"
+Cohesion: 0.13
+Nodes (15): MetadataEntry, title, type, additionalProperties, properties, required, title, type (+7 more)
+
+### Community 1610 - "Candidate"
+Cohesion: 0.13
+Nodes (15): additionalProperties, properties, required, title, type, items, Candidate, $ref (+7 more)
+
+### Community 1611 - "Candidate"
+Cohesion: 0.13
+Nodes (15): additionalProperties, properties, required, title, type, items, Candidate, $ref (+7 more)
+
+### Community 1612 - "ContentInventory"
+Cohesion: 0.13
+Nodes (15): additionalProperties, description, properties, required, title, type, ContentInventory, title (+7 more)
+
+### Community 1613 - "CrossReferenceRepresentation"
+Cohesion: 0.13
+Nodes (15): additionalProperties, properties, required, title, type, CrossReferenceRepresentation, ItemRelationship, additionalProperties (+7 more)
+
+### Community 1614 - "$defs"
+Cohesion: 0.13
+Nodes (15): enum, type, $defs, AduRole, EnthymemeOutput, IatRelationType, NonEmpty, additionalProperties (+7 more)
+
+### Community 1615 - "$defs"
+Cohesion: 0.13
+Nodes (15): enum, type, $defs, AduRole, EnthymemeOutput, IatRelationType, NonEmpty, additionalProperties (+7 more)
+
+### Community 1616 - "DefeasibleRuleInput"
+Cohesion: 0.15
+Nodes (15): minItems, title, type, $ref, additionalProperties, properties, required, title (+7 more)
+
+### Community 1617 - "DefeasibleRuleInput"
+Cohesion: 0.15
+Nodes (15): minItems, title, type, $ref, additionalProperties, properties, required, title (+7 more)
+
+### Community 1618 - "contract_version"
+Cohesion: 0.13
+Nodes (15): const, default, title, type, const, default, $ref, title (+7 more)
+
+### Community 1619 - "contract_version"
+Cohesion: 0.13
+Nodes (15): const, default, title, type, const, default, $ref, title (+7 more)
 
 ### Community 1620 - "$defs"
 Cohesion: 0.15
@@ -3474,6 +5997,46 @@ Nodes (13): $defs, ExactText, NonEmpty, PdtbSense, RelationId, minLength, type, 
 ### Community 1623 - "PdtbArgument"
 Cohesion: 0.15
 Nodes (13): PdtbArgument, spans, additionalProperties, description, properties, required, title, type (+5 more)
+
+### Community 1624 - "max_workers"
+Cohesion: 0.13
+Nodes (15): anyOf, default, title, ExecutionSettings, additionalProperties, properties, title, type (+7 more)
+
+### Community 1625 - "PublishedRstModel"
+Cohesion: 0.13
+Nodes (15): PublishedRstModel, const, default, title, type, kind, version, additionalProperties (+7 more)
+
+### Community 1626 - "max_workers"
+Cohesion: 0.13
+Nodes (15): anyOf, default, title, ExecutionSettings, additionalProperties, properties, title, type (+7 more)
+
+### Community 1627 - "PublishedRstModel"
+Cohesion: 0.13
+Nodes (15): PublishedRstModel, const, default, title, type, kind, version, additionalProperties (+7 more)
+
+### Community 1628 - "SourceEvidenceSpan"
+Cohesion: 0.13
+Nodes (15): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, additionalProperties, description (+7 more)
+
+### Community 1629 - "$ref"
+Cohesion: 0.13
+Nodes (15): items, title, type, $ref, items, default, items, title (+7 more)
+
+### Community 1630 - "SourceEvidenceSpan"
+Cohesion: 0.13
+Nodes (15): SourceEvidenceSpan, exclusiveMinimum, title, type, end, start, additionalProperties, description (+7 more)
+
+### Community 1631 - "$ref"
+Cohesion: 0.13
+Nodes (15): items, title, type, $ref, items, default, items, title (+7 more)
+
+### Community 1632 - "properties"
+Cohesion: 0.13
+Nodes (15): minimum, title, type, items, title, type, items, title (+7 more)
+
+### Community 1633 - "properties"
+Cohesion: 0.13
+Nodes (15): minimum, title, type, items, title, type, items, title (+7 more)
 
 ### Community 1634 - "end"
 Cohesion: 0.15
@@ -3515,6 +6078,38 @@ Nodes (13): ad_hominem, analogy, cause_to_effect, consequences, example, expert_
 Cohesion: 0.15
 Nodes (13): exclusiveMinimum, title, type, end, start, text, properties, minimum (+5 more)
 
+### Community 1644 - "MetadataEntry"
+Cohesion: 0.13
+Nodes (15): MetadataEntry, title, type, additionalProperties, properties, required, title, type (+7 more)
+
+### Community 1645 - "errors.py"
+Cohesion: 0.40
+Nodes (4): DoclangIngestError, ValueError, Failures raised by the private DocLang source loader., Base class for DocLang validation and archive-loading failures.
+
+### Community 1646 - "AnnotationRepresentation"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+6 more)
+
+### Community 1647 - "kind"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AnnotationRepresentation, const, default (+6 more)
+
+### Community 1648 - "mapping"
+Cohesion: 0.14
+Nodes (14): discriminator, oneOf, ContentRepresentation, mapping, propertyName, annotation, cross_reference, list (+6 more)
+
+### Community 1649 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1650 - "kind"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AnnotationRepresentation, const, default (+6 more)
+
+### Community 1651 - "mapping"
+Cohesion: 0.14
+Nodes (14): discriminator, oneOf, ContentRepresentation, mapping, propertyName, annotation, cross_reference, list (+6 more)
+
 ### Community 1652 - "enum"
 Cohesion: 0.17
 Nodes (12): Relation, generalizes, is_suggested_by, objects_to, questions, replaces, responds_to, specializes (+4 more)
@@ -3522,6 +6117,30 @@ Nodes (12): Relation, generalizes, is_suggested_by, objects_to, questions, repla
 ### Community 1653 - "enum"
 Cohesion: 0.17
 Nodes (12): Relation, generalizes, is_suggested_by, objects_to, questions, replaces, responds_to, specializes (+4 more)
+
+### Community 1654 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1655 - "ExcludedSurface"
+Cohesion: 0.12
+Nodes (17): ExcludedSurface, anyOf, default, title, additionalProperties, properties, required, title (+9 more)
+
+### Community 1656 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1657 - "ExcludedSurface"
+Cohesion: 0.12
+Nodes (17): ExcludedSurface, anyOf, default, title, additionalProperties, properties, required, title (+9 more)
+
+### Community 1658 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1659 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
 
 ### Community 1660 - "enum"
 Cohesion: 0.17
@@ -3531,9 +6150,9 @@ Nodes (12): enum, title, type, busy, dependency_unavailable, internal_error, int
 Cohesion: 0.17
 Nodes (12): enum, title, type, busy, dependency_unavailable, internal_error, interrupted, invalid_request (+4 more)
 
-### Community 1663 - "load_repository_environment"
-Cohesion: 0.11
-Nodes (16): _encoding_payload(), main(), _payload_hash(), probe_mandatory_tokenizers(), _probe_target(), _TokenizerTarget, _clear_hf_tokens(), test_existing_process_environment_is_not_overridden() (+8 more)
+### Community 1662 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
 
 ### Community 1664 - "ComplexDiscourseUnit"
 Cohesion: 0.17
@@ -3567,6 +6186,54 @@ Nodes (11): additionalProperties, $id, extraction, instance_count, instances, sc
 Cohesion: 0.17
 Nodes (12): HistoricalInstanceOutput, additionalProperties, required, title, type, conclusion, critical_questions, open_question_count (+4 more)
 
+### Community 1672 - "AnnotationRepresentation"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+6 more)
+
+### Community 1673 - "ArchiveMemberAnchor"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+6 more)
+
+### Community 1674 - "AnnotationRepresentation"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+6 more)
+
+### Community 1675 - "ArchiveMemberAnchor"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+6 more)
+
+### Community 1676 - "ArchiveMemberAnchor"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+6 more)
+
+### Community 1677 - "ArchiveMemberAnchor"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+6 more)
+
+### Community 1678 - "ArchiveMemberAnchor"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+6 more)
+
+### Community 1679 - "properties"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AduNodeOutput, proposition, role (+6 more)
+
+### Community 1680 - "properties"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AduNodeOutput, proposition, role (+6 more)
+
+### Community 1681 - "ContraryPairInput"
+Cohesion: 0.14
+Nodes (14): $ref, additionalProperties, properties, required, title, type, ContraryPairInput, contrary (+6 more)
+
+### Community 1682 - "items"
+Cohesion: 0.18
+Nodes (14): maxItems, minItems, prefixItems, type, default, items, title, type (+6 more)
+
+### Community 1683 - "ContraryPairInput"
+Cohesion: 0.14
+Nodes (14): $ref, additionalProperties, properties, required, title, type, ContraryPairInput, contrary (+6 more)
+
 ### Community 1684 - "properties"
 Cohesion: 0.18
 Nodes (11): minLength, title, type, properties, from, relation, to, $ref (+3 more)
@@ -3590,6 +6257,26 @@ Nodes (11): properties, minLength, title, type, $ref, id, kind, text (+3 more)
 ### Community 1689 - "nodes"
 Cohesion: 0.20
 Nodes (11): $ref, items, title, type, items, minItems, title, type (+3 more)
+
+### Community 1690 - "items"
+Cohesion: 0.18
+Nodes (14): maxItems, minItems, prefixItems, type, default, items, title, type (+6 more)
+
+### Community 1691 - "AspicEvidenceRecord"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AspicEvidenceRecord, $ref, enum (+6 more)
+
+### Community 1692 - "items"
+Cohesion: 0.19
+Nodes (14): items, maxItems, minItems, prefixItems, default, items, title, type (+6 more)
+
+### Community 1693 - "ContraryPairInput"
+Cohesion: 0.14
+Nodes (14): $ref, additionalProperties, properties, required, title, type, ContraryPairInput, contrary (+6 more)
+
+### Community 1694 - "AspicEvidenceRecord"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AspicEvidenceRecord, $ref, enum (+6 more)
 
 ### Community 1695 - "machine-operation-error.serialization.schema.json"
 Cohesion: 0.18
@@ -3622,6 +6309,22 @@ Nodes (10): additionalProperties, $id, extraction, relation_count, relation_type
 ### Community 1702 - "enum"
 Cohesion: 0.18
 Nodes (11): RelationType, AltLex, AltLexC, EntRel, Explicit, Hypophora, Implicit, NoRel (+3 more)
+
+### Community 1703 - "items"
+Cohesion: 0.19
+Nodes (14): items, maxItems, minItems, prefixItems, default, items, title, type (+6 more)
+
+### Community 1704 - "ContraryPairInput"
+Cohesion: 0.14
+Nodes (14): $ref, additionalProperties, properties, required, title, type, ContraryPairInput, contrary (+6 more)
+
+### Community 1705 - "ContractSupport"
+Cohesion: 0.14
+Nodes (14): const, default, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1706 - "type"
+Cohesion: 0.14
+Nodes (14): items, title, type, type, items, title, type, accepted_media_types (+6 more)
 
 ### Community 1707 - "SdrtRelation"
 Cohesion: 0.18
@@ -3671,6 +6374,22 @@ Nodes (11): required, enum, backing, claim, elements_present, grounds, is_qualif
 Cohesion: 0.18
 Nodes (10): additionalProperties, $id, extraction, layout_count, layouts, qualified_layout_count, required, $schema (+2 more)
 
+### Community 1719 - "EntityGridRowOutput"
+Cohesion: 0.14
+Nodes (14): EntityGridRowOutput, minLength, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1720 - "EntityGridRowOutput"
+Cohesion: 0.14
+Nodes (14): EntityGridRowOutput, minLength, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1721 - "properties"
+Cohesion: 0.14
+Nodes (14): $ref, additionalProperties, properties, required, title, type, AppealOutput, $ref (+6 more)
+
+### Community 1722 - "span"
+Cohesion: 0.14
+Nodes (14): $ref, KairosCueOutput, additionalProperties, properties, required, title, type, cue_id (+6 more)
+
 ### Community 1723 - "required"
 Cohesion: 0.18
 Nodes (11): QuestionOutput, evidence, index, note, question, reason, status, additionalProperties (+3 more)
@@ -3683,9 +6402,29 @@ Nodes (11): QuestionOutput, evidence, index, note, question, reason, status, add
 Cohesion: 0.05
 Nodes (41): anyOf, anyOf, additionalProperties, properties, title, type, properties, items (+33 more)
 
+### Community 1726 - "properties"
+Cohesion: 0.14
+Nodes (14): $ref, additionalProperties, properties, required, title, type, AppealOutput, $ref (+6 more)
+
+### Community 1727 - "span"
+Cohesion: 0.14
+Nodes (14): $ref, KairosCueOutput, additionalProperties, properties, required, title, type, cue_id (+6 more)
+
+### Community 1728 - "LocalRstModel"
+Cohesion: 0.14
+Nodes (14): LocalRstModel, additionalProperties, properties, required, title, type, release_id, store (+6 more)
+
+### Community 1729 - "LocalRstModel"
+Cohesion: 0.14
+Nodes (14): LocalRstModel, additionalProperties, properties, required, title, type, release_id, store (+6 more)
+
 ### Community 1730 - "properties"
 Cohesion: 0.06
 Nodes (37): items, title, type, properties, $ref, $ref, items, title (+29 more)
+
+### Community 1731 - "properties"
+Cohesion: 0.14
+Nodes (14): $ref, anyOf, default, $ref, $ref, enum, title, type (+6 more)
 
 ### Community 1732 - "machine-ibis-input.serialization.schema.json"
 Cohesion: 0.20
@@ -3694,6 +6433,14 @@ Nodes (9): additionalProperties, description, $id, links, nodes, required, $sche
 ### Community 1733 - "machine-ibis-input.validation.schema.json"
 Cohesion: 0.20
 Nodes (9): additionalProperties, description, $id, links, nodes, required, $schema, title (+1 more)
+
+### Community 1734 - "DungInput"
+Cohesion: 0.14
+Nodes (14): items, title, type, DungInput, additionalProperties, description, properties, required (+6 more)
+
+### Community 1735 - "properties"
+Cohesion: 0.14
+Nodes (14): $ref, anyOf, default, $ref, $ref, enum, title, type (+6 more)
 
 ### Community 1736 - "algorithm"
 Cohesion: 0.20
@@ -3710,6 +6457,26 @@ Nodes (10): PdtbRelation, arg1, arg2, relation_id, relation_type, additionalProp
 ### Community 1739 - "PdtbRelation"
 Cohesion: 0.20
 Nodes (10): PdtbRelation, arg1, arg2, relation_id, relation_type, additionalProperties, description, required (+2 more)
+
+### Community 1740 - "DungInput"
+Cohesion: 0.14
+Nodes (14): items, title, type, DungInput, additionalProperties, description, properties, required (+6 more)
+
+### Community 1741 - "IbisStructurePayload"
+Cohesion: 0.14
+Nodes (14): IbisStructurePayload, additionalProperties, properties, title, type, default, title, type (+6 more)
+
+### Community 1742 - "PositionOutput"
+Cohesion: 0.14
+Nodes (14): PositionOutput, items, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1743 - "IbisStructurePayload"
+Cohesion: 0.14
+Nodes (14): IbisStructurePayload, additionalProperties, properties, title, type, default, title, type (+6 more)
+
+### Community 1744 - "PositionOutput"
+Cohesion: 0.14
+Nodes (14): PositionOutput, items, title, type, additionalProperties, properties, required, title (+6 more)
 
 ### Community 1745 - "properties"
 Cohesion: 0.06
@@ -3731,6 +6498,74 @@ Nodes (41): anyOf, anyOf, additionalProperties, properties, title, type, propert
 Cohesion: 0.05
 Nodes (41): anyOf, anyOf, additionalProperties, properties, title, type, properties, items (+33 more)
 
+### Community 1750 - "TableCoordinateAnchor"
+Cohesion: 0.14
+Nodes (14): minimum, title, type, TableCoordinateAnchor, column, row, minimum, title (+6 more)
+
+### Community 1751 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1752 - "TableCoordinateAnchor"
+Cohesion: 0.14
+Nodes (14): minimum, title, type, TableCoordinateAnchor, column, row, minimum, title (+6 more)
+
+### Community 1753 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1754 - "TableCoordinateAnchor"
+Cohesion: 0.14
+Nodes (14): minimum, title, type, TableCoordinateAnchor, column, row, minimum, title (+6 more)
+
+### Community 1755 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1756 - "TableCoordinateAnchor"
+Cohesion: 0.14
+Nodes (14): minimum, title, type, TableCoordinateAnchor, column, row, minimum, title (+6 more)
+
+### Community 1757 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1758 - "properties"
+Cohesion: 0.14
+Nodes (14): DerailmentOutput, additionalProperties, properties, required, title, type, $ref, $ref (+6 more)
+
+### Community 1759 - "StandpointOutput"
+Cohesion: 0.14
+Nodes (14): StandpointOutput, $ref, polarity, proposition, protagonist, span, $ref, $ref (+6 more)
+
+### Community 1760 - "properties"
+Cohesion: 0.14
+Nodes (14): DerailmentOutput, additionalProperties, properties, required, title, type, $ref, $ref (+6 more)
+
+### Community 1761 - "StandpointOutput"
+Cohesion: 0.14
+Nodes (14): StandpointOutput, $ref, polarity, proposition, protagonist, span, $ref, $ref (+6 more)
+
+### Community 1762 - "DerivationSpec"
+Cohesion: 0.14
+Nodes (14): $ref, const, default, title, type, DerivationSpec, additionalProperties, description (+6 more)
+
+### Community 1763 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1764 - "PreparedRange"
+Cohesion: 0.14
+Nodes (14): PreparedRange, exclusiveMinimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1765 - "PageAnchor"
+Cohesion: 0.14
+Nodes (14): PageAnchor, minimum, title, type, additionalProperties, properties, required, title (+6 more)
+
+### Community 1766 - "PreparedRange"
+Cohesion: 0.14
+Nodes (14): PreparedRange, exclusiveMinimum, title, type, additionalProperties, properties, required, title (+6 more)
+
 ### Community 1767 - "Retryability"
 Cohesion: 0.22
 Nodes (9): $defs, Retryability, not_retryable, retryable, unknown, description, enum, title (+1 more)
@@ -3746,6 +6581,26 @@ Nodes (9): ExtractionRecord, additionalProperties, required, title, type, instru
 ### Community 1770 - "ExtractionRecord"
 Cohesion: 0.22
 Nodes (9): ExtractionRecord, additionalProperties, required, title, type, instructions_digest, model, output_attempts (+1 more)
+
+### Community 1771 - "AnnotationRepresentation"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+6 more)
+
+### Community 1772 - "AnnotationRepresentation"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+6 more)
+
+### Community 1773 - "properties"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, CommitmentConflictOutput, $ref, $ref (+6 more)
+
+### Community 1774 - "properties"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, CommitmentConflictOutput, $ref, $ref (+6 more)
+
+### Community 1775 - "ArchiveMemberAnchor"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+6 more)
 
 ### Community 1776 - "ExtractionRecord"
 Cohesion: 0.22
@@ -3795,6 +6650,14 @@ Nodes (8): additionalProperties, $id, contracts, version, required, $schema, tit
 Cohesion: 0.22
 Nodes (9): const, default, title, type, properties, package, version, title (+1 more)
 
+### Community 1788 - "ArchiveMemberAnchor"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+6 more)
+
+### Community 1789 - "mapping"
+Cohesion: 0.14
+Nodes (14): discriminator, oneOf, ContentRepresentation, mapping, propertyName, annotation, cross_reference, list (+6 more)
+
 ### Community 1790 - "ExtractionRecord"
 Cohesion: 0.22
 Nodes (9): ExtractionRecord, additionalProperties, required, title, type, instructions_digest, model, output_attempts (+1 more)
@@ -3818,6 +6681,54 @@ Nodes (9): ExtractionRecord, additionalProperties, required, title, type, instru
 ### Community 1795 - "SourceEvidenceSpan"
 Cohesion: 0.22
 Nodes (9): SourceEvidenceSpan, end, start, text, additionalProperties, description, required, title (+1 more)
+
+### Community 1796 - "AnnotationRepresentation"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+6 more)
+
+### Community 1797 - "AnnotationRepresentation"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+6 more)
+
+### Community 1798 - "ArchiveMemberAnchor"
+Cohesion: 0.14
+Nodes (14): additionalProperties, properties, required, title, type, title, type, ArchiveMemberAnchor (+6 more)
+
+### Community 1799 - "StructuralOnlyAdapter"
+Cohesion: 0.20
+Nodes (7): BaseModel, Tensor, Frozen finite optimization and decoding configuration., Train and score the structural control through the shared harness path., _StructuralClassifier, StructuralConfig, StructuralOnlyAdapter
+
+### Community 1800 - "ListRepresentation"
+Cohesion: 0.15
+Nodes (13): ListRepresentation, additionalProperties, properties, required, title, type, anyOf, default (+5 more)
+
+### Community 1801 - "ListRepresentation"
+Cohesion: 0.15
+Nodes (13): ListRepresentation, additionalProperties, properties, required, title, type, anyOf, default (+5 more)
+
+### Community 1802 - "mapping"
+Cohesion: 0.15
+Nodes (13): SourceAnchor, mapping, propertyName, archive_member, coordinate_box, item, page, page_box (+5 more)
+
+### Community 1803 - "mapping"
+Cohesion: 0.15
+Nodes (13): SourceAnchor, mapping, propertyName, archive_member, coordinate_box, item, page, page_box (+5 more)
+
+### Community 1804 - "mapping"
+Cohesion: 0.15
+Nodes (13): SourceAnchor, mapping, propertyName, archive_member, coordinate_box, item, page, page_box (+5 more)
+
+### Community 1805 - "mapping"
+Cohesion: 0.15
+Nodes (13): SourceAnchor, mapping, propertyName, archive_member, coordinate_box, item, page, page_box (+5 more)
+
+### Community 1806 - "AnnotationRepresentation"
+Cohesion: 0.15
+Nodes (13): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+5 more)
+
+### Community 1807 - "AnnotationRepresentation"
+Cohesion: 0.15
+Nodes (13): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+5 more)
 
 ### Community 1808 - "$defs"
 Cohesion: 0.25
@@ -3843,6 +6754,14 @@ Nodes (8): IbisInputLink, additionalProperties, required, title, type, from, rel
 Cohesion: 0.25
 Nodes (8): IbisInputNode, additionalProperties, required, title, type, id, kind, text
 
+### Community 1814 - "AnnotationRepresentation"
+Cohesion: 0.15
+Nodes (13): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+5 more)
+
+### Community 1815 - "AnnotationRepresentation"
+Cohesion: 0.15
+Nodes (13): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+5 more)
+
 ### Community 1816 - "InputIssue"
 Cohesion: 0.25
 Nodes (8): InputIssue, additionalProperties, required, title, type, code, expected, path
@@ -3851,9 +6770,37 @@ Nodes (8): InputIssue, additionalProperties, required, title, type, code, expect
 Cohesion: 0.25
 Nodes (8): InputIssue, additionalProperties, required, title, type, code, expected, path
 
+### Community 1818 - "AnnotationRepresentation"
+Cohesion: 0.15
+Nodes (13): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+5 more)
+
+### Community 1819 - "AnnotationRepresentation"
+Cohesion: 0.15
+Nodes (13): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+5 more)
+
+### Community 1820 - "end"
+Cohesion: 0.15
+Nodes (13): exclusiveMinimum, title, type, end, start, text, properties, minimum (+5 more)
+
+### Community 1821 - "end"
+Cohesion: 0.15
+Nodes (13): exclusiveMinimum, title, type, end, start, text, properties, minimum (+5 more)
+
+### Community 1822 - "DefeatFrameworkOutput"
+Cohesion: 0.15
+Nodes (13): items, title, type, title, type, additionalProperties, properties, required (+5 more)
+
 ### Community 1823 - "properties"
 Cohesion: 0.05
 Nodes (41): anyOf, anyOf, additionalProperties, properties, title, type, properties, items (+33 more)
+
+### Community 1824 - "DefeatFrameworkOutput"
+Cohesion: 0.15
+Nodes (13): items, title, type, title, type, additionalProperties, properties, required (+5 more)
+
+### Community 1825 - "UnavailableCapability"
+Cohesion: 0.15
+Nodes (13): UnavailableCapability, reason, state, $ref, const, default, title, type (+5 more)
 
 ### Community 1826 - "$defs"
 Cohesion: 0.25
@@ -3891,9 +6838,77 @@ Nodes (8): description, enum, title, type, CriticalQuestionStatus, addressed, no
 Cohesion: 0.22
 Nodes (10): Rhetorical Discourse Analysis Machine (rdam), production_machine(), Aggregate Analysis Contract, Data Model: Aggregate Analysis Contract, Implementation Plan: Aggregate Analysis Contract, Aggregate Analysis Contract Research, Feature Specification: Aggregate Analysis Contract, Tasks: Aggregate Analysis Contract (+2 more)
 
+### Community 1835 - "UnavailableCapability"
+Cohesion: 0.15
+Nodes (13): UnavailableCapability, reason, state, $ref, const, default, title, type (+5 more)
+
 ### Community 1836 - "enum"
 Cohesion: 0.25
 Nodes (8): encoder_config, model_card, parser_state, tokenizer, relation_inventory, role, enum, type
+
+### Community 1837 - "UnavailableCapability"
+Cohesion: 0.15
+Nodes (13): UnavailableCapability, reason, state, $ref, const, default, title, type (+5 more)
+
+### Community 1838 - "TechniqueCapability"
+Cohesion: 0.15
+Nodes (13): TechniqueCapability, default, title, type, formalisms, requires_structured_input, title, type (+5 more)
+
+### Community 1839 - "UnavailableCapability"
+Cohesion: 0.15
+Nodes (13): UnavailableCapability, reason, state, $ref, const, default, title, type (+5 more)
+
+### Community 1840 - "properties"
+Cohesion: 0.15
+Nodes (13): properties, minimum, title, type, output_retries, transport_deadline_seconds, transport_retries, exclusiveMinimum (+5 more)
+
+### Community 1841 - "properties"
+Cohesion: 0.15
+Nodes (13): properties, minimum, title, type, output_retries, transport_deadline_seconds, transport_retries, exclusiveMinimum (+5 more)
+
+### Community 1842 - "SourcePathAnchor"
+Cohesion: 0.15
+Nodes (13): SourcePathAnchor, enum, title, type, title, type, path, path_kind (+5 more)
+
+### Community 1843 - "SourcePathAnchor"
+Cohesion: 0.15
+Nodes (13): SourcePathAnchor, enum, title, type, title, type, path, path_kind (+5 more)
+
+### Community 1844 - "mapping"
+Cohesion: 0.15
+Nodes (13): SourceAnchor, mapping, propertyName, archive_member, coordinate_box, item, page, page_box (+5 more)
+
+### Community 1845 - "SourcePathAnchor"
+Cohesion: 0.15
+Nodes (13): SourcePathAnchor, enum, title, type, title, type, path, path_kind (+5 more)
+
+### Community 1846 - "mapping"
+Cohesion: 0.15
+Nodes (13): SourceAnchor, mapping, propertyName, archive_member, coordinate_box, item, page, page_box (+5 more)
+
+### Community 1847 - "SourcePathAnchor"
+Cohesion: 0.15
+Nodes (13): SourcePathAnchor, enum, title, type, title, type, path, path_kind (+5 more)
+
+### Community 1848 - "mapping"
+Cohesion: 0.15
+Nodes (13): SourceAnchor, mapping, propertyName, archive_member, coordinate_box, item, page, page_box (+5 more)
+
+### Community 1849 - "mapping"
+Cohesion: 0.15
+Nodes (13): SourceAnchor, mapping, propertyName, archive_member, coordinate_box, item, page, page_box (+5 more)
+
+### Community 1850 - "end"
+Cohesion: 0.15
+Nodes (13): exclusiveMinimum, title, type, end, start, text, properties, minimum (+5 more)
+
+### Community 1851 - "end"
+Cohesion: 0.15
+Nodes (13): exclusiveMinimum, title, type, end, start, text, properties, minimum (+5 more)
+
+### Community 1852 - "AnnotationRepresentation"
+Cohesion: 0.15
+Nodes (13): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+5 more)
 
 ### Community 1853 - "Sha256Identity"
 Cohesion: 0.29
@@ -3903,9 +6918,29 @@ Nodes (7): Sha256Identity, hex_digest, additionalProperties, description, requir
 Cohesion: 0.29
 Nodes (7): Sha256Identity, hex_digest, additionalProperties, description, required, title, type
 
+### Community 1855 - "AnnotationRepresentation"
+Cohesion: 0.15
+Nodes (13): additionalProperties, properties, required, title, type, AnnotationRepresentation, title, type (+5 more)
+
+### Community 1856 - "AdapterExecutionIdentity"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+4 more)
+
+### Community 1857 - "OperationCapability"
+Cohesion: 0.17
+Nodes (12): OperationCapability, title, type, title, type, additionalProperties, properties, required (+4 more)
+
+### Community 1858 - "AdapterExecutionIdentity"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+4 more)
+
 ### Community 1859 - "required"
 Cohesion: 0.15
 Nodes (13): additionalProperties, required, title, type, AnalysisSubstrateTransformation, affected_ranges, algorithm, algorithm_version (+5 more)
+
+### Community 1860 - "AdapterExecutionIdentity"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+4 more)
 
 ### Community 1861 - "warrant_origin"
 Cohesion: 0.29
@@ -3914,6 +6949,14 @@ Nodes (7): explicit, reconstructed, undetermined, warrant_origin, enum, title, t
 ### Community 1862 - "warrant_origin"
 Cohesion: 0.29
 Nodes (7): explicit, reconstructed, undetermined, warrant_origin, enum, title, type
+
+### Community 1863 - "AnalysisReadingGuide"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AnalysisReadingGuide, items, title (+4 more)
+
+### Community 1864 - "contract"
+Cohesion: 0.17
+Nodes (12): anyOf, default, const, default, title, type, HistoricalNativeTechniqueResult, additionalProperties (+4 more)
 
 ### Community 1865 - "issues"
 Cohesion: 0.33
@@ -3930,6 +6973,14 @@ Nodes (13): additionalProperties, required, title, type, AnalysisSubstrateTransf
 ### Community 1868 - "required"
 Cohesion: 0.15
 Nodes (13): additionalProperties, required, title, type, AnalysisSubstrateTransformation, affected_ranges, algorithm, algorithm_version (+5 more)
+
+### Community 1869 - "AnalysisReadingGuide"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AnalysisReadingGuide, items, title (+4 more)
+
+### Community 1870 - "contract"
+Cohesion: 0.17
+Nodes (12): anyOf, default, const, default, title, type, HistoricalNativeTechniqueResult, additionalProperties (+4 more)
 
 ### Community 1871 - "elements_present"
 Cohesion: 0.40
@@ -3983,17 +7034,57 @@ Nodes (5): $ref, additionalProperties, title, type, premises
 Cohesion: 0.15
 Nodes (13): additionalProperties, required, title, type, AnalysisSubstrateTransformation, affected_ranges, algorithm, algorithm_version (+5 more)
 
+### Community 1885 - ".__init__"
+Cohesion: 0.13
+Nodes (12): device, dtype, PretrainedConfig, PreTrainedTokenizerBase, Tensor, Boundary-aware span representations for pure transformer discourse parsing., Pool token representations safely without NaN gradient instabilities., Encodes discourse spans using boundary tokens and learned attention pooling.… (+4 more)
+
+### Community 1886 - "IatRelationOutput"
+Cohesion: 0.17
+Nodes (12): IatRelationOutput, additionalProperties, properties, required, title, type, relation_type, source_id (+4 more)
+
+### Community 1887 - "properties"
+Cohesion: 0.17
+Nodes (12): properties, const, default, title, type, $ref, $ref, grounded (+4 more)
+
+### Community 1888 - "IatRelationOutput"
+Cohesion: 0.17
+Nodes (12): IatRelationOutput, additionalProperties, properties, required, title, type, relation_type, source_id (+4 more)
+
+### Community 1889 - "properties"
+Cohesion: 0.17
+Nodes (12): properties, const, default, title, type, $ref, $ref, grounded (+4 more)
+
 ### Community 1890 - "release_id"
 Cohesion: 0.67
 Nodes (3): release_id, pattern, type
+
+### Community 1891 - "$ref"
+Cohesion: 0.17
+Nodes (12): items, $ref, default, items, title, type, ordinary_premises, strict_rules (+4 more)
 
 ### Community 1893 - "required"
 Cohesion: 0.06
 Nodes (40): required, required, required, required, additionalProperties, required, title, type (+32 more)
 
+### Community 1894 - "properties"
+Cohesion: 0.17
+Nodes (12): default, items, title, type, default, $ref, properties, defeasible_rules (+4 more)
+
+### Community 1895 - "$ref"
+Cohesion: 0.17
+Nodes (12): items, $ref, default, items, title, type, ordinary_premises, strict_rules (+4 more)
+
+### Community 1896 - "properties"
+Cohesion: 0.17
+Nodes (12): default, items, title, type, default, $ref, properties, defeasible_rules (+4 more)
+
 ### Community 1897 - "required"
 Cohesion: 0.17
 Nodes (12): additionalProperties, required, title, type, AnalysisExecutionEvidence, cache_status, device, duration_ms (+4 more)
+
+### Community 1898 - "DerivedFromRecord"
+Cohesion: 0.17
+Nodes (12): DerivedFromRecord, additionalProperties, properties, required, title, type, result_identity, technique (+4 more)
 
 ### Community 1899 - "required"
 Cohesion: 0.17
@@ -4003,25 +7094,141 @@ Nodes (12): additionalProperties, required, title, type, AnalysisExecutionEviden
 Cohesion: 0.10
 Nodes (21): additionalProperties, properties, title, type, AnalysisAnchor, source_endpoint, supporting_signal_ids, target_endpoint (+13 more)
 
+### Community 1901 - "DerivedFromRecord"
+Cohesion: 0.17
+Nodes (12): DerivedFromRecord, additionalProperties, properties, required, title, type, result_identity, technique (+4 more)
+
+### Community 1902 - "$defs"
+Cohesion: 0.17
+Nodes (12): oneOf, $defs, CapabilityState, SemanticVersion, Technique, description, title, type (+4 more)
+
+### Community 1903 - "$defs"
+Cohesion: 0.17
+Nodes (12): oneOf, $defs, CapabilityState, SemanticVersion, Technique, description, title, type (+4 more)
+
+### Community 1904 - "RhetoricalFigureOutput"
+Cohesion: 0.17
+Nodes (12): RhetoricalFigureOutput, $ref, $ref, explanation, figure_id, scheme, additionalProperties, properties (+4 more)
+
+### Community 1905 - "RhetoricalFigureOutput"
+Cohesion: 0.17
+Nodes (12): RhetoricalFigureOutput, $ref, $ref, explanation, figure_id, scheme, additionalProperties, properties (+4 more)
+
+### Community 1906 - "DerivedFromRecord"
+Cohesion: 0.17
+Nodes (12): DerivedFromRecord, additionalProperties, properties, required, title, type, result_identity, technique (+4 more)
+
+### Community 1907 - "DerivedFromRecord"
+Cohesion: 0.17
+Nodes (12): DerivedFromRecord, additionalProperties, properties, required, title, type, result_identity, technique (+4 more)
+
+### Community 1908 - "DerivedFromRecord"
+Cohesion: 0.17
+Nodes (12): DerivedFromRecord, additionalProperties, properties, required, title, type, result_identity, technique (+4 more)
+
+### Community 1909 - "IbisNodeEvidence"
+Cohesion: 0.17
+Nodes (12): IbisNodeEvidence, additionalProperties, properties, required, title, type, minLength, title (+4 more)
+
 ### Community 1910 - "test_adversarial_calibration.py"
 Cohesion: 0.29
-Nodes (5): test_calibration_summary_handles_empty_inputs(), test_compute_calibration_error_boundary_cases(), test_temperature_scaler_handles_extreme_overflow_underflow_logits(), test_temperature_scaler_handles_uniform_zero_logits(), test_temperature_scaler_homogeneous_labels_does_not_crash()
+Nodes (6): Adversarial and numerical edge-case tests for calibration math. Tests…, test_calibration_summary_handles_empty_inputs(), test_compute_calibration_error_boundary_cases(), test_temperature_scaler_handles_extreme_overflow_underflow_logits(), test_temperature_scaler_handles_uniform_zero_logits(), test_temperature_scaler_homogeneous_labels_does_not_crash()
 
 ### Community 1911 - "mapping"
 Cohesion: 0.22
 Nodes (9): discriminator, oneOf, ComponentIdentity, mapping, propertyName, immutable_release, mutable_instance, not_used (+1 more)
 
-### Community 1920 - "test_argument.py"
-Cohesion: 0.10
-Nodes (3): TestCoreTriad, TestPayload, TestWarrantIsNotRestatement
+### Community 1912 - "DerivedFromRecord"
+Cohesion: 0.17
+Nodes (12): DerivedFromRecord, additionalProperties, properties, required, title, type, result_identity, technique (+4 more)
+
+### Community 1913 - "IbisNodeEvidence"
+Cohesion: 0.17
+Nodes (12): IbisNodeEvidence, additionalProperties, properties, required, title, type, minLength, title (+4 more)
+
+### Community 1914 - "contributing_item_ids"
+Cohesion: 0.18
+Nodes (12): items, minItems, title, type, default, items, title, type (+4 more)
+
+### Community 1915 - "contributing_item_ids"
+Cohesion: 0.18
+Nodes (12): items, minItems, title, type, default, items, title, type (+4 more)
+
+### Community 1916 - "contributing_item_ids"
+Cohesion: 0.18
+Nodes (12): items, minItems, title, type, default, items, title, type (+4 more)
+
+### Community 1917 - "contributing_item_ids"
+Cohesion: 0.18
+Nodes (12): items, minItems, title, type, default, items, title, type (+4 more)
+
+### Community 1918 - "properties"
+Cohesion: 0.17
+Nodes (12): $ref, StrategicManoeuvreOutput, $ref, audience_demand, presentational_device, topical_potential, additionalProperties, properties (+4 more)
+
+### Community 1919 - "StageSegmentOutput"
+Cohesion: 0.17
+Nodes (12): StageSegmentOutput, $ref, id, stage, summary, $ref, additionalProperties, properties (+4 more)
+
+### Community 1920 - "test_native_integrity.py"
+Cohesion: 0.05
+Nodes (52): IncompleteLayoutError, LayoutError, BaseModel, JsonValue, model_validator, Self, ValueError, Toulmin's layout of argument: the six elements and what makes a layout… (+44 more)
+
+### Community 1921 - "properties"
+Cohesion: 0.17
+Nodes (12): $ref, StrategicManoeuvreOutput, $ref, audience_demand, presentational_device, topical_potential, additionalProperties, properties (+4 more)
+
+### Community 1922 - "StageSegmentOutput"
+Cohesion: 0.17
+Nodes (12): StageSegmentOutput, $ref, id, stage, summary, $ref, additionalProperties, properties (+4 more)
+
+### Community 1923 - "AdapterExecutionIdentity"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+4 more)
+
+### Community 1924 - "AdapterExecutionIdentity"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+4 more)
+
+### Community 1925 - "AdapterExecutionIdentity"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+4 more)
+
+### Community 1926 - "AdapterExecutionIdentity"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+4 more)
+
+### Community 1927 - "AdapterExecutionIdentity"
+Cohesion: 0.17
+Nodes (12): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+4 more)
+
+### Community 1928 - ".export"
+Cohesion: 0.50
+Nodes (3): Any, Path, Export parameters and fitting provenance. ``calibrated`` records that these…
 
 ### Community 1929 - "properties"
 Cohesion: 0.05
 Nodes (44): items, title, type, properties, items, title, type, $ref (+36 more)
 
+### Community 1933 - "machine-argument_mining-result.serialization.schema.json"
+Cohesion: 0.16
+Nodes (10): additionalProperties, $id, relation_count, minimum, title, type, required, $schema (+2 more)
+
+### Community 1934 - "machine-argument_mining-result.validation.schema.json"
+Cohesion: 0.16
+Nodes (10): additionalProperties, $id, relation_count, minimum, title, type, required, $schema (+2 more)
+
 ### Community 1935 - "required"
 Cohesion: 0.06
 Nodes (40): required, required, required, required, additionalProperties, required, title, type (+32 more)
+
+### Community 1936 - "StasisOutput"
+Cohesion: 0.18
+Nodes (11): anyOf, default, StasisOutput, $ref, contested_question, dominant_stasis, additionalProperties, properties (+3 more)
+
+### Community 1937 - "StasisOutput"
+Cohesion: 0.18
+Nodes (11): anyOf, default, StasisOutput, $ref, contested_question, dominant_stasis, additionalProperties, properties (+3 more)
 
 ### Community 1938 - "properties"
 Cohesion: 0.10
@@ -4339,6 +7546,10 @@ Nodes (30): $ref, $ref, additionalProperties, properties, required, title, type,
 Cohesion: 0.07
 Nodes (30): properties, $ref, exclusiveMinimum, title, type, minimum, title, type (+22 more)
 
+### Community 2017 - "$defs"
+Cohesion: 0.18
+Nodes (11): $defs, ExtensionOutput, Technique, additionalProperties, required, title, type, description (+3 more)
+
 ### Community 2018 - "properties"
 Cohesion: 0.07
 Nodes (29): anyOf, default, title, $ref, properties, anyOf, title, confidence (+21 more)
@@ -4523,6 +7734,10 @@ Nodes (26): title, type, $ref, properties, $ref, items, title, type (+18 more)
 Cohesion: 0.08
 Nodes (26): properties, anyOf, default, $ref, title, type, minimum, title (+18 more)
 
+### Community 2064 - "$defs"
+Cohesion: 0.18
+Nodes (11): $defs, ExtensionOutput, Technique, additionalProperties, required, title, type, description (+3 more)
+
 ### Community 2065 - "semantic_digest"
 Cohesion: 0.08
 Nodes (25): additionalProperties, properties, required, title, type, const, default, title (+17 more)
@@ -4559,9 +7774,25 @@ Nodes (28): additionalProperties, title, type, additionalProperties, title, type
 Cohesion: 0.08
 Nodes (25): additionalProperties, properties, required, title, type, const, default, title (+17 more)
 
+### Community 2074 - "mapping"
+Cohesion: 0.18
+Nodes (11): mapping, propertyName, archive_member, coordinate_box, item, page, page_box, source_path (+3 more)
+
+### Community 2075 - "source_alignment"
+Cohesion: 0.18
+Nodes (11): $ref, source_alignment, source_anchors, default, items, title, type, items (+3 more)
+
 ### Community 2076 - "AnnotationRepresentation"
 Cohesion: 0.08
 Nodes (24): additionalProperties, properties, required, title, type, default, items, title (+16 more)
+
+### Community 2077 - "mapping"
+Cohesion: 0.18
+Nodes (11): mapping, propertyName, archive_member, coordinate_box, item, page, page_box, source_path (+3 more)
+
+### Community 2078 - "source_alignment"
+Cohesion: 0.18
+Nodes (11): $ref, source_alignment, source_anchors, default, items, title, type, items (+3 more)
 
 ### Community 2079 - "properties"
 Cohesion: 0.14
@@ -4687,6 +7918,10 @@ Nodes (21): required, additionalProperties, required, title, type, AnalysisSeman
 Cohesion: 0.10
 Nodes (20): minimum, title, type, ExactCoverage, additionalProperties, description, properties, required (+12 more)
 
+### Community 2110 - "conversion_provenance"
+Cohesion: 0.18
+Nodes (11): default, items, title, type, $ref, conversion_provenance, techniques, default (+3 more)
+
 ### Community 2111 - "OperationCapability"
 Cohesion: 0.11
 Nodes (19): OperationCapability, title, type, failure_kind, operation, success_kinds, title, type (+11 more)
@@ -4767,9 +8002,9 @@ Nodes (17): const, default, title, type, Sha256Identity, pattern, title, type (+
 Cohesion: 0.12
 Nodes (16): additionalProperties, required, title, type, ContentInventoryItem, ListItemRepresentation, classification, disposition (+8 more)
 
-### Community 2133 - "SourceEvidenceSpan"
-Cohesion: 0.15
-Nodes (25): ToulminLayout, _instance(), _layout(), _span(), test_repeated_quotes_keep_the_declared_occurrence(), test_source_evidence_is_frozen_and_rejects_unknown_fields(), test_source_evidence_rejects_fabricated_quotes_wrong_offsets_and_out_of_bounds(), test_source_evidence_rejects_invalid_ranges_and_coercion() (+17 more)
+### Community 2132 - "conversion_provenance"
+Cohesion: 0.18
+Nodes (11): default, items, title, type, $ref, conversion_provenance, techniques, default (+3 more)
 
 ### Community 2134 - "text"
 Cohesion: 0.13
@@ -4798,6 +8033,10 @@ Nodes (14): additionalProperties, properties, required, title, type, AdapterExec
 ### Community 2140 - "AdapterExecutionIdentity"
 Cohesion: 0.14
 Nodes (14): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+6 more)
+
+### Community 2141 - "CapabilityExecution"
+Cohesion: 0.20
+Nodes (10): additionalProperties, properties, required, title, type, CapabilityExecution, minLength, title (+2 more)
 
 ### Community 2142 - "required"
 Cohesion: 0.11
@@ -4834,6 +8073,10 @@ Nodes (14): additionalProperties, properties, required, title, type, AdapterExec
 ### Community 2150 - "AdapterExecutionIdentity"
 Cohesion: 0.14
 Nodes (14): additionalProperties, properties, required, title, type, AdapterExecutionIdentity, title, type (+6 more)
+
+### Community 2151 - "AvailableCapability"
+Cohesion: 0.20
+Nodes (10): additionalProperties, properties, required, title, type, AvailableCapability, provider_id, minLength (+2 more)
 
 ### Community 2152 - "required"
 Cohesion: 0.11
@@ -4901,7 +8144,7 @@ Nodes (12): additionalProperties, required, title, type, AnalysisExecutionEviden
 
 ### Community 2168 - "test_transformer_segmenter.py"
 Cohesion: 0.05
-Nodes (21): InvalidSegmenterCheckpointError, SegmentationResult, _segmenter_context_limit(), SegmenterInputLimitError, TransformerEduSegmenter, _validate_offset_coverage(), download_dataset(), compute_metrics() (+13 more)
+Nodes (55): Dataset, inference_mode, Neural EDU discourse segmentation package., InvalidSegmenterCheckpointError, Any, device, dtype, PreTrainedModel (+47 more)
 
 ### Community 2169 - "CapabilityExecution"
 Cohesion: 0.18
@@ -4959,6 +8202,10 @@ Nodes (9): discriminator, oneOf, ComponentIdentity, mapping, propertyName, immut
 Cohesion: 0.18
 Nodes (11): description, enum, title, type, AnnotationStatusEnum, derived, gold, imported (+3 more)
 
+### Community 2184 - "formalisms"
+Cohesion: 0.20
+Nodes (10): default, items, title, type, $ref, formalisms, techniques, items (+2 more)
+
 ### Community 2185 - "enum"
 Cohesion: 0.20
 Nodes (10): enum, title, type, AnchorTargetKind, decision, edu, node, primary_edge (+2 more)
@@ -4987,6 +8234,10 @@ Nodes (10): enum, title, type, AnchorTargetKind, decision, edu, node, primary_ed
 Cohesion: 0.20
 Nodes (10): enum, title, type, ConfidenceKind, deterministic, entropy, logit, margin (+2 more)
 
+### Community 2192 - "AvailableCapability"
+Cohesion: 0.20
+Nodes (10): additionalProperties, properties, required, title, type, AvailableCapability, provider_id, minLength (+2 more)
+
 ### Community 2193 - "enum"
 Cohesion: 0.20
 Nodes (10): enum, title, type, AnchorTargetKind, decision, edu, node, primary_edge (+2 more)
@@ -4998,6 +8249,10 @@ Nodes (10): enum, title, type, AnchorTargetKind, decision, edu, node, primary_ed
 ### Community 2195 - "enum"
 Cohesion: 0.20
 Nodes (10): SourceForm, doclang_archive, doclang_xml, docling_json, edus, markdown, text, enum (+2 more)
+
+### Community 2196 - "formalisms"
+Cohesion: 0.20
+Nodes (10): default, items, title, type, $ref, formalisms, techniques, items (+2 more)
 
 ### Community 2197 - "enum"
 Cohesion: 0.20
@@ -5023,6 +8278,14 @@ Nodes (10): enum, title, type, AnchorTargetKind, decision, edu, node, primary_ed
 Cohesion: 0.20
 Nodes (10): enum, title, type, AnchorTargetKind, decision, edu, node, primary_edge (+2 more)
 
+### Community 2203 - "BoundaryConfiguration"
+Cohesion: 0.20
+Nodes (10): additionalProperties, properties, required, title, type, $ref, BoundaryConfiguration, configuration (+2 more)
+
+### Community 2204 - "LineEndingParameters"
+Cohesion: 0.20
+Nodes (10): LineEndingParameters, additionalProperties, properties, title, type, const, default, title (+2 more)
+
 ### Community 2205 - "0409816ae4cd768a4fe796b89f4a6b0103043ed1/capabilities.schema.json"
 Cohesion: 0.22
 Nodes (8): additionalProperties, $id, execution, semantic, required, $schema, title, type
@@ -5039,9 +8302,17 @@ Nodes (8): additionalProperties, $id, execution, semantic, required, $schema, ti
 Cohesion: 0.22
 Nodes (9): DispositionDecision, enum, title, type, duplicate, primary, rejected_invalid, retained (+1 more)
 
+### Community 2209 - "LineEndingParameters"
+Cohesion: 0.20
+Nodes (10): LineEndingParameters, additionalProperties, properties, title, type, const, default, title (+2 more)
+
 ### Community 2210 - "enum"
 Cohesion: 0.25
 Nodes (8): ModelIdentityState, immutable_release, mutable_instance, not_configured, unidentified, enum, title, type
+
+### Community 2211 - "LineEndingParameters"
+Cohesion: 0.20
+Nodes (10): LineEndingParameters, additionalProperties, properties, title, type, const, default, title (+2 more)
 
 ### Community 2212 - "HistoricalQuestionOutput"
 Cohesion: 0.22
@@ -5063,6 +8334,18 @@ Nodes (8): enum, title, type, CacheStatus, bypass, hit, miss, written
 Cohesion: 0.22
 Nodes (9): HistoricalQuestionOutput, additionalProperties, required, title, type, index, note, question (+1 more)
 
+### Community 2218 - "LineEndingParameters"
+Cohesion: 0.20
+Nodes (10): LineEndingParameters, additionalProperties, properties, title, type, const, default, title (+2 more)
+
+### Community 2220 - "LineEndingParameters"
+Cohesion: 0.20
+Nodes (10): LineEndingParameters, additionalProperties, properties, title, type, const, default, title (+2 more)
+
+### Community 2221 - "evaluate"
+Cohesion: 0.22
+Nodes (8): evaluate(), Return a valid enumeration capacity or reject invalid configuration., Grounded, complete, preferred, and stable extensions of one framework., validate_capacity(), af(), ``af("abc", "a>b", "b>c")``., sets(), TestKnownFrameworks
+
 ### Community 2222 - "enum"
 Cohesion: 0.29
 Nodes (7): enum, title, type, AnalysisPlanStatus, not_planned, single_unit, subdivided
@@ -5078,6 +8361,10 @@ Nodes (7): enum, title, type, AnalysisPlanStatus, not_planned, single_unit, subd
 ### Community 2225 - "enum"
 Cohesion: 0.29
 Nodes (7): enum, title, type, AnalysisPlanStatus, not_planned, single_unit, subdivided
+
+### Community 2228 - "MatchingOptions"
+Cohesion: 0.22
+Nodes (9): default, title, type, MatchingOptions, additionalProperties, properties, title, type (+1 more)
 
 ### Community 2229 - "EvidenceDetailPolicy"
 Cohesion: 0.33
@@ -5095,9 +8382,9 @@ Nodes (6): EvidenceDetailPolicy, enum, title, type, decision_complete, normalize
 Cohesion: 0.33
 Nodes (6): OutputFormalism, erst_graph, rst_tree, enum, title, type
 
-### Community 2234 - "Tasks: RST Provider Adapter"
-Cohesion: 0.33
-Nodes (7): ProductionIngestor, Production Source Ingest Research, Data Model: RST Provider Adapter, Implementation Plan: RST Provider Adapter, RST Provider Adapter Research, Feature Specification: RST Provider Adapter, Tasks: RST Provider Adapter
+### Community 2233 - "MatchingOptions"
+Cohesion: 0.22
+Nodes (9): default, title, type, MatchingOptions, additionalProperties, properties, title, type (+1 more)
 
 ### Community 2235 - "properties"
 Cohesion: 0.06
@@ -5107,17 +8394,153 @@ Nodes (31): anyOf, title, $ref, title, type, const, title, type (+23 more)
 Cohesion: 0.06
 Nodes (31): anyOf, title, $ref, title, type, const, title, type (+23 more)
 
-### Community 2237 - "test_base_predictor.py"
-Cohesion: 0.15
-Nodes (20): _device_from_spec(), DeviceProbe, resolve_device(), test_device_probe_detect_matches_host_mps_or_cpu(), test_resolve_device_auto_falls_back_to_mps(), test_resolve_device_auto_no_accelerator_is_cpu(), test_resolve_device_auto_prefers_cuda_when_probe_says_so(), test_resolve_device_both_args_raises() (+12 more)
-
 ### Community 2238 - "train_tree_parser.py"
 Cohesion: 0.10
-Nodes (7): main(), get_current_git_commit(), GUMTreebankDataset, ParsedGUMDocument, extract_bracket_spans_from_decoded_spans(), ModernTreeParserTrainer, TrainingMetricsReceipt
+Nodes (21): main(), End-to-end training and evaluation runner for Pure Transformer ModernBERT on…, get_current_git_commit(), Get current git commit hash, or 'untracked' if git is unavailable., Authority constants for experimental workbench models., GUMTreebankDataset, ParsedGUMDocument, A fully parsed and token-aligned GUM discourse document. (+13 more)
+
+### Community 2239 - "MatchingOptions"
+Cohesion: 0.22
+Nodes (9): default, title, type, MatchingOptions, additionalProperties, properties, title, type (+1 more)
+
+### Community 2240 - "MatchingOptions"
+Cohesion: 0.22
+Nodes (9): default, title, type, MatchingOptions, additionalProperties, properties, title, type (+1 more)
+
+### Community 2241 - "MatchingOptions"
+Cohesion: 0.22
+Nodes (9): default, title, type, MatchingOptions, additionalProperties, properties, title, type (+1 more)
 
 ### Community 2242 - "enum"
 Cohesion: 0.25
 Nodes (8): OriginClassification, declared, in_memory, local_file, uri, enum, title, type
+
+### Community 2243 - "MatchingOptions"
+Cohesion: 0.22
+Nodes (9): default, title, type, MatchingOptions, additionalProperties, properties, title, type (+1 more)
+
+### Community 2244 - "SourceArtifactRef"
+Cohesion: 0.22
+Nodes (9): $ref, SourceArtifactRef, artifact, additionalProperties, description, properties, required, title (+1 more)
+
+### Community 2245 - "SourceArtifactRef"
+Cohesion: 0.22
+Nodes (9): $ref, SourceArtifactRef, artifact, additionalProperties, description, properties, required, title (+1 more)
+
+### Community 2246 - "mapping"
+Cohesion: 0.22
+Nodes (9): discriminator, oneOf, ComponentIdentity, mapping, propertyName, immutable_release, mutable_instance, not_used (+1 more)
+
+### Community 2247 - "mapping"
+Cohesion: 0.22
+Nodes (9): discriminator, oneOf, ComponentIdentity, mapping, propertyName, immutable_release, mutable_instance, not_used (+1 more)
+
+### Community 2248 - "mapping"
+Cohesion: 0.22
+Nodes (9): discriminator, oneOf, ComponentIdentity, mapping, propertyName, immutable_release, mutable_instance, not_used (+1 more)
+
+### Community 2251 - "byte_length"
+Cohesion: 0.25
+Nodes (8): minimum, title, type, RedactedContentRepresentation, byte_length, character_length, additionalProperties, properties
+
+### Community 2252 - "byte_length"
+Cohesion: 0.25
+Nodes (8): minimum, title, type, RedactedContentRepresentation, byte_length, character_length, additionalProperties, properties
+
+### Community 2253 - "machine-capabilities.serialization.schema.json"
+Cohesion: 0.25
+Nodes (7): additionalProperties, description, $id, required, $schema, title, type
+
+### Community 2254 - "machine-capabilities-v1.serialization.schema.json"
+Cohesion: 0.25
+Nodes (7): additionalProperties, description, $id, required, $schema, title, type
+
+### Community 2255 - "machine-capabilities-v1.validation.schema.json"
+Cohesion: 0.25
+Nodes (7): additionalProperties, description, $id, required, $schema, title, type
+
+### Community 2256 - "machine-capabilities.validation.schema.json"
+Cohesion: 0.25
+Nodes (7): additionalProperties, description, $id, required, $schema, title, type
+
+### Community 2257 - "machine-native-result-v1.serialization.schema.json"
+Cohesion: 0.25
+Nodes (7): additionalProperties, description, $id, required, $schema, title, type
+
+### Community 2258 - "machine-native-result-v1.validation.schema.json"
+Cohesion: 0.25
+Nodes (7): additionalProperties, description, $id, required, $schema, title, type
+
+### Community 2259 - "machine-native-result.validation.schema.json"
+Cohesion: 0.25
+Nodes (7): additionalProperties, description, $id, required, $schema, title, type
+
+### Community 2261 - "execution_fields"
+Cohesion: 0.29
+Nodes (8): items, default, items, title, type, items, type, execution_fields
+
+### Community 2262 - "provider_attributes"
+Cohesion: 0.25
+Nodes (8): maxItems, minItems, prefixItems, provider_attributes, default, items, title, type
+
+### Community 2263 - "provider_attributes"
+Cohesion: 0.25
+Nodes (8): maxItems, minItems, prefixItems, provider_attributes, default, items, title, type
+
+### Community 2266 - "schemas/capabilities.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2267 - "machine-aspic-result.serialization.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2268 - "machine-aspic-result.validation.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2269 - "discriminator"
+Cohesion: 0.29
+Nodes (7): discriminator, oneOf, CapabilityState, mapping, propertyName, available, unavailable
+
+### Community 2270 - "machine-centering-result.serialization.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2271 - "machine-centering-result.validation.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2272 - "machine-classical_rhetoric-result.serialization.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2273 - "machine-classical_rhetoric-result.validation.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2274 - "machine-dung-result.serialization.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2275 - "machine-dung-result.validation.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2276 - "machine-ibis-result.serialization.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2277 - "machine-ibis-result.validation.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2278 - "machine-pragma_dialectics-result.serialization.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2279 - "machine-pragma_dialectics-result.validation.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
 
 ### Community 2280 - "enum"
 Cohesion: 0.29
@@ -5127,21 +8550,229 @@ Nodes (7): enum, title, type, AnalysisPlanStatus, not_planned, single_unit, subd
 Cohesion: 0.29
 Nodes (7): enum, title, type, CapacityUnit, edu_count, segment_count, token_count
 
-### Community 2291 - "tree_stats"
-Cohesion: 0.27
-Nodes (4): find_cdu(), _is_leaf(), relation_category(), tree_stats()
+### Community 2282 - "machine-speech_acts-result.serialization.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2283 - "machine-speech_acts-result.validation.schema.json"
+Cohesion: 0.29
+Nodes (6): additionalProperties, $id, required, $schema, title, type
+
+### Community 2286 - "SourceEvidenceSpan"
+Cohesion: 0.33
+Nodes (6): SourceEvidenceSpan, additionalProperties, description, required, title, type
+
+### Community 2287 - "SourceEvidenceSpan"
+Cohesion: 0.33
+Nodes (6): SourceEvidenceSpan, additionalProperties, description, required, title, type
+
+### Community 2288 - "FormalismDeclaration"
+Cohesion: 0.33
+Nodes (6): FormalismDeclaration, additionalProperties, description, required, title, type
+
+### Community 2289 - "FormalismDeclaration"
+Cohesion: 0.33
+Nodes (6): FormalismDeclaration, additionalProperties, description, required, title, type
+
+### Community 2290 - "arguments"
+Cohesion: 0.33
+Nodes (6): items, minItems, title, type, minLength, arguments
+
+### Community 2291 - "rdam/rst/__init__.py"
+Cohesion: 0.20
+Nodes (11): Convenience helpers for working with RST structures. This module exposes the…, find_cdu(), _is_leaf(), Any, Analytical helpers for parsed RST trees. These functions operate on…, Classify an RST relation label as subject-matter or presentational. Follows…, Compute structural diagnostics for an RST tree. Returned dict keys: ``depth``…, Locate the Central Discourse Unit (CDU) of an RST tree. Descends from the root… (+3 more)
+
+### Community 2292 - "arguments"
+Cohesion: 0.33
+Nodes (6): items, minItems, title, type, minLength, arguments
+
+### Community 2293 - "SourceIdentity"
+Cohesion: 0.33
+Nodes (6): SourceIdentity, additionalProperties, description, required, title, type
+
+### Community 2294 - "media_type"
+Cohesion: 0.33
+Nodes (6): anyOf, default, minLength, title, type, media_type
+
+### Community 2295 - "NativeTechniqueResult"
+Cohesion: 0.33
+Nodes (6): NativeTechniqueResult, additionalProperties, description, required, title, type
+
+### Community 2296 - "FormalismChoice"
+Cohesion: 0.33
+Nodes (6): FormalismChoice, additionalProperties, description, required, title, type
+
+### Community 2297 - "SourceEvidenceSpan"
+Cohesion: 0.33
+Nodes (6): SourceEvidenceSpan, additionalProperties, description, required, title, type
+
+### Community 2298 - "SourceEvidenceSpan"
+Cohesion: 0.33
+Nodes (6): SourceEvidenceSpan, additionalProperties, description, required, title, type
+
+### Community 2299 - "upstream_results"
+Cohesion: 0.33
+Nodes (6): anyOf, upstream_results, default, items, title, type
 
 ### Community 2300 - "findFile"
 Cohesion: 0.29
-Nodes (3): findFile(), getDisFiles(), readEduDoc()
+Nodes (7): findFile(), getDisFiles(), Any, Path, Retrieve the edu file corresponding to the basename_dis, Read information from the edu file, and fill the fields tokendict and edudict…, readEduDoc()
+
+### Community 2301 - "upstream_results"
+Cohesion: 0.33
+Nodes (6): anyOf, upstream_results, default, items, title, type
+
+### Community 2303 - "axioms"
+Cohesion: 0.40
+Nodes (5): default, items, title, type, axioms
+
+### Community 2304 - "contraries"
+Cohesion: 0.40
+Nodes (5): default, items, title, type, contraries
+
+### Community 2305 - "StrictRuleInput"
+Cohesion: 0.40
+Nodes (5): StrictRuleInput, additionalProperties, required, title, type
+
+### Community 2306 - "axioms"
+Cohesion: 0.40
+Nodes (5): default, items, title, type, axioms
 
 ### Community 2307 - "parseXML"
-Cohesion: 0.22
-Nodes (4): getRelationsType(), parseXML(), readRS3Annotation(), writeEdus()
+Cohesion: 0.29
+Nodes (7): getRelationsType(), parseXML(), _Element, _ElementTree, Path, a group's ``type`` attribute tells us whether the group node represents a span…, readRS3Annotation()
 
 ### Community 2308 - "semantic_sha256"
 Cohesion: 0.02
-Nodes (97): _evaluation_to_payload(), source_identity(), semantic_sha256(), CenteringProvider, _selections(), source_identity(), source_identity(), LlmSettings (+89 more)
+Nodes (187): dotenv, NonNegativeInt, ProviderProvenance, pydantic_ai_capabilities, pydantic_ai_models, pydantic_ai_profiles, pydantic_ai_settings, pydantic_ai_usage (+179 more)
+
+### Community 2309 - "contraries"
+Cohesion: 0.40
+Nodes (5): default, items, title, type, contraries
+
+### Community 2310 - "StrictRuleInput"
+Cohesion: 0.40
+Nodes (5): StrictRuleInput, additionalProperties, required, title, type
+
+### Community 2311 - "discriminator"
+Cohesion: 0.40
+Nodes (5): discriminator, mapping, propertyName, available, unavailable
+
+### Community 2312 - "model_probe"
+Cohesion: 0.40
+Nodes (5): const, default, title, type, model_probe
+
+### Community 2313 - "discriminator"
+Cohesion: 0.40
+Nodes (5): discriminator, mapping, propertyName, available, unavailable
+
+### Community 2314 - "TechniqueCapability"
+Cohesion: 0.40
+Nodes (5): TechniqueCapability, additionalProperties, required, title, type
+
+### Community 2315 - "UnavailableReason"
+Cohesion: 0.40
+Nodes (5): UnavailableReason, description, enum, title, type
+
+### Community 2316 - "discriminator"
+Cohesion: 0.40
+Nodes (5): discriminator, mapping, propertyName, available, unavailable
+
+### Community 2317 - "TechniqueCapability"
+Cohesion: 0.40
+Nodes (5): TechniqueCapability, additionalProperties, required, title, type
+
+### Community 2319 - "UnavailableReason"
+Cohesion: 0.40
+Nodes (5): UnavailableReason, description, enum, title, type
+
+### Community 2320 - "cf_ranking"
+Cohesion: 0.40
+Nodes (5): items, title, type, type, cf_ranking
+
+### Community 2321 - "cf_ranking"
+Cohesion: 0.40
+Nodes (5): items, title, type, type, cf_ranking
+
+### Community 2322 - "device"
+Cohesion: 0.40
+Nodes (5): default, pattern, title, type, device
+
+### Community 2323 - "evidence_detail"
+Cohesion: 0.40
+Nodes (5): default, enum, title, type, evidence_detail
+
+### Community 2324 - "device"
+Cohesion: 0.40
+Nodes (5): default, pattern, title, type, device
+
+### Community 2325 - "evidence_detail"
+Cohesion: 0.40
+Nodes (5): default, enum, title, type, evidence_detail
+
+### Community 2326 - "ConversionActivity"
+Cohesion: 0.40
+Nodes (5): additionalProperties, required, title, type, ConversionActivity
+
+### Community 2327 - "raw_size_bytes"
+Cohesion: 0.40
+Nodes (5): raw_size_bytes, default, minimum, title, type
+
+### Community 2328 - "ConversionActivity"
+Cohesion: 0.40
+Nodes (5): additionalProperties, required, title, type, ConversionActivity
+
+### Community 2329 - "raw_bytes"
+Cohesion: 0.40
+Nodes (5): raw_bytes, anyOf, contentEncoding, default, title
+
+### Community 2330 - "raw_size_bytes"
+Cohesion: 0.40
+Nodes (5): raw_size_bytes, default, minimum, title, type
+
+### Community 2331 - "SpeechActOutputItem"
+Cohesion: 0.40
+Nodes (5): SpeechActOutputItem, additionalProperties, required, title, type
+
+### Community 2332 - "SpeechActOutputItem"
+Cohesion: 0.40
+Nodes (5): SpeechActOutputItem, additionalProperties, required, title, type
+
+### Community 2334 - "classical_rhetoric"
+Cohesion: 0.50
+Nodes (4): anyOf, default, title, classical_rhetoric
+
+### Community 2335 - "pdtb"
+Cohesion: 0.50
+Nodes (4): anyOf, default, title, pdtb
+
+### Community 2336 - "pragma_dialectics"
+Cohesion: 0.50
+Nodes (4): anyOf, default, title, pragma_dialectics
+
+### Community 2337 - "speech_acts"
+Cohesion: 0.50
+Nodes (4): speech_acts, anyOf, default, title
+
+### Community 2338 - "classical_rhetoric"
+Cohesion: 0.50
+Nodes (4): anyOf, default, title, classical_rhetoric
+
+### Community 2339 - "pdtb"
+Cohesion: 0.50
+Nodes (4): anyOf, default, title, pdtb
+
+### Community 2340 - "pragma_dialectics"
+Cohesion: 0.50
+Nodes (4): anyOf, default, title, pragma_dialectics
+
+### Community 2341 - "speech_acts"
+Cohesion: 0.50
+Nodes (4): speech_acts, anyOf, default, title
+
+### Community 2342 - "declared_artifact_id"
+Cohesion: 0.50
+Nodes (4): anyOf, default, title, declared_artifact_id
 
 ### Community 2361 - "Shared concept linking and downstream evidence integration"
 Cohesion: 0.20
@@ -5163,9 +8794,9 @@ Nodes (5): const, default, title, type, contract
 Cohesion: 0.40
 Nodes (5): const, default, title, type, contract
 
-### Community 2407 - "rdam/rst/__init__.py"
-Cohesion: 0.13
-Nodes (5): render(), _run_coro_sync_result(), to_html(), to_pdf(), test_to_html_returns_string_and_writes_file()
+### Community 2407 - "render"
+Cohesion: 0.12
+Nodes (17): PathLike, T, Render an RST tree and, optionally, display it inline. This is a light-weight…, Convert an ``.rs3`` file into HTML. Parameters ---------- rs3_path: Path to the…, Render an ``.rs3`` file to PNG (works in both sync and async environments)., Render an ``.rs3`` file to PDF. The viewer exposes only an asynchronous PDF…, Execute `coro` to completion and return its result, regardless of asyncio state., render() (+9 more)
 
 ### Community 2410 - "Verification, 2026-09-12"
 Cohesion: 0.25
@@ -5175,29 +8806,25 @@ Nodes (7): Authorized normal-environment cutover, Downstream and evaluation, Ful
 Cohesion: 0.33
 Nodes (5): Docling NLP 1.4.0 evaluation, Fixed inputs and method, Isolation and reproduction, Measurements, Offset fidelity
 
-### Community 2432 - "SourceForm"
-Cohesion: 0.06
-Nodes (33): ConversionActivity, _identify_path(), _media_type(), _raw_contract(), SourceForm, project(), _source(), test_all_forms_exact_evidence_and_prepare_reuse() (+25 more)
-
 ## Knowledge Gaps
-- **2402 isolated node(s):** `rdam`, `Apache-2.0`, `CC-BY-NC-4.0`, `MIT`, `boundary_reason` (+2397 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 12677 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **641 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **19210 isolated node(s):** `Data`, `type`, `const`, `type`, `const` (+19205 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 22556 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **287 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ParserInput` connect `ParserInput` to `DataManager`, `release.py`, `DataManager`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Why does `semantic_sha256()` connect `semantic_sha256` to `source.py`, `legacy.py`, `Machine`, `_interpretation_types.py`, `.for_text`, `parser_result.py`, `rdam/ingest/__init__.py`, `linker.py`, `gold.py`, `ingest/identity.py`, `ProductionIngestor`, `_set_failure_identity`, `test_baseline_corrections.py`, `contracts/capabilities.py`, `test_runtime_vocabulary.py`, `SourceArtifact`, `Technique`, `Parser`, `build_analysis_validation_receipt`, `ontology.py`, `canonical_json_bytes`, `AnalysedDocument`, `production_ingest/contracts.py`, `baseline_corrections.py`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
+- **Why does `ProductionIngestor` connect `ProductionIngestor` to `source.py`, `semantic_sha256`, `Machine`, `RstAnalysis`, `test_erst_checkpoint.py`, `parser_result.py`, `rdam/ingest/__init__.py`, `test_alignment.py`, `linker.py`, `test_doclang_decoder.py`, `StrictModel`, `gold.py`, `ingest/identity.py`, `test_failure_stages.py`, `test_baseline_corrections.py`, `contracts/capabilities.py`, `test_runtime_vocabulary.py`, `SourceArtifact`, `test_version_compat.py`, `rst_diag.py`, `rst_baseline.py`, `Technique`, `RstDocument`, `Parser`, `build_analysis_validation_receipt`, `AnalysedDocument`, `test_doclang_track.py`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
+- **Why does `BasePredictor` connect `BasePredictor` to `PredictorUniRST`, `PredictorDMRST`, `NetworkStructureDecision`, `RstDocument`?**
+  _High betweenness centrality (0.003) - this node is a cross-community bridge._
 - **Are the 56 inferred relationships involving `ProductionIngestor` (e.g. with `ProductionCapabilities` and `SourceArtifact`) actually correct?**
   _`ProductionIngestor` has 56 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `rdam`, `Apache-2.0`, `CC-BY-NC-4.0` to the rest of the system?**
-  _2402 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `StandardParsevalScorer` be split into smaller, more focused modules?**
-  _Cohesion score 0.029307344239470935 - nodes in this community are weakly interconnected._
-- **Why does `RstAnalysis` connect `RstAnalysis` to `StandardParsevalScorer`, `test_llm_rst_protocol.py`, `test_erst_checkpoint.py`, `legacy.py`, `corpus.py`, `._graph_inputs`, `systems/common.py`, `Sha256Identity`, `assessor.py`, `erst/data.py`, `rdam/ingest/__init__.py`, `rst/contracts/__init__.py`, `DiscourseUnit`, `ProductionIngestor`, `test_gum_gold.py`, `AnalysisSemanticEvidence`, `SecondaryEdgeCandidate`, `Parser`, `StandardParsevalScorer`, `research/erst/contracts.py`, `ingest/contracts/analysis.py`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Are the 24 inferred relationships involving `Machine` (e.g. with `AggregateAnalysis` and `AggregateRequest`) actually correct?**
+  _`Machine` has 24 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 74 inferred relationships involving `Technique` (e.g. with `_derive_spec()` and `production_machine()`) actually correct?**
   _`Technique` has 74 INFERRED edges - model-reasoned connections that need verification._
-- **Should `interfaces/test_cli.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.116701607267645 - nodes in this community are weakly interconnected._
+- **Are the 3 inferred relationships involving `RstAnalysis` (e.g. with `FailureCodeEnum` and `NodeKindEnum`) actually correct?**
+  _`RstAnalysis` has 3 INFERRED edges - model-reasoned connections that need verification._

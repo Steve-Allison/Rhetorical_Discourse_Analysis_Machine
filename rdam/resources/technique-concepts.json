@@ -1931,5 +1931,5 @@
   },
   "scheme": "https://steve-allison.github.io/Central_Configs/v5/schema/coe",
   "source": "../Central_Configs/dist/build/central.sqlite",
-  "source_sha256": "886f08957bf6dca2317f6c105ac9dcf29da67e9d143edb01403caf261a8f6b28"
+  "source_sha256": "f3db32a9045fa017f0c58c9799fd70235ff4b2c2e901b012dc5478a65cb98850"
 }
