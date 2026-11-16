@@ -96,7 +96,11 @@ def main() -> int:
     parser.add_argument(
         "--cache-root",
         type=Path,
-        default=Path("/Users/steveallison/.cache/huggingface/hub/models--tchewik--isanlp_rst_v3"),
+        default=Path(__file__).resolve().parents[3]
+        / "_models"
+        / "huggingface"
+        / "hub"
+        / "models--tchewik--isanlp_rst_v3",
     )
     parser.add_argument(
         "--store",

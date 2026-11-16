@@ -193,6 +193,18 @@ shim for removed format-specific functions; and `dclq` + `doclang[schematron-sax
 ship in core `[project.dependencies]` (`pyproject.toml:44-45`), leaving `http`, `dev`, and
 `offline` as the optional extras (`pyproject.toml:58-82`).
 
+## Central model store (`../_models`)
+
+- **Single shared cache**: All local ML/NLP/LLM/embedding models and caches
+  (`HF_HOME`, `HF_HUB_CACHE`, `HF_ASSETS_CACHE`, `HF_XET_CACHE`, `TORCH_HOME`)
+  MUST resolve to the workspace-level `../_models` directory (configured in
+  `pyproject.toml` `[tool.pixi.activation.env]`). Never create per-repo model
+  caches or store model weights in `~/.cache/`.
+- **Reuse before adding**: Before introducing, configuring, or downloading any
+  new model, inspect `../_models` (including `../_models/huggingface/hub` and
+  `../_models/torch`) to reuse an already-installed model for that capability
+  instead of adding a duplicate or second variant.
+
 ## Shared subject-matter linking and Central_Configs
 
 `rdam.concepts` consumes `Central_Configs` v5.0.0 proper-noun surface rules (`LinkableProperNoun`
