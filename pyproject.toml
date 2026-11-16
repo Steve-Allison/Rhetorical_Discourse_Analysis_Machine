@@ -117,6 +117,13 @@ channels = ["conda-forge"]
 # compatibility default.
 platforms = [{ platform = "osx-arm64", macos = "14.0" }]
 
+[tool.pixi.activation.env]
+HF_HOME = "../_models/huggingface"
+HF_HUB_CACHE = "../_models/huggingface/hub"
+HF_ASSETS_CACHE = "../_models/huggingface/assets"
+HF_XET_CACHE = "../_models/huggingface/xet"
+TORCH_HOME = "../_models/torch"
+
 [tool.pixi.feature.production.dependencies]
 python = "3.14.*"
 
